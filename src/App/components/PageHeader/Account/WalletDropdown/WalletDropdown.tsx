@@ -29,14 +29,13 @@ import { toDisplayQty } from '@crocswap-libs/sdk';
 import { ethereumMainnet } from '../../../../../utils/networks/ethereumMainnet';
 import { mainnetUSDC } from '../../../../../utils/data/defaultTokens';
 import IconWithTooltip from '../../../../../components/Global/IconWithTooltip/IconWithTooltip';
-import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
 
 interface WalletDropdownPropsIF {
     ensName: string;
     accountAddress: string;
     handleCopyAddress: () => void;
     clickOutsideHandler: () => void;
-    connectorName: string | undefined;
     clickLogout: () => void;
     accountAddressFull: string;
 }
@@ -54,7 +53,6 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         accountAddress,
         handleCopyAddress,
         clickOutsideHandler,
-        // connectorName,
         clickLogout,
         accountAddressFull,
     } = props;
@@ -62,7 +60,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
-    const { tokenBalances } = useContext(UserDataContext);
+    const { tokenBalances } = useContext(TokenBalanceContext);
     const nativeData: TokenIF | undefined =
         tokenBalances &&
         tokenBalances.find((tkn: TokenIF) => tkn.address === ZERO_ADDRESS);

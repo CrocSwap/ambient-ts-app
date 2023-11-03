@@ -1,7 +1,7 @@
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { GRAPHCACHE_SMALL_URL, GRAPHCACHE_URL } from '../../constants';
-import { CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { TokenPriceFn } from './fetchTokenPrice';
+import { CandlesByPoolAndDuration } from '../../contexts/CandleContext';
 
 interface CandleDataServerIF {
     priceOpen: number;

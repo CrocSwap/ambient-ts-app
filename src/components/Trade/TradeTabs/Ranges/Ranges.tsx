@@ -27,6 +27,8 @@ import {
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -61,7 +63,9 @@ function Ranges(props: propsIF) {
 
     const { userAddress } = useContext(UserDataContext);
 
-    const graphData = useAppSelector((state) => state?.graphData);
+    const { userPositionsByPool, positionsByPool } =
+        useContext(GraphDataContext);
+    const dataLoadingStatus = useContext(DataLoadingContext);
     const tradeData = useAppSelector((state) => state.tradeData);
     const { transactionsByType, pendingTransactions } = useAppSelector(
         (state) => state.receiptData,
@@ -82,7 +86,7 @@ function Ranges(props: propsIF) {
         if (isAccountView) setRangeData(activeAccountPositionData || []);
         else if (!showAllData)
             setRangeData(
-                graphData?.userPositionsByPool?.positions.filter(
+                userPositionsByPool?.positions.filter(
                     (position) =>
                         position.base.toLowerCase() ===
                             baseTokenAddress.toLowerCase() &&
@@ -92,39 +96,32 @@ function Ranges(props: propsIF) {
                 ),
             );
         else {
-            setRangeData(graphData?.positionsByPool.positions);
+            setRangeData(positionsByPool.positions);
         }
     }, [
         showAllData,
         isAccountView,
         activeAccountPositionData,
-        graphData?.positionsByPool,
-        graphData?.userPositionsByPool,
+        positionsByPool,
+        userPositionsByPool,
     ]);
 
     useEffect(() => {
         if (isAccountView && connectedAccountActive)
-            setIsLoading(
-                graphData?.dataLoadingStatus.isConnectedUserRangeDataLoading,
-            );
+            setIsLoading(dataLoadingStatus.isConnectedUserRangeDataLoading);
         else if (isAccountView)
-            setIsLoading(
-                graphData?.dataLoadingStatus.isLookupUserRangeDataLoading,
-            );
+            setIsLoading(dataLoadingStatus.isLookupUserRangeDataLoading);
         else if (!showAllData)
-            setIsLoading(
-                graphData?.dataLoadingStatus
-                    .isConnectedUserPoolRangeDataLoading,
-            );
-        else setIsLoading(graphData?.dataLoadingStatus.isPoolRangeDataLoading);
+            setIsLoading(dataLoadingStatus.isConnectedUserPoolRangeDataLoading);
+        else setIsLoading(dataLoadingStatus.isPoolRangeDataLoading);
     }, [
         showAllData,
         isAccountView,
         connectedAccountActive,
-        graphData?.dataLoadingStatus.isConnectedUserRangeDataLoading,
-        graphData?.dataLoadingStatus.isConnectedUserPoolRangeDataLoading,
-        graphData?.dataLoadingStatus.isLookupUserRangeDataLoading,
-        graphData?.dataLoadingStatus.isPoolRangeDataLoading,
+        dataLoadingStatus.isConnectedUserRangeDataLoading,
+        dataLoadingStatus.isConnectedUserPoolRangeDataLoading,
+        dataLoadingStatus.isLookupUserRangeDataLoading,
+        dataLoadingStatus.isPoolRangeDataLoading,
     ]);
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =

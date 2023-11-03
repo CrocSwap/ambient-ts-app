@@ -8,13 +8,13 @@ import { getPinnedPriceValuesFromTicks } from '../../../../../pages/Trade/Range/
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
-import { useAccount } from 'wagmi';
 import trimString from '../../../../../utils/functions/trimString';
 import {
     RangeRow,
     RowItem,
 } from '../../../../../styled/Components/TransactionTable';
 import { FlexContainer } from '../../../../../styled/Common';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
 
 interface PropsIF {
     transaction: {
@@ -75,7 +75,7 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
 
     // -------------------------------POSITION HASH------------------------
 
-    const { address: userAddress } = useAccount();
+    const { userAddress } = useContext(UserDataContext);
 
     let posHash;
     if (isAmbient) {

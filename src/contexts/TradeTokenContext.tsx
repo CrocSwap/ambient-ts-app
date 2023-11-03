@@ -5,7 +5,6 @@ import React, {
     useMemo,
     useState,
 } from 'react';
-import { useAccount } from 'wagmi';
 import { usePoolMetadata } from '../App/hooks/usePoolMetadata';
 import { useTokenPairAllowance } from '../App/hooks/useTokenPairAllowance';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../constants';
@@ -20,6 +19,7 @@ import { TokenContext } from './TokenContext';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { BigNumber } from 'ethers';
 import { UserDataContext } from './UserDataContext';
+import { TokenBalanceContext } from './TokenBalanceContext';
 
 interface TradeTokenContextIF {
     baseToken: {
@@ -63,7 +63,6 @@ export const TradeTokenContextProvider = (props: {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
 
-    const { setTokenBalance } = useContext(UserDataContext);
     const {
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
@@ -73,12 +72,14 @@ export const TradeTokenContextProvider = (props: {
     const { crocEnv, chainData, provider, activeNetwork } =
         useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
+    const { setTokenBalance } = useContext(TokenBalanceContext);
+
     const { isEnabled: isChartEnabled } = useContext(ChartContext);
     const { setSimpleRangeWidth } = useContext(RangeContext);
     const { tokens } = useContext(TokenContext);
 
     const { tradeData, receiptData } = useAppSelector((state) => state);
-    const { address: userAddress, isConnected } = useAccount();
+    const { userAddress, isUserConnected } = useContext(UserDataContext);
     const {
         tokenAAllowance,
         tokenBAllowance,
@@ -197,7 +198,7 @@ export const TradeTokenContextProvider = (props: {
             if (
                 crocEnv &&
                 userAddress &&
-                isConnected &&
+                isUserConnected &&
                 tradeData.baseToken.address &&
                 tradeData.quoteToken.address &&
                 baseTokenDecimals &&
@@ -288,7 +289,7 @@ export const TradeTokenContextProvider = (props: {
         })();
     }, [
         crocEnv,
-        isConnected,
+        isUserConnected,
         userAddress,
         tradeData.baseToken.address,
         tradeData.quoteToken.address,

@@ -6,7 +6,6 @@ import React, {
     useMemo,
     useState,
 } from 'react';
-import { useAccount } from 'wagmi';
 import { estimateFrom24HrAmbientApr } from '../App/functions/fetchAprEst';
 import { usePoolPricing } from '../App/hooks/usePoolPricing';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
@@ -18,6 +17,7 @@ import { TradeTokenContext } from './TradeTokenContext';
 import { usePoolList } from '../App/hooks/usePoolList';
 import { PoolIF, PoolStatIF } from '../utils/interfaces/exports';
 import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
+import { UserDataContext } from './UserDataContext';
 
 interface PoolContextIF {
     poolList: PoolIF[];
@@ -49,13 +49,12 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         },
     } = useContext(TradeTokenContext);
 
+    const { tradeData, receiptData } = useAppSelector((state) => state);
+    const { isUserConnected } = useContext(UserDataContext);
     const poolList: PoolIF[] = usePoolList(
         activeNetwork.graphCacheUrl,
         crocEnv,
     );
-
-    const { tradeData, receiptData } = useAppSelector((state) => state);
-    const { isConnected } = useAccount();
 
     const pool = useMemo(
         () =>
@@ -92,7 +91,7 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         quoteTokenDecimals,
         chainData,
         receiptCount: receiptData.sessionReceipts.length,
-        isUserLoggedIn: isConnected,
+        isUserLoggedIn: !!isUserConnected,
         lastBlockNumber,
         isServerEnabled,
         cachedQuerySpotPrice,

@@ -1,6 +1,5 @@
 // START: Import React and Dongles
 import { useEffect, useState, useContext, memo, useMemo } from 'react';
-import { useEnsName } from 'wagmi';
 
 // START: Import JSX Components
 import ExchangeBalance from '../../components/Portfolio/ExchangeBalance/ExchangeBalance';
@@ -30,10 +29,8 @@ import { FlexContainer, Text } from '../../styled/Common';
 import { UserDataContext } from '../../contexts/UserDataContext';
 
 function Portfolio() {
-    const { userAddress, setResolvedAddressInContext } =
+    const { userAddress, setResolvedAddressInContext, ensName } =
         useContext(UserDataContext);
-
-    const { data: ensName } = useEnsName({ address: userAddress });
 
     const isUserConnected = useSimulatedIsUserConnected();
 

@@ -8,8 +8,8 @@ import { useContext } from 'react';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { tokenListURIs } from '../../../../../utils/data/tokenListURIs';
 import { ZERO_ADDRESS } from '../../../../../constants';
+import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
 import { isUsdcToken } from '../../../../../utils/data/stablePairs';
-import { UserDataContext } from '../../../../../contexts/UserDataContext';
 
 interface propsIF {
     chainId: string;
@@ -28,7 +28,7 @@ export default function Wallet(props: propsIF) {
 
     const { tokens } = useContext(TokenContext);
 
-    const { tokenBalances } = useContext(UserDataContext);
+    const { tokenBalances } = useContext(TokenBalanceContext);
 
     const tokensToRender: Array<TokenIF | undefined> | undefined =
         connectedAccountActive ? tokenBalances : resolvedAddressTokens;

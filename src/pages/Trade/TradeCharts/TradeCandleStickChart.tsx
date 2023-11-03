@@ -37,6 +37,7 @@ import {
 } from '../../Chart/ChartUtils/chartUtils';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { updatesIF } from '../../../utils/hooks/useUrlParams';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface propsIF {
@@ -107,9 +108,8 @@ function TradeCandleStickChart(props: propsIF) {
     );
 
     const tradeData = useAppSelector((state) => state.tradeData);
-    const { liquidityData: unparsedLiquidityData } = useAppSelector(
-        (state) => state.graphData,
-    );
+    const { liquidityData: unparsedLiquidityData } =
+        useContext(GraphDataContext);
 
     const tokenPair = useMemo(
         () => ({

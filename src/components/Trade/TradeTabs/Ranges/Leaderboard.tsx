@@ -15,27 +15,28 @@ import { RangeRow as RangeRowStyled } from '../../../../styled/Components/Transa
 import { FlexContainer } from '../../../../styled/Common';
 import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 
 // react functional component
 function Leaderboard() {
     const { showAllData } = useContext(TradeTableContext);
 
     const { tradeTableState } = useContext(ChartContext);
+    const { leaderboardByPool } = useContext(GraphDataContext);
 
     const { userAddress } = useContext(UserDataContext);
-    const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const baseTokenAddress = tradeData.baseToken.address;
     const quoteTokenAddress = tradeData.quoteToken.address;
 
     const positionsByApy: string[] =
-        [...graphData?.leaderboardByPool?.positions]
+        [...leaderboardByPool?.positions]
             .sort((a, b) => b.apy - a.apy)
             .map((pos) => pos.positionId) ?? [];
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =
-        useSortedPositions('apr', graphData?.leaderboardByPool?.positions);
+        useSortedPositions('apr', leaderboardByPool?.positions);
 
     // ---------------------
     const [currentPage, setCurrentPage] = useState(1);

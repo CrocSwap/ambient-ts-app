@@ -23,6 +23,8 @@ import {
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 
 // interface for props for react functional component
 interface propsIF {
@@ -55,7 +57,9 @@ function Orders(props: propsIF) {
     const isTradeTableExpanded =
         !isAccountView && tradeTableState === 'Expanded';
 
-    const graphData = useAppSelector((state) => state?.graphData);
+    const { userLimitOrdersByPool, limitOrdersByPool } =
+        useContext(GraphDataContext);
+    const dataLoadingStatus = useContext(DataLoadingContext);
     const { userAddress } = useContext(UserDataContext);
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -73,7 +77,7 @@ function Orders(props: propsIF) {
         if (isAccountView) setLimitOrderData(activeAccountLimitOrderData || []);
         else if (!showAllData)
             setLimitOrderData(
-                graphData?.userLimitOrdersByPool?.limitOrders.filter(
+                userLimitOrdersByPool?.limitOrders.filter(
                     (order) =>
                         order.base.toLowerCase() ===
                             baseTokenAddress.toLowerCase() &&
@@ -83,39 +87,32 @@ function Orders(props: propsIF) {
                 ),
             );
         else {
-            setLimitOrderData(graphData?.limitOrdersByPool.limitOrders);
+            setLimitOrderData(limitOrdersByPool.limitOrders);
         }
     }, [
         showAllData,
         isAccountView,
         activeAccountLimitOrderData,
-        graphData?.limitOrdersByPool,
-        graphData?.userLimitOrdersByPool,
+        limitOrdersByPool,
+        userLimitOrdersByPool,
     ]);
 
     useEffect(() => {
         if (isAccountView && connectedAccountActive)
-            setIsLoading(
-                graphData?.dataLoadingStatus.isConnectedUserOrderDataLoading,
-            );
+            setIsLoading(dataLoadingStatus.isConnectedUserOrderDataLoading);
         else if (isAccountView)
-            setIsLoading(
-                graphData?.dataLoadingStatus.isLookupUserOrderDataLoading,
-            );
+            setIsLoading(dataLoadingStatus.isLookupUserOrderDataLoading);
         else if (!showAllData)
-            setIsLoading(
-                graphData?.dataLoadingStatus
-                    .isConnectedUserPoolOrderDataLoading,
-            );
-        else setIsLoading(graphData?.dataLoadingStatus.isPoolOrderDataLoading);
+            setIsLoading(dataLoadingStatus.isConnectedUserPoolOrderDataLoading);
+        else setIsLoading(dataLoadingStatus.isPoolOrderDataLoading);
     }, [
         showAllData,
         isAccountView,
         connectedAccountActive,
-        graphData?.dataLoadingStatus.isConnectedUserOrderDataLoading,
-        graphData?.dataLoadingStatus.isConnectedUserPoolOrderDataLoading,
-        graphData?.dataLoadingStatus.isLookupUserOrderDataLoading,
-        graphData?.dataLoadingStatus.isPoolOrderDataLoading,
+        dataLoadingStatus.isConnectedUserOrderDataLoading,
+        dataLoadingStatus.isConnectedUserPoolOrderDataLoading,
+        dataLoadingStatus.isLookupUserOrderDataLoading,
+        dataLoadingStatus.isPoolOrderDataLoading,
     ]);
 
     const relevantTransactionsByType = transactionsByType.filter(

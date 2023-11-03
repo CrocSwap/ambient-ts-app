@@ -1,5 +1,12 @@
 import { ChainSpec, CrocEnv, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import { GRAPHCACHE_SMALL_URL } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { LimitOrderServerIF } from '../../utils/interfaces/LimitOrderIF';
@@ -8,17 +15,7 @@ import {
     PositionServerIF,
 } from '../../utils/interfaces/PositionIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-import {
-    setChangesByPool,
-    setDataLoadingStatus,
-    setLeaderboardByPool,
-    setLimitOrdersByPool,
-    setLiquidity,
-    setLiquidityPending,
-    setPositionsByPool,
-    setUserLimitOrdersByPool,
-    setUserPositionsByPool,
-} from '../../utils/state/graphDataSlice';
+
 import {
     setAdvancedHighTick,
     setAdvancedLowTick,
@@ -36,6 +33,8 @@ import { SpotPriceFn } from '../functions/querySpotPrice';
 import useDebounce from './useDebounce';
 import { getLiquidityFee } from '../functions/getPoolStats';
 import { Provider } from '@ethersproject/providers';
+import { DataLoadingContext } from '../../contexts/DataLoadingContext';
+import { GraphDataContext } from '../../contexts/GraphDataContext';
 
 interface PoolParamsHookIF {
     crocEnv?: CrocEnv;
@@ -60,7 +59,17 @@ interface PoolParamsHookIF {
 export function usePoolMetadata(props: PoolParamsHookIF) {
     const dispatch = useAppDispatch();
     const tradeData = useAppSelector((state) => state.tradeData);
-
+    const { setDataLoadingStatus } = useContext(DataLoadingContext);
+    const {
+        setUserPositionsByPool,
+        setPositionsByPool,
+        setLeaderboardByPool,
+        setChangesByPool,
+        setLimitOrdersByPool,
+        setUserLimitOrdersByPool,
+        setLiquidity,
+        setLiquidityPending,
+    } = useContext(GraphDataContext);
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
 
@@ -153,36 +162,26 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
     // Reset loading states when token values change
     useEffect(() => {
-        dispatch(
-            setDataLoadingStatus({
-                datasetName: 'poolRangeData',
-                loadingStatus: true,
-            }),
-        );
-        dispatch(
-            setDataLoadingStatus({
-                datasetName: 'poolTxData',
-                loadingStatus: true,
-            }),
-        );
-        dispatch(
-            setDataLoadingStatus({
-                datasetName: 'poolOrderData',
-                loadingStatus: true,
-            }),
-        );
-        dispatch(
-            setDataLoadingStatus({
-                datasetName: 'connectedUserPoolRangeData',
-                loadingStatus: true,
-            }),
-        );
-        dispatch(
-            setDataLoadingStatus({
-                datasetName: 'connectedUserPoolOrderData',
-                loadingStatus: true,
-            }),
-        );
+        setDataLoadingStatus({
+            datasetName: 'isPoolRangeDataLoading',
+            loadingStatus: true,
+        });
+        setDataLoadingStatus({
+            datasetName: 'isPoolTxDataLoading',
+            loadingStatus: true,
+        });
+        setDataLoadingStatus({
+            datasetName: 'isPoolOrderDataLoading',
+            loadingStatus: true,
+        });
+        setDataLoadingStatus({
+            datasetName: 'isConnectedUserRangeDataLoading',
+            loadingStatus: true,
+        });
+        setDataLoadingStatus({
+            datasetName: 'isConnectedUserOrderDataLoading',
+            loadingStatus: true,
+        });
     }, [tradeData.baseToken.address, tradeData.quoteToken.address]);
 
     // Sets up the asynchronous queries to TVL, volume and liquidity curve
@@ -258,33 +257,26 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                     ),
                                 )
                                     .then((updatedPositions) => {
-                                        dispatch(
-                                            setPositionsByPool({
-                                                dataReceived: true,
-                                                positions: updatedPositions,
-                                            }),
-                                        );
-                                        dispatch(
-                                            setDataLoadingStatus({
-                                                datasetName: 'poolRangeData',
-                                                loadingStatus: false,
-                                            }),
-                                        );
+                                        setPositionsByPool({
+                                            dataReceived: true,
+                                            positions: updatedPositions,
+                                        });
+                                        setDataLoadingStatus({
+                                            datasetName:
+                                                'isPoolRangeDataLoading',
+                                            loadingStatus: false,
+                                        });
                                     })
                                     .catch(console.error);
                             } else {
-                                dispatch(
-                                    setPositionsByPool({
-                                        dataReceived: false,
-                                        positions: [],
-                                    }),
-                                );
-                                dispatch(
-                                    setDataLoadingStatus({
-                                        datasetName: 'poolRangeData',
-                                        loadingStatus: false,
-                                    }),
-                                );
+                                setPositionsByPool({
+                                    dataReceived: false,
+                                    positions: [],
+                                });
+                                setDataLoadingStatus({
+                                    datasetName: 'isPoolRangeDataLoading',
+                                    loadingStatus: false,
+                                });
                             }
                         })
                         .catch(console.error);
@@ -351,12 +343,10 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                             )
                                             .slice(0, 10);
 
-                                        dispatch(
-                                            setLeaderboardByPool({
-                                                dataReceived: true,
-                                                positions: top10Positions,
-                                            }),
-                                        );
+                                        setLeaderboardByPool({
+                                            dataReceived: true,
+                                            positions: top10Positions,
+                                        });
                                     })
                                     .catch(console.error);
                             }
@@ -387,18 +377,14 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     })
                         .then((poolChangesJsonData) => {
                             if (poolChangesJsonData) {
-                                dispatch(
-                                    setChangesByPool({
-                                        dataReceived: true,
-                                        changes: poolChangesJsonData,
-                                    }),
-                                );
-                                dispatch(
-                                    setDataLoadingStatus({
-                                        datasetName: 'poolTxData',
-                                        loadingStatus: false,
-                                    }),
-                                );
+                                setChangesByPool({
+                                    dataReceived: true,
+                                    changes: poolChangesJsonData,
+                                });
+                                setDataLoadingStatus({
+                                    datasetName: 'isPoolTxDataLoading',
+                                    loadingStatus: false,
+                                });
                             }
                         })
                         .catch(console.error);
@@ -445,33 +431,24 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                         },
                                     ),
                                 ).then((updatedLimitOrderStates) => {
-                                    dispatch(
-                                        setLimitOrdersByPool({
-                                            dataReceived: true,
-                                            limitOrders:
-                                                updatedLimitOrderStates,
-                                        }),
-                                    );
-                                    dispatch(
-                                        setDataLoadingStatus({
-                                            datasetName: 'poolOrderData',
-                                            loadingStatus: false,
-                                        }),
-                                    );
+                                    setLimitOrdersByPool({
+                                        dataReceived: true,
+                                        limitOrders: updatedLimitOrderStates,
+                                    });
+                                    setDataLoadingStatus({
+                                        datasetName: 'isPoolOrderDataLoading',
+                                        loadingStatus: false,
+                                    });
                                 });
                             } else {
-                                dispatch(
-                                    setLimitOrdersByPool({
-                                        dataReceived: false,
-                                        limitOrders: [],
-                                    }),
-                                );
-                                dispatch(
-                                    setDataLoadingStatus({
-                                        datasetName: 'poolOrderData',
-                                        loadingStatus: false,
-                                    }),
-                                );
+                                setLimitOrdersByPool({
+                                    dataReceived: false,
+                                    limitOrders: [],
+                                });
+                                setDataLoadingStatus({
+                                    datasetName: 'isPoolOrderDataLoading',
+                                    loadingStatus: false,
+                                });
                             }
                         })
                         .catch(console.error);
@@ -520,35 +497,27 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                         ),
                                     )
                                         .then((updatedPositions) => {
-                                            dispatch(
-                                                setUserPositionsByPool({
-                                                    dataReceived: true,
-                                                    positions: updatedPositions,
-                                                }),
-                                            );
-                                            dispatch(
-                                                setDataLoadingStatus({
-                                                    datasetName:
-                                                        'connectedUserPoolRangeData',
-                                                    loadingStatus: false,
-                                                }),
-                                            );
+                                            setUserPositionsByPool({
+                                                dataReceived: true,
+                                                positions: updatedPositions,
+                                            });
+                                            setDataLoadingStatus({
+                                                datasetName:
+                                                    'isConnectedUserRangeDataLoading',
+                                                loadingStatus: false,
+                                            });
                                         })
                                         .catch(console.error);
                                 } else {
-                                    dispatch(
-                                        setUserPositionsByPool({
-                                            dataReceived: false,
-                                            positions: [],
-                                        }),
-                                    );
-                                    dispatch(
-                                        setDataLoadingStatus({
-                                            datasetName:
-                                                'connectedUserPoolRangeData',
-                                            loadingStatus: false,
-                                        }),
-                                    );
+                                    setUserPositionsByPool({
+                                        dataReceived: false,
+                                        positions: [],
+                                    });
+                                    setDataLoadingStatus({
+                                        datasetName:
+                                            'isConnectedUserRangeDataLoading',
+                                        loadingStatus: false,
+                                    });
                                 }
                             })
                             .catch(console.error);
@@ -603,36 +572,28 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                             },
                                         ),
                                     ).then((updatedLimitOrderStates) => {
-                                        dispatch(
-                                            setUserLimitOrdersByPool({
-                                                dataReceived: true,
-                                                limitOrders:
-                                                    updatedLimitOrderStates,
-                                            }),
-                                        );
-
-                                        dispatch(
-                                            setDataLoadingStatus({
-                                                datasetName:
-                                                    'connectedUserPoolOrderData',
-                                                loadingStatus: false,
-                                            }),
-                                        );
-                                    });
-                                } else {
-                                    dispatch(
                                         setUserLimitOrdersByPool({
-                                            dataReceived: false,
-                                            limitOrders: [],
-                                        }),
-                                    );
-                                    dispatch(
+                                            dataReceived: true,
+                                            limitOrders:
+                                                updatedLimitOrderStates,
+                                        });
+
                                         setDataLoadingStatus({
                                             datasetName:
-                                                'connectedUserPoolOrderData',
+                                                'isConnectedUserOrderDataLoading',
                                             loadingStatus: false,
-                                        }),
-                                    );
+                                        });
+                                    });
+                                } else {
+                                    setUserLimitOrdersByPool({
+                                        dataReceived: false,
+                                        limitOrders: [],
+                                    });
+                                    setDataLoadingStatus({
+                                        datasetName:
+                                            'isConnectedUserOrderDataLoading',
+                                        loadingStatus: false,
+                                    });
                                 }
                             })
                             .catch(console.error);
@@ -665,7 +626,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         };
 
         // Set the pending data before making the request
-        dispatch(setLiquidityPending(request));
+        setLiquidityPending(request);
 
         const crocEnv = props.crocEnv;
         if (
@@ -687,7 +648,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             )
                 .then((liqCurve) => {
                     if (liqCurve) {
-                        dispatch(setLiquidity(liqCurve));
+                        setLiquidity(liqCurve);
                     }
                 })
                 .catch(console.error);

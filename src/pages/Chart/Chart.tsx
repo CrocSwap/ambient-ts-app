@@ -11,7 +11,6 @@ import {
 } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import {
     setLimitTick,
     setIsLinesSwitched,
@@ -37,7 +36,10 @@ import {
     diffHashSigChart,
     diffHashSigScaleData,
 } from '../../utils/functions/diffHashSig';
-import { CandleContext } from '../../contexts/CandleContext';
+import {
+    CandleContext,
+    CandlesByPoolAndDuration,
+} from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../contexts/SidebarContext';
 import { RangeContext } from '../../contexts/RangeContext';

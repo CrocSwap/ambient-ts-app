@@ -8,8 +8,8 @@ import { TokenContext } from '../../../../../contexts/TokenContext';
 import { useContext } from 'react';
 import { tokenListURIs } from '../../../../../utils/data/tokenListURIs';
 import { ZERO_ADDRESS } from '../../../../../constants';
+import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
 import { isUsdcToken } from '../../../../../utils/data/stablePairs';
-import { UserDataContext } from '../../../../../contexts/UserDataContext';
 
 interface propsIF {
     chainId: string;
@@ -27,8 +27,7 @@ export default function Exchange(props: propsIF) {
     } = props;
 
     const { tokens } = useContext(TokenContext);
-
-    const { tokenBalances } = useContext(UserDataContext);
+    const { tokenBalances } = useContext(TokenBalanceContext);
 
     const tokensToRender = connectedAccountActive
         ? tokenBalances

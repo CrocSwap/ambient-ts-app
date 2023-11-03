@@ -7,6 +7,7 @@ import { toDisplayQty } from '@crocswap-libs/sdk';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { useContext } from 'react';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 
 interface propsIF {
     token: TokenIF;
@@ -17,7 +18,8 @@ interface propsIF {
 export default function TokenSelect(props: propsIF) {
     const { token, chooseToken, fromListsText } = props;
 
-    const { tokenBalances, isUserConnected } = useContext(UserDataContext);
+    const { isUserConnected } = useContext(UserDataContext);
+    const { tokenBalances } = useContext(TokenBalanceContext);
 
     const isMatchingToken = (tokenInRtk: TokenIF) =>
         tokenInRtk.address.toLowerCase() === token.address.toLowerCase();

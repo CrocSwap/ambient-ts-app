@@ -1,10 +1,11 @@
-import { useAccount } from 'wagmi';
 import { CHAT_BACKEND_URL } from '../../../constants';
+import { useContext } from 'react';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 const host = CHAT_BACKEND_URL;
 
 const useChatApi = () => {
-    const { address } = useAccount();
+    const { userAddress } = useContext(UserDataContext);
 
     async function getStatus() {
         // Hit the chat /status endpoint to see if it's online
@@ -20,9 +21,9 @@ const useChatApi = () => {
     }
 
     async function getID() {
-        if (address) {
+        if (userAddress) {
             const response = await fetch(
-                host + '/chat/api/auth/getUserByAccount/' + address,
+                host + '/chat/api/auth/getUserByAccount/' + userAddress,
                 {
                     method: 'GET',
                 },

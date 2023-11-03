@@ -8,13 +8,13 @@ import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import trimString from '../../../../../utils/functions/trimString';
 import { concPosSlot, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
-import { useAccount } from 'wagmi';
 import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
 import {
     OrderRow,
     RowItem,
 } from '../../../../../styled/Components/TransactionTable';
 import { FlexContainer } from '../../../../../styled/Common';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
 
 interface PropsIF {
     transaction: {
@@ -46,7 +46,7 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
     const { transaction, tableView } = props;
 
     const { showAllData } = useContext(TradeTableContext);
-    const { address: userAddress } = useAccount();
+    const { userAddress } = useContext(UserDataContext);
     const {
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);

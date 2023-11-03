@@ -1,6 +1,5 @@
 // START: Import React and Dongles
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { useConnect, useAccount, useDisconnect } from 'wagmi';
 
 // START: Import Local Files
 import styles from './WalletModalWagmi.module.css';
@@ -13,36 +12,32 @@ import rabbyLogo from '../../../assets/images/logos/rabby_logo.svg';
 
 import { CircleLoaderFailed } from '../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
 import WaitingConfirmation from '../../../components/Global/WaitingConfirmation/WaitingConfirmation';
-import { checkBlacklist } from '../../../utils/data/blacklist';
 import { IS_LOCAL_ENV } from '../../../constants';
 import GateWallet from './GateWallet';
 import { useTermsAgreed } from '../../hooks/useTermsAgreed';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 export default function WalletModalWagmi() {
-    const { disconnect } = useDisconnect();
     const {
         wagmiModal: { isOpen: isModalOpen, close: closeModal },
     } = useContext(AppStateContext);
 
-    const { connect, connectors, error, isLoading, pendingConnector } =
-        useConnect({
-            onSettled(data, error) {
-                if (error) console.error({ error });
-                const connectedAddress = data?.account;
-                const isBlacklisted = connectedAddress
-                    ? checkBlacklist(connectedAddress)
-                    : false;
-                if (isBlacklisted) disconnect();
-            },
-        });
+    const {
+        isUserConnected,
+        connectUser,
+        connectors,
+        connectError,
+        connectIsLoading,
+        pendingConnector,
+    } = useContext(UserDataContext);
+
     useEffect(() => {
-        if (error && error.name === 'UserRejectedRequestError') {
-            IS_LOCAL_ENV && console.error({ error });
+        if (connectError && connectError.name === 'UserRejectedRequestError') {
+            IS_LOCAL_ENV && console.error({ error: connectError });
             setPage('metamaskError');
         }
-    }, [error]);
-    const { isConnected } = useAccount();
+    }, [connectError]);
 
     const defaultState = process.env.REACT_APP_VIEW_ONLY
         ? 'notAvailable'
@@ -80,8 +75,8 @@ export default function WalletModalWagmi() {
 
     // close the Connect Wallet modal only when authentication completes
     useEffect(() => {
-        isConnected && pendingLoginDelayElapsed && closeModal();
-    }, [isConnected, pendingLoginDelayElapsed]);
+        isUserConnected && pendingLoginDelayElapsed && closeModal();
+    }, [isUserConnected, pendingLoginDelayElapsed]);
 
     const learnAboutWalletsContent = (
         <div className={styles.learn_container}>
@@ -103,14 +98,15 @@ export default function WalletModalWagmi() {
                     title={`${connector.name} ${
                         !connector.ready ? ' (unavailable)' : ''
                     }  ${
-                        isLoading && connector.id === pendingConnector?.id
+                        connectIsLoading &&
+                        connector.id === pendingConnector?.id
                             ? ' (connecting)'
                             : ''
                     }`}
                     disabled={!connector.ready}
                     key={connector.id + '|' + connector.name} // Join both to ensure uniqueness
                     action={() => {
-                        connect({ connector });
+                        connectUser({ connector });
                         IS_LOCAL_ENV && console.debug({ connector });
                         connector.name.toLowerCase() === 'metamask'
                             ? (() => {

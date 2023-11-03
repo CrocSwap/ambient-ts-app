@@ -10,7 +10,6 @@ import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
-import { useAccount } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { exponentialNumRegEx } from '../../utils/regex/exports';
@@ -68,6 +67,7 @@ import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useRangeInputDisable } from '../Trade/Range/useRangeInputDisable';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 import InitButton from './InitButton';
+import { UserDataContext } from '../../contexts/UserDataContext';
 import Button from '../../components/Form/Button';
 import {
     addPendingTx,
@@ -137,7 +137,7 @@ export default function InitPool() {
         tknA.toLowerCase() === tokenA.address.toLowerCase() &&
         tknB.toLowerCase() === tokenB.address.toLowerCase();
 
-    const { isConnected, address: userAddress } = useAccount();
+    const { isUserConnected, userAddress } = useContext(UserDataContext);
 
     const {
         baseTokenDexBalance,
@@ -1045,7 +1045,7 @@ export default function InitPool() {
         sendRangePosition,
         sendInit,
         poolExists,
-        isConnected,
+        isConnected: !!isUserConnected,
         connectButtonDelayElapsed,
         isTokenAAllowanceSufficient,
         isTokenBAllowanceSufficient,

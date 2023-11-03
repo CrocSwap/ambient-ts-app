@@ -11,7 +11,6 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
-import { useAccount, useDisconnect, useEnsName, useSwitchNetwork } from 'wagmi';
 import { BiGitBranch } from 'react-icons/bi';
 import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../constants';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
@@ -21,7 +20,6 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-import { resetUserGraphData } from '../../../utils/state/graphDataSlice';
 import { resetReceiptData } from '../../../utils/state/receiptDataSlice';
 
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
@@ -47,6 +45,9 @@ import { FlexContainer } from '../../../styled/Common';
 import Button from '../../../components/Form/Button';
 import { version as appVersion } from '../../../../package.json';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import { useSwitchNetwork } from 'wagmi';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 
 const PageHeader = function () {
     const {
@@ -58,7 +59,8 @@ const PageHeader = function () {
     const {
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
-    const { setTokenBalances, resetUserAddress } = useContext(UserDataContext);
+    const { resetTokenBalances } = useContext(TokenBalanceContext);
+    const { resetUserGraphData } = useContext(GraphDataContext);
 
     const { poolPriceDisplay } = useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
@@ -73,17 +75,17 @@ const PageHeader = function () {
             setDexBalance: setQuoteTokenDexBalance,
         },
     } = useContext(TradeTokenContext);
-    const { address, isConnected } = useAccount();
-    const { data: ensName } = useEnsName({ address });
+    const { userAddress, isUserConnected, disconnectUser, ensName } =
+        useContext(UserDataContext);
+    const { switchNetwork } = useSwitchNetwork();
 
     // eslint-disable-next-line
     const [mobileNavToggle, setMobileNavToggle] = useState<boolean>(false);
 
     const accountAddress =
-        isConnected && address ? trimString(address, 6, 6) : '';
+        isUserConnected && userAddress ? trimString(userAddress, 6, 6) : '';
 
     const dispatch = useAppDispatch();
-    const { disconnect } = useDisconnect();
 
     const clickLogout = useCallback(async () => {
         setCrocEnv(undefined);
@@ -91,19 +93,18 @@ const PageHeader = function () {
         setQuoteTokenBalance('');
         setBaseTokenDexBalance('');
         setQuoteTokenDexBalance('');
-        dispatch(resetUserGraphData());
+        resetUserGraphData();
         dispatch(resetReceiptData());
-        setTokenBalances(undefined);
-        resetUserAddress();
+        resetTokenBalances();
         setShowAllData(true);
-        disconnect();
+        disconnectUser();
     }, []);
 
     const accountProps = {
         accountAddress: accountAddress,
-        accountAddressFull: isConnected && address ? address : '',
+        accountAddressFull: isUserConnected && userAddress ? userAddress : '',
         ensName: ensName || '',
-        isUserLoggedIn: isConnected,
+        isUserLoggedIn: isUserConnected,
         clickLogout: clickLogout,
     };
     const desktopScreen = useMediaQuery('(min-width: 1020px)');
@@ -255,7 +256,7 @@ const PageHeader = function () {
         {
             title: 'Account',
             destination: '/account',
-            shouldDisplay: isConnected,
+            shouldDisplay: !!isUserConnected,
         },
     ];
 
@@ -325,8 +326,6 @@ const PageHeader = function () {
         </AnimateSharedLayout>
     );
 
-    const { switchNetwork } = useSwitchNetwork();
-
     // ----------------------------END OF NAVIGATION FUNCTIONALITY-------------------------------------
     const [show, handleShow] = useState(false);
 
@@ -384,7 +383,7 @@ const PageHeader = function () {
                                 ) : null}
                             </FlexContainer>
                             <NetworkSelector switchNetwork={switchNetwork} />
-                            {!isConnected && connectWagmiButton}
+                            {!isUserConnected && connectWagmiButton}
                             <Account {...accountProps} />
                             <NotificationCenter />
                         </FlexContainer>
