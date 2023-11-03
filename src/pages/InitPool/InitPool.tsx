@@ -1534,8 +1534,8 @@ export default function InitPool() {
             disabled={isWithdrawPending}
             title={
                 isWithdrawPending
-                    ? `Withdrawing ${erc20TokenWithDexBalance?.symbol}...`
-                    : `withdraw ${erc20TokenWithDexBalance?.symbol}`
+                    ? `${erc20TokenWithDexBalance?.symbol} Withdrawal Pending`
+                    : `Withdraw ${erc20TokenWithDexBalance?.symbol}`
             }
             action={async () => {
                 if (
