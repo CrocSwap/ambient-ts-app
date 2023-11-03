@@ -1,20 +1,20 @@
 import styles from './TransactionException.module.css';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import DividerDark from '../../../../Global/DividerDark/DividerDark';
 import { useContext } from 'react';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import { RangeContext } from '../../../../../contexts/RangeContext';
 
 export default function TransactionException() {
     const rangeModuleActive = location.pathname.includes('/trade/pool');
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const { isTokenAPrimaryRange } = useContext(RangeContext);
     const { tokenA, tokenB } = useContext(TradeDataContext);
 
     const isEthSecondary =
-        (tradeData.isTokenAPrimaryRange && tokenB.address === ZERO_ADDRESS) ||
-        (!tradeData.isTokenAPrimaryRange && tokenA.address === ZERO_ADDRESS);
+        (isTokenAPrimaryRange && tokenB.address === ZERO_ADDRESS) ||
+        (!isTokenAPrimaryRange && tokenA.address === ZERO_ADDRESS);
 
-    const primaryTokenSymbol = tradeData.isTokenAPrimaryRange
+    const primaryTokenSymbol = isTokenAPrimaryRange
         ? tokenA.symbol
         : tokenB.symbol;
 

@@ -26,13 +26,13 @@ import { formatTokenInput } from '../../../utils/numbers';
 import {
     setShouldSwapDirectionReverse,
     setPrimaryQuantity,
-    setIsTokenAPrimaryRange,
     setLimitTick,
 } from '../../../utils/state/tradeDataSlice';
 import TokenInputWithWalletBalance from '../../Form/TokenInputWithWalletBalance';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { RangeContext } from '../../../contexts/RangeContext';
 
 interface propsIF {
     sellQtyString: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -80,15 +80,14 @@ function SwapTokenInput(props: propsIF) {
     } = useContext(TradeTokenContext);
 
     const { showSwapPulseAnimation } = useContext(TradeTableContext);
-
+    const { setIsTokenAPrimaryRange, isTokenAPrimaryRange } =
+        useContext(RangeContext);
     const dispatch = useAppDispatch();
     const { isUserConnected } = useContext(UserDataContext);
 
-    const {
-        primaryQuantity,
-        isTokenAPrimaryRange,
-        shouldSwapDirectionReverse,
-    } = useAppSelector((state) => state.tradeData);
+    const { primaryQuantity, shouldSwapDirectionReverse } = useAppSelector(
+        (state) => state.tradeData,
+    );
     const { tokenA, tokenB, isTokenAPrimary, setIsTokenAPrimary } =
         useContext(TradeDataContext);
     // hook to generate navigation actions with pre-loaded path
@@ -154,7 +153,7 @@ function SwapTokenInput(props: propsIF) {
             setBuyQtyString(primaryQuantity);
         }
         setIsTokenAPrimary(!isTokenAPrimary);
-        dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
+        setIsTokenAPrimaryRange(!isTokenAPrimaryRange);
     };
 
     const handleBlockUpdate = () => {

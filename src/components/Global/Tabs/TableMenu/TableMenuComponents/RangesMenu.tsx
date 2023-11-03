@@ -7,13 +7,7 @@ import styles from './TableMenus.module.css';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
-import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
-import {
-    setAdvancedHighTick,
-    setAdvancedLowTick,
-    setAdvancedMode,
-    setRangeTicksCopied,
-} from '../../../../../utils/state/tradeDataSlice';
+
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { RangeContext } from '../../../../../contexts/RangeContext';
 import {
@@ -66,17 +60,19 @@ export default function RangesMenu(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const {
+        setRangeTicksCopied,
         setSimpleRangeWidth,
         setCurrentRangeInReposition,
         setCurrentRangeInAdd,
+        setAdvancedHighTick,
+        setAdvancedLowTick,
+        setAdvancedMode,
     } = useContext(RangeContext);
     const { sidebar } = useContext(SidebarContext);
     const { handlePulseAnimation, setActiveMobileComponent } =
         useContext(TradeTableContext);
 
     const { isAmbient } = rangeDetailsProps;
-
-    const dispatch = useAppDispatch();
 
     // ---------------------MODAL FUNCTIONALITY----------------
 
@@ -137,17 +133,17 @@ export default function RangesMenu(props: propsIF) {
     const handleCopyClick = () => {
         setActiveMobileComponent('trade');
 
-        dispatch(setRangeTicksCopied(true));
+        setRangeTicksCopied(true);
         handlePulseAnimation('range');
 
         if (position.positionType === 'ambient') {
             setSimpleRangeWidth(100);
-            dispatch(setAdvancedMode(false));
+            setAdvancedMode(false);
         } else {
             IS_LOCAL_ENV && console.debug({ position });
-            dispatch(setAdvancedLowTick(position.bidTick));
-            dispatch(setAdvancedHighTick(position.askTick));
-            dispatch(setAdvancedMode(true));
+            setAdvancedLowTick(position.bidTick);
+            setAdvancedHighTick(position.askTick);
+            setAdvancedMode(true);
         }
         setShowDropdownMenu(false);
     };
