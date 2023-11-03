@@ -351,7 +351,6 @@ const PageHeader = function () {
                     )}
                 </LogoContainer>
             </div>
-
             {routeDisplay}
             <RightSide>
                 {show ? (
