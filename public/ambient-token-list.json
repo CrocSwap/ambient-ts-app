@@ -128,7 +128,7 @@
             "name": "Tether",
             "symbol": "USDT",
             "decimals": 6,
-            "logoURI": "https://scroll-tech.github.io/token-list/data/USDT/logo.svg",
+            "logoURI": "https://scroll-tech.github.io/token-list/data/USDT/logo.svg"
         },
         {
             "chainId": 534352,
@@ -136,7 +136,7 @@
             "name": "Wrapped BTC",
             "symbol": "WBTC",
             "decimals": 8,
-            "logoURI": "https://scroll-tech.github.io/token-list/data/WBTC/logo.svg",
+            "logoURI": "https://scroll-tech.github.io/token-list/data/WBTC/logo.svg"
         }
     ]
 }
