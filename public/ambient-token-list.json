@@ -121,6 +121,22 @@
             "decimals": 6,
             "chainId": 534352,
             "logoURI": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png"
+        },
+        {
+            "chainId": 534352,
+            "address": "0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df",
+            "name": "Tether",
+            "symbol": "USDT",
+            "decimals": 6,
+            "logoURI": "https://scroll-tech.github.io/token-list/data/USDT/logo.svg",
+        },
+        {
+            "chainId": 534352,
+            "address": "0x3C1BCa5a656e69edCD0D4E36BEbb3FcDAcA60Cf1",
+            "name": "Wrapped BTC",
+            "symbol": "WBTC",
+            "decimals": 8,
+            "logoURI": "https://scroll-tech.github.io/token-list/data/WBTC/logo.svg",
         }
     ]
 }
