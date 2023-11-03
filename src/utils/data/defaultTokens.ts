@@ -190,6 +190,24 @@ export const scrollAxlUSDC = {
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
 };
 
+export const scrollUSDT = {
+    chainId: 534352,
+    address: '0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df',
+    name: 'Tether',
+    symbol: 'USDT',
+    decimals: 6,
+    logoURI: 'https://scroll-tech.github.io/token-list/data/USDT/logo.svg',
+};
+
+export const scrollWBTC = {
+    chainId: 534352,
+    address: '0x3C1BCa5a656e69edCD0D4E36BEbb3FcDAcA60Cf1',
+    name: 'Wrapped BTC',
+    symbol: 'WBTC',
+    decimals: 8,
+    logoURI: 'https://scroll-tech.github.io/token-list/data/WBTC/logo.svg',
+};
+
 export const scrollSepoliaETH = {
     name: 'Native Ether',
     address: '0x0000000000000000000000000000000000000000',
@@ -227,6 +245,8 @@ export const defaultTokens: TokenIF[] = [
     scrollETH,
     scrollUSDC,
     scrollAxlUSDC,
+    scrollUSDT,
+    scrollWBTC,
     scrollSepoliaETH,
     scrollSepoliaUSDC,
 ];
