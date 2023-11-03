@@ -32,7 +32,7 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
 export const getMoneynessRankByAddr = (tokenAddress: string): number => {
     let moneynessRank = 0;
     defaultTokens.forEach((token) => {
-        if (token.address === tokenAddress) {
+        if (token.address.toLowerCase() === tokenAddress.toLowerCase()) {
             moneynessRank = getMoneynessRank(token.symbol);
         }
     });
