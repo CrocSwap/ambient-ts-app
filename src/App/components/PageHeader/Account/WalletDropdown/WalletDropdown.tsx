@@ -67,7 +67,9 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         tokenBalances &&
         tokenBalances.find((tkn: TokenIF) => tkn.address === ZERO_ADDRESS);
     const usdcData: TokenIF | undefined = useMemo(() => {
-        return tokenBalances?.find((tkn: TokenIF) => tkn.symbol === 'USDC');
+        return tokenBalances?.find(
+            (tkn: TokenIF) => tkn.symbol === 'USDC' && tkn.name !== '',
+        );
     }, [tokenBalances]);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
