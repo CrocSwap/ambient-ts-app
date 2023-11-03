@@ -1,8 +1,6 @@
 import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
-import { getMainnetAddress } from '../../utils/functions/getMainnetAddress';
 import { TokenIF, TransactionIF } from '../../utils/interfaces/exports';
 import { TransactionServerIF } from '../../utils/interfaces/TransactionIF';
-import { supportedNetworks } from '../../utils/networks';
 import { FetchAddrFn } from './fetchAddress';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
@@ -42,16 +40,8 @@ export const getTransactionData = async (
 
     // const ensRequest = cachedEnsResolve(tx.user);
 
-    const basePricedToken = getMainnetAddress(
-        baseTokenAddress,
-        supportedNetworks[chainId],
-    );
-    const basePricePromise = cachedFetchTokenPrice(basePricedToken, chainId);
-    const quotePricedToken = getMainnetAddress(
-        quoteTokenAddress,
-        supportedNetworks[chainId],
-    );
-    const quotePricePromise = cachedFetchTokenPrice(quotePricedToken, chainId);
+    const basePricePromise = cachedFetchTokenPrice(baseTokenAddress, chainId);
+    const quotePricePromise = cachedFetchTokenPrice(quoteTokenAddress, chainId);
 
     newTx.ensResolution = skipENSFetch
         ? ''

@@ -24,7 +24,6 @@ import { BigNumber } from 'ethers';
 interface TradeTokenContextIF {
     baseToken: {
         address: string;
-        mainnetAddress: string;
         balance: string;
         setBalance: (val: string) => void;
         dexBalance: string;
@@ -33,7 +32,6 @@ interface TradeTokenContextIF {
     };
     quoteToken: {
         address: string;
-        mainnetAddress: string;
         balance: string;
         setBalance: (val: string) => void;
         dexBalance: string;
@@ -70,7 +68,8 @@ export const TradeTokenContextProvider = (props: {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const { crocEnv, chainData, provider } = useContext(CrocEnvContext);
+    const { crocEnv, chainData, provider, activeNetwork } =
+        useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { isEnabled: isChartEnabled } = useContext(ChartContext);
     const { setSimpleRangeWidth } = useContext(RangeContext);
@@ -93,14 +92,13 @@ export const TradeTokenContextProvider = (props: {
     const {
         baseTokenAddress,
         quoteTokenAddress,
-        mainnetBaseTokenAddress,
-        mainnetQuoteTokenAddress,
         baseTokenDecimals,
         quoteTokenDecimals,
         isTokenABase,
         rtkMatchesParams,
     } = usePoolMetadata({
         crocEnv,
+        graphCacheUrl: activeNetwork.graphCacheUrl,
         provider,
         pathname: location.pathname,
         chainData,
@@ -164,7 +162,6 @@ export const TradeTokenContextProvider = (props: {
     const tradeTokenContext = {
         baseToken: {
             address: baseTokenAddress,
-            mainnetAddress: mainnetBaseTokenAddress,
             balance: baseTokenBalance,
             setBalance: setBaseTokenBalance,
             dexBalance: baseTokenDexBalance,
@@ -173,7 +170,6 @@ export const TradeTokenContextProvider = (props: {
         },
         quoteToken: {
             address: quoteTokenAddress,
-            mainnetAddress: mainnetQuoteTokenAddress,
             balance: quoteTokenBalance,
             setBalance: setQuoteTokenBalance,
             dexBalance: quoteTokenDexBalance,
