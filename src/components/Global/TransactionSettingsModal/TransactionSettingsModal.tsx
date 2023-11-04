@@ -64,7 +64,6 @@ export default function TransactionSettingsModal(props: propsIF) {
                 flexDirection='column'
                 justifyContent='space-between'
                 gap={12}
-                background='dark1'
                 padding='16px'
             >
                 <section>

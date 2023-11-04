@@ -34,9 +34,9 @@ export const PrimaryHeader = styled.header<PrimaryHeaderProps>`
 `;
 
 // Define the styles for LogoContainer
+// inline block prevents clickable area from expanding larger than content
 export const LogoContainer = styled(Link)`
-    width: 100%;
-    display: flex;
+    display: inline-block;
     flex-direction: row;
     gap: 8px;
     align-items: center;

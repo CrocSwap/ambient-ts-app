@@ -7,6 +7,7 @@ import { translateTestnetToken } from '../../utils/data/testnetTokenMap';
 
 export const fetchTokenPrice = async (
     dispToken: string,
+    chain: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _lastTime: number,
 ) => {
@@ -21,6 +22,8 @@ export const fetchTokenPrice = async (
                         config_path: 'price',
                         include_data: '0',
                         token_address: address,
+                        asset_platform:
+                            chain === '0x82750' ? 'scroll' : 'ethereum',
                     }),
             );
             const result = await response.json();
