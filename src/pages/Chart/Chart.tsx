@@ -142,7 +142,7 @@ interface propsIF {
     currentPool: TradeDataIF;
     deleteItem: (item: drawDataHistory) => void;
     updateURL: (changes: updatesIF) => void;
-    addDrawActionStack: (item: drawDataHistory) => void;
+    addDrawActionStack: (item: drawDataHistory, isNewShape: boolean) => void;
     drawActionStack: Map<actionKeyIF, drawDataHistory[]>;
     undoStack: Map<actionKeyIF, drawDataHistory[]>;
 }
@@ -4333,6 +4333,7 @@ export default function Chart(props: propsIF) {
                                 setSelectedDrawnShape={setSelectedDrawnShape}
                                 currentPool={currentPool}
                                 denomInBase={denomInBase}
+                                addDrawActionStack={addDrawActionStack}
                             />
                         )}
 

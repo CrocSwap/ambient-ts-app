@@ -29,6 +29,7 @@ interface DrawCanvasProps {
         React.SetStateAction<selectedDrawnData | undefined>
     >;
     denomInBase: boolean;
+    addDrawActionStack: (item: drawDataHistory, isNewShape: boolean) => void;
 }
 
 function DrawCanvas(props: DrawCanvasProps) {
@@ -45,6 +46,7 @@ function DrawCanvas(props: DrawCanvasProps) {
         setSelectedDrawnShape,
         currentPool,
         denomInBase,
+        addDrawActionStack,
     } = props;
 
     const circleSeries = createCircle(
@@ -183,42 +185,12 @@ function DrawCanvas(props: DrawCanvasProps) {
 
                 if (endDraw || activeDrawingType === 'Ray') {
                     if (activeDrawingType === 'Ray') {
-                        // const newRayScale = scaleData.xScale.copy();
-
-                        // newRayScale.range([
-                        //     valueX,
-                        //     scaleData.xScale.range()[1],
-                        // ]);
-
                         tempLineData[0] = {
                             x: valueX,
                             y: valueY,
                             denomInBase: denomInBase,
                         };
                     }
-
-                    // if (activeDrawingType === 'Square') {
-                    //     const newBandScale = createScaleForBandArea(
-                    //         tempLineData[0].x,
-                    //         valueX,
-                    //     );
-
-                    //     const bandArea = createBandArea(
-                    //         newBandScale,
-                    //         scaleData?.yScale,
-                    //         denomInBase,
-                    //     );
-
-                    //     bandArea
-                    //         .xScale()
-                    //         .range([
-                    //             scaleData?.xScale(tempLineData[0].x),
-                    //             scaleData?.xScale(valueX),
-                    //         ]);
-
-                    //     setBandArea(()=>bandArea)
-
-                    // }
 
                     tempLineData[1] = {
                         x: valueX,
@@ -228,19 +200,18 @@ function DrawCanvas(props: DrawCanvasProps) {
 
                     isDrawing = false;
                     setActiveDrawingType('Cross');
-
+                    const endPoint = {
+                        data: tempLineData,
+                        type: activeDrawingType,
+                        time: Date.now(),
+                        pool: currentPool,
+                        color: 'rgba(115, 113, 252, 1)',
+                        lineWidth: 1.5,
+                        style: [0, 0],
+                    };
                     setDrawnShapeHistory((prevData: drawDataHistory[]) => {
                         if (tempLineData.length > 0) {
-                            const endPoint = {
-                                data: tempLineData,
-                                type: activeDrawingType,
-                                time: Date.now(),
-                                pool: currentPool,
-                                color: 'rgba(115, 113, 252, 1)',
-                                lineWidth: 1.5,
-                                style: [0, 0],
-                            };
-
+                            endPoint.time = Date.now();
                             setSelectedDrawnShape({
                                 data: endPoint,
                                 selectedCircle: undefined,
@@ -250,6 +221,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                         }
                         return prevData;
                     });
+                    addDrawActionStack(endPoint, true);
                 }
             } else {
                 setActiveDrawingType('Cross');
