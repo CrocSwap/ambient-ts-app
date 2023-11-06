@@ -8,6 +8,7 @@ import {
 import { TopPool } from '../data/defaultTopPools';
 import { NetworkIF } from '../interfaces/NetworkIF';
 import { Provider } from '@ethersproject/providers';
+import { GCGO_SCROLL_URL } from '../../constants';
 
 const wagmiChain = {
     id: 534352,
@@ -37,11 +38,11 @@ const wagmiChain = {
 
 export const scrollMainnet: NetworkIF = {
     chainId: '0x82750',
+    graphCacheUrl: GCGO_SCROLL_URL,
     wagmiChain,
     shouldPollBlock: true,
     marketData: '0x82750',
     defaultPair: [scrollETH, scrollUSDC],
-    graphCacheUrl: 'https://ambindexer.net/scroll-gcgo',
     topPools: [
         new TopPool(scrollETH, scrollUSDC, lookupChain('0x82750').poolIndex),
         // new TopPool(scrollETH, scrollUSDT, lookupChain('0x82750').poolIndex),

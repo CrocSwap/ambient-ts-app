@@ -30,7 +30,7 @@ import {
     TransactionError,
 } from '../../utils/TransactionError';
 import { isStablePair } from '../../utils/data/stablePairs';
-import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
+import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
@@ -107,8 +107,8 @@ export default function RangeActionModal(props: propsIF) {
         (feeLiqBaseDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0) >
         0;
 
-    const positionStatsCacheEndpoint = GRAPHCACHE_SMALL_URL
-        ? GRAPHCACHE_SMALL_URL + '/position_stats?'
+    const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/position_stats?'
         : activeNetwork.graphCacheUrl + '/position_stats?';
 
     const dispatch = useAppDispatch();
