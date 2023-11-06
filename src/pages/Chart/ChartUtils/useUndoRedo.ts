@@ -335,25 +335,18 @@ export function useUndoRedo(denomInBase: boolean) {
             style: tempLastData.style,
         };
 
-        const tempMap = new Map<actionKeyIF, drawDataHistory[]>();
+        const newDrawActionStack = new Map(drawActionStack);
 
-        if (drawActionStack.has(actionKey)) {
-            const actions = drawActionStack.get(actionKey);
-
+        if (newDrawActionStack.has(actionKey)) {
+            const actions = newDrawActionStack.get(actionKey);
             if (actions) {
-                tempMap.set(actionKey, actions);
-
-                const values = tempMap.get(actionKey);
-                if (values) {
-                    if (actions) {
-                        actions.push(tempDta);
-                    }
-                }
+                actions.push(tempDta);
             }
-            setDrawActionStack(tempMap);
         } else {
-            drawActionStack.set(actionKey, [tempDta]);
+            newDrawActionStack.set(actionKey, [tempDta]);
         }
+
+        setDrawActionStack(newDrawActionStack);
 
         if (isNewShape) {
             undoStack.clear();
