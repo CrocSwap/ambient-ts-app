@@ -6,6 +6,15 @@
     top: calc(50% - .5rem);
     transform: translateY(-100%);
     padding: 1rem;
+    z-index: 99;
+}
+
+.rise_to_bottom{
+    /* top: calc(-50% + .5rem); */
+    position: fixed;
+    z-index: 9999;
+    transform: translateY(.5rem);
+    right: 0;
 }
 
 

@@ -346,12 +346,12 @@ const useChatSocket = (
         });
     }
 
-    async function deleteMsgFromList(msgId: string, isModerator: boolean) {
+    async function deleteMsgFromList(msgId: string) {
         const payload = {
             _id: msgId,
         };
         const response = await fetch(
-            `${CHAT_BACKEND_URL}/chat/api/messages/deleteMessage/${msgId}`,
+            `${CHAT_BACKEND_URL}/chat/api/messages/deleteMessagev2/${msgId}`,
             {
                 method: 'POST',
             },

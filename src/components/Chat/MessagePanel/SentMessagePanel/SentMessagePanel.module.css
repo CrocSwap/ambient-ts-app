@@ -372,9 +372,15 @@
 
 .msg_bubble_container{
     animation: msgBubbleAnim 0.1s ease-in-out forwards;
-    transition: background .1s ease-in-out;
+    transition: background .1s ease-in-out, padding-bottom .2s ease-in-out;
     width: 90%;
+    position: relative;
+    padding-bottom: 0;
     /* border: 1px solid rgba(255,0,0, .3); */
+}
+
+.rise_to_bottom_wrapper{
+    padding-bottom: 6rem;
 }
 
 .msg_bubble_container.flipped .msg_bubble_content{
@@ -663,12 +669,6 @@
     color: pink;
   }
 
-  /* .menu {
-    position: absolute;
-    top: -0.5rem;
-    left: 17.7rem;
-  } */
-  
   .msg_bubble_container:hover .options_button {
     display: block; 
     /* right: -10rem; */

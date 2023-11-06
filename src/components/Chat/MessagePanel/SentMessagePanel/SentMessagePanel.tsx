@@ -84,7 +84,6 @@ interface SentMessageProps {
 function SentMessagePanel(props: SentMessageProps) {
     const { deleteMsgFromList } = props;
     const [isMoreButtonPressed, setIsMoreButtonPressed] = useState(false);
-    const [aa, setaa] = useState('');
     const [hasSeparator, setHasSeparator] = useState(false);
     const [isClickedOptions, setIsClickedOptions] = useState(false);
     const [isPosition, setIsPosition] = useState(false);
@@ -111,8 +110,6 @@ function SentMessagePanel(props: SentMessageProps) {
 
     const navigate = useNavigate();
     const location = useLocation();
-
-    const deletedMessageText = 'This message has deleted.';
 
     const handleInitialLikeDislike = () => {
         let retVal = 0;
@@ -236,12 +233,6 @@ function SentMessagePanel(props: SentMessageProps) {
             getReplyMessageInfo(props.message.repliedMessage as string);
         }
     }, [props.message]);
-
-    useEffect(() => {
-        if (props.isMessageDeleted) {
-            console.log('xxx', props.message);
-        }
-    }, [props.isMessageDeleted]);
 
     const formatAMPM = (str: string) => {
         const date = new Date(str);
@@ -487,7 +478,11 @@ function SentMessagePanel(props: SentMessageProps) {
         if (props.isLinkInCrocodileLabsLinks(word)) {
             ret = <span>{word}</span>;
         } else {
-            if (mentFound.val == false && word.indexOf('@') >= 0) {
+            if (
+                mentFound.val == false &&
+                word.indexOf('@') >= 0 &&
+                props.message.mentionedWalletID
+            ) {
                 mentFound.val = true;
                 ret = (
                     <span
@@ -670,6 +665,22 @@ function SentMessagePanel(props: SentMessageProps) {
         return ret;
     }
 
+    const optionsButtonRef = useRef<any>();
+
+    function shouldOptionsRiseToBottom() {
+        const wrapper = document.getElementById('chatmessage');
+        if (wrapper && optionsButtonRef.current) {
+            const wrapperCenter =
+                wrapper.getBoundingClientRect().height / 2 +
+                wrapper.getBoundingClientRect().top;
+            return (
+                wrapperCenter >
+                optionsButtonRef.current.getBoundingClientRect().top
+            );
+        }
+        return false;
+    }
+
     return (
         <div
             className={`${styles.msg_bubble_container} ${
@@ -691,6 +702,12 @@ function SentMessagePanel(props: SentMessageProps) {
                     ? styles.reader_mentioned
                     : ''
             }
+
+            ${
+                shouldOptionsRiseToBottom() && isMoreButtonPressed
+                    ? styles.rise_to_bottom_wrapper
+                    : ''
+            }
             
             `}
             // style={messageStyle()}
@@ -709,7 +726,10 @@ function SentMessagePanel(props: SentMessageProps) {
                             }}
                         ></div>
                         {props.address && (
-                            <div className={styles.options_button}>
+                            <div
+                                ref={optionsButtonRef}
+                                className={styles.options_button}
+                            >
                                 <Options
                                     setIsReplyButtonPressed={
                                         props.setIsReplyButtonPressed
@@ -731,6 +751,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                     addReactionListener={
                                         props.addReactionListener
                                     }
+                                    tooltipTop={shouldOptionsRiseToBottom()}
                                 />
                             </div>
                         )}
@@ -927,46 +948,48 @@ function SentMessagePanel(props: SentMessageProps) {
                                     />
                                     {!isPosition && renderMessage()}
                                     {isMoreButtonPressed ? (
-                                        <div className={styles.menu}>
-                                            <Menu
-                                                isMessageDeleted={
-                                                    props.isMessageDeleted
-                                                }
-                                                setIsMessageDeleted={
-                                                    props.setIsMessageDeleted
-                                                }
-                                                setIsMoreButtonPressed={
-                                                    setIsMoreButtonPressed
-                                                }
-                                                setFlipped={(val) => {
-                                                    setFlipped(true);
-                                                    setFlipRead(true);
-                                                }}
-                                                deleteMsgFromList={
-                                                    deleteMsgFromList
-                                                }
-                                                id={props.message._id}
-                                                isModerator={props.isModerator}
-                                                isUsersMessage={
-                                                    props.message.sender ===
-                                                    props.currentUser
-                                                }
-                                                setIsReplyButtonPressed={
-                                                    props.setIsReplyButtonPressed
-                                                }
-                                                isReplyButtonPressed={false}
-                                                replyMessageContent={
-                                                    props.replyMessageContent
-                                                }
-                                                setReplyMessageContent={
-                                                    props.setReplyMessageContent
-                                                }
-                                                message={props.message}
-                                                addReactionListener={
-                                                    props.addReactionListener
-                                                }
-                                            />
-                                        </div>
+                                        <Menu
+                                            isMessageDeleted={
+                                                props.isMessageDeleted
+                                            }
+                                            setIsMessageDeleted={
+                                                props.setIsMessageDeleted
+                                            }
+                                            setIsMoreButtonPressed={
+                                                setIsMoreButtonPressed
+                                            }
+                                            setFlipped={(val) => {
+                                                setFlipped(true);
+                                                setFlipRead(true);
+                                            }}
+                                            deleteMsgFromList={
+                                                deleteMsgFromList
+                                            }
+                                            id={props.message._id}
+                                            isModerator={props.isModerator}
+                                            isUsersMessage={
+                                                props.message.sender ===
+                                                props.currentUser
+                                            }
+                                            setIsReplyButtonPressed={
+                                                props.setIsReplyButtonPressed
+                                            }
+                                            isReplyButtonPressed={false}
+                                            replyMessageContent={
+                                                props.replyMessageContent
+                                            }
+                                            setReplyMessageContent={
+                                                props.setReplyMessageContent
+                                            }
+                                            message={props.message}
+                                            addReactionListener={
+                                                props.addReactionListener
+                                            }
+                                            isUserVerified={
+                                                props.isUserVerified
+                                            }
+                                            riseToBottom={shouldOptionsRiseToBottom()}
+                                        />
                                     ) : (
                                         <></>
                                     )}

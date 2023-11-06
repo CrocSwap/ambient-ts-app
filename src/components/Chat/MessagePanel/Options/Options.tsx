@@ -17,6 +17,7 @@ interface propsIF {
     isMoreButtonPressed: boolean;
     setIsMoreButtonPressed: Dispatch<boolean>;
     addReactionListener: (message?: Message) => void;
+    tooltipTop: boolean;
 }
 export default function Options(props: propsIF) {
     const { isMoreButtonPressed, setIsMoreButtonPressed } = props;
@@ -80,7 +81,7 @@ export default function Options(props: propsIF) {
                     <span> {'Reply'}</span>
                 </div>
             }
-            placement={'bottom'}
+            placement={props.tooltipTop ? 'top' : 'bottom'}
             enterDelay={100}
             leaveDelay={0}
         >
@@ -104,7 +105,7 @@ export default function Options(props: propsIF) {
                     <span> {'Add Reaction'}</span>
                 </div>
             }
-            placement={'bottom'}
+            placement={props.tooltipTop ? 'top' : 'bottom'}
             enterDelay={100}
             leaveDelay={0}
         >
@@ -128,7 +129,7 @@ export default function Options(props: propsIF) {
                     <span> {'More'}</span>
                 </div>
             }
-            placement={'bottom'}
+            placement={props.tooltipTop ? 'top' : 'bottom'}
             enterDelay={100}
             leaveDelay={0}
         >

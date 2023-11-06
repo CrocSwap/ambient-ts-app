@@ -21,17 +21,6 @@ import MentionAutoComplete from './MentionAutoComplete/MentionAutoComplete';
 import { User, getUserLabel, userLabelForFilter } from '../../Model/UserModel';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
 import CircularProgressBar from '../../../Global/OpenOrderStatus/CircularProgressBar';
-import {
-    Editor,
-    EditorState,
-    RichUtils,
-    convertToRaw,
-    ContentState,
-    Modifier,
-    ContentBlock,
-    CompositeDecorator,
-} from 'draft-js';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
 interface MessageInputProps {
     currentUser: string;
@@ -168,10 +157,6 @@ export default function MessageInput(props: MessageInputProps) {
     }, [isConnected, address]);
 
     useEffect(() => {
-        console.log('reply test');
-    }, [props.isReplyButtonPressed === false]);
-
-    useEffect(() => {
         if (inputRef.current !== null && cursorPosition !== null) {
             inputRef.current.setSelectionRange(cursorPosition, cursorPosition);
         }
@@ -240,6 +225,7 @@ export default function MessageInput(props: MessageInputProps) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const _handleKeyDown = (e: any) => {
+        console.log(mentPanelActive);
         console.log('possible', possibleMentUser?.walletID);
         console.log('selected', mentUser?.walletID);
         console.log('................');
@@ -400,12 +386,6 @@ export default function MessageInput(props: MessageInputProps) {
                 (props.replyMessageContent?.roomInfo !== 'Admins' &&
                     props.replyMessageContent?.roomInfo !== undefined)
             ) {
-                console.log(
-                    'evet',
-                    isRoomAdmins,
-                    props.replyMessageContent,
-                    props.replyMessageContent?.roomInfo,
-                );
                 props.sendMsg(
                     props.currentUser,
                     message,
@@ -419,13 +399,6 @@ export default function MessageInput(props: MessageInputProps) {
                         : undefined,
                 );
             } else {
-                console.log(
-                    'burada',
-                    isRoomAdmins,
-                    props.replyMessageContent,
-                    props.replyMessageContent?.roomInfo,
-                    roomId,
-                );
                 props.sendMsg(
                     props.currentUser,
                     message,
@@ -455,6 +428,8 @@ export default function MessageInput(props: MessageInputProps) {
             }
             // setMentPanelQueryStr();
             const filteredUsers = filterUsers(e.target.value.split('@')[1]);
+            console.log('.... filtered uesrs..............');
+            console.log(filteredUsers);
             setFilteredUsers(filteredUsers);
             if (filteredUsers.length < 1) {
                 setPossibleMentUser(null);
@@ -478,56 +453,6 @@ export default function MessageInput(props: MessageInputProps) {
             selectedUser={possibleMentUser}
         />
     );
-
-    const [editorState, setEditorState] = useState(EditorState.createEmpty());
-    // const [editorState, setEditorState] = useState(() => {
-    //     const mentionDecorator = new CompositeDecorator(
-    //         [{
-    //             strategy: mentionStrategy,
-    //             component: MentionSpan,
-    //         }]
-    //     );
-
-    //     return EditorState.createEmpty(mentionDecorator);
-    // });
-
-    const handleEditorChange = (newEditorState: EditorState) => {
-        setEditorState(newEditorState);
-    };
-
-    const handleColorize = (color: any) => {
-        const currentContent = editorState.getCurrentContent();
-        const selection = editorState.getSelection();
-        const contentWithColor = Modifier.applyInlineStyle(
-            currentContent,
-            selection,
-            color,
-        );
-        const newEditorState = EditorState.push(
-            editorState,
-            contentWithColor,
-            'change-inline-style',
-        );
-        setEditorState(newEditorState);
-    };
-
-    const mentionStrategy = (
-        contentBlock: ContentBlock,
-        callback: (start: number, end: number) => void,
-    ) => {
-        const text = contentBlock.getText();
-        const matches = text.match(/@[\w]+/g);
-        if (matches) {
-            matches.forEach((match) => {
-                const start = text.indexOf(match);
-                callback(start, start + match.length);
-            });
-        }
-    };
-
-    const MentionSpan = (props: any) => {
-        return <span style={{ color: 'blue' }}>{props.children}</span>;
-    };
 
     return (
         <>
@@ -597,7 +522,7 @@ export default function MessageInput(props: MessageInputProps) {
                             onKeyDown={_handleKeyDown}
                             onInput={handleInputChange}
                             value={message}
-                            onChange={handleInputChange}
+                            onChange={onChangeMessage}
                             onClick={handleInputClick}
                             onDoubleClick={handleInputDoubleClick}
                             autoComplete={'off'}
@@ -701,18 +626,6 @@ export default function MessageInput(props: MessageInputProps) {
                     )}
 
                     {mentionAutoComplete}
-                    <div>
-                        <button onClick={() => handleColorize('red')}>
-                            Colorize Red
-                        </button>
-                        <button onClick={() => handleColorize('blue')}>
-                            Colorize Blue
-                        </button>
-                        <Editor
-                            editorState={editorState}
-                            onChange={handleEditorChange}
-                        />
-                    </div>
                 </div>
             )}
         </>
