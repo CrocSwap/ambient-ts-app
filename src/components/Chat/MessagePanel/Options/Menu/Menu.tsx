@@ -23,19 +23,7 @@ interface propsIF {
     riseToBottom: boolean;
 }
 export default function Menu(props: propsIF) {
-    const { deleteMessage } = useChatApi();
-    const closePanel = () => {
-        // props.deleteMsgFromList(props.id)
-        // deleteMessage(props.id).then((result: any) => {
-        //     if (result.status === 'OK') {
-        //         props.setIsMessageDeleted(true);
-        //         props.deleteMsgFromList(props.id, props.isModerator);
-        //         return result;
-        //     } else {
-        //         props.setIsMessageDeleted(false);
-        //     }
-        // });
-
+    const deleteMessageListener = () => {
         props.deleteMsgFromList(props.id, props.isModerator);
     };
 
@@ -60,7 +48,11 @@ export default function Menu(props: propsIF) {
             icon: <BsEmojiSmileUpsideDown size={10} />,
             listener: addReaction,
         },
-        { label: 'Delete', icon: <FiDelete size={10} />, listener: closePanel },
+        {
+            label: 'Delete',
+            icon: <FiDelete size={10} />,
+            listener: deleteMessageListener,
+        },
         {
             label: 'Details',
             icon: <FiArrowLeft size={10} />,
