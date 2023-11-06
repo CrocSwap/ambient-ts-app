@@ -60,6 +60,7 @@ import {
     CandleDataChart,
     SubChartValue,
     bandLineData,
+    calculateFibRetracement,
     chartItemStates,
     crosshair,
     defaultCandleBandwith,
@@ -3213,6 +3214,77 @@ export default function Chart(props: propsIF) {
                                         }
                                     }
                                 }
+
+                                if (item.type === 'FibRetracement') {
+                                    item.data[1].ctx
+                                        .xScale()
+                                        .domain(scaleData.xScale.domain());
+
+                                    item.data[1].ctx
+                                        .yScale()
+                                        .domain(scaleData.yScale.domain());
+
+                                    const range = [
+                                        scaleData?.xScale(item.data[0].x),
+                                        scaleData.xScale(item.data[1].x),
+                                    ];
+
+                                    item.data[1].ctx.xScale().range(range);
+
+                                    const diffBoundary =
+                                        item.data[0].y - item.data[1].y;
+
+                                    const topBoundary =
+                                        item.data[0].y + diffBoundary * 3.236;
+
+                                    const bandData = {
+                                        fromValue: item.data[1].y,
+                                        toValue: topBoundary,
+                                        denomInBase: denomInBase,
+                                    } as bandLineData;
+
+                                    item.data[1].ctx([bandData]);
+
+                                    if (ctx) ctx.setLineDash([5, 3]);
+                                    lineSeries.decorate(
+                                        (context: CanvasRenderingContext2D) => {
+                                            context.strokeStyle = '#7371FC';
+                                            context.lineWidth = 1.5;
+                                        },
+                                    );
+                                    lineSeries(item.data);
+
+                                    const fibLineData = calculateFibRetracement(
+                                        item.data,
+                                    );
+
+                                    const colorScale = d3
+                                        .scaleOrdinal<string>()
+                                        .range(d3.schemePaired);
+
+                                    const colorList = Array.from(
+                                        { length: 10 },
+                                        (_, i) => colorScale(i.toString()),
+                                    );
+
+                                    if (ctx) ctx.setLineDash([0, 0]);
+                                    fibLineData.forEach((lineData, i) => {
+                                        console.log(colorList[i]);
+                                        lineSeries.decorate(
+                                            (
+                                                context: CanvasRenderingContext2D,
+                                            ) => {
+                                                context.strokeStyle = colorList[
+                                                    i
+                                                ]
+                                                    ? colorList[i]
+                                                    : '#7371FC';
+                                                context.lineWidth = 1.5;
+                                            },
+                                        );
+                                        lineSeries(lineData);
+                                    });
+                                }
                             }
                         }
                     });
@@ -3224,6 +3296,7 @@ export default function Chart(props: propsIF) {
                         if (
                             item.type === 'Square' ||
                             item.type === 'Ray' ||
+                            item.type === 'FibRetracement' ||
                             item.type === 'DPRange'
                         ) {
                             item.data[1].ctx.context(ctx);
@@ -3359,9 +3432,9 @@ export default function Chart(props: propsIF) {
                 const marketPrice = market;
 
                 if (minYBoundary && maxYBoundary) {
-                    const diffBoundray = Math.abs(maxYBoundary - minYBoundary);
-                    const buffer = diffBoundray
-                        ? diffBoundray / 6
+                    const diffBoundary = Math.abs(maxYBoundary - minYBoundary);
+                    const buffer = diffBoundary
+                        ? diffBoundary / 6
                         : minYBoundary / 2;
                     if (
                         location.pathname.includes('pool') ||

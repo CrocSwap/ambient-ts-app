@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import {
     bandLineData,
+    calculateFibRetracement,
     drawDataHistory,
     lineData,
     renderCanvasArray,
@@ -217,6 +218,7 @@ function DrawCanvas(props: DrawCanvasProps) {
 
                     if (
                         activeDrawingType === 'Square' ||
+                        activeDrawingType === 'FibRetracement' ||
                         activeDrawingType === 'DPRange'
                     ) {
                         const newBandScale = createScaleForBandArea(
@@ -522,6 +524,76 @@ function DrawCanvas(props: DrawCanvasProps) {
                             });
                         }
                     }
+                })
+                .on('measure', (event: CustomEvent) => {
+                    lineData[1].ctx.context(ctx);
+                    lineSeries.context(ctx);
+                    circleSeries.context(ctx);
+                    scaleData?.yScale.range([event.detail.height, 0]);
+                });
+        }
+    }, [diffHashSig(lineData), denomInBase]);
+
+    useEffect(() => {
+        const canvas = d3
+            .select(d3DrawCanvas.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d');
+
+        if (
+            scaleData &&
+            lineData.length > 1 &&
+            (activeDrawingType === 'Square' ||
+                activeDrawingType === 'FibRetracement' ||
+                activeDrawingType === 'DPRange')
+        ) {
+            d3.select(d3DrawCanvas.current)
+                .on('draw', () => {
+                    setCanvasResolution(canvas);
+
+                    const diffBoundary = lineData[0].y - lineData[1].y;
+
+                    const topBoundary = lineData[0].y + diffBoundary * 3.236;
+
+                    const bandData = {
+                        fromValue: lineData[1].y,
+                        toValue: topBoundary,
+                        denomInBase: denomInBase,
+                    } as bandLineData;
+
+                    lineData[1].ctx([bandData]);
+
+                    if (ctx) ctx.setLineDash([5, 3]);
+                    lineSeries.decorate((context: CanvasRenderingContext2D) => {
+                        context.strokeStyle = '#7371FC';
+                        context.lineWidth = 1.5;
+                    });
+                    lineSeries(lineData);
+
+                    const fibLineData = calculateFibRetracement(lineData);
+
+                    if (ctx) ctx.setLineDash([0, 0]);
+                    const colorScale = d3
+                        .scaleOrdinal<string>()
+                        .range(d3.schemePaired);
+
+                    const colorList = Array.from({ length: 10 }, (_, i) =>
+                        colorScale(i.toString()),
+                    );
+
+                    if (ctx) ctx.setLineDash([0, 0]);
+                    fibLineData.forEach((lineData, i) => {
+                        lineSeries.decorate(
+                            (context: CanvasRenderingContext2D) => {
+                                context.strokeStyle = colorList[i]
+                                    ? colorList[i]
+                                    : '#7371FC';
+                                context.lineWidth = 1.5;
+                            },
+                        );
+                        lineSeries(lineData);
+                    });
                 })
                 .on('measure', (event: CustomEvent) => {
                     lineData[1].ctx.context(ctx);

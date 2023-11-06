@@ -226,3 +226,68 @@ export function formatTimeDifference(startDate: Date, endDate: Date): string {
         return `${hours}h ${minutes}m`;
     }
 }
+
+export function calculateFibRetracement(data: lineData[]) {
+    const fibLevels = [
+        { level: 0, active: true },
+        { level: 0.236, active: true },
+        { level: 0.382, active: true },
+        { level: 0.5, active: true },
+        { level: 0.618, active: true },
+        { level: 0.786, active: true },
+        { level: 1, active: true },
+        { level: 1.272, active: false },
+        { level: 1.414, active: false },
+        { level: 1.618, active: true },
+        { level: 2, active: false },
+        { level: 2.272, active: false },
+        { level: 2.414, active: false },
+        { level: 2.618, active: true },
+        { level: 3, active: false },
+        { level: 3.272, active: false },
+        { level: 3.414, active: false },
+        { level: 3.618, active: true },
+        { level: 4, active: false },
+        { level: 4.236, active: true },
+        { level: 4.272, active: false },
+        { level: 4.414, active: false },
+        { level: 4.618, active: false },
+        { level: 4.764, active: false },
+    ];
+
+    const pointLevel = Math.max(data[0].y, data[1].y);
+    const pointLevelLower = Math.min(data[0].y, data[1].y);
+
+    const diff = Math.abs(pointLevel - pointLevelLower);
+
+    const fibLineData: Array<lineData[]> = [];
+
+    fibLevels.forEach((level) => {
+        if (level.active) {
+            fibLineData.push([
+                {
+                    x: data[0].x,
+                    y:
+                        pointLevel +
+                        (level.level > 1
+                            ? diff * (level.level - 1)
+                            : -1 * (diff * level.level)),
+                    ctx: undefined,
+                    denomInBase: data[0].denomInBase,
+                },
+                {
+                    x: data[1].x,
+                    y:
+                        pointLevel +
+                        (level.level > 1
+                            ? diff * (level.level - 1)
+                            : -1 * (diff * level.level)),
+                    ctx: undefined,
+                    denomInBase: data[0].denomInBase,
+                },
+            ]);
+        }
+    });
+
+    return fibLineData;
+}
