@@ -58,6 +58,7 @@ export const USDC_TOKENS = [
     goerliUSDC.address,
     arbGoerliUSDC.address,
     scrollSepoliaUSDC.address,
+    scrollUSDC.address,
 ].map((x) => x.toLowerCase());
 
 export const WETH_TOKENS = [
