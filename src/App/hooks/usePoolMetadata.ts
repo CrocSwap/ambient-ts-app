@@ -179,7 +179,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             loadingStatus: true,
         });
         setDataLoadingStatus({
-            datasetName: 'isConnectedUserOrderDataLoading',
+            datasetName: 'isConnectedUserPoolOrderDataLoading',
             loadingStatus: true,
         });
     }, [tradeData.baseToken.address, tradeData.quoteToken.address]);
@@ -503,7 +503,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                             });
                                             setDataLoadingStatus({
                                                 datasetName:
-                                                    'isConnectedUserRangeDataLoading',
+                                                    'isConnectedUserPoolRangeDataLoading',
                                                 loadingStatus: false,
                                             });
                                         })
@@ -515,7 +515,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                     });
                                     setDataLoadingStatus({
                                         datasetName:
-                                            'isConnectedUserRangeDataLoading',
+                                            'isConnectedUserPoolRangeDataLoading',
                                         loadingStatus: false,
                                     });
                                 }
@@ -580,7 +580,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
                                         setDataLoadingStatus({
                                             datasetName:
-                                                'isConnectedUserOrderDataLoading',
+                                                'isConnectedUserPoolOrderDataLoading',
                                             loadingStatus: false,
                                         });
                                     });
@@ -591,7 +591,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                     });
                                     setDataLoadingStatus({
                                         datasetName:
-                                            'isConnectedUserOrderDataLoading',
+                                            'isConnectedUserPoolOrderDataLoading',
                                         loadingStatus: false,
                                     });
                                 }
