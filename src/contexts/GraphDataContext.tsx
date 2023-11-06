@@ -3,7 +3,7 @@ import { fetchUserRecentChanges } from '../App/functions/fetchUserRecentChanges'
 import { getLimitOrderData } from '../App/functions/getLimitOrderData';
 import { getPositionData } from '../App/functions/getPositionData';
 import useDebounce from '../App/hooks/useDebounce';
-import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../constants';
+import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../constants';
 import {
     LimitOrderIF,
     LimitOrderServerIF,
@@ -162,8 +162,8 @@ export const GraphDataContextProvider = (props: {
 
     const { userAddress, isUserConnected } = useContext(UserDataContext);
 
-    const userLimitOrderStatesCacheEndpoint = GRAPHCACHE_SMALL_URL
-        ? GRAPHCACHE_SMALL_URL + '/user_limit_orders?'
+    const userLimitOrderStatesCacheEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/user_limit_orders?'
         : activeNetwork.graphCacheUrl + '/user_limit_orders?';
 
     const resetUserGraphData = () => {
@@ -234,7 +234,7 @@ export const GraphDataContextProvider = (props: {
             IS_LOCAL_ENV && console.debug('fetching user positions');
 
             const userPositionsCacheEndpoint =
-                GRAPHCACHE_SMALL_URL + '/user_positions?';
+                GCGO_OVERRIDE_URL + '/user_positions?';
 
             try {
                 fetch(

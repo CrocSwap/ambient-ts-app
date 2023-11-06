@@ -59,7 +59,7 @@ export default function MessageInput(props: MessageInputProps) {
         if (isUserConnected && userAddress) {
             return 'Type to chat. Enter to submit.';
         } else {
-            return 'Please log in to chat.';
+            return 'Please connect wallet to chat.';
         }
     }
 

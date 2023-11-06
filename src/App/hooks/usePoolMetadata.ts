@@ -7,7 +7,7 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { GRAPHCACHE_SMALL_URL } from '../../constants';
+import { GCGO_OVERRIDE_URL } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { LimitOrderServerIF } from '../../utils/interfaces/LimitOrderIF';
 import {
@@ -212,8 +212,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .catch(console.error);
 
                     // retrieve pool_positions
-                    const allPositionsCacheEndpoint = GRAPHCACHE_SMALL_URL
-                        ? GRAPHCACHE_SMALL_URL + '/pool_positions?'
+                    const allPositionsCacheEndpoint = GCGO_OVERRIDE_URL
+                        ? GCGO_OVERRIDE_URL + '/pool_positions?'
                         : props.graphCacheUrl + '/pool_positions?';
                     fetch(
                         allPositionsCacheEndpoint +
@@ -282,8 +282,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .catch(console.error);
 
                     // retrieve positions for leaderboard
-                    const poolPositionsCacheEndpoint = GRAPHCACHE_SMALL_URL
-                        ? GRAPHCACHE_SMALL_URL + '/pool_position_apy_leaders?'
+                    const poolPositionsCacheEndpoint = GCGO_OVERRIDE_URL
+                        ? GCGO_OVERRIDE_URL + '/pool_position_apy_leaders?'
                         : props.graphCacheUrl + '/pool_position_apy_leaders?';
                     fetch(
                         poolPositionsCacheEndpoint +
@@ -390,10 +390,9 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .catch(console.error);
 
                     // retrieve pool limit order states
-                    const poolLimitOrderStatesCacheEndpoint =
-                        GRAPHCACHE_SMALL_URL
-                            ? GRAPHCACHE_SMALL_URL + '/pool_limit_orders?'
-                            : props.graphCacheUrl + '/pool_limit_orders?';
+                    const poolLimitOrderStatesCacheEndpoint = GCGO_OVERRIDE_URL
+                        ? GCGO_OVERRIDE_URL + '/pool_limit_orders?'
+                        : props.graphCacheUrl + '/pool_limit_orders?';
 
                     fetch(
                         poolLimitOrderStatesCacheEndpoint +
@@ -454,10 +453,9 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .catch(console.error);
                     if (props.userAddress) {
                         // retrieve user_pool_positions
-                        const userPoolPositionsCacheEndpoint =
-                            GRAPHCACHE_SMALL_URL
-                                ? GRAPHCACHE_SMALL_URL + '/user_pool_positions?'
-                                : props.graphCacheUrl + '/user_pool_positions?';
+                        const userPoolPositionsCacheEndpoint = GCGO_OVERRIDE_URL
+                            ? GCGO_OVERRIDE_URL + '/user_pool_positions?'
+                            : props.graphCacheUrl + '/user_pool_positions?';
                         fetch(
                             userPoolPositionsCacheEndpoint +
                                 new URLSearchParams({
@@ -524,9 +522,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
                         // retrieve user_pool_limit_orders
                         const userPoolLimitOrdersCacheEndpoint =
-                            GRAPHCACHE_SMALL_URL
-                                ? GRAPHCACHE_SMALL_URL +
-                                  '/user_pool_limit_orders?'
+                            GCGO_OVERRIDE_URL
+                                ? GCGO_OVERRIDE_URL + '/user_pool_limit_orders?'
                                 : props.graphCacheUrl +
                                   '/user_pool_limit_orders?';
                         fetch(
