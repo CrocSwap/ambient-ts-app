@@ -94,9 +94,12 @@ export function useUndoRedo(denomInBase: boolean) {
     function deleteItem(item: drawDataHistory) {
         const actionList = drawActionStack.get(actionKey);
         if (actionList) {
-            const findItem = actionList.find(
-                (i) => JSON.stringify(i) === JSON.stringify(item),
-            );
+            const findItem = actionList.find((i) => {
+                return (
+                    JSON.stringify(i.data) === JSON.stringify(item.data) &&
+                    i.time === item.time
+                );
+            });
 
             if (findItem) {
                 const tempHistoryData = {
@@ -135,7 +138,29 @@ export function useUndoRedo(denomInBase: boolean) {
                 if (!undoStack.has(actionKey)) {
                     undoStack.set(actionKey, []);
                 }
-                undoStack.get(actionKey)?.push(action);
+
+                const undoStackList = undoStack.get(actionKey);
+
+                if (undoStackList) {
+                    const lastDataUndoStack =
+                        undoStackList[undoStackList?.length - 1];
+                    if (
+                        undoStackList.length === 0 ||
+                        !(
+                            lastDataUndoStack.time === action.time &&
+                            lastDataUndoStack.data[0].x === 0 &&
+                            lastDataUndoStack.data[0].y === 0 &&
+                            lastDataUndoStack.data[1].x === 0 &&
+                            lastDataUndoStack.data[1].y === 0 &&
+                            action.data[0].x === 0 &&
+                            action.data[0].y === 0 &&
+                            action.data[1].x === 0 &&
+                            action.data[1].y === 0
+                        )
+                    ) {
+                        undoStack.get(actionKey)?.push(action);
+                    }
+                }
             }
         }
     }
@@ -184,53 +209,53 @@ export function useUndoRedo(denomInBase: boolean) {
         const actions = drawActionStack
             .get(actionKey)
             ?.filter((item) => item.time === action.time);
-        let _tempData: drawDataHistory | undefined = undefined;
+        let tempData: drawDataHistory | undefined = undefined;
 
         const index = drawnShapeHistory.findIndex(
             (item) => JSON.stringify(item.time) === JSON.stringify(action.time),
         );
-
+        let lastActionData: drawDataHistory | undefined = undefined;
         if (actions && actions?.length > 0) {
-            const tempData = actions[actions?.length - 1];
-            _tempData = {
+            lastActionData = actions[actions?.length - 1];
+            tempData = {
                 data: [
                     {
-                        x: tempData.data[0].x,
-                        y: tempData.data[0].y,
-                        denomInBase: tempData.data[0].denomInBase,
+                        x: lastActionData.data[0].x,
+                        y: lastActionData.data[0].y,
+                        denomInBase: lastActionData.data[0].denomInBase,
                     },
                     {
-                        x: tempData.data[1].x,
-                        y: tempData.data[1].y,
-                        denomInBase: tempData.data[0].denomInBase,
+                        x: lastActionData.data[1].x,
+                        y: lastActionData.data[1].y,
+                        denomInBase: lastActionData.data[0].denomInBase,
                     },
                 ],
-                type: tempData.type,
-                time: tempData.time,
-                pool: tempData.pool,
-                color: tempData.color,
-                lineWidth: tempData.lineWidth,
-                style: tempData.style,
+                type: lastActionData.type,
+                time: lastActionData.time,
+                pool: lastActionData.pool,
+                color: lastActionData.color,
+                lineWidth: lastActionData.lineWidth,
+                style: lastActionData.style,
             } as drawDataHistory;
         }
 
         setDrawnShapeHistory((prev) => {
-            if (_tempData) {
+            if (tempData) {
                 if (
                     action.data[0].x === 0 &&
                     action.data[0].y === 0 &&
                     action.data[1].x === 0 &&
-                    action.data[1].y === 0
+                    action.data[1].y === 0 &&
+                    JSON.stringify(lastActionData) !== JSON.stringify(action)
                 ) {
-                    return [...prev, _tempData];
+                    return [...prev, tempData];
                 } else {
                     const newDrawnShapeHistory = [...prev];
-                    newDrawnShapeHistory[index] = _tempData;
+                    newDrawnShapeHistory[index] = tempData;
                     return newDrawnShapeHistory;
                 }
             } else {
                 const newDrawnShapeHistory = [...prev];
-
                 return newDrawnShapeHistory.filter(
                     (item) =>
                         JSON.stringify(item.data) !==
@@ -241,23 +266,47 @@ export function useUndoRedo(denomInBase: boolean) {
     }
 
     function redoDrawnShapeHistory(action: drawDataHistory) {
-        setDrawnShapeHistory((prev) => {
-            const updatedHistory = prev.map((item) => {
-                if (item.time === action.time) {
-                    item = action;
-                    return {
-                        ...item,
-                    };
+        const tempData = {
+            data: [
+                {
+                    x: action.data[0].x,
+                    y: action.data[0].y,
+                    denomInBase: action.data[0].denomInBase,
+                },
+                {
+                    x: action.data[1].x,
+                    y: action.data[1].y,
+                    denomInBase: action.data[0].denomInBase,
+                },
+            ],
+            type: action.type,
+            time: action.time,
+            pool: action.pool,
+            color: action.color,
+            lineWidth: action.lineWidth,
+            style: action.style,
+        } as drawDataHistory;
+
+        if (
+            action.data[0].x !== 0 &&
+            action.data[0].y !== 0 &&
+            action.data[1].x !== 0 &&
+            action.data[1].y !== 0
+        ) {
+            const index = drawnShapeHistory.findIndex(
+                (item) => item.time === action.time,
+            );
+
+            setDrawnShapeHistory((prev) => {
+                const updatedHistory = [...prev];
+                if (index !== -1) {
+                    updatedHistory[index] = tempData;
+                    return updatedHistory;
+                } else {
+                    return [...prev, tempData];
                 }
-                return item;
             });
-
-            if (!updatedHistory.some((item) => item.time === action.time)) {
-                updatedHistory.push(action);
-            }
-
-            return updatedHistory;
-        });
+        }
     }
 
     function addDrawActionStack(
