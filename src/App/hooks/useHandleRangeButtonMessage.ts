@@ -17,7 +17,10 @@ export function useHandleRangeButtonMessage(
         let rangeButtonErrorMessage = '';
         if (!isPoolInitialized) {
             rangeButtonErrorMessage = 'Pool Not Initialized';
-        } else if (!isMintLiqEnabled) {
+        } else if (!isMintLiqEnabled && parseFloat(tokenBalance) <= 0) {
+            tokenAllowed = false;
+            rangeButtonErrorMessage = `${token.symbol} Wallet Balance Insufficient`;
+        } else if (!isMintLiqEnabled && parseFloat(tokenBalance) > 0) {
             tokenAllowed = true;
         } else if (
             (isNaN(parseFloat(tokenAmount)) || parseFloat(tokenAmount) <= 0) &&

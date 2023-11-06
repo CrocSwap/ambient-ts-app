@@ -583,10 +583,12 @@ export default function InitPool() {
 
     const shouldResetAdvancedLowTick =
         advancedHighTick > selectedPoolPriceTick + 100000 ||
-        advancedLowTick < selectedPoolPriceTick - 100000;
+        advancedLowTick < selectedPoolPriceTick - 100000 ||
+        advancedLowTick === advancedHighTick;
     const shouldResetAdvancedHighTick =
         advancedHighTick > selectedPoolPriceTick + 100000 ||
-        advancedLowTick < selectedPoolPriceTick - 100000;
+        advancedLowTick < selectedPoolPriceTick - 100000 ||
+        advancedLowTick === advancedHighTick;
 
     const defaultLowTick = useMemo<number>(() => {
         const value: number = shouldResetAdvancedLowTick
@@ -1027,7 +1029,7 @@ export default function InitPool() {
               sendInit(initialPriceInBaseDenom);
           };
 
-    const initButtopPropsIF = {
+    const initButtonPropsIF = {
         tokenA,
         tokenB,
         tokenACollateral,
@@ -1051,8 +1053,8 @@ export default function InitPool() {
         isTokenBAllowanceSufficient,
         isInitPending,
         initialPriceDisplay,
-        advancedHighTick,
-        advancedLowTick,
+        defaultLowTick,
+        defaultHighTick,
         selectedPoolPriceTick,
     };
 
@@ -1659,7 +1661,7 @@ export default function InitPool() {
                     {erc20TokenWithDexBalance?.symbol ? (
                         withdrawWalletBalanceButton
                     ) : (
-                        <InitButton {...initButtopPropsIF} />
+                        <InitButton {...initButtonPropsIF} />
                     )}
                 </FlexContainer>
             </FlexContainer>
