@@ -36,7 +36,7 @@ export default function Menu(props: propsIF) {
         //     }
         // });
 
-        props.deleteMsgFromList(props.id);
+        props.deleteMsgFromList(props.id, props.isModerator);
     };
 
     const setReplyMessage = () => {

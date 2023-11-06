@@ -114,11 +114,15 @@ const useChatApi = () => {
         return data;
     }
 
-    async function deleteMessage(_id: string) {
+    async function deleteMessage(_id: string, isModerator: boolean) {
         const response = await fetch(
             host + '/chat/api/messages/deleteMessagev2/' + _id,
             {
                 method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    isModerator: isModerator,
+                }),
             },
         );
         const data = await response.json();

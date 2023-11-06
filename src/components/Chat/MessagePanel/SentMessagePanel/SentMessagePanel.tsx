@@ -84,7 +84,6 @@ interface SentMessageProps {
 function SentMessagePanel(props: SentMessageProps) {
     const { deleteMsgFromList } = props;
     const [isMoreButtonPressed, setIsMoreButtonPressed] = useState(false);
-    const [aa, setaa] = useState('');
     const [hasSeparator, setHasSeparator] = useState(false);
     const [isClickedOptions, setIsClickedOptions] = useState(false);
     const [isPosition, setIsPosition] = useState(false);
@@ -111,8 +110,6 @@ function SentMessagePanel(props: SentMessageProps) {
 
     const navigate = useNavigate();
     const location = useLocation();
-
-    const deletedMessageText = 'This message has deleted.';
 
     const handleInitialLikeDislike = () => {
         let retVal = 0;
@@ -236,12 +233,6 @@ function SentMessagePanel(props: SentMessageProps) {
             getReplyMessageInfo(props.message.repliedMessage as string);
         }
     }, [props.message]);
-
-    useEffect(() => {
-        if (props.isMessageDeleted) {
-            console.log('xxx', props.message);
-        }
-    }, [props.isMessageDeleted]);
 
     const formatAMPM = (str: string) => {
         const date = new Date(str);
@@ -692,9 +683,6 @@ function SentMessagePanel(props: SentMessageProps) {
 
     return (
         <div
-            onMouseEnter={() => {
-                console.log('>>>>>>>>>>>>>>>>>>> into message card');
-            }}
             className={`${styles.msg_bubble_container} ${
                 props.mentionIndex !== undefined
                     ? 'mentionedMessage mentIndex-' + props.mentionIndex
