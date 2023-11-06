@@ -1,5 +1,5 @@
 import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
-import { GRAPHCACHE_SMALL_URL } from '../../constants';
+import { GCGO_OVERRIDE_URL } from '../../constants';
 import { TokenPriceFn } from './fetchTokenPrice';
 
 export const fetchPoolLiquidity = async (
@@ -11,8 +11,8 @@ export const fetchPoolLiquidity = async (
     graphCacheUrl: string,
     cachedFetchTokenPrice: TokenPriceFn,
 ): Promise<LiquidityDataIF | undefined> => {
-    const poolLiquidityCacheEndpoint = GRAPHCACHE_SMALL_URL
-        ? GRAPHCACHE_SMALL_URL + '/pool_liq_curve?'
+    const poolLiquidityCacheEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/pool_liq_curve?'
         : graphCacheUrl + '/pool_liq_curve?';
 
     return fetch(

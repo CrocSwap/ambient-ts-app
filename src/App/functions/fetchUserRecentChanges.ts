@@ -1,5 +1,5 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
+import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../constants';
 import { TokenIF, TransactionIF } from '../../utils/interfaces/exports';
 import { FetchAddrFn } from './fetchAddress';
 import { FetchContractDetailsFn } from './fetchContractDetails';
@@ -51,8 +51,8 @@ export const fetchUserRecentChanges = (args: argsIF) => {
         cachedEnsResolve,
     } = args;
 
-    const userRecentChangesCacheEndpoint = GRAPHCACHE_SMALL_URL
-        ? GRAPHCACHE_SMALL_URL + '/user_txs?'
+    const userRecentChangesCacheEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/user_txs?'
         : graphCacheUrl + '/user_txs?';
 
     IS_LOCAL_ENV && console.debug('fetching user recent changes');

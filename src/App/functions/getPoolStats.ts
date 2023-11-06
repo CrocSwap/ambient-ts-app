@@ -1,5 +1,5 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { GRAPHCACHE_SMALL_URL } from '../../constants';
+import { GCGO_OVERRIDE_URL } from '../../constants';
 import { TokenPriceFn } from './fetchTokenPrice';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 
@@ -10,8 +10,8 @@ export const getLiquidityFee = async (
     chainId: string,
     graphCacheUrl: string,
 ): Promise<number | undefined> => {
-    const poolStatsFreshEndpoint = GRAPHCACHE_SMALL_URL
-        ? GRAPHCACHE_SMALL_URL + '/pool_stats?'
+    const poolStatsFreshEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/pool_stats?'
         : graphCacheUrl + '/pool_stats?';
 
     return fetch(
@@ -47,8 +47,8 @@ const fetchPoolStats = async (
     graphCacheUrl: string,
     cachedFetchTokenPrice: TokenPriceFn,
 ): Promise<PoolStatsIF | undefined> => {
-    const poolStatsFreshEndpoint = GRAPHCACHE_SMALL_URL
-        ? GRAPHCACHE_SMALL_URL + '/pool_stats?'
+    const poolStatsFreshEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/pool_stats?'
         : graphCacheUrl + '/pool_stats?';
 
     return fetch(
@@ -177,8 +177,8 @@ const get24hChange = async (
     denomInBase: boolean,
     graphCacheUrl: string,
 ): Promise<number | undefined> => {
-    const poolStatsFreshEndpoint = GRAPHCACHE_SMALL_URL
-        ? GRAPHCACHE_SMALL_URL + '/pool_stats?'
+    const poolStatsFreshEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/pool_stats?'
         : graphCacheUrl + '/pool_stats?';
 
     const nowQuery = fetch(
@@ -252,8 +252,8 @@ export async function getChainStats(
 ): Promise<DexAggStatsIF | undefined> {
     const N_TOKEN_CHAIN_SUMM = 10;
 
-    const chainStatsFreshEndpoint = GRAPHCACHE_SMALL_URL
-        ? GRAPHCACHE_SMALL_URL + '/chain_stats?'
+    const chainStatsFreshEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/chain_stats?'
         : graphCacheUrl + '/chain_stats?';
 
     return fetch(
