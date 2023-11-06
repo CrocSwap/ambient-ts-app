@@ -246,7 +246,8 @@ export function useUndoRedo(denomInBase: boolean) {
                     action.data[0].y === 0 &&
                     action.data[1].x === 0 &&
                     action.data[1].y === 0 &&
-                    JSON.stringify(lastActionData) !== JSON.stringify(action)
+                    JSON.stringify(lastActionData) !== JSON.stringify(action) &&
+                    index === -1
                 ) {
                     return [...prev, tempData];
                 } else {
