@@ -9,7 +9,6 @@ import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 import TokenIcon from '../../../TokenIcon/TokenIcon';
 import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
 import uriToHttp from '../../../../../utils/functions/uriToHttp';
-import { ethereumMainnet } from '../../../../../utils/networks/ethereumMainnet';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 
 interface propsIF {
@@ -50,19 +49,11 @@ export default function WalletCard(props: propsIF) {
         (async () => {
             try {
                 if (tokenFromMap?.symbol) {
-                    const mainnetAddress =
-                        ethereumMainnet.tokens[
-                            tokenFromMap?.symbol as keyof typeof ethereumMainnet.tokens
-                        ];
-                    if (mainnetAddress) {
-                        const price = await cachedFetchTokenPrice(
-                            mainnetAddress === ZERO_ADDRESS
-                                ? ethereumMainnet.tokens['WETH']
-                                : mainnetAddress,
-                            ethereumMainnet.chainId,
-                        );
-                        if (price) setTokenPrice(price);
-                    }
+                    const price = await cachedFetchTokenPrice(
+                        tokenFromMap.address,
+                        chainId,
+                    );
+                    if (price) setTokenPrice(price);
                 }
             } catch (err) {
                 console.error(err);

@@ -80,7 +80,6 @@ function createCirclePoints(element: drawDataHistory, denomInBase: boolean) {
                 x: item.x,
                 y: denomInBase === item.denomInBase ? item.y : 1 / item.y,
                 denomInBase: item.denomInBase,
-                ctx: item.ctx,
             } as lineData);
         });
 
@@ -100,10 +99,10 @@ function createCirclePoints(element: drawDataHistory, denomInBase: boolean) {
                 : 1 / element.data[1].y;
 
         const data: lineData[] = [
-            { x: startX, y: startY, ctx: undefined, denomInBase: denomInBase },
-            { x: startX, y: endY, ctx: undefined, denomInBase: denomInBase },
-            { x: endX, y: startY, ctx: undefined, denomInBase: denomInBase },
-            { x: endX, y: endY, ctx: undefined, denomInBase: denomInBase },
+            { x: startX, y: startY, denomInBase: denomInBase },
+            { x: startX, y: endY, denomInBase: denomInBase },
+            { x: endX, y: startY, denomInBase: denomInBase },
+            { x: endX, y: endY, denomInBase: denomInBase },
         ];
 
         return data;
@@ -119,7 +118,6 @@ function createCirclePoints(element: drawDataHistory, denomInBase: boolean) {
                     ? element.data[1].y
                     : 1 / element.data[1].y,
             denomInBase: element.data[1].denomInBase,
-            ctx: element.data[1].ctx,
         } as lineData);
 
         return data;

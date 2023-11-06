@@ -23,7 +23,7 @@ interface DragCanvasProps {
         React.SetStateAction<selectedDrawnData | undefined>
     >;
     denomInBase: boolean;
-    addDrawActionStack: (item: drawDataHistory) => void;
+    addDrawActionStack: (item: drawDataHistory, isNewShape: boolean) => void;
 }
 
 export default function DragCanvas(props: DragCanvasProps) {
@@ -70,7 +70,6 @@ export default function DragCanvas(props: DragCanvasProps) {
                     y: scale.invert(
                         scale(hoveredDrawnShape.data.data[0].y) + movemementY,
                     ),
-                    ctx: hoveredDrawnShape.data?.data[0].ctx,
                     denomInBase: hoveredDrawnShape.data?.data[0].denomInBase,
                 },
                 {
@@ -81,7 +80,6 @@ export default function DragCanvas(props: DragCanvasProps) {
                     y: scale.invert(
                         scale(hoveredDrawnShape.data.data[1].y) + movemementY,
                     ),
-                    ctx: hoveredDrawnShape.data?.data[1].ctx,
                     denomInBase: hoveredDrawnShape.data?.data[1].denomInBase,
                 },
             ];
@@ -153,46 +151,47 @@ export default function DragCanvas(props: DragCanvasProps) {
             (item) => item === hoveredDrawnShape?.data,
         );
 
-        const previosData = drawnShapeHistory[index].data;
+        if (index !== -1) {
+            const previosData = drawnShapeHistory[index].data;
 
-        const newX = scaleData.xScale.invert(offsetX);
-        const newY = scaleData.yScale.invert(offsetY);
+            const newX = scaleData.xScale.invert(offsetX);
+            const newY = scaleData.yScale.invert(offsetY);
 
-        const should0xMove = is0Left
-            ? rectDragDirection.includes('Left')
-            : rectDragDirection.includes('Right');
+            const should0xMove = is0Left
+                ? rectDragDirection.includes('Left')
+                : rectDragDirection.includes('Right');
 
-        const should0yMove = is0Top
-            ? rectDragDirection.includes('top')
-            : rectDragDirection.includes('bottom');
+            const should0yMove = is0Top
+                ? rectDragDirection.includes('top')
+                : rectDragDirection.includes('bottom');
 
-        const should1xMove = is0Left
-            ? rectDragDirection.includes('Right')
-            : rectDragDirection.includes('Left');
+            const should1xMove = is0Left
+                ? rectDragDirection.includes('Right')
+                : rectDragDirection.includes('Left');
 
-        const should1yMove = is0Top
-            ? rectDragDirection.includes('bottom')
-            : rectDragDirection.includes('top');
+            const should1yMove = is0Top
+                ? rectDragDirection.includes('bottom')
+                : rectDragDirection.includes('top');
 
-        const newYWithDenom =
-            previosData[0].denomInBase === denomInBase ? newY : 1 / newY;
+            const newYWithDenom =
+                previosData[0].denomInBase === denomInBase ? newY : 1 / newY;
 
-        previosData[0].x = should0xMove ? newX : previosData[0].x;
+            previosData[0].x = should0xMove ? newX : previosData[0].x;
 
-        previosData[0].y = should0yMove ? newYWithDenom : previosData[0].y;
+            previosData[0].y = should0yMove ? newYWithDenom : previosData[0].y;
 
-        previosData[1].x = should1xMove ? newX : previosData[1].x;
+            previosData[1].x = should1xMove ? newX : previosData[1].x;
 
-        previosData[1].y = should1yMove ? newYWithDenom : previosData[1].y;
+            previosData[1].y = should1yMove ? newYWithDenom : previosData[1].y;
 
-        drawnShapeHistory[index].data = previosData;
-        if (hoveredDrawnShape) {
-            hoveredDrawnShape.selectedCircle = {
-                x: newX,
-                y: newYWithDenom,
-                ctx: undefined,
-                denomInBase: denomInBase,
-            };
+            drawnShapeHistory[index].data = previosData;
+            if (hoveredDrawnShape) {
+                hoveredDrawnShape.selectedCircle = {
+                    x: newX,
+                    y: newYWithDenom,
+                    denomInBase: denomInBase,
+                };
+            }
         }
     }
 
@@ -260,6 +259,8 @@ export default function DragCanvas(props: DragCanvasProps) {
                 previousIndex = drawnShapeHistory.findIndex(
                     (item) => item === hoveredDrawnShape?.data,
                 );
+
+                // console.log({drawnShapeHistory},previousIndex);
 
                 const originalData = drawnShapeHistory[previousIndex].data;
                 previousData = originalData.map((item) => {
@@ -392,9 +393,9 @@ export default function DragCanvas(props: DragCanvasProps) {
                         tempLastData &&
                         isDragging &&
                         dragTimeout &&
-                        event.sourceEvent.timeStamp - dragTimeout > 250
+                        event.sourceEvent.timeStamp - dragTimeout > 200
                     ) {
-                        addDrawActionStack(tempLastData);
+                        addDrawActionStack(tempLastData, false);
                     }
                 } else {
                     if (previousData) {
@@ -410,7 +411,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                 d3DragCanvas.current,
             ).call(dragDrawnShape);
         }
-    }, [hoveredDrawnShape]);
+    }, [hoveredDrawnShape, drawnShapeHistory]);
 
     return <d3fc-canvas ref={d3DragCanvas} />;
 }

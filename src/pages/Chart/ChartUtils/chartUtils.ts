@@ -25,10 +25,11 @@ declare global {
     }
 }
 
+export const CHART_ANNOTATIONS_LS_KEY = 'chart_annotations';
 export const defaultCandleBandwith = 5;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type lineData = { x: number; y: number; ctx: any; denomInBase: boolean };
+export type lineData = { x: number; y: number; denomInBase: boolean };
 export type drawDataHistory = {
     data: lineData[];
     type: string;
@@ -272,7 +273,6 @@ export function calculateFibRetracement(data: lineData[]) {
                         (level.level > 1
                             ? diff * (level.level - 1)
                             : -1 * (diff * level.level)),
-                    ctx: undefined,
                     denomInBase: data[0].denomInBase,
                 },
                 {
@@ -282,7 +282,6 @@ export function calculateFibRetracement(data: lineData[]) {
                         (level.level > 1
                             ? diff * (level.level - 1)
                             : -1 * (diff * level.level)),
-                    ctx: undefined,
                     denomInBase: data[0].denomInBase,
                 },
             ]);

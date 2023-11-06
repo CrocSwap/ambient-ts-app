@@ -42,6 +42,7 @@ export default function TransactionDetailsModal(props: propsIF) {
     const { lastBlockNumber } = useContext(ChainDataContext);
     const {
         crocEnv,
+        activeNetwork,
         provider,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
@@ -53,8 +54,9 @@ export default function TransactionDetailsModal(props: propsIF) {
     >(1.01);
 
     useEffect(() => {
-        const positionStatsCacheEndpoint =
-            GRAPHCACHE_SMALL_URL + '/position_stats?';
+        const positionStatsCacheEndpoint = GRAPHCACHE_SMALL_URL
+            ? GRAPHCACHE_SMALL_URL + '/position_stats?'
+            : activeNetwork.graphCacheUrl + '/position_stats?';
 
         fetch(
             positionStatsCacheEndpoint +
