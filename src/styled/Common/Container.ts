@@ -13,6 +13,7 @@ import {
     scrollSnapAlign,
     TextAlign,
     Displays,
+    BoxShadows,
 } from './Types';
 import { Breakpoint, BreakpointProps } from './Breakpoints';
 import { AnimationProps, Animations } from './Animations';
@@ -57,6 +58,7 @@ export interface ContainerProps {
     display?: Displays;
     colSpan?: string;
     rowSpan?: string;
+    boxShadow?: BoxShadows;
 
     // Flex Props
     flexDirection?: 'row' | 'column';
@@ -104,6 +106,7 @@ export const ContainerStyles = (props: ContainerProps) => {
         overlay,
         grow,
         margin,
+        boxShadow,
         padding,
         colSpan,
         rowSpan,
@@ -203,6 +206,7 @@ export const ContainerStyles = (props: ContainerProps) => {
         ${overlayStyles}
         ${padding ? `padding: ${padding};` : ''}
         ${margin ? `margin: ${margin};` : ''}
+        ${boxShadow ? `box-shadow: var(--${boxShadow}-box-shadow);` : ''}
         ${displayStyling}
         ${font ? `font-family: var(--${font});` : ''}
         ${letterSpacing ? 'letter-spacing: -0.02em;' : ''}
