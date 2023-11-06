@@ -166,6 +166,10 @@ export const GraphDataContextProvider = (props: {
         ? GCGO_OVERRIDE_URL + '/user_limit_orders?'
         : activeNetwork.graphCacheUrl + '/user_limit_orders?';
 
+    const userPositionsCacheEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/user_positions?'
+        : activeNetwork.graphCacheUrl + '/user_positions?';
+
     const resetUserGraphData = () => {
         setPositionsByUser({
             dataReceived: false,
@@ -232,9 +236,6 @@ export const GraphDataContextProvider = (props: {
             chainData.chainId
         ) {
             IS_LOCAL_ENV && console.debug('fetching user positions');
-
-            const userPositionsCacheEndpoint =
-                GCGO_OVERRIDE_URL + '/user_positions?';
 
             try {
                 fetch(
