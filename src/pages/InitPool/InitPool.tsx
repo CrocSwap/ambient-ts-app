@@ -1460,6 +1460,7 @@ export default function InitPool() {
                     tokenB: isTokenBInputDisabled,
                 }}
                 reverseTokens={reverseTokens}
+                isMintLiqEnabled={isMintLiqEnabled}
                 isInitPage
             />
         </FlexContainer>
