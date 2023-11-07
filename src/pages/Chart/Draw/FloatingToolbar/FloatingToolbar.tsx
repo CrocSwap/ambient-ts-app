@@ -39,7 +39,7 @@ interface FloatingToolbarProps {
     >;
     setIsShapeEdited: React.Dispatch<boolean>;
     deleteItem: (item: drawDataHistory) => void;
-    addDrawActionStack: (item: drawDataHistory) => void;
+    addDrawActionStack: (item: drawDataHistory, isNewShape: boolean) => void;
 }
 function FloatingToolbar(props: FloatingToolbarProps) {
     const {
@@ -102,7 +102,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 );
 
                 item[changedItemIndex].color = colorRgbaCode;
-                addDrawActionStack(item[changedItemIndex]);
+                addDrawActionStack(item[changedItemIndex], false);
 
                 return item;
             });
@@ -118,7 +118,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 );
 
                 item[changedItemIndex].lineWidth = value;
-                addDrawActionStack(item[changedItemIndex]);
+                addDrawActionStack(item[changedItemIndex], false);
                 return item;
             });
             setIsShapeEdited(true);
@@ -133,7 +133,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 );
 
                 item[changedItemIndex].style = array;
-                addDrawActionStack(item[changedItemIndex]);
+                addDrawActionStack(item[changedItemIndex], false);
                 return item;
             });
             setIsShapeEdited(true);

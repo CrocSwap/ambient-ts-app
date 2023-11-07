@@ -31,6 +31,7 @@ import Spinner from '../../../components/Global/Spinner/Spinner';
 import { LiquidityDataLocal } from './TradeCharts';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
 import {
+    CHART_ANNOTATIONS_LS_KEY,
     chartItemStates,
     liquidityChartData,
     scaleData,
@@ -120,6 +121,8 @@ function TradeCandleStickChart(props: propsIF) {
         currentPool,
         deleteItem,
         addDrawActionStack,
+        drawActionStack,
+        undoStack,
     } = useUndoRedo(denominationsInBase);
 
     const tokenPair = useMemo(
@@ -161,6 +164,13 @@ function TradeCandleStickChart(props: propsIF) {
     useEffect(() => {
         setIsLoading(true);
     }, [period, denominationsInBase]);
+
+    useEffect(() => {
+        localStorage.setItem(
+            CHART_ANNOTATIONS_LS_KEY,
+            JSON.stringify(drawnShapeHistory),
+        );
+    }, [JSON.stringify(drawnShapeHistory)]);
 
     useEffect(() => {
         if (unparsedLiquidityData !== undefined) {
@@ -851,6 +861,8 @@ function TradeCandleStickChart(props: propsIF) {
                         deleteItem={deleteItem}
                         updateURL={updateURL}
                         addDrawActionStack={addDrawActionStack}
+                        drawActionStack={drawActionStack}
+                        undoStack={undoStack}
                     />
                 ) : (
                     <Spinner size={100} bg='var(--dark2)' centered />
