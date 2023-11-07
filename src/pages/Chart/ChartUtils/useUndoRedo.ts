@@ -74,17 +74,26 @@ export function useUndoRedo(denomInBase: boolean) {
                 style: element.style,
             };
 
-            if (
-                !drawActionStack.has(actionKey) &&
-                actionKey.tokenA === element.pool.tokenA.address &&
-                actionKey.tokenB === element.pool.tokenB.address
-            ) {
-                drawActionStack.set(actionKey, [tempData]);
+            if (!drawActionStack.has(actionKey)) {
+                if (
+                    (actionKey.tokenA === element.pool.tokenA.address &&
+                        actionKey.tokenB === element.pool.tokenB.address) ||
+                    (actionKey.tokenA === element.pool.tokenB.address &&
+                        actionKey.tokenB === element.pool.tokenA.address)
+                ) {
+                    drawActionStack.set(actionKey, [tempData]);
+                } else {
+                    drawActionStack.set(actionKey, []);
+                }
             } else {
                 const actionList = drawActionStack
                     .get(actionKey)
                     ?.find((item) => item.time === element.time);
-                if (actionList === undefined) {
+                if (
+                    actionList === undefined &&
+                    actionKey.tokenA === element.pool.tokenA.address &&
+                    actionKey.tokenB === element.pool.tokenB.address
+                ) {
                     drawActionStack.get(actionKey)?.push(tempData);
                 }
             }
