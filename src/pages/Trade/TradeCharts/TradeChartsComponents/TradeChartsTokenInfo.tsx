@@ -182,6 +182,7 @@ function TradeChartsTokenInfo() {
 
     const denomToggleButton = (
         <HeaderButtons
+            id='token_pair_in_chart_header'
             aria-label='flip denomination.'
             onClick={() => dispatch(toggleDidUserFlipDenom())}
         >
