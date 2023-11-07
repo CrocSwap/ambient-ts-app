@@ -25,10 +25,11 @@ declare global {
     }
 }
 
+export const CHART_ANNOTATIONS_LS_KEY = 'chart_annotations';
 export const defaultCandleBandwith = 5;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type lineData = { x: number; y: number; ctx: any; denomInBase: boolean };
+export type lineData = { x: number; y: number; denomInBase: boolean };
 export type drawDataHistory = {
     data: lineData[];
     type: string;

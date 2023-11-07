@@ -19,6 +19,7 @@
 
 .swap_main_content {
     padding: 24px;
+    box-shadow: var(--gradient-box-shadow);
 }
 
 .swap_bg {
@@ -40,7 +41,7 @@
 }
 
 .swap_route {
-    background: var(--swap-border);
+    background: var(--accent1);
     padding: 1px;
     border-radius: var(--border-radius);
     box-shadow: var(--swap-box-shadow);

@@ -71,3 +71,11 @@ export type Displays =
     | 'none'
     | 'initial'
     | 'inherit';
+
+export type BoxShadows =
+    | 'gradient'
+    | 'swap'
+    | 'dark'
+    | 'dark1'
+    | 'trade'
+    | 'glow-light';
