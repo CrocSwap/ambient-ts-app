@@ -1,9 +1,10 @@
-import { memo } from 'react';
+import { memo, useContext } from 'react';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { formatTokenInput } from '../../utils/numbers';
 import TokenInputQuantity from './TokenInputQuantity';
 import { WalletBalanceSubinfo } from './WalletBalanceSubinfo';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 interface propsIF {
     tokenAorB: 'A' | 'B';
@@ -50,7 +51,17 @@ function TokenInputWithWalletBalance(props: propsIF) {
         handleRefresh,
     } = props;
 
-    const ETH_BUFFER = 0.025;
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+
+    const amountToReduceEthMainnet = 0.005; // .005 ETH
+    const amountToReduceEthScroll = 0.0003; // .0003 ETH
+
+    const amountToReduceEth =
+        chainId === '0x82750' || chainId === '0x8274f'
+            ? amountToReduceEthScroll
+            : amountToReduceEthMainnet;
 
     const toDecimal = (val: string) =>
         isTokenEth ? parseFloat(val).toFixed(18) : parseFloat(val).toString();
@@ -70,7 +81,9 @@ function TokenInputWithWalletBalance(props: propsIF) {
     });
 
     const subtractBuffer = (balance: string) =>
-        isTokenEth ? (parseFloat(balance) - ETH_BUFFER).toFixed(18) : balance;
+        isTokenEth
+            ? (parseFloat(balance) - amountToReduceEth).toFixed(18)
+            : balance;
 
     const balanceWithBuffer = balance ? subtractBuffer(balance) : '...';
 
