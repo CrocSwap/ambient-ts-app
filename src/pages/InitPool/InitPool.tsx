@@ -820,8 +820,32 @@ export default function InitPool() {
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice, isMintLiqEnabled]);
 
-    const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) > 0;
-    const isTokenBAllowanceSufficient = parseFloat(tokenBAllowance) > 0;
+    const tokenASurplusMinusTokenARemainderNum =
+        parseFloat(tokenADexBalance || '0') -
+        parseFloat(tokenACollateral || '0');
+    const tokenBSurplusMinusTokenBRemainderNum =
+        parseFloat(tokenBDexBalance || '0') -
+        parseFloat(tokenBCollateral || '0');
+    const tokenAQtyCoveredByWalletBalance = isWithdrawTokenAFromDexChecked
+        ? tokenASurplusMinusTokenARemainderNum < 0
+            ? tokenASurplusMinusTokenARemainderNum * -1
+            : 0
+        : parseFloat(tokenACollateral || '0');
+    const tokenBQtyCoveredByWalletBalance = isWithdrawTokenBFromDexChecked
+        ? tokenBSurplusMinusTokenBRemainderNum < 0
+            ? tokenBSurplusMinusTokenBRemainderNum * -1
+            : 0
+        : parseFloat(tokenBCollateral || '0');
+
+    // if liquidity miniting is enabled, tthen oken allowance must be greater than the amount of tokens the user is depositing,
+    // plus a small amount for the initialization transactions
+    // if liquidity minting is disabled, then token allowance must be greater than 0
+    const isTokenAAllowanceSufficient = isMintLiqEnabled
+        ? parseFloat(tokenAAllowance) > tokenAQtyCoveredByWalletBalance
+        : parseFloat(tokenAAllowance) > 0;
+    const isTokenBAllowanceSufficient = isMintLiqEnabled
+        ? parseFloat(tokenBAllowance) > tokenBQtyCoveredByWalletBalance
+        : parseFloat(tokenBAllowance) > 0;
 
     const focusInput = () => {
         const inputField = document.getElementById(
