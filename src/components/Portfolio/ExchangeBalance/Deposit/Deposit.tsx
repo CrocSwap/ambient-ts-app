@@ -141,31 +141,27 @@ export default function Deposit(props: propsIF) {
     );
 
     const isWalletBalanceSufficientToCoverGas = useMemo(() => {
-        if (selectedToken.address !== ZERO_ADDRESS) {
+        if (selectedToken.address !== ZERO_ADDRESS || !depositQtyNonDisplay) {
             return true;
         }
         return tokenWalletBalance
-            ? BigNumber.from(tokenWalletBalance).gt(amountToReduceEth)
+            ? BigNumber.from(tokenWalletBalance).gte(
+                  amountToReduceEth.add(BigNumber.from(depositQtyNonDisplay)),
+              )
             : false;
-    }, [tokenWalletBalance, amountToReduceEth]);
+    }, [tokenWalletBalance, amountToReduceEth, depositQtyNonDisplay]);
 
     const isWalletBalanceSufficientToCoverDeposit = useMemo(
         () =>
-            tokenWalletBalanceAdjustedNonDisplayString && isDepositQtyValid
-                ? BigNumber.from(
-                      tokenWalletBalanceAdjustedNonDisplayString,
-                  ).gte(BigNumber.from(depositQtyNonDisplay))
-                : tokenWalletBalanceAdjustedNonDisplayString &&
-                  BigNumber.from(
-                      tokenWalletBalanceAdjustedNonDisplayString,
-                  ).gte(BigNumber.from(0))
+            tokenWalletBalance && isDepositQtyValid
+                ? BigNumber.from(tokenWalletBalance).gte(
+                      BigNumber.from(depositQtyNonDisplay),
+                  )
+                : tokenWalletBalance &&
+                  BigNumber.from(tokenWalletBalance).gte(BigNumber.from(0))
                 ? true
                 : false,
-        [
-            tokenWalletBalanceAdjustedNonDisplayString,
-            isDepositQtyValid,
-            depositQtyNonDisplay,
-        ],
+        [tokenWalletBalance, isDepositQtyValid, depositQtyNonDisplay],
     );
 
     const [isDepositPending, setIsDepositPending] = useState(false);
@@ -188,17 +184,17 @@ export default function Deposit(props: propsIF) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Approval Pending`);
-        } else if (!isWalletBalanceSufficientToCoverGas) {
-            setIsButtonDisabled(true);
-            setIsCurrencyFieldDisabled(false);
-            setButtonMessage(
-                `${selectedToken.symbol} Wallet Balance Insufficient To Cover Gas`,
-            );
         } else if (!isWalletBalanceSufficientToCoverDeposit) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(false);
             setButtonMessage(
                 `${selectedToken.symbol} Wallet Balance Insufficient to Cover Deposit`,
+            );
+        } else if (!isWalletBalanceSufficientToCoverGas) {
+            setIsButtonDisabled(true);
+            setIsCurrencyFieldDisabled(false);
+            setButtonMessage(
+                `${selectedToken.symbol} Wallet Balance Insufficient To Cover Gas`,
             );
         } else if (!isTokenAllowanceSufficient) {
             setIsButtonDisabled(false);
@@ -382,7 +378,7 @@ export default function Deposit(props: propsIF) {
                     {tokenWalletBalance !== '0' && (
                         <MaxButton
                             onClick={handleBalanceClick}
-                            disabled={!isWalletBalanceSufficientToCoverDeposit}
+                            disabled={false}
                         >
                             Max
                         </MaxButton>
