@@ -10,15 +10,16 @@ export function useHandleRangeButtonMessage(
     isWithdrawTokenFromDexChecked: boolean,
     isPoolInitialized: boolean,
     isMintLiqEnabled = true,
+    isInitPage = false,
 ) {
     const { tokenAllowed, rangeButtonErrorMessage } = useMemo(() => {
-        // console.log('Token Amount: ', token.symbol, { tokenAmount, token });
         let tokenAllowed = false;
         let rangeButtonErrorMessage = '';
         if (!isPoolInitialized) {
             rangeButtonErrorMessage = 'Pool Not Initialized';
-        } else if (!isMintLiqEnabled) {
-            tokenAllowed = true;
+        } else if (isInitPage && parseFloat(tokenBalance) <= 0) {
+            tokenAllowed = false;
+            rangeButtonErrorMessage = `${token.symbol} Wallet Balance Insufficient`;
         } else if (
             (isNaN(parseFloat(tokenAmount)) || parseFloat(tokenAmount) <= 0) &&
             !isTokenInputDisabled
