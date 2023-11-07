@@ -964,7 +964,10 @@ export default function InitPool() {
             defaultLowTick,
             defaultHighTick,
             isDenomBase,
+            isMintLiqEnabled,
         );
+
+    const isInitPage = true;
 
     const {
         tokenAllowed: tokenAAllowed,
@@ -978,6 +981,7 @@ export default function InitPool() {
         isWithdrawTokenAFromDexChecked,
         true, // hardcode pool initialized since we will be initializing it on confirm
         isMintLiqEnabled,
+        isInitPage,
     );
     const {
         tokenAllowed: tokenBAllowed,
@@ -991,6 +995,7 @@ export default function InitPool() {
         isWithdrawTokenBFromDexChecked,
         true, // hardcode pool initialized since we will be initializing it on confirm
         isMintLiqEnabled,
+        isInitPage,
     );
 
     // Next step - understand how sider affects these params
