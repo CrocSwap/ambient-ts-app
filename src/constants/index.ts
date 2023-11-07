@@ -17,17 +17,17 @@ export const ANALYTICS_URL =
     process.env.REACT_APP_ANALYTICS_URL ||
     'https://crocswap-analytics-tools-service-dfxb5x3tja-uc.a.run.app/run?';
 
-export const GRAPHCACHE_URL =
-    process.env.REACT_APP_GRAPHCACHE_URL || 'https://ambindexer.net';
+export const GCGO_ETHEREUM_URL =
+    process.env.REACT_APP_GCGO_ETHEREUM_URL || 'https://ambindexer.net/gcgo';
+export const GCGO_SCROLL_URL =
+    process.env.GCGO_SCROLL_URL || 'https://ambindexer.net/scroll-gcgo';
+export const GCGO_OVERRIDE_URL = process.env.REACT_APP_GCGO_OVERRIDE_URL;
 
-export const GRAPHCACHE_SMALL_URL = process.env.REACT_APP_GRAPHCACHE_SMALL_URL;
-
-export const GRAPHCACHE_WSS_URL =
-    process.env.REACT_APP_GRAPHCACHE_WSS_URL ||
-    GRAPHCACHE_URL.replace('http', 'ws');
+export const HISTORICAL_CANDLES_URL =
+    process.env.REACT_APP_HISTORICAL_CANDLES_URL || 'https://ambindexer.net';
 
 export const CHAT_BACKEND_URL =
-    process.env.REACT_APP_CHAT_URL || `${GRAPHCACHE_URL}`;
+    process.env.REACT_APP_CHAT_URL || `${HISTORICAL_CANDLES_URL}`;
 
 export const CHAT_BACKEND_WSS_URL =
     process.env.REACT_APP_CHAT_WSS_URL ||
@@ -52,6 +52,7 @@ export const GITHUB_LINK = 'https://github.com/CrocSwap';
 export const TWITTER_LINK = 'https://twitter.com/ambient_finance';
 export const DISCORD_LINK = 'https://discord.gg/ambient-finance';
 export const MEDIUM_LINK = 'https://crocswap.medium.com/';
+export const CORPORATE_LINK = 'https://www.crocswap.com/';
 
 export const OVERRIDE_CANDLE_POOL_ID = 36000;
 
