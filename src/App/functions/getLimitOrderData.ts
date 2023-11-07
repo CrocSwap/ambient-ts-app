@@ -7,10 +7,8 @@ import {
     tickToPrice,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
-import { getMainnetAddress } from '../../utils/functions/getMainnetAddress';
 import { LimitOrderIF, TokenIF } from '../../utils/interfaces/exports';
 import { LimitOrderServerIF } from '../../utils/interfaces/LimitOrderIF';
-import { supportedNetworks } from '../../utils/networks';
 import { FetchAddrFn } from './fetchAddress';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
@@ -51,16 +49,8 @@ export const getLimitOrderData = async (
         ? ''
         : (await cachedEnsResolve(order.user)) ?? '';
 
-    const basePricedToken = getMainnetAddress(
-        baseTokenAddress,
-        supportedNetworks[chainId],
-    );
-    const basePricePromise = cachedFetchTokenPrice(basePricedToken, chainId);
-    const quotePricedToken = getMainnetAddress(
-        quoteTokenAddress,
-        supportedNetworks[chainId],
-    );
-    const quotePricePromise = cachedFetchTokenPrice(quotePricedToken, chainId);
+    const basePricePromise = cachedFetchTokenPrice(baseTokenAddress, chainId);
+    const quotePricePromise = cachedFetchTokenPrice(quoteTokenAddress, chainId);
 
     const DEFAULT_DECIMALS = 18;
     const baseTokenDecimals =

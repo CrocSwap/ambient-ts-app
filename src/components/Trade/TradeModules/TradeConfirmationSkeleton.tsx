@@ -137,7 +137,6 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                 flexDirection='column'
                 padding='16px'
                 gap={8}
-                background='dark1'
                 aria-label='Transaction Confirmation modal'
             >
                 {type === 'Swap' || type === 'Limit'

@@ -19,12 +19,13 @@
 }
 
 .modal_body {
+   
     border: solid 1px transparent;
     background-image: linear-gradient(
             rgba(189, 27, 27, 0),
             rgba(255, 255, 255, 0)
         ),
-        linear-gradient(101deg, var(--accent1), var(--accent5), var(--accent1));
+        linear-gradient(101deg, var(--accent1), var(--accent1), var(--accent1));
     background-origin: border-box;
     background-clip: content-box, border-box;
     box-shadow: 2px 1000px 1px var(--dark1) inset;
@@ -40,6 +41,10 @@
     color: var(--text1);
 
     /* min-height: 80vh; */
+}
+
+.box_shadow{
+    box-shadow: var(--gradient-box-shadow);
 }
 
 .no_background_modal {
@@ -68,8 +73,11 @@
 
 .modal_content {
     /* padding: 20px; */
-    background: var(--dark1);
+   
     border-radius: var(--border-radius);
+   
+   
+    
 
     /* min-height: 250px; */
 }
@@ -85,5 +93,6 @@
 @media only screen and (min-width: 500px) {
     .modal_body {
         min-width: 400px;
+       
     }
 }

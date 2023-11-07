@@ -10,6 +10,7 @@ interface propsIF {
     thin?: boolean;
     black?: boolean;
     width?: string;
+    style?: React.CSSProperties;
 }
 
 export default function Button(props: propsIF) {
@@ -21,6 +22,7 @@ export default function Button(props: propsIF) {
         flat,
         customAriaLabel,
         width,
+        style,
         thin,
     } = props;
 
@@ -32,7 +34,10 @@ export default function Button(props: propsIF) {
     return (
         <ButtonBase
             id={idForDOM}
-            style={thin ? { height: '28px', width: '156px', padding: 0 } : {}}
+            style={{
+                ...(thin ? { height: '28px', width: '156px', padding: 0 } : {}),
+                ...style, // Merge with style prop
+            }}
             onClick={action}
             disabled={disabled}
             aria-label={ariaLabelToDisplay}
