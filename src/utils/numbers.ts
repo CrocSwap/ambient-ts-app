@@ -1,4 +1,6 @@
 import numbro from 'numbro';
+import { getFormattedNumber } from '../App/functions/getFormattedNumber';
+import { TokenIF } from './interfaces/TokenIF';
 
 // using a currency library here in case we want to add more in future
 export const formatDollarAmount = (
@@ -63,10 +65,10 @@ export const formatPoolPriceAxis = (
         return '<0.001';
     }
 
-    return num > 99999
+    return num > 99999 || num < 1
         ? numbro(num).format({
               average: true,
-              mantissa: 2,
+              mantissa: num < 1 ? 5 : 2,
               // mantissa: num > 1000 ? 2 : num < 100 ? 5 : digits,
               abbreviations: {
                   million: 'M',
@@ -169,4 +171,21 @@ export const formatAmountOld = (num: number | undefined, digits = 1) => {
             billion: 'B',
         },
     });
+};
+
+export const formatTokenInput = (
+    value: string,
+    token: TokenIF,
+    shouldTruncate = false,
+) => {
+    const inputStr = value.replaceAll(',', '');
+    if (!inputStr) return '';
+    if (!shouldTruncate)
+        return getFormattedNumber({
+            value: inputStr ? +inputStr : undefined,
+            isToken: true,
+            nullDisplay: '',
+        });
+
+    return (+inputStr).toFixed(token.decimals);
 };

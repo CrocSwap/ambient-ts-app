@@ -8,10 +8,8 @@ import {
     memoizeFetchContractDetails,
 } from '../App/functions/fetchContractDetails';
 import {
-    nativeTokenBalanceFn,
-    Erc20TokenBalanceFn,
-    memoizeFetchNativeTokenBalance,
-    memoizeFetchErc20TokenBalances,
+    TokenBalancesQueryFn,
+    memoizeFetchTokenBalances,
 } from '../App/functions/fetchTokenBalances';
 import {
     TokenPriceFn,
@@ -22,15 +20,19 @@ import {
     SpotPriceFn,
     memoizeQuerySpotPrice,
 } from '../App/functions/querySpotPrice';
+import {
+    FetchBlockTimeFn,
+    memoizeFetchBlockTime,
+} from '../App/functions/fetchBlockTime';
 
 interface CachedDataIF {
-    cachedFetchNativeTokenBalance: nativeTokenBalanceFn;
-    cachedFetchErc20TokenBalances: Erc20TokenBalanceFn;
+    cachedFetchTokenBalances: TokenBalancesQueryFn;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedPoolStatsFetch: PoolStatsFn;
     cachedQuerySpotPrice: SpotPriceFn;
     cachedTokenDetails: FetchContractDetailsFn;
     cachedEnsResolve: FetchAddrFn;
+    cachedFetchBlockTime: FetchBlockTimeFn;
 }
 
 export const CachedDataContext = createContext<CachedDataIF>(
@@ -42,13 +44,13 @@ export const CachedDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const cachedDataState = {
-        cachedFetchNativeTokenBalance: memoizeFetchNativeTokenBalance(),
-        cachedFetchErc20TokenBalances: memoizeFetchErc20TokenBalances(),
+        cachedFetchTokenBalances: memoizeFetchTokenBalances(),
         cachedFetchTokenPrice: memoizeTokenPrice(),
         cachedPoolStatsFetch: memoizePoolStats(),
         cachedQuerySpotPrice: memoizeQuerySpotPrice(),
         cachedTokenDetails: memoizeFetchContractDetails(),
         cachedEnsResolve: memoizeFetchEnsAddress(),
+        cachedFetchBlockTime: memoizeFetchBlockTime(),
     };
 
     return (

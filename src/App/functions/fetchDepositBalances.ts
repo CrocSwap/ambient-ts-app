@@ -1,5 +1,5 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { GRAPHCACHE_SMALL_URL } from '../../constants';
+import { GCGO_OVERRIDE_URL } from '../../constants';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { IDepositedTokenBalance } from './fetchTokenBalances';
 
@@ -7,6 +7,7 @@ interface IFetchDepositBalancesProps {
     chainId: string;
     user: string;
     crocEnv: CrocEnv;
+    graphCacheUrl: string;
     cachedTokenDetails: FetchContractDetailsFn;
 }
 
@@ -15,8 +16,9 @@ export async function fetchDepositBalances(
 ): Promise<undefined | IDepositedTokenBalance[]> {
     const { chainId, user } = props;
 
-    const depositBalancesCacheEndpoint =
-        GRAPHCACHE_SMALL_URL + '/user_balance_tokens?';
+    const depositBalancesCacheEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/user_balance_tokens?'
+        : props.graphCacheUrl + '/user_balance_tokens?';
 
     return fetch(
         depositBalancesCacheEndpoint +
@@ -53,13 +55,11 @@ async function expandTokenBalance(
     const symbol = details.then((d) => d?.symbol || '');
     const decimals = props.crocEnv.token(token).decimals;
     const balance = props.crocEnv.token(token).balance(props.user);
-    const balanceDisp = props.crocEnv.token(token).balanceDisplay(props.user);
 
     return {
         token: token,
         symbol: await symbol,
         decimals: await decimals,
         balance: (await balance).toString(),
-        balanceDecimalCorrected: parseFloat(await balanceDisp),
     };
 }

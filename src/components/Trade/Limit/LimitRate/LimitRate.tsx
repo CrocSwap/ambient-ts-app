@@ -1,17 +1,24 @@
-import styles from './LimitRate.module.css';
 import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import { setLimitTick } from '../../../../utils/state/tradeDataSlice';
 import { pinTickLower, pinTickUpper } from '@crocswap-libs/sdk';
-import { Dispatch, SetStateAction, useContext } from 'react';
+import { ChangeEvent, Dispatch, SetStateAction, useContext } from 'react';
 import { HiPlus, HiMinus } from 'react-icons/hi';
 import { IS_LOCAL_ENV } from '../../../../constants';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import removeLeadingZeros from '../../../../utils/functions/removeLeadingZeros';
+import { useSimulatedIsPoolInitialized } from '../../../../App/hooks/useSimulatedIsPoolInitialized';
+import { updatesIF } from '../../../../utils/hooks/useUrlParams';
+import { FlexContainer } from '../../../../styled/Common';
+import {
+    LimitRateButton,
+    LimitRateButtonContainer,
+    TokenQuantityInput,
+} from '../../../../styled/Components/TradeModules';
 
 interface propsIF {
     previousDisplayPrice: string;
@@ -22,6 +29,7 @@ interface propsIF {
     fieldId: string;
     isSellTokenBase: boolean;
     disable?: boolean;
+    updateURL: (changes: updatesIF) => void;
 }
 
 export default function LimitRate(props: propsIF) {
@@ -33,6 +41,7 @@ export default function LimitRate(props: propsIF) {
         setPriceInputFieldBlurred,
         fieldId,
         disable,
+        updateURL,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -43,20 +52,25 @@ export default function LimitRate(props: propsIF) {
     const { showOrderPulseAnimation } = useContext(TradeTableContext);
 
     const tradeData = useAppSelector((state) => state.tradeData);
+    const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const isDenomBase: boolean = tradeData.isDenomBase;
     const limitTick: number | undefined = tradeData.limitTick;
 
     const increaseTick = (): void => {
-        if (limitTick) {
-            dispatch(setLimitTick(limitTick + gridSize));
+        if (limitTick !== undefined) {
+            const newLimitTick: number = limitTick + gridSize;
+            dispatch(setLimitTick(newLimitTick));
+            updateURL({ update: [['limitTick', newLimitTick]] });
             setPriceInputFieldBlurred(true);
         }
     };
 
     const decreaseTick = (): void => {
-        if (limitTick) {
-            dispatch(setLimitTick(limitTick - gridSize));
+        if (limitTick !== undefined) {
+            const newLimitTick: number = limitTick - gridSize;
+            dispatch(setLimitTick(newLimitTick));
+            updateURL({ update: [['limitTick', newLimitTick]] });
             setPriceInputFieldBlurred(true);
         }
     };
@@ -72,8 +86,8 @@ export default function LimitRate(props: propsIF) {
                 const pinnedTick: number = isSellTokenBase
                     ? pinTickLower(limit, gridSize)
                     : pinTickUpper(limit, gridSize);
-
                 dispatch(setLimitTick(pinnedTick));
+                updateURL({ update: [['limitTick', pinnedTick]] });
             }
         }
     };
@@ -82,7 +96,7 @@ export default function LimitRate(props: propsIF) {
 
     const handleOnBlur = async (input: string) => {
         let newDisplayPrice = removeLeadingZeros(input.replaceAll(',', ''));
-        if (input.startsWith('.')) newDisplayPrice = `0.${input}`;
+        if (input.startsWith('.')) newDisplayPrice = `0${input}`;
 
         if (newDisplayPrice !== previousDisplayPrice) {
             await handleLimitChange(newDisplayPrice);
@@ -91,25 +105,29 @@ export default function LimitRate(props: propsIF) {
     };
 
     return (
-        <div
-            className={`${styles.swapbox} ${
-                showOrderPulseAnimation && styles.pulse_animation
-            }`}
-        >
-            <span
-                className={styles.direction}
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    height: '19px',
-                }}
+        <FlexContainer flexDirection='column' gap={4}>
+            <FlexContainer
+                alignItems='center'
+                justifyContent='space-between'
+                fontSize='body'
+                color='text2'
             >
                 <p>Price</p>
-            </span>
-            <div className={styles.swap_input} id='limit_rate'>
-                <div className={styles.token_amount}>
-                    <input
+            </FlexContainer>
+            <FlexContainer
+                animation={showOrderPulseAnimation ? 'pulse' : ''}
+                fullWidth
+                justifyContent='space-between'
+                alignItems='center'
+                gap={4}
+                id='limit_rate'
+            >
+                <FlexContainer
+                    fullWidth
+                    background='dark2'
+                    style={{ borderRadius: 'var(--border-radius)' }}
+                >
+                    <TokenQuantityInput
                         id={`${fieldId}-quantity`}
                         onFocus={() => {
                             const limitRateInputField = document.getElementById(
@@ -118,11 +136,22 @@ export default function LimitRate(props: propsIF) {
 
                             (limitRateInputField as HTMLInputElement).select();
                         }}
-                        onChange={(e) => handleOnChange(e.target.value)}
-                        className={styles.currency_quantity}
-                        placeholder='0.0'
-                        onBlur={(e) => handleOnBlur(e.target.value)}
-                        value={displayPrice === 'NaN' ? '...' : displayPrice}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                            handleOnChange(e.target.value)
+                        }
+                        placeholder={
+                            !isPoolInitialized ? 'Pool not initialized' : '0.0'
+                        }
+                        onBlur={(e: ChangeEvent<HTMLInputElement>) =>
+                            handleOnBlur(e.target.value)
+                        }
+                        value={
+                            !isPoolInitialized
+                                ? 'Pool not initialized'
+                                : displayPrice === 'NaN'
+                                ? '...'
+                                : displayPrice
+                        }
                         type='number'
                         step='any'
                         inputMode='decimal'
@@ -130,29 +159,35 @@ export default function LimitRate(props: propsIF) {
                         autoCorrect='off'
                         min='0'
                         minLength={1}
-                        disabled={disable}
+                        disabled={disable || !isPoolInitialized}
                         tabIndex={0}
                         aria-label='Limit Price.'
                         aria-live='polite'
                         aria-atomic='true'
                         aria-relevant='all'
                     />
-                </div>
-                <div className={styles.button_controls}>
-                    <button
+                </FlexContainer>
+                <LimitRateButtonContainer
+                    flexDirection='column'
+                    justifyContent='center'
+                    alignItems='center'
+                    background='dark2'
+                    disabled={!isPoolInitialized}
+                >
+                    <LimitRateButton
                         onClick={!isDenomBase ? increaseTick : decreaseTick}
                         aria-label='Increase limit tick.'
                     >
                         <HiPlus />
-                    </button>
-                    <button
+                    </LimitRateButton>
+                    <LimitRateButton
                         onClick={!isDenomBase ? decreaseTick : increaseTick}
                         aria-label='Decrease limit tick.'
                     >
                         <HiMinus />
-                    </button>
-                </div>
-            </div>
-        </div>
+                    </LimitRateButton>
+                </LimitRateButtonContainer>
+            </FlexContainer>
+        </FlexContainer>
     );
 }

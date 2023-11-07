@@ -8,8 +8,8 @@
 .settings_icon {
     margin: 0.5rem 0 0.5rem 1rem;
     cursor: pointer;
-    height: 30px;
-    width: 30px;
+    /* height: 30px;
+    width: 30px; */
 }
 
 .close_icon {

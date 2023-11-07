@@ -1,6 +1,6 @@
 .token_info {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(18ch, 2fr) 3fr;
     width: 100%;
     align-items: center;
     color: var(--text1);
@@ -20,25 +20,24 @@
     height: 48px;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: rgba(235, 235, 255, 0.4);
+    color: var(--text2);
     padding: 0 4px;
     border-radius: var(--border-radius);
 }
 
 .exchange_row:hover {
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
     background: var(--dark2);
     cursor: default;
 }
 
 .token_key,
 .amount {
-    font-weight: 200;
-    font-size: 18px;
+    font-weight: 300;
+    font-size: var(--header2-size);
     line-height: 22px;
     letter-spacing: -0.02em;
     color: var(--text1);
-
 }
 
 .value,
@@ -46,10 +45,4 @@
     display: flex;
     justify-content: flex-end;
     color: var(--text1);
-}
-
-@media only screen and (min-width: 768px) {
-    .token_info {
-        width: 50%;
-    }
 }

@@ -1,9 +1,15 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, {
+    createContext,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import { useAccount } from 'wagmi';
 import { usePoolMetadata } from '../App/hooks/usePoolMetadata';
 import { useTokenPairAllowance } from '../App/hooks/useTokenPairAllowance';
-import { IS_LOCAL_ENV } from '../constants';
-import { useAppSelector } from '../utils/hooks/reduxToolkit';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../constants';
+import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
@@ -11,11 +17,13 @@ import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { RangeContext } from './RangeContext';
 import { TokenContext } from './TokenContext';
+import { setTokenBalance } from '../utils/state/userDataSlice';
+import { toDisplayQty } from '@crocswap-libs/sdk';
+import { BigNumber } from 'ethers';
 
 interface TradeTokenContextIF {
     baseToken: {
         address: string;
-        mainnetAddress: string;
         balance: string;
         setBalance: (val: string) => void;
         dexBalance: string;
@@ -24,18 +32,24 @@ interface TradeTokenContextIF {
     };
     quoteToken: {
         address: string;
-        mainnetAddress: string;
         balance: string;
         setBalance: (val: string) => void;
         dexBalance: string;
         setDexBalance: (val: string) => void;
         decimals: number;
     };
+    tokenABalance: string;
+    tokenBBalance: string;
+    tokenADexBalance: string;
+    tokenBDexBalance: string;
+    isTokenAEth: boolean;
+    isTokenBEth: boolean;
     tokenAAllowance: string;
     tokenBAllowance: string;
     setRecheckTokenAApproval: (val: boolean) => void;
     setRecheckTokenBApproval: (val: boolean) => void;
     isTokenABase: boolean;
+    rtkMatchesParams: boolean;
 }
 
 export const TradeTokenContext = createContext<TradeTokenContextIF>(
@@ -54,13 +68,15 @@ export const TradeTokenContextProvider = (props: {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const { crocEnv, chainData } = useContext(CrocEnvContext);
+    const { crocEnv, chainData, provider, activeNetwork } =
+        useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { isEnabled: isChartEnabled } = useContext(ChartContext);
     const { setSimpleRangeWidth } = useContext(RangeContext);
     const { tokens } = useContext(TokenContext);
 
     const { tradeData, receiptData } = useAppSelector((state) => state);
+    const dispatchRTK = useAppDispatch();
     const { address: userAddress, isConnected } = useAccount();
     const {
         tokenAAllowance,
@@ -76,13 +92,14 @@ export const TradeTokenContextProvider = (props: {
     const {
         baseTokenAddress,
         quoteTokenAddress,
-        mainnetBaseTokenAddress,
-        mainnetQuoteTokenAddress,
         baseTokenDecimals,
         quoteTokenDecimals,
         isTokenABase,
+        rtkMatchesParams,
     } = usePoolMetadata({
         crocEnv,
+        graphCacheUrl: activeNetwork.graphCacheUrl,
+        provider,
         pathname: location.pathname,
         chainData,
         userAddress,
@@ -103,11 +120,48 @@ export const TradeTokenContextProvider = (props: {
     const [baseTokenDexBalance, setBaseTokenDexBalance] = useState<string>('');
     const [quoteTokenDexBalance, setQuoteTokenDexBalance] =
         useState<string>('');
+    const {
+        tokenABalance,
+        tokenBBalance,
+        tokenADexBalance,
+        tokenBDexBalance,
+        isTokenAEth,
+        isTokenBEth,
+    } = useMemo(() => {
+        const tokenABalance = isTokenABase
+            ? baseTokenBalance
+            : quoteTokenBalance;
+        const tokenBBalance = isTokenABase
+            ? quoteTokenBalance
+            : baseTokenBalance;
+        const tokenADexBalance = isTokenABase
+            ? baseTokenDexBalance
+            : quoteTokenDexBalance;
+        const tokenBDexBalance = isTokenABase
+            ? quoteTokenDexBalance
+            : baseTokenDexBalance;
+
+        const isTokenAEth = tradeData.tokenA.address === ZERO_ADDRESS;
+        const isTokenBEth = tradeData.tokenB.address === ZERO_ADDRESS;
+        return {
+            tokenABalance,
+            tokenBBalance,
+            tokenADexBalance,
+            tokenBDexBalance,
+            isTokenAEth,
+            isTokenBEth,
+        };
+    }, [
+        isTokenABase,
+        baseTokenBalance,
+        quoteTokenBalance,
+        tradeData.tokenA,
+        tradeData.tokenB,
+    ]);
 
     const tradeTokenContext = {
         baseToken: {
             address: baseTokenAddress,
-            mainnetAddress: mainnetBaseTokenAddress,
             balance: baseTokenBalance,
             setBalance: setBaseTokenBalance,
             dexBalance: baseTokenDexBalance,
@@ -116,18 +170,24 @@ export const TradeTokenContextProvider = (props: {
         },
         quoteToken: {
             address: quoteTokenAddress,
-            mainnetAddress: mainnetQuoteTokenAddress,
             balance: quoteTokenBalance,
             setBalance: setQuoteTokenBalance,
             dexBalance: quoteTokenDexBalance,
             setDexBalance: setQuoteTokenDexBalance,
             decimals: quoteTokenDecimals,
         },
+        tokenABalance,
+        tokenBBalance,
+        tokenADexBalance,
+        tokenBDexBalance,
+        isTokenAEth,
+        isTokenBEth,
         tokenAAllowance,
         tokenBAllowance,
         setRecheckTokenAApproval,
         setRecheckTokenBApproval,
         isTokenABase,
+        rtkMatchesParams,
     };
 
     // useEffect to update selected token balances
@@ -138,53 +198,95 @@ export const TradeTokenContextProvider = (props: {
                 userAddress &&
                 isConnected &&
                 tradeData.baseToken.address &&
-                tradeData.quoteToken.address
+                tradeData.quoteToken.address &&
+                baseTokenDecimals &&
+                quoteTokenDecimals
             ) {
                 crocEnv
                     .token(tradeData.baseToken.address)
-                    .walletDisplay(userAddress)
-                    .then((bal: string) => {
-                        if (bal !== baseTokenBalance) {
+                    .wallet(userAddress)
+                    .then((bal: BigNumber) => {
+                        const displayBalance = toDisplayQty(
+                            bal,
+                            baseTokenDecimals,
+                        );
+                        if (displayBalance !== baseTokenBalance) {
                             IS_LOCAL_ENV &&
                                 console.debug(
                                     'setting base token wallet balance',
                                 );
-                            setBaseTokenBalance(bal);
+                            setBaseTokenBalance(displayBalance);
+                            dispatchRTK(
+                                setTokenBalance({
+                                    tokenAddress: tradeData.baseToken.address,
+                                    walletBalance: bal.toString(),
+                                }),
+                            );
                         }
                     })
                     .catch(console.error);
                 crocEnv
                     .token(tradeData.baseToken.address)
-                    .balanceDisplay(userAddress)
-                    .then((bal: string) => {
-                        if (bal !== baseTokenDexBalance) {
+                    .balance(userAddress)
+                    .then((bal: BigNumber) => {
+                        const displayBalance = toDisplayQty(
+                            bal,
+                            baseTokenDecimals,
+                        );
+                        if (displayBalance !== baseTokenDexBalance) {
                             IS_LOCAL_ENV &&
                                 console.debug('setting base token dex balance');
-                            setBaseTokenDexBalance(bal);
+                            setBaseTokenDexBalance(displayBalance);
+                            dispatchRTK(
+                                setTokenBalance({
+                                    tokenAddress: tradeData.baseToken.address,
+                                    dexBalance: bal.toString(),
+                                }),
+                            );
                         }
                     })
                     .catch(console.error);
                 crocEnv
                     .token(tradeData.quoteToken.address)
-                    .walletDisplay(userAddress)
-                    .then((bal: string) => {
-                        if (bal !== quoteTokenBalance) {
+                    .wallet(userAddress)
+                    .then((bal: BigNumber) => {
+                        const displayBalance = toDisplayQty(
+                            bal,
+                            quoteTokenDecimals,
+                        );
+                        if (displayBalance !== quoteTokenBalance) {
                             IS_LOCAL_ENV &&
                                 console.debug('setting quote token balance');
-                            setQuoteTokenBalance(bal);
+                            setQuoteTokenBalance(displayBalance);
+                            dispatchRTK(
+                                setTokenBalance({
+                                    tokenAddress: tradeData.quoteToken.address,
+                                    walletBalance: bal.toString(),
+                                }),
+                            );
                         }
                     })
                     .catch(console.error);
                 crocEnv
                     .token(tradeData.quoteToken.address)
-                    .balanceDisplay(userAddress)
-                    .then((bal: string) => {
-                        if (bal !== quoteTokenDexBalance) {
+                    .balance(userAddress)
+                    .then((bal: BigNumber) => {
+                        const displayBalance = toDisplayQty(
+                            bal,
+                            quoteTokenDecimals,
+                        );
+                        if (displayBalance !== quoteTokenDexBalance) {
                             IS_LOCAL_ENV &&
                                 console.debug(
                                     'setting quote token dex balance',
                                 );
-                            setQuoteTokenDexBalance(bal);
+                            setQuoteTokenDexBalance(displayBalance);
+                            dispatchRTK(
+                                setTokenBalance({
+                                    tokenAddress: tradeData.quoteToken.address,
+                                    dexBalance: bal.toString(),
+                                }),
+                            );
                         }
                     })
                     .catch(console.error);
@@ -197,6 +299,8 @@ export const TradeTokenContextProvider = (props: {
         tradeData.baseToken.address,
         tradeData.quoteToken.address,
         lastBlockNumber,
+        baseTokenDecimals,
+        quoteTokenDecimals,
     ]);
 
     return (

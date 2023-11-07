@@ -3,7 +3,7 @@
     /* flex-flow: row nowrap; */
     align-items: center;
     padding: 2px 8px;
-    color: rgba(235, 235, 255, 0.4);
+    color: var(--text2);
 }
 
 .arrow_placeholder {
@@ -27,7 +27,7 @@ OLD STUFF BELOW!!!!
     grid-template-columns: auto 50px;
     align-items: center;
 
-    font-size: 10px;
+    font-size: var(--mini-size);
     padding-bottom: 4px;
     border-bottom: 1px solid var(--dark2);
 }
@@ -46,7 +46,7 @@ OLD STUFF BELOW!!!!
     padding: 2px 8px;
     /* font-size: var(--body-size);
     line-height: var(--body-lh); */
-    color: rgba(235, 235, 255, 0.4);
+    color: var(--text2);
 }
 
 .wallet,
@@ -71,8 +71,8 @@ OLD STUFF BELOW!!!!
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    font-size: 10px;
-    color: rgba(235, 235, 255, 0.4);
+    font-size: var(--mini-size);
+    color: var(--text2);
     padding: 0 0.5rem;
 }
 .mobile_header_content {
@@ -128,7 +128,7 @@ OLD STUFF BELOW!!!!
         grid-template-columns: auto 100px;
         align-items: center;
 
-        font-size: 10px;
+        font-size: var(--mini-size);
 
         padding-bottom: 4px;
         border-bottom: 1px solid var(--dark2);

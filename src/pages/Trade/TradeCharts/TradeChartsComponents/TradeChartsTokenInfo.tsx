@@ -1,4 +1,3 @@
-import styles from './TradeChartsTokenInfo.module.css';
 import { NoColorTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
 import {
     useAppSelector,
@@ -14,13 +13,11 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { TokenIF } from '../../../../utils/interfaces/exports';
+import { FlexContainer } from '../../../../styled/Common';
+import { HeaderButtons, HeaderText } from '../../../../styled/Components/Chart';
 
-interface propsIF {
-    simplifyVersion?: boolean;
-}
-
-function TradeChartsTokenInfo(props: propsIF) {
-    const { simplifyVersion } = props;
+function TradeChartsTokenInfo() {
     const dispatch = useAppDispatch();
 
     const { tradeData } = useAppSelector((state) => state);
@@ -36,19 +33,9 @@ function TradeChartsTokenInfo(props: propsIF) {
 
     const denomInBase = tradeData.isDenomBase;
 
-    const topTokenLogo = denomInBase
-        ? tradeData.baseToken.logoURI
-        : tradeData.quoteToken.logoURI;
-    const bottomTokenLogo = denomInBase
-        ? tradeData.quoteToken.logoURI
-        : tradeData.baseToken.logoURI;
-
-    const topTokenSymbol = denomInBase
-        ? tradeData.baseToken.symbol
-        : tradeData.quoteToken.symbol;
-    const bottomTokenSymbol = denomInBase
-        ? tradeData.quoteToken.symbol
-        : tradeData.baseToken.symbol;
+    const [topToken, bottomToken]: [TokenIF, TokenIF] = denomInBase
+        ? [tradeData.baseToken, tradeData.quoteToken]
+        : [tradeData.quoteToken, tradeData.baseToken];
 
     const currencyCharacter = denomInBase
         ? // denom in a, return token b character
@@ -79,7 +66,6 @@ function TradeChartsTokenInfo(props: propsIF) {
     const currentAmountDisplay = (
         <span
             onClick={() => dispatch(toggleDidUserFlipDenom())}
-            className={styles.amount}
             style={{ cursor: 'pointer' }}
             aria-label={poolPrice}
         >
@@ -94,7 +80,7 @@ function TradeChartsTokenInfo(props: propsIF) {
         <NoColorTooltip
             title={'24 hour price change'}
             interactive
-            placement={simplifyVersion ? 'left' : 'right'}
+            placement='right'
             arrow
             enterDelay={400}
             leaveDelay={200}
@@ -151,8 +137,7 @@ function TradeChartsTokenInfo(props: propsIF) {
     }
 
     const favButton = (
-        <button
-            className={styles.favorite_button}
+        <HeaderButtons
             onClick={handleFavButton}
             id='trade_fav_button'
             role='button'
@@ -192,60 +177,51 @@ function TradeChartsTokenInfo(props: propsIF) {
                     </defs>
                 </svg>
             }
-        </button>
+        </HeaderButtons>
     );
 
     const denomToggleButton = (
-        <button
-            className={styles.denom_toggle_button}
+        <HeaderButtons
             aria-label='flip denomination.'
             onClick={() => dispatch(toggleDidUserFlipDenom())}
         >
-            <div className={styles.tokens_images} id='trade_token_pair'>
+            <FlexContainer id='trade_token_pair' role='button' gap={4}>
                 <TokenIcon
-                    src={topTokenLogo}
-                    alt={topTokenSymbol}
+                    token={topToken}
+                    src={topToken.logoURI}
+                    alt={topToken.symbol}
                     size={smallScrenView ? 's' : 'l'}
                 />
                 <TokenIcon
-                    src={bottomTokenLogo}
-                    alt={bottomTokenSymbol}
+                    token={bottomToken}
+                    src={bottomToken.logoURI}
+                    alt={bottomToken.symbol}
                     size={smallScrenView ? 's' : 'l'}
                 />
-            </div>
-            <div
-                className={styles.tokens_name}
+            </FlexContainer>
+            <HeaderText
+                fontSize='header1'
+                fontWeight='300'
+                color='text1'
+                role='button'
                 aria-live='polite'
                 aria-atomic='true'
                 aria-relevant='all'
             >
-                {topTokenSymbol} / {bottomTokenSymbol}
-            </div>
-        </button>
+                {topToken.symbol} / {bottomToken.symbol}
+            </HeaderText>
+        </HeaderButtons>
     );
 
     // end of fav button-------------------------------
 
-    const simpleHeaderDisplay = (
-        <div className={styles.tokens_info_simplify}>
-            <div className={styles.tokens_info_simplify_content}>
-                {favButton}
-                {denomToggleButton}
-                {currentAmountDisplay}
-                {poolPriceChange}
-            </div>
-        </div>
-    );
-
-    if (simplifyVersion) return simpleHeaderDisplay;
-
     return (
-        <div className={styles.tokens_info}>
+        <FlexContainer alignItems='center' gap={16}>
             {favButton}
             {denomToggleButton}
             {currentAmountDisplay}
             {poolPriceChange}
-        </div>
+        </FlexContainer>
     );
 }
 

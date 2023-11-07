@@ -8,9 +8,12 @@ import {
 import { fetchPoolList } from '../functions/fetchPoolList';
 import { TokenContext } from '../../contexts/TokenContext';
 
-export const usePoolList = (crocEnv?: CrocEnv): PoolIF[] => {
+export const usePoolList = (
+    graphCacheUrl: string,
+    crocEnv?: CrocEnv,
+): PoolIF[] => {
     const {
-        tokens: { verifyToken, getTokenByAddress, tokenUniv },
+        tokens: { verify, getTokenByAddress, tokenUniv },
     } = useContext(TokenContext);
 
     const [poolList, setPoolList] = useState<PoolIF[]>([]);
@@ -20,14 +23,16 @@ export const usePoolList = (crocEnv?: CrocEnv): PoolIF[] => {
             return undefined;
         }
 
-        const pools: Promise<GCServerPoolIF[]> = fetchPoolList(crocEnv);
+        const pools: Promise<GCServerPoolIF[]> = fetchPoolList(
+            crocEnv,
+            graphCacheUrl,
+        );
         Promise.resolve<GCServerPoolIF[]>(pools)
             .then((res: GCServerPoolIF[]) => {
                 return res
                     .filter(
                         (result: GCServerPoolIF) =>
-                            verifyToken(result.base) &&
-                            verifyToken(result.quote),
+                            verify(result.base) && verify(result.quote),
                     )
                     .map((result: GCServerPoolIF) => {
                         const baseToken: TokenIF | undefined =

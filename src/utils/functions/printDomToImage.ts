@@ -4,12 +4,12 @@ const printDomToImage = async (
     node: HTMLElement,
     background?: string,
     additionalStyles?: Partial<CSSStyleDeclaration>,
+    height?: number,
 ) => {
     const scale = 2;
-
     try {
         const blob = await domToBlob(node, {
-            height: node.offsetHeight * scale,
+            height: (height || node.offsetHeight) * scale,
             width: node.offsetWidth * scale,
             backgroundColor: background,
             style: {

@@ -5,7 +5,7 @@
     align-items: center;
     justify-content: space-between;
     position: relative;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
     background: transparent;
     outline: none;
     border: none;
@@ -31,7 +31,7 @@
     align-items: center;
     padding: 10.5px 5px;
     border-radius: var(--border-radius);
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 }
 
 .left_side_container {
@@ -46,7 +46,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 }
 
 .close_icon_svg:hover {
@@ -57,14 +57,14 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
     cursor: pointer;
     gap: 1rem;
 }
 
 .star_svg {
     cursor: pointer;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 }
 
 .star_svg:hover {
@@ -101,7 +101,7 @@
     background-color: var(--dark2);
     overflow: hidden;
     height: 100%;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -136,7 +136,7 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
     cursor: pointer;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
     padding: 5px 12px;
     border: none;
     border: 1px solid var(--accent5);

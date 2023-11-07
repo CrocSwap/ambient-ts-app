@@ -1,5 +1,4 @@
-import { createContext, useContext, useEffect } from 'react';
-import { fetchTokenLists } from '../App/functions/fetchTokenLists';
+import { createContext, useContext } from 'react';
 import {
     getRecentTokensParamsIF,
     useRecentTokens,
@@ -13,6 +12,7 @@ import { CrocEnvContext } from './CrocEnvContext';
 interface TokenContextIF {
     tokens: tokenMethodsIF;
     outputTokens: TokenIF[];
+    rawInput: string;
     validatedInput: string;
     setInput: (val: string) => void;
     searchType: string;
@@ -25,8 +25,8 @@ export const TokenContext = createContext<TokenContextIF>({} as TokenContextIF);
 
 export const TokenContextProvider = (props: { children: React.ReactNode }) => {
     const { chainData } = useContext(CrocEnvContext);
-    const connectedUserErc20Tokens = useAppSelector(
-        (state) => state.userData.tokens.erc20Tokens,
+    const connectedUserTokens = useAppSelector(
+        (state) => state.userData.tokenBalances,
     );
 
     const tokens: tokenMethodsIF = useTokens(chainData.chainId);
@@ -34,12 +34,13 @@ export const TokenContextProvider = (props: { children: React.ReactNode }) => {
         chainData.chainId,
     );
 
-    const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
-        chainData.chainId,
-        tokens,
-        connectedUserErc20Tokens ?? [],
-        getRecentTokens,
-    );
+    const [outputTokens, validatedInput, setInput, searchType, rawInput] =
+        useTokenSearch(
+            chainData.chainId,
+            tokens,
+            connectedUserTokens ?? [],
+            getRecentTokens,
+        );
 
     const addTokenInfo = (token: TokenIF): TokenIF => {
         const oldToken: TokenIF | undefined = tokens.getTokenByAddress(
@@ -54,6 +55,7 @@ export const TokenContextProvider = (props: { children: React.ReactNode }) => {
     const tokenContext = {
         tokens,
         outputTokens,
+        rawInput,
         validatedInput,
         setInput,
         searchType,
@@ -61,10 +63,6 @@ export const TokenContextProvider = (props: { children: React.ReactNode }) => {
         getRecentTokens,
         addTokenInfo,
     };
-
-    useEffect(() => {
-        fetchTokenLists();
-    }, []);
 
     return (
         <TokenContext.Provider value={tokenContext}>

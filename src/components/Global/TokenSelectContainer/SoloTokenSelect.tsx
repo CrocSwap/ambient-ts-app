@@ -16,28 +16,28 @@ import styles from './SoloTokenSelect.module.css';
 import SoloTokenImport from './SoloTokenImport';
 import { setSoloToken } from '../../../utils/state/soloTokenDataSlice';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { useProvider } from 'wagmi';
 import { ethers } from 'ethers';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { handleWETH } from '../../../utils/data/handleWETH';
-import { ZERO_ADDRESS } from '../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
+import removeWrappedNative from '../../../utils/functions/removeWrappedNative';
+import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
+import { IoIosArrowBack } from 'react-icons/io';
+import { isWethToken } from '../../../utils/data/stablePairs';
 
 interface propsIF {
-    modalCloseCustom: () => void;
-    closeModal: () => void;
     showSoloSelectTokenButtons: boolean;
     setShowSoloSelectTokenButtons: Dispatch<SetStateAction<boolean>>;
     isSingleToken: boolean;
-    tokenAorB: string | null;
+    tokenAorB: 'A' | 'B' | null;
     reverseTokens?: () => void;
+    onClose: () => void;
 }
 
 export const SoloTokenSelect = (props: propsIF) => {
     const {
-        modalCloseCustom,
-        closeModal,
+        onClose,
         setShowSoloSelectTokenButtons,
         showSoloSelectTokenButtons,
         isSingleToken,
@@ -48,10 +48,13 @@ export const SoloTokenSelect = (props: propsIF) => {
     const { cachedTokenDetails } = useContext(CachedDataContext);
     const {
         chainData: { chainId },
+        provider,
     } = useContext(CrocEnvContext);
+
     const {
         tokens,
         outputTokens,
+        rawInput,
         validatedInput,
         setInput,
         searchType,
@@ -61,14 +64,6 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
-    // add an event listener for custom functionalities on modal close
-    // this needs to be coordinated with data in Modal.tsx
-    // later we'll abstract and import functionality to get rid of magic numbers
-    useEffect(
-        () => window.addEventListener('closeModalEvent', modalCloseCustom),
-        [],
-    );
-
     // instance of hook used to retrieve data from RTK
     const dispatch = useAppDispatch();
 
@@ -76,12 +71,10 @@ export const SoloTokenSelect = (props: propsIF) => {
     // no arg ➡ hook will infer destination from current URL path
     const linkGenAny: linkGenMethodsIF = useLinkGen();
 
-    const provider = useProvider();
-
     // fn to respond to a user clicking to select a token
     const chooseToken = (tkn: TokenIF, isCustom: boolean): void => {
         if (isCustom) {
-            tokens.ackToken(tkn);
+            tokens.acknowledge(tkn);
         }
         // dispatch token data object to RTK
         if (isSingleToken) {
@@ -101,8 +94,10 @@ export const SoloTokenSelect = (props: propsIF) => {
 
         if (tokenAorB === 'A') {
             if (tokenB.address.toLowerCase() === tkn.address.toLowerCase()) {
-                reverseTokens && reverseTokens();
-                closeModal();
+                if (reverseTokens) {
+                    reverseTokens();
+                }
+                onClose();
                 return;
             }
             goToNewUrlParams(
@@ -115,8 +110,10 @@ export const SoloTokenSelect = (props: propsIF) => {
             // user is updating token B
         } else if (tokenAorB === 'B') {
             if (tokenA.address.toLowerCase() === tkn.address.toLowerCase()) {
-                reverseTokens && reverseTokens();
-                closeModal();
+                if (reverseTokens) {
+                    reverseTokens();
+                }
+                onClose();
                 return;
             }
             goToNewUrlParams(
@@ -141,7 +138,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         }
         setInput('');
         // close the token modal
-        closeModal();
+        onClose();
     };
 
     // hook to hold data for a token pulled from on-chain
@@ -209,7 +206,7 @@ export const SoloTokenSelect = (props: propsIF) => {
             case 'address':
                 // pathway if input can be validated to a real extant token
                 // can be in `allTokenLists` or in imported tokens list
-                if (tokens.verifyToken(validatedInput)) {
+                if (tokens.verify(validatedInput)) {
                     output = 'token buttons';
                     // pathway if the address cannot be validated to any token in local storage
                 } else {
@@ -236,36 +233,57 @@ export const SoloTokenSelect = (props: propsIF) => {
         }
     }, [contentRouter]);
 
-    const input = document.getElementById(
-        'token_select_input_field',
-    ) as HTMLInputElement;
-    const clearInputField = () => {
-        if (input) input.value = '';
+    const clearInputFieldAndCloseModal = () => {
         setInput('');
-        document.getElementById('token_select_input_field')?.focus();
+        onClose();
     };
+
+    const deviceHasKeyboard = 'ontouchstart' in document.documentElement;
+
+    useEffect(() => {
+        if (deviceHasKeyboard) return;
+
+        const input = document.getElementById(
+            'token_select_input_field',
+        ) as HTMLInputElement;
+        if (input) input.focus();
+    }, [deviceHasKeyboard]);
 
     // arbitrary limit on number of tokens to display in DOM for performance
     const MAX_TOKEN_COUNT = 300;
 
+    const WETH_WARNING = ' Ambient uses Native Ether (ETH) to lower gas costs.';
+
+    const isInit = location.pathname.startsWith('/initpool');
+
     return (
-        <section className={styles.container}>
+        <section
+            className={styles.container}
+            style={{ margin: isInit ? '0 -1rem' : '' }}
+        >
+            <header className={styles.header}>
+                <IoIosArrowBack onClick={clearInputFieldAndCloseModal} />
+                <p>Select Token</p>
+                <p />
+            </header>
             <div className={styles.input_control_container}>
                 <input
                     id='token_select_input_field'
                     spellCheck='false'
                     type='text'
-                    placeholder=' Search name or enter an Address'
+                    value={rawInput}
                     onChange={(e) => setInput(e.target.value)}
+                    placeholder=' Search name or paste address'
                     style={{
                         color: showSoloSelectTokenButtons
                             ? 'var(--text2)'
                             : 'var(--text3)',
                     }}
                 />
-                {input?.value && (
+                {validatedInput && (
                     <button
-                        onClick={clearInputField}
+                        className={styles.clearButton}
+                        onClick={() => setInput('')}
                         aria-label='Clear input'
                         tabIndex={0}
                     >
@@ -273,10 +291,36 @@ export const SoloTokenSelect = (props: propsIF) => {
                     </button>
                 )}
             </div>
-            {handleWETH.check(validatedInput) && (
-                <p className={styles.weth_text}>{handleWETH.message}</p>
-            )}
-            {handleWETH.check(validatedInput) &&
+            <div style={{ padding: '1rem' }}>
+                {isWethToken(validatedInput) && (
+                    <WarningBox
+                        title=''
+                        details={WETH_WARNING}
+                        noBackground
+                        button={
+                            <button
+                                onClick={() => {
+                                    try {
+                                        const wethToken =
+                                            tokens.getTokenByAddress(
+                                                validatedInput,
+                                            );
+                                        if (wethToken) {
+                                            chooseToken(wethToken, false);
+                                        }
+                                    } catch (err) {
+                                        IS_LOCAL_ENV && console.warn(err);
+                                        onClose();
+                                    }
+                                }}
+                            >
+                                I understand, use WETH
+                            </button>
+                        }
+                    />
+                )}
+            </div>
+            {isWethToken(validatedInput) &&
                 [tokens.getTokenByAddress(ZERO_ADDRESS) as TokenIF].map(
                     (token: TokenIF) => (
                         <TokenSelect
@@ -289,8 +333,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                 )}
             {showSoloSelectTokenButtons ? (
                 <div className={styles.scrollable_container}>
-                    {' '}
-                    {outputTokens
+                    {removeWrappedNative(chainId, outputTokens)
                         .slice(0, MAX_TOKEN_COUNT)
                         .map((token: TokenIF) => (
                             <TokenSelect

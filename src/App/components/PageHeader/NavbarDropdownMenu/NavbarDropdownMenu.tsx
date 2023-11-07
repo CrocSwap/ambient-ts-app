@@ -1,15 +1,13 @@
 // START: Import React and Dongles
-import { ReactNode, useRef, useEffect, memo } from 'react';
-
-import { motion } from 'framer-motion';
+import { useRef, useEffect, memo, useContext } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { AiFillTwitterCircle } from 'react-icons/ai';
 import { IoDocumentTextSharp } from 'react-icons/io5';
-import { BsBook, BsMedium } from 'react-icons/bs';
+import { BsMedium } from 'react-icons/bs';
+import { SiGitbook } from 'react-icons/si';
+import { RiSpyFill } from 'react-icons/ri';
 import { FaDiscord } from 'react-icons/fa';
-
 import '../../../App.css';
-import styles from './NavbarDropdownMenu.module.css';
 import useKeyPress from '../../../hooks/useKeyPress';
 import { openInNewTab } from '../../../../utils/functions/openInNewTab';
 import {
@@ -19,30 +17,29 @@ import {
     TWITTER_LINK,
 } from '../../../../constants';
 import { useTermsAgreed } from '../../../hooks/useTermsAgreed';
+import { LogoutButton } from '../../../../components/Global/LogoutButton/LogoutButton';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import {
+    NavbarDropdown,
+    Menu,
+    NavbarLogoutContainer,
+} from '../../../../styled/Components/Header';
+import NavbarDropdownItem from './NavbarDropdownItem';
 
-interface NavbarDropdownItemPropsIF {
-    onClick: () => void;
-    children: ReactNode;
-    rightIcon?: ReactNode;
-    isLogoutButton?: boolean;
-}
-
-interface NavbarDropdownMenuPropsIF {
+interface propsIF {
     isUserLoggedIn: boolean | undefined;
     clickLogout: () => void;
     closeMenu?: () => void;
     setIsNavbarMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    openWagmiModal: () => void;
 }
 
-function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
+function NavbarDropdownMenu(props: propsIF) {
+    const { closeMenu, clickLogout, setIsNavbarMenuOpen, isUserLoggedIn } =
+        props;
+
     const {
-        closeMenu,
-        clickLogout,
-        setIsNavbarMenuOpen,
-        openWagmiModal,
-        isUserLoggedIn,
-    } = props;
+        wagmiModal: { open: openWagmiModal },
+    } = useContext(AppStateContext);
 
     const [, , termsUrls] = useTermsAgreed();
 
@@ -56,72 +53,50 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         }
     }, [isEscapePressed]);
 
-    function NavbarDropdownItem(props: NavbarDropdownItemPropsIF) {
-        const topLevelItemStyle = styles.topLevelContainer;
-
-        const logoutStyles = `${styles.navbar_logout}`;
-        const menuItemStyles = `${styles.menu_item} ${topLevelItemStyle}`;
-
-        const buttonStyle = props.isLogoutButton
-            ? logoutStyles
-            : menuItemStyles;
-
-        return (
-            <button
-                className={buttonStyle}
-                onClick={() => props.onClick()}
-                tabIndex={0}
-                role='button'
-            >
-                <span>{props.children}</span>
-                <span className={`${styles.icon_right}`}>
-                    {props.rightIcon}
-                </span>
-            </button>
-        );
-    }
-
     const ariaLabel =
         'You are currently on a focus mode on the main dropdown menu. To enter focus mode, press tab once again.  To exit focus mode, press escape.';
 
-    const closeMenuBar = () => closeMenu && closeMenu();
+    interface navDataIF {
+        icon: JSX.Element;
+        resource: string;
+        text: string;
+    }
 
-    const handleDocsClick = () => {
-        openInNewTab(DOCS_LINK);
-        closeMenuBar();
-    };
-
-    const handleTwitterClick = () => {
-        openInNewTab(TWITTER_LINK);
-        closeMenuBar();
-    };
-
-    const handleDiscordClick = () => {
-        openInNewTab(DISCORD_LINK);
-        closeMenuBar();
-    };
-
-    const handleMediumClick = () => {
-        openInNewTab(MEDIUM_LINK);
-        closeMenuBar();
-    };
-
-    const handleLegalPrivacyClick = () => {
-        openInNewTab(`${window.location.origin}/${termsUrls.privacy}`);
-        closeMenuBar();
-    };
-
-    const handleTOSClick = () => {
-        openInNewTab(`${window.location.origin}/${termsUrls.tos}`);
-        closeMenuBar();
-    };
+    const navData: navDataIF[] = [
+        {
+            icon: <SiGitbook size={20} />,
+            resource: DOCS_LINK,
+            text: 'Docs',
+        },
+        {
+            icon: <AiFillTwitterCircle size={20} />,
+            resource: TWITTER_LINK,
+            text: 'Twitter',
+        },
+        {
+            icon: <FaDiscord size={20} />,
+            resource: DISCORD_LINK,
+            text: 'Discord',
+        },
+        {
+            icon: <BsMedium size={20} />,
+            resource: MEDIUM_LINK,
+            text: 'Medium',
+        },
+        {
+            icon: <RiSpyFill size={20} />,
+            resource: `${window.location.origin}/${termsUrls.privacy}`,
+            text: 'Privacy',
+        },
+        {
+            icon: <IoDocumentTextSharp size={20} />,
+            resource: `${window.location.origin}/${termsUrls.tos}`,
+            text: 'Terms of Service',
+        },
+    ];
 
     return (
-        <div
-            className={styles.dropdown}
-            ref={dropdownRef}
-            aria-label={ariaLabel}
-        >
+        <NavbarDropdown ref={dropdownRef} aria-label={ariaLabel}>
             <CSSTransition
                 in={true}
                 unmountOnExit
@@ -129,74 +104,46 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                 classNames='menu-primary'
             >
                 {/* Menu with each drop down item */}
-                <motion.div
+                <Menu
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5 }}
-                    className={styles.menu}
                     tabIndex={0}
                 >
-                    <NavbarDropdownItem
-                        rightIcon={<BsBook size={18} />}
-                        onClick={handleDocsClick}
-                    >
-                        Docs
-                    </NavbarDropdownItem>
-                    <NavbarDropdownItem
-                        rightIcon={<AiFillTwitterCircle size={20} />}
-                        onClick={handleTwitterClick}
-                    >
-                        Twitter
-                    </NavbarDropdownItem>
-                    <NavbarDropdownItem
-                        rightIcon={<FaDiscord size={20} />}
-                        onClick={handleDiscordClick}
-                    >
-                        Discord
-                    </NavbarDropdownItem>
-                    <NavbarDropdownItem
-                        rightIcon={<BsMedium size={20} />}
-                        onClick={handleMediumClick}
-                    >
-                        Medium
-                    </NavbarDropdownItem>
-                    <NavbarDropdownItem
-                        rightIcon={<IoDocumentTextSharp size={20} />}
-                        onClick={handleLegalPrivacyClick}
-                    >
-                        Privacy
-                    </NavbarDropdownItem>
-                    <NavbarDropdownItem
-                        rightIcon={<IoDocumentTextSharp size={20} />}
-                        onClick={handleTOSClick}
-                    >
-                        Terms of Service
-                    </NavbarDropdownItem>
+                    {navData.map((item: navDataIF) => (
+                        <NavbarDropdownItem
+                            key={item.text}
+                            rightIcon={item.icon}
+                            onClick={() => {
+                                openInNewTab(item.resource);
+                                closeMenu && closeMenu();
+                            }}
+                        >
+                            {item.text}
+                        </NavbarDropdownItem>
+                    ))}
                     {isUserLoggedIn ? (
-                        <div className={`${styles.navbar_logout_container}`}>
-                            <NavbarDropdownItem
-                                isLogoutButton
+                        <NavbarLogoutContainer>
+                            <LogoutButton
                                 onClick={() => {
                                     clickLogout();
-                                    closeMenu ? closeMenu() : null;
+                                    closeMenu && closeMenu();
                                 }}
-                            >
-                                Logout
-                            </NavbarDropdownItem>
-                        </div>
+                            />
+                        </NavbarLogoutContainer>
                     ) : (
-                        <div className={`${styles.navbar_logout_container}`}>
+                        <NavbarLogoutContainer>
                             <NavbarDropdownItem
-                                isLogoutButton
+                                connectButton
                                 onClick={openWagmiModal}
                             >
                                 Connect Wallet
                             </NavbarDropdownItem>
-                        </div>
+                        </NavbarLogoutContainer>
                     )}
-                </motion.div>
+                </Menu>
             </CSSTransition>
-        </div>
+        </NavbarDropdown>
     );
 }
 

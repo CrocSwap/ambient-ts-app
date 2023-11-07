@@ -10,7 +10,7 @@
 .wallet_row p {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: rgba(235, 235, 255, 0.4);
+    color: var(--text2);
     /* text-align: right; */
 
     height: 16px;

@@ -1,1 +1,0 @@
-export { getTxType } from './getTxType';

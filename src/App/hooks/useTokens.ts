@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { tokenListURIs } from '../../utils/data/tokenListURIs';
-import fetchTokenList from '../../utils/functions/fetchTokenList';
 import { TokenIF, TokenListIF } from '../../utils/interfaces/exports';
 import chainNumToString from '../functions/chainNumToString';
 import { defaultTokens } from '../../utils/data/defaultTokens';
+import uriToHttp from '../../utils/functions/uriToHttp';
 
 export interface tokenMethodsIF {
     defaultTokens: TokenIF[];
-    verifyToken: (addr: string) => boolean;
-    ackToken: (tkn: TokenIF) => void;
+    verify: (addr: string) => boolean;
+    acknowledge: (tkn: TokenIF) => void;
     tokenUniv: TokenIF[];
     getTokenByAddress: (addr: string) => TokenIF | undefined;
     getTokensFromList: (uri: string) => TokenIF[];
@@ -56,8 +56,8 @@ function getAckTokensFromLS(): TokenIF[] {
 // Load pre-existing values from local storage, once at beggining of session
 // After this point, we will write updates to local storage, for future sessions
 // but the source os truth will be React state
-const INIT_LIST = getTokenListsFromLS();
-const INIT_ACK = getAckTokensFromLS();
+const INIT_LIST: TokenListIF[] = getTokenListsFromLS();
+const INIT_ACK: TokenIF[] = getAckTokensFromLS();
 
 export const useTokens = (chainId: string): tokenMethodsIF => {
     // Token universe
@@ -71,7 +71,8 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
     const tokenMap = useMemo<Map<string, TokenIF>>(() => {
         const retMap = new Map<string, TokenIF>();
         tokenLists
-            .reverse() // Reverse add, so higher priority lists overwrite lower priority
+            // Reverse add, so higher priority lists overwrite lower priority
+            .reverse()
             .flatMap((tl) => tl.tokens)
             .concat(ackTokens)
             .filter((t) => chainNumToString(t.chainId) === chainId)
@@ -108,6 +109,8 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
         }
     }, [tokenMap.size]);
 
+    // fn to make a deep copy of a token data object
+    // without this we overrwrite token data in local storage in post-processing
     function deepCopyToken(tkn: TokenIF, source: string): TokenIF {
         return {
             address: tkn.address,
@@ -135,33 +138,51 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
     // Load token lists from local storage for fast load, but asynchronously
     // fetch tokens from external URLs and update with latest values
     useEffect(() => {
-        const fetches = Object.values(tokenListURIs).map((uri: string) =>
-            fetchTokenList(uri),
-        );
-
-        Promise.allSettled(fetches)
-            // format returned data into a useful form for the app
-            // 1st val ➡ indicates if second val is a value
-            // 2nd val ➡ value returned by promise
-            .then((promises) =>
-                promises
-                    .flatMap((promise) => Object.entries(promise))
-                    .filter((promise) => promise[0] === 'value')
-                    .map((promise) => promise[1]),
-            )
-            .then((lists: TokenListIF[]) => {
-                lists.forEach((list) => {
-                    list.tokens.forEach(
-                        (token: TokenIF) => (token.fromList = list.uri),
-                    );
-                });
-
-                // Write to local storage to cache for future sessions
+        const fetchAndFormatList = async (
+            uri: string,
+        ): Promise<TokenListIF | undefined> => {
+            // convert URI to an array of queryable endpoints
+            const endpoints: string[] = uriToHttp(uri, 'retry');
+            // logic to query endpoints until a query is successful
+            let rawData;
+            for (let i = 0; i < endpoints.length; i++) {
+                const response = await fetch(endpoints[i]);
+                if (response.ok) {
+                    rawData = await response.json();
+                    break;
+                }
+            }
+            // cease funcationality if no endpoint returned a valid response
+            if (!rawData) return;
+            // format the raw data returned with values used in the Ambient app
+            const output: TokenListIF = {
+                ...rawData,
+                uri,
+                dateRetrieved: new Date().toISOString(),
+                userImported: false,
+                tokens: rawData.tokens.map((tkn: TokenIF) => {
+                    return { ...tkn, fromList: uri };
+                }),
+            };
+            // return formatted token list
+            return output;
+        };
+        // array of promises for fetched token lists
+        const tokenListPromises: Promise<TokenListIF | undefined>[] =
+            Object.values(tokenListURIs).map((uri: string) =>
+                fetchAndFormatList(uri),
+            );
+        // resolve all promises for token lists
+        Promise.all(tokenListPromises)
+            // remove `undefined` values (URIs that did not produce a valid response)
+            .then((lists) => lists.filter((l) => l !== undefined))
+            // record token lists in local storage + persist in local storage
+            .then((lists) => {
                 localStorage.setItem(
                     localStorageKeys.tokenLists,
                     JSON.stringify(lists),
                 );
-                setTokenLists(lists);
+                setTokenLists(lists as TokenListIF[]);
             });
     }, []);
 
@@ -262,8 +283,8 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
     return useMemo(
         () => ({
             defaultTokens: defaultTokensInUniv,
-            verifyToken: verifyToken,
-            ackToken: ackToken,
+            verify: verifyToken,
+            acknowledge: ackToken,
             tokenUniv: tokenUniv,
             getTokenByAddress: getTokenByAddress,
             getTokensFromList: getTokensFromList,

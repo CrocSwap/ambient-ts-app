@@ -2,7 +2,6 @@
     display: grid;
     grid-auto-rows: auto;
     row-gap: 8px;
-   
 }
 .slippage_title {
     display: flex;
@@ -17,7 +16,7 @@
 }
 .slippage_box {
     background-color: var(--dark2);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     /* border: 1px solid var(--text3); */
     height: 33px;
 }
@@ -25,7 +24,7 @@
     width: 100%;
     height: 100%;
     display: flex;
-  
+
     -webkit-box-align: center;
     align-items: center;
     -webkit-box-pack: justify;
@@ -35,17 +34,17 @@
 .slippage_content input {
     height: 100%;
     border: 0px;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     background: none;
-    font-size: 16px;
+    font-size: var(--header-size);
     width: auto;
     outline: none;
     color: var(--text1);
     text-align: left;
 }
 
-.slippage_content input::placeholder{
-    color: var(--text2)
+.slippage_content input::placeholder {
+    color: var(--text2);
 }
 
 .input_container {
@@ -53,32 +52,7 @@
     width: 100%;
     flex-direction: row;
     align-items: center;
-   
 }
 .slippage_content button {
-    background: var(--dark1);
-    cursor: pointer;
-  
-    width: 42px;
-    height: 25px;
-
- 
-    border: 1px solid var(--dark3);
-    border-radius: 50px;
-
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-    color: var(--text1);
-
-    padding: 0.25rem 0.5rem;
-    transition: all var(--animation-speed) ease-in-out;
-
-
-}
-
-.slippage_content button:hover,
-.slippage_content button:focus-visible {
-    box-shadow: none;
-    cursor: pointer;
-    color: var(--text1);
+    margin: 0 2px;
 }

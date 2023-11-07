@@ -1,8 +1,6 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { ZERO_ADDRESS } from '../../../../constants';
-import { testTokenMap } from '../../../../utils/data/testTokenMap';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 import './TransactionDetailsGraph.css';
@@ -12,13 +10,14 @@ import {
     formatAmountChartData,
     formatPoolPriceAxis,
 } from '../../../../utils/numbers';
-import {
-    renderCanvasArray,
-    setCanvasResolution,
-} from '../../../../pages/Chart/Chart';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { fetchCandleSeriesCroc } from '../../../../App/functions/fetchCandleSeries';
 import moment from 'moment';
+import {
+    renderCanvasArray,
+    setCanvasResolution,
+} from '../../../../pages/Chart/ChartUtils/chartUtils';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -37,7 +36,7 @@ export default function TransactionDetailsGraph(
         isBaseTokenMoneynessGreaterOrEqual,
         isAccountView,
     } = props;
-    const { chainData, crocEnv } = useContext(CrocEnvContext);
+    const { chainData, crocEnv, activeNetwork } = useContext(CrocEnvContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const oneHourMiliseconds = 60 * 60 * 1000;
 
@@ -51,33 +50,14 @@ export default function TransactionDetailsGraph(
     const baseTokenAddress = tx.base;
     const quoteTokenAddress = tx.quote;
 
-    const chainId = tx.chainId;
-
     const tradeData = useAppSelector((state) => state.tradeData);
     const denominationsInBase = tradeData.isDenomBase;
-
-    const mainnetBaseTokenAddress =
-        chainId === '0x1'
-            ? baseTokenAddress
-            : baseTokenAddress === ZERO_ADDRESS
-            ? baseTokenAddress
-            : testTokenMap
-                  .get(baseTokenAddress.toLowerCase() + '_' + chainId)
-                  ?.split('_')[0];
-    const mainnetQuoteTokenAddress =
-        chainId === '0x1'
-            ? quoteTokenAddress
-            : quoteTokenAddress === ZERO_ADDRESS
-            ? quoteTokenAddress
-            : testTokenMap
-                  .get(quoteTokenAddress.toLowerCase() + '_' + chainId)
-                  ?.split('_')[0];
 
     const [graphData, setGraphData] = useState<any>();
 
     const d3PlotGraph = useRef(null);
-    const d3Yaxis = useRef<HTMLInputElement | null>(null);
-    const d3Xaxis = useRef<HTMLInputElement | null>(null);
+    const d3Yaxis = useRef<HTMLCanvasElement | null>(null);
+    const d3Xaxis = useRef<HTMLCanvasElement | null>(null);
     const graphMainDiv = useRef(null);
 
     const [scaleData, setScaleData] = useState<any>();
@@ -112,9 +92,7 @@ export default function TransactionDetailsGraph(
         chainData &&
         isServerEnabled &&
         baseTokenAddress &&
-        quoteTokenAddress &&
-        mainnetBaseTokenAddress &&
-        mainnetQuoteTokenAddress
+        quoteTokenAddress
     );
 
     const [isDataEmpty, setIsDataEmpty] = useState(false);
@@ -156,7 +134,7 @@ export default function TransactionDetailsGraph(
                         case 'liqchange':
                             return tx?.timeFirstMint !== undefined
                                 ? tx?.timeFirstMint
-                                : new Date().getTime();
+                                : tx.txTime;
                         default:
                             return new Date().getTime();
                     }
@@ -201,6 +179,7 @@ export default function TransactionDetailsGraph(
                         const graphData = await fetchCandleSeriesCroc(
                             fetchEnabled,
                             chainData,
+                            activeNetwork.graphCacheUrl,
                             period,
                             baseTokenAddress,
                             quoteTokenAddress,
@@ -594,7 +573,7 @@ export default function TransactionDetailsGraph(
 
     const drawXaxis = (context: any, xScale: any, Y: any) => {
         if (period) {
-            const _width = 30; // magic number of pixels to surrounding price
+            const _width = 15; // magic number of pixels to surrounding price
             const minDomainLocation = scaleData?.xScale.range()[0];
             const maxDomainLocation = scaleData?.xScale.range()[1];
 
@@ -727,11 +706,15 @@ export default function TransactionDetailsGraph(
                         Math.abs(Number(splitNumber[1])) -
                         (splitNumber.includes('.') ? 2 : 1);
 
-                    const precision = splitNumber[0]
-                        .toString()
-                        .replace('.', '');
+                    const scientificValue = getFormattedNumber({
+                        value: d,
+                        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                    });
 
-                    const factor = Math.pow(10, 3 - precision.length);
+                    const textScientificArray = scientificValue.split('0.0');
+                    const textScientific = textScientificArray[1].slice(1, 4);
+
+                    const factor = Math.pow(10, 3 - textScientific.length);
 
                     const textHeight =
                         context.measureText('0.0').actualBoundingBoxAscent +
@@ -745,11 +728,12 @@ export default function TransactionDetailsGraph(
                             context.measureText(subString).width / 2,
                         yScale(d),
                     );
+
                     context.fillText(subString, X, yScale(d) + textHeight / 3);
                     context.fillText(
-                        factor * Number(precision),
+                        factor * Number(textScientific),
                         X +
-                            context.measureText(factor * Number(precision))
+                            context.measureText(factor * Number(textScientific))
                                 .width /
                                 2 +
                             context.measureText(subString).width / 2,
@@ -874,6 +858,12 @@ export default function TransactionDetailsGraph(
                             maxDomain,
                         ]);
                     }
+                }
+
+                if (transactionType === 'liqchange' && period) {
+                    const buffer = period * 1000 * 2;
+
+                    scaleData?.xScale.domain([minDomain, maxDomain + buffer]);
                 }
 
                 const lineJoin = d3fc.dataJoin('g', 'lineJoin');
@@ -1044,7 +1034,7 @@ export default function TransactionDetailsGraph(
                 render();
             }
         },
-        [tx],
+        [tx, graphData],
     );
 
     const loadingSpinner = <Spinner size={100} bg='var(--dark1)' centered />;

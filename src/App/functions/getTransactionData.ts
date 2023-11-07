@@ -1,22 +1,24 @@
 import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
-import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
 import { TokenIF, TransactionIF } from '../../utils/interfaces/exports';
 import { TransactionServerIF } from '../../utils/interfaces/TransactionIF';
 import { FetchAddrFn } from './fetchAddress';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
 import { SpotPriceFn } from './querySpotPrice';
+import { Provider } from '@ethersproject/providers';
 
 export const getTransactionData = async (
     tx: TransactionServerIF,
     tokenList: TokenIF[],
     crocEnv: CrocEnv,
+    provider: Provider,
     chainId: string,
     lastBlockNumber: number,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
     cachedEnsResolve: FetchAddrFn,
+    skipENSFetch?: boolean,
 ): Promise<TransactionIF> => {
     const newTx = { ...tx } as TransactionIF;
 
@@ -33,35 +35,17 @@ export const getTransactionData = async (
         lastBlockNumber,
     );
 
-    const baseMetadata = cachedTokenDetails(
-        (await crocEnv.context).provider,
-        tx.base,
-        chainId,
-    );
-    const quoteMetadata = cachedTokenDetails(
-        (await crocEnv.context).provider,
-        tx.quote,
-        chainId,
-    );
+    const baseMetadata = cachedTokenDetails(provider, tx.base, chainId);
+    const quoteMetadata = cachedTokenDetails(provider, tx.quote, chainId);
 
-    const ensRequest = cachedEnsResolve(
-        (await crocEnv.context).provider,
-        tx.user,
-        '0x1',
-    );
+    // const ensRequest = cachedEnsResolve(tx.user);
 
-    const basePricedToken = getMainnetEquivalent(baseTokenAddress, chainId);
-    const basePricePromise = cachedFetchTokenPrice(
-        basePricedToken.token,
-        basePricedToken.chainId,
-    );
-    const quotePricedToken = getMainnetEquivalent(quoteTokenAddress, chainId);
-    const quotePricePromise = cachedFetchTokenPrice(
-        quotePricedToken.token,
-        quotePricedToken.chainId,
-    );
+    const basePricePromise = cachedFetchTokenPrice(baseTokenAddress, chainId);
+    const quotePricePromise = cachedFetchTokenPrice(quoteTokenAddress, chainId);
 
-    newTx.ensResolution = (await ensRequest) ?? '';
+    newTx.ensResolution = skipENSFetch
+        ? ''
+        : (await cachedEnsResolve(tx.user)) ?? '';
 
     const baseTokenName = tokenList.find(
         (token) =>

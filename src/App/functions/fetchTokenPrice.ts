@@ -1,27 +1,33 @@
-import Moralis from 'moralis';
-import { EvmChain } from '@moralisweb3/common-evm-utils';
+/* eslint-disable camelcase */
 
 import { memoizePromiseFn } from './memoizePromiseFn';
 const randomNum = Math.random();
+import { ANALYTICS_URL } from '../../constants';
+import { translateTestnetToken } from '../../utils/data/testnetTokenMap';
 
 export const fetchTokenPrice = async (
-    address: string,
-    chainId: string,
+    dispToken: string,
+    chain: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _lastTime: number,
 ) => {
-    const chain = chainId === '0x1' ? EvmChain.ETHEREUM : EvmChain.ETHEREUM;
+    const address = translateTestnetToken(dispToken);
 
     try {
-        if (address && chain) {
-            const response = await Moralis.EvmApi.token.getTokenPrice({
-                address,
-                chain,
-            });
-
-            const result = response?.result;
-
-            return result;
+        if (address) {
+            const response = await fetch(
+                ANALYTICS_URL +
+                    new URLSearchParams({
+                        service: 'run',
+                        config_path: 'price',
+                        include_data: '0',
+                        token_address: address,
+                        asset_platform:
+                            chain === '0x82750' ? 'scroll' : 'ethereum',
+                    }),
+            );
+            const result = await response.json();
+            return result?.value;
         }
     } catch (error) {
         return undefined;

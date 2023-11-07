@@ -1,11 +1,12 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, KeyboardEvent } from 'react';
 import { useSlippageInput } from '../../../utils/hooks/useSlippageInput';
 import styles from './SlippageTolerance.module.css';
+import { Chip } from '../../Form/Chip';
 
 interface propsIF {
     persistedSlippage: number;
     setCurrentSlippage: Dispatch<SetStateAction<number>>;
-    handleKeyDown: (event: { keyCode: number }) => void;
+    handleKeyDown: (event: KeyboardEvent<HTMLInputElement>) => void;
     presets: number[];
 }
 
@@ -37,14 +38,11 @@ export default function SlippageTolerance(props: propsIF) {
                         />
                     </div>
                     {presets.map((preset: number) => (
-                        <button
-                            tabIndex={0}
+                        <Chip
                             key={`slippage-preset-button-${preset}`}
                             onClick={() => takeNewSlippage(preset)}
-                            aria-label={`set slippage to ${preset}% `}
-                        >
-                            {preset}%
-                        </button>
+                            ariaLabel={`set slippage to ${preset}% `}
+                        >{`${preset}%`}</Chip>
                     ))}
                 </div>
             </div>

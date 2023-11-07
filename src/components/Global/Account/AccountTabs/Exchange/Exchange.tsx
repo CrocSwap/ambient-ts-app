@@ -8,8 +8,8 @@ import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { useContext } from 'react';
 import { tokenListURIs } from '../../../../../utils/data/tokenListURIs';
-import { USDC } from '../../../../../utils/tokens/exports';
 import { ZERO_ADDRESS } from '../../../../../constants';
+import { isUsdcToken } from '../../../../../utils/data/stablePairs';
 
 interface propsIF {
     chainId: string;
@@ -21,7 +21,6 @@ interface propsIF {
 
 export default function Exchange(props: propsIF) {
     const {
-        chainId,
         connectedAccountActive,
         resolvedAddressTokens,
         cachedFetchTokenPrice,
@@ -29,45 +28,13 @@ export default function Exchange(props: propsIF) {
 
     const { tokens } = useContext(TokenContext);
 
-    const { nativeToken, erc20Tokens } = useAppSelector(
-        (state) => state.userData.tokens,
+    const tokenBalances = useAppSelector(
+        (state) => state.userData.tokenBalances,
     );
-    const connectedUserTokens = [nativeToken]
-        .concat(erc20Tokens)
-        .filter((token) => token);
 
-    const spinnerElement = <Spinner size={100} bg='var(--dark1)' centered />;
-
-    const ItemContent = () => {
-        if (connectedAccountActive) {
-            if (connectedUserTokens && connectedUserTokens.length > 0) {
-                return sequenceTokens(connectedUserTokens as TokenIF[]).map(
-                    (item, idx) => (
-                        <ExchangeCard
-                            key={idx}
-                            token={item}
-                            cachedFetchTokenPrice={cachedFetchTokenPrice}
-                        />
-                    ),
-                );
-            }
-        }
-        if (resolvedAddressTokens && resolvedAddressTokens[0]) {
-            return sequenceTokens(resolvedAddressTokens as TokenIF[]).map(
-                (item, idx) => (
-                    <ExchangeCard
-                        key={idx}
-                        token={item}
-                        cachedFetchTokenPrice={cachedFetchTokenPrice}
-                    />
-                ),
-            );
-        }
-        if (resolvedAddressTokens && !resolvedAddressTokens[0]) {
-            return;
-        }
-        return spinnerElement;
-    };
+    const tokensToRender = connectedAccountActive
+        ? tokenBalances
+        : resolvedAddressTokens;
 
     function sequenceTokens(tkns: TokenIF[]) {
         const tokensWithOrigins: TokenIF[] = tkns.map((tkn: TokenIF) => {
@@ -111,32 +78,13 @@ export default function Exchange(props: propsIF) {
             .sort((a: TokenIF, b: TokenIF) => {
                 // fn to numerically prioritize a token (high = important)
                 const getPriority = (tkn: TokenIF): number => {
-                    // declare an output variable
-                    let priority: number;
-                    // canonical token addresses to assign probability
-                    const addresses = {
-                        nativeToken: ZERO_ADDRESS,
-                        USDC: USDC[
-                            chainId.toLowerCase() as keyof typeof USDC
-                        ].toLowerCase(),
-                    };
-                    // logic router to assign numerical priority to output
-                    // unlisted tokens get priority 0
-                    switch (tkn.address.toLowerCase()) {
-                        // native token
-                        case addresses.nativeToken:
-                            priority = 1000;
-                            break;
-                        // USDCoin (uses address for current chain)
-                        case addresses.USDC:
-                            priority = 900;
-                            break;
-                        // all non-privileged tokens
-                        default:
-                            priority = 0;
+                    if (tkn.address === ZERO_ADDRESS) {
+                        return 1000;
+                    } else if (isUsdcToken(tkn.address)) {
+                        return 900;
+                    } else {
+                        return 0;
                     }
-                    // return numerical priority of the token
-                    return priority;
                 };
                 // sort tokens by relative priority level
                 return getPriority(b) - getPriority(a);
@@ -147,7 +95,22 @@ export default function Exchange(props: propsIF) {
     return (
         <div className={styles.container}>
             <ExchangeHeader />
-            <div className={styles.item_container}>{ItemContent()}</div>
+            <div className={styles.item_container}>
+                {tokensToRender &&
+                tokensToRender.length > 0 &&
+                tokensToRender[0] !== undefined ? (
+                    // values can be `undefined` but this fn will filter them out
+                    sequenceTokens(tokensToRender as TokenIF[]).map((token) => (
+                        <ExchangeCard
+                            key={JSON.stringify(token)}
+                            token={token}
+                            cachedFetchTokenPrice={cachedFetchTokenPrice}
+                        />
+                    ))
+                ) : (
+                    <Spinner size={100} bg='var(--dark1)' centered />
+                )}
+            </div>
         </div>
     );
 }

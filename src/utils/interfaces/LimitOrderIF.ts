@@ -17,8 +17,16 @@ export interface LimitOrderIF {
     positionLiq: number;
     positionLiqBase: number;
     positionLiqQuote: number;
+    originalPositionLiqBase: number;
+    originalPositionLiqQuote: number;
+    expectedPositionLiqBase: number;
+    expectedPositionLiqQuote: number;
     positionLiqBaseDecimalCorrected: number;
     positionLiqQuoteDecimalCorrected: number;
+    originalPositionLiqBaseDecimalCorrected: number;
+    originalPositionLiqQuoteDecimalCorrected: number;
+    expectedPositionLiqBaseDecimalCorrected: number;
+    expectedPositionLiqQuoteDecimalCorrected: number;
     claimableLiq: number;
     claimableLiqPivotTimes: number;
     claimableLiqBase: number;

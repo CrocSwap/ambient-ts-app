@@ -11,8 +11,6 @@ import {
     CandleData,
     fetchCandleSeriesHybrid,
 } from '../App/functions/fetchCandleSeries';
-import useDebounce from '../App/hooks/useDebounce';
-import { translateMainnetForGraphcache } from '../utils/data/testTokenMap';
 import { CandlesByPoolAndDuration } from '../utils/state/graphDataSlice';
 import { candleDomain, candleScale } from '../utils/state/tradeDataSlice';
 import { AppStateContext } from './AppStateContext';
@@ -28,6 +26,8 @@ interface CandleContextIF {
     >;
     isCandleDataNull: boolean;
     setIsCandleDataNull: Dispatch<SetStateAction<boolean>>;
+    isManualCandleFetchRequested: boolean;
+    setIsManualCandleFetchRequested: Dispatch<SetStateAction<boolean>>;
     isCandleSelected: boolean | undefined;
     setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
     isFetchingCandle: boolean;
@@ -46,20 +46,14 @@ export const CandleContext = createContext<CandleContextIF>(
 
 export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const {
-        server: { isEnabled: isServerEnabled },
+        server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
     } = useContext(AppStateContext);
     const { chartSettings, isEnabled: isChartEnabled } =
         useContext(ChartContext);
-    const { chainData, crocEnv } = useContext(CrocEnvContext);
+    const { chainData, crocEnv, activeNetwork } = useContext(CrocEnvContext);
     const {
-        baseToken: {
-            address: baseTokenAddress,
-            mainnetAddress: mainnetCanonBase,
-        },
-        quoteToken: {
-            address: quoteTokenAddress,
-            mainnetAddress: mainnetCanonQuote,
-        },
+        baseToken: { address: baseTokenAddress },
+        quoteToken: { address: quoteTokenAddress },
     } = useContext(TradeTokenContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
@@ -74,6 +68,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         boolean | undefined
     >();
 
+    const [isZoomRequestCanceled, setIsZoomRequestCanceled] = useState(false);
+
     const [timeOfEndCandle, setTimeOfEndCandle] = useState<
         number | undefined
     >();
@@ -86,8 +82,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     const [candleScale, setCandleScale] = useState<candleScale>({
         lastCandleDate: undefined,
-        nCandle: 200,
+        nCandles: 200,
         isFetchForTimeframe: false,
+        isShowLatestCandle: true,
     });
 
     // local logic to determine current chart period
@@ -96,6 +93,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         return chartSettings.candleTime.global.time;
     }, [chartSettings.candleTime.global.time, location.pathname]);
 
+    const [isManualCandleFetchRequested, setIsManualCandleFetchRequested] =
+        useState(false);
+
     const candleContext = {
         candleData,
         setCandleData,
@@ -103,6 +103,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         setIsCandleDataNull,
         isCandleSelected,
         setIsCandleSelected,
+        isManualCandleFetchRequested,
+        setIsManualCandleFetchRequested,
         isFetchingCandle,
         setIsFetchingCandle,
         candleDomains,
@@ -113,14 +115,24 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         timeOfEndCandle,
     };
 
-    const {
-        baseToken: mainnetBaseTokenAddress,
-        quoteToken: mainnetQuoteTokenAddress,
-    } = translateMainnetForGraphcache(mainnetCanonBase, mainnetCanonQuote);
+    useEffect(() => {
+        setCandleData(undefined);
+    }, [baseTokenAddress + quoteTokenAddress, candleTimeLocal]);
 
     useEffect(() => {
-        isChartEnabled && fetchCandles();
-        if (isChartEnabled) {
+        isChartEnabled && isUserOnline && fetchCandles();
+        if (isManualCandleFetchRequested)
+            setIsManualCandleFetchRequested(false);
+    }, [
+        isManualCandleFetchRequested,
+        isChartEnabled,
+        isUserOnline,
+        baseTokenAddress + quoteTokenAddress,
+        candleScale?.isFetchForTimeframe,
+    ]);
+
+    useEffect(() => {
+        if (isChartEnabled && isUserOnline && candleScale.isShowLatestCandle) {
             const interval = setInterval(() => {
                 fetchCandles(true);
             }, 60000);
@@ -128,35 +140,36 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         }
     }, [
         isChartEnabled,
-        mainnetBaseTokenAddress,
-        mainnetQuoteTokenAddress,
+        isUserOnline,
+        baseTokenAddress + quoteTokenAddress,
         candleScale?.isFetchForTimeframe,
-        candleTimeLocal,
+        candleScale.nCandles,
+        candleScale.isShowLatestCandle,
     ]);
 
     const fetchCandles = (bypassSpinner = false) => {
         if (
             isServerEnabled &&
+            isUserOnline &&
             baseTokenAddress &&
             quoteTokenAddress &&
-            mainnetBaseTokenAddress &&
-            mainnetQuoteTokenAddress &&
             candleTimeLocal &&
             crocEnv
         ) {
-            if (abortController) {
-                abortController.abort();
-            }
+            setIsZoomRequestCanceled(true);
 
-            const candleTime = candleScale?.lastCandleDate || 0;
+            const candleTime = candleScale.isShowLatestCandle
+                ? Date.now() / 1000
+                : candleScale.lastCandleDate || 0;
             const nCandles =
-                candleScale?.nCandle > 1000 ? 1000 : candleScale?.nCandle;
+                candleScale?.nCandles > 2999 ? 2999 : candleScale?.nCandles;
 
             !bypassSpinner && setIsFetchingCandle(true);
             setTimeOfEndCandle(undefined);
             fetchCandleSeriesHybrid(
                 true,
                 chainData,
+                activeNetwork.graphCacheUrl,
                 candleTimeLocal,
                 baseTokenAddress,
                 quoteTokenAddress,
@@ -166,15 +179,17 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 cachedFetchTokenPrice,
             ).then((candles) => {
                 setCandleData(candles);
-                setIsCandleDataNull(false);
 
                 const candleSeries = candles?.candles;
                 if (candleSeries && candleSeries.length > 0) {
-                    setIsFetchingCandle(false);
+                    setIsCandleDataNull(false);
+                } else {
+                    setIsCandleDataNull(true);
                 }
+                setIsFetchingCandle(false);
             });
         } else {
-            setIsCandleDataNull(true);
+            setIsFetchingCandle(true);
         }
     };
 
@@ -182,18 +197,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         (candleDomains?.domainBoundry || 0) / 1000,
     );
 
-    const domainBoundaryInSecondsDebounced = useDebounce(
-        domainBoundaryInSeconds,
-        500,
-    );
-
     const lastCandleDateInSeconds = Math.floor(
         (candleDomains?.lastCandleDate || 0) / 1000,
-    );
-
-    const lastCandleDateInSecondsDebounced = useDebounce(
-        lastCandleDateInSeconds,
-        500,
     );
 
     const minTimeMemo = useMemo(() => {
@@ -205,7 +210,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         ).getTime();
 
         return lastDate;
-    }, [candleData?.candles?.length, lastCandleDateInSecondsDebounced]);
+    }, [candleData?.candles?.length, lastCandleDateInSeconds]);
 
     const numDurationsNeeded = useMemo(() => {
         if (!minTimeMemo || !domainBoundaryInSeconds) return;
@@ -214,19 +219,22 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         );
 
         return numDurations > 2999 ? 2999 : numDurations;
-    }, [minTimeMemo, domainBoundaryInSecondsDebounced]);
+    }, [minTimeMemo, domainBoundaryInSeconds]);
 
     const fetchCandlesByNumDurations = (numDurations: number) => {
-        const controller = new AbortController();
-        setAbortController(controller);
-
         if (!crocEnv) {
             return;
         }
 
+        const controller = new AbortController();
+        setAbortController(controller);
+
+        const signal = controller?.signal; // used cancel the request when the pool or timeframe changes before the zoom request end
+
         fetchCandleSeriesHybrid(
             true,
             chainData,
+            activeNetwork.graphCacheUrl,
             candleTimeLocal,
             baseTokenAddress,
             quoteTokenAddress,
@@ -234,9 +242,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             numDurations,
             crocEnv,
             cachedFetchTokenPrice,
+            signal,
         )
             .then((incrCandles) => {
-                if (incrCandles && candleData) {
+                if (incrCandles && candleData && !isZoomRequestCanceled) {
                     const newCandles: CandleData[] = [];
                     if (incrCandles.candles.length === 0) {
                         candleData.candles.sort(
@@ -272,6 +281,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                         candles: candleData.candles.concat(newCandles),
                     });
                     setCandleData(newSeries);
+                } else {
+                    setIsZoomRequestCanceled(false);
                 }
             })
             .catch((e) => {
@@ -289,7 +300,13 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         if (numDurationsNeeded > 0 && numDurationsNeeded < 3000) {
             fetchCandlesByNumDurations(numDurationsNeeded);
         }
-    }, [numDurationsNeeded]);
+    }, [numDurationsNeeded, isZoomRequestCanceled]);
+
+    useEffect(() => {
+        if (abortController && isZoomRequestCanceled) {
+            abortController.abort();
+        }
+    }, [isZoomRequestCanceled]);
 
     return (
         <CandleContext.Provider value={candleContext}>

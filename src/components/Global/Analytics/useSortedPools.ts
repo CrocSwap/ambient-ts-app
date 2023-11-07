@@ -47,7 +47,27 @@ export const useSortedPools = (allPools: PoolDataIF[]): SortedPoolMethodsIF => {
                 break;
         }
         // reverse data if user has indicated descending sort sequence
-        return direction === 'descending' ? output.reverse() : output;
+        const sequencedData: PoolDataIF[] =
+            direction === 'descending' ? output.reverse() : output;
+        // logic to demote arbitrary values depending on current sort
+        const preferredData: PoolDataIF[] = [];
+        const demotedData: PoolDataIF[] = [];
+        sequencedData.forEach((p: PoolDataIF) => {
+            // boolean for control flow
+            let needsDemotion: boolean;
+            // assign bool based on given value for a given key
+            switch (sortBy) {
+                case 'change':
+                    needsDemotion = p.priceChangeStr === '';
+                    break;
+                default:
+                    needsDemotion = false;
+            }
+            // push each result into the preferred or demoted array
+            needsDemotion ? demotedData.push(p) : preferredData.push(p);
+        });
+        // combine and return the two sub-arrays
+        return preferredData.concat(demotedData);
     }, [sortBy, direction, allPools]);
 
     // fn to respond to user clicks and update sort values correctly

@@ -1,9 +1,5 @@
 import React, { createContext, useEffect, useMemo, useState } from 'react';
 import {
-    globalModalMethodsIF,
-    useGlobalModal,
-} from '../App/components/GlobalModal/useGlobalModal';
-import {
     globalPopupMethodsIF,
     useGlobalPopup,
 } from '../App/components/GlobalPopup/useGlobalPopup';
@@ -18,7 +14,6 @@ import { CHAT_ENABLED } from '../constants';
 
 interface AppStateContextIF {
     appOverlay: { isActive: boolean; setIsActive: (val: boolean) => void };
-    globalModal: globalModalMethodsIF;
     globalPopup: globalPopupMethodsIF;
     snackbar: snackbarMethodsIF;
     tutorial: { isActive: boolean; setIsActive: (val: boolean) => void };
@@ -33,7 +28,7 @@ interface AppStateContextIF {
         isEnabled: boolean;
         setIsEnabled: (val: boolean) => void;
     };
-    server: { isEnabled: boolean };
+    server: { isEnabled: boolean; isUserOnline: boolean };
     subscriptions: { isEnabled: boolean };
     wagmiModal: {
         isOpen: boolean;
@@ -54,6 +49,10 @@ export const AppStateContextProvider = (props: {
     const [isTutorialMode, setIsTutorialMode] = useState(false);
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isChatEnabled, setIsChatEnabled] = useState(CHAT_ENABLED);
+    const [isUserOnline, setIsUserOnline] = useState(navigator.onLine);
+
+    window.ononline = () => setIsUserOnline(true);
+    window.onoffline = () => setIsUserOnline(false);
 
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
     const isServerEnabled =
@@ -72,7 +71,6 @@ export const AppStateContextProvider = (props: {
     // All of these objects results from use*() functions are assumed to be memoized correct,
     // I.e. updated if and only if their conrents need to be updated.
     const snackbar = useSnackbar();
-    const globalModal = useGlobalModal();
     const globalPopup = useGlobalPopup();
     const skin = useSkin('purple_dark');
 
@@ -88,7 +86,6 @@ export const AppStateContextProvider = (props: {
                 isActive: isAppOverlayActive,
                 setIsActive: setIsAppOverlayActive,
             },
-            globalModal,
             globalPopup,
             snackbar,
             tutorial: {
@@ -103,7 +100,7 @@ export const AppStateContextProvider = (props: {
                 isEnabled: isChatEnabled,
                 setIsEnabled: setIsChatEnabled,
             },
-            server: { isEnabled: isServerEnabled },
+            server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
             subscriptions: { isEnabled: areSubscriptionsEnabled },
             wagmiModal: {
                 isOpen: isWagmiModalOpenWallet,
@@ -115,17 +112,19 @@ export const AppStateContextProvider = (props: {
             // Dependency list includes the memoized use*() values from above and any primitives
             // directly references in above appState object
             snackbar,
-            globalModal,
             globalPopup,
             skin,
             isChatOpen,
             isChatEnabled,
             isServerEnabled,
+            isUserOnline,
             areSubscriptionsEnabled,
             isAppOverlayActive,
             isTutorialMode,
             theme,
             isWagmiModalOpenWallet,
+            openWagmiModalWallet,
+            closeWagmiModalWallet,
         ],
     );
 

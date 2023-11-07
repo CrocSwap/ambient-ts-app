@@ -3,12 +3,13 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 import { useConnect, useAccount, useDisconnect } from 'wagmi';
 
 // START: Import Local Files
-import styles from './WalletModal.module.css';
+import styles from './WalletModalWagmi.module.css';
 import Modal from '../../../components/Global/Modal/Modal';
-import Button from '../../../components/Global/Button/Button';
+import Button from '../../../components/Form/Button';
 import WalletButton from './WalletButton/WalletButton';
 import metamaskLogo from '../../../assets/images/logos/MetaMask_Fox.svg';
 import braveLogo from '../../../assets/images/logos/brave_lion.svg';
+import rabbyLogo from '../../../assets/images/logos/rabby_logo.svg';
 
 import { CircleLoaderFailed } from '../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
 import WaitingConfirmation from '../../../components/Global/WaitingConfirmation/WaitingConfirmation';
@@ -48,6 +49,7 @@ export default function WalletModalWagmi() {
         : 'wallets';
 
     const [page, setPage] = useState(defaultState);
+
     // reset the page everytime the modal is closed
     useEffect(() => {
         if (!isModalOpen) {
@@ -124,9 +126,11 @@ export default function WalletModalWagmi() {
                             ? metamaskLogo
                             : connector.name === 'Brave'
                             ? braveLogo
+                            : connector.name.toLowerCase() === 'rabby'
+                            ? rabbyLogo
                             : undefined
                     }
-                ></WalletButton>
+                />
             ))}
         </div>
     );
@@ -135,12 +139,6 @@ export default function WalletModalWagmi() {
         () => (
             <div className={styles.main_container}>
                 {connectorsDisplay}
-                {/* {walletsDisplay} */}
-                {/* <button className={styles.email_button} onClick={() => setPage('magicLogin')}>
-                        <HiOutlineMail size={20} color='#EBEBFF' />
-                        Connect with Email
-                    </button> */}
-
                 {learnAboutWalletsContent}
             </div>
         ),
@@ -154,12 +152,7 @@ export default function WalletModalWagmi() {
                     !delayForHelpTextElapsed ? (
                         ''
                     ) : (
-                        <div>
-                            Please check your wallet for notifications.
-                            <br />
-                            <br />
-                            You may need to refresh the page and try again.
-                        </div>
+                        <div>Please check your wallet for notifications.</div>
                     )
                 }
             />
@@ -176,9 +169,8 @@ export default function WalletModalWagmi() {
 
     const metamaskErrorPage = (
         <div className={styles.metamask_pending_container}>
-            <CircleLoaderFailed />
-            <p>The connection to MetaMask was rejected. </p>
-            <p>Please try again.</p>
+            <CircleLoaderFailed size='48' />
+            <p>The connection to your wallet was rejected. </p>
             <Button
                 title='Try Again'
                 flat={true}
@@ -191,7 +183,7 @@ export default function WalletModalWagmi() {
 
     const notAvailablePage = (
         <div className={styles.metamask_pending_container}>
-            <CircleLoaderFailed />
+            <CircleLoaderFailed size='48' />
             <p>Ambient is not available in the United States.</p>
             <Button
                 title='Close'
@@ -226,9 +218,9 @@ export default function WalletModalWagmi() {
             case 'wallets':
                 return 'Choose a Wallet';
             case 'metamaskPending':
-                return 'Waiting for MetaMask';
+                return 'Waiting for Wallet';
             case 'metamaskError':
-                return 'MetaMask Error';
+                return 'Wallet Connection Error';
             case 'magicLogin':
             case 'magicLoginPending':
                 return 'Log In With Email';
@@ -263,24 +255,18 @@ export default function WalletModalWagmi() {
 
     const [recordAgreed, hasAgreedTerms, termUrls] = useTermsAgreed();
 
-    return isModalOpen ? (
-        <div className={styles.wallet_modal} style={{ width: '500px' }}>
-            <Modal
-                onClose={closeModal}
-                handleBack={clickBackArrow}
-                showBackButton={showBackArrow}
-                title={!hasAgreedTerms ? 'Welcome' : activeTitle}
-                centeredTitle={activeTitle === 'Choose a Wallet' ? true : false}
-            >
-                {!hasAgreedTerms ? (
-                    <GateWallet
-                        recordAgreed={recordAgreed}
-                        termUrls={termUrls}
-                    />
-                ) : (
-                    activeContent
-                )}
-            </Modal>
-        </div>
-    ) : null;
+    return (
+        <Modal
+            onClose={closeModal}
+            handleBack={clickBackArrow}
+            showBackButton={showBackArrow}
+            title={!hasAgreedTerms ? 'Welcome' : activeTitle}
+        >
+            {!hasAgreedTerms ? (
+                <GateWallet recordAgreed={recordAgreed} termUrls={termUrls} />
+            ) : (
+                activeContent
+            )}
+        </Modal>
+    );
 }

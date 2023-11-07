@@ -21,7 +21,7 @@
 
     /* Dark/Tertiary */
     background: var(--dark3);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
 
     /* Inside auto layout */
     flex: none;
@@ -34,9 +34,9 @@
 
     font-family: 'Lexend Deca';
     font-style: normal;
-    font-weight: 200;
+    font-weight: 300;
     font-size: 15px;
-    line-height: 12px;
+    line-height: var(--mini-lh);
 
     /* identical to box height */
     display: flex;
@@ -59,9 +59,9 @@
 
     font-family: 'Lexend Deca';
     font-style: normal;
-    font-weight: 200;
+    font-weight: 300;
     font-size: 15px;
-    line-height: 12px;
+    line-height: var(--mini-lh);
 
     /* identical to box height */
     display: flex;
@@ -70,7 +70,7 @@
     letter-spacing: -0.02em;
 
     /* text/grey light */
-    color: rgba(235, 235, 255, 0.4);
+    color: var(--text2);
 
     /* Inside auto layout */
     flex: none;
@@ -85,7 +85,7 @@
     position: relative;
     background: var(--dark3);
     padding: 1px;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
 }
 
 .dropdown_btn {
@@ -107,7 +107,7 @@
     background: white;
     box-shadow: 3px 3px 10px 6px rgba(0, 0, 0, 0.06);
     font-weight: 500;
-    color: rgba(235, 235, 255, 0.4);
+    color: var(--text2);
     width: 95%;
     text-align: center;
 }
@@ -125,14 +125,14 @@
     align-items: center;
     cursor: pointer;
     justify-content: space-between;
-    color: rgba(235, 235, 255, 0.4);
-    border-radius: 4px;
+    color: var(--text2);
+    border-radius: var(--border-radius);
 }
 
 .star_icon_selected_room {
     height: 20px;
     width: 20px;
-    color: rgba(235, 235, 255, 0.4);
+    color: var(--text2);
     pointer-events: none;
 }
 
@@ -144,7 +144,7 @@
     align-items: center;
     gap: 4px;
     transition: all 0.2s;
-    color: rgba(235, 235, 255, 0.4);
+    color: var(--text2);
 
     font-size: var(--body-size);
     line-height: var(--body-lh);
@@ -162,7 +162,7 @@
     align-items: center;
     gap: 4px;
     transition: all 0.2s;
-    color: rgba(235, 235, 255, 0.4);
+    color: var(--text2);
 
     font-size: var(--body-size);
     line-height: var(--body-lh);

@@ -1,4 +1,4 @@
-import {
+import React, {
     useRef,
     Children,
     ReactNode,
@@ -8,8 +8,11 @@ import {
     SetStateAction,
     memo,
 } from 'react';
-import styles from './NavItem.module.css';
 import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
+import {
+    NavItemButton,
+    NavItemIconButton,
+} from '../../../../styled/Components/Header';
 
 interface NavItemPropsIF {
     children: ReactNode;
@@ -17,10 +20,18 @@ interface NavItemPropsIF {
     open: boolean;
     setOpen: Dispatch<SetStateAction<boolean>>;
     allowClicksOutside?: boolean;
+    square?: boolean;
 }
 
 function NavItem(props: NavItemPropsIF) {
-    const { children, icon, open, setOpen, allowClicksOutside = false } = props;
+    const {
+        children,
+        icon,
+        open,
+        setOpen,
+        allowClicksOutside = false,
+        square,
+    } = props;
     const navItemRef = useRef<HTMLButtonElement>(null);
 
     const clickOutsideHandler = () => {
@@ -38,17 +49,17 @@ function NavItem(props: NavItemPropsIF) {
     });
 
     return (
-        <button
-            className={styles.nav_item}
+        <NavItemButton
+            className='nav_item'
             ref={navItemRef}
             tabIndex={0}
             aria-label='Nav item'
         >
-            <div className={styles.icon_button} onClick={() => setOpen(!open)}>
+            <NavItemIconButton square={square} onClick={() => setOpen(!open)}>
                 {icon}
-            </div>
+            </NavItemIconButton>
             {open && childrenWithProps}
-        </button>
+        </NavItemButton>
     );
 }
 
