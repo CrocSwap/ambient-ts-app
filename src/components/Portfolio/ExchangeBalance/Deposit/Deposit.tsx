@@ -76,7 +76,7 @@ export default function Deposit(props: propsIF) {
 
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
-    const amountToReduceEthMainnet = BigNumber.from(25).mul('1000000000000000'); // .025 ETH
+    const amountToReduceEthMainnet = BigNumber.from(50).mul('100000000000000'); // .005 ETH
     const amountToReduceEthScroll = BigNumber.from(3).mul('100000000000000'); // .0003 ETH
 
     const amountToReduceEth =
