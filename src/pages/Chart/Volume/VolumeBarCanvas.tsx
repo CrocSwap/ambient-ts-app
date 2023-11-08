@@ -3,12 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
-import {
-    renderCanvasArray,
-    scaleData,
-    setCanvasResolution,
-} from '../ChartUtils/chartUtils';
-import { diffHashSigScaleData } from '../../../utils/functions/diffHashSig';
+import { scaleData, setCanvasResolution } from '../ChartUtils/chartUtils';
 
 interface propsIF {
     scaleData: scaleData | undefined;
@@ -39,10 +34,6 @@ export default function VolumeBarCanvas(props: propsIF) {
             setBarSeries(() => canvasBarChart);
         }
     }, [scaleData?.xScale, scaleData?.volumeScale]);
-
-    useEffect(() => {
-        renderCanvasArray([d3CanvasBar]);
-    }, [diffHashSigScaleData(scaleData)]);
 
     useEffect(() => {
         if (barSeries) {
