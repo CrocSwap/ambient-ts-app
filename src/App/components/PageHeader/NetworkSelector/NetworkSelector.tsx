@@ -41,7 +41,7 @@ export default function NetworkSelector(props: propsIF) {
     );
     const chainMap = new Map();
     chains.forEach((chain: ChainSpec) => chainMap.set(chain.chainId, chain));
-    console.log(chains);
+    console.log(chainMap);
 
     const handleClick = (chn: ChainSpec): void => {
         if (switchNetwork) {
@@ -59,58 +59,106 @@ export default function NetworkSelector(props: propsIF) {
         }
     };
 
-    const dropdownAriaDescription = 'Dropdown menu for networks.';
+    const ethereumNetwork: JSX.Element = (
+        <NetworkItem
+            id='ethereum_network_selector'
+            onClick={() => handleClick(chainMap.get('0x1'))}
+            key={'ethereum'}
+            custom={0}
+            variants={ItemEnterAnimation}
+            tabIndex={0}
+        >
+            <ChainNameStatus tabIndex={0} active={chainId === '0x1'}>
+                <img
+                    src={chainMap.get('0x1').logoUrl}
+                    alt={'Canto'}
+                    width='21px'
+                    height='21px'
+                    style={{ borderRadius: '50%' }}
+                />
+                <Text color={chainId === '0x1' ? 'accent1' : 'white'}>
+                    Ethereum
+                </Text>
+            </ChainNameStatus>
+        </NetworkItem>
+    );
+
+    const scrollNetwork: JSX.Element = (
+        <NetworkItem
+            id='scroll_network_selector'
+            onClick={() => handleClick(chainMap.get('0x82750'))}
+            key={'scroll'}
+            custom={0}
+            variants={ItemEnterAnimation}
+            tabIndex={0}
+        >
+            <ChainNameStatus tabIndex={0} active={chainId === '0x82750'}>
+                <img
+                    src={chainMap.get('0x82750').logoUrl}
+                    alt={'Canto'}
+                    width='21px'
+                    height='21px'
+                    style={{ borderRadius: '50%' }}
+                />
+                <Text color={chainId === '0x82750' ? 'accent1' : 'white'}>
+                    Scroll
+                </Text>
+            </ChainNameStatus>
+        </NetworkItem>
+    );
+
+    const cantoNetwork: JSX.Element = (
+        <NetworkItem
+            id='canto_network_selector'
+            onClick={() => window.open('http://beta.canto.io/lp', '_blank')}
+            key={'canto'}
+            custom={chains.length + 1}
+            variants={ItemEnterAnimation}
+            tabIndex={0}
+        >
+            <ChainNameStatus tabIndex={0} active={false}>
+                <img
+                    src={canto}
+                    alt={'Canto'}
+                    width='21px'
+                    height='21px'
+                    style={{ borderRadius: '50%' }}
+                />
+                <Text color='white'>Canto</Text>
+            </ChainNameStatus>
+        </NetworkItem>
+    );
+
+    const goerliNetwork: JSX.Element = (
+        <NetworkItem
+            id='goerli_network_selector'
+            onClick={() => handleClick(chainMap.get('0x5'))}
+            key={'scroll'}
+            custom={0}
+            variants={ItemEnterAnimation}
+            tabIndex={0}
+        >
+            <ChainNameStatus tabIndex={0} active={chainId === '0x5'}>
+                <img
+                    src={chainMap.get('0x5').logoUrl}
+                    alt={'Canto'}
+                    width='21px'
+                    height='21px'
+                    style={{ borderRadius: '50%' }}
+                />
+                <Text color={chainId === '0x5' ? 'accent1' : 'white'}>
+                    Goerli
+                </Text>
+            </ChainNameStatus>
+        </NetworkItem>
+    );
+
     const networkMenuContent = (
-        <MenuContent tabIndex={0} aria-label={dropdownAriaDescription}>
-            {chains.map((chain, idx) => (
-                <NetworkItem
-                    onClick={() => handleClick(chain)}
-                    key={chain.chainId}
-                    custom={idx}
-                    variants={ItemEnterAnimation}
-                    tabIndex={0}
-                >
-                    <ChainNameStatus
-                        tabIndex={0}
-                        active={chain.chainId === chainId}
-                    >
-                        <img
-                            src={chain.logoUrl}
-                            alt={chain.displayName}
-                            width='21px'
-                            height='21px'
-                            style={{ borderRadius: '50%' }}
-                        />
-
-                        <Text
-                            color={
-                                chain.chainId === chainId ? 'accent1' : 'white'
-                            }
-                        >
-                            {chain.displayName}
-                        </Text>
-                    </ChainNameStatus>
-                </NetworkItem>
-            ))}
-            <NetworkItem
-                onClick={() => window.open('http://beta.canto.io/lp', '_blank')}
-                key={'canto'}
-                custom={chains.length}
-                variants={ItemEnterAnimation}
-                tabIndex={0}
-            >
-                <ChainNameStatus tabIndex={0} active={false}>
-                    <img
-                        src={canto}
-                        alt={'Canto'}
-                        width='21px'
-                        height='21px'
-                        style={{ borderRadius: '50%' }}
-                    />
-
-                    <Text color='white'>Canto</Text>
-                </ChainNameStatus>
-            </NetworkItem>
+        <MenuContent tabIndex={0} aria-label={'Dropdown menu for networks.'}>
+            {ethereumNetwork}
+            {scrollNetwork}
+            {cantoNetwork}
+            {goerliNetwork}
         </MenuContent>
     );
 
