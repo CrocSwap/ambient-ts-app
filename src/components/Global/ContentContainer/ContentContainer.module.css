@@ -4,14 +4,14 @@
     color: var(--text2);
     border-radius: var(--border-radius);
 
-    background-color: var(--dark1);
-    background: var(--dark-gradient);
+    background-color: var(--accent1);
+    background: var(--accent1);
 }
 
 .main_content {
     background-color: transparent;
     border-radius: var(--border-radius);
-    padding: 8px 16px 16px 16px;
+
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -80,6 +80,7 @@
     .no_background:focus-within {
         box-shadow: none;
     }
+    
 }
 @media (min-width: 1200px) {
     .container {
@@ -108,7 +109,7 @@
 
     .swap_route,
     .no_background {
-        width: 95%;
+       
         margin: 0 auto;
     }
 }
@@ -118,5 +119,11 @@
         overflow-y: scroll;
 
         max-height: 75vh;
+    }
+
+    .swap_route,
+    .no_background {
+        width: 95%;
+       
     }
 }
