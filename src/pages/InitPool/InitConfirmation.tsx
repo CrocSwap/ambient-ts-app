@@ -176,14 +176,14 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         : `${tokenB.symbol} / ${tokenA.symbol}`;
 
     const noMintLiqSteps = [
-        { label: 'Sign transaction to initialize pool.' },
+        { label: 'Sign transaction to initialize pool' },
         {
             label: `Submitting pool initialization for ${tokenSymbols}`,
         },
     ];
 
     const mintLiqSteps = [
-        { label: 'Sign transaction to initialize pool ' },
+        { label: 'Sign transaction to initialize pool' },
         {
             label: `Submitting pool initialization for ${tokenSymbols}`,
         },

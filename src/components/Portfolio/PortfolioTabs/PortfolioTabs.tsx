@@ -339,7 +339,7 @@ export default function PortfolioTabs(props: propsIF) {
             icon: openOrdersImage,
         },
         {
-            label: 'Ranges',
+            label: 'Liquidity',
             content: <Ranges {...rangeProps} />,
             icon: rangePositionsImage,
         },
