@@ -39,11 +39,13 @@ export default function NetworkSelector(props: propsIF) {
     const chains: ChainSpec[] = getSupportedChainIds().map((chain: string) =>
         lookupChain(chain),
     );
+
+    // organize chain data into a hashmap for easier access in the file
     const chainMap = new Map();
     chains.forEach((chain: ChainSpec) => chainMap.set(chain.chainId, chain));
-    console.log(chainMap);
 
-    const handleClick = (chn: ChainSpec): void => {
+    // click handler for network switching (does not handle Canto link)
+    function handleClick(chn: ChainSpec): void {
         if (switchNetwork) {
             switchNetwork(parseInt(chn.chainId));
             if (chainParam || networkParam) {
@@ -57,8 +59,12 @@ export default function NetworkSelector(props: propsIF) {
             }
             chooseNetwork(supportedNetworks[chn.chainId]);
         }
-    };
+    }
 
+    // !important:  network data is manually coded because the data used to generate
+    // !important:  ... elements does not follow a consistent shape (due to Canto)
+
+    // JSX element to select ethereum mainnet network
     const ethereumNetwork: JSX.Element = (
         <NetworkItem
             id='ethereum_network_selector'
@@ -83,6 +89,7 @@ export default function NetworkSelector(props: propsIF) {
         </NetworkItem>
     );
 
+    // JSX element to select scroll network
     const scrollNetwork: JSX.Element = (
         <NetworkItem
             id='scroll_network_selector'
@@ -107,6 +114,7 @@ export default function NetworkSelector(props: propsIF) {
         </NetworkItem>
     );
 
+    // JSX element to select canto network (external link)
     const cantoNetwork: JSX.Element = (
         <NetworkItem
             id='canto_network_selector'
@@ -129,6 +137,7 @@ export default function NetworkSelector(props: propsIF) {
         </NetworkItem>
     );
 
+    // JSX element to select goerli network
     const goerliNetwork: JSX.Element = (
         <NetworkItem
             id='goerli_network_selector'
@@ -147,38 +156,36 @@ export default function NetworkSelector(props: propsIF) {
                     style={{ borderRadius: '50%' }}
                 />
                 <Text color={chainId === '0x5' ? 'accent1' : 'white'}>
-                    Goerli
+                    Görli
                 </Text>
             </ChainNameStatus>
         </NetworkItem>
     );
 
     return (
-        <>
-            <div style={{ position: 'relative' }}>
-                <DropdownMenuContainer
-                    justifyContent='center'
-                    alignItems='center'
-                    gap={4}
+        <div style={{ position: 'relative' }}>
+            <DropdownMenuContainer
+                justifyContent='center'
+                alignItems='center'
+                gap={4}
+            >
+                <DropdownMenu2
+                    marginTop={'50px'}
+                    titleWidth={'80px'}
+                    title={lookupChain(chainId).displayName}
+                    logo={lookupChain(chainId).logoUrl}
                 >
-                    <DropdownMenu2
-                        marginTop={'50px'}
-                        titleWidth={'80px'}
-                        title={lookupChain(chainId).displayName}
-                        logo={lookupChain(chainId).logoUrl}
+                    <MenuContent
+                        tabIndex={0}
+                        aria-label={'Dropdown menu for networks.'}
                     >
-                        <MenuContent
-                            tabIndex={0}
-                            aria-label={'Dropdown menu for networks.'}
-                        >
-                            {ethereumNetwork}
-                            {scrollNetwork}
-                            {cantoNetwork}
-                            {goerliNetwork}
-                        </MenuContent>
-                    </DropdownMenu2>
-                </DropdownMenuContainer>
-            </div>
-        </>
+                        {ethereumNetwork}
+                        {scrollNetwork}
+                        {cantoNetwork}
+                        {goerliNetwork}
+                    </MenuContent>
+                </DropdownMenu2>
+            </DropdownMenuContainer>
+        </div>
     );
 }
