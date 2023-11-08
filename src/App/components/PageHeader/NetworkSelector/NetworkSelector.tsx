@@ -209,11 +209,11 @@ export default function NetworkSelector(props: propsIF) {
                         tabIndex={0}
                         aria-label={'Dropdown menu for networks.'}
                     >
-                        {ethereumNetwork}
-                        {scrollNetwork}
-                        {cantoNetwork}
-                        {goerliNetwork}
-                        {sepoliaNetwork}
+                        {chainMap.has('0x1') && ethereumNetwork}
+                        {chainMap.has('0x82750') && scrollNetwork}
+                        {process.env.INCLUDE_CANTO_LINK && cantoNetwork}
+                        {chainMap.has('0x5') && goerliNetwork}
+                        {chainMap.has('0x8274f') && sepoliaNetwork}
                     </MenuContent>
                 </DropdownMenu2>
             </DropdownMenuContainer>
