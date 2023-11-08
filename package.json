@@ -4,7 +4,7 @@
     "private": true,
     "dependencies": {
         "@covalenthq/client-sdk": "^0.2.6",
-        "@crocswap-libs/sdk": "^0.2.78",
+        "@crocswap-libs/sdk": "^0.2.79",
         "@d3fc/d3fc-extent": "^4.0.2",
         "@emotion/is-prop-valid": "^1.2.1",
         "@emotion/react": "^11.10.5",

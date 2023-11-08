@@ -175,6 +175,16 @@ function Swap(props: propsIF) {
         },
     );
 
+    const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
+
+    const amountToReduceEthMainnet = 0.005; // .005 ETH
+    const amountToReduceEthScroll = 0.0003; // .0003 ETH
+
+    const amountToReduceEth =
+        chainId === '0x82750' || chainId === '0x8274f'
+            ? amountToReduceEthScroll
+            : amountToReduceEthMainnet;
+
     useEffect(() => {
         if (isSellLoading || isBuyLoading) {
             setSwapAllowed(false);
@@ -206,6 +216,15 @@ function Swap(props: propsIF) {
                 setSwapButtonErrorMessage(
                     `${tokenA.symbol} Amount Exceeds ${balanceLabel} Balance`,
                 );
+            } else if (
+                isSellTokenNativeToken &&
+                tokenAQtyCoveredByWalletBalance + amountToReduceEth >
+                    parseFloat(tokenABalance)
+            ) {
+                setSwapAllowed(false);
+                setSwapButtonErrorMessage(
+                    'Wallet Balance Insufficient to Cover Gas',
+                );
             } else {
                 setSwapAllowed(true);
             }
@@ -224,13 +243,14 @@ function Swap(props: propsIF) {
         isWithdrawFromDexChecked,
         isBuyLoading,
         isSellLoading,
+        isSellTokenNativeToken,
+        tokenABalance,
+        tokenAQtyCoveredByWalletBalance,
     ]);
 
     useEffect(() => {
         setNewSwapTransactionHash('');
     }, [baseToken.address + quoteToken.address]);
-
-    const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
 
     // calculate price of gas for swap
     useEffect(() => {
