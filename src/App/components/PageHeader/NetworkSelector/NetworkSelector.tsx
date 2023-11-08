@@ -36,9 +36,12 @@ export default function NetworkSelector(props: propsIF) {
     const chainParam = searchParams.get('chain');
     const networkParam = searchParams.get('network');
 
-    const chains = getSupportedChainIds().map((chain: string) =>
+    const chains: ChainSpec[] = getSupportedChainIds().map((chain: string) =>
         lookupChain(chain),
     );
+    const chainMap = new Map();
+    chains.forEach((chain: ChainSpec) => chainMap.set(chain.chainId, chain));
+    console.log(chains);
 
     const handleClick = (chn: ChainSpec): void => {
         if (switchNetwork) {
