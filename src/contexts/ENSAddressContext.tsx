@@ -1,8 +1,8 @@
 import { createContext, useContext, useState, useRef, ReactNode } from 'react';
-import { TransactionIF } from '../utils/interfaces/TransactionIF';
+import { TransactionIF } from '@crocswap-libs/ambient-utils/types';
 import { LimitOrderIF } from '../utils/interfaces/LimitOrderIF';
 import { PositionIF } from '../utils/interfaces/PositionIF';
-import { batchFetchAndCacheENSAddressData } from 'ambient-data-and-controls';
+import { batchFetchAndCacheENSAddressData } from '@crocswap-libs/ambient-utils';
 
 type TradeTableDataRow = TransactionIF | LimitOrderIF | PositionIF;
 

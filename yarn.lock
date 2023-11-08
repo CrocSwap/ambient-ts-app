@@ -5399,7 +5399,7 @@ alphanum-sort@^1.0.0:
   resolved "https://registry.npmjs.org/alphanum-sort/-/alphanum-sort-1.0.2.tgz"
   integrity sha512-0FcBfdcmaumGPQ0qPn7Q5qTgz/ooXgIyp1rf8ik5bGX8mpE2YHjC0P/eyQvxu1GURYQgq9ozf2mteQ5ZD9YiyQ==
 
-"ambient-data-and-controls@git+https://github.com/CrocSwap/data-and-controls.git":
+"ambient-data-and-controls@git+https://github.com/CrocSwap/data-and-controls.git#main":
   version "0.1.0"
   resolved "git+https://github.com/CrocSwap/data-and-controls.git#7dcad8e36b43280ebb9fa4a8e1737c221b609466"
   dependencies:
