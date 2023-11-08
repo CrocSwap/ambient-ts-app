@@ -78,10 +78,10 @@ export function useUndoRedo(denomInBase: boolean) {
 
             if (!drawActionStack.has(actionKey)) {
                 if (
-                    (actionKey.tokenA === element.pool.tokenA.address &&
-                        actionKey.tokenB === element.pool.tokenB.address) ||
-                    (actionKey.tokenA === element.pool.tokenB.address &&
-                        actionKey.tokenB === element.pool.tokenA.address)
+                    (actionKey.tokenA === element.pool.tokenA &&
+                        actionKey.tokenB === element.pool.tokenB) ||
+                    (actionKey.tokenA === element.pool.tokenB &&
+                        actionKey.tokenB === element.pool.tokenA)
                 ) {
                     drawActionStack.set(actionKey, [tempData]);
                 } else {
@@ -93,8 +93,8 @@ export function useUndoRedo(denomInBase: boolean) {
                     ?.find((item) => item.time === element.time);
                 if (
                     actionList === undefined &&
-                    actionKey.tokenA === element.pool.tokenA.address &&
-                    actionKey.tokenB === element.pool.tokenB.address
+                    actionKey.tokenA === element.pool.tokenA &&
+                    actionKey.tokenB === element.pool.tokenB
                 ) {
                     drawActionStack.get(actionKey)?.push(tempData);
                 }

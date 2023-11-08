@@ -3,7 +3,6 @@ import { DetailedHTMLProps, HTMLAttributes, MutableRefObject } from 'react';
 import * as d3 from 'd3';
 import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
-import { TradeDataIF } from '../../../utils/state/tradeDataSlice';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -34,11 +33,18 @@ export type chartAnnotationData = {
 };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type lineData = { x: number; y: number; denomInBase: boolean };
+export type poolDataChart = {
+    poolIndex: number;
+    tokenA: string;
+    tokenB: string;
+    isTokenABase: boolean;
+    denomInBase: boolean;
+};
 export type drawDataHistory = {
     data: lineData[];
     type: string;
     time: number;
-    pool: TradeDataIF;
+    pool: poolDataChart;
     color: string;
     background: string;
     lineWidth: number;
