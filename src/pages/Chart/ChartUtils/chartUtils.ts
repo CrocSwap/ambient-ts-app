@@ -40,6 +40,7 @@ export type drawDataHistory = {
     time: number;
     pool: TradeDataIF;
     color: string;
+    background: string;
     lineWidth: number;
     style: number[];
 };
@@ -100,6 +101,33 @@ export type zoomUtils = {
     zoom: d3.ZoomBehavior<Element, unknown>;
     xAxisZoom: d3.ZoomBehavior<Element, unknown>;
 };
+
+const fibLevels = [
+    { level: 0, active: true },
+    { level: 0.236, active: true },
+    { level: 0.382, active: true },
+    { level: 0.5, active: true },
+    { level: 0.618, active: true },
+    { level: 0.786, active: true },
+    { level: 1, active: true },
+    { level: 1.272, active: false },
+    { level: 1.414, active: false },
+    { level: 1.618, active: true },
+    { level: 2, active: false },
+    { level: 2.272, active: false },
+    { level: 2.414, active: false },
+    { level: 2.618, active: true },
+    { level: 3, active: false },
+    { level: 3.272, active: false },
+    { level: 3.414, active: false },
+    { level: 3.618, active: true },
+    { level: 4, active: false },
+    { level: 4.236, active: true },
+    { level: 4.272, active: false },
+    { level: 4.414, active: false },
+    { level: 4.618, active: false },
+    { level: 4.764, active: false },
+];
 
 export function setCanvasResolution(canvas: HTMLCanvasElement) {
     const ratio = window.devicePixelRatio < 1 ? 1 : window.devicePixelRatio;
@@ -215,4 +243,149 @@ export function fillLiqAdvanced(
             }
         }
     }
+}
+
+export function formatTimeDifference(startDate: Date, endDate: Date): string {
+    const timeDifference = endDate.getTime() - startDate.getTime();
+    const secondsDifference = Math.floor(timeDifference / 1000);
+
+    const days = Math.floor(secondsDifference / 86400);
+    const hours = Math.floor((secondsDifference % 86400) / 3600);
+    const minutes = Math.floor((secondsDifference % 3600) / 60);
+
+    if (days > 0) {
+        return `${days}d ${hours}h ${minutes}m`;
+    } else {
+        return `${hours}h ${minutes}m`;
+    }
+}
+
+export function calculateFibRetracement(data: lineData[]) {
+    const colorScale = d3
+        .scaleOrdinal<string>()
+        .range([
+            '#787b86',
+            '#f23645',
+            '#ff9800',
+            '#4caf50',
+            '#089981',
+            '#00bcd4',
+            '#787b86',
+            '#2962ff',
+            '#f23645',
+            '#9c27b0',
+            '#e91e63',
+        ]);
+
+    const retracementIsUp = data[0].y > data[1].y;
+
+    const pointLevel = data[1].y;
+    const secondLevel = data[0].y;
+
+    const diff = Math.abs(pointLevel - secondLevel);
+
+    const fibLineData: Array<
+        {
+            x: number;
+            y: number;
+            denomInBase: boolean;
+            color: string;
+            level: number;
+        }[]
+    > = [];
+
+    fibLevels.forEach((level) => {
+        if (level.active) {
+            fibLineData.push([
+                {
+                    x: data[0].x,
+                    y:
+                        pointLevel +
+                        diff * level.level * (retracementIsUp ? 1 : -1),
+                    denomInBase: data[0].denomInBase,
+                    color: '',
+                    level: level.level,
+                },
+                {
+                    x: data[1].x,
+                    y:
+                        pointLevel +
+                        diff * level.level * (retracementIsUp ? 1 : -1),
+                    denomInBase: data[0].denomInBase,
+                    color: '',
+                    level: level.level,
+                },
+            ]);
+        }
+    });
+
+    fibLineData.sort((a, b) =>
+        retracementIsUp ? a[0].y - b[0].y : b[0].y - a[0].y,
+    );
+
+    fibLineData.forEach((lineData, index) => {
+        lineData[0].color = colorScale(index.toString());
+        lineData[1].color = colorScale(index.toString());
+    });
+
+    return fibLineData;
+}
+
+export function calculateFibRetracementBandAreas(data: lineData[]) {
+    const colorScale = d3
+        .scaleOrdinal<string>()
+        .range([
+            '#f23645',
+            '#ff9800',
+            '#4caf50',
+            '#089981',
+            '#00bcd4',
+            '#787b86',
+            '#2962ff',
+            '#f23645',
+            '#9c27b0',
+            '#f23645',
+            '#787b86',
+        ]);
+
+    const retracementIsUp = data[0].y > data[1].y;
+
+    const pointLevel = data[1].y;
+    const secondLevel = data[0].y;
+
+    const diff = Math.abs(pointLevel - secondLevel);
+
+    const fibLineData: Array<{
+        fromValue: number;
+        toValue: number;
+        denomInBase: boolean;
+        color: string;
+    }> = [];
+
+    const activeFibLevels = fibLevels.filter((level) => level.active);
+
+    activeFibLevels.reduce((prev, curr) => {
+        if (curr.active) {
+            fibLineData.push({
+                fromValue:
+                    pointLevel + diff * prev.level * (retracementIsUp ? 1 : -1),
+                toValue:
+                    pointLevel + diff * curr.level * (retracementIsUp ? 1 : -1),
+                denomInBase: data[0].denomInBase,
+                color: '',
+            });
+        }
+
+        return curr;
+    });
+
+    fibLineData.sort((a, b) =>
+        retracementIsUp ? a.fromValue - b.fromValue : b.fromValue - a.fromValue,
+    );
+
+    fibLineData.forEach((lineData, index) => {
+        lineData.color = colorScale(index.toString());
+    });
+
+    return fibLineData;
 }

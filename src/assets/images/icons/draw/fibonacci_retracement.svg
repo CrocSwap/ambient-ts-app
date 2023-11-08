@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <defs>
+  <clipPath id="clip0_7255_86007">
+   <rect fill="white" height="20" id="svg_1" transform="translate(2 2)" width="20"/>
+  </clipPath>
+ </defs>
+ <g class="layer">
+  <title>Layer 1</title>
+  <g clip-path="url(#clip0_7255_86007)" id="svg_2">
+   <path d="m19.36,20.92c1.05,0 1.9,-0.85 1.9,-1.91c0,-1.05 -0.85,-1.9 -1.9,-1.9c-1.06,0 -1.91,0.85 -1.91,1.9c0,1.06 0.85,1.91 1.91,1.91z" id="svg_3" stroke="#8B98A5" stroke-linecap="round" stroke-linejoin="round" transform="matrix(1 0 0 1 0 0)"/>
+   <path d="m5.68,10.1c1.06,0 1.91,-0.85 1.91,-1.9c0,-1.06 -0.85,-1.91 -1.91,-1.91c-1.05,0 -1.9,0.85 -1.9,1.91c0,1.05 0.85,1.9 1.9,1.9z" id="svg_4" stroke="#8B98A5" stroke-linecap="round" stroke-linejoin="round" transform="matrix(1 0 0 1 0 0)"/>
+   <line id="svg_5" stroke="#8B98A5" transform="matrix(1 0 0 1 0 0)" x1="20.04" x2="5.5" y1="13.81" y2="13.82"/>
+   <line id="svg_6" stroke="#8B98A5" transform="matrix(1 0 0 1 0 0)" x1="19.92" x2="7.6" y1="8.09" y2="8.1"/>
+   <line id="svg_7" stroke="#8B98A5" x1="20.02" x2="5.39" y1="2.9" y2="2.91"/>
+   <line id="svg_8" stroke="#8B98A5" transform="matrix(1 0 0 1 0 0)" x1="17.83" x2="5.76" y1="19.22" y2="19.23"/>
+  </g>
+ </g>
+</svg>
