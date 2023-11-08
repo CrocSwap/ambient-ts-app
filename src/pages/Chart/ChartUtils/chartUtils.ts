@@ -28,6 +28,10 @@ declare global {
 export const CHART_ANNOTATIONS_LS_KEY = 'chart_annotations';
 export const defaultCandleBandwith = 5;
 
+export type chartAnnotationData = {
+    isOpenAnnotationPanel: boolean;
+    drawnShapes: drawDataHistory[];
+};
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type lineData = { x: number; y: number; denomInBase: boolean };
 export type drawDataHistory = {

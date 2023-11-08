@@ -11,8 +11,9 @@ export interface actionKeyIF {
 
 export function useUndoRedo(denomInBase: boolean) {
     const initialData = localStorage.getItem(CHART_ANNOTATIONS_LS_KEY);
-
-    const initialArray = initialData ? JSON.parse(initialData) : [];
+    const initialArray = initialData
+        ? JSON.parse(initialData)?.drawnShapes || []
+        : [];
 
     const [drawnShapeHistory, setDrawnShapeHistory] =
         useState<drawDataHistory[]>(initialArray);
