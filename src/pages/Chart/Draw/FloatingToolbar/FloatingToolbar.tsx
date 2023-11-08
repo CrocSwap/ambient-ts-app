@@ -23,7 +23,7 @@ import {
     AiOutlineMinus,
     AiOutlineSmallDash,
 } from 'react-icons/ai';
-import { CompactPicker, SketchPicker } from 'react-color';
+import { SketchPicker } from 'react-color';
 import { IoCloseOutline } from 'react-icons/io5';
 import useKeyPress from '../../../../App/hooks/useKeyPress';
 import { IoMdColorFilter } from 'react-icons/io';
