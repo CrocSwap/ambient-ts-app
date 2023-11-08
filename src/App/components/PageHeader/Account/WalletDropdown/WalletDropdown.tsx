@@ -30,6 +30,7 @@ import { toDisplayQty } from '@crocswap-libs/sdk';
 import { ethereumMainnet } from '../../../../../utils/networks/ethereumMainnet';
 import { mainnetUSDC } from '../../../../../utils/data/defaultTokens';
 import IconWithTooltip from '../../../../../components/Global/IconWithTooltip/IconWithTooltip';
+import { supportedNetworks } from '../../../../../utils/networks';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -62,6 +63,9 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
+    const defaultPair: [TokenIF, TokenIF] =
+        supportedNetworks[chainId].defaultPair;
+
     const tokenBalances: TokenIF[] | undefined = useAppSelector(
         (state) => state.userData.tokenBalances,
     );
@@ -70,7 +74,9 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         tokenBalances.find((tkn: TokenIF) => tkn.address === ZERO_ADDRESS);
     const usdcData: TokenIF | undefined = useMemo(() => {
         return tokenBalances?.find(
-            (tkn: TokenIF) => tkn.symbol === 'USDC' && tkn.name !== '',
+            (tkn: TokenIF) =>
+                tkn.address.toLowerCase() ===
+                defaultPair[1].address.toLowerCase(),
         );
     }, [tokenBalances]);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);

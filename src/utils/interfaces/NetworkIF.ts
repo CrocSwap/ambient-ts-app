@@ -8,7 +8,7 @@ export interface NetworkIF {
     wagmiChain: any;
     shouldPollBlock: boolean;
     marketData: string;
-    defaultPair: TokenIF[];
+    defaultPair: [TokenIF, TokenIF];
     topPools: TopPool[];
     getGasPriceInGwei: (provider?: Provider) => Promise<number | undefined>;
 }
