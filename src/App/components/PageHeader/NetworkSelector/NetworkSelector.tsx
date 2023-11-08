@@ -20,6 +20,7 @@ import {
 import { Text } from '../../../../styled/Common';
 import canto from '../../../../assets/images/networks/canto.png';
 import { RiExternalLinkLine } from 'react-icons/ri';
+import { INCLUDE_CANTO_LINK } from '../../../../constants';
 
 interface propsIF {
     switchNetwork: ((chainId_?: number | undefined) => void) | undefined;
@@ -211,7 +212,7 @@ export default function NetworkSelector(props: propsIF) {
                     >
                         {chainMap.has('0x1') && ethereumNetwork}
                         {chainMap.has('0x82750') && scrollNetwork}
-                        {process.env.INCLUDE_CANTO_LINK && cantoNetwork}
+                        {INCLUDE_CANTO_LINK && cantoNetwork}
                         {chainMap.has('0x5') && goerliNetwork}
                         {chainMap.has('0x8274f') && sepoliaNetwork}
                     </MenuContent>
