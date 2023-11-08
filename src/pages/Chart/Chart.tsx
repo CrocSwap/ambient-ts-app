@@ -4031,6 +4031,8 @@ export default function Chart(props: propsIF) {
     }, [
         diffHashSigScaleData(scaleData, 'x'),
         diffHashSigChart(unparsedCandleData),
+        reset,
+        latest,
     ]);
 
     // Candle transactions
