@@ -1,0 +1,3 @@
+[submodule "ambient-utils"]
+	path = ambient-utils
+	url = https://github.com/CrocSwap/data-and-controls.git
