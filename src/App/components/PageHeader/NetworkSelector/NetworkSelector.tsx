@@ -166,6 +166,32 @@ export default function NetworkSelector(props: propsIF) {
         </NetworkItem>
     );
 
+    // JSX element to select sepolia network
+    // uses the same logo as scroll network
+    const sepoliaNetwork: JSX.Element = (
+        <NetworkItem
+            id='sepolia_network_selector'
+            onClick={() => handleClick(chainMap.get('0x8274f'))}
+            key={'sepolia'}
+            custom={0}
+            variants={ItemEnterAnimation}
+            tabIndex={0}
+        >
+            <ChainNameStatus tabIndex={0} active={chainId === '0x8274f'}>
+                <img
+                    src={chainMap.get('0x82750').logoUrl}
+                    alt={'goerli network'}
+                    width='21px'
+                    height='21px'
+                    style={{ borderRadius: '50%' }}
+                />
+                <Text color={chainId === '0x8274f' ? 'accent1' : 'white'}>
+                    Sepolia
+                </Text>
+            </ChainNameStatus>
+        </NetworkItem>
+    );
+
     return (
         <div style={{ position: 'relative' }}>
             <DropdownMenuContainer
@@ -187,6 +213,7 @@ export default function NetworkSelector(props: propsIF) {
                         {scrollNetwork}
                         {cantoNetwork}
                         {goerliNetwork}
+                        {sepoliaNetwork}
                     </MenuContent>
                 </DropdownMenu2>
             </DropdownMenuContainer>
