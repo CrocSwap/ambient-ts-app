@@ -18,6 +18,8 @@ import {
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
 import { Text } from '../../../../styled/Common';
+import canto from '../../../../assets/images/networks/canto.png';
+
 interface propsIF {
     switchNetwork: ((chainId_?: number | undefined) => void) | undefined;
 }
@@ -87,6 +89,25 @@ export default function NetworkSelector(props: propsIF) {
                     </ChainNameStatus>
                 </NetworkItem>
             ))}
+            <NetworkItem
+                onClick={() => window.open('http://beta.canto.io/lp', '_blank')}
+                key={'canto'}
+                custom={chains.length}
+                variants={ItemEnterAnimation}
+                tabIndex={0}
+            >
+                <ChainNameStatus tabIndex={0} active={false}>
+                    <img
+                        src={canto}
+                        alt={'Canto'}
+                        width='21px'
+                        height='21px'
+                        style={{ borderRadius: '50%' }}
+                    />
+
+                    <Text color='white'>Canto</Text>
+                </ChainNameStatus>
+            </NetworkItem>
         </MenuContent>
     );
 

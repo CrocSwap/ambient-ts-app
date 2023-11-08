@@ -4,7 +4,7 @@ import { IoWarningOutline } from 'react-icons/io5';
 
 interface WarningBoxProps {
     title?: string;
-    details: string;
+    details: React.ReactNode;
     button?: React.ReactNode;
     noBackground?: boolean;
 }

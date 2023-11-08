@@ -1,10 +1,6 @@
 import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
-import { GRAPHCACHE_SMALL_URL } from '../../constants';
-import { getMainnetAddress } from '../../utils/functions/getMainnetAddress';
-import { supportedNetworks } from '../../utils/networks';
+import { GCGO_OVERRIDE_URL } from '../../constants';
 import { TokenPriceFn } from './fetchTokenPrice';
-
-const poolLiquidityCacheEndpoint = GRAPHCACHE_SMALL_URL + '/pool_liq_curve?';
 
 export const fetchPoolLiquidity = async (
     chainId: string,
@@ -12,8 +8,13 @@ export const fetchPoolLiquidity = async (
     quote: string,
     poolIdx: number,
     crocEnv: CrocEnv,
+    graphCacheUrl: string,
     cachedFetchTokenPrice: TokenPriceFn,
 ): Promise<LiquidityDataIF | undefined> => {
+    const poolLiquidityCacheEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/pool_liq_curve?'
+        : graphCacheUrl + '/pool_liq_curve?';
+
     return fetch(
         poolLiquidityCacheEndpoint +
             new URLSearchParams({
@@ -53,10 +54,8 @@ async function expandLiquidityData(
     const pool = crocEnv.pool(base, quote);
     const curveTick = pool.spotTick();
 
-    const mainnetBase = getMainnetAddress(base, supportedNetworks[chainId]);
-    const mainnetQuote = getMainnetAddress(quote, supportedNetworks[chainId]);
-    const basePricePromise = cachedFetchTokenPrice(mainnetBase, chainId);
-    const quotePricePromise = cachedFetchTokenPrice(mainnetQuote, chainId);
+    const basePricePromise = cachedFetchTokenPrice(base, chainId);
+    const quotePricePromise = cachedFetchTokenPrice(quote, chainId);
 
     const basePrice = (await basePricePromise)?.usdPrice || 0.0;
     const quotePrice = (await quotePricePromise)?.usdPrice || 0.0;
@@ -93,7 +92,7 @@ function bumpsToRanges(
     let bumps = curve.liquidityBumps ? curve.liquidityBumps : [];
 
     // Insert a synthetic bump right at the current price tick, so curve is smooth
-    if (curve.liquidityBumps.filter((b) => b.bumpTick == tick).length == 0) {
+    if (bumps.filter((b) => b.bumpTick == tick).length == 0) {
         bumps = bumps.concat({
             bumpTick: tick,
             liquidityDelta: 0,

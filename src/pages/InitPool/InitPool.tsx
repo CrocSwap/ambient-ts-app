@@ -29,6 +29,7 @@ import Toggle from '../../components/Form/Toggle';
 import { TextOnlyTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
 import { TokenContext } from '../../contexts/TokenContext';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
+import { useSendInit } from '../../App/hooks/useSendInit';
 
 import { useTokenBalancesAndAllowances } from '../../App/hooks/useTokenBalancesAndAllowances';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
@@ -36,7 +37,6 @@ import Spinner from '../../components/Global/Spinner/Spinner';
 import AdvancedModeToggle from '../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import { getMoneynessRank } from '../../utils/functions/getMoneynessRank';
 import { WarningBox } from '../../components/RangeActionModal/WarningBox/WarningBox';
-import { ethereumMainnet } from '../../utils/networks/ethereumMainnet';
 import InitSkeleton from './InitSkeleton';
 import InitConfirmation from './InitConfirmation';
 import MultiContentComponent from '../../components/Global/MultiStepTransaction/MultiContentComponent';
@@ -68,7 +68,19 @@ import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useRangeInputDisable } from '../Trade/Range/useRangeInputDisable';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 import InitButton from './InitButton';
-import { useSendInit } from '../../App/hooks/useSendInit';
+import Button from '../../components/Form/Button';
+import {
+    addPendingTx,
+    addReceipt,
+    addTransactionByType,
+    removePendingTx,
+    updateTransactionHash,
+} from '../../utils/state/receiptDataSlice';
+import {
+    TransactionError,
+    isTransactionFailedError,
+    isTransactionReplacedError,
+} from '../../utils/TransactionError';
 // react functional component
 export default function InitPool() {
     const {
@@ -125,7 +137,7 @@ export default function InitPool() {
         tknA.toLowerCase() === tokenA.address.toLowerCase() &&
         tknB.toLowerCase() === tokenB.address.toLowerCase();
 
-    const { isConnected } = useAccount();
+    const { isConnected, address: userAddress } = useAccount();
 
     const {
         baseTokenDexBalance,
@@ -450,28 +462,33 @@ export default function InitPool() {
         return undefined;
     }, [baseToken, quoteToken, baseTokenDexBalance, quoteTokenDexBalance]);
 
+    const dexBalanceToBeRemoved = useMemo(() => {
+        if (baseToken?.address === erc20TokenWithDexBalance?.address) {
+            return baseTokenDexBalance;
+        } else if (quoteToken?.address === erc20TokenWithDexBalance?.address) {
+            return quoteTokenDexBalance;
+        }
+        return undefined;
+    }, [
+        erc20TokenWithDexBalance,
+        baseToken,
+        quoteToken,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
+    ]);
+
     const [isReferencePriceAvailable, setIsReferencePriceAvailable] =
         useState(false);
 
     const refreshReferencePrice = async () => {
         if (tradeDataMatchesURLParams) {
-            const mainnetBase =
-                baseToken.address === ZERO_ADDRESS
-                    ? ethereumMainnet.tokens['WETH']
-                    : ethereumMainnet.tokens[
-                          baseToken?.symbol as keyof typeof ethereumMainnet.tokens
-                      ];
-            const mainnetQuote =
-                ethereumMainnet.tokens[
-                    quoteToken?.symbol as keyof typeof ethereumMainnet.tokens
-                ];
             const basePricePromise = cachedFetchTokenPrice(
-                mainnetBase,
-                ethereumMainnet.chainId,
+                baseToken.address,
+                chainId,
             );
             const quotePricePromise = cachedFetchTokenPrice(
-                mainnetQuote,
-                ethereumMainnet.chainId,
+                quoteToken.address,
+                chainId,
             );
 
             const basePrice = await basePricePromise;
@@ -566,10 +583,12 @@ export default function InitPool() {
 
     const shouldResetAdvancedLowTick =
         advancedHighTick > selectedPoolPriceTick + 100000 ||
-        advancedLowTick < selectedPoolPriceTick - 100000;
+        advancedLowTick < selectedPoolPriceTick - 100000 ||
+        advancedLowTick === advancedHighTick;
     const shouldResetAdvancedHighTick =
         advancedHighTick > selectedPoolPriceTick + 100000 ||
-        advancedLowTick < selectedPoolPriceTick - 100000;
+        advancedLowTick < selectedPoolPriceTick - 100000 ||
+        advancedLowTick === advancedHighTick;
 
     const defaultLowTick = useMemo<number>(() => {
         const value: number = shouldResetAdvancedLowTick
@@ -801,8 +820,32 @@ export default function InitPool() {
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice, isMintLiqEnabled]);
 
-    const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) > 0;
-    const isTokenBAllowanceSufficient = parseFloat(tokenBAllowance) > 0;
+    const tokenASurplusMinusTokenARemainderNum =
+        parseFloat(tokenADexBalance || '0') -
+        parseFloat(tokenACollateral || '0');
+    const tokenBSurplusMinusTokenBRemainderNum =
+        parseFloat(tokenBDexBalance || '0') -
+        parseFloat(tokenBCollateral || '0');
+    const tokenAQtyCoveredByWalletBalance = isWithdrawTokenAFromDexChecked
+        ? tokenASurplusMinusTokenARemainderNum < 0
+            ? tokenASurplusMinusTokenARemainderNum * -1
+            : 0
+        : parseFloat(tokenACollateral || '0');
+    const tokenBQtyCoveredByWalletBalance = isWithdrawTokenBFromDexChecked
+        ? tokenBSurplusMinusTokenBRemainderNum < 0
+            ? tokenBSurplusMinusTokenBRemainderNum * -1
+            : 0
+        : parseFloat(tokenBCollateral || '0');
+
+    // if liquidity miniting is enabled, tthen oken allowance must be greater than the amount of tokens the user is depositing,
+    // plus a small amount for the initialization transactions
+    // if liquidity minting is disabled, then token allowance must be greater than 0
+    const isTokenAAllowanceSufficient = isMintLiqEnabled
+        ? parseFloat(tokenAAllowance) > tokenAQtyCoveredByWalletBalance
+        : parseFloat(tokenAAllowance) > 0;
+    const isTokenBAllowanceSufficient = isMintLiqEnabled
+        ? parseFloat(tokenBAllowance) > tokenBQtyCoveredByWalletBalance
+        : parseFloat(tokenBAllowance) > 0;
 
     const focusInput = () => {
         const inputField = document.getElementById(
@@ -945,7 +988,10 @@ export default function InitPool() {
             defaultLowTick,
             defaultHighTick,
             isDenomBase,
+            isMintLiqEnabled,
         );
+
+    const isInitPage = true;
 
     const {
         tokenAllowed: tokenAAllowed,
@@ -959,6 +1005,7 @@ export default function InitPool() {
         isWithdrawTokenAFromDexChecked,
         true, // hardcode pool initialized since we will be initializing it on confirm
         isMintLiqEnabled,
+        isInitPage,
     );
     const {
         tokenAllowed: tokenBAllowed,
@@ -972,6 +1019,7 @@ export default function InitPool() {
         isWithdrawTokenBFromDexChecked,
         true, // hardcode pool initialized since we will be initializing it on confirm
         isMintLiqEnabled,
+        isInitPage,
     );
 
     // Next step - understand how sider affects these params
@@ -1010,7 +1058,7 @@ export default function InitPool() {
               sendInit(initialPriceInBaseDenom);
           };
 
-    const initButtopPropsIF = {
+    const initButtonPropsIF = {
         tokenA,
         tokenB,
         tokenACollateral,
@@ -1034,8 +1082,8 @@ export default function InitPool() {
         isTokenBAllowanceSufficient,
         isInitPending,
         initialPriceDisplay,
-        advancedHighTick,
-        advancedLowTick,
+        defaultLowTick,
+        defaultHighTick,
         selectedPoolPriceTick,
     };
 
@@ -1412,6 +1460,7 @@ export default function InitPool() {
                     tokenB: isTokenBInputDisabled,
                 }}
                 reverseTokens={reverseTokens}
+                isMintLiqEnabled={isMintLiqEnabled}
                 isInitPage
             />
         </FlexContainer>
@@ -1510,6 +1559,85 @@ export default function InitPool() {
         </FlexContainer>
     );
 
+    const [isWithdrawPending, setIsWithdrawPending] = useState(false);
+
+    const withdrawWalletBalanceButton = (
+        <Button
+            disabled={isWithdrawPending}
+            title={
+                isWithdrawPending
+                    ? `${erc20TokenWithDexBalance?.symbol} Withdrawal Pending`
+                    : `Withdraw ${erc20TokenWithDexBalance?.symbol}`
+            }
+            action={async () => {
+                if (
+                    !crocEnv ||
+                    !erc20TokenWithDexBalance ||
+                    !userAddress ||
+                    !dexBalanceToBeRemoved
+                )
+                    return;
+
+                setIsWithdrawPending(true);
+
+                try {
+                    const tx = await crocEnv
+                        .token(erc20TokenWithDexBalance.address)
+                        .withdraw(dexBalanceToBeRemoved, userAddress);
+
+                    dispatch(addPendingTx(tx?.hash));
+
+                    if (tx?.hash) {
+                        dispatch(
+                            addTransactionByType({
+                                txHash: tx.hash,
+                                txType: 'Withdraw',
+                                txDescription: `Withdrawal of ${erc20TokenWithDexBalance.symbol}`,
+                            }),
+                        );
+                    }
+
+                    let receipt;
+                    try {
+                        if (tx) receipt = await tx.wait();
+                    } catch (e) {
+                        const error = e as TransactionError;
+                        console.error({ error });
+
+                        if (isTransactionReplacedError(error)) {
+                            IS_LOCAL_ENV && console.debug('repriced');
+                            dispatch(removePendingTx(error.hash));
+
+                            const newTransactionHash = error.replacement.hash;
+                            dispatch(addPendingTx(newTransactionHash));
+
+                            dispatch(
+                                updateTransactionHash({
+                                    oldHash: error.hash,
+                                    newHash: error.replacement.hash,
+                                }),
+                            );
+                            IS_LOCAL_ENV &&
+                                console.debug({ newTransactionHash });
+                            receipt = error.receipt;
+                        } else if (isTransactionFailedError(error)) {
+                            console.error({ error });
+                            receipt = error.receipt;
+                        }
+                    }
+
+                    if (receipt) {
+                        dispatch(addReceipt(JSON.stringify(receipt)));
+                        dispatch(removePendingTx(receipt.transactionHash));
+                    }
+                } finally {
+                    setIsWithdrawPending(false);
+                }
+            }}
+            flat
+        />
+    );
+
     const mainContent = (
         <InitSkeleton
             isTokenModalOpen={tokenModalOpen}
@@ -1560,7 +1688,11 @@ export default function InitPool() {
 
                 <FlexContainer flexDirection='column' gap={8}>
                     {warningAndExtraInfo}
-                    <InitButton {...initButtopPropsIF} />
+                    {erc20TokenWithDexBalance?.symbol ? (
+                        withdrawWalletBalanceButton
+                    ) : (
+                        <InitButton {...initButtonPropsIF} />
+                    )}
                 </FlexContainer>
             </FlexContainer>
         </InitSkeleton>

@@ -28,7 +28,9 @@ import { ZERO_ADDRESS } from '../../../../../constants';
 import { BigNumber } from 'ethers';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { ethereumMainnet } from '../../../../../utils/networks/ethereumMainnet';
+import { mainnetUSDC } from '../../../../../utils/data/defaultTokens';
 import IconWithTooltip from '../../../../../components/Global/IconWithTooltip/IconWithTooltip';
+import { supportedNetworks } from '../../../../../utils/networks';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -58,9 +60,11 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         accountAddressFull,
     } = props;
     const {
-        selectedNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+
+    const defaultPair: [TokenIF, TokenIF] =
+        supportedNetworks[chainId].defaultPair;
 
     const tokenBalances: TokenIF[] | undefined = useAppSelector(
         (state) => state.userData.tokenBalances,
@@ -68,12 +72,11 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     const nativeData: TokenIF | undefined =
         tokenBalances &&
         tokenBalances.find((tkn: TokenIF) => tkn.address === ZERO_ADDRESS);
-    const usdcAddr: string = selectedNetwork.tokens.USDC;
     const usdcData: TokenIF | undefined = useMemo(() => {
         return tokenBalances?.find(
             (tkn: TokenIF) =>
-                tkn.address.toLowerCase() === usdcAddr.toLowerCase() &&
-                tkn.chainId === parseInt(chainId),
+                tkn.address.toLowerCase() ===
+                defaultPair[1].address.toLowerCase(),
         );
     }, [tokenBalances]);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
@@ -133,10 +136,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         setUsdcBalanceForDom(usdcCombinedBalanceDisplayTruncated);
 
         Promise.resolve(
-            cachedFetchTokenPrice(
-                ethereumMainnet.tokens.USDC,
-                ethereumMainnet.chainId,
-            ),
+            cachedFetchTokenPrice(mainnetUSDC.address, ethereumMainnet.chainId),
         ).then((price) => {
             if (price?.usdPrice !== undefined) {
                 const usdValueNum: number =

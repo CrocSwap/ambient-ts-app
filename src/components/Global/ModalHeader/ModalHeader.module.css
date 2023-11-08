@@ -10,7 +10,7 @@
     justify-content: space-between;
     align-items: center;
 
-    background: var(--dark1);
+   
     padding: 1rem;
     border-radius: var(--border-radius);
 }

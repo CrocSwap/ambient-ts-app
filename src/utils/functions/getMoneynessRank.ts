@@ -1,4 +1,4 @@
-import { Tokens } from '../interfaces/NetworkIF';
+import { defaultTokens } from '../data/defaultTokens';
 
 export const getMoneynessRank = (tokenSymbol: string): number => {
     /* 
@@ -15,18 +15,26 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
         but otherwise arbitrary.
     */
 
-    const moneynessRank: { [K in keyof Tokens]: number } = {
+    const moneynessRank = {
         USDC: 100,
         DAI: 90,
         USDT: 80,
         FRAX: 70,
         WBTC: 60,
         ETH: 50,
-        UNI: 0,
-        WETH: 0,
         PEPE: 0,
     };
 
-    const rank = moneynessRank[tokenSymbol as keyof Tokens] ?? 0;
+    const rank = moneynessRank[tokenSymbol as keyof typeof moneynessRank] ?? 0;
     return rank;
+};
+
+export const getMoneynessRankByAddr = (tokenAddress: string): number => {
+    let moneynessRank = 0;
+    defaultTokens.forEach((token) => {
+        if (token.address.toLowerCase() === tokenAddress.toLowerCase()) {
+            moneynessRank = getMoneynessRank(token.symbol);
+        }
+    });
+    return moneynessRank;
 };

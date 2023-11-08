@@ -19,6 +19,7 @@
 
 .swap_main_content {
     padding: 24px;
+    box-shadow: var(--gradient-box-shadow);
 }
 
 .swap_bg {
