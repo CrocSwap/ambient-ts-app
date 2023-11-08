@@ -33,7 +33,7 @@ import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentCh
 import Orders from '../../Trade/TradeTabs/Orders/Orders';
 import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
 import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
-import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../../constants';
+import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
@@ -95,11 +95,11 @@ export default function PortfolioTabs(props: propsIF) {
     const [lookupAccountTransactionData, setLookupAccountTransactionData] =
         useState<TransactionIF[]>([]);
 
-    const userPositionsCacheEndpoint = GRAPHCACHE_SMALL_URL
-        ? GRAPHCACHE_SMALL_URL + '/user_positions?'
+    const userPositionsCacheEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/user_positions?'
         : activeNetwork.graphCacheUrl + '/user_positions?';
-    const userLimitOrdersCacheEndpoint = GRAPHCACHE_SMALL_URL
-        ? GRAPHCACHE_SMALL_URL + '/user_limit_orders?'
+    const userLimitOrdersCacheEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/user_limit_orders?'
         : activeNetwork.graphCacheUrl + '/user_limit_orders?';
 
     const getLookupUserPositions = async (accountToSearch: string) =>
@@ -339,7 +339,7 @@ export default function PortfolioTabs(props: propsIF) {
             icon: openOrdersImage,
         },
         {
-            label: 'Ranges',
+            label: 'Liquidity',
             content: <Ranges {...rangeProps} />,
             icon: rangePositionsImage,
         },

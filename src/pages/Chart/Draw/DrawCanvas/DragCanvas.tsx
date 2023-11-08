@@ -260,50 +260,50 @@ export default function DragCanvas(props: DragCanvasProps) {
                     (item) => item === hoveredDrawnShape?.data,
                 );
 
-                // console.log({drawnShapeHistory},previousIndex);
+                if (previousIndex !== -1) {
+                    const originalData = drawnShapeHistory[previousIndex].data;
+                    previousData = originalData.map((item) => {
+                        return { ...item };
+                    });
+                    dragTimeout = event.sourceEvent.timeStamp;
 
-                const originalData = drawnShapeHistory[previousIndex].data;
-                previousData = originalData.map((item) => {
-                    return { ...item };
-                });
-                dragTimeout = event.sourceEvent.timeStamp;
+                    if (
+                        hoveredDrawnShape &&
+                        (hoveredDrawnShape.data.type === 'Square' ||
+                            hoveredDrawnShape.data.type === 'DPRange')
+                    ) {
+                        const selectedCircle = hoveredDrawnShape.selectedCircle;
 
-                if (
-                    hoveredDrawnShape &&
-                    (hoveredDrawnShape.data.type === 'Square' ||
-                        hoveredDrawnShape.data.type === 'DPRange')
-                ) {
-                    const selectedCircle = hoveredDrawnShape.selectedCircle;
+                        if (selectedCircle) {
+                            const topLineY = Math.max(
+                                previousData[0].y,
+                                previousData[1].y,
+                            );
+                            const leftLineX = Math.min(
+                                previousData[0].x,
+                                previousData[1].x,
+                            );
 
-                    if (selectedCircle) {
-                        const topLineY = Math.max(
-                            previousData[0].y,
-                            previousData[1].y,
-                        );
-                        const leftLineX = Math.min(
-                            previousData[0].x,
-                            previousData[1].x,
-                        );
+                            const direction =
+                                topLineY ===
+                                (previousData[0].denomInBase === denomInBase
+                                    ? selectedCircle.y
+                                    : 1 / selectedCircle.y)
+                                    ? 'top'
+                                    : 'bottom';
 
-                        const direction =
-                            topLineY ===
-                            (previousData[0].denomInBase === denomInBase
-                                ? selectedCircle.y
-                                : 1 / selectedCircle.y)
-                                ? 'top'
-                                : 'bottom';
+                            rectDragDirection =
+                                leftLineX === selectedCircle.x
+                                    ? direction + 'Left'
+                                    : direction + 'Right';
+                        }
 
-                        rectDragDirection =
-                            leftLineX === selectedCircle.x
-                                ? direction + 'Left'
-                                : direction + 'Right';
+                        is0Left = previousData[0].x < previousData[1].x;
+                        is0Top = previousData[0].y > previousData[1].y;
                     }
 
-                    is0Left = previousData[0].x < previousData[1].x;
-                    is0Top = previousData[0].y > previousData[1].y;
+                    setSelectedDrawnShape(hoveredDrawnShape);
                 }
-
-                setSelectedDrawnShape(hoveredDrawnShape);
             })
             .on('drag', function (event) {
                 if (!cancelDrag) {

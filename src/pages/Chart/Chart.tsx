@@ -57,6 +57,7 @@ import LimitLineChart from './LimitLine/LimitLineChart';
 import FeeRateChart from './FeeRate/FeeRateChart';
 import RangeLinesChart from './RangeLine/RangeLinesChart';
 import {
+    CHART_ANNOTATIONS_LS_KEY,
     CandleDataChart,
     SubChartValue,
     bandLineData,
@@ -321,7 +322,13 @@ export default function Chart(props: propsIF) {
 
     const mobileView = useMediaQuery('(max-width: 600px)');
 
-    const [isToolbarOpen, setIsToolbarOpen] = useState(true);
+    const initialData = localStorage.getItem(CHART_ANNOTATIONS_LS_KEY);
+
+    const initialIsToolbarOpen = initialData
+        ? JSON.parse(initialData).isOpenAnnotationPanel
+        : true;
+
+    const [isToolbarOpen, setIsToolbarOpen] = useState(initialIsToolbarOpen);
 
     const unparsedCandleData = useMemo(() => {
         const data = unparsedData.candles
@@ -642,6 +649,16 @@ export default function Chart(props: propsIF) {
 
         return false;
     }, [hoveredDrawnShape, chartMousemoveEvent, mainCanvasBoundingClientRect]);
+
+    useEffect(() => {
+        localStorage.setItem(
+            CHART_ANNOTATIONS_LS_KEY,
+            JSON.stringify({
+                isOpenAnnotationPanel: isToolbarOpen,
+                drawnShapes: drawnShapeHistory,
+            }),
+        );
+    }, [JSON.stringify(drawnShapeHistory), isToolbarOpen]);
 
     useEffect(() => {
         if (isLineDrag) {
@@ -4427,6 +4444,8 @@ export default function Chart(props: propsIF) {
     }, [
         diffHashSigScaleData(scaleData, 'x'),
         diffHashSigChart(unparsedCandleData),
+        reset,
+        latest,
     ]);
 
     // Candle transactions
