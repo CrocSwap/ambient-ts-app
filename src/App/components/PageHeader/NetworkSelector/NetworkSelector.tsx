@@ -19,6 +19,7 @@ import {
 } from '../../../../utils/hooks/useLinkGen';
 import { Text } from '../../../../styled/Common';
 import canto from '../../../../assets/images/networks/canto.png';
+import { RiExternalLinkLine } from 'react-icons/ri';
 
 interface propsIF {
     switchNetwork: ((chainId_?: number | undefined) => void) | undefined;
@@ -132,7 +133,10 @@ export default function NetworkSelector(props: propsIF) {
                     height='21px'
                     style={{ borderRadius: '50%' }}
                 />
-                <Text color='white'>Canto</Text>
+                <Text color='white' marginRight='10px'>
+                    Canto
+                </Text>
+                <RiExternalLinkLine size={14} />
             </ChainNameStatus>
         </NetworkItem>
     );
