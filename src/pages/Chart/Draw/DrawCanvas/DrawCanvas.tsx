@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import {
     bandLineData,
@@ -14,6 +14,7 @@ import { createCircle } from '../../ChartUtils/circle';
 import { createLinearLineSeries } from './LinearLineSeries';
 import { createBandArea, createPointsOfBandLine } from './BandArea';
 import { TradeDataIF } from '../../../../utils/state/tradeDataSlice';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 interface DrawCanvasProps {
     scaleData: scaleData;
@@ -70,6 +71,10 @@ function DrawCanvas(props: DrawCanvasProps) {
 
         return newXScale;
     }
+
+    const {
+        chainData: { poolIndex },
+    } = useContext(CrocEnvContext);
 
     useEffect(() => {
         const canvas = d3
@@ -204,7 +209,13 @@ function DrawCanvas(props: DrawCanvasProps) {
                         data: tempLineData,
                         type: activeDrawingType,
                         time: Date.now(),
-                        pool: currentPool,
+                        pool: {
+                            poolIndex: poolIndex,
+                            tokenA: currentPool.tokenA.address,
+                            tokenB: currentPool.tokenB.address,
+                            isTokenABase: currentPool.isTokenABase,
+                            denomInBase: currentPool.isDenomBase,
+                        },
                         color: 'rgba(115, 113, 252, 1)',
                         lineWidth: 1.5,
                         style: [0, 0],
@@ -269,7 +280,13 @@ function DrawCanvas(props: DrawCanvasProps) {
                         data: tempLineData,
                         type: activeDrawingType,
                         time: Date.now(),
-                        pool: currentPool,
+                        pool: {
+                            poolIndex: poolIndex,
+                            tokenA: currentPool.tokenA.address,
+                            tokenB: currentPool.tokenB.address,
+                            isTokenABase: currentPool.isTokenABase,
+                            denomInBase: currentPool.isDenomBase,
+                        },
                         color: 'rgba(115, 113, 252, 1)',
                         lineWidth: 1.5,
                         style: [0, 0],

@@ -2559,18 +2559,14 @@ export default function Chart(props: propsIF) {
                     drawnShapeHistory?.forEach((item) => {
                         if (item.pool) {
                             const isShapeInCurrentPool =
-                                JSON.stringify(currentPool.tokenA) ===
-                                    JSON.stringify(
-                                        isTokenABase === item.pool.isTokenABase
-                                            ? item.pool.tokenA
-                                            : item.pool.tokenB,
-                                    ) &&
-                                JSON.stringify(currentPool.tokenB) ===
-                                    JSON.stringify(
-                                        isTokenABase === item.pool.isTokenABase
-                                            ? item.pool.tokenB
-                                            : item.pool.tokenA,
-                                    );
+                                currentPool.tokenA.address ===
+                                    (isTokenABase === item.pool.isTokenABase
+                                        ? item.pool.tokenA
+                                        : item.pool.tokenB) &&
+                                currentPool.tokenB.address ===
+                                    (isTokenABase === item.pool.isTokenABase
+                                        ? item.pool.tokenB
+                                        : item.pool.tokenA);
 
                             if (isShapeInCurrentPool) {
                                 if (
@@ -3601,18 +3597,14 @@ export default function Chart(props: propsIF) {
 
         drawnShapeHistory.forEach((element) => {
             const isShapeInCurrentPool =
-                JSON.stringify(currentPool.tokenA) ===
-                    JSON.stringify(
-                        isTokenABase === element.pool.isTokenABase
-                            ? element.pool.tokenA
-                            : element.pool.tokenB,
-                    ) &&
-                JSON.stringify(currentPool.tokenB) ===
-                    JSON.stringify(
-                        isTokenABase === element.pool.isTokenABase
-                            ? element.pool.tokenB
-                            : element.pool.tokenA,
-                    );
+                currentPool.tokenA.address ===
+                    (isTokenABase === element.pool.isTokenABase
+                        ? element.pool.tokenA
+                        : element.pool.tokenB) &&
+                currentPool.tokenB.address ===
+                    (isTokenABase === element.pool.isTokenABase
+                        ? element.pool.tokenB
+                        : element.pool.tokenA);
 
             if (isShapeInCurrentPool) {
                 if (element.type === 'Brush' || element.type === 'Angle') {
