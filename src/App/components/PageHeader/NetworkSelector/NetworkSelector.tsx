@@ -146,7 +146,7 @@ export default function NetworkSelector(props: propsIF) {
         <NetworkItem
             id='goerli_network_selector'
             onClick={() => handleClick(chainMap.get('0x5'))}
-            key={'scroll'}
+            key={'goerli'}
             custom={0}
             variants={ItemEnterAnimation}
             tabIndex={0}
