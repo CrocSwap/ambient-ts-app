@@ -153,15 +153,6 @@ export default function NetworkSelector(props: propsIF) {
         </NetworkItem>
     );
 
-    const networkMenuContent = (
-        <MenuContent tabIndex={0} aria-label={'Dropdown menu for networks.'}>
-            {ethereumNetwork}
-            {scrollNetwork}
-            {cantoNetwork}
-            {goerliNetwork}
-        </MenuContent>
-    );
-
     return (
         <>
             <div style={{ position: 'relative' }}>
@@ -176,7 +167,15 @@ export default function NetworkSelector(props: propsIF) {
                         title={lookupChain(chainId).displayName}
                         logo={lookupChain(chainId).logoUrl}
                     >
-                        {networkMenuContent}
+                        <MenuContent
+                            tabIndex={0}
+                            aria-label={'Dropdown menu for networks.'}
+                        >
+                            {ethereumNetwork}
+                            {scrollNetwork}
+                            {cantoNetwork}
+                            {goerliNetwork}
+                        </MenuContent>
                     </DropdownMenu2>
                 </DropdownMenuContainer>
             </div>
