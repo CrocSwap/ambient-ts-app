@@ -32,8 +32,8 @@ interface PropsIF {
     isTokenBAllowanceSufficient: boolean;
     isInitPending: boolean;
     initialPriceDisplay: string;
-    advancedHighTick: number;
-    advancedLowTick: number;
+    defaultLowTick: number;
+    defaultHighTick: number;
     selectedPoolPriceTick: number;
 }
 export default function InitButton(props: PropsIF) {
@@ -67,8 +67,8 @@ export default function InitButton(props: PropsIF) {
         isTokenBAllowanceSufficient,
         initialPriceDisplay,
         isInitPending,
-        advancedHighTick,
-        advancedLowTick,
+        defaultLowTick,
+        defaultHighTick,
         selectedPoolPriceTick,
     } = props;
 
@@ -201,11 +201,12 @@ export default function InitButton(props: PropsIF) {
             }
 
             if (
-                (advancedHighTick === 0 &&
-                    advancedLowTick === 0 &&
+                isMintLiqEnabled &&
+                ((defaultHighTick === 0 &&
+                    defaultLowTick === 0 &&
                     selectedPoolPriceTick === 0) ||
-                (advancedHighTick <= advancedLowTick &&
-                    !(advancedHighTick === 0 && advancedLowTick === 0))
+                    (defaultHighTick <= defaultLowTick &&
+                        !(defaultHighTick === 0 && defaultLowTick === 0)))
             ) {
                 return invalidRangeButton;
             }

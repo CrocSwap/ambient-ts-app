@@ -75,6 +75,7 @@ function SwapTokenInput(props: propsIF) {
         tokenBDexBalance,
         isTokenAEth: isSellTokenEth,
         isTokenBEth: isBuyTokenEth,
+        rtkMatchesParams,
     } = useContext(TradeTokenContext);
 
     const { showSwapPulseAnimation } = useContext(TradeTableContext);
@@ -101,18 +102,6 @@ function SwapTokenInput(props: propsIF) {
     const debouncedLastInput = useDebounce(lastInput, 750);
 
     useEffect(() => {
-        if (isTokenAPrimary) {
-            if (sellQtyString !== '') {
-                setIsBuyLoading(true);
-            }
-        } else {
-            if (buyQtyString !== '') {
-                setIsSellLoading(true);
-            }
-        }
-    }, []);
-
-    useEffect(() => {
         handleBlockUpdate();
     }, [lastBlockNumber]);
 
@@ -133,10 +122,12 @@ function SwapTokenInput(props: propsIF) {
 
     useEffect(() => {
         (async () => {
-            await refreshTokenData();
-            setDisableReverseTokens(false);
+            if (rtkMatchesParams) {
+                await refreshTokenData();
+                setDisableReverseTokens(false);
+            }
         })();
-    }, [tokenA, tokenB]);
+    }, [rtkMatchesParams]);
 
     const reverseTokens = (): void => {
         if (disableReverseTokens || !isPoolInitialized) return;
@@ -168,8 +159,12 @@ function SwapTokenInput(props: propsIF) {
     };
 
     const handleBlockUpdate = () => {
-        setDisableReverseTokens(true);
-        isTokenAPrimary ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
+        if (rtkMatchesParams) {
+            setDisableReverseTokens(true);
+            isTokenAPrimary
+                ? handleTokenAChangeEvent()
+                : handleTokenBChangeEvent();
+        }
     };
 
     async function refreshImpact(

@@ -8,9 +8,10 @@ import App from './App/App';
 import './i18n/config';
 import { StyleSheetManager } from 'styled-components';
 import isValidProp from '@emotion/is-prop-valid';
-import { WagmiConfig, createClient, configureChains } from 'wagmi';
+import { WagmiConfig, createClient, configureChains, Chain } from 'wagmi';
 
 import { infuraProvider } from 'wagmi/providers/infura';
+import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 
 import { InjectedConnector } from 'wagmi/connectors/injected';
 import { GLOBAL_MODAL_PORTAL_ID } from './constants';
@@ -40,6 +41,18 @@ if (!doReload) {
                 apiKey:
                     process.env.REACT_APP_INFURA_KEY ||
                     '360ea5fda45b4a22883de8522ebd639e', // croc labs #2
+            }),
+
+            jsonRpcProvider({
+                rpc: (chain: Chain) => {
+                    if (chain.id === 534352) {
+                        return { http: 'https://rpc.scroll.io' };
+                    } else if (chain.id === 534351) {
+                        return { http: 'https://sepolia-rpc.scroll.io' };
+                    } else {
+                        return { http: '' };
+                    }
+                },
             }),
         ],
     );

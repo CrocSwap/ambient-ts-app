@@ -8,8 +8,7 @@ import { FiRefreshCw } from 'react-icons/fi';
 import WalletBalanceSubinfo from './WalletBalanceSubinfo';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { getMainnetAddress } from '../../utils/functions/getMainnetAddress';
-import { supportedNetworks } from '../../utils/networks';
+import { translateTestnetToken } from '../../utils/data/testnetTokenMap';
 interface propsIF {
     tokenAorB: 'A' | 'B';
     token: TokenIF;
@@ -55,20 +54,23 @@ function TokenInputWithWalletBalance(props: propsIF) {
         handleRefresh,
     } = props;
 
-    const ETH_BUFFER = 0.025;
-
-    const [usdValueForDom, setUsdValueForDom] = useState<string | undefined>();
-
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
+    const amountToReduceEthMainnet = 0.005; // .005 ETH
+    const amountToReduceEthScroll = 0.0003; // .0003 ETH
+
+    const amountToReduceEth =
+        chainId === '0x82750' || chainId === '0x8274f'
+            ? amountToReduceEthScroll
+            : amountToReduceEthMainnet;
+
+    const [usdValueForDom, setUsdValueForDom] = useState<string | undefined>();
+
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
-    const pricedToken = getMainnetAddress(
-        token.address,
-        supportedNetworks[chainId],
-    );
+    const pricedToken = translateTestnetToken(token.address);
 
     useEffect(() => {
         Promise.resolve(cachedFetchTokenPrice(pricedToken, chainId)).then(
@@ -113,7 +115,9 @@ function TokenInputWithWalletBalance(props: propsIF) {
     });
 
     const subtractBuffer = (balance: string) =>
-        isTokenEth ? (parseFloat(balance) - ETH_BUFFER).toFixed(18) : balance;
+        isTokenEth
+            ? (parseFloat(balance) - amountToReduceEth).toFixed(18)
+            : balance;
 
     const balanceWithBuffer = balance ? subtractBuffer(balance) : '...';
 

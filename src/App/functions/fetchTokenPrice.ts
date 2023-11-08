@@ -3,12 +3,16 @@
 import { memoizePromiseFn } from './memoizePromiseFn';
 const randomNum = Math.random();
 import { ANALYTICS_URL } from '../../constants';
+import { translateTestnetToken } from '../../utils/data/testnetTokenMap';
 
 export const fetchTokenPrice = async (
-    address: string,
+    dispToken: string,
+    chain: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _lastTime: number,
 ) => {
+    const address = translateTestnetToken(dispToken);
+
     try {
         if (address) {
             const response = await fetch(
@@ -18,6 +22,10 @@ export const fetchTokenPrice = async (
                         config_path: 'price',
                         include_data: '0',
                         token_address: address,
+                        asset_platform:
+                            chain === '0x82750' || chain === '0x8274f'
+                                ? 'scroll'
+                                : 'ethereum',
                     }),
             );
             const result = await response.json();

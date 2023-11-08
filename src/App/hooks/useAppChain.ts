@@ -153,7 +153,9 @@ export const useAppChain = (): {
     // metadata about the active network in the app
     const [activeNetwork, setActiveNetwork] = useState<NetworkIF>(
         findNetworkData(
-            chainInURLValidated ?? localStorage.getItem(CHAIN_LS_KEY) ?? '0x1',
+            chainInURLValidated ??
+                localStorage.getItem(CHAIN_LS_KEY) ??
+                defaultChain,
         ),
     );
 
