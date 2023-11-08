@@ -70,6 +70,7 @@ export function useUndoRedo(denomInBase: boolean) {
                 time: element.time,
                 pool: element.pool,
                 color: element.color,
+                background: element.background,
                 lineWidth: element.lineWidth,
                 style: element.style,
             };
@@ -116,6 +117,7 @@ export function useUndoRedo(denomInBase: boolean) {
                     time: findItem.time,
                     pool: findItem.pool,
                     color: '#7371fc',
+                    background: '#7371fc',
                     lineWidth: 1.5,
                     style: [0, 0],
                 };
@@ -150,6 +152,7 @@ export function useUndoRedo(denomInBase: boolean) {
                     if (undoActionList) {
                         drawActionStack.get(actionKey)?.push({
                             color: lastValue.color,
+                            background: lastValue.background,
                             data: [
                                 {
                                     x: lastValue.data[0].x,
@@ -281,6 +284,7 @@ export function useUndoRedo(denomInBase: boolean) {
             time: tempLastData.time,
             pool: tempLastData.pool,
             color: tempLastData.color,
+            background: tempLastData.background,
             lineWidth: tempLastData.lineWidth,
             style: tempLastData.style,
         };

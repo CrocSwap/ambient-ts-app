@@ -71,6 +71,7 @@ function createCirclePoints(element: drawDataHistory, denomInBase: boolean) {
     if (
         element.type === 'Brush' ||
         element.type === 'Angle' ||
+        element.type === 'FibRetracement' ||
         element.type === 'DPRange'
     ) {
         const data: lineData[] = [];

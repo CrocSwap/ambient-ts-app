@@ -331,6 +331,8 @@ export default function DragCanvas(props: DragCanvasProps) {
                             hoveredDrawnShape &&
                             (hoveredDrawnShape.data.type === 'Brush' ||
                                 hoveredDrawnShape.data.type === 'Angle' ||
+                                hoveredDrawnShape.data.type ===
+                                    'FibRetracement' ||
                                 hoveredDrawnShape.data.type === 'Ray')
                         ) {
                             if (!hoveredDrawnShape.selectedCircle) {

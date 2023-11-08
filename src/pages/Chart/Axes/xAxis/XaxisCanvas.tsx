@@ -358,7 +358,7 @@ function XAxisCanvas(props: xAxisIF) {
                         xScale(shapeData.data[1].x) -
                         xScale(shapeData.data[0].x);
 
-                    context.fillStyle = '#7674ff3f';
+                    context.fillStyle = 'rgba(41, 98, 255, 0.15)';
                     context.fillRect(
                         xScale(shapeData.data[0].x) + column,
                         height * 0.175,
@@ -388,7 +388,7 @@ function XAxisCanvas(props: xAxisIF) {
                                 const textWidth =
                                     context.measureText(point).width + 10;
 
-                                context.fillStyle = '#5553be';
+                                context.fillStyle = '#2962ff';
                                 context.fillRect(
                                     shapePoint + column - textWidth / 2,
                                     height * 0.175,
