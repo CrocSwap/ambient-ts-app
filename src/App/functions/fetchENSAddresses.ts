@@ -42,29 +42,24 @@ export const fetchEnsAddresses = async (addresses: string[]) => {
         },
     });
 
-    try {
-        const response = await fetch(
-            ANALYTICS_URL +
-                new URLSearchParams({
-                    service: 'run',
-                    config_path: 'batch_requests',
-                    include_data: '0',
-                }),
-            {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: addressQueryBody,
+    const response = await fetch(
+        ANALYTICS_URL +
+            new URLSearchParams({
+                service: 'run',
+                config_path: 'batch_requests',
+                include_data: '0',
+            }),
+        {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
             },
-        );
+            body: addressQueryBody,
+        },
+    );
 
-        const result = await response.json();
-        const parsedResult = parseBatchedEnsReq(result as BatchedENSResult);
-        return parsedResult;
-    } catch (e) {
-        console.warn(e);
-        return null;
-    }
+    const result = await response.json();
+    const parsedResult = parseBatchedEnsReq(result as BatchedENSResult);
+    return parsedResult;
 };

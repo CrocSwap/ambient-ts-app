@@ -20,12 +20,28 @@ export const ENSAddressContextProvider = (props: { children: ReactNode }) => {
     const [ensAddressMapping, setEnsAddressMapping] = useState<
         Map<string, string>
     >(new Map());
+    const [serverReturnedErrorTimestamp, setServerReturnedErrorTimestamp] =
+        useState<number>(-1);
     const cacheRef = useRef<Map<string, string>>(new Map());
     const nullCacheRef = useRef<Map<string, number>>(new Map());
     const DEADLINE = 1 * 60 * 60 * 1000; // 1 hour
+    const RETRY_DELAY = 1 * 60 * 1000; // 10 minutes
 
     const addData = (data: TradeTableDataRow[]) => {
         const now = Date.now();
+
+        console.log(
+            serverReturnedErrorTimestamp > 0 &&
+                now - serverReturnedErrorTimestamp < RETRY_DELAY,
+        );
+
+        if (
+            serverReturnedErrorTimestamp > 0 &&
+            now - serverReturnedErrorTimestamp < RETRY_DELAY
+        ) {
+            // If the server returned an error less than RETRY_DELAY ago, we don't fetch ENS addresses
+            return;
+        }
 
         const uncachedAddresses = [
             ...new Set(
@@ -46,36 +62,44 @@ export const ENSAddressContextProvider = (props: { children: ReactNode }) => {
         // If we have uncached addresses, we fetch them
         if (uncachedAddresses.length > 0) {
             (async () => {
-                const batchedEnsMap = await fetchEnsAddresses(
-                    uncachedAddresses,
-                );
-
-                if (batchedEnsMap && batchedEnsMap.size > 0) {
-                    // Separate the addresses that returned null
-                    const nullAddresses: string[] = [];
-
-                    batchedEnsMap.forEach(
-                        (value, key) =>
-                            value === 'null' &&
-                            nullAddresses.push(key.toLowerCase()) &&
-                            batchedEnsMap.delete(key),
+                try {
+                    const batchedEnsMap = await fetchEnsAddresses(
+                        uncachedAddresses,
                     );
 
-                    // Update nullCache with the addresses that returned null and current timestamp
-                    nullAddresses.forEach((addr) =>
-                        nullCacheRef.current.set(addr, now),
-                    );
+                    if (batchedEnsMap && batchedEnsMap.size > 0) {
+                        // Separate the addresses that returned null
+                        const nullAddresses: string[] = [];
 
-                    // Update the state with the newly fetched addresses
-                    setEnsAddressMapping(
-                        (prev) => new Map([...prev, ...batchedEnsMap]),
-                    );
+                        batchedEnsMap.forEach(
+                            (value, key) =>
+                                value === 'null' &&
+                                nullAddresses.push(key.toLowerCase()) &&
+                                batchedEnsMap.delete(key),
+                        );
 
-                    // Update the cache with the newly fetched addresses
-                    cacheRef.current = new Map([
-                        ...cacheRef.current,
-                        ...batchedEnsMap,
-                    ]);
+                        // Update nullCache with the addresses that returned null and current timestamp
+                        nullAddresses.forEach((addr) =>
+                            nullCacheRef.current.set(addr, now),
+                        );
+
+                        // Update the state with the newly fetched addresses
+                        setEnsAddressMapping(
+                            (prev) => new Map([...prev, ...batchedEnsMap]),
+                        );
+
+                        // Update the cache with the newly fetched addresses
+                        cacheRef.current = new Map([
+                            ...cacheRef.current,
+                            ...batchedEnsMap,
+                        ]);
+                    }
+                    setServerReturnedErrorTimestamp(-1);
+                } catch (error) {
+                    console.log(error);
+                    if (serverReturnedErrorTimestamp < 0) {
+                        setServerReturnedErrorTimestamp(now);
+                    }
                 }
             })();
         }
