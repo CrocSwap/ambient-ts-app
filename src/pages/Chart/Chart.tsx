@@ -61,11 +61,14 @@ import {
     CandleDataChart,
     SubChartValue,
     bandLineData,
+    calculateFibRetracement,
+    calculateFibRetracementBandAreas,
     chartItemStates,
     crosshair,
     defaultCandleBandwith,
     drawDataHistory,
     fillLiqAdvanced,
+    formatTimeDifference,
     lineData,
     lineValue,
     liquidityChartData,
@@ -87,8 +90,10 @@ import {
     distanceToLine,
 } from './Draw/DrawCanvas/LinearLineSeries';
 import {
+    createArrowPointsOfDPRangeLine,
     createBandArea,
     createPointsOfBandLine,
+    createPointsOfDPRangeLine,
 } from './Draw/DrawCanvas/BandArea';
 import { checkCricleLocation, createCircle } from './ChartUtils/circle';
 import DragCanvas from './Draw/DrawCanvas/DragCanvas';
@@ -97,6 +102,7 @@ import FloatingToolbar from './Draw/FloatingToolbar/FloatingToolbar';
 import { updatesIF } from '../../utils/hooks/useUrlParams';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { actionKeyIF } from './ChartUtils/useUndoRedo';
+import { formatDollarAmountAxis } from '../../utils/numbers';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -2576,18 +2582,14 @@ export default function Chart(props: propsIF) {
                     drawnShapeHistory?.forEach((item) => {
                         if (item.pool) {
                             const isShapeInCurrentPool =
-                                JSON.stringify(currentPool.tokenA) ===
-                                    JSON.stringify(
-                                        isTokenABase === item.pool.isTokenABase
-                                            ? item.pool.tokenA
-                                            : item.pool.tokenB,
-                                    ) &&
-                                JSON.stringify(currentPool.tokenB) ===
-                                    JSON.stringify(
-                                        isTokenABase === item.pool.isTokenABase
-                                            ? item.pool.tokenB
-                                            : item.pool.tokenA,
-                                    );
+                                currentPool.tokenA.address ===
+                                    (isTokenABase === item.pool.isTokenABase
+                                        ? item.pool.tokenA
+                                        : item.pool.tokenB) &&
+                                currentPool.tokenB.address ===
+                                    (isTokenABase === item.pool.isTokenABase
+                                        ? item.pool.tokenB
+                                        : item.pool.tokenA);
 
                             if (isShapeInCurrentPool) {
                                 if (
@@ -2603,49 +2605,6 @@ export default function Chart(props: propsIF) {
                                     );
 
                                     lineSeries(item?.data);
-                                    if (
-                                        (hoveredDrawnShape &&
-                                            hoveredDrawnShape.data.time ===
-                                                item.time) ||
-                                        (selectedDrawnShape &&
-                                            selectedDrawnShape.data.time ===
-                                                item.time)
-                                    ) {
-                                        item.data.forEach((element) => {
-                                            if (
-                                                hoveredDrawnShape &&
-                                                hoveredDrawnShape.selectedCircle &&
-                                                hoveredDrawnShape.selectedCircle
-                                                    .x === element.x &&
-                                                Number(
-                                                    element.y.toFixed(12),
-                                                ) ===
-                                                    (element.denomInBase ===
-                                                    denomInBase
-                                                        ? Number(
-                                                              hoveredDrawnShape?.selectedCircle.y.toFixed(
-                                                                  12,
-                                                              ),
-                                                          )
-                                                        : Number(
-                                                              (
-                                                                  1 /
-                                                                  hoveredDrawnShape
-                                                                      ?.selectedCircle
-                                                                      .y
-                                                              ).toFixed(12),
-                                                          ))
-                                            ) {
-                                                if (!isUpdatingShape) {
-                                                    selectedCircleSeries([
-                                                        element,
-                                                    ]);
-                                                }
-                                            } else {
-                                                circleSeries([element]);
-                                            }
-                                        });
-                                    }
 
                                     if (item.type === 'Angle') {
                                         const opposite = Math.abs(
@@ -2787,13 +2746,17 @@ export default function Chart(props: propsIF) {
                                     }
                                 }
 
-                                if (item.type === 'Square') {
+                                if (
+                                    item.type === 'Square' ||
+                                    item.type === 'DPRange'
+                                ) {
                                     const range = [
                                         scaleData?.xScale(item.data[0].x),
                                         scaleData?.xScale(item.data[1].x),
                                     ];
 
                                     bandArea.xScale().range(range);
+
                                     const checkDenom =
                                         item.data[0].denomInBase ===
                                         denomInBase;
@@ -2807,138 +2770,281 @@ export default function Chart(props: propsIF) {
                                         denomInBase: denomInBase,
                                     } as bandLineData;
 
-                                    const rgbaValues =
-                                        item.color.match(/\d+(\.\d+)?/g);
-
-                                    if (rgbaValues) {
-                                        const alphaValue =
-                                            Number(rgbaValues[3]) < 0.3
-                                                ? Number(rgbaValues[3]) / 2
-                                                : '0.15';
-
-                                        const rectRgbaFiller =
-                                            'rgba(' +
-                                            rgbaValues[0] +
-                                            ',' +
-                                            rgbaValues[1] +
-                                            ',' +
-                                            rgbaValues[2] +
-                                            ',' +
-                                            alphaValue +
-                                            ')';
-
+                                    if (item.background) {
                                         bandArea.decorate(
                                             (
                                                 context: CanvasRenderingContext2D,
                                             ) => {
                                                 context.fillStyle =
-                                                    rectRgbaFiller;
+                                                    item.background;
                                             },
                                         );
                                     }
 
                                     bandArea([bandData]);
 
-                                    const lineOfBand = createPointsOfBandLine(
-                                        item.data,
-                                    );
+                                    if (item.type === 'Square') {
+                                        const lineOfBand =
+                                            createPointsOfBandLine(item.data);
 
-                                    lineOfBand?.forEach((line) => {
-                                        if (ctx) ctx.setLineDash(item.style);
-                                        lineSeries.decorate(
-                                            (
-                                                context: CanvasRenderingContext2D,
-                                            ) => {
-                                                context.strokeStyle =
-                                                    item.color;
-                                                context.lineWidth =
-                                                    item.lineWidth;
-                                            },
+                                        lineOfBand?.forEach((line) => {
+                                            if (ctx)
+                                                ctx.setLineDash(item.style);
+                                            lineSeries.decorate(
+                                                (
+                                                    context: CanvasRenderingContext2D,
+                                                ) => {
+                                                    context.strokeStyle =
+                                                        item.color;
+                                                    context.lineWidth =
+                                                        item.lineWidth;
+                                                },
+                                            );
+                                            lineSeries(line);
+
+                                            if (
+                                                (hoveredDrawnShape &&
+                                                    hoveredDrawnShape.data
+                                                        .time === item.time) ||
+                                                (selectedDrawnShape &&
+                                                    selectedDrawnShape.data
+                                                        .time === item.time)
+                                            ) {
+                                                line.forEach(
+                                                    (element, _index) => {
+                                                        const selectedCircleIsActive =
+                                                            hoveredDrawnShape &&
+                                                            hoveredDrawnShape.selectedCircle &&
+                                                            hoveredDrawnShape
+                                                                .selectedCircle
+                                                                .x ===
+                                                                element.x &&
+                                                            Number(
+                                                                element.y.toFixed(
+                                                                    12,
+                                                                ),
+                                                            ) ===
+                                                                (element.denomInBase ===
+                                                                denomInBase
+                                                                    ? Number(
+                                                                          hoveredDrawnShape?.selectedCircle.y.toFixed(
+                                                                              12,
+                                                                          ),
+                                                                      )
+                                                                    : Number(
+                                                                          (
+                                                                              1 /
+                                                                              hoveredDrawnShape
+                                                                                  ?.selectedCircle
+                                                                                  .y
+                                                                          ).toFixed(
+                                                                              12,
+                                                                          ),
+                                                                      ));
+
+                                                        if (
+                                                            selectedCircleIsActive
+                                                        ) {
+                                                            if (
+                                                                !isUpdatingShape
+                                                            ) {
+                                                                selectedCircleSeries(
+                                                                    [element],
+                                                                );
+                                                            }
+                                                        } else {
+                                                            circleSeries([
+                                                                element,
+                                                            ]);
+                                                        }
+                                                    },
+                                                );
+                                            }
+                                        });
+                                    }
+
+                                    if (item.type === 'DPRange') {
+                                        const lineOfDPRange =
+                                            createPointsOfDPRangeLine(
+                                                item.data,
+                                            );
+
+                                        lineOfDPRange?.forEach((line) => {
+                                            if (ctx)
+                                                ctx.setLineDash(item.style);
+                                            lineSeries.decorate(
+                                                (
+                                                    context: CanvasRenderingContext2D,
+                                                ) => {
+                                                    context.strokeStyle =
+                                                        item.color;
+                                                    context.lineWidth =
+                                                        item.lineWidth;
+                                                },
+                                            );
+                                            lineSeries(line);
+                                        });
+
+                                        const firstPointYAxisData =
+                                            item.data[0].denomInBase ===
+                                            denomInBase
+                                                ? item.data[0].y
+                                                : 1 / item.data[0].y;
+                                        const secondPointYAxisData =
+                                            item.data[1].denomInBase ===
+                                            denomInBase
+                                                ? item.data[1].y
+                                                : 1 / item.data[1].y;
+
+                                        const filtered =
+                                            unparsedCandleData.filter(
+                                                (data: CandleData) =>
+                                                    data.time * 1000 >=
+                                                        Math.min(
+                                                            item.data[0].x,
+                                                            item.data[1].x,
+                                                        ) &&
+                                                    data.time * 1000 <=
+                                                        Math.max(
+                                                            item.data[0].x,
+                                                            item.data[1].x,
+                                                        ),
+                                            );
+
+                                        const totalVolumeCovered =
+                                            filtered.reduce(
+                                                (sum, obj) =>
+                                                    sum + obj.volumeUSD,
+                                                0,
+                                            );
+
+                                        const height = Math.abs(
+                                            scaleData.yScale(
+                                                firstPointYAxisData,
+                                            ) -
+                                                scaleData.yScale(
+                                                    secondPointYAxisData,
+                                                ),
                                         );
-                                        lineSeries(line);
+                                        const width = Math.abs(
+                                            scaleData.xScale(item.data[0].x) -
+                                                scaleData.xScale(
+                                                    item.data[1].x,
+                                                ),
+                                        );
 
-                                        if (
-                                            (hoveredDrawnShape &&
-                                                hoveredDrawnShape.data.time ===
-                                                    item.time) ||
-                                            (selectedDrawnShape &&
-                                                selectedDrawnShape.data.time ===
-                                                    item.time)
-                                        ) {
-                                            line.forEach((element, _index) => {
-                                                const selectedCircleIsActive =
-                                                    hoveredDrawnShape &&
-                                                    hoveredDrawnShape.selectedCircle &&
-                                                    hoveredDrawnShape
-                                                        .selectedCircle.x ===
-                                                        element.x &&
-                                                    Number(
-                                                        element.y.toFixed(12),
-                                                    ) ===
-                                                        (element.denomInBase ===
-                                                        denomInBase
-                                                            ? Number(
-                                                                  hoveredDrawnShape?.selectedCircle.y.toFixed(
-                                                                      12,
-                                                                  ),
-                                                              )
-                                                            : Number(
-                                                                  (
-                                                                      1 /
-                                                                      hoveredDrawnShape
-                                                                          ?.selectedCircle
-                                                                          .y
-                                                                  ).toFixed(12),
-                                                              ));
+                                        const lengthAsBars = Math.abs(
+                                            item.data[0].x - item.data[1].x,
+                                        );
+                                        const lengthAsDate =
+                                            (item.data[0].x > item.data[1].x
+                                                ? '-'
+                                                : '') +
+                                            formatTimeDifference(
+                                                new Date(item.data[0].x),
+                                                new Date(item.data[1].x),
+                                            );
 
-                                                if (selectedCircleIsActive) {
-                                                    if (!isUpdatingShape) {
-                                                        selectedCircleSeries([
-                                                            element,
-                                                        ]);
-                                                    }
-                                                } else {
-                                                    circleSeries([element]);
-                                                }
+                                        const heightAsPrice =
+                                            secondPointYAxisData -
+                                            firstPointYAxisData;
+
+                                        const heightAsPercentage = (
+                                            (Number(heightAsPrice) /
+                                                Math.min(
+                                                    firstPointYAxisData,
+                                                    secondPointYAxisData,
+                                                )) *
+                                            100
+                                        ).toFixed(2);
+
+                                        const infoLabelHeight = 66;
+                                        const infoLabelWidth = 150;
+
+                                        const infoLabelXAxisData =
+                                            Math.min(
+                                                item.data[0].x,
+                                                item.data[1].x,
+                                            ) +
+                                            Math.abs(
+                                                item.data[0].x - item.data[1].x,
+                                            ) /
+                                                2;
+                                        const infoLabelYAxisData =
+                                            scaleData.yScale(
+                                                secondPointYAxisData,
+                                            ) +
+                                            (secondPointYAxisData >
+                                            firstPointYAxisData
+                                                ? -(infoLabelHeight + 15)
+                                                : 15);
+
+                                        if (ctx) {
+                                            ctx.beginPath();
+                                            ctx.fillStyle = 'rgb(34,44,58)';
+                                            ctx.fillRect(
+                                                scaleData.xScale(
+                                                    infoLabelXAxisData,
+                                                ) -
+                                                    infoLabelWidth / 2,
+                                                infoLabelYAxisData,
+                                                infoLabelWidth,
+                                                infoLabelHeight,
+                                            );
+                                            ctx.fillStyle =
+                                                'rgba(210,210,210,1)';
+                                            ctx.font = '12.425px Lexend Deca';
+                                            ctx.textAlign = 'center';
+                                            ctx.textBaseline = 'middle';
+
+                                            ctx.fillText(
+                                                heightAsPrice.toFixed(2) +
+                                                    ' ' +
+                                                    '(' +
+                                                    heightAsPercentage.toString() +
+                                                    '%)',
+                                                scaleData.xScale(
+                                                    infoLabelXAxisData,
+                                                ),
+                                                infoLabelYAxisData + 16,
+                                            );
+                                            ctx.fillText(
+                                                (lengthAsBars / (1000 * period))
+                                                    .toFixed(0)
+                                                    .toString() +
+                                                    ' bars,  ' +
+                                                    lengthAsDate,
+                                                scaleData.xScale(
+                                                    infoLabelXAxisData,
+                                                ),
+                                                infoLabelYAxisData + 33,
+                                            );
+                                            ctx.fillText(
+                                                'Vol ' +
+                                                    formatDollarAmountAxis(
+                                                        totalVolumeCovered,
+                                                    ).replace('$', ''),
+                                                scaleData.xScale(
+                                                    infoLabelXAxisData,
+                                                ),
+                                                infoLabelYAxisData + 50,
+                                            );
+                                        }
+
+                                        if (height > 70 && width > 70) {
+                                            const arrowArray =
+                                                createArrowPointsOfDPRangeLine(
+                                                    item.data,
+                                                    scaleData,
+                                                    denomInBase,
+                                                );
+
+                                            arrowArray.forEach((arrow) => {
+                                                lineSeries(arrow);
                                             });
                                         }
-                                    });
-                                }
+                                    }
 
-                                if (item.type === 'Ray') {
-                                    rayLine
-                                        .xScale()
-                                        .domain(scaleData.xScale.domain());
-
-                                    rayLine
-                                        .yScale()
-                                        .domain(scaleData.yScale.domain());
-
-                                    const range = [
-                                        scaleData.xScale(item.data[0].x),
-                                        scaleData.xScale.range()[1],
-                                    ];
-
-                                    rayLine.xScale().range(range);
-                                    if (ctx) ctx.setLineDash(item.style);
-                                    rayLine.decorate(
-                                        (context: CanvasRenderingContext2D) => {
-                                            context.strokeStyle = item.color;
-                                            context.lineWidth = item.lineWidth;
-                                        },
-                                    );
-
-                                    rayLine([
-                                        {
-                                            denomInBase:
-                                                item.data[0].denomInBase,
-                                            y:
-                                                item.data[0].denomInBase ===
-                                                denomInBase
-                                                    ? item.data[0].y
-                                                    : 1 / item.data[0].y,
-                                        },
-                                    ]);
                                     if (
                                         (hoveredDrawnShape &&
                                             hoveredDrawnShape.data.time ===
@@ -2947,15 +3053,234 @@ export default function Chart(props: propsIF) {
                                             selectedDrawnShape.data.time ===
                                                 item.time)
                                     ) {
+                                        item.data.forEach((element, _index) => {
+                                            const selectedCircleIsActive =
+                                                hoveredDrawnShape &&
+                                                hoveredDrawnShape.selectedCircle &&
+                                                hoveredDrawnShape.selectedCircle
+                                                    .x === element.x &&
+                                                Number(
+                                                    element.y.toFixed(12),
+                                                ) ===
+                                                    (element.denomInBase ===
+                                                    denomInBase
+                                                        ? Number(
+                                                              hoveredDrawnShape?.selectedCircle.y.toFixed(
+                                                                  12,
+                                                              ),
+                                                          )
+                                                        : Number(
+                                                              (
+                                                                  1 /
+                                                                  hoveredDrawnShape
+                                                                      ?.selectedCircle
+                                                                      .y
+                                                              ).toFixed(12),
+                                                          ));
+
+                                            if (selectedCircleIsActive) {
+                                                if (!isUpdatingShape) {
+                                                    selectedCircleSeries([
+                                                        element,
+                                                    ]);
+                                                }
+                                            } else {
+                                                circleSeries([element]);
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+
+                            if (item.type === 'Ray') {
+                                rayLine
+                                    .xScale()
+                                    .domain(scaleData.xScale.domain());
+
+                                rayLine
+                                    .yScale()
+                                    .domain(scaleData.yScale.domain());
+
+                                const range = [
+                                    scaleData.xScale(item.data[0].x),
+                                    scaleData.xScale.range()[1],
+                                ];
+
+                                rayLine.xScale().range(range);
+                                if (ctx) ctx.setLineDash(item.style);
+                                rayLine.decorate(
+                                    (context: CanvasRenderingContext2D) => {
+                                        context.strokeStyle = item.color;
+                                        context.lineWidth = item.lineWidth;
+                                    },
+                                );
+
+                                rayLine([
+                                    {
+                                        denomInBase: item.data[0].denomInBase,
+                                        y:
+                                            item.data[0].denomInBase ===
+                                            denomInBase
+                                                ? item.data[0].y
+                                                : 1 / item.data[0].y,
+                                    },
+                                ]);
+                                if (
+                                    (hoveredDrawnShape &&
+                                        hoveredDrawnShape.data.time ===
+                                            item.time) ||
+                                    (selectedDrawnShape &&
+                                        selectedDrawnShape.data.time ===
+                                            item.time)
+                                ) {
+                                    if (
+                                        hoveredDrawnShape &&
+                                        hoveredDrawnShape.selectedCircle &&
+                                        hoveredDrawnShape.selectedCircle.x ===
+                                            item.data[0].x &&
+                                        Number(item.data[0].y.toFixed(12)) ===
+                                            (item.data[0].denomInBase ===
+                                            denomInBase
+                                                ? Number(
+                                                      hoveredDrawnShape?.selectedCircle.y.toFixed(
+                                                          12,
+                                                      ),
+                                                  )
+                                                : Number(
+                                                      (
+                                                          1 /
+                                                          hoveredDrawnShape
+                                                              ?.selectedCircle.y
+                                                      ).toFixed(12),
+                                                  ))
+                                    ) {
+                                        if (!isUpdatingShape) {
+                                            selectedCircleSeries([
+                                                item.data[0],
+                                            ]);
+                                        }
+                                    } else {
+                                        circleSeries([
+                                            {
+                                                denomInBase:
+                                                    item.data[0].denomInBase,
+                                                y: item.data[0].y,
+                                                x: item.data[0].x,
+                                            },
+                                        ]);
+                                    }
+                                }
+                            }
+
+                            if (item.type === 'FibRetracement') {
+                                const range = [
+                                    scaleData?.xScale(item.data[0].x),
+                                    scaleData?.xScale(item.data[1].x),
+                                ];
+
+                                bandArea.xScale().range(range);
+
+                                if (ctx) ctx.setLineDash([6, 6]);
+                                lineSeries.decorate(
+                                    (context: CanvasRenderingContext2D) => {
+                                        context.strokeStyle = '#7371FC';
+                                        context.lineWidth = 1.5;
+                                    },
+                                );
+                                lineSeries(item.data);
+
+                                const fibLineData = calculateFibRetracement(
+                                    item.data,
+                                );
+
+                                const bandAreaData =
+                                    calculateFibRetracementBandAreas(item.data);
+
+                                bandAreaData.forEach((bandData) => {
+                                    const color = d3.color(bandData.color);
+
+                                    if (color) {
+                                        color.opacity = 0.3;
+
+                                        bandArea.decorate(
+                                            (
+                                                context: CanvasRenderingContext2D,
+                                            ) => {
+                                                context.fillStyle =
+                                                    color.toString();
+                                            },
+                                        );
+                                    }
+
+                                    bandArea([bandData]);
+                                });
+
+                                if (ctx) ctx.setLineDash([0, 0]);
+
+                                fibLineData.forEach((lineData) => {
+                                    lineSeries.decorate(
+                                        (context: CanvasRenderingContext2D) => {
+                                            context.strokeStyle =
+                                                lineData[0].color;
+                                            context.lineWidth = 1.5;
+                                        },
+                                    );
+                                    lineSeries(lineData);
+
+                                    if (ctx) {
+                                        ctx.fillStyle = lineData[0].color;
+                                        ctx.font = '12px Lexend Deca';
+                                        ctx.textAlign = 'right';
+                                        ctx.textBaseline = 'middle';
+
+                                        const lineLabel =
+                                            lineData[0].level +
+                                            ' (' +
+                                            lineData[0].y
+                                                .toFixed(2)
+                                                .toString() +
+                                            ')';
+
+                                        ctx.fillText(
+                                            lineLabel,
+                                            scaleData.xScale(
+                                                Math.min(
+                                                    lineData[0].x,
+                                                    lineData[1].x,
+                                                ),
+                                            ) - 10,
+                                            scaleData.yScale(
+                                                denomInBase ===
+                                                    lineData[0].denomInBase
+                                                    ? lineData[0].y
+                                                    : 1 / lineData[0].y,
+                                            ),
+                                        );
+                                    }
+                                });
+                            }
+
+                            if (
+                                item.type === 'Brush' ||
+                                item.type === 'Angle' ||
+                                item.type === 'FibRetracement'
+                            ) {
+                                if (
+                                    (hoveredDrawnShape &&
+                                        hoveredDrawnShape.data.time ===
+                                            item.time) ||
+                                    (selectedDrawnShape &&
+                                        selectedDrawnShape.data.time ===
+                                            item.time)
+                                ) {
+                                    item.data.forEach((element) => {
                                         if (
                                             hoveredDrawnShape &&
                                             hoveredDrawnShape.selectedCircle &&
                                             hoveredDrawnShape.selectedCircle
-                                                .x === item.data[0].x &&
-                                            Number(
-                                                item.data[0].y.toFixed(12),
-                                            ) ===
-                                                (item.data[0].denomInBase ===
+                                                .x === element.x &&
+                                            Number(element.y.toFixed(12)) ===
+                                                (element.denomInBase ===
                                                 denomInBase
                                                     ? Number(
                                                           hoveredDrawnShape?.selectedCircle.y.toFixed(
@@ -2972,22 +3297,12 @@ export default function Chart(props: propsIF) {
                                                       ))
                                         ) {
                                             if (!isUpdatingShape) {
-                                                selectedCircleSeries([
-                                                    item.data[0],
-                                                ]);
+                                                selectedCircleSeries([element]);
                                             }
                                         } else {
-                                            circleSeries([
-                                                {
-                                                    denomInBase:
-                                                        item.data[0]
-                                                            .denomInBase,
-                                                    y: item.data[0].y,
-                                                    x: item.data[0].x,
-                                                },
-                                            ]);
+                                            circleSeries([element]);
                                         }
-                                    }
+                                    });
                                 }
                             }
                         }
@@ -3144,9 +3459,9 @@ export default function Chart(props: propsIF) {
                         filteredMax,
                     );
 
-                    const diffBoundray = Math.abs(maxYBoundary - minYBoundary);
-                    const buffer = diffBoundray
-                        ? diffBoundray / 6
+                    const diffBoundary = Math.abs(maxYBoundary - minYBoundary);
+                    const buffer = diffBoundary
+                        ? diffBoundary / 6
                         : minYBoundary / 2;
                     if (
                         location.pathname.includes('pool') ||
@@ -3618,38 +3933,111 @@ export default function Chart(props: propsIF) {
 
         drawnShapeHistory.forEach((element) => {
             const isShapeInCurrentPool =
-                JSON.stringify(currentPool.tokenA) ===
-                    JSON.stringify(
-                        isTokenABase === element.pool.isTokenABase
-                            ? element.pool.tokenA
-                            : element.pool.tokenB,
-                    ) &&
-                JSON.stringify(currentPool.tokenB) ===
-                    JSON.stringify(
-                        isTokenABase === element.pool.isTokenABase
-                            ? element.pool.tokenB
-                            : element.pool.tokenA,
-                    );
+                currentPool.tokenA.address ===
+                    (isTokenABase === element.pool.isTokenABase
+                        ? element.pool.tokenA
+                        : element.pool.tokenB) &&
+                currentPool.tokenB.address ===
+                    (isTokenABase === element.pool.isTokenABase
+                        ? element.pool.tokenB
+                        : element.pool.tokenA);
 
             if (isShapeInCurrentPool) {
-                if (element.type === 'Brush' || element.type === 'Angle') {
-                    if (
-                        checkLineLocation(
+                if (
+                    element.type === 'Brush' ||
+                    element.type === 'Angle' ||
+                    element.type === 'FibRetracement'
+                ) {
+                    const lineData: Array<lineData[]> = [];
+                    lineData.push(element.data);
+
+                    if (element.type === 'FibRetracement') {
+                        const fibLineData = calculateFibRetracement(
                             element.data,
-                            mouseX,
-                            mouseY,
-                            denomInBase,
-                        )
-                    ) {
-                        resElement = element;
+                        );
+                        fibLineData.forEach((fibData) =>
+                            lineData.push(fibData),
+                        );
                     }
+
+                    lineData.forEach((line) => {
+                        if (
+                            checkLineLocation(line, mouseX, mouseY, denomInBase)
+                        ) {
+                            resElement = element;
+                        }
+                    });
                 }
 
-                if (element.type === 'Square') {
+                if (element.type === 'Square' || element.type === 'DPRange') {
                     if (checkRectLocation(element.data, mouseX, mouseY)) {
                         resElement = element;
                     }
+
+                    if (element.type === 'DPRange') {
+                        const startX = Math.min(
+                            element.data[0].x,
+                            element.data[1].x,
+                        );
+                        const startY = Math.max(
+                            element.data[0].y,
+                            element.data[1].y,
+                        );
+                        const endX = Math.max(
+                            element.data[0].x,
+                            element.data[1].x,
+                        );
+                        const endY = Math.min(
+                            element.data[0].y,
+                            element.data[1].y,
+                        );
+
+                        const lineOfDPRange = [
+                            [
+                                {
+                                    x: startX + (endX - startX) / 2,
+                                    y: startY,
+                                    denomInBase: element.data[0].denomInBase,
+                                    ctx: undefined,
+                                },
+                                {
+                                    x: startX + (endX - startX) / 2,
+                                    y: endY,
+                                    denomInBase: element.data[1].denomInBase,
+                                    ctx: undefined,
+                                },
+                            ],
+                            [
+                                {
+                                    x: startX,
+                                    y: startY - (startY - endY) / 2,
+                                    denomInBase: element.data[0].denomInBase,
+                                    ctx: undefined,
+                                },
+                                {
+                                    x: endX,
+                                    y: startY - (startY - endY) / 2,
+                                    denomInBase: element.data[0].denomInBase,
+                                    ctx: undefined,
+                                },
+                            ],
+                        ];
+
+                        lineOfDPRange.forEach((line) => {
+                            if (
+                                checkLineLocation(
+                                    line,
+                                    mouseX,
+                                    mouseY,
+                                    denomInBase,
+                                )
+                            ) {
+                                resElement = element;
+                            }
+                        });
+                    }
                 }
+
                 if (element.type === 'Ray') {
                     if (
                         checkRayLineLocation(

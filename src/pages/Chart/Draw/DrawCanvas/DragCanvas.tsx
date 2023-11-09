@@ -269,7 +269,8 @@ export default function DragCanvas(props: DragCanvasProps) {
 
                     if (
                         hoveredDrawnShape &&
-                        hoveredDrawnShape.data.type === 'Square'
+                        (hoveredDrawnShape.data.type === 'Square' ||
+                            hoveredDrawnShape.data.type === 'DPRange')
                     ) {
                         const selectedCircle = hoveredDrawnShape.selectedCircle;
 
@@ -330,6 +331,8 @@ export default function DragCanvas(props: DragCanvasProps) {
                             hoveredDrawnShape &&
                             (hoveredDrawnShape.data.type === 'Brush' ||
                                 hoveredDrawnShape.data.type === 'Angle' ||
+                                hoveredDrawnShape.data.type ===
+                                    'FibRetracement' ||
                                 hoveredDrawnShape.data.type === 'Ray')
                         ) {
                             if (!hoveredDrawnShape.selectedCircle) {
@@ -342,7 +345,8 @@ export default function DragCanvas(props: DragCanvasProps) {
 
                         if (
                             hoveredDrawnShape &&
-                            hoveredDrawnShape.data.type === 'Square'
+                            (hoveredDrawnShape.data.type === 'Square' ||
+                                hoveredDrawnShape.data.type === 'DPRange')
                         ) {
                             if (!hoveredDrawnShape.selectedCircle) {
                                 dragLine(movemementX, movemementY);

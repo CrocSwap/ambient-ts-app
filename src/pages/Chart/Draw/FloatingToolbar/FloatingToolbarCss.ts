@@ -75,7 +75,20 @@ const OptionsTab = styled.div`
     margin: 4px;
     padding: 4px;
 
+    width: 50%;
+
     justify-content: end;
+`;
+
+const ColorPickerTab = styled.div`
+    display: flex;
+
+    align-items: center;
+
+    margin: 4px;
+    padding: 4px;
+
+    justify-content: center;
 `;
 
 const OptionsTabSize = styled.div`
@@ -115,4 +128,5 @@ export {
     OptionsTab,
     OptionsTabSize,
     OptionsTabStyle,
+    ColorPickerTab,
 };

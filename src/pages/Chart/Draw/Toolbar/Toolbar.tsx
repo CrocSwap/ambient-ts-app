@@ -3,8 +3,10 @@ import styles from './Toolbar.module.css';
 import drawLine from '../../../../assets/images/icons/draw/draw_line.svg';
 import drawCross from '../../../../assets/images/icons/draw/draw_cross.svg';
 import drawRect from '../../../../assets/images/icons/draw/rect.svg';
+import dprange from '../../../../assets/images/icons/draw/dprange.svg';
 // import drawAngle from '../../../../assets/images/icons/draw/angle_line.svg';
 import horizontalRay from '../../../../assets/images/icons/draw/horizontal_ray.svg';
+import fibRetracement from '../../../../assets/images/icons/draw/fibonacci_retracement.svg';
 
 interface ToolbarProps {
     activeDrawingType: string;
@@ -67,6 +69,14 @@ function Toolbar(props: ToolbarProps) {
         {
             icon: horizontalRay,
             label: 'Ray',
+        },
+        {
+            icon: dprange,
+            label: 'DPRange',
+        },
+        {
+            icon: fibRetracement,
+            label: 'FibRetracement',
         },
 
         // Add more icons here
