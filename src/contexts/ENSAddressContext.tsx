@@ -25,7 +25,7 @@ export const ENSAddressContextProvider = (props: { children: ReactNode }) => {
     const cacheRef = useRef<Map<string, string>>(new Map());
     const nullCacheRef = useRef<Map<string, number>>(new Map());
     const DEADLINE = 1 * 60 * 60 * 1000; // 1 hour
-    const RETRY_DELAY = 1 * 60 * 1000; // 10 minutes
+    const RETRY_DELAY = 10 * 60 * 1000; // 10 minutes
 
     const addData = (data: TradeTableDataRow[]) => {
         const now = Date.now();
