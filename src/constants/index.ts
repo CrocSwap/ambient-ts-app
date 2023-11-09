@@ -38,6 +38,11 @@ export const CHAT_ENABLED =
         ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
         : true;
 
+export const INCLUDE_CANTO_LINK =
+    process.env.REACT_APP_INCLUDE_CANTO_LINK !== undefined
+        ? process.env.REACT_APP_INCLUDE_CANTO_LINK.toLowerCase() === 'true'
+        : false;
+
 export const DISABLE_INIT_SETTINGS =
     process.env.REACT_APP_DISABLE_INIT_SETTINGS !== undefined
         ? process.env.REACT_APP_DISABLE_INIT_SETTINGS.toLowerCase() === 'true'
