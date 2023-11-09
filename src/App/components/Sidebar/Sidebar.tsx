@@ -91,7 +91,6 @@ function Sidebar() {
         {
             name: 'Top Pools',
             icon: <TopPoolsIcon open={sidebar.isOpen} size={20} />,
-
             data: (
                 <TopPools
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
@@ -255,6 +254,8 @@ function Sidebar() {
         setOpenAllDefault(!openAllDefault);
     };
 
+    // TODO: why are we using an `<input>` as a clickable to close the sidebar?
+
     const searchContainerDisplay = (
         <FlexContainer
             flexDirection='row'
@@ -275,11 +276,13 @@ function Sidebar() {
                         >
                             {isLocked ? (
                                 <AiFillLock
+                                    id='sidebar_is_locked_clickable'
                                     size={18}
                                     onClick={toggleLockSidebar}
                                 />
                             ) : (
                                 <AiFillUnlock
+                                    id='sidebar_is_unlocked_clickable'
                                     size={18}
                                     onClick={toggleLockSidebar}
                                 />
@@ -292,11 +295,13 @@ function Sidebar() {
                         >
                             {openAllDefault ? (
                                 <BsChevronContract
+                                    id='sidebar_expand_all_button'
                                     size={18}
                                     onClick={toggleExpandCollapseAll}
                                 />
                             ) : (
                                 <BsChevronExpand
+                                    id='sidebar_collapse_all_button'
                                     size={18}
                                     onClick={toggleExpandCollapseAll}
                                 />
@@ -312,6 +317,7 @@ function Sidebar() {
                             }
                         >
                             <input
+                                id='close_sidebar_button'
                                 type='image'
                                 src={closeSidebarImage}
                                 alt='close sidebar'

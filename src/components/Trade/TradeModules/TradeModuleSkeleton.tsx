@@ -199,6 +199,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                         )
                     ) : (
                         <Button
+                            idForDOM='connect_wallet_button_in_trade_configurator'
                             action={openWagmiModal}
                             title='Connect Wallet'
                             flat

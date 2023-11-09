@@ -9,6 +9,9 @@ interface PropsIF {
 export default function GateWallet(props: PropsIF) {
     const { termUrls, recordAgreed } = props;
 
+    // TODO:    the two `<section>` elements are likely unnecessary and the
+    // TODO:    ... top-level return element should not be a generic `<div>`
+
     return (
         <div className={styles.main_container}>
             <section className={styles.first_section}>
@@ -50,7 +53,12 @@ export default function GateWallet(props: PropsIF) {
                 </p>
             </section>
             <section>
-                <Button flat title='Agree' action={recordAgreed} />
+                <Button
+                    idForDOM='agree_button_ToS'
+                    flat
+                    title='Agree'
+                    action={recordAgreed}
+                />
             </section>
         </div>
     );
