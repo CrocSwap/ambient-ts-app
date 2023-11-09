@@ -4,16 +4,29 @@ import { memoizePromiseFn } from './memoizePromiseFn';
 const randomNum = Math.random();
 import { ANALYTICS_URL } from '../../constants';
 import { translateTestnetToken } from '../../utils/data/testnetTokenMap';
+import { supportedNetworks } from '../../utils/networks';
 
 export const fetchTokenPrice = async (
     dispToken: string,
+    chain: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _lastTime: number,
 ) => {
     const address = translateTestnetToken(dispToken);
 
+    const defaultPair = supportedNetworks[chain].defaultPair;
+
     try {
         if (address) {
+            if (
+                address.toLowerCase() === defaultPair[1].address.toLowerCase()
+            ) {
+                return {
+                    usdPrice: 0.9995309916951084,
+                    usdPriceFormatted: 1,
+                };
+            }
+
             const response = await fetch(
                 ANALYTICS_URL +
                     new URLSearchParams({
