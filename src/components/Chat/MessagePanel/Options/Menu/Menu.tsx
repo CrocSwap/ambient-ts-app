@@ -11,8 +11,6 @@ interface propsIF {
     setFlipped: Dispatch<SetStateAction<boolean>>;
     deleteMsgFromList: any;
     id: string;
-    isModerator: boolean;
-    isUsersMessage: boolean;
     setIsReplyButtonPressed: Dispatch<SetStateAction<boolean>>;
     isReplyButtonPressed: boolean;
     replyMessageContent: Message | undefined;
@@ -20,6 +18,8 @@ interface propsIF {
     message: Message | undefined;
     addReactionListener: (message?: Message) => void;
     isUserVerified: boolean;
+    isModerator: boolean;
+    isUsersMessage: boolean;
     riseToBottom: boolean;
 }
 export default function Menu(props: propsIF) {
@@ -38,36 +38,36 @@ export default function Menu(props: propsIF) {
     };
 
     const options = [
-        {
-            label: 'Reply',
-            icon: <BsFillReplyFill size={10} />,
-            listener: setReplyMessage,
-        },
-        {
-            label: 'Add Reaction',
-            icon: <BsEmojiSmileUpsideDown size={10} />,
-            listener: addReaction,
-        },
+        // CHAT_FEATURES_WBO - Feature : Reply Message
+        // {
+        //     label: 'Reply',
+        //     icon: <BsFillReplyFill size={10} />,
+        //     listener: setReplyMessage,
+        // },
+        //  CHAT_FEATURES_WBO - Feature: Add Reaction
+        // {
+        //     label: 'Add Reaction',
+        //     icon: <BsEmojiSmileUpsideDown size={10} />,
+        //     listener: addReaction,
+        // },
         {
             label: 'Delete',
             icon: <FiDelete size={10} />,
             listener: deleteMessageListener,
         },
-        {
-            label: 'Details',
-            icon: <FiArrowLeft size={10} />,
-            listener: () => props.setFlipped(true),
-        },
+
+        //  CHAT_FEATURES_WBO - Feature: Like & Dislike
+        // {
+        //     label: 'Details',
+        //     icon: <FiArrowLeft size={10} />,
+        //     listener: () => props.setFlipped(true),
+        // },
     ];
 
     const filteredOptions =
         !(props.isUsersMessage && props.isUserVerified) && !props.isModerator
             ? options.filter((option) => option.label !== 'Delete')
             : options;
-
-    console.log('........................................');
-    console.log(props.riseToBottom);
-    console.log('........................................');
 
     return (
         <div

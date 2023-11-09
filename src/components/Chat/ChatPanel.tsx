@@ -90,6 +90,7 @@ function ChatPanel(props: propsIF) {
     const [messageCooldownInterval, setSendMessageCooldownInterval] =
         useState<any>();
 
+    // CHAT_FEATURE_STATES - Feature : User Summary
     const [userSummaryToBottom, setUserSummaryToBottom] = useState(false);
     const [userSummaryVerticalPosition, setUserSummaryVerticalPosition] =
         useState(0);
@@ -178,21 +179,22 @@ function ChatPanel(props: propsIF) {
     }
 
     async function mentionHoverListener(elementTop: number, walletID: string) {
-        const userDetails = await getUserSummaryDetails(walletID);
-        console.log(userDetails);
-        setSelectedUserSummary(userDetails);
-        const wrapperCenterPoint =
-            messageEnd.current?.getBoundingClientRect().height / 2 +
-            messageEnd.current?.getBoundingClientRect().top;
-        setUserSummaryActive(true);
-        setUserSummaryVerticalPosition(
-            elementTop - messageEnd.current?.getBoundingClientRect().top,
-        );
-        if (elementTop >= wrapperCenterPoint) {
-            setUserSummaryToBottom(false);
-        } else {
-            setUserSummaryToBottom(true);
-        }
+        // CHAT_FEATURES_WBO -  Feature : User Summary
+        // const userDetails = await getUserSummaryDetails(walletID);
+        // console.log(userDetails);
+        // setSelectedUserSummary(userDetails);
+        // const wrapperCenterPoint =
+        //     messageEnd.current?.getBoundingClientRect().height / 2 +
+        //     messageEnd.current?.getBoundingClientRect().top;
+        // setUserSummaryActive(true);
+        // setUserSummaryVerticalPosition(
+        //     elementTop - messageEnd.current?.getBoundingClientRect().top,
+        // );
+        // if (elementTop >= wrapperCenterPoint) {
+        //     setUserSummaryToBottom(false);
+        // } else {
+        //     setUserSummaryToBottom(true);
+        // }
     }
 
     function summaryMouseLeaveListener() {
@@ -480,7 +482,6 @@ function ChatPanel(props: propsIF) {
                 setShowPreviousMessagesButton(false);
             }
             setScrollDirection('Scroll Up');
-            console.log(scrollDirection); // to do
         }
 
         if (mentions.length > 0) {

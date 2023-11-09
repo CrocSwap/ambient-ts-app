@@ -445,13 +445,16 @@ export default function MessageInput(props: MessageInputProps) {
         }
     };
 
+    // CHAT_FEATURES_WBO
+    // Feature : Mention & AutoComplete
     const mentionAutoComplete = (
-        <MentionAutoComplete
-            userList={filteredUsers}
-            active={mentPanelActive}
-            queryStr={mentPanelQueryStr}
-            selectedUser={possibleMentUser}
-        />
+        <></>
+        // <MentionAutoComplete
+        //     userList={filteredUsers}
+        //     active={mentPanelActive}
+        //     queryStr={mentPanelQueryStr}
+        //     selectedUser={possibleMentUser}
+        // />
     );
 
     return (

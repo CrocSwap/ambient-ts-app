@@ -18,6 +18,9 @@ interface propsIF {
     setIsMoreButtonPressed: Dispatch<boolean>;
     addReactionListener: (message?: Message) => void;
     tooltipTop: boolean;
+    isUserVerified: boolean;
+    isModerator: boolean;
+    isUsersMessage: boolean;
 }
 export default function Options(props: propsIF) {
     const { isMoreButtonPressed, setIsMoreButtonPressed } = props;
@@ -142,11 +145,19 @@ export default function Options(props: propsIF) {
             </p>
         </TextOnlyTooltip>
     );
-    return (
+    return !(props.isUsersMessage && props.isUserVerified) &&
+        !props.isModerator ? (
+        <>
+            {/* CHAT_FEATURES_WBO - Feature : Add Reaction | Reply */}
+            {/* This conditional rendering will be removed after opening other features. */}
+        </>
+    ) : (
         <div>
             <div className={styles.dropdown_item}>
-                {ReplyWithTooltip}
-                {addReactionWithTooltip}
+                {/* CHAT_FEATURES_WBO - Feature: Reply */}
+                {/* {ReplyWithTooltip} */}
+                {/* CHAT_FEATURES_WBO - Feature: Add Reaction */}
+                {/* {addReactionWithTooltip} */}
                 {optionsWithTooltip}
             </div>
         </div>

@@ -670,11 +670,11 @@ function SentMessagePanel(props: SentMessageProps) {
     function shouldOptionsRiseToBottom() {
         const wrapper = document.getElementById('chatmessage');
         if (wrapper && optionsButtonRef.current) {
-            const wrapperCenter =
-                wrapper.getBoundingClientRect().height / 2 +
+            const tresholdPoint =
+                wrapper.getBoundingClientRect().height / 4 +
                 wrapper.getBoundingClientRect().top;
             return (
-                wrapperCenter >
+                tresholdPoint >
                 optionsButtonRef.current.getBoundingClientRect().top
             );
         }
@@ -752,6 +752,12 @@ function SentMessagePanel(props: SentMessageProps) {
                                         props.addReactionListener
                                     }
                                     tooltipTop={shouldOptionsRiseToBottom()}
+                                    isModerator={props.isModerator}
+                                    isUsersMessage={
+                                        props.message.sender ===
+                                        props.currentUser
+                                    }
+                                    isUserVerified={props.isUserVerified}
                                 />
                             </div>
                         )}

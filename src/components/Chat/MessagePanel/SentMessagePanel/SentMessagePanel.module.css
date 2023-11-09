@@ -381,6 +381,7 @@
 
 .rise_to_bottom_wrapper{
     padding-bottom: 6rem;
+    padding-bottom: 2rem;  /* 3rem will be removed after other chat panel features opened in sentMessagePanel context menu*/
 }
 
 .msg_bubble_container.flipped .msg_bubble_content{
