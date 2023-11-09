@@ -30,11 +30,6 @@ export const ENSAddressContextProvider = (props: { children: ReactNode }) => {
     const addData = (data: TradeTableDataRow[]) => {
         const now = Date.now();
 
-        console.log(
-            serverReturnedErrorTimestamp > 0 &&
-                now - serverReturnedErrorTimestamp < RETRY_DELAY,
-        );
-
         if (
             serverReturnedErrorTimestamp > 0 &&
             now - serverReturnedErrorTimestamp < RETRY_DELAY
