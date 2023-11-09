@@ -159,18 +159,20 @@ function DrawCanvas(props: DrawCanvasProps) {
             const valueX = scaleData?.xScale.invert(offsetX);
             const valueY = scaleData?.yScale.invert(offsetY);
 
-            if (tempLineData.length > 0 || activeDrawingType === 'Ray') {
-                endDrawing(mouseX, mouseY);
-            } else {
-                tempLineData.push({
-                    x: valueX,
-                    y: valueY,
-                    denomInBase: denomInBase,
-                });
-            }
+            if (valueY > 0) {
+                if (tempLineData.length > 0 || activeDrawingType === 'Ray') {
+                    endDrawing(mouseX, mouseY);
+                } else {
+                    tempLineData.push({
+                        x: valueX,
+                        y: valueY,
+                        denomInBase: denomInBase,
+                    });
+                }
 
-            setLineData(tempLineData);
-            renderCanvasArray([d3DrawCanvas]);
+                setLineData(tempLineData);
+                renderCanvasArray([d3DrawCanvas]);
+            }
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -255,56 +257,60 @@ function DrawCanvas(props: DrawCanvasProps) {
                 const offsetY = mouseY - canvasRect?.top;
                 const offsetX = mouseX - canvasRect?.left;
 
+                const valueX = scaleData?.xScale.invert(offsetX);
+                const valueY = scaleData?.yScale.invert(offsetY);
+
                 setCrossHairDataFunc(offsetX, offsetY);
 
                 if (!isDrawing || activeDrawingType === 'Ray') return;
 
-                const newBandScale = createScaleForBandArea(
-                    tempLineData[0].x,
-                    scaleData.xScale.invert(offsetX),
-                );
+                if (valueY > 0) {
+                    const newBandScale = createScaleForBandArea(
+                        tempLineData[0].x,
+                        scaleData.xScale.invert(offsetX),
+                    );
 
-                const bandArea = createBandArea(
-                    newBandScale,
-                    scaleData?.yScale,
-                    denomInBase,
-                );
+                    const bandArea = createBandArea(
+                        newBandScale,
+                        scaleData?.yScale,
+                        denomInBase,
+                    );
 
-                setBandArea(() => bandArea);
-                const valueX = scaleData?.xScale.invert(offsetX);
-                const valueY = scaleData?.yScale.invert(offsetY);
-                if (tempLineData.length === 1) {
-                    tempLineData.push({
-                        x: valueX,
-                        y: valueY,
-                        denomInBase: denomInBase,
-                    });
-                } else {
-                    tempLineData[1] = {
-                        x: valueX,
-                        y: valueY,
-                        denomInBase: denomInBase,
-                    };
-                }
-                setSelectedDrawnShape({
-                    data: {
-                        data: tempLineData,
-                        type: activeDrawingType,
-                        time: Date.now(),
-                        pool: {
-                            poolIndex: poolIndex,
-                            tokenA: currentPool.tokenA.address,
-                            tokenB: currentPool.tokenB.address,
-                            isTokenABase: currentPool.isTokenABase,
-                            denomInBase: currentPool.isDenomBase,
+                    setBandArea(() => bandArea);
+
+                    if (tempLineData.length === 1) {
+                        tempLineData.push({
+                            x: valueX,
+                            y: valueY,
+                            denomInBase: denomInBase,
+                        });
+                    } else {
+                        tempLineData[1] = {
+                            x: valueX,
+                            y: valueY,
+                            denomInBase: denomInBase,
+                        };
+                    }
+                    setSelectedDrawnShape({
+                        data: {
+                            data: tempLineData,
+                            type: activeDrawingType,
+                            time: Date.now(),
+                            pool: {
+                                poolIndex: poolIndex,
+                                tokenA: currentPool.tokenA.address,
+                                tokenB: currentPool.tokenB.address,
+                                isTokenABase: currentPool.isTokenABase,
+                                denomInBase: currentPool.isDenomBase,
+                            },
+                            color: 'rgba(115, 113, 252, 1)',
+                            background: 'rgba(115, 113, 252, 0.15)',
+                            lineWidth: 1.5,
+                            style: [0, 0],
                         },
-                        color: 'rgba(115, 113, 252, 1)',
-                        background: 'rgba(115, 113, 252, 0.15)',
-                        lineWidth: 1.5,
-                        style: [0, 0],
-                    },
-                    selectedCircle: undefined,
-                });
+                        selectedCircle: undefined,
+                    });
+                }
             } else {
                 setSelectedDrawnShape(undefined);
                 setLineData([]);

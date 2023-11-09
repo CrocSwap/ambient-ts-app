@@ -61,31 +61,40 @@ export default function DragCanvas(props: DragCanvasProps) {
 
             const scale = isPointInDenom ? scaleData.yScale : denomScale;
 
-            const lastData = [
-                {
-                    x: scaleData.xScale.invert(
-                        scaleData.xScale(hoveredDrawnShape?.data?.data[0].x) +
-                            movemementX,
-                    ),
-                    y: scale.invert(
-                        scale(hoveredDrawnShape.data.data[0].y) + movemementY,
-                    ),
-                    denomInBase: hoveredDrawnShape.data?.data[0].denomInBase,
-                },
-                {
-                    x: scaleData.xScale.invert(
-                        scaleData.xScale(hoveredDrawnShape.data.data[1].x) +
-                            movemementX,
-                    ),
-                    y: scale.invert(
-                        scale(hoveredDrawnShape.data.data[1].y) + movemementY,
-                    ),
-                    denomInBase: hoveredDrawnShape.data?.data[1].denomInBase,
-                },
-            ];
+            const firstPoint = scale.invert(
+                scale(hoveredDrawnShape.data.data[0].y) + movemementY,
+            );
 
-            drawnShapeHistory[index].data = lastData;
-            hoveredDrawnShape.data.data = lastData;
+            const secondPoint = scale.invert(
+                scale(hoveredDrawnShape.data.data[1].y) + movemementY,
+            );
+
+            if (firstPoint > 0 && secondPoint > 0) {
+                const lastData = [
+                    {
+                        x: scaleData.xScale.invert(
+                            scaleData.xScale(
+                                hoveredDrawnShape?.data?.data[0].x,
+                            ) + movemementX,
+                        ),
+                        y: firstPoint,
+                        denomInBase:
+                            hoveredDrawnShape.data?.data[0].denomInBase,
+                    },
+                    {
+                        x: scaleData.xScale.invert(
+                            scaleData.xScale(hoveredDrawnShape.data.data[1].x) +
+                                movemementX,
+                        ),
+                        y: secondPoint,
+                        denomInBase:
+                            hoveredDrawnShape.data?.data[1].denomInBase,
+                    },
+                ];
+
+                drawnShapeHistory[index].data = lastData;
+                hoveredDrawnShape.data.data = lastData;
+            }
 
             render();
         }
@@ -129,11 +138,16 @@ export default function DragCanvas(props: DragCanvasProps) {
                         scaleData.yScale.invert(offsetY);
                 }
 
-                previosData[lastDataIndex].x = scaleData.xScale.invert(offsetX);
-                previosData[lastDataIndex].y =
+                const neyYData =
                     previosData[lastDataIndex].denomInBase === denomInBase
                         ? scaleData.yScale.invert(offsetY)
                         : 1 / scaleData.yScale.invert(offsetY);
+
+                if (neyYData > 0) {
+                    previosData[lastDataIndex].x =
+                        scaleData.xScale.invert(offsetX);
+                    previosData[lastDataIndex].y = neyYData;
+                }
             }
         }
         drawnShapeHistory[index].data = previosData;
