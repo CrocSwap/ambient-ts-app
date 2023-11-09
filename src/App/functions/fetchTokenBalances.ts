@@ -133,7 +133,7 @@ export const fetchTokenBalances = async (
 export type TokenBalancesQueryFn = (
     address: string,
     chain: string,
-    lastBlock: number,
+    refreshTime: number,
     cachedTokenDetails: FetchContractDetailsFn,
     crocEnv: CrocEnv | undefined,
     graphCacheUrl: string,
