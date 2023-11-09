@@ -3,8 +3,8 @@ import {
     TransactionIF,
     LimitOrderIF,
     PositionIF,
-} from '../../ambient-utils/src/types';
-import { batchFetchAndCacheENSAddressData } from '../../ambient-utils/src/dataLayer';
+} from '../ambient-utils/src/types';
+import { batchFetchAndCacheENSAddressData } from '../ambient-utils/src/dataLayer';
 
 type TradeTableDataRow = TransactionIF | LimitOrderIF | PositionIF;
 
