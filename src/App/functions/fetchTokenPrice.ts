@@ -37,7 +37,9 @@ export const fetchTokenPrice = async (
                         include_data: '0',
                         token_address: address,
                         asset_platform:
-                            chain === '0x82750' ? 'scroll' : 'ethereum',
+                            chain === '0x82750' || chain === '0x8274f'
+                                ? 'scroll'
+                                : 'ethereum',
                     }),
             );
             const result = await response.json();
