@@ -125,6 +125,7 @@ export default function LimitRate(props: propsIF) {
                     fullWidth
                     background='dark2'
                     style={{ borderRadius: 'var(--border-radius)' }}
+                    padding='0 16px'
                 >
                     <TokenQuantityInput
                         id={`${fieldId}-quantity`}

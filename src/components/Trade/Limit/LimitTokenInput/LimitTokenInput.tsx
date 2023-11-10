@@ -225,7 +225,6 @@ function LimitTokenInput(props: propsIF) {
                 fullWidth
                 justifyContent='center'
                 alignItems='center'
-                padding='0 0 8px 0'
             >
                 <IconWithTooltip title='Reverse tokens' placement='left'>
                     <TokensArrow
