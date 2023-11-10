@@ -53,20 +53,19 @@ export default function DragCanvas(props: DragCanvasProps) {
             const isPointInDenom =
                 hoveredDrawnShape?.data?.data[0].denomInBase === denomInBase;
 
-            const denomScale = scaleData.yScale.copy();
-            denomScale.domain([
-                1 / scaleData.yScale.domain()[0],
-                1 / scaleData.yScale.domain()[1],
-            ]);
+            const firstPoint = isPointInDenom
+                ? hoveredDrawnShape.data.data[0].y
+                : 1 / hoveredDrawnShape.data.data[0].y;
 
-            const scale = isPointInDenom ? scaleData.yScale : denomScale;
+            const secondPoint = isPointInDenom
+                ? hoveredDrawnShape.data.data[1].y
+                : 1 / hoveredDrawnShape.data.data[1].y;
 
-            const firstPoint = scale.invert(
-                scale(hoveredDrawnShape.data.data[0].y) + movemementY,
+            const reversedFirstPoint = scaleData.yScale.invert(
+                scaleData.yScale(firstPoint) + movemementY,
             );
-
-            const secondPoint = scale.invert(
-                scale(hoveredDrawnShape.data.data[1].y) + movemementY,
+            const reversedSecondPoint = scaleData.yScale.invert(
+                scaleData.yScale(secondPoint) + movemementY,
             );
 
             if (firstPoint > 0 && secondPoint > 0) {
@@ -77,7 +76,9 @@ export default function DragCanvas(props: DragCanvasProps) {
                                 hoveredDrawnShape?.data?.data[0].x,
                             ) + movemementX,
                         ),
-                        y: firstPoint,
+                        y: isPointInDenom
+                            ? reversedFirstPoint
+                            : 1 / reversedFirstPoint,
                         denomInBase:
                             hoveredDrawnShape.data?.data[0].denomInBase,
                     },
@@ -86,7 +87,9 @@ export default function DragCanvas(props: DragCanvasProps) {
                             scaleData.xScale(hoveredDrawnShape.data.data[1].x) +
                                 movemementX,
                         ),
-                        y: secondPoint,
+                        y: isPointInDenom
+                            ? reversedSecondPoint
+                            : 1 / reversedSecondPoint,
                         denomInBase:
                             hoveredDrawnShape.data?.data[1].denomInBase,
                     },
