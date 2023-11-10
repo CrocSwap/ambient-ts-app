@@ -24,7 +24,7 @@
     height: 100%;
 }
 
-.main_layout_chart svg:hover {
-    color: var(--accent1) ;
-    cursor: default ;
+.transaction_details_graph svg:hover {
+    color: var(--accent1);
+    cursor: default;
 }
