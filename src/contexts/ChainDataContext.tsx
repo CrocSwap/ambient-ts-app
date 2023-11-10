@@ -3,7 +3,6 @@ import React, {
     SetStateAction,
     Dispatch,
     useEffect,
-    useMemo,
     useState,
     useContext,
 } from 'react';
@@ -158,11 +157,9 @@ export const ChainDataContextProvider = (props: {
         fetchGasPrice();
     }, [lastBlockNumber]);
 
-    // prevents useEffect below from triggering every block update
-    const everyEigthBlock = useMemo(
-        () => Math.floor(lastBlockNumber / 8),
-        [lastBlockNumber],
-    );
+    // used to trigger token balance refreshes every 2 minutes
+    const everyTwoMinutes = Math.floor(Date.now() / 120000);
+
     useEffect(() => {
         (async () => {
             IS_LOCAL_ENV &&
@@ -173,7 +170,7 @@ export const ChainDataContextProvider = (props: {
                         await cachedFetchTokenBalances(
                             userAddress,
                             chainData.chainId,
-                            everyEigthBlock,
+                            everyTwoMinutes,
                             cachedTokenDetails,
                             crocEnv,
                             client,
@@ -194,7 +191,7 @@ export const ChainDataContextProvider = (props: {
                 }
             }
         })();
-    }, [crocEnv, isConnected, userAddress, chainData.chainId, everyEigthBlock]);
+    }, [crocEnv, isConnected, userAddress, chainData.chainId, everyTwoMinutes]);
 
     return (
         <ChainDataContext.Provider value={chainDataContext}>

@@ -47,7 +47,7 @@ function Portfolio() {
         crocEnv,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { lastBlockNumber, client } = useContext(ChainDataContext);
+    const { client } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
     const dispatch = useAppDispatch();
@@ -179,13 +179,15 @@ function Portfolio() {
         TokenIF[]
     >([]);
 
+    // used to trigger token balance refreshes every 2 minutes
+    const everyTwoMinutes = Math.floor(Date.now() / 120000);
+
     useEffect(() => {
         (async () => {
             if (
                 crocEnv &&
                 resolvedAddress &&
                 chainId &&
-                lastBlockNumber &&
                 !connectedAccountActive
             ) {
                 try {
@@ -194,7 +196,7 @@ function Portfolio() {
                     const tokenBalanceResults = await cachedFetchTokenBalances(
                         resolvedAddress,
                         chainId,
-                        lastBlockNumber,
+                        everyTwoMinutes,
                         cachedTokenDetails,
                         crocEnv,
                         client,
@@ -236,7 +238,7 @@ function Portfolio() {
         crocEnv,
         resolvedAddress,
         chainId,
-        lastBlockNumber,
+        everyTwoMinutes,
         connectedAccountActive,
     ]);
 
