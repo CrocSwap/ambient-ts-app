@@ -1,11 +1,14 @@
-import { memo, useContext } from 'react';
+import { memo, useContext, useEffect, useState } from 'react';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { formatTokenInput } from '../../utils/numbers';
 import TokenInputQuantity from './TokenInputQuantity';
-import { WalletBalanceSubinfo } from './WalletBalanceSubinfo';
+import { RefreshButton } from '../../styled/Components/TradeModules';
+import { FiRefreshCw } from 'react-icons/fi';
+import WalletBalanceSubinfo from './WalletBalanceSubinfo';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-
+import { translateTestnetToken } from '../../utils/data/testnetTokenMap';
 interface propsIF {
     tokenAorB: 'A' | 'B';
     token: TokenIF;
@@ -63,6 +66,37 @@ function TokenInputWithWalletBalance(props: propsIF) {
             ? amountToReduceEthScroll
             : amountToReduceEthMainnet;
 
+    const [usdValueForDom, setUsdValueForDom] = useState<string | undefined>();
+
+    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+
+    const pricedToken = translateTestnetToken(token.address);
+
+    useEffect(() => {
+        Promise.resolve(cachedFetchTokenPrice(pricedToken, chainId)).then(
+            (price) => {
+                if (price?.usdPrice !== undefined) {
+                    const usdValueNum: number | undefined =
+                        price !== undefined && tokenInput !== ''
+                            ? price.usdPrice * parseFloat(tokenInput)
+                            : undefined;
+                    const usdValueTruncated =
+                        usdValueNum !== undefined
+                            ? getFormattedNumber({
+                                  value: usdValueNum,
+                                  isUSD: true,
+                              })
+                            : undefined;
+                    usdValueTruncated !== undefined
+                        ? setUsdValueForDom(usdValueTruncated)
+                        : setUsdValueForDom('');
+                } else {
+                    setUsdValueForDom(undefined);
+                }
+            },
+        );
+    }, [chainId, pricedToken, tokenInput]);
+
     const toDecimal = (val: string) =>
         isTokenEth ? parseFloat(val).toFixed(18) : parseFloat(val).toString();
 
@@ -116,39 +150,55 @@ function TokenInputWithWalletBalance(props: propsIF) {
         handleToggleDexSelection();
     };
 
-    const walletContent = showWallet && (
-        <WalletBalanceSubinfo
-            isWithdraw={isWithdraw ?? tokenAorB === 'A'}
-            balance={balanceToDisplay}
-            availableBalance={parseFloat(balanceWithBuffer)}
-            useExchangeBalance={
-                isDexSelected &&
-                !!tokenDexBalance &&
-                parseFloat(tokenDexBalance) > 0
-            }
-            isDexSelected={isDexSelected}
-            onToggleDex={handleToggleDex}
-            onMaxButtonClick={
-                !hideWalletMaxButton ? handleMaxButtonClick : undefined
-            }
-            onRefresh={handleRefresh}
-        />
+    const walletContent = (
+        <>
+            <WalletBalanceSubinfo
+                usdValueForDom={
+                    isLoading || !usdValueForDom ? '' : usdValueForDom
+                }
+                showWallet={showWallet}
+                isWithdraw={isWithdraw ?? tokenAorB === 'A'}
+                balance={balanceToDisplay}
+                availableBalance={parseFloat(balanceWithBuffer)}
+                useExchangeBalance={
+                    isDexSelected &&
+                    !!tokenDexBalance &&
+                    parseFloat(tokenDexBalance) > 0
+                }
+                isDexSelected={isDexSelected}
+                onToggleDex={handleToggleDex}
+                onMaxButtonClick={
+                    !hideWalletMaxButton ? handleMaxButtonClick : undefined
+                }
+                onRefresh={handleRefresh}
+            />
+        </>
     );
 
     return (
-        <TokenInputQuantity
-            fieldId={fieldId}
-            token={token}
-            tokenAorB={tokenAorB}
-            value={tokenInput}
-            handleTokenInputEvent={handleTokenInputEvent}
-            reverseTokens={reverseTokens}
-            isLoading={isLoading}
-            includeWallet={walletContent}
-            showPulseAnimation={showPulseAnimation}
-            parseInput={parseTokenInput}
-            disabledContent={disabledContent}
-        />
+        <>
+            <TokenInputQuantity
+                fieldId={fieldId}
+                token={token}
+                tokenAorB={tokenAorB}
+                value={tokenInput}
+                handleTokenInputEvent={handleTokenInputEvent}
+                reverseTokens={reverseTokens}
+                isLoading={isLoading}
+                includeWallet={walletContent}
+                showPulseAnimation={showPulseAnimation}
+                parseInput={parseTokenInput}
+                disabledContent={disabledContent}
+            />
+            {handleRefresh && (
+                <RefreshButton
+                    onClick={handleRefresh}
+                    aria-label='Refresh data'
+                >
+                    <FiRefreshCw size={18} />
+                </RefreshButton>
+            )}
+        </>
     );
 }
 
