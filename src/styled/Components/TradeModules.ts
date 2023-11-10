@@ -206,8 +206,8 @@ export const InputDisabledText = styled(FlexContainer)`
 
 export const TokenQuantityInput = styled.input`
     font-weight: 300;
-    font-size: var(--header2-size);
-    line-height: 22px;
+    font-size: var(--header1-size);
+    line-height: var(--header1-lh);
     color: var(--text1);
     text-align: start;
     width: 80%;
@@ -215,7 +215,7 @@ export const TokenQuantityInput = styled.input`
     padding: 0;
     max-height: 23px;
     margin: 8px 0;
-    margin-left: 32px;
+    // margin-left: 32px;
     border: none;
     outline: 0;
     background-color: transparent;
@@ -232,13 +232,11 @@ export const TokenQuantityInput = styled.input`
 `;
 
 export const TokenQuantityContainer = styled.div<AnimationProps>`
-    border-radius: var(--border-radius);
-    background-color: var(--dark2);
     min-height: 40px;
 
     display: grid;
     grid-template-columns: 1fr 145px;
-    ${Animations}
+    ${Animations};
 `;
 
 export const TokenSelectButton = styled.button`
@@ -250,14 +248,22 @@ export const TokenSelectButton = styled.button`
     cursor: pointer;
     transition: var(--transition);
 
-    background: transparent;
+    background: var(--dark1);
     outline: none;
-    border: none;
+    border: 0.5px solid transparent;
     padding: 0 4px;
-    border-radius: var(--border-radius);
+    border-radius: 50px;
+    height: 40px;
+
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+    color: var(--text1);
 
     &:hover {
-        background: var(--dark3);
+        border: 0.5px solid var(--accent1);
+        color: var(--accent1);
+        box-shadow: 0px 0px 20px 0px rgba(115, 113, 252, 0.25) inset;
+        transition: var(--transition);
     }
 
     &:focus-visible {
@@ -266,7 +272,10 @@ export const TokenSelectButton = styled.button`
 `;
 
 export const RefreshButton = styled(IconButton)`
+    display: flex;
+
     justify-content: flex-end;
+    padding: 0 24px;
 
     &:hover > svg {
         color: var(--accent1);
