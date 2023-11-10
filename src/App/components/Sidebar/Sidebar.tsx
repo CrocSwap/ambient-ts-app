@@ -103,7 +103,7 @@ function Sidebar() {
 
     const rangePositions = [
         {
-            name: 'Range Positions',
+            name: 'Liquidity Positions',
             icon: <RangesIcon open={sidebar.isOpen} size={20} />,
             data: <SidebarRangePositions userPositions={mostRecentPositions} />,
         },

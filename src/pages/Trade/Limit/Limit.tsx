@@ -372,6 +372,8 @@ export default function Limit() {
         setNewLimitOrderTransactionHash('');
     }, [baseToken.address + quoteToken.address]);
 
+    const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
+
     useEffect(() => {
         handleLimitButtonMessage(parseFloat(tokenAInputQty));
     }, [
@@ -381,13 +383,14 @@ export default function Limit() {
         poolPriceNonDisplay,
         limitTick,
         isSellTokenBase,
+        isSellTokenNativeToken,
+        tokenAQtyCoveredByWalletBalance,
+        tokenABalance,
     ]);
 
     useEffect(() => {
         setIsWithdrawFromDexChecked(parseFloat(tokenADexBalance) > 0);
     }, [tokenADexBalance]);
-
-    const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
@@ -537,6 +540,14 @@ export default function Limit() {
         }
     };
 
+    const amountToReduceEthMainnet = 0.005; // .005 ETH
+    const amountToReduceEthScroll = 0.0003; // .0003 ETH
+
+    const amountToReduceEth =
+        chainId === '0x82750' || chainId === '0x8274f'
+            ? amountToReduceEthScroll
+            : amountToReduceEthMainnet;
+
     const handleLimitButtonMessage = (tokenAAmount: number) => {
         if (!isPoolInitialized) {
             setLimitAllowed(false);
@@ -575,6 +586,15 @@ export default function Limit() {
                     setLimitAllowed(false);
                     setLimitButtonErrorMessage(
                         `${tokenA.symbol} Amount Exceeds Wallet Balance`,
+                    );
+                } else if (
+                    isSellTokenNativeToken &&
+                    tokenAQtyCoveredByWalletBalance + amountToReduceEth >
+                        parseFloat(tokenABalance)
+                ) {
+                    setLimitAllowed(false);
+                    setLimitButtonErrorMessage(
+                        'Wallet Balance Insufficient to Cover Gas',
                     );
                 } else {
                     setLimitAllowed(true);

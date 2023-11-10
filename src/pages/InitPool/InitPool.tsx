@@ -572,10 +572,12 @@ export default function InitPool() {
 
     const shouldResetAdvancedLowTick =
         advancedHighTick > selectedPoolPriceTick + 100000 ||
-        advancedLowTick < selectedPoolPriceTick - 100000;
+        advancedLowTick < selectedPoolPriceTick - 100000 ||
+        advancedLowTick === advancedHighTick;
     const shouldResetAdvancedHighTick =
         advancedHighTick > selectedPoolPriceTick + 100000 ||
-        advancedLowTick < selectedPoolPriceTick - 100000;
+        advancedLowTick < selectedPoolPriceTick - 100000 ||
+        advancedLowTick === advancedHighTick;
 
     const defaultLowTick = useMemo<number>(() => {
         const value: number = shouldResetAdvancedLowTick
@@ -807,8 +809,32 @@ export default function InitPool() {
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice, isMintLiqEnabled]);
 
-    const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) > 0;
-    const isTokenBAllowanceSufficient = parseFloat(tokenBAllowance) > 0;
+    const tokenASurplusMinusTokenARemainderNum =
+        parseFloat(tokenADexBalance || '0') -
+        parseFloat(tokenACollateral || '0');
+    const tokenBSurplusMinusTokenBRemainderNum =
+        parseFloat(tokenBDexBalance || '0') -
+        parseFloat(tokenBCollateral || '0');
+    const tokenAQtyCoveredByWalletBalance = isWithdrawTokenAFromDexChecked
+        ? tokenASurplusMinusTokenARemainderNum < 0
+            ? tokenASurplusMinusTokenARemainderNum * -1
+            : 0
+        : parseFloat(tokenACollateral || '0');
+    const tokenBQtyCoveredByWalletBalance = isWithdrawTokenBFromDexChecked
+        ? tokenBSurplusMinusTokenBRemainderNum < 0
+            ? tokenBSurplusMinusTokenBRemainderNum * -1
+            : 0
+        : parseFloat(tokenBCollateral || '0');
+
+    // if liquidity miniting is enabled, tthen oken allowance must be greater than the amount of tokens the user is depositing,
+    // plus a small amount for the initialization transactions
+    // if liquidity minting is disabled, then token allowance must be greater than 0
+    const isTokenAAllowanceSufficient = isMintLiqEnabled
+        ? parseFloat(tokenAAllowance) > tokenAQtyCoveredByWalletBalance
+        : parseFloat(tokenAAllowance) > 0;
+    const isTokenBAllowanceSufficient = isMintLiqEnabled
+        ? parseFloat(tokenBAllowance) > tokenBQtyCoveredByWalletBalance
+        : parseFloat(tokenBAllowance) > 0;
 
     const focusInput = () => {
         const inputField = document.getElementById(
@@ -951,7 +977,10 @@ export default function InitPool() {
             defaultLowTick,
             defaultHighTick,
             isDenomBase,
+            isMintLiqEnabled,
         );
+
+    const isInitPage = true;
 
     const {
         tokenAllowed: tokenAAllowed,
@@ -965,6 +994,7 @@ export default function InitPool() {
         isWithdrawTokenAFromDexChecked,
         true, // hardcode pool initialized since we will be initializing it on confirm
         isMintLiqEnabled,
+        isInitPage,
     );
     const {
         tokenAllowed: tokenBAllowed,
@@ -978,6 +1008,7 @@ export default function InitPool() {
         isWithdrawTokenBFromDexChecked,
         true, // hardcode pool initialized since we will be initializing it on confirm
         isMintLiqEnabled,
+        isInitPage,
     );
 
     // Next step - understand how sider affects these params
@@ -1016,7 +1047,7 @@ export default function InitPool() {
               sendInit(initialPriceInBaseDenom);
           };
 
-    const initButtopPropsIF = {
+    const initButtonPropsIF = {
         tokenA,
         tokenB,
         tokenACollateral,
@@ -1040,8 +1071,8 @@ export default function InitPool() {
         isTokenBAllowanceSufficient,
         isInitPending,
         initialPriceDisplay,
-        advancedHighTick,
-        advancedLowTick,
+        defaultLowTick,
+        defaultHighTick,
         selectedPoolPriceTick,
     };
 
@@ -1418,6 +1449,7 @@ export default function InitPool() {
                     tokenB: isTokenBInputDisabled,
                 }}
                 reverseTokens={reverseTokens}
+                isMintLiqEnabled={isMintLiqEnabled}
                 isInitPage
             />
         </FlexContainer>
@@ -1648,7 +1680,7 @@ export default function InitPool() {
                     {erc20TokenWithDexBalance?.symbol ? (
                         withdrawWalletBalanceButton
                     ) : (
-                        <InitButton {...initButtopPropsIF} />
+                        <InitButton {...initButtonPropsIF} />
                     )}
                 </FlexContainer>
             </FlexContainer>

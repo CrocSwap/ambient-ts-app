@@ -5,6 +5,10 @@ interface TextProps {
     align?: string;
     cursor?: 'pointer' | 'default';
     margin?: string;
+    marginLeft?: string;
+    marginTop?: string;
+    marginRight?: string;
+    marginBottom?: string;
     padding?: string;
     color?: textColors;
     font?: Fonts;
@@ -21,6 +25,10 @@ export const Text = styled.span<TextProps>`
         align,
         cursor,
         margin,
+        marginLeft,
+        marginTop,
+        marginRight,
+        marginBottom,
         padding,
         color,
     }) => `
@@ -38,6 +46,10 @@ export const Text = styled.span<TextProps>`
     ${align ? `text-align: ${align}` : ''}
     ${cursor ? `cursor: ${cursor}` : ''}
     ${margin ? `margin: ${margin};` : ''}
+    ${marginLeft ? `margin-left: ${marginLeft};` : ''}
+    ${marginTop ? `margin-top: ${marginTop};` : ''}
+    ${marginRight ? `margin-right: ${marginRight};` : ''}
+    ${marginBottom ? `margin-bottom: ${marginBottom};` : ''}
     ${padding ? `padding: ${padding};` : ''}
     ${color ? `color: var(--${color});` : ''}
     `}
