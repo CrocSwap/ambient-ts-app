@@ -351,7 +351,7 @@ function TradeTabs2(props: propsIF) {
                   showRightSideOption: true,
               },
               {
-                  label: 'Ranges',
+                  label: 'Liquidity',
                   content: <Ranges {...rangesProps} />,
                   icon: rangePositionsImage,
                   showRightSideOption: true,
