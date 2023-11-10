@@ -11,9 +11,9 @@ interface Step {
 }
 
 interface StepperComponentProps {
-    steps: Step[];
-    activeStep: number;
-    setActiveStep: React.Dispatch<React.SetStateAction<number>>;
+    steps: Step[] | undefined;
+    activeStep: number | undefined;
+    setActiveStep: React.Dispatch<React.SetStateAction<number>> | undefined;
     isError: boolean;
     orientation: 'vertical' | 'horizontal';
     completedDisplay?: React.ReactNode;
@@ -29,10 +29,8 @@ const StepperComponent: React.FC<StepperComponentProps> = ({
     completedDisplay,
     errorDisplay,
 }) => {
+    if (!steps) return null;
     // eslint-disable-next-line
-    const handleReset = () => {
-        setActiveStep(0);
-    };
 
     if (orientation === 'horizontal') {
         return (

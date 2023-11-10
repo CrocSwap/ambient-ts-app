@@ -32,6 +32,7 @@ interface propsIF {
     steps: {
         label: string;
     }[];
+    handleSetActiveContent: (newActiveContent: string) => void;
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
@@ -55,6 +56,7 @@ export default function ConfirmSwapModal(props: propsIF) {
         activeStep,
         setActiveStep,
         steps,
+        handleSetActiveContent,
     } = props;
 
     const { pool } = useContext(PoolContext);
@@ -249,6 +251,7 @@ export default function ConfirmSwapModal(props: propsIF) {
             activeStep={activeStep}
             setActiveStep={setActiveStep}
             steps={steps}
+            handleSetActiveContent={handleSetActiveContent}
         />
     );
 }

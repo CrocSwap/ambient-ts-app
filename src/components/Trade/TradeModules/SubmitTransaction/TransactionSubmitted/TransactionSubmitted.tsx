@@ -6,6 +6,7 @@ import Button from '../../../../Form/Button';
 import { FiExternalLink } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
 import { getChainExplorer } from '../../../../../utils/data/chains';
+import { Text } from '../../../../../styled/Common';
 
 interface PropsIF {
     type:
@@ -24,6 +25,7 @@ interface PropsIF {
     chainId: string | number;
     isConfirmed: boolean;
     noAnimation?: boolean;
+    stepperComponent?: boolean;
 }
 
 export default function TransactionSubmitted(props: PropsIF) {
@@ -37,6 +39,7 @@ export default function TransactionSubmitted(props: PropsIF) {
         noAnimation,
         chainId,
         isConfirmed,
+        stepperComponent,
     } = props;
 
     const blockExplorer = getChainExplorer(chainId);
@@ -89,7 +92,11 @@ export default function TransactionSubmitted(props: PropsIF) {
                 )}
             </div>
 
-            <h2 style={{ marginBottom: '15px' }}>
+            <Text
+                color='text1'
+                fontSize='header2'
+                style={{ marginBottom: '15px' }}
+            >
                 {type === 'Limit'
                     ? `Limit Transaction ${
                           isConfirmed ? 'Confirmed' : 'Successfully Submitted'
@@ -113,7 +120,7 @@ export default function TransactionSubmitted(props: PropsIF) {
                     : `Swap Transaction ${
                           isConfirmed ? 'Confirmed' : 'Successfully Submitted'
                       }`}
-            </h2>
+            </Text>
             <div
                 className={`${styles.action_buttons} ${
                     noAnimation && styles.bypass_buttons

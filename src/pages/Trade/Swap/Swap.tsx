@@ -493,7 +493,7 @@ function Swap(props: propsIF) {
         },
     ];
 
-    const [activeStep, setActiveStep] = useState(1);
+    const [activeStep, setActiveStep] = useState(0);
     // active step 0 is sign transaction loading
     // active step 1 is 'swapping something for something loading'
     // active step 2 is all completed
@@ -592,6 +592,7 @@ function Swap(props: propsIF) {
                     activeStep={activeStep}
                     setActiveStep={setActiveStep}
                     steps={swapSteps}
+                    handleSetActiveContent={handleSetActiveContent}
                 />
             }
             button={

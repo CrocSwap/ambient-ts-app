@@ -37,11 +37,12 @@ interface propsIF {
     transactionDetails?: React.ReactNode;
     acknowledgeUpdate?: React.ReactNode;
     extraNotes?: React.ReactNode;
-    activeStep: number;
-    setActiveStep: React.Dispatch<React.SetStateAction<number>>;
-    steps: {
+    activeStep?: number;
+    setActiveStep?: React.Dispatch<React.SetStateAction<number>>;
+    steps?: {
         label: string;
     }[];
+    handleSetActiveContent?: (newActiveContent: string) => void;
 }
 
 export default function TradeConfirmationSkeleton(props: propsIF) {
@@ -63,6 +64,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         activeStep,
         setActiveStep,
         steps,
+        handleSetActiveContent,
     } = props;
 
     const {
@@ -239,6 +241,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                             steps={steps}
                             stepperComponent
                             stepperTokensDisplay={tokensDisplay}
+                            handleSetActiveContent={handleSetActiveContent}
                         />
                     </FlexContainer>
                 )}

@@ -36,13 +36,14 @@ interface propsIF {
     transactionPendingDisplayString: string;
     disableSubmitAgain?: boolean;
 
-    activeStep: number;
-    setActiveStep: React.Dispatch<React.SetStateAction<number>>;
-    steps: {
+    activeStep?: number;
+    setActiveStep?: React.Dispatch<React.SetStateAction<number>>;
+    steps?: {
         label: string;
     }[];
     stepperComponent?: boolean;
     stepperTokensDisplay?: React.ReactNode;
+    handleSetActiveContent?: (newActiveContent: string) => void;
 }
 export default function SubmitTransaction(props: propsIF) {
     const receiptData = useAppSelector((state) => state.receiptData);
@@ -60,6 +61,7 @@ export default function SubmitTransaction(props: propsIF) {
         steps,
         stepperComponent,
         stepperTokensDisplay,
+        handleSetActiveContent,
     } = props;
 
     const isTransactionApproved = newTransactionHash !== '';
@@ -86,6 +88,8 @@ export default function SubmitTransaction(props: propsIF) {
     function handleReset() {
         resetConfirmation();
         setShowExtraInfo(false);
+        setActiveStep && setActiveStep(0);
+        handleSetActiveContent && handleSetActiveContent('main');
     }
 
     const transactionDenied = <TransactionDenied noAnimation />;
@@ -120,6 +124,7 @@ export default function SubmitTransaction(props: propsIF) {
             chainId={tokenB.chainId}
             isConfirmed={isTransactionConfirmed}
             noAnimation
+            stepperComponent
         />
     );
     const confirmationDisplay = isTransactionException
@@ -208,10 +213,24 @@ export default function SubmitTransaction(props: propsIF) {
             action={() => {
                 isError
                     ? (resetConfirmation(), sendTransaction())
-                    : resetConfirmation();
+                    : handleReset();
             }}
             flat
         />
+    );
+
+    const stepperMessage = isTransactionPending ? (
+        <Text color='text2' fontSize='body'>
+            Proceed in your wallet
+        </Text>
+    ) : isTransactionException ? (
+        transactionException
+    ) : isTransactionDenied ? (
+        transactionDenied
+    ) : isTransactionConfirmed ? (
+        transactionSubmitted
+    ) : (
+        ''
     );
 
     if (stepperComponent)
@@ -224,9 +243,13 @@ export default function SubmitTransaction(props: propsIF) {
                     setActiveStep={setActiveStep}
                     isError={isError}
                 />
-                {confirmationDisplay}
+                {/* {confirmationDisplay} */}
                 {stepperTokensDisplay}
-                {isError || (isTransactionConfirmed && stepperActionButton)}
+                {stepperMessage}
+                {/* <p>isTransactionApproved: {  isTransactionApproved ? 'true' : 'false'}</p>
+                <p>isTransactionConfirmed: {  isTransactionConfirmed ? 'true' : 'false'}</p>
+                <p>isError: {  isTransactionConfirmed ? 'true' : 'false'}</p> */}
+                {(isError || isTransactionConfirmed) && stepperActionButton}
             </FlexContainer>
         );
 
