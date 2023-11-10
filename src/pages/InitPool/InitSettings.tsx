@@ -23,11 +23,13 @@ const Description = styled.p`
     margin-bottom: 24px;
 `;
 
-interface InitSettingsProps {
+interface propsIF {
     setCurrentStep: Dispatch<SetStateAction<number>>;
 }
 
-export default function InitSettings(props: InitSettingsProps) {
+export default function InitSettings(props: propsIF) {
+    const { setCurrentStep } = props;
+
     return (
         <Wrapper>
             <Title>Init Settings</Title>
@@ -38,7 +40,11 @@ export default function InitSettings(props: InitSettingsProps) {
                 omnis ad adipisci asperiores quos, voluptatibus, sapiente ullam
                 est tempore enim eos. Officiis, eveniet? Nihil, eaque sed!
             </Description>
-            <Button title='Confirm' action={() => props.setCurrentStep(0)} />
+            <Button
+                idForDOM='confirm_init_settings_button'
+                title='Confirm'
+                action={() => setCurrentStep(0)}
+            />
         </Wrapper>
     );
 }

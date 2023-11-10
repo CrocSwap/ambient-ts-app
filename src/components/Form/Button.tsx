@@ -1,6 +1,7 @@
 import { ButtonBase } from './Form.styles';
 
 interface propsIF {
+    idForDOM: string;
     disabled?: boolean;
     title: string;
     action: () => void;
@@ -14,6 +15,7 @@ interface propsIF {
 
 export default function Button(props: propsIF) {
     const {
+        idForDOM,
         disabled,
         action,
         title,
@@ -31,6 +33,7 @@ export default function Button(props: propsIF) {
         : '';
     return (
         <ButtonBase
+            id={idForDOM}
             style={{
                 ...(thin ? { height: '28px', width: '156px', padding: 0 } : {}),
                 ...style, // Merge with style prop

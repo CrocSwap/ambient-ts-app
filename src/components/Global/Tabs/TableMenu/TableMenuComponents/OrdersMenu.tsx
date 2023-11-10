@@ -123,7 +123,12 @@ export default function OrdersMenu(props: propsIF) {
         ) : null;
     const claimButton =
         limitOrder && isOwnerActiveAccount && isOrderFilled ? (
-            <Chip onClick={() => openLimitActionModal('Claim')}>Claim</Chip>
+            <Chip
+                id={`claim_limit_button_${limitOrder.limitOrderId}`}
+                onClick={() => openLimitActionModal('Claim')}
+            >
+                Claim
+            </Chip>
         ) : null;
     const copyButton = limitOrder ? (
         <Chip
@@ -155,15 +160,6 @@ export default function OrdersMenu(props: propsIF) {
     ) : null;
     const detailsButton = <Chip onClick={openLimitDetailsModal}>Details</Chip>;
 
-    const ordersMenu = (
-        <div className={styles.actions_menu}>
-            {(view3 || view2WithNoSidebar) && detailsButton}
-            {minView && claimButton}
-            {minView && removeButton}
-            {minView && copyButton}
-        </div>
-    );
-
     const menuContent = (
         <div className={styles.menu_column}>
             {detailsButton}
@@ -184,17 +180,6 @@ export default function OrdersMenu(props: propsIF) {
     };
 
     UseOnClickOutside(menuItemRef, clickOutsideHandler);
-    const dropdownOrdersMenu = (
-        <div className={styles.dropdown_menu} ref={menuItemRef}>
-            <div
-                onClick={() => setShowDropdownMenu(!showDropdownMenu)}
-                className={styles.dropdown_button}
-            >
-                <CiCircleMore size={25} color='var(--text1)' />
-            </div>
-            <div className={wrapperStyle}>{menuContent}</div>
-        </div>
-    );
 
     useEffect(() => {
         if (showDropdownMenu) {
@@ -211,8 +196,21 @@ export default function OrdersMenu(props: propsIF) {
                 style={{ width: 'min-content', cursor: 'default' }}
                 className={styles.main_container}
             >
-                {ordersMenu}
-                {dropdownOrdersMenu}
+                <div className={styles.actions_menu}>
+                    {(view3 || view2WithNoSidebar) && detailsButton}
+                    {minView && claimButton}
+                    {minView && removeButton}
+                    {minView && copyButton}
+                </div>
+                <div className={styles.dropdown_menu} ref={menuItemRef}>
+                    <div
+                        onClick={() => setShowDropdownMenu(!showDropdownMenu)}
+                        className={styles.dropdown_button}
+                    >
+                        <CiCircleMore size={25} color='var(--text1)' />
+                    </div>
+                    <div className={wrapperStyle}>{menuContent}</div>
+                </div>
             </div>
             {isDetailsModalOpen && (
                 <OrderDetailsModal

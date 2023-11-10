@@ -41,7 +41,9 @@ export const HoverableIcon = styled.svg`
     }
 `;
 
-export const TradeModuleHeaderContainer = styled(FlexContainer)`
+export const TradeModuleHeaderContainer = styled(FlexContainer).attrs({
+    as: 'header',
+})`
     & svg {
         color: var(--text2);
         height: 20px;
