@@ -36,6 +36,10 @@ export const TradeDropdown = styled.div`
     text-transform: capitalize;
     margin: 0 auto;
     background: var(--dark2);
+
+    @media (max-width: 500px) {
+        width: 95%;
+    }
 `;
 
 export const TradeDropdownButton = styled.button<{ activeText?: boolean }>`

@@ -7,6 +7,7 @@ interface ContentContainerPropsIF {
     customWidthAuto?: boolean;
     isOnTradeRoute?: boolean;
     noPadding?: boolean;
+    noStyle?: boolean;
 }
 
 export default function ContentContainer(props: ContentContainerPropsIF) {
@@ -16,6 +17,7 @@ export default function ContentContainer(props: ContentContainerPropsIF) {
         customWidth,
         customWidthAuto,
         noPadding,
+        noStyle,
     } = props;
 
     const customWidthStyle = customWidth ? styles.customWidth_container : null;
@@ -26,6 +28,8 @@ export default function ContentContainer(props: ContentContainerPropsIF) {
     const customWidthAutoStyle = customWidthAuto
         ? styles.customWidthAuto
         : styles.container;
+
+    if (noStyle) return <>{children}</>;
 
     return (
         <section

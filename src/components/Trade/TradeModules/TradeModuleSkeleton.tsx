@@ -16,6 +16,7 @@ import TutorialOverlay from '../../Global/TutorialOverlay/TutorialOverlay';
 import Button from '../../Form/Button';
 
 import TradeLinks from './TradeLinks';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface PropsIF {
     chainId: string;
@@ -98,9 +99,10 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         /\b(not)\b/g,
         '<span style="color: var(--negative); text-transform: uppercase;">$1</span>',
     );
+    const smallScreen = useMediaQuery('(max-width: 500px)');
 
     return (
-        <section>
+        <>
             {isTutorialActive && (
                 <FlexContainer
                     fullWidth
@@ -113,7 +115,10 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     </TutorialButton>
                 </FlexContainer>
             )}{' '}
-            <ContentContainer isOnTradeRoute={!isSwapPage}>
+            <ContentContainer
+                isOnTradeRoute={!isSwapPage}
+                noPadding={smallScreen && !isSwapPage}
+            >
                 {header}
                 {isSwapPage || (
                     <TradeLinks
@@ -213,6 +218,6 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                 setIsTutorialEnabled={setIsTutorialEnabled}
                 steps={tutorialSteps}
             />
-        </section>
+        </>
     );
 };
