@@ -82,7 +82,7 @@ function Ranges(props: propsIF) {
         if (isAccountView) setRangeData(activeAccountPositionData || []);
         else if (!showAllData)
             setRangeData(
-                graphData?.userPositionsByPool?.positions.filter(
+                graphData?.positionsByUser?.positions.filter(
                     (position) =>
                         position.base.toLowerCase() ===
                             baseTokenAddress.toLowerCase() &&
