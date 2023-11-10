@@ -17,22 +17,26 @@ const ENSAddressContext = createContext<ENSAddressContextValue | undefined>(
 );
 
 export const ENSAddressContextProvider = (props: { children: ReactNode }) => {
+    const DEADLINE = 1 * 60 * 60 * 1000; // 1 hour
+    const MIN_RETRY_DELAY = 2 * 1000; // 2 seconds
+    const MAX_RETRY_DELAY = 10 * 60 * 1000; // 10 minutes
+
     const [ensAddressMapping, setEnsAddressMapping] = useState<
         Map<string, string>
     >(new Map());
     const [serverReturnedErrorTimestamp, setServerReturnedErrorTimestamp] =
         useState<number>(-1);
+    const [retryDelay, setRetryDelay] = useState(MIN_RETRY_DELAY);
+
     const cacheRef = useRef<Map<string, string>>(new Map());
     const nullCacheRef = useRef<Map<string, number>>(new Map());
-    const DEADLINE = 1 * 60 * 60 * 1000; // 1 hour
-    const RETRY_DELAY = 10 * 60 * 1000; // 10 minutes
 
     const addData = (data: TradeTableDataRow[]) => {
         const now = Date.now();
 
         if (
             serverReturnedErrorTimestamp > 0 &&
-            now - serverReturnedErrorTimestamp < RETRY_DELAY
+            now - serverReturnedErrorTimestamp < retryDelay
         ) {
             // If the server returned an error less than RETRY_DELAY ago, we don't fetch ENS addresses
             return;
@@ -90,10 +94,14 @@ export const ENSAddressContextProvider = (props: { children: ReactNode }) => {
                         ]);
                     }
                     setServerReturnedErrorTimestamp(-1);
+                    setRetryDelay(MIN_RETRY_DELAY);
                 } catch (error) {
                     console.log(error);
                     if (serverReturnedErrorTimestamp < 0) {
                         setServerReturnedErrorTimestamp(now);
+                        setRetryDelay(
+                            Math.min(Math.pow(retryDelay, 2), MAX_RETRY_DELAY),
+                        );
                     }
                 }
             })();
