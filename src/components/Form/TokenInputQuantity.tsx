@@ -222,7 +222,7 @@ function TokenInputQuantity(props: propsIF) {
                 background: 'var(--dark2)',
                 borderRadius: '1rem',
                 gap: '8px',
-                padding: '8px 16px',
+                padding: '8px 8px 8px 16px ',
                 minHeight: '81px',
             }}
         >

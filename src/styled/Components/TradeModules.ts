@@ -206,8 +206,8 @@ export const InputDisabledText = styled(FlexContainer)`
 
 export const TokenQuantityInput = styled.input`
     font-weight: 300;
-    font-size: var(--header2-size);
-    line-height: 22px;
+    font-size: var(--header1-size);
+    line-height: var(--header1-lh);
     color: var(--text1);
     text-align: start;
     width: 80%;
