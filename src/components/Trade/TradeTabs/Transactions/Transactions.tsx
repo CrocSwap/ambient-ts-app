@@ -698,7 +698,7 @@ function Transactions(props: propsIF) {
 
     return (
         <FlexContainer flexDirection='column' fullHeight>
-            <div id='this one'>{headerColumnsDisplay}</div>
+            <div>{headerColumnsDisplay}</div>
 
             <div style={{ flex: 1, overflow: 'auto' }}>
                 {isLoading ? (
