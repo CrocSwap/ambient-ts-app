@@ -212,7 +212,11 @@ function Trade() {
         : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`;
 
     const mobileTrade = (
-        <MainSection style={{ marginTop: '32px' }} isDropdown>
+        <MainSection
+            style={{ marginTop: '32px' }}
+            isDropdown
+            isSmallScreen={smallScreen}
+        >
             {mobileTradeDropdown}
 
             <Text

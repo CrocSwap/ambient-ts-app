@@ -413,6 +413,10 @@ function Sidebar() {
         </ContentContainer>
     );
 
+    const { hideOnMobile } = useContext(SidebarContext);
+
+    if (hideOnMobile) return null;
+
     return (
         <FlexContainer
             ref={sidebarRef}
