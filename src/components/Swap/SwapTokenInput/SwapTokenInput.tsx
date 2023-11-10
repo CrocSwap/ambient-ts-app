@@ -175,6 +175,7 @@ function SwapTokenInput(props: propsIF) {
     ): Promise<number | undefined> {
         if (isNaN(parseFloat(input)) || parseFloat(input) === 0 || !crocEnv) {
             setIsLiquidityInsufficient(false);
+            setPriceImpact(undefined);
             return undefined;
         }
 
