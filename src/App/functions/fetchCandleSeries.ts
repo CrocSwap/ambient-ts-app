@@ -1,8 +1,5 @@
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import { GRAPHCACHE_SMALL_URL, GRAPHCACHE_URL } from '../../constants';
-import { translateMainnetForGraphcache } from '../../utils/data/testTokenMap';
-import { getMainnetAddress } from '../../utils/functions/getMainnetAddress';
-import { supportedNetworks } from '../../utils/networks';
+import { GCGO_OVERRIDE_URL, HISTORICAL_CANDLES_URL } from '../../constants';
 import { CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { TokenPriceFn } from './fetchTokenPrice';
 
@@ -52,6 +49,7 @@ export interface CandleData {
 export async function fetchCandleSeriesHybrid(
     isFetchEnabled: boolean,
     chainData: ChainSpec,
+    graphCacheUrl: string,
     period: number,
     baseTokenAddress: string,
     quoteTokenAddress: string,
@@ -64,6 +62,7 @@ export async function fetchCandleSeriesHybrid(
     const candles = await fetchCandleSeriesCroc(
         isFetchEnabled,
         chainData,
+        graphCacheUrl,
         period,
         baseTokenAddress,
         quoteTokenAddress,
@@ -129,6 +128,7 @@ export async function fetchCandleSeriesHybrid(
 export async function fetchCandleSeriesCroc(
     isFetchEnabled: boolean,
     chainData: ChainSpec,
+    graphCacheUrl: string,
     period: number,
     baseTokenAddress: string,
     quoteTokenAddress: string,
@@ -142,7 +142,9 @@ export async function fetchCandleSeriesCroc(
         return undefined;
     }
 
-    const candleSeriesEndpoint = GRAPHCACHE_SMALL_URL + '/pool_candles';
+    const candleSeriesEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/pool_candles'
+        : graphCacheUrl + '/pool_candles';
 
     if (endTime == 0) {
         endTime = Math.floor(Date.now() / 1000);
@@ -223,13 +225,11 @@ async function expandPoolStats(
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
 ): Promise<CandleData[]> {
-    const mainnetBase = getMainnetAddress(base, supportedNetworks[chainId]);
-    const mainnetQuote = getMainnetAddress(quote, supportedNetworks[chainId]);
-    const basePricePromise = cachedFetchTokenPrice(mainnetBase, chainId);
-    const quotePricePromise = cachedFetchTokenPrice(mainnetQuote, chainId);
-
     const baseDecimals = crocEnv.token(base).decimals;
     const quoteDecimals = crocEnv.token(quote).decimals;
+
+    const basePricePromise = cachedFetchTokenPrice(base, chainId);
+    const quotePricePromise = cachedFetchTokenPrice(quote, chainId);
 
     const basePrice = (await basePricePromise)?.usdPrice || 0.0;
     const quotePrice = (await quotePricePromise)?.usdPrice || 0.0;
@@ -299,6 +299,21 @@ function decorateCandleData(
         });
 }
 
+function translateUniswapTokens(
+    baseToken: string,
+    quoteToken: string,
+): { baseToken: string; quoteToken: string } {
+    const WETH = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
+    const ZERO = '0x0000000000000000000000000000000000000000';
+    if (baseToken === WETH) {
+        return { baseToken: ZERO, quoteToken: quoteToken };
+    } else if (quoteToken === WETH) {
+        return { baseToken: ZERO, quoteToken: baseToken };
+    } else {
+        return { baseToken: baseToken, quoteToken: quoteToken };
+    }
+}
+
 async function fetchCandleSeriesUniswap(
     isFetchEnabled: boolean,
     mainnetBaseTokenAddress: string,
@@ -312,17 +327,17 @@ async function fetchCandleSeriesUniswap(
     signal?: AbortSignal,
 ): Promise<CandleData[] | undefined | void> {
     const { baseToken: mainnetBase, quoteToken: mainnetQuote } =
-        translateMainnetForGraphcache(
+        translateUniswapTokens(
             mainnetBaseTokenAddress,
             mainnetQuoteTokenAddress,
         );
 
-    const httpGraphCacheServerDomain = GRAPHCACHE_URL;
+    const httpGraphCacheServerDomain = HISTORICAL_CANDLES_URL;
     if (isFetchEnabled) {
         try {
             if (httpGraphCacheServerDomain) {
                 const candleSeriesCacheEndpoint =
-                    GRAPHCACHE_URL + '/candle_series?';
+                    HISTORICAL_CANDLES_URL + '/candle_series?';
 
                 return fetch(
                     candleSeriesCacheEndpoint +

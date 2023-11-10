@@ -55,13 +55,9 @@ export default function TransactionSubmitted(props: PropsIF) {
     };
 
     const addToMetaMaskButton = (
-        <Button
-            flat
-            title={`Import ${tokenBSymbol} into Connected Wallet`}
-            // action={props.onClickFn}
-            action={handleAddToMetaMask}
-            disabled={false}
-        ></Button>
+        <p onClick={handleAddToMetaMask} className={styles.view_etherscan}>
+            {`Import ${tokenBSymbol} into Connected Wallet`}
+        </p>
     );
 
     const etherscanButton = (
@@ -73,7 +69,6 @@ export default function TransactionSubmitted(props: PropsIF) {
             aria-label='view on etherscan'
         >
             View on Etherscan
-            <FiExternalLink size={18} color='var(--text1)' />
         </a>
     );
     return (

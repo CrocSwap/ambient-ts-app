@@ -27,6 +27,11 @@ interface propsIF {
     buyQtyString: string;
     onClose?: () => void;
     isTokenAPrimary: boolean;
+    activeStep: number;
+    setActiveStep: React.Dispatch<React.SetStateAction<number>>;
+    steps: {
+        label: string;
+    }[];
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
@@ -47,6 +52,9 @@ export default function ConfirmSwapModal(props: propsIF) {
         buyQtyString,
         onClose = () => null,
         isTokenAPrimary,
+        activeStep,
+        setActiveStep,
+        steps,
     } = props;
 
     const { pool } = useContext(PoolContext);
@@ -238,6 +246,9 @@ export default function ConfirmSwapModal(props: propsIF) {
             acknowledgeUpdate={
                 isWaitingForPriceChangeAckt && priceIncreaseComponent
             }
+            activeStep={activeStep}
+            setActiveStep={setActiveStep}
+            steps={steps}
         />
     );
 }

@@ -74,12 +74,12 @@ const StepperComponent: React.FC<StepperComponentProps> = ({
     return (
         <FlexContainer flexDirection='column'>
             <Stepper activeStep={activeStep} orientation='vertical'>
-                {steps.map((step, index) => (
-                    <Step key={step.label}>
+                {steps?.map((step, index) => (
+                    <Step key={step?.label}>
                         {activeStep === index ? (
                             isError ? (
                                 <StepLabel error={isError}>
-                                    {step.label}
+                                    {step?.label}
                                 </StepLabel>
                             ) : (
                                 <FlexContainer gap={32}>
@@ -89,13 +89,13 @@ const StepperComponent: React.FC<StepperComponentProps> = ({
                                         weight={2}
                                     />
 
-                                    {step.label}
+                                    {step?.label}
                                 </FlexContainer>
                             )
                         ) : (
                             <StepLabel>
                                 <p style={{ color: 'var(--text3)' }}>
-                                    {step.label}
+                                    {step?.label}
                                 </p>
                             </StepLabel>
                         )}
@@ -103,7 +103,7 @@ const StepperComponent: React.FC<StepperComponentProps> = ({
                 ))}
             </Stepper>
 
-            {activeStep === steps.length &&
+            {activeStep === steps?.length &&
                 completedDisplay &&
                 completedDisplay}
             {isError && errorDisplay && errorDisplay}

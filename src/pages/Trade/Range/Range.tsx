@@ -175,7 +175,6 @@ function Range() {
     const slippageTolerancePercentage = isStablePair(
         tokenA.address,
         tokenB.address,
-        chainId,
     )
         ? mintSlippage.stable
         : mintSlippage.volatile;
@@ -978,6 +977,15 @@ function Range() {
     const handleSetActiveContent = (newActiveContent: string) => {
         setActiveContent(newActiveContent);
     };
+
+    const swapSteps = [
+        { label: 'Sign transaction to initialize swap.' },
+        {
+            label: 'something for something',
+        },
+    ];
+
+    const [activeStep, setActiveStep] = useState(0);
     return (
         <TradeModuleSkeleton
             chainId={chainId}
@@ -1109,6 +1117,9 @@ function Range() {
                         } ${tokenA.symbol} and ${tokenBInputQty ?? '0'} ${
                             tokenB.symbol
                         }.`}
+                        activeStep={activeStep}
+                        setActiveStep={setActiveStep}
+                        steps={swapSteps}
                     />
                 ) : undefined
             }

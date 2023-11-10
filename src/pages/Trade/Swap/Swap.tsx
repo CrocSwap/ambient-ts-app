@@ -68,6 +68,7 @@ function Swap(props: propsIF) {
     const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
         UserPreferenceContext,
     );
+    const receiptData = useAppSelector((state) => state.receiptData);
 
     const dispatch = useAppDispatch();
     // get URL pathway for user relative to index
@@ -127,7 +128,6 @@ function Swap(props: propsIF) {
     const slippageTolerancePercentage = isStablePair(
         tokenA.address,
         tokenB.address,
-        chainId,
     )
         ? swapSlippage.stable
         : swapSlippage.volatile;
@@ -176,6 +176,16 @@ function Swap(props: propsIF) {
         },
     );
 
+    const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
+
+    const amountToReduceEthMainnet = 0.005; // .005 ETH
+    const amountToReduceEthScroll = 0.0003; // .0003 ETH
+
+    const amountToReduceEth =
+        chainId === '0x82750' || chainId === '0x8274f'
+            ? amountToReduceEthScroll
+            : amountToReduceEthMainnet;
+
     useEffect(() => {
         if (isSellLoading || isBuyLoading) {
             setSwapAllowed(false);
@@ -207,6 +217,15 @@ function Swap(props: propsIF) {
                 setSwapButtonErrorMessage(
                     `${tokenA.symbol} Amount Exceeds ${balanceLabel} Balance`,
                 );
+            } else if (
+                isSellTokenNativeToken &&
+                tokenAQtyCoveredByWalletBalance + amountToReduceEth >
+                    parseFloat(tokenABalance)
+            ) {
+                setSwapAllowed(false);
+                setSwapButtonErrorMessage(
+                    'Wallet Balance Insufficient to Cover Gas',
+                );
             } else {
                 setSwapAllowed(true);
             }
@@ -225,13 +244,14 @@ function Swap(props: propsIF) {
         isWithdrawFromDexChecked,
         isBuyLoading,
         isSellLoading,
+        isSellTokenNativeToken,
+        tokenABalance,
+        tokenAQtyCoveredByWalletBalance,
     ]);
 
     useEffect(() => {
         setNewSwapTransactionHash('');
     }, [baseToken.address + quoteToken.address]);
-
-    const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
 
     // calculate price of gas for swap
     useEffect(() => {
@@ -453,6 +473,47 @@ function Swap(props: propsIF) {
         setActiveContent(newActiveContent);
     };
 
+    const isTransactionApproved = newSwapTransactionHash !== '';
+    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
+    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
+
+    const isTransactionPending = !(
+        isTransactionApproved ||
+        isTransactionDenied ||
+        isTransactionException
+    );
+    const isTransactionConfirmed =
+        isTransactionApproved &&
+        !receiptData.pendingTransactions.includes(newSwapTransactionHash);
+
+    const swapSteps = [
+        { label: 'Sign transaction to initialize swap.' },
+        {
+            label: `Swapping ${sellQtyString} ${tokenA.symbol} for ${buyQtyString} ${tokenB.symbol}`,
+        },
+    ];
+
+    const [activeStep, setActiveStep] = useState(1);
+    // active step 0 is sign transaction loading
+    // active step 1 is 'swapping something for something loading'
+    // active step 2 is all completed
+
+    useEffect(() => {
+        console.log({
+            isTransactionApproved,
+            isTransactionConfirmed,
+            isTransactionPending,
+        });
+
+        setActiveStep(0);
+        if (isTransactionApproved) {
+            setActiveStep(1);
+        }
+        if (isTransactionConfirmed) {
+            setActiveStep(2);
+        }
+    }, [isTransactionApproved, isTransactionPending, isTransactionConfirmed]);
+
     return (
         <TradeModuleSkeleton
             activeContent={activeContent}
@@ -528,6 +589,9 @@ function Swap(props: propsIF) {
                     sellQtyString={sellQtyString}
                     buyQtyString={buyQtyString}
                     isTokenAPrimary={isTokenAPrimary}
+                    activeStep={activeStep}
+                    setActiveStep={setActiveStep}
+                    steps={swapSteps}
                 />
             }
             button={
@@ -570,6 +634,9 @@ function Swap(props: propsIF) {
                         resetConfirmation={resetConfirmation}
                         sendTransaction={initiateSwap}
                         transactionPendingDisplayString={`Swapping ${sellQtyString} ${tokenA.symbol} for ${buyQtyString} ${tokenB.symbol}`}
+                        activeStep={activeStep}
+                        setActiveStep={setActiveStep}
+                        steps={swapSteps}
                     />
                 ) : undefined
             }

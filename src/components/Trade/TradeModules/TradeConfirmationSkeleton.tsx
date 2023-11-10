@@ -37,6 +37,11 @@ interface propsIF {
     transactionDetails?: React.ReactNode;
     acknowledgeUpdate?: React.ReactNode;
     extraNotes?: React.ReactNode;
+    activeStep: number;
+    setActiveStep: React.Dispatch<React.SetStateAction<number>>;
+    steps: {
+        label: string;
+    }[];
 }
 
 export default function TradeConfirmationSkeleton(props: propsIF) {
@@ -55,6 +60,9 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         poolTokenDisplay,
         acknowledgeUpdate,
         extraNotes,
+        activeStep,
+        setActiveStep,
+        steps,
     } = props;
 
     const {
@@ -129,13 +137,8 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         </>
     );
 
-    return (
-        <FlexContainer
-            flexDirection='column'
-            gap={8}
-            background='dark1'
-            aria-label='Transaction Confirmation modal'
-        >
+    const confirmationContent = (
+        <>
             {type === 'Swap' || type === 'Limit'
                 ? tokenDisplay
                 : poolTokenDisplay}
@@ -149,6 +152,43 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                 </ConfirmationDetailsContainer>
             )}
             {extraNotes && extraNotes}
+        </>
+    );
+
+    const [showStepperComponent, setShowStepperComponent] = useState(false);
+
+    const tokensDisplay = (
+        <FlexContainer gap={8} alignItems='center'>
+            <TokenIcon
+                token={tokenA}
+                src={uriToHttp(tokenA.logoURI)}
+                alt={tokenA.symbol}
+                size='s'
+            />
+            <Text fontSize='body' color='text2' align='center'>
+                {formattedTokenAQuantity} {tokenA.symbol}
+            </Text>
+            →
+            <TokenIcon
+                token={tokenB}
+                src={uriToHttp(tokenB.logoURI)}
+                alt={tokenB.symbol}
+                size='s'
+            />
+            <Text fontSize='body' color='text2' align='center'>
+                {formattedTokenBQuantity} {tokenB.symbol}
+            </Text>
+        </FlexContainer>
+    );
+
+    return (
+        <FlexContainer
+            flexDirection='column'
+            gap={8}
+            background='dark1'
+            aria-label='Transaction Confirmation modal'
+        >
+            {!showStepperComponent && confirmationContent}
             <footer>
                 {!showConfirmation ? (
                     !acknowledgeUpdate ? (
@@ -170,6 +210,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                                         bypassConfirmRepo.enable();
                                     }
                                     console.log('showing stepper');
+                                    setShowStepperComponent(true);
                                     initiate();
                                 }}
                                 flat
@@ -180,15 +221,26 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                         acknowledgeUpdate
                     )
                 ) : (
-                    <SubmitTransaction
-                        type={type}
-                        newTransactionHash={transactionHash}
-                        txErrorCode={txErrorCode}
-                        resetConfirmation={resetConfirmation}
-                        sendTransaction={initiate}
-                        transactionPendingDisplayString={statusText}
-                        disableSubmitAgain
-                    />
+                    <FlexContainer
+                        flexDirection='column'
+                        justifyContent='space-between'
+                        alignItems='center'
+                    >
+                        <SubmitTransaction
+                            type={type}
+                            newTransactionHash={transactionHash}
+                            txErrorCode={txErrorCode}
+                            resetConfirmation={resetConfirmation}
+                            sendTransaction={initiate}
+                            transactionPendingDisplayString={statusText}
+                            disableSubmitAgain
+                            activeStep={activeStep}
+                            setActiveStep={setActiveStep}
+                            steps={steps}
+                            stepperComponent
+                            stepperTokensDisplay={tokensDisplay}
+                        />
+                    </FlexContainer>
                 )}
             </footer>
         </FlexContainer>

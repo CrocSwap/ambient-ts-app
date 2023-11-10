@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RiArrowUpSLine, RiArrowDownSLine } from 'react-icons/ri';
 import uriToHttp from '../../../../utils/functions/uriToHttp';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
@@ -18,6 +18,7 @@ import {
 } from '../../../../styled/Components/TradeModules';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import StepperComponent from '../../../Global/MultiStepTransaction/StepperComponent';
+import Button from '../../../Form/Button';
 
 interface propsIF {
     type:
@@ -34,11 +35,17 @@ interface propsIF {
     sendTransaction: () => Promise<void>;
     transactionPendingDisplayString: string;
     disableSubmitAgain?: boolean;
+
+    activeStep: number;
+    setActiveStep: React.Dispatch<React.SetStateAction<number>>;
+    steps: {
+        label: string;
+    }[];
+    stepperComponent?: boolean;
+    stepperTokensDisplay?: React.ReactNode;
 }
 export default function SubmitTransaction(props: propsIF) {
     const receiptData = useAppSelector((state) => state.receiptData);
-
-    const [activeStep, setActiveStep] = useState(0);
 
     const {
         type,
@@ -48,6 +55,11 @@ export default function SubmitTransaction(props: propsIF) {
         sendTransaction,
         transactionPendingDisplayString,
         disableSubmitAgain,
+        activeStep,
+        setActiveStep,
+        steps,
+        stepperComponent,
+        stepperTokensDisplay,
     } = props;
 
     const isTransactionApproved = newTransactionHash !== '';
@@ -151,51 +163,71 @@ export default function SubmitTransaction(props: propsIF) {
         ? 'Transaction Submitted'
         : transactionPendingDisplayString;
 
+    const resetOrRetryButton = (
+        <FlexContainer alignItems='center' justifyContent='flex-end' gap={8}>
+            {!isTransactionPending && (
+                <SubmitTransactionExtraButton
+                    onClick={() => {
+                        resetConfirmation();
+                    }}
+                >
+                    {disableSubmitAgain
+                        ? 'Reset'
+                        : 'Submit another transaction'}
+                </SubmitTransactionExtraButton>
+            )}
+            {(isTransactionDenied || isTransactionException) && (
+                <SubmitTransactionExtraButton
+                    onClick={() => {
+                        resetConfirmation();
+                        sendTransaction();
+                    }}
+                >
+                    Retry
+                </SubmitTransactionExtraButton>
+            )}
+        </FlexContainer>
+    );
+
     const [showExtraInfo, setShowExtraInfo] = useState(false);
-    const yes = false;
 
-    const steps = [
-        { label: 'Sign transaction to initialize pool.' },
-        {
-            label: 'Submitting pool initialization for something',
-        },
-    ];
-    const isError = false;
-    const errorMessage = 'yes I am error';
+    const isError =
+        isTransactionDenied ||
+        isTransactionException ||
+        (lastReceipt && !isLastReceiptSuccess);
 
-    if (yes)
+    const stepperActionButton = (
+        <Button
+            title={
+                isError
+                    ? 'Try again'
+                    : isTransactionConfirmed
+                    ? 'Send another transaction'
+                    : ''
+            }
+            action={() => {
+                isError
+                    ? (resetConfirmation(), sendTransaction())
+                    : resetConfirmation();
+            }}
+            flat
+        />
+    );
+
+    if (stepperComponent)
         return (
-            <StepperComponent
-                orientation='vertical'
-                steps={steps}
-                activeStep={activeStep}
-                setActiveStep={setActiveStep}
-                isError={isTransactionException || isTransactionDenied}
-                errorDisplay={
-                    isError && (
-                        <Text
-                            fontWeight='300'
-                            fontSize='body'
-                            color='other-red'
-                            align='center'
-                        >
-                            {buttonText}
-                        </Text>
-                    )
-                }
-                completedDisplay={
-                    isError && (
-                        <Text
-                            fontWeight='300'
-                            fontSize='body'
-                            color='other-green'
-                            align='center'
-                        >
-                            {`Pool initialization for ${errorMessage} completed`}
-                        </Text>
-                    )
-                }
-            />
+            <FlexContainer flexDirection='column' gap={8} alignItems='center'>
+                <StepperComponent
+                    orientation='vertical'
+                    steps={steps}
+                    activeStep={activeStep}
+                    setActiveStep={setActiveStep}
+                    isError={isError}
+                />
+                {confirmationDisplay}
+                {stepperTokensDisplay}
+                {isError || (isTransactionConfirmed && stepperActionButton)}
+            </FlexContainer>
         );
 
     return (
@@ -228,33 +260,7 @@ export default function SubmitTransaction(props: propsIF) {
                     {confirmationDisplay}
                 </FlexContainer>
             )}
-            <FlexContainer
-                alignItems='center'
-                justifyContent='flex-end'
-                gap={8}
-            >
-                {!isTransactionPending && (
-                    <SubmitTransactionExtraButton
-                        onClick={() => {
-                            resetConfirmation();
-                        }}
-                    >
-                        {disableSubmitAgain
-                            ? 'Reset'
-                            : 'Submit another transaction'}
-                    </SubmitTransactionExtraButton>
-                )}
-                {(isTransactionDenied || isTransactionException) && (
-                    <SubmitTransactionExtraButton
-                        onClick={() => {
-                            resetConfirmation();
-                            sendTransaction();
-                        }}
-                    >
-                        Retry
-                    </SubmitTransactionExtraButton>
-                )}
-            </FlexContainer>
+            {resetOrRetryButton}
         </FlexContainer>
     );
 }
