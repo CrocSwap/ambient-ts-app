@@ -517,6 +517,7 @@ function Transactions(props: propsIF) {
         _DATA.currentData.map((tx, idx) => (
             <TransactionRow
                 key={idx}
+                idForDOM={`tx_row_${idx}`}
                 tx={tx}
                 tableView={tableView}
                 isAccountView={isAccountView}
