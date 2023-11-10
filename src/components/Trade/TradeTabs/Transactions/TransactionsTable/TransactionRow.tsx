@@ -230,7 +230,7 @@ function TransactionRow(props: propsIF) {
                 tabIndex={0}
                 onKeyDown={handleKeyPress}
             >
-                {tableView === 'medium' && TxTimeWithTooltip}
+                {tableView !== 'small' && TxTimeWithTooltip}
                 {isAccountView && tokenPair}
                 {tableView === 'large' && <div>{IDWithTooltip}</div>}
                 {tableView === 'large' && !isAccountView && (
