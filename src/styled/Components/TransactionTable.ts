@@ -130,7 +130,7 @@ export const TransactionRow = styled(Row)`
                     minmax(90px, 1fr) minmax(5px, 1fr)`
             : size === 'medium'
             ? `grid-template-columns:
-                        minmax(100px, 1.5fr) minmax(80px, 1.3fr)
+                        minmax(100px, 1fr) minmax(100px, 1.5fr) minmax(80px, 1.3fr)
                         minmax(80px, 1fr) minmax(80px, 1.4fr) minmax(90px, 1.6fr) minmax(78px, 25%)`
             : `grid-template-columns:
             minmax(80px, 1fr) minmax(90px, 1fr) minmax(100px, 1fr)

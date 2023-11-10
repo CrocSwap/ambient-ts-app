@@ -313,7 +313,7 @@ function Transactions(props: propsIF) {
     }[] = [
         {
             name: 'Timestamp',
-            show: tableView === 'large',
+            show: tableView === 'medium',
             slug: 'time',
             sortable: true,
         },
@@ -698,7 +698,7 @@ function Transactions(props: propsIF) {
 
     return (
         <FlexContainer flexDirection='column' fullHeight>
-            <div>{headerColumnsDisplay}</div>
+            <div id='this one'>{headerColumnsDisplay}</div>
 
             <div style={{ flex: 1, overflow: 'auto' }}>
                 {isLoading ? (
