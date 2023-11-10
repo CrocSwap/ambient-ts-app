@@ -234,14 +234,14 @@ function Trade() {
                 {conversionRate}
             </Text>
             {activeMobileComponent === 'chart' && isPoolInitialized && (
-                <div style={{ marginLeft: '2rem', flex: 1 }}>
+                <div style={{ marginLeft: smallScreen ? '' : '2rem', flex: 1 }}>
                     <TradeChartsHeader />
                     {!isCandleDataNull && <TradeCharts {...tradeChartsProps} />}
                 </div>
             )}
 
             {activeMobileComponent === 'transactions' && (
-                <div style={{ marginLeft: '2rem', flex: 1 }}>
+                <div style={{ marginLeft: smallScreen ? '' : '2rem', flex: 1 }}>
                     <TradeChartsHeader />
                     <TradeTabs2 {...tradeTabsProps} />
                 </div>
