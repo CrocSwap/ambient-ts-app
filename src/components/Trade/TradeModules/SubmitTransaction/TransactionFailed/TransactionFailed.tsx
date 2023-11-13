@@ -22,6 +22,7 @@ export default function TransactionFailed(props: PropsIF) {
             </div>
             <p>Please check your wallet for notifications or try again.</p>
             <Button
+                idForDOM='tx_failed_try_again_button'
                 title='Try Again'
                 action={() => {
                     if (initiateTx) initiateTx();

@@ -4,11 +4,11 @@ import Toggle from '../../../Form/Toggle';
 import { memo } from 'react';
 import { FlexContainer, Text } from '../../../../styled/Common';
 
-interface advancedModePropsIF {
+interface propsIF {
     advancedMode: boolean;
 }
 
-function AdvancedModeToggle(props: advancedModePropsIF) {
+function AdvancedModeToggle(props: propsIF) {
     const { advancedMode } = props;
 
     const dispatch = useAppDispatch();
@@ -19,7 +19,7 @@ function AdvancedModeToggle(props: advancedModePropsIF) {
             fullWidth
             alignItems='center'
             gap={4}
-            id='range_advance_mode_toggle'
+            id='range_advance_mode_toggle_container'
             aria-label='Advanced mode toggle'
         >
             <Toggle
@@ -28,7 +28,7 @@ function AdvancedModeToggle(props: advancedModePropsIF) {
                 id='advanced_reposition'
             />
             <Text fontSize='body' color='text2'>
-                {'Balanced'}
+                Balanced
             </Text>
         </FlexContainer>
     );

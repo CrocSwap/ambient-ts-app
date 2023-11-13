@@ -109,6 +109,7 @@ export default function TransactionSettingsModal(props: propsIF) {
                 </section>
                 <div style={{ padding: '0 16px' }}>
                     <Button
+                        idForDOM='update_settings_button'
                         title={
                             module === 'Limit Order'
                                 ? 'Submit Settings'
