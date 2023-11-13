@@ -313,7 +313,7 @@ function Transactions(props: propsIF) {
     }[] = [
         {
             name: 'Timestamp',
-            show: tableView === 'large',
+            show: tableView !== 'small',
             slug: 'time',
             sortable: true,
         },
