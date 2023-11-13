@@ -20,9 +20,9 @@ import {
 import { Text } from '../../../../styled/Common';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { INCLUDE_CANTO_LINK } from '../../../../constants';
-import ethereumLogo from '../../../../assets/images/networks/ethereum.png';
 import cantoLogo from '../../../../assets/images/networks/canto.png';
 import scrollLogo from '../../../../assets/images/networks/scroll.png';
+import ETH from '../../../../assets/images/tokens/ETH.png';
 
 interface propsIF {
     switchNetwork: ((chainId_?: number | undefined) => void) | undefined;
@@ -80,7 +80,7 @@ export default function NetworkSelector(props: propsIF) {
         >
             <ChainNameStatus tabIndex={0} active={chainId === '0x1'}>
                 <img
-                    src={ethereumLogo}
+                    src={ETH}
                     alt='ethereum mainnet network'
                     width='21px'
                     height='21px'
@@ -156,7 +156,7 @@ export default function NetworkSelector(props: propsIF) {
         >
             <ChainNameStatus tabIndex={0} active={chainId === '0x5'}>
                 <img
-                    src={ethereumLogo}
+                    src={ETH}
                     alt='goerli network'
                     width='21px'
                     height='21px'
