@@ -36,6 +36,7 @@ import {
     scaleData,
 } from '../../Chart/ChartUtils/chartUtils';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useUndoRedo } from '../../Chart/ChartUtils/useUndoRedo';
 import { updatesIF } from '../../../utils/hooks/useUrlParams';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -105,11 +106,23 @@ function TradeCandleStickChart(props: propsIF) {
     const [liqBoundary, setLiqBoundary] = useState<number | undefined>(
         undefined,
     );
-
     const tradeData = useAppSelector((state) => state.tradeData);
     const { liquidityData: unparsedLiquidityData } = useAppSelector(
         (state) => state.graphData,
     );
+    const denominationsInBase = tradeData.isDenomBase;
+
+    const {
+        undo,
+        redo,
+        drawnShapeHistory,
+        setDrawnShapeHistory,
+        currentPool,
+        deleteItem,
+        addDrawActionStack,
+        drawActionStack,
+        undoStack,
+    } = useUndoRedo(denominationsInBase);
 
     const tokenPair = useMemo(
         () => ({
@@ -125,7 +138,6 @@ function TradeCandleStickChart(props: propsIF) {
     );
     const { poolPriceNonDisplay } = tradeData;
 
-    const denominationsInBase = tradeData.isDenomBase;
     const isTokenABase = tokenPair?.dataTokenA.address === baseTokenAddress;
 
     const poolPriceDisplay = poolPriceWithoutDenom
@@ -833,7 +845,16 @@ function TradeCandleStickChart(props: propsIF) {
                         liquidityDepthScale={liquidityDepthScale}
                         candleTime={chartSettings.candleTime.global}
                         unparsedData={candleData}
+                        undo={undo}
+                        redo={redo}
+                        drawnShapeHistory={drawnShapeHistory}
+                        setDrawnShapeHistory={setDrawnShapeHistory}
+                        currentPool={currentPool}
+                        deleteItem={deleteItem}
                         updateURL={updateURL}
+                        addDrawActionStack={addDrawActionStack}
+                        drawActionStack={drawActionStack}
+                        undoStack={undoStack}
                     />
                 ) : (
                     <Spinner size={100} bg='var(--dark2)' centered />
