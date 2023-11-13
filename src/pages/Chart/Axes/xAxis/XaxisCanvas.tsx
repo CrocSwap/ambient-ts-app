@@ -11,6 +11,7 @@ import {
     crosshair,
     renderCanvasArray,
     scaleData,
+    selectedDrawnData,
     setCanvasResolution,
 } from '../../ChartUtils/chartUtils';
 import { CandleContext } from '../../../../contexts/CandleContext';
@@ -45,6 +46,8 @@ interface xAxisIF {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     zoomBase: any;
     isChartZoom: boolean;
+    isToolbarOpen: boolean;
+    selectedDrawnShape: selectedDrawnData | undefined;
 }
 
 function XAxisCanvas(props: xAxisIF) {
@@ -70,6 +73,8 @@ function XAxisCanvas(props: xAxisIF) {
         showLatestActive,
         zoomBase,
         isChartZoom,
+        isToolbarOpen,
+        selectedDrawnShape,
     } = props;
 
     const d3Xaxis = useRef<HTMLInputElement | null>(null);
@@ -98,6 +103,42 @@ function XAxisCanvas(props: xAxisIF) {
         }
     }, [scaleData, location]);
 
+    const formatDateTicks = (value: Date | number, type: string) => {
+        let formatValue = undefined;
+
+        if (type === 'tick') {
+            if (moment(value).format('HH:mm') === '00:00' || period === 86400) {
+                formatValue = moment(value).format('DD');
+            } else {
+                formatValue = moment(value).format('HH:mm');
+            }
+
+            if (
+                moment(value)
+                    .format('DD')
+                    .match(/^(01)$/) &&
+                moment(value).format('HH:mm') === '00:00'
+            ) {
+                formatValue =
+                    moment(value).format('MMM') === 'Jan'
+                        ? moment(value).format('YYYY')
+                        : moment(value).format('MMM');
+            }
+        }
+
+        if (type === 'cr') {
+            if (period === 86400) {
+                formatValue = moment(value)
+                    .subtract(utcDiffHours, 'hours')
+                    .format('MMM DD YYYY');
+            } else {
+                formatValue = moment(value).format('MMM DD HH:mm');
+            }
+        }
+
+        return formatValue;
+    };
+
     const drawXaxis = (
         context: CanvasRenderingContext2D,
         xScale: d3.ScaleLinear<number, number>,
@@ -106,6 +147,10 @@ function XAxisCanvas(props: xAxisIF) {
         if (scaleData) {
             const _width = mobileView ? 25 : 65; // magic number of pixels to blur surrounding price
             const tickSize = 6;
+
+            const toolbar = document.getElementById('toolbar_container');
+
+            const column = toolbar ? toolbar.getClientRects()[0].width : 9;
 
             const timeOfEndCandleLocation = timeOfEndCandle
                 ? xScale(timeOfEndCandle)
@@ -124,6 +169,7 @@ function XAxisCanvas(props: xAxisIF) {
                 const rectCanvas = canvas.getBoundingClientRect();
 
                 const width = rectCanvas.width;
+                const height = rectCanvas.height;
 
                 const factor = width / (width < 500 ? 75 : 100);
 
@@ -150,33 +196,13 @@ function XAxisCanvas(props: xAxisIF) {
 
                 filteredData.forEach((d: xAxisTick) => {
                     if (d.date instanceof Date) {
-                        let formatValue = undefined;
                         context.textAlign = 'center';
                         context.textBaseline = 'top';
                         context.fillStyle = 'rgba(189,189,189,0.8)';
                         context.font = '50 11.425px Lexend Deca';
                         context.filter = ' blur(0px)';
 
-                        if (
-                            moment(d.date).format('HH:mm') === '00:00' ||
-                            period === 86400
-                        ) {
-                            formatValue = moment(d.date).format('DD');
-                        } else {
-                            formatValue = moment(d.date).format('HH:mm');
-                        }
-
-                        if (
-                            moment(d.date)
-                                .format('DD')
-                                .match(/^(01)$/) &&
-                            moment(d.date).format('HH:mm') === '00:00'
-                        ) {
-                            formatValue =
-                                moment(d.date).format('MMM') === 'Jan'
-                                    ? moment(d.date).format('YYYY')
-                                    : moment(d.date).format('MMM');
-                        }
+                        const formatValue = formatDateTicks(d.date, 'tick');
 
                         if (
                             crosshairActive !== 'none' &&
@@ -245,21 +271,22 @@ function XAxisCanvas(props: xAxisIF) {
                                         ) {
                                             context.fillText(
                                                 formatValue,
-                                                xScale(d.date.getTime()),
+                                                xScale(d.date.getTime()) +
+                                                    column,
                                                 Y + tickSize,
                                             );
                                         }
                                     } else {
                                         context.fillText(
                                             formatValue,
-                                            xScale(d.date.getTime()),
+                                            xScale(d.date.getTime()) + column,
                                             Y + tickSize,
                                         );
                                     }
                                 } else {
                                     context.fillText(
                                         formatValue,
-                                        xScale(d.date.getTime()),
+                                        xScale(d.date.getTime()) + column,
                                         Y + tickSize,
                                     );
                                 }
@@ -269,26 +296,17 @@ function XAxisCanvas(props: xAxisIF) {
                     }
                 });
 
-                let dateCrosshair;
+                const dateCrosshair = formatDateTicks(crosshairData[0].x, 'cr');
                 context.filter = ' blur(0px)';
 
                 context.font = '800 13px Lexend Deca';
-                if (period === 86400) {
-                    dateCrosshair = moment(crosshairData[0].x)
-                        .subtract(utcDiffHours, 'hours')
-                        .format('MMM DD YYYY');
-                } else {
-                    dateCrosshair = moment(crosshairData[0].x).format(
-                        'MMM DD HH:mm',
-                    );
-                }
 
                 context.beginPath();
 
                 if (dateCrosshair && crosshairActive !== 'none') {
                     context.fillText(
                         dateCrosshair,
-                        xScale(crosshairData[0].x),
+                        xScale(crosshairData[0].x) + column,
                         Y + tickSize,
                     );
                 }
@@ -305,7 +323,11 @@ function XAxisCanvas(props: xAxisIF) {
                 }
 
                 if (firstCrDateLocation) {
-                    context.fillText('🐊', firstCrDateLocation, Y + tickSize);
+                    context.fillText(
+                        '🐊',
+                        firstCrDateLocation + column,
+                        Y + tickSize,
+                    );
                 }
 
                 if (timeOfEndCandle && timeOfEndCandleLocation) {
@@ -322,9 +344,69 @@ function XAxisCanvas(props: xAxisIF) {
                     }
                     context.fillText(
                         '🥚',
-                        timeOfEndCandleLocation,
+                        timeOfEndCandleLocation + column,
                         Y + tickSize,
                     );
+                }
+
+                if (selectedDrawnShape) {
+                    context.filter = ' blur(0px)';
+
+                    const shapeData = selectedDrawnShape.data;
+
+                    const rectWidth =
+                        xScale(shapeData.data[1].x) -
+                        xScale(shapeData.data[0].x);
+
+                    context.fillStyle = '#7674ff3f';
+                    context.fillRect(
+                        xScale(shapeData.data[0].x) + column,
+                        height * 0.175,
+                        rectWidth,
+                        height * 0.65,
+                    );
+
+                    shapeData.data.forEach((data) => {
+                        const shapePoint = xScale(data.x);
+                        const point = formatDateTicks(data.x, 'cr');
+
+                        if (point) {
+                            if (
+                                xScale(crosshairData[0].x) >
+                                    shapePoint - (_width - 15) &&
+                                xScale(crosshairData[0].x) <
+                                    shapePoint + (_width - 15) &&
+                                crosshairActive !== 'none'
+                            ) {
+                                context.filter = ' blur(7px)';
+                                context.fillText(
+                                    point,
+                                    shapePoint + column,
+                                    height * 0.5375,
+                                );
+                            } else {
+                                const textWidth =
+                                    context.measureText(point).width + 10;
+
+                                context.fillStyle = '#5553be';
+                                context.fillRect(
+                                    shapePoint + column - textWidth / 2,
+                                    height * 0.175,
+                                    textWidth,
+                                    height * 0.65,
+                                );
+                                context.fillStyle = 'rgb(214, 214, 214)';
+                                context.font = '800 13px Lexend Deca';
+                                context.textAlign = 'center';
+                                context.textBaseline = 'middle';
+                                context.fillText(
+                                    point,
+                                    shapePoint + column,
+                                    height * 0.5375,
+                                );
+                            }
+                        }
+                    });
                 }
 
                 context.restore();
@@ -387,6 +469,8 @@ function XAxisCanvas(props: xAxisIF) {
         location,
         crosshairActive,
         xAxis === undefined,
+        isToolbarOpen,
+        selectedDrawnShape,
     ]);
 
     useEffect(() => {
