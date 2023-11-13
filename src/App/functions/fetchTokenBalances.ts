@@ -27,7 +27,7 @@ export const fetchTokenBalances = async (
     address: string,
     chain: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _lastBlockNumber: number,
+    _refreshTime: number,
     cachedTokenDetails: FetchContractDetailsFn,
     crocEnv: CrocEnv | undefined,
     graphCacheUrl: string,
@@ -133,7 +133,7 @@ export const fetchTokenBalances = async (
 export type TokenBalancesQueryFn = (
     address: string,
     chain: string,
-    lastBlock: number,
+    refreshTime: number,
     cachedTokenDetails: FetchContractDetailsFn,
     crocEnv: CrocEnv | undefined,
     graphCacheUrl: string,

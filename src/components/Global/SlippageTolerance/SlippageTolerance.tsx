@@ -19,6 +19,9 @@ export default function SlippageTolerance(props: propsIF) {
         setCurrentSlippage,
     );
 
+    // type derived from preset values received in props
+    type presetValues = typeof presets[number];
+
     return (
         <div className={styles.slippage_tolerance_container}>
             <div className={styles.slippage_title}>Slippage Tolerance (%)</div>
@@ -37,13 +40,21 @@ export default function SlippageTolerance(props: propsIF) {
                             aria-label='Enter Slippage Tolerance'
                         />
                     </div>
-                    {presets.map((preset: number) => (
-                        <Chip
-                            key={`slippage-preset-button-${preset}`}
-                            onClick={() => takeNewSlippage(preset)}
-                            ariaLabel={`set slippage to ${preset}% `}
-                        >{`${preset}%`}</Chip>
-                    ))}
+                    {presets.map((preset: presetValues) => {
+                        // convert preset value to a human-readable string
+                        const humanReadable: string = preset + '%';
+                        // generate preset buttons
+                        return (
+                            <Chip
+                                key={preset.toString()}
+                                id={`slippage-preset-button-${humanReadable}`}
+                                onClick={() => takeNewSlippage(preset)}
+                                ariaLabel={`set slippage to ${humanReadable}`}
+                            >
+                                {humanReadable}
+                            </Chip>
+                        );
+                    })}
                 </div>
             </div>
         </div>

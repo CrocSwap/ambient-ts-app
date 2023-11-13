@@ -481,6 +481,7 @@ function Swap(props: propsIF) {
             }
             input={
                 <SwapTokenInput
+                    isLiquidityInsufficient={isLiquidityInsufficient}
                     setIsLiquidityInsufficient={setIsLiquidityInsufficient}
                     slippageTolerancePercentage={slippageTolerancePercentage}
                     setPriceImpact={setPriceImpact}
@@ -547,6 +548,7 @@ function Swap(props: propsIF) {
             }
             button={
                 <Button
+                    idForDOM='confirm_swap_button'
                     title={
                         areBothAckd
                             ? bypassConfirmSwap.isEnabled
@@ -595,6 +597,7 @@ function Swap(props: propsIF) {
                 parseFloat(sellQtyString) > 0 &&
                 sellQtyString !== 'Infinity' ? (
                     <Button
+                        idForDOM='approve_token_a_for_swap_module'
                         title={
                             !isApprovalPending
                                 ? `Approve ${tokenA.symbol}`
@@ -611,7 +614,9 @@ function Swap(props: propsIF) {
             warnings={
                 priceImpactWarning || liquidityInsufficientWarning ? (
                     <>
-                        {priceImpactWarning && priceImpactWarning}
+                        {priceImpactWarning &&
+                            sellQtyString !== '' &&
+                            priceImpactWarning}
                         {liquidityInsufficientWarning &&
                             liquidityInsufficientWarning}
                     </>

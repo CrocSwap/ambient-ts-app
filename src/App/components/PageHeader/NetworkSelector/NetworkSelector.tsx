@@ -78,7 +78,7 @@ export default function NetworkSelector(props: propsIF) {
         >
             <ChainNameStatus tabIndex={0} active={chainId === '0x1'}>
                 <img
-                    src={chainMap.get('0x1').logoUrl}
+                    src={chainMap.get('0x1')?.logoUrl}
                     alt={'ethereum mainnet network'}
                     width='21px'
                     height='21px'
@@ -103,7 +103,7 @@ export default function NetworkSelector(props: propsIF) {
         >
             <ChainNameStatus tabIndex={0} active={chainId === '0x82750'}>
                 <img
-                    src={chainMap.get('0x82750').logoUrl}
+                    src={chainMap.get('0x82750')?.logoUrl}
                     alt={'scroll network'}
                     width='21px'
                     height='21px'
@@ -154,7 +154,7 @@ export default function NetworkSelector(props: propsIF) {
         >
             <ChainNameStatus tabIndex={0} active={chainId === '0x5'}>
                 <img
-                    src={chainMap.get('0x5').logoUrl}
+                    src={chainMap.get('0x5')?.logoUrl}
                     alt={'goerli network'}
                     width='21px'
                     height='21px'
@@ -180,7 +180,7 @@ export default function NetworkSelector(props: propsIF) {
         >
             <ChainNameStatus tabIndex={0} active={chainId === '0x8274f'}>
                 <img
-                    src={chainMap.get('0x82750').logoUrl}
+                    src={chainMap.get('0x82750')?.logoUrl}
                     alt={'goerli network'}
                     width='21px'
                     height='21px'

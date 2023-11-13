@@ -171,6 +171,7 @@ function Trade() {
     ]);
 
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
+    const smallScreen = useMediaQuery('(max-width: 500px)');
 
     const [isChartLoading, setIsChartLoading] = useState<boolean>(true);
 
@@ -243,7 +244,7 @@ function Trade() {
             )}
 
             {activeMobileComponent === 'trade' && (
-                <ContentContainer noPadding>
+                <ContentContainer noPadding noStyle={smallScreen}>
                     <Outlet
                         context={{
                             tradeData: tradeData,
