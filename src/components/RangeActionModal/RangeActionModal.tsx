@@ -623,6 +623,7 @@ export default function RangeActionModal(props: propsIF) {
         <div className={styles.button_container}>
             {showSettings ? (
                 <Button
+                    idForDOM='update_settings_button_in_range_modal'
                     title={
                         currentSlippage > 0
                             ? 'Confirm'
@@ -654,6 +655,7 @@ export default function RangeActionModal(props: propsIF) {
                 />
             ) : (
                 <Button
+                    idForDOM='harvest_remove_fees_modal_button'
                     title={
                         !(
                             (type === 'Remove'

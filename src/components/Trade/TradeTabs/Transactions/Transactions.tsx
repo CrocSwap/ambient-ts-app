@@ -313,7 +313,7 @@ function Transactions(props: propsIF) {
     }[] = [
         {
             name: 'Timestamp',
-            show: tableView === 'large',
+            show: tableView !== 'small',
             slug: 'time',
             sortable: true,
         },
@@ -517,6 +517,7 @@ function Transactions(props: propsIF) {
         _DATA.currentData.map((tx, idx) => (
             <TransactionRow
                 key={idx}
+                idForDOM={`tx_row_${idx}`}
                 tx={tx}
                 tableView={tableView}
                 isAccountView={isAccountView}

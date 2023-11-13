@@ -43,6 +43,7 @@ interface propsIF {
     slippageTolerancePercentage: number;
     setSwapAllowed: Dispatch<SetStateAction<boolean>>;
     setPriceImpact: Dispatch<SetStateAction<CrocImpact | undefined>>;
+    isLiquidityInsufficient: boolean;
     setIsLiquidityInsufficient: Dispatch<SetStateAction<boolean>>;
     toggleDexSelection: (tokenAorB: 'A' | 'B') => void;
 }
@@ -58,6 +59,7 @@ function SwapTokenInput(props: propsIF) {
         slippageTolerancePercentage,
         setSwapAllowed,
         setPriceImpact,
+        isLiquidityInsufficient,
         setIsLiquidityInsufficient,
         toggleDexSelection,
     } = props;
@@ -172,6 +174,8 @@ function SwapTokenInput(props: propsIF) {
         sellToken: boolean,
     ): Promise<number | undefined> {
         if (isNaN(parseFloat(input)) || parseFloat(input) === 0 || !crocEnv) {
+            setIsLiquidityInsufficient(false);
+            setPriceImpact(undefined);
             return undefined;
         }
 
@@ -310,12 +314,12 @@ function SwapTokenInput(props: propsIF) {
                 fieldId='swap_sell'
                 tokenAorB='A'
                 token={tokenA}
-                tokenInput={sellQtyString}
+                tokenInput={buyQtyString !== '' ? sellQtyString : ''}
                 tokenBalance={tokenABalance}
                 tokenDexBalance={tokenADexBalance}
                 isTokenEth={isSellTokenEth}
                 isDexSelected={isWithdrawFromDexChecked}
-                isLoading={isSellLoading}
+                isLoading={isSellLoading && buyQtyString !== ''}
                 showPulseAnimation={showSwapPulseAnimation}
                 handleTokenInputEvent={debouncedTokenAChangeEvent}
                 reverseTokens={reverseTokens}
@@ -329,7 +333,6 @@ function SwapTokenInput(props: propsIF) {
                 fullWidth
                 justifyContent='center'
                 alignItems='center'
-                padding='0 0 8px 0'
             >
                 <TokensArrow
                     disabled={
@@ -342,12 +345,16 @@ function SwapTokenInput(props: propsIF) {
                 fieldId='swap_buy'
                 tokenAorB='B'
                 token={tokenB}
-                tokenInput={buyQtyString}
+                tokenInput={
+                    sellQtyString !== '' || isLiquidityInsufficient
+                        ? buyQtyString
+                        : ''
+                }
                 tokenBalance={tokenBBalance}
                 tokenDexBalance={tokenBDexBalance}
                 isTokenEth={isBuyTokenEth}
                 isDexSelected={isSaveAsDexSurplusChecked}
-                isLoading={isBuyLoading}
+                isLoading={isBuyLoading && sellQtyString !== ''}
                 showPulseAnimation={showSwapPulseAnimation}
                 handleTokenInputEvent={debouncedTokenBChangeEvent}
                 reverseTokens={reverseTokens}
