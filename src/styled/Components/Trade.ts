@@ -1,7 +1,10 @@
 import { Resizable } from 're-resizable';
 import styled from 'styled-components/macro';
 
-export const MainSection = styled.section<{ isDropdown?: boolean }>`
+export const MainSection = styled.section<{
+    isDropdown?: boolean;
+    isSmallScreen?: boolean;
+}>`
     display: ${(props) => (props.isDropdown ? 'flex' : 'grid')};
     gap: ${(props) => (props.isDropdown ? '8px' : 'initial')};
 
@@ -16,7 +19,7 @@ export const MainSection = styled.section<{ isDropdown?: boolean }>`
     }
 
     @media only screen and (max-width: 1279px) {
-        padding-left: 30px;
+        padding-left: ${(props) => (props.isSmallScreen ? '' : '30px')};
     }
 
     @media (max-width: 600px) {
