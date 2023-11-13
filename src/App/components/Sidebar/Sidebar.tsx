@@ -49,13 +49,15 @@ import {
     TopPoolsIcon,
     TransactionsIcon,
 } from '../../../styled/Components/Sidebar';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 function Sidebar() {
     const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
         useContext(CachedDataContext);
     const { chainData: chainData } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
-    const { sidebar } = useContext(SidebarContext);
+    const { sidebar, toggleMobileModeVisibility, hideOnMobile } =
+        useContext(SidebarContext);
 
     const graphData = useAppSelector((state) => state.graphData);
 
@@ -175,6 +177,7 @@ function Sidebar() {
     // id for search input HTML elem in the DOM
     // defined in a const because we reference this multiple places
     const searchInputElementId = 'sidebar_search_input';
+    const smallScreen = useMediaQuery('(max-width: 500px)');
 
     const searchContainer = (
         <SearchContainer
@@ -321,7 +324,12 @@ function Sidebar() {
                                 type='image'
                                 src={closeSidebarImage}
                                 alt='close sidebar'
-                                onClick={() => sidebar.close(true)}
+                                onClick={() => {
+                                    sidebar.close(true);
+                                    if (smallScreen) {
+                                        toggleMobileModeVisibility();
+                                    }
+                                }}
                                 disabled={isLocked}
                                 style={{ opacity: isLocked ? 0.5 : 1 }}
                             />
@@ -412,8 +420,6 @@ function Sidebar() {
             ))}
         </ContentContainer>
     );
-
-    const { hideOnMobile } = useContext(SidebarContext);
 
     if (hideOnMobile) return null;
 

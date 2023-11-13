@@ -39,13 +39,21 @@ function SidebarFooter() {
         tokenB: tradeData.tokenB.address,
     });
 
-    const { hideOnMobile, toggleMobileModeVisibility } =
+    const { hideOnMobile, toggleMobileModeVisibility, sidebar } =
         useContext(SidebarContext);
+
+    const handleSidebarCloseAndOpen = () => {
+        toggleMobileModeVisibility();
+
+        if (!sidebar.isOpen) {
+            sidebar.open(true);
+        }
+    };
 
     const linksData = [
         {
             title: 'Sidebar ',
-            onClick: toggleMobileModeVisibility,
+            onClick: handleSidebarCloseAndOpen,
             icon: VscLayoutSidebarLeft,
             isButton: true,
         },
