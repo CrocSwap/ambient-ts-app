@@ -403,7 +403,7 @@ export default function Limit() {
             const costOfMainnetLimitInETH =
                 gasPriceInGwei * averageLimitCostInGasDrops * 1e-9;
 
-            setAmountToReduceEthMainnet(1.5 * costOfMainnetLimitInETH);
+            setAmountToReduceEthMainnet(1.75 * costOfMainnetLimitInETH);
 
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
