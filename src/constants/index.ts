@@ -15,7 +15,7 @@ export const IS_LOCAL_ENV = APP_ENVIRONMENT === 'local';
 
 export const ANALYTICS_URL =
     process.env.REACT_APP_ANALYTICS_URL ||
-    'https://crocswap-analytics-tools-service-dfxb5x3tja-uc.a.run.app/run?';
+    'https://ambindexer.net/analytics/run?';
 
 export const GCGO_ETHEREUM_URL =
     process.env.REACT_APP_GCGO_ETHEREUM_URL || 'https://ambindexer.net/gcgo';
