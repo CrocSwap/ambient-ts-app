@@ -6,7 +6,7 @@ export const MainSection = styled.section<{ isDropdown?: boolean }>`
     gap: ${(props) => (props.isDropdown ? '8px' : 'initial')};
 
     grid-template-columns: auto 380px;
-    height: calc(100dvh - 156px);
+    height: calc(100dvh - 180px);
 
     border-top: ${(props) => !props.isDropdown && '1px solid var(--dark2)'};
 
