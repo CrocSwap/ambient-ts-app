@@ -20,13 +20,13 @@ import {
     setLimitTick,
     setPoolPriceNonDisplay,
     setPrimaryQuantity,
-    setIsTokenAPrimaryRange,
 } from '../../../../utils/state/tradeDataSlice';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import TokenInputWithWalletBalance from '../../../Form/TokenInputWithWalletBalance';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { RangeContext } from '../../../../contexts/RangeContext';
 
 interface propsIF {
     tokenAInputQty: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -54,6 +54,8 @@ function LimitTokenInput(props: propsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { setIsTokenAPrimaryRange, isTokenAPrimaryRange } =
+        useContext(RangeContext);
     const { pool } = useContext(PoolContext);
     const {
         baseToken: {
@@ -72,9 +74,7 @@ function LimitTokenInput(props: propsIF) {
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
     const { isUserConnected } = useContext(UserDataContext);
 
-    const { isTokenAPrimaryRange, primaryQuantity } = useAppSelector(
-        (state) => state.tradeData,
-    );
+    const { primaryQuantity } = useAppSelector((state) => state.tradeData);
 
     const { tokenA, tokenB, isTokenAPrimary, isDenomBase, setIsTokenAPrimary } =
         useContext(TradeDataContext);
@@ -100,7 +100,7 @@ function LimitTokenInput(props: propsIF) {
         // navigate user to limit page with URL params defined above
         linkGenLimit.navigate(limitLinkParams);
         setIsTokenAPrimary(!isTokenAPrimary);
-        dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
+        setIsTokenAPrimaryRange(!isTokenAPrimaryRange);
     };
 
     useEffect(() => {

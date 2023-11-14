@@ -10,14 +10,7 @@ import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import TransactionDetailsModal from '../../../TransactionDetails/TransactionDetailsModal';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
-import {
-    setAdvancedHighTick,
-    setAdvancedLowTick,
-    setAdvancedMode,
-    setShouldSwapDirectionReverse,
-    setPrimaryQuantityRange,
-    setRangeTicksCopied,
-} from '../../../../../utils/state/tradeDataSlice';
+import { setShouldSwapDirectionReverse } from '../../../../../utils/state/tradeDataSlice';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
@@ -47,7 +40,15 @@ export default function TransactionsMenu(props: propsIF) {
     const {
         chainData: { blockExplorer, chainId },
     } = useContext(CrocEnvContext);
-    const { setSimpleRangeWidth } = useContext(RangeContext);
+    const {
+        setSimpleRangeWidth,
+        setPrimaryQuantityRange,
+        setRangeTicksCopied,
+        setAdvancedHighTick,
+        setAdvancedLowTick,
+        setAdvancedMode,
+    } = useContext(RangeContext);
+
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
@@ -87,24 +88,24 @@ export default function TransactionsMenu(props: propsIF) {
         }
 
         if (tx.positionType === 'ambient') {
-            dispatch(setRangeTicksCopied(true));
+            setRangeTicksCopied(true);
             setSimpleRangeWidth(100);
-            dispatch(setAdvancedMode(false));
+            setAdvancedMode(false);
             const shouldReverse =
                 tokenA.address.toLowerCase() !== tx.base.toLowerCase();
             if (shouldReverse) {
-                dispatch(setPrimaryQuantityRange(''));
+                setPrimaryQuantityRange('');
             }
         } else if (tx.positionType === 'concentrated') {
             setTimeout(() => {
-                dispatch(setRangeTicksCopied(true));
-                dispatch(setAdvancedLowTick(tx.bidTick));
-                dispatch(setAdvancedHighTick(tx.askTick));
-                dispatch(setAdvancedMode(true));
+                setRangeTicksCopied(true);
+                setAdvancedLowTick(tx.bidTick);
+                setAdvancedHighTick(tx.askTick);
+                setAdvancedMode(true);
                 const shouldReverse =
                     tokenA.address.toLowerCase() !== tx.base.toLowerCase();
                 if (shouldReverse) {
-                    dispatch(setPrimaryQuantityRange(''));
+                    setPrimaryQuantityRange('');
                 }
             }, 1000);
         } else if (tx.entityType === 'swap') {

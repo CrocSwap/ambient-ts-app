@@ -8,7 +8,6 @@ import {
     useState,
 } from 'react';
 import { GCGO_OVERRIDE_URL } from '../../constants';
-import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { LimitOrderServerIF } from '../../utils/interfaces/LimitOrderIF';
 import {
     PositionIF,
@@ -16,11 +15,6 @@ import {
 } from '../../utils/interfaces/PositionIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 
-import {
-    setAdvancedHighTick,
-    setAdvancedLowTick,
-    setAdvancedMode,
-} from '../../utils/state/tradeDataSlice';
 import { FetchAddrFn } from '../functions/fetchAddress';
 import { FetchContractDetailsFn } from '../functions/fetchContractDetails';
 import { fetchPoolRecentChanges } from '../functions/fetchPoolRecentChanges';
@@ -35,6 +29,7 @@ import { Provider } from '@ethersproject/providers';
 import { DataLoadingContext } from '../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { RangeContext } from '../../contexts/RangeContext';
 
 interface PoolParamsHookIF {
     crocEnv?: CrocEnv;
@@ -57,7 +52,6 @@ interface PoolParamsHookIF {
 
 // Hooks to update metadata and volume/TVL/liquidity curves on a per-pool basis
 export function usePoolMetadata(props: PoolParamsHookIF) {
-    const dispatch = useAppDispatch();
     const { tokenA, tokenB, baseToken, quoteToken } =
         useContext(TradeDataContext);
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
@@ -72,6 +66,9 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         setLiquidityPending,
         setLiquidityFee,
     } = useContext(GraphDataContext);
+
+    const { setAdvancedLowTick, setAdvancedHighTick, setAdvancedMode } =
+        useContext(RangeContext);
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
 
@@ -122,9 +119,9 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
     useEffect(() => {
         if (rtkMatchesParams && props.crocEnv) {
             if (!ticksInParams) {
-                dispatch(setAdvancedLowTick(0));
-                dispatch(setAdvancedHighTick(0));
-                dispatch(setAdvancedMode(false));
+                setAdvancedLowTick(0);
+                setAdvancedHighTick(0);
+                setAdvancedMode(false);
                 props.setSimpleRangeWidth(10);
             }
 
