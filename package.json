@@ -43,10 +43,10 @@
         "web-vitals": "^2.1.0"
     },
     "scripts": {
-        "start": "yarn && react-scripts --openssl-legacy-provider start",
-        "start-only": "react-scripts --openssl-legacy-provider start",
-        "build": "react-scripts --openssl-legacy-provider --max_old_space_size=4096 build",
-        "test": "react-scripts --openssl-legacy-provider test ",
+        "start": "yarn && react-scripts start",
+        "start-only": "react-scripts start",
+        "build": "react-scripts --max_old_space_size=4096 build",
+        "test": "react-scripts test ",
         "test:nowatch": "react-scripts test --watchAll=false",
         "eject": "react-scripts eject",
         "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
