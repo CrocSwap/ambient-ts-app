@@ -78,34 +78,38 @@ const StepperComponent: React.FC<StepperComponentProps> = ({
         return (
             <Stepper
                 activeStep={activeStep}
-                alternativeLabel
+                orientation='vertical'
                 connector={<CustomConnector />}
             >
-                {steps.map((label, index) => (
-                    <Step key={label.label}>
-                        {activeStep === index ? (
+                {steps.map((step, index) => (
+                    <Step key={step.label}>
+                        {index > activeStep ? (
+                            <FlexContainer gap={8} alignItems='center'>
+                                <CircularBorder />
+                                {step.label}
+                            </FlexContainer>
+                        ) : activeStep === index ? (
                             isError ? (
-                                <StepLabel error={isError}>
-                                    {label.label}
-                                </StepLabel>
+                                <FlexContainer gap={8} alignItems='center'>
+                                    <CircularBorderWithExclamation>
+                                        !
+                                    </CircularBorderWithExclamation>
+                                    {step.label}
+                                </FlexContainer>
                             ) : (
-                                <FlexContainer
-                                    gap={16}
-                                    flexDirection='column'
-                                    alignItems='center'
-                                >
+                                <FlexContainer gap={8} alignItems='center'>
                                     <Spinner
                                         size={24}
                                         bg='var(--dark2)'
                                         weight={2}
                                     />
-                                    {label.label}
+                                    {step.label}
                                 </FlexContainer>
                             )
                         ) : (
                             <StepLabel>
                                 <p style={{ color: 'var(--text3)' }}>
-                                    {label.label}
+                                    {step.label}
                                 </p>
                             </StepLabel>
                         )}
@@ -131,7 +135,11 @@ const StepperComponent: React.FC<StepperComponentProps> = ({
                             </FlexContainer>
                         ) : activeStep === index ? (
                             isError ? (
-                                <FlexContainer gap={8} alignItems='center'>
+                                <FlexContainer
+                                    gap={8}
+                                    alignItems='center'
+                                    style={{ color: '#f6385b' }}
+                                >
                                     <CircularBorderWithExclamation>
                                         !
                                     </CircularBorderWithExclamation>
