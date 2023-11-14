@@ -9,7 +9,7 @@ import {
     selectedDrawnData,
     setCanvasResolution,
 } from '../../ChartUtils/chartUtils';
-import { diffHashSig } from '../../../../utils/functions/diffHashSig';
+import { diffHashSig } from '../../../../ambient-utils/src/dataLayer';
 import { createCircle } from '../../ChartUtils/circle';
 import { createLinearLineSeries } from './LinearLineSeries';
 import { createBandArea, createPointsOfBandLine } from './BandArea';

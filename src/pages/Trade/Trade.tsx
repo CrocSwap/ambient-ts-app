@@ -25,6 +25,7 @@ import { TradeTableContext } from '../../contexts/TradeTableContext';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { TokenContext } from '../../contexts/TokenContext';
 import { CandleDataIF } from '../../ambient-utils/src/types';
+import { getFormattedNumber } from '../../ambient-utils/src/dataLayer';
 import { NoChartData } from '../../components/NoChartData/NoChartData';
 import { TradeChartsHeader } from './TradeCharts/TradeChartsHeader/TradeChartsHeader';
 import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
@@ -40,7 +41,6 @@ import { Direction } from 're-resizable/lib/resizer';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
 import { PoolContext } from '../../contexts/PoolContext';
-import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { MdAutoGraph } from 'react-icons/md';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
