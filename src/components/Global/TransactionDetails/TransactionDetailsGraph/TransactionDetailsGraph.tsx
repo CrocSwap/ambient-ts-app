@@ -1044,7 +1044,7 @@ export default function TransactionDetailsGraph(
 
     const chartRender = (
         <div
-            className='main_layout_chart'
+            className='transaction_details_graph'
             ref={graphMainDiv}
             data-testid={'chart'}
             style={{

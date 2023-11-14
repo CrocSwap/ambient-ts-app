@@ -33,7 +33,6 @@ export interface TradeDataIF {
     isLinesSwitched: boolean | undefined;
 
     // swap and  limit order UI
-    // isTokenAPrimary: boolean;
     primaryQuantity: string;
     slippageTolerance: number; // swap and range, not limit
 
@@ -42,6 +41,11 @@ export interface TradeDataIF {
 
     // Limit order
     limitTick: number | undefined; // values that affects price? just in limit order
+
+    // // not used
+    // isTokenABase?: boolean;
+    // tokenA?: TokenIF;
+    // tokenB?: TokenIF;
 }
 
 const initialState: TradeDataIF = {

@@ -1559,6 +1559,7 @@ export default function InitPool() {
 
     const withdrawWalletBalanceButton = (
         <Button
+            idForDOM='init_pool_primary_CTA'
             disabled={isWithdrawPending}
             title={
                 isWithdrawPending

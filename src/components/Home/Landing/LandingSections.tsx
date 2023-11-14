@@ -59,7 +59,7 @@ export default function LandingSections() {
                         contract, allowing for low-fee transactions, greater
                         liquidity rewards, and a fairer trading experience.
                     </Text>
-                    <TradeNowButton />
+                    <TradeNowButton fieldId='trade_now_btn_home_second_row' />
                 </FasterSection>
             </RowContainer>
         </SlideContainer>
@@ -184,7 +184,7 @@ export default function LandingSections() {
                         array of quality-of-life improvements allowing for a
                         best-in-class user experience.
                     </Text>
-                    <TradeNowButton />
+                    <TradeNowButton fieldId='trade_now_btn_home_fifth_row' />
                 </FasterSection>
             </RowContainer>
         </SlideContainer>

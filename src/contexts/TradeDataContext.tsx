@@ -7,7 +7,7 @@ import {
 } from '../utils/data/chains';
 import { useAppChain } from '../App/hooks/useAppChain';
 
-interface TradeDataContextIF {
+export interface TradeDataContextIF {
     tokenA: TokenIF;
     tokenB: TokenIF;
     baseToken: TokenIF;

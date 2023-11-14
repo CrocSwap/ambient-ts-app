@@ -112,7 +112,7 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                 placeholder
                 tabIndex={0}
             >
-                {tableView === 'large' && (
+                {tableView !== 'small' && (
                     <div>
                         <p>Now</p>
                     </div>

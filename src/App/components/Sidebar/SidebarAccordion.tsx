@@ -117,6 +117,7 @@ export default function SidebarAccordion(props: propsIF) {
                         Your recent {item.name.toLowerCase()} will display here.
                     </p>
                     <Button
+                        idForDOM={`connect_wallet_button_in_sidebar_${item.name}`}
                         action={openWagmiModal}
                         flat
                         thin
@@ -127,6 +128,8 @@ export default function SidebarAccordion(props: propsIF) {
         ) : (
             sidebar.isOpen && openStateContent
         );
+
+    // TODO: remove unnecessary wrapper inside `<AccordionHeader />`
 
     return (
         <FlexContainer
@@ -139,6 +142,9 @@ export default function SidebarAccordion(props: propsIF) {
                 open={sidebar.isOpen}
             >
                 <FlexContainer
+                    id={`sidebar_header_${item.name
+                        .replaceAll(' ', '_')
+                        .toLowerCase()}`}
                     flexDirection='row'
                     alignItems='center'
                     justifyContent={!sidebar.isOpen ? 'center' : 'flex-start'}
