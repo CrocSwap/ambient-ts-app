@@ -9,7 +9,7 @@
 
     background-color: var(--dark1);
     height: 64px;
-    padding-left: 1.5rem;
+ 
     display: none;
 }
 
@@ -20,7 +20,14 @@
 .position_absolute {
     position: absolute;
 }
-.sidebar_footer a {
+
+.sidebar_footer span{
+    background-color: transparent;
+    outline: none;
+    border: none;
+    cursor: pointer;
+}
+.sidebar_footer a, .sidebar_footer span {
     cursor: pointer;
     display: flex;
     flex: 1 0;
@@ -29,21 +36,18 @@
     padding: 9px 3px;
     font-size: 11px;
 }
-.sidebar_footer a img,
-.sidebar_footer a svg {
+.sidebar_footer a img, .sidebar_footer span img,
+.sidebar_footer a svg, .sidebar_footer span svg {
     width: 20px;
 }
 
 @media only screen and (min-width: 500px) {
-    .sidebar_footer a {
+    .sidebar_footer a, .sidebar button {
         flex: 1 0;
         padding: 9px 8px;
         font-size: var(--body-size);
     }
-    .sidebar_footer a img,
-    .sidebar_footer a svg {
-        width: 20px;
-    }
+
 }
 
 /* Small screens */
