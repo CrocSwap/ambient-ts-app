@@ -25,7 +25,7 @@ import Ranges from './Ranges/Ranges';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
 import { setChangesByUser } from '../../../utils/state/graphDataSlice';
-import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
+import { fetchUserRecentChanges } from '../../../ambient-utils/src/api';
 import Leaderboard from './Ranges/Leaderboard';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -36,22 +36,22 @@ import {
     diffHashSigLimits,
     diffHashSigPostions,
     diffHashSigTxs,
-} from '../../../utils/functions/diffHashSig';
+} from '../../../ambient-utils/src/dataLayer';
 import { CandleContext } from '../../../contexts/CandleContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { ChartContext } from '../../../contexts/ChartContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { CandleData } from '../../../App/functions/fetchCandleSeries';
+import { CandleDataIF } from '../../../ambient-utils/src/types';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { FlexContainer } from '../../../styled/Common';
 import { ClearButton } from '../../../styled/Components/TransactionTable';
 import TableInfo from '../TableInfo/TableInfo';
 interface propsIF {
-    filter: CandleData | undefined;
-    setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
+    filter: CandleDataIF | undefined;
+    setTransactionFilter: Dispatch<SetStateAction<CandleDataIF | undefined>>;
     changeState: (
         isOpen: boolean | undefined,
-        candleData: CandleData | undefined,
+        candleData: CandleDataIF | undefined,
     ) => void;
     selectedDate: number | undefined;
     setSelectedDate: Dispatch<number | undefined>;

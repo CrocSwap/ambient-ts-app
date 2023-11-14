@@ -23,7 +23,7 @@ import {
     setRangeTicksCopied,
     setIsTokenAPrimary,
 } from '../../../../../utils/state/tradeDataSlice';
-import { TransactionIF } from '../../../../../utils/interfaces/exports';
+import { TransactionIF } from '../../../../../ambient-utils/src/types';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import { RangeContext } from '../../../../../contexts/RangeContext';

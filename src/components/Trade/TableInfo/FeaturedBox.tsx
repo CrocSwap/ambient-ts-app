@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../../ambient-utils/src/types';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import {
@@ -15,11 +15,13 @@ import {
 } from './TableInfo.styles';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
-import trimString from '../../../utils/functions/trimString';
+import {
+    trimString,
+    uriToHttp,
+    getChainExplorer,
+} from '../../../ambient-utils/src/dataLayer';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { ZERO_ADDRESS } from '../../../constants';
-import { getChainExplorer } from '../../../utils/data/chains';
-import uriToHttp from '../../../utils/functions/uriToHttp';
 
 interface FeaturedBoxPropsIF {
     token: TokenIF;

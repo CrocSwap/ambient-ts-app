@@ -6,10 +6,10 @@ import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import MobileLandingSections from '../../components/Home/Landing/MobileLandingSections';
 import { useSearchParams } from 'react-router-dom';
 import { useAccount, useSwitchNetwork } from 'wagmi';
-import { supportedNetworks } from '../../utils/networks/index';
+import { supportedNetworks } from '../../ambient-utils/src/constants';
 import { useAppChain } from '../../App/hooks/useAppChain';
 import { useEffect } from 'react';
-import { lookupChainId } from '../../utils/functions/lookupChainId';
+import { lookupChainId } from '../../ambient-utils/src/dataLayer';
 
 export default function Home() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');

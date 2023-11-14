@@ -13,10 +13,10 @@ import {
     IS_LOCAL_ENV,
     SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
 } from '../constants';
-import isJsonString from '../utils/functions/isJsonString';
+import { isJsonString } from '../ambient-utils/src/dataLayer';
 import { useAppDispatch } from '../utils/hooks/reduxToolkit';
-import { TokenIF } from '../utils/interfaces/TokenIF';
-import { supportedNetworks } from '../utils/networks';
+import { TokenIF } from '../ambient-utils/src/types';
+import { supportedNetworks } from '../ambient-utils/src/constants';
 import { setLastBlock } from '../utils/state/graphDataSlice';
 import { setTokenBalances } from '../utils/state/userDataSlice';
 import { CachedDataContext } from './CachedDataContext';

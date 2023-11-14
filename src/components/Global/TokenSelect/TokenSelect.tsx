@@ -1,11 +1,11 @@
 // START: Import Local Files
 import styles from './TokenSelect.module.css';
-import { TokenIF } from '../../../utils/interfaces/exports';
+import { TokenIF } from '../../../ambient-utils/src/types';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../TokenIcon/TokenIcon';
 import { BigNumber } from 'ethers';
 import { toDisplayQty } from '@crocswap-libs/sdk';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import { getFormattedNumber } from '../../../ambient-utils/src/dataLayer';
 
 interface propsIF {
     token: TokenIF;

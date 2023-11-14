@@ -12,13 +12,17 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { useAccount } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
-import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
-import { exponentialNumRegEx } from '../../utils/regex/exports';
+import {
+    getFormattedNumber,
+    exponentialNumRegEx,
+    getUnicodeCharacter,
+    getMoneynessRank,
+    truncateDecimals,
+} from '../../ambient-utils/src/dataLayer';
 
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import InitPoolTokenSelect from '../../components/Global/InitPoolTokenSelect/InitPoolTokenSelect';
 
-import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { PoolContext } from '../../contexts/PoolContext';
 import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
 // import { toggleAdvancedMode } from '../../utils/state/tradeDataSlice';
@@ -35,7 +39,6 @@ import { useTokenBalancesAndAllowances } from '../../App/hooks/useTokenBalancesA
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import Spinner from '../../components/Global/Spinner/Spinner';
 import AdvancedModeToggle from '../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
-import { getMoneynessRank } from '../../utils/functions/getMoneynessRank';
 import { WarningBox } from '../../components/RangeActionModal/WarningBox/WarningBox';
 import InitSkeleton from './InitSkeleton';
 import InitConfirmation from './InitConfirmation';
@@ -61,7 +64,6 @@ import {
     setAdvancedHighTick,
 } from '../../utils/state/tradeDataSlice';
 import { concDepositSkew, fromDisplayPrice } from '@crocswap-libs/sdk';
-import truncateDecimals from '../../utils/data/truncateDecimals';
 
 import { useHandleRangeButtonMessage } from '../../App/hooks/useHandleRangeButtonMessage';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';

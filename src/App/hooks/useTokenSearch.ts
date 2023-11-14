@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
-import { TokenIF } from '../../utils/interfaces/exports';
+import { TokenIF } from '../../ambient-utils/src/types';
 import { tokenMethodsIF } from './useTokens';
-import { tokenListURIs } from '../../utils/data/tokenListURIs';
+import { tokenListURIs } from '../../ambient-utils/src/constants';
 import { ZERO_ADDRESS } from '../../constants';
-import removeWrappedNative from '../../utils/functions/removeWrappedNative';
-import { isUsdcToken } from '../../utils/data/stablePairs';
+import {
+    removeWrappedNative,
+    isUsdcToken,
+} from '../../ambient-utils/src/dataLayer';
 
 export const useTokenSearch = (
     chainId: string,

@@ -4,16 +4,17 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 
-import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
+import {
+    getUnicodeCharacter,
+    getMoneynessRank,
+    getFormattedNumber,
+    get24hChange,
+} from '../../ambient-utils/src/dataLayer';
+import { estimateFrom24HrRangeApr } from '../../ambient-utils/src/api';
 import { sortBaseQuoteTokens, toDisplayPrice } from '@crocswap-libs/sdk';
-import { getMoneynessRank } from '../../utils/functions/getMoneynessRank';
-import { getFormattedNumber } from '../functions/getFormattedNumber';
-import { estimateFrom24HrRangeApr } from '../functions/fetchAprEst';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { get24hChange } from '../functions/getPoolStats';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
-import { PoolIF } from '../../utils/interfaces/PoolIF';
-import { PoolStatIF } from '../../utils/interfaces/PoolStatIF';
+import { PoolIF, PoolStatIF } from '../../ambient-utils/src/types';
 
 const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
     const {

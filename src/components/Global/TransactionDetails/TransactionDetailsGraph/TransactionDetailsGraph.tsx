@@ -11,13 +11,13 @@ import {
     formatPoolPriceAxis,
 } from '../../../../utils/numbers';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import { fetchCandleSeriesCroc } from '../../../../App/functions/fetchCandleSeries';
+import { getFormattedNumber } from '../../../../ambient-utils/src/dataLayer';
+import { fetchCandleSeriesCroc } from '../../../../ambient-utils/src/api';
 import moment from 'moment';
 import {
     renderCanvasArray,
     setCanvasResolution,
 } from '../../../../pages/Chart/ChartUtils/chartUtils';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {

@@ -12,11 +12,11 @@ import {
     PoolIF,
     TokenIF,
     TransactionIF,
-} from '../../utils/interfaces/exports';
+} from '../../ambient-utils/src/types';
 import matchSearchInput from '../functions/matchSearchInput';
 import { tokenMethodsIF } from './useTokens';
 import { ZERO_ADDRESS } from '../../constants';
-import { tokenListURIs } from '../../utils/data/tokenListURIs';
+import { tokenListURIs } from '../../ambient-utils/src/constants';
 import { PoolContext } from '../../contexts/PoolContext';
 
 export interface sidebarSearchIF {

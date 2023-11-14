@@ -8,12 +8,12 @@ import { favePoolsMethodsIF, useFavePools } from '../App/hooks/useFavePools';
 import { skipConfirmIF, useSkipConfirm } from '../App/hooks/useSkipConfirm';
 import { SlippageMethodsIF, useSlippage } from '../App/hooks/useSlippage';
 import { IS_LOCAL_ENV } from '../constants';
-import { slippage } from '../utils/data/slippage';
+import { slippage } from '../ambient-utils/src/constants';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { setDenomInBase } from '../utils/state/tradeDataSlice';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
-import { getMoneynessRankByAddr } from '../utils/functions/getMoneynessRank';
+import { getMoneynessRankByAddr } from '../ambient-utils/src/dataLayer';
 
 interface UserPreferenceIF {
     favePools: favePoolsMethodsIF;

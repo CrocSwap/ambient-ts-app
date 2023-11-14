@@ -1,9 +1,11 @@
-import { LimitOrderIF } from '../../../../utils/interfaces/exports';
+import { LimitOrderIF } from '../../../../ambient-utils/src/types';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useContext } from 'react';
 import { TokenContext } from '../../../../contexts/TokenContext';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
-import { getLimitPrice } from '../../../../App/functions/getLimitPrice';
+import {
+    getFormattedNumber,
+    getLimitPrice,
+} from '../../../../ambient-utils/src/dataLayer';
 import { FlexContainer } from '../../../../styled/Common';
 import { ItemContainer } from '../../../../styled/Components/Sidebar';
 

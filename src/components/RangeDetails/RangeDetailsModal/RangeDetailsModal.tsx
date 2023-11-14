@@ -1,8 +1,7 @@
 import PriceInfo from '.././PriceInfo/PriceInfo';
 import styles from './RangeDetailsModal.module.css';
 import { useContext, useEffect, useRef, useState } from 'react';
-import printDomToImage from '../../../utils/functions/printDomToImage';
-import { PositionIF } from '../../../utils/interfaces/exports';
+import { PositionIF, PositionServerIF } from '../../../ambient-utils/src/types';
 import RangeDetailsHeader from '.././RangeDetailsHeader/RangeDetailsHeader';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import RangeDetailsSimplify from '.././RangeDetailsSimplify/RangeDetailsSimplify';
@@ -13,12 +12,14 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { GCGO_OVERRIDE_URL } from '../../../constants';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
-import { getPositionData } from '../../../App/functions/getPositionData';
+import {
+    getPositionData,
+    getFormattedNumber,
+    printDomToImage,
+} from '../../../ambient-utils/src/dataLayer';
 import { TokenContext } from '../../../contexts/TokenContext';
 import modalBackground from '../../../assets/images/backgrounds/background.png';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import Modal from '../../Global/Modal/Modal';
 
 interface propsIF {

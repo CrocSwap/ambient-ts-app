@@ -2,7 +2,7 @@
 import { DetailedHTMLProps, HTMLAttributes, MutableRefObject } from 'react';
 import * as d3 from 'd3';
 import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
-import { CandleData } from '../../../App/functions/fetchCandleSeries';
+import { CandleDataIF } from '../../../ambient-utils/src/types';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -26,7 +26,7 @@ declare global {
 
 export const defaultCandleBandwith = 5;
 
-export interface CandleDataChart extends CandleData {
+export interface CandleDataChart extends CandleDataIF {
     isFakeData: boolean;
 }
 export type liquidityChartData = {

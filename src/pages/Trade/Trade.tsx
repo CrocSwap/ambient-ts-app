@@ -24,7 +24,7 @@ import { ChartContext } from '../../contexts/ChartContext';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { TokenContext } from '../../contexts/TokenContext';
-import { CandleData } from '../../App/functions/fetchCandleSeries';
+import { CandleDataIF } from '../../ambient-utils/src/types';
 import { NoChartData } from '../../components/NoChartData/NoChartData';
 import { TradeChartsHeader } from './TradeCharts/TradeChartsHeader/TradeChartsHeader';
 import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
@@ -72,7 +72,7 @@ function Trade() {
 
     const { urlParamMap, updateURL } = useUrlParams(tokens, chainId, provider);
 
-    const [transactionFilter, setTransactionFilter] = useState<CandleData>();
+    const [transactionFilter, setTransactionFilter] = useState<CandleDataIF>();
     const [selectedDate, setSelectedDate] = useState<number | undefined>();
 
     const tradeTableRef = useRef<HTMLDivElement>(null);
@@ -80,7 +80,7 @@ function Trade() {
     const [hasInitialized, setHasInitialized] = useState(false);
 
     const changeState = useCallback(
-        (isOpen: boolean | undefined, candleData: CandleData | undefined) => {
+        (isOpen: boolean | undefined, candleData: CandleDataIF | undefined) => {
             setIsCandleSelected(isOpen);
             setHasInitialized(false);
             setTransactionFilter(candleData);

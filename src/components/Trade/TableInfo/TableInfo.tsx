@@ -4,7 +4,7 @@ import { GridContainer, ScrollContainer } from '../../../styled/Common';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { MainSection } from './TableInfo.styles';
 
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import { getFormattedNumber } from '../../../ambient-utils/src/dataLayer';
 
 import { DetailedBox } from './DetailedBox';
 import { FeaturedBox } from './FeaturedBox';

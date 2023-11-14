@@ -6,7 +6,7 @@ import {
 import { tokenMethodsIF, useTokens } from '../App/hooks/useTokens';
 import { useTokenSearch } from '../App/hooks/useTokenSearch';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
-import { TokenIF } from '../utils/interfaces/TokenIF';
+import { TokenIF } from '../ambient-utils/src/types';
 import { CrocEnvContext } from './CrocEnvContext';
 
 interface TokenContextIF {

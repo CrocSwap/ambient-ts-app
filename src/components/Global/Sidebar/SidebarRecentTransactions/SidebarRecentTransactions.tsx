@@ -7,7 +7,7 @@ import { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 
 // START: Import Local Files
-import { TransactionIF } from '../../../../utils/interfaces/exports';
+import { TransactionIF } from '../../../../ambient-utils/src/types';
 
 // START: Import JSX Components
 import SidebarRecentTransactionsCard from './SidebarRecentTransactionsCard';

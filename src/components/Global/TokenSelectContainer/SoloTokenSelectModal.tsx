@@ -6,7 +6,7 @@ import {
     SetStateAction,
     useContext,
 } from 'react';
-import { TokenIF } from '../../../utils/interfaces/exports';
+import { TokenIF } from '../../../ambient-utils/src/types';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import {
     useAppDispatch,
@@ -22,9 +22,11 @@ import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import Modal from '../Modal/Modal';
-import removeWrappedNative from '../../../utils/functions/removeWrappedNative';
+import {
+    removeWrappedNative,
+    isWethToken,
+} from '../../../ambient-utils/src/dataLayer';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
-import { isWethToken } from '../../../utils/data/stablePairs';
 
 interface propsIF {
     showSoloSelectTokenButtons: boolean;

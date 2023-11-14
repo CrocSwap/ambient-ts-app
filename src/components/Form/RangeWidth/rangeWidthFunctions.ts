@@ -1,5 +1,5 @@
 import { ChangeEvent, Dispatch, SetStateAction } from 'react';
-import truncateDecimals from '../../../utils/data/truncateDecimals';
+import { truncateDecimals } from '../../../ambient-utils/src/dataLayer';
 
 export function handleRangeSlider(
     event: ChangeEvent<HTMLInputElement>,

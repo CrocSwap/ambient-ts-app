@@ -1,13 +1,15 @@
 import styles from './ExchangeCard.module.css';
-import { TokenIF } from '../../../../../utils/interfaces/exports';
+import { TokenIF } from '../../../../../ambient-utils/src/types';
 import { useContext, useEffect, useState } from 'react';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
-import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
-import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
-import uriToHttp from '../../../../../utils/functions/uriToHttp';
+import { TokenPriceFn } from '../../../../../ambient-utils/src/api';
+import {
+    getFormattedNumber,
+    uriToHttp,
+} from '../../../../../ambient-utils/src/dataLayer';
 import TokenIcon from '../../../TokenIcon/TokenIcon';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 

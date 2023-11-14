@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { getLocalStorageItem } from '../../utils/functions/getLocalStorageItem';
+import { getLocalStorageItem } from '../../ambient-utils/src/dataLayer';
 
 export interface sidebarMethodsIF {
     status: SidebarStoredStatus;

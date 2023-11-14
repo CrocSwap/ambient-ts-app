@@ -9,7 +9,7 @@ import TransactionSettingsModal from '../../../Global/TransactionSettingsModal/T
 
 // START: Import Local Files
 import styles from './RepositionHeader.module.css';
-import trimString from '../../../../utils/functions/trimString';
+import { trimString } from '../../../../ambient-utils/src/dataLayer';
 import { useRepoExitPath } from './useRepoExitPath';
 import { setAdvancedMode } from '../../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';

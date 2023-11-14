@@ -4,7 +4,7 @@ import NotificationTable from './NotificationTable/NotificationTable';
 import ActivityIndicator from './ActivityIndicator/ActivityIndicator';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
-import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
+import { getReceiptTxHashes } from '../../../ambient-utils/src/dataLayer';
 
 const NotificationCenter = () => {
     const [showNotificationTable, setShowNotificationTable] =

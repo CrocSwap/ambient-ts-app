@@ -13,7 +13,7 @@ import rabbyLogo from '../../../assets/images/logos/rabby_logo.svg';
 
 import { CircleLoaderFailed } from '../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
 import WaitingConfirmation from '../../../components/Global/WaitingConfirmation/WaitingConfirmation';
-import { checkBlacklist } from '../../../utils/data/blacklist';
+import { checkBlacklist } from '../../../ambient-utils/src/constants';
 import { IS_LOCAL_ENV } from '../../../constants';
 import GateWallet from './GateWallet';
 import { useTermsAgreed } from '../../hooks/useTermsAgreed';

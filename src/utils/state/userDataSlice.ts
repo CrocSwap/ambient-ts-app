@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { TokenIF } from '../interfaces/exports';
+import { TokenIF } from '../../ambient-utils/src/types';
 
 export interface userData {
     isLoggedIn: boolean | undefined;

@@ -6,8 +6,8 @@ import { Dispatch, SetStateAction, useContext, useState } from 'react';
 // START: Import Local Files
 import styles from './InitPoolExtraInfo.module.css';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import { TokenIF } from '../../../ambient-utils/src/types';
+import { getFormattedNumber } from '../../../ambient-utils/src/dataLayer';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 interface InitPriceExtraInfoProps {

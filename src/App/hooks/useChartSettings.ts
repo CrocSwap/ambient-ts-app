@@ -1,6 +1,6 @@
 import { useEffect, useState, Dispatch, SetStateAction, useMemo } from 'react';
 import { LS_KEY_CHART_SETTINGS } from '../../constants';
-import { getLocalStorageItem } from '../../utils/functions/getLocalStorageItem';
+import { getLocalStorageItem } from '../../ambient-utils/src/dataLayer';
 
 // interface for shape of data held in local storage
 interface chartSettingsIF {

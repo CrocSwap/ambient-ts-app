@@ -10,8 +10,7 @@ import * as d3 from 'd3';
 import {
     diffHashSig,
     diffHashSigScaleData,
-} from '../../../utils/functions/diffHashSig';
-
+} from '../../../ambient-utils/src/dataLayer';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { formatAmountWithoutDigit } from '../../../utils/numbers';

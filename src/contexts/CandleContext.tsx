@@ -7,10 +7,8 @@ import {
     useState,
     useContext,
 } from 'react';
-import {
-    CandleData,
-    fetchCandleSeriesHybrid,
-} from '../App/functions/fetchCandleSeries';
+import { fetchCandleSeriesHybrid } from '../ambient-utils/src/api';
+import { CandleDataIF } from '../ambient-utils/src/types';
 import { CandlesByPoolAndDuration } from '../utils/state/graphDataSlice';
 import { candleDomain, candleScale } from '../utils/state/tradeDataSlice';
 import { AppStateContext } from './AppStateContext';
@@ -246,10 +244,11 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         )
             .then((incrCandles) => {
                 if (incrCandles && candleData && !isZoomRequestCanceled) {
-                    const newCandles: CandleData[] = [];
+                    const newCandles: CandleDataIF[] = [];
                     if (incrCandles.candles.length === 0) {
                         candleData.candles.sort(
-                            (a: CandleData, b: CandleData) => b.time - a.time,
+                            (a: CandleDataIF, b: CandleDataIF) =>
+                                b.time - a.time,
                         );
                         setTimeOfEndCandle(
                             candleData.candles[candleData.candles.length - 1]

@@ -20,7 +20,7 @@ import { IS_LOCAL_ENV } from '../../../constants';
 import {
     diffHashSig,
     diffHashSigLiquidity,
-} from '../../../utils/functions/diffHashSig';
+} from '../../../ambient-utils/src/dataLayer';
 import { CandleContext } from '../../../contexts/CandleContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
@@ -29,7 +29,7 @@ import { candleScale } from '../../../utils/state/tradeDataSlice';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import Spinner from '../../../components/Global/Spinner/Spinner';
 import { LiquidityDataLocal } from './TradeCharts';
-import { CandleData } from '../../../App/functions/fetchCandleSeries';
+import { CandleDataIF } from '../../../ambient-utils/src/types';
 import {
     chartItemStates,
     liquidityChartData,
@@ -42,10 +42,10 @@ import { updatesIF } from '../../../utils/hooks/useUrlParams';
 interface propsIF {
     changeState: (
         isOpen: boolean | undefined,
-        candleData: CandleData | undefined,
+        candleData: CandleDataIF | undefined,
     ) => void;
     chartItemStates: chartItemStates;
-    setCurrentData: Dispatch<SetStateAction<CandleData | undefined>>;
+    setCurrentData: Dispatch<SetStateAction<CandleDataIF | undefined>>;
     setCurrentVolumeData: Dispatch<SetStateAction<number | undefined>>;
     selectedDate: number | undefined;
     setSelectedDate: Dispatch<number | undefined>;

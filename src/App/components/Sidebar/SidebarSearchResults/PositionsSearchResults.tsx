@@ -1,4 +1,4 @@
-import { PositionIF } from '../../../../utils/interfaces/exports';
+import { PositionIF } from '../../../../ambient-utils/src/types';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
@@ -8,8 +8,10 @@ import {
     linkGenMethodsIF,
     poolParamsIF,
 } from '../../../../utils/hooks/useLinkGen';
-import { getFormattedNumber } from '../../../functions/getFormattedNumber';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import {
+    getFormattedNumber,
+    getUnicodeCharacter,
+} from '../../../../ambient-utils/src/dataLayer';
 import { FlexContainer, GridContainer, Text } from '../../../../styled/Common';
 import {
     Results,

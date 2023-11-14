@@ -1,16 +1,20 @@
 import React, { createContext, useContext, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAccount } from 'wagmi';
-import { fetchUserRecentChanges } from '../App/functions/fetchUserRecentChanges';
-import { getLimitOrderData } from '../App/functions/getLimitOrderData';
-import { getPositionData } from '../App/functions/getPositionData';
+import { fetchUserRecentChanges } from '../ambient-utils/src/api';
+import {
+    getLimitOrderData,
+    getPositionData,
+} from '../ambient-utils/src/dataLayer';
 import useDebounce from '../App/hooks/useDebounce';
 import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../constants';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
-import { LimitOrderServerIF } from '../utils/interfaces/LimitOrderIF';
-import { PositionServerIF } from '../utils/interfaces/PositionIF';
-import { TokenIF } from '../utils/interfaces/TokenIF';
-import { TransactionIF } from '../utils/interfaces/TransactionIF';
+import {
+    LimitOrderServerIF,
+    PositionServerIF,
+    TokenIF,
+    TransactionIF,
+} from '../ambient-utils/src/types';
 import {
     resetUserGraphData,
     setChangesByUser,

@@ -1,11 +1,13 @@
 import styles from './RangeActionInfo.module.css';
 import Row from '../../Global/Row/Row';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import {
+    getFormattedNumber,
+    uriToHttp,
+} from '../../../ambient-utils/src/dataLayer';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
-import uriToHttp from '../../../utils/functions/uriToHttp';
 import { useContext } from 'react';
 import { TokenContext } from '../../../contexts/TokenContext';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../../ambient-utils/src/types';
 
 interface IHarvestPositionInfoProps {
     baseHarvestNum: number | undefined;

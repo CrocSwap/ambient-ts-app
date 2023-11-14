@@ -1,8 +1,8 @@
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { getDefaultChainId } from '../data/chains';
-import { getDefaultPairForChain } from '../data/defaultTokens';
-import { TokenIF } from '../interfaces/exports';
+import { getDefaultPairForChain } from '../../ambient-utils/src/constants';
+import { getDefaultChainId } from '../../ambient-utils/src/dataLayer';
+import { TokenIF } from '../../ambient-utils/src/types';
 
 export interface targetData {
     name: string;

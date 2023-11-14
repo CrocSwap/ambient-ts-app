@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { PoolContext } from '../../../../contexts/PoolContext';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { getFormattedNumber } from '../../../../ambient-utils/src/dataLayer';
 import TradeConfirmationSkeleton from '../../TradeModules/TradeConfirmationSkeleton';
 import { FlexContainer, Text } from '../../../../styled/Common';
 

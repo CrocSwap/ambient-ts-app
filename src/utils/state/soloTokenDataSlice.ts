@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { goerliETH } from '../data/defaultTokens';
-import { TokenIF } from '../interfaces/exports';
+import { goerliETH } from '../../ambient-utils/src/constants';
+import { TokenIF } from '../../ambient-utils/src/types';
 
 interface soloTokenData {
     token: TokenIF;

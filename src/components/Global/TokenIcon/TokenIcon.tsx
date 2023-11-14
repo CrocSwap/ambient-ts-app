@@ -2,7 +2,7 @@ import { Suspense, memo, useEffect, useState } from 'react';
 import styles from './TokenIcon.module.css';
 import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
 import { IS_LOCAL_ENV } from '../../../constants';
-import { TokenIF } from '../../../utils/interfaces/exports';
+import { TokenIF } from '../../../ambient-utils/src/types';
 import processLogoSrc from './processLogoSrc';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 import { useLocation } from 'react-router-dom';

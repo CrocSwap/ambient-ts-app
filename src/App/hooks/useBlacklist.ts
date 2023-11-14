@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useDisconnect } from 'wagmi';
-import { checkBlacklist } from '../../utils/data/blacklist';
+import { checkBlacklist } from '../../ambient-utils/src/constants';
 
 export function useBlacklist(account: `0x${string}` | undefined): void {
     const { disconnect } = useDisconnect();

@@ -6,7 +6,7 @@ import { useLocation } from 'react-router-dom';
 import {
     diffHashSig,
     diffHashSigScaleData,
-} from '../../../../utils/functions/diffHashSig';
+} from '../../../../ambient-utils/src/dataLayer';
 import {
     crosshair,
     renderCanvasArray,
@@ -16,7 +16,7 @@ import {
 import { CandleContext } from '../../../../contexts/CandleContext';
 import { correctStyleForData, xAxisTick } from './calculateXaxisTicks';
 import moment from 'moment';
-import { CandleData } from '../../../../App/functions/fetchCandleSeries';
+import { CandleDataIF } from '../../../../ambient-utils/src/types';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 interface xAxisIF {
     scaleData: scaleData | undefined;
@@ -33,9 +33,9 @@ interface xAxisIF {
     setXaxisActiveTooltip: React.Dispatch<React.SetStateAction<string>>;
     setCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
     setIsCrDataIndActive: React.Dispatch<React.SetStateAction<boolean>>;
-    unparsedCandleData: CandleData[];
-    firstCandleData: CandleData;
-    lastCandleData: CandleData;
+    unparsedCandleData: CandleDataIF[];
+    firstCandleData: CandleDataIF;
+    lastCandleData: CandleDataIF;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     changeScale: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

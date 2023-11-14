@@ -4,12 +4,12 @@
 import { useContext, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 // import { getPinnedPriceValuesFromTicks } from '../../../../pages/Trade/Range/rangeFunctions';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import { getUnicodeCharacter } from '../../../../ambient-utils/src/dataLayer';
 import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
-import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+import { PositionIF } from '../../../../ambient-utils/src/types';
 // import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 // import DividerDark from '../../../Global/DividerDark/DividerDark';
 import styles from './RepositionPriceInfo.module.css';
@@ -21,9 +21,9 @@ import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContex
 // import { AppStateContext } from '../../../../contexts/AppStateContext';
 // import { PoolContext } from '../../../../contexts/PoolContext';
 
-// import truncateDecimals from '../../../../utils/data/truncateDecimals';
+// import truncateDecimals from '../../../../ambient-utils/src/dataLayer';
 // import makeCurrentPrice from './makeCurrentPrice';
-// import { TokenPairIF } from '../../../../utils/interfaces/exports';
+// import { TokenPairIF } from '../../../../ambient-utils/src/types';
 
 // interface for component props
 // interface IRepositionPriceInfoPropsIF {

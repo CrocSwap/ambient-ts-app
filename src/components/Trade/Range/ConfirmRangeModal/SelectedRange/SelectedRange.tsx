@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, memo, useContext } from 'react';
 import { PoolContext } from '../../../../../contexts/PoolContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
-import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
+import { getFormattedNumber } from '../../../../../ambient-utils/src/dataLayer';
 import { FlexContainer, Text } from '../../../../../styled/Common';
 import { SelectedRangeContainer } from '../../../../../styled/Components/TradeModules';
 

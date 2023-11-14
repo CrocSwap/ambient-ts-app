@@ -1,14 +1,16 @@
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
-import { PositionIF } from '../../utils/interfaces/exports';
-import trimString from '../../utils/functions/trimString';
+import {
+    getChainExplorer,
+    getUnicodeCharacter,
+    trimString,
+    getMoneynessRank,
+    getFormattedNumber,
+} from '../../ambient-utils/src/dataLayer';
+import { PositionIF } from '../../ambient-utils/src/types';
 import { useMemo } from 'react';
-import { getMoneynessRank } from '../functions/getMoneynessRank';
-import { getChainExplorer } from '../data/chains';
 import moment from 'moment';
-import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { getAddress } from 'ethers/lib/utils.js';
 
 export const useProcessRange = (

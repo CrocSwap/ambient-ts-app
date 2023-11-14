@@ -6,10 +6,12 @@ import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import SelectedRange from './SelectedRange/SelectedRange';
 
 // START: Import Local Files
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
-import uriToHttp from '../../../../utils/functions/uriToHttp';
+import {
+    uriToHttp,
+    getUnicodeCharacter,
+} from '../../../../ambient-utils/src/dataLayer';
 import TradeConfirmationSkeleton from '../../TradeModules/TradeConfirmationSkeleton';
 import { FlexContainer, GridContainer, Text } from '../../../../styled/Common';
 import { FeeTierDisplay } from '../../../../styled/Components/TradeModules';

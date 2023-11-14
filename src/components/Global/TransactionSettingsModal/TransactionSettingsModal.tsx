@@ -4,7 +4,7 @@ import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { FlexContainer, Text } from '../../../styled/Common';
 import { SettingsContainer } from '../../../styled/Components/TradeModules';
-import { isStablePair } from '../../../utils/data/stablePairs';
+import { isStablePair } from '../../../ambient-utils/src/dataLayer';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import Button from '../../Form/Button';
 import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationModalControl';

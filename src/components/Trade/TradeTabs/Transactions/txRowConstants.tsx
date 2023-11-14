@@ -5,7 +5,7 @@ import {
     DefaultTooltip,
     TextOnlyTooltip,
 } from '../../../Global/StyledTooltip/StyledTooltip';
-import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
+import { TokenIF, TransactionIF } from '../../../../ambient-utils/src/types';
 import { NavLink } from 'react-router-dom';
 import moment from 'moment';
 import { IS_LOCAL_ENV } from '../../../../constants';

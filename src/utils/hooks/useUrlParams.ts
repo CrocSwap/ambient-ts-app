@@ -7,15 +7,17 @@ import {
     setLimitTick,
     setChainId,
 } from '../state/tradeDataSlice';
-import { TokenIF } from '../interfaces/exports';
 import { ethers } from 'ethers';
-import { fetchContractDetails } from '../../App/functions/fetchContractDetails';
+import { fetchContractDetails } from '../../ambient-utils/src/api';
 import { useProvider, useSwitchNetwork } from 'wagmi';
-import { getDefaultPairForChain } from '../data/defaultTokens';
 import { tokenMethodsIF } from '../../App/hooks/useTokens';
 import { pageNames, linkGenMethodsIF, useLinkGen } from './useLinkGen';
-import validateAddress from '../functions/validateAddress';
-import validateChain from '../functions/validateChain';
+import { TokenIF } from '../../ambient-utils/src/types';
+import { getDefaultPairForChain } from '../../ambient-utils/src/constants';
+import {
+    validateAddress,
+    validateChain,
+} from '../../ambient-utils/src/dataLayer';
 
 /* Hook to process GET-request style parameters passed to the URL. This includes
  * chain, tokens, and context-specific tick parameters. All action is intermediated

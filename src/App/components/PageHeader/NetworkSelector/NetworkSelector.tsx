@@ -1,7 +1,7 @@
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownMenu2';
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
-import { getSupportedChainIds } from '../../../../utils/data/chains';
+import { getSupportedChainIds } from '../../../../ambient-utils/src/dataLayer';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import {
@@ -10,7 +10,7 @@ import {
     NetworkItem,
     DropdownMenuContainer,
 } from '../../../../styled/Components/Header';
-import { supportedNetworks } from '../../../../utils/networks';
+import { supportedNetworks } from '../../../../ambient-utils/src/constants';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { useSearchParams } from 'react-router-dom';
 import {

@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom';
 import { AnimateSharedLayout } from 'framer-motion';
 import Account from './Account/Account';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
-import trimString from '../../../utils/functions/trimString';
 import logo from '../../../assets/images/logos/logo_mark.svg';
 import mainLogo from '../../../assets/images/logos/large.svg';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
@@ -28,8 +27,11 @@ import {
     resetUserAddresses,
 } from '../../../utils/state/userDataSlice';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
-import { getFormattedNumber } from '../../functions/getFormattedNumber';
-import chainNumToString from '../../functions/chainNumToString';
+import {
+    getFormattedNumber,
+    chainNumToString,
+    trimString,
+} from '../../../ambient-utils/src/dataLayer';
 import {
     linkGenMethodsIF,
     swapParamsIF,

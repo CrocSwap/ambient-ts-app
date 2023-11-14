@@ -1,13 +1,13 @@
 import { ChainSpec, CrocEnv, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
-import { GCGO_OVERRIDE_URL } from '../../constants';
-import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { GCGO_OVERRIDE_URL } from '../ambient-utils/src/constants';
+import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
 import {
     LimitOrderServerIF,
     PositionIF,
     PositionServerIF,
     TokenIF,
-} from '../../ambient-utils/src/types';
+} from '../ambient-utils/src/types';
 import {
     setChangesByPool,
     setDataLoadingStatus,
@@ -18,27 +18,27 @@ import {
     setPositionsByPool,
     setUserLimitOrdersByPool,
     setUserPositionsByPool,
-} from '../../utils/state/graphDataSlice';
+} from '../utils/state/graphDataSlice';
 import {
     setAdvancedHighTick,
     setAdvancedLowTick,
     setAdvancedMode,
     setLiquidityFee,
-} from '../../utils/state/tradeDataSlice';
+} from '../utils/state/tradeDataSlice';
 import {
     TokenPriceFn,
     FetchAddrFn,
     FetchContractDetailsFn,
     fetchPoolRecentChanges,
     fetchPoolLiquidity,
-} from '../../ambient-utils/src/api';
+} from '../ambient-utils/src/api';
 import {
     SpotPriceFn,
     getLimitOrderData,
     getPositionData,
     getLiquidityFee,
-} from '../../ambient-utils/src/dataLayer';
-import useDebounce from './useDebounce';
+} from '../ambient-utils/src/dataLayer';
+import useDebounce from '../App/hooks/useDebounce';
 import { Provider } from '@ethersproject/providers';
 
 interface PoolParamsHookIF {

@@ -1,6 +1,9 @@
-import { TransactionIF } from '../../../../utils/interfaces/exports';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
-import { EntityType, getTxType } from '../../../../App/functions/getTxType';
+import { TransactionIF } from '../../../../ambient-utils/src/types';
+import {
+    getFormattedNumber,
+    EntityType,
+    getTxType,
+} from '../../../../ambient-utils/src/dataLayer';
 import { ItemContainer } from '../../../../styled/Components/Sidebar';
 import { FlexContainer } from '../../../../styled/Common';
 

@@ -1,6 +1,6 @@
 import { memo, useContext } from 'react';
-import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { getFormattedNumber } from '../../ambient-utils/src/dataLayer';
+import { TokenIF } from '../../ambient-utils/src/types';
 import { formatTokenInput } from '../../utils/numbers';
 import TokenInputQuantity from './TokenInputQuantity';
 import { WalletBalanceSubinfo } from './WalletBalanceSubinfo';

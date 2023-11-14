@@ -6,10 +6,12 @@ import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
 import { FiExternalLink } from 'react-icons/fi';
 import { getPinnedPriceValuesFromTicks } from '../../../../../pages/Trade/Range/rangeFunctions';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
-import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 import { useAccount } from 'wagmi';
-import trimString from '../../../../../utils/functions/trimString';
+import {
+    trimString,
+    getUnicodeCharacter,
+} from '../../../../../ambient-utils/src/dataLayer';
 import {
     RangeRow,
     RowItem,

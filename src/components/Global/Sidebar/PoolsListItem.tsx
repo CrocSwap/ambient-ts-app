@@ -1,5 +1,5 @@
-import { PoolIF } from '../../../utils/interfaces/exports';
-import { PoolStatsFn } from '../../../App/functions/getPoolStats';
+import { PoolIF } from '../../../ambient-utils/src/types';
+import { PoolStatsFn } from '../../../ambient-utils/src/dataLayer';
 import { Link, useLocation } from 'react-router-dom';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { usePoolStats } from '../../../App/hooks/usePoolStats';
@@ -11,7 +11,7 @@ import {
     linkGenMethodsIF,
     pageNames,
 } from '../../../utils/hooks/useLinkGen';
-import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
+import { TokenPriceFn } from '../../../ambient-utils/src/api';
 import { ItemContainer } from '../../../styled/Components/Sidebar';
 import { FlexContainer } from '../../../styled/Common';
 

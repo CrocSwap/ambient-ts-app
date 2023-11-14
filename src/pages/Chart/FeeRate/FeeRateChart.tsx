@@ -4,15 +4,15 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import '../Chart.css';
 import { scaleData, setCanvasResolution } from '../ChartUtils/chartUtils';
-import { CandleData } from '../../../App/functions/fetchCandleSeries';
+import { CandleDataIF } from '../../../ambient-utils/src/types';
 import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
 import {
     diffHashSig,
     diffHashSigScaleData,
-} from '../../../utils/functions/diffHashSig';
+} from '../../../ambient-utils/src/dataLayer';
 
 interface FreeRateData {
-    feeData: Array<CandleData>;
+    feeData: Array<CandleDataIF>;
     period: number;
     subChartValues: any;
     crosshairForSubChart: any;

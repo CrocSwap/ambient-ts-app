@@ -3,7 +3,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { useLocation } from 'react-router-dom';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../../ambient-utils/src/types';
 import { getPinnedPriceValuesFromTicks } from '../../Trade/Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { RangeContext } from '../../../contexts/RangeContext';

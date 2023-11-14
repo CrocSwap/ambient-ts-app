@@ -1,14 +1,15 @@
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { CgProfile } from 'react-icons/cg';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-import { getChainExplorer } from '../../../../../utils/data/chains';
+import {
+    getChainExplorer,
+    getFormattedNumber,
+} from '../../../../../ambient-utils/src/dataLayer';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
-import { TokenIF } from '../../../../../utils/interfaces/exports';
+import { TokenIF } from '../../../../../ambient-utils/src/types';
 import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
-
-import { getFormattedNumber } from '../../../../functions/getFormattedNumber';
 import { LogoutButton } from '../../../../../components/Global/LogoutButton/LogoutButton';
 import {
     NameDisplay,
@@ -27,10 +28,12 @@ import { FlexContainer } from '../../../../../styled/Common';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { BigNumber } from 'ethers';
 import { toDisplayQty } from '@crocswap-libs/sdk';
-import { ethereumMainnet } from '../../../../../utils/networks/ethereumMainnet';
-import { mainnetUSDC } from '../../../../../utils/data/defaultTokens';
+import {
+    ethereumMainnet,
+    supportedNetworks,
+    mainnetUSDC,
+} from '../../../../../ambient-utils/src/constants';
 import IconWithTooltip from '../../../../../components/Global/IconWithTooltip/IconWithTooltip';
-import { supportedNetworks } from '../../../../../utils/networks';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -63,8 +66,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
-    const defaultPair: [TokenIF, TokenIF] =
-        supportedNetworks[chainId].defaultPair;
+    const defaultPair = supportedNetworks[chainId].defaultPair;
 
     const tokenBalances: TokenIF[] | undefined = useAppSelector(
         (state) => state.userData.tokenBalances,

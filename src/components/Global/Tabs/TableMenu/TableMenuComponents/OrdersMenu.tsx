@@ -10,7 +10,7 @@ import OrderDetailsModal from '../../../../OrderDetails/OrderDetailsModal/OrderD
 import LimitActionModal from '../../../../LimitActionModal/LimitActionModal';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
-import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
+import { LimitOrderIF } from '../../../../../ambient-utils/src/types';
 import {
     useAppDispatch,
     useAppSelector,

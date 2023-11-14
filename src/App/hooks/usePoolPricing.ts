@@ -7,8 +7,7 @@ import {
     setPoolPriceNonDisplay,
     setPrimaryQuantityRange,
 } from '../../utils/state/tradeDataSlice';
-import { get24hChange } from '../functions/getPoolStats';
-import { SpotPriceFn } from '../functions/querySpotPrice';
+import { get24hChange, SpotPriceFn } from '../../ambient-utils/src/dataLayer';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 interface PoolPricingPropsIF {

@@ -11,12 +11,12 @@ import {
 import {
     diffHashSig,
     diffHashSigScaleData,
-} from '../../../utils/functions/diffHashSig';
-import { CandleData } from '../../../App/functions/fetchCandleSeries';
+} from '../../../ambient-utils/src/dataLayer';
+import { CandleDataIF } from '../../../ambient-utils/src/types';
 import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
 
 interface TvlData {
-    tvlData: Array<CandleData>;
+    tvlData: Array<CandleDataIF>;
     period: number;
     subChartValues: any;
     crosshairForSubChart: any;
@@ -33,8 +33,8 @@ interface TvlData {
     xAxisActiveTooltip: string;
     zoomBase: any;
     mainZoom: any;
-    firstCandleData: CandleData;
-    lastCandleData: CandleData;
+    firstCandleData: CandleDataIF;
+    lastCandleData: CandleDataIF;
     isChartZoom: boolean;
     setIsChartZoom: React.Dispatch<React.SetStateAction<boolean>>;
 }

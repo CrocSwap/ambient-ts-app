@@ -4,7 +4,7 @@
     "lib": [
       "dom",
       "dom.iterable",
-      "esnext"
+      "esnext",
     ],
     "allowJs": true,
     "skipLibCheck": true,
@@ -23,5 +23,11 @@
   },
   "include": [
     "src"
-  ]
+  ],
+  "paths": {
+    "@covalenthq/client-sdk": [
+      "./node_modules/@covalenthq/client-sdk" // Path to the package in the parent's node_modules
+    ],
+    // Add other path mappings here if necessary
+  }
 }

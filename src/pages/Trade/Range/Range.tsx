@@ -1,6 +1,5 @@
 import { capitalConcFactor, concDepositSkew } from '@crocswap-libs/sdk';
 import { memo, useContext, useEffect, useMemo, useState } from 'react';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import Button from '../../../components/Form/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
 
@@ -21,15 +20,18 @@ import { RangeContext } from '../../../contexts/RangeContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
-import { isStablePair } from '../../../utils/data/stablePairs';
-import truncateDecimals from '../../../utils/data/truncateDecimals';
-import { diffHashSig } from '../../../utils/functions/diffHashSig';
-import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
+import {
+    getFormattedNumber,
+    getUnicodeCharacter,
+    diffHashSig,
+    isStablePair,
+    truncateDecimals,
+} from '../../../ambient-utils/src/dataLayer';
 import {
     useAppDispatch,
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
-import { PositionIF } from '../../../utils/interfaces/PositionIF';
+import { PositionIF } from '../../../ambient-utils/src/types';
 import {
     setAdvancedHighTick,
     setAdvancedLowTick,

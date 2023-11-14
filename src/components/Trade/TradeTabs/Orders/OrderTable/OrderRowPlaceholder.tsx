@@ -5,11 +5,13 @@ import { Chip } from '../../../../Form/Chip';
 import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus';
 import { FiExternalLink } from 'react-icons/fi';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
-import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
-import trimString from '../../../../../utils/functions/trimString';
 import { concPosSlot, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import { useAccount } from 'wagmi';
-import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
+import {
+    getFormattedNumber,
+    getUnicodeCharacter,
+    trimString,
+} from '../../../../../ambient-utils/src/dataLayer';
 import {
     OrderRow,
     RowItem,

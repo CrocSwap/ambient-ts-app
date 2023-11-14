@@ -1,6 +1,6 @@
 // START: Import Local Files
 import styles from './RangePriceInfo.module.css';
-// import truncateDecimals from '../../../../utils/data/truncateDecimals';
+// import truncateDecimals from '../../../../ambient-utils/src/dataLayer';
 // import makeCurrentPrice from './makeCurrentPrice';
 import {
     // useAppDispatch,
@@ -9,12 +9,14 @@ import {
 // import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import { memo, useContext, useEffect, useMemo, useState } from 'react';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
-import { isStableToken } from '../../../../utils/data/stablePairs';
+import {
+    isStableToken,
+    getFormattedNumber,
+} from '../../../../ambient-utils/src/dataLayer';
 
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 // interface for component props
 interface propsIF {

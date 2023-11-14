@@ -1,6 +1,9 @@
 /* eslint-disable no-irregular-whitespace */
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import { TransactionIF } from '../../../../utils/interfaces/exports';
+import {
+    TransactionIF,
+    CandleDataIF,
+} from '../../../../ambient-utils/src/types';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { Dispatch, useState, useEffect, useRef, useContext, memo } from 'react';
 
@@ -15,10 +18,9 @@ import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropd
 import Spinner from '../../../Global/Spinner/Spinner';
 import { CandleContext } from '../../../../contexts/CandleContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
-import { CandleData } from '../../../../App/functions/fetchCandleSeries';
+import { fetchPoolRecentChanges } from '../../../../ambient-utils/src/api';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { fetchPoolRecentChanges } from '../../../../App/functions/fetchPoolRecentChanges';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { IS_LOCAL_ENV } from '../../../../constants';
@@ -34,7 +36,7 @@ import { FlexContainer, Text } from '../../../../styled/Common';
 import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 
 interface propsIF {
-    filter?: CandleData | undefined;
+    filter?: CandleDataIF | undefined;
     activeAccountTransactionData?: TransactionIF[];
     connectedAccountActive?: boolean;
     isAccountView: boolean; // when viewing from /account: fullscreen and not paginated

@@ -10,7 +10,7 @@ import { IS_LOCAL_ENV } from '../../../../constants';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import removeLeadingZeros from '../../../../utils/functions/removeLeadingZeros';
+import { removeLeadingZeros } from '../../../../ambient-utils/src/dataLayer';
 import { useSimulatedIsPoolInitialized } from '../../../../App/hooks/useSimulatedIsPoolInitialized';
 import { updatesIF } from '../../../../utils/hooks/useUrlParams';
 import { FlexContainer } from '../../../../styled/Common';

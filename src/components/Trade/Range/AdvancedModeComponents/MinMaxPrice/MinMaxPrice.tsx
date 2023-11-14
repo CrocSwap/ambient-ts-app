@@ -16,7 +16,7 @@ import {
 } from '../../../../../utils/state/tradeDataSlice';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
-import { exponentialNumRegEx } from '../../../../../utils/regex/exports';
+import { exponentialNumRegEx } from '../../../../../ambient-utils/src/dataLayer';
 import { FlexContainer, Text } from '../../../../../styled/Common';
 
 interface propsIF {

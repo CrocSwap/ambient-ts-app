@@ -1,5 +1,5 @@
 import { useEffect, useRef, useContext, memo } from 'react';
-import { PositionIF } from '../../../../../utils/interfaces/exports';
+import { PositionIF } from '../../../../../ambient-utils/src/types';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
 import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';

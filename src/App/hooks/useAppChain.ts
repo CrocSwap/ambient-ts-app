@@ -8,14 +8,17 @@ import {
 } from 'react';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { getDefaultChainId, validateChainId } from '../../utils/data/chains';
 import { useNetwork, useSwitchNetwork } from 'wagmi';
 import { setChainId } from '../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
-import chainNumToString from '../functions/chainNumToString';
+import {
+    getDefaultChainId,
+    validateChainId,
+    chainNumToString,
+} from '../../ambient-utils/src/dataLayer';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
-import { NetworkIF } from '../../utils/interfaces/exports';
-import { supportedNetworks } from '../../utils/networks/index';
+import { NetworkIF } from '../../ambient-utils/src/types';
+import { supportedNetworks } from '../../ambient-utils/src/constants';
 import { useSearchParams } from 'react-router-dom';
 
 export const useAppChain = (): {

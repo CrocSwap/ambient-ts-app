@@ -7,7 +7,7 @@ import { BsFillChatDotsFill } from 'react-icons/bs';
 import { memo } from 'react';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
-import chainNumToString from '../../../../App/functions/chainNumToString';
+import { chainNumToString } from '../../../../ambient-utils/src/dataLayer';
 
 function SidebarFooter() {
     const location = useLocation();

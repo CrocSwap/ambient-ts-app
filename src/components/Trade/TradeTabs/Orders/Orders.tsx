@@ -5,7 +5,7 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
 import OrderRow from './OrderTable/OrderRow';
 import { useSortedLimits } from '../useSortedLimits';
-import { LimitOrderIF } from '../../../../utils/interfaces/exports';
+import { LimitOrderIF } from '../../../../ambient-utils/src/types';
 import NoTableData from '../NoTableData/NoTableData';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';

@@ -2,14 +2,14 @@ import { useEffect, useRef, useState } from 'react';
 
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { CandleData } from '../../../App/functions/fetchCandleSeries';
+import { CandleDataIF } from '../../../ambient-utils/src/types';
 import { scaleData, setCanvasResolution } from '../ChartUtils/chartUtils';
 
 interface propsIF {
     scaleData: scaleData | undefined;
     selectedDate: number | undefined;
     denomInBase: boolean;
-    volumeData: Array<CandleData>;
+    volumeData: Array<CandleDataIF>;
     showVolume: boolean;
 }
 
@@ -28,8 +28,10 @@ export default function VolumeBarCanvas(props: propsIF) {
                 .autoBandwidth(d3fc.seriesCanvasBar())
                 .xScale(scaleData?.xScale)
                 .yScale(scaleData?.volumeScale)
-                .crossValue((d: CandleData) => d.time * 1000)
-                .mainValue((d: CandleData) => (d.volumeUSD ? d.volumeUSD : 0));
+                .crossValue((d: CandleDataIF) => d.time * 1000)
+                .mainValue((d: CandleDataIF) =>
+                    d.volumeUSD ? d.volumeUSD : 0,
+                );
 
             setBarSeries(() => canvasBarChart);
         }
@@ -38,7 +40,7 @@ export default function VolumeBarCanvas(props: propsIF) {
     useEffect(() => {
         if (barSeries) {
             barSeries.decorate(
-                (context: CanvasRenderingContext2D, d: CandleData) => {
+                (context: CanvasRenderingContext2D, d: CandleDataIF) => {
                     const close = denomInBase
                         ? d.invPriceCloseExclMEVDecimalCorrected
                         : d.priceCloseExclMEVDecimalCorrected;

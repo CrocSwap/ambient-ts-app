@@ -4,7 +4,7 @@ import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuCompone
 import TransactionDetailsModal from '../../../../Global/TransactionDetails/TransactionDetailsModal';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
-import { TransactionIF } from '../../../../../utils/interfaces/exports';
+import { TransactionIF } from '../../../../../ambient-utils/src/types';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { txRowConstants } from '../txRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';

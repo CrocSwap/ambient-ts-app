@@ -5,8 +5,8 @@ import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 import OpenOrderStatus from '../../Global/OpenOrderStatus/OpenOrderStatus';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import styles from './LimitActionTokenHeader.module.css';
-import { TokenIF } from '../../../utils/interfaces/exports';
-import uriToHttp from '../../../utils/functions/uriToHttp';
+import { TokenIF } from '../../../ambient-utils/src/types';
+import { uriToHttp } from '../../../ambient-utils/src/dataLayer';
 
 interface propsIF {
     isOrderFilled: boolean;

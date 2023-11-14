@@ -2,12 +2,12 @@ import styles from './CurrentDataInfo.module.css';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import { Dispatch, memo, SetStateAction } from 'react';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { CandleData } from '../../../../App/functions/fetchCandleSeries';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { CandleDataIF } from '../../../../ambient-utils/src/types';
+import { getFormattedNumber } from '../../../../ambient-utils/src/dataLayer';
 
 interface CurrentDataInfoPropsIF {
     showTooltip: boolean;
-    currentData: CandleData | undefined;
+    currentData: CandleDataIF | undefined;
     currentVolumeData: number | undefined;
     showLatest: boolean;
     setLatest: Dispatch<SetStateAction<boolean>>;

@@ -1,10 +1,12 @@
 import styles from './TransactionDetailsModal.module.css';
 import { useState, useRef, useContext, useEffect } from 'react';
-import printDomToImage from '../../../utils/functions/printDomToImage';
 import TransactionDetailsHeader from './TransactionDetailsHeader/TransactionDetailsHeader';
 import TransactionDetailsPriceInfo from './TransactionDetailsPriceInfo/TransactionDetailsPriceInfo';
 import TransactionDetailsGraph from './TransactionDetailsGraph/TransactionDetailsGraph';
-import { TransactionIF } from '../../../utils/interfaces/exports';
+import {
+    TransactionIF,
+    PositionServerIF,
+} from '../../../ambient-utils/src/types';
 import TransactionDetailsSimplify from './TransactionDetailsSimplify/TransactionDetailsSimplify';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
@@ -12,8 +14,10 @@ import modalBackground from '../../../assets/images/backgrounds/background.png';
 import { GCGO_OVERRIDE_URL } from '../../../constants';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
-import { getPositionData } from '../../../App/functions/getPositionData';
+import {
+    getPositionData,
+    printDomToImage,
+} from '../../../ambient-utils/src/dataLayer';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import Modal from '../Modal/Modal';

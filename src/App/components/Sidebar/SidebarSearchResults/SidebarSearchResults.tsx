@@ -2,10 +2,10 @@ import PoolsSearchResults from './PoolsSearchResults/PoolsSearchResults';
 import PositionsSearchResults from './PositionsSearchResults';
 import OrdersSearchResults from './OrdersSearchResults';
 import TxSearchResults from './TxSearchResults/TxSearchResults';
-import { PoolStatsFn } from '../../../functions/getPoolStats';
+import { PoolStatsFn } from '../../../../ambient-utils/src/dataLayer';
+import { TokenPriceFn } from '../../../../ambient-utils/src/api';
 import { sidebarSearchIF } from '../../../hooks/useSidebarSearch';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { TokenPriceFn } from '../../../functions/fetchTokenPrice';
 import { SearchResultsContainer } from '../../../../styled/Components/Sidebar';
 import { Text } from '../../../../styled/Common';
 

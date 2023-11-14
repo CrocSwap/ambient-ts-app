@@ -1,8 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { CandleData } from '../../App/functions/fetchCandleSeries';
-import { LiquidityDataIF } from '../../App/functions/fetchPoolLiquidity';
 import { IS_LOCAL_ENV } from '../../constants';
-import { LimitOrderIF, PositionIF, TransactionIF } from '../interfaces/exports';
+import {
+    LimitOrderIF,
+    PositionIF,
+    TransactionIF,
+    CandleDataIF,
+    LiquidityDataIF,
+} from '../../ambient-utils/src/types';
 
 export interface graphData {
     lastBlock: number;
@@ -74,7 +78,7 @@ export interface CandlesByPoolAndDuration {
         chainId: string;
     };
     duration: number;
-    candles: Array<CandleData>;
+    candles: Array<CandleDataIF>;
 }
 
 export interface PositionsByUser {

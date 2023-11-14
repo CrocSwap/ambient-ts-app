@@ -10,14 +10,14 @@ import Button from '../../components/Form/Button';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 
 // START: Import Other Local Files
-import { TokenIF } from '../../utils/interfaces/exports';
-import { fetchEnsAddress } from '../../App/functions/fetchAddress';
+import { TokenIF } from '../../ambient-utils/src/types';
+import { fetchEnsAddress } from '../../ambient-utils/src/api';
 import { Navigate, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { setResolvedAddressRedux } from '../../utils/state/userDataSlice';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { diffHashSig } from '../../utils/functions/diffHashSig';
+import { diffHashSig } from '../../ambient-utils/src/dataLayer';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { TokenContext } from '../../contexts/TokenContext';

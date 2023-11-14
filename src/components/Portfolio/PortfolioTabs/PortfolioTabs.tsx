@@ -15,29 +15,31 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
-import { getPositionData } from '../../../App/functions/getPositionData';
+import {
+    getPositionData,
+    getLimitOrderData,
+} from '../../../ambient-utils/src/dataLayer';
 import {
     LimitOrderIF,
     PositionIF,
     TokenIF,
     TransactionIF,
-} from '../../../utils/interfaces/exports';
+    PositionServerIF,
+    LimitOrderServerIF,
+} from '../../../ambient-utils/src/types';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
 import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
 import { setDataLoadingStatus } from '../../../utils/state/graphDataSlice';
-import { getLimitOrderData } from '../../../App/functions/getLimitOrderData';
-import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
+import { fetchUserRecentChanges } from '../../../ambient-utils/src/api';
 import Orders from '../../Trade/TradeTabs/Orders/Orders';
 import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
 import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
 import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
-import { LimitOrderServerIF } from '../../../utils/interfaces/LimitOrderIF';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { PortfolioTabsPortfolioTabsContainer } from '../../../styled/Components/Portfolio';

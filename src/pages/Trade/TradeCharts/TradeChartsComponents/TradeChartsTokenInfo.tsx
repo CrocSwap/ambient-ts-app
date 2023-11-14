@@ -4,7 +4,6 @@ import {
     useAppDispatch,
 } from '../../../../utils/hooks/reduxToolkit';
 import { memo, useContext } from 'react';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { IS_LOCAL_ENV } from '../../../../constants';
@@ -12,8 +11,11 @@ import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContex
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
-import { TokenIF } from '../../../../utils/interfaces/exports';
+import {
+    getFormattedNumber,
+    getUnicodeCharacter,
+} from '../../../../ambient-utils/src/dataLayer';
+import { TokenIF } from '../../../../ambient-utils/src/types';
 import { FlexContainer } from '../../../../styled/Common';
 import { HeaderButtons, HeaderText } from '../../../../styled/Components/Chart';
 

@@ -7,7 +7,7 @@ import React, {
     useState,
 } from 'react';
 import { useAccount } from 'wagmi';
-import { estimateFrom24HrAmbientApr } from '../App/functions/fetchAprEst';
+import { estimateFrom24HrAmbientApr } from '../ambient-utils/src/api';
 import { usePoolPricing } from '../App/hooks/usePoolPricing';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { AppStateContext } from './AppStateContext';
@@ -16,7 +16,7 @@ import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
 import { usePoolList } from '../App/hooks/usePoolList';
-import { PoolIF, PoolStatIF } from '../utils/interfaces/exports';
+import { PoolIF, PoolStatIF } from '../ambient-utils/src/types';
 import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
 
 interface PoolContextIF {

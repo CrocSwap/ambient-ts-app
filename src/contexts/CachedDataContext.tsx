@@ -2,28 +2,22 @@ import React, { createContext } from 'react';
 import {
     FetchAddrFn,
     memoizeFetchEnsAddress,
-} from '../App/functions/fetchAddress';
-import {
     FetchContractDetailsFn,
     memoizeFetchContractDetails,
-} from '../App/functions/fetchContractDetails';
-import {
     TokenBalancesQueryFn,
     memoizeFetchTokenBalances,
-} from '../App/functions/fetchTokenBalances';
-import {
     TokenPriceFn,
     memoizeTokenPrice,
-} from '../App/functions/fetchTokenPrice';
-import { PoolStatsFn, memoizePoolStats } from '../App/functions/getPoolStats';
-import {
-    SpotPriceFn,
-    memoizeQuerySpotPrice,
-} from '../App/functions/querySpotPrice';
-import {
     FetchBlockTimeFn,
     memoizeFetchBlockTime,
-} from '../App/functions/fetchBlockTime';
+} from '../ambient-utils/src/api';
+
+import {
+    PoolStatsFn,
+    memoizePoolStats,
+    SpotPriceFn,
+    memoizeQuerySpotPrice,
+} from '../ambient-utils/src/dataLayer';
 
 interface CachedDataIF {
     cachedFetchTokenBalances: TokenBalancesQueryFn;

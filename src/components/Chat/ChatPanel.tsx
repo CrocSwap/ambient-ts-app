@@ -6,14 +6,14 @@ import Room from './MessagePanel/Room/Room';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
 import useChatSocket from './Service/useChatSocket';
-import { PoolIF } from '../../utils/interfaces/exports';
+import { PoolIF } from '../../ambient-utils/src/types';
 import useChatApi from './Service/ChatApi';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { BsChatLeftFill } from 'react-icons/bs';
 import { useAccount, useEnsName } from 'wagmi';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import FullChat from './FullChat/FullChat';
-import trimString from '../../utils/functions/trimString';
+import { trimString } from '../../ambient-utils/src/dataLayer';
 import NotFound from '../../pages/NotFound/NotFound';
 import { AppStateContext } from '../../contexts/AppStateContext';
 

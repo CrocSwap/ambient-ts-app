@@ -5,7 +5,7 @@
 
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSwitchNetwork } from 'wagmi';
-import { getSupportedChainIds } from '../../../../utils/data/chains';
+import { getSupportedChainIds } from '../../../../ambient-utils/src/dataLayer';
 import NetworkButton from './NetworkButton';
 
 // interface NetworkButtonsPropsIF {

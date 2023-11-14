@@ -6,7 +6,7 @@ import SelectedRange from '../../components/Trade/Range/ConfirmRangeModal/Select
 import { FlexContainer, GridContainer, Text } from '../../styled/Common';
 
 import { FeaturedBox } from '../../components/Trade/TableInfo/FeaturedBox';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../ambient-utils/src/types';
 
 const Wrapper = styled.div`
     width: 100%;

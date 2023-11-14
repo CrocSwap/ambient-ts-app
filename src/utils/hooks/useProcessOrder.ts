@@ -1,9 +1,16 @@
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { useState, useEffect, useMemo } from 'react';
-import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
-import trimString from '../../utils/functions/trimString';
-import { LimitOrderIF } from '../interfaces/exports';
-import { getMoneynessRank } from '../functions/getMoneynessRank';
+import {
+    getChainExplorer,
+    getUnicodeCharacter,
+    trimString,
+    getMoneynessRank,
+    getElapsedTime,
+    diffHashSig,
+    getFormattedNumber,
+    uriToHttp,
+} from '../../ambient-utils/src/dataLayer';
+import { LimitOrderIF } from '../../ambient-utils/src/types';
 
 import {
     concPosSlot,
@@ -14,11 +21,6 @@ import {
 
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import moment from 'moment';
-import { getChainExplorer } from '../data/chains';
-import { getElapsedTime } from '../../App/functions/getElapsedTime';
-import { diffHashSig } from '../functions/diffHashSig';
-import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
-import uriToHttp from '../functions/uriToHttp';
 import { getAddress } from 'ethers/lib/utils.js';
 
 export const useProcessOrder = (

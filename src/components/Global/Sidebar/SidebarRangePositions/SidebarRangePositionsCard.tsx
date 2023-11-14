@@ -1,8 +1,10 @@
-import { PositionIF } from '../../../../utils/interfaces/exports';
+import { PositionIF } from '../../../../ambient-utils/src/types';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
-import { getSymbols } from '../../../../App/functions/getSymbols';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import {
+    getFormattedNumber,
+    getSymbols,
+    getUnicodeCharacter,
+} from '../../../../ambient-utils/src/dataLayer';
 import { RangeItemContainer } from '../../../../styled/Components/Sidebar';
 import { FlexContainer } from '../../../../styled/Common';
 import { Status } from '../../../../styled/Components/Range';

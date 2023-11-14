@@ -1,12 +1,14 @@
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
-import trimString from '../../utils/functions/trimString';
-import { getMoneynessRank } from '../functions/getMoneynessRank';
-import { TransactionIF } from '../../utils/interfaces/exports';
-import { getChainExplorer } from '../data/chains';
+import {
+    getChainExplorer,
+    getUnicodeCharacter,
+    trimString,
+    getMoneynessRank,
+    getElapsedTime,
+    getFormattedNumber,
+} from '../../ambient-utils/src/dataLayer';
+import { TransactionIF } from '../../ambient-utils/src/types';
 import moment from 'moment';
-import { getElapsedTime } from '../../App/functions/getElapsedTime';
-import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { getAddress } from 'ethers/lib/utils.js';
 import {
     toDisplayPrice,

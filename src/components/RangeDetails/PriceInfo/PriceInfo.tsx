@@ -4,7 +4,7 @@ import Apy from '../../Global/Tabs/Apy/Apy';
 import DividerDark from '../../Global/DividerDark/DividerDark';
 import { useLocation } from 'react-router-dom';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
-import { TokenIF } from '../../../utils/interfaces/exports';
+import { TokenIF } from '../../../ambient-utils/src/types';
 import { useContext } from 'react';
 import { TokenContext } from '../../../contexts/TokenContext';
 

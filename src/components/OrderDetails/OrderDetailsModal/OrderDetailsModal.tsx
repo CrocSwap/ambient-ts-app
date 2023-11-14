@@ -4,7 +4,10 @@ import styles from './OrderDetailsModal.module.css';
 import OrderDetailsHeader from '../OrderDetailsHeader/OrderDetailsHeader';
 import PriceInfo from '../PriceInfo/PriceInfo';
 import { useProcessOrder } from '../../../utils/hooks/useProcessOrder';
-import { LimitOrderIF } from '../../../utils/interfaces/exports';
+import {
+    LimitOrderIF,
+    LimitOrderServerIF,
+} from '../../../ambient-utils/src/types';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import OrderDetailsSimplify from '../OrderDetailsSimplify/OrderDetailsSimplify';
@@ -12,15 +15,16 @@ import TransactionDetailsGraph from '../../Global/TransactionDetails/Transaction
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import { LimitOrderServerIF } from '../../../utils/interfaces/LimitOrderIF';
-import { getLimitOrderData } from '../../../App/functions/getLimitOrderData';
+import {
+    getLimitOrderData,
+    getFormattedNumber,
+    printDomToImage,
+} from '../../../ambient-utils/src/dataLayer';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import modalBackground from '../../../assets/images/backgrounds/background.png';
-import printDomToImage from '../../../utils/functions/printDomToImage';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import Modal from '../../Global/Modal/Modal';
 
 interface propsIF {

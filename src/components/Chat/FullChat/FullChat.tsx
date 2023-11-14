@@ -16,12 +16,12 @@ import { AiOutlineSound } from 'react-icons/ai';
 import { IoOptions, IoNotificationsOutline } from 'react-icons/io5';
 import { Link, useParams } from 'react-router-dom';
 import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
-import { PoolIF } from '../../../utils/interfaces/exports';
+import { PoolIF } from '../../../ambient-utils/src/types';
 import { useMediaQuery } from '@material-ui/core';
-import { defaultTokens } from '../../../utils/data/defaultTokens';
+import { defaultTokens } from '../../../ambient-utils/src/constants';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import uriToHttp from '../../../utils/functions/uriToHttp';
+import { uriToHttp } from '../../../ambient-utils/src/dataLayer';
 
 interface FullChatPropsIF {
     messageList: JSX.Element;

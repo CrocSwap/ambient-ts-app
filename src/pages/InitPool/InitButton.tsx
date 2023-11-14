@@ -1,7 +1,7 @@
 import { useContext, useMemo } from 'react';
 import { useApprove } from '../../App/functions/approve';
 import Button from '../../components/Form/Button';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../ambient-utils/src/types';
 import { IS_LOCAL_ENV } from '../../constants';
 import { AppStateContext } from '../../contexts/AppStateContext';
 

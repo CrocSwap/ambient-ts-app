@@ -1,10 +1,10 @@
 import styles from './ConfirmRepositionModal.module.css';
-import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+import { PositionIF } from '../../../../ambient-utils/src/types';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import SelectedRange from '../../Range/ConfirmRangeModal/SelectedRange/SelectedRange';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
-import uriToHttp from '../../../../utils/functions/uriToHttp';
+import { uriToHttp } from '../../../../ambient-utils/src/dataLayer';
 import TradeConfirmationSkeleton from '../../TradeModules/TradeConfirmationSkeleton';
 import { useState } from 'react';
 

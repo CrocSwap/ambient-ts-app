@@ -1,5 +1,5 @@
 import styles from './OrderDetailsSimplify.module.css';
-import { LimitOrderIF } from '../../../utils/interfaces/exports';
+import { LimitOrderIF } from '../../../ambient-utils/src/types';
 import { ZERO_ADDRESS } from '../../../constants';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { useProcessOrder } from '../../../utils/hooks/useProcessOrder';
@@ -11,7 +11,7 @@ import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import { getFormattedNumber } from '../../../ambient-utils/src/dataLayer';
 import { useMediaQuery } from '@material-ui/core';
 
 interface ItemRowPropsIF {

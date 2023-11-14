@@ -36,12 +36,12 @@ import { IS_LOCAL_ENV } from '../../constants';
 import {
     diffHashSigChart,
     diffHashSigScaleData,
-} from '../../utils/functions/diffHashSig';
+} from '../../ambient-utils/src/dataLayer';
 import { CandleContext } from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../contexts/SidebarContext';
 import { RangeContext } from '../../contexts/RangeContext';
-import { CandleData } from '../../App/functions/fetchCandleSeries';
+import { CandleDataIF } from '../../ambient-utils/src/types';
 import CandleChart from './Candle/CandleChart';
 import LiquidityChart from './Liquidity/LiquidityChart';
 import VolumeBarCanvas from './Volume/VolumeBarCanvas';
@@ -81,12 +81,12 @@ interface propsIF {
     liquidityData: liquidityChartData | undefined;
     changeState: (
         isOpen: boolean | undefined,
-        candleData: CandleData | undefined,
+        candleData: CandleDataIF | undefined,
     ) => void;
     denomInBase: boolean;
     chartItemStates: chartItemStates;
     setCurrentData: React.Dispatch<
-        React.SetStateAction<CandleData | undefined>
+        React.SetStateAction<CandleDataIF | undefined>
     >;
     setCurrentVolumeData: React.Dispatch<
         React.SetStateAction<number | undefined>
@@ -595,7 +595,7 @@ export default function Chart(props: propsIF) {
     }, [location.pathname, period, denomInBase]);
 
     // finds candle closest to the mouse
-    const snapForCandle = (point: number, filtered: Array<CandleData>) => {
+    const snapForCandle = (point: number, filtered: Array<CandleDataIF>) => {
         if (scaleData) {
             if (point == undefined) return [];
             if (filtered.length > 1) {
@@ -2517,7 +2517,7 @@ export default function Chart(props: propsIF) {
             const xmax = scaleData?.xScale.domain()[1];
 
             const filtered = unparsedCandleData.filter(
-                (data: CandleData) =>
+                (data: CandleDataIF) =>
                     data.time * 1000 >= xmin && data.time * 1000 <= xmax,
             );
 
@@ -2806,11 +2806,11 @@ export default function Chart(props: propsIF) {
                         setChartMousemoveEvent(undefined);
                         if (unparsedCandleData) {
                             const lastData = unparsedCandleData.find(
-                                (item: CandleData) =>
+                                (item: CandleDataIF) =>
                                     item.time ===
                                     d3.max(
                                         unparsedCandleData,
-                                        (data: CandleData) => data.time,
+                                        (data: CandleDataIF) => data.time,
                                     ),
                             );
 
@@ -2874,7 +2874,7 @@ export default function Chart(props: propsIF) {
         ) as number;
 
         let avaregeHeight = 1;
-        const filtered: Array<CandleData> = [];
+        const filtered: Array<CandleDataIF> = [];
         let longestValue = 0;
 
         const xmin = scaleData?.xScale.domain()[0] as number;
@@ -2882,7 +2882,7 @@ export default function Chart(props: propsIF) {
         const ymin = scaleData?.yScale.domain()[0] as number;
         const ymax = scaleData?.yScale.domain()[1] as number;
 
-        visibleCandleData.map((d: CandleData) => {
+        visibleCandleData.map((d: CandleDataIF) => {
             avaregeHeight =
                 avaregeHeight +
                 Math.abs(
@@ -2941,13 +2941,13 @@ export default function Chart(props: propsIF) {
             : nearest?.maxPriceExclMEVDecimalCorrected;
 
         if (tempFilterData.length > 1) {
-            close = d3.max(tempFilterData, (d: CandleData) =>
+            close = d3.max(tempFilterData, (d: CandleDataIF) =>
                 denomInBase
                     ? d?.invMinPriceExclMEVDecimalCorrected
                     : d?.minPriceExclMEVDecimalCorrected,
             );
 
-            open = d3.min(tempFilterData, (d: CandleData) =>
+            open = d3.min(tempFilterData, (d: CandleDataIF) =>
                 denomInBase
                     ? d?.invMaxPriceExclMEVDecimalCorrected
                     : d?.maxPriceExclMEVDecimalCorrected,
@@ -3009,7 +3009,7 @@ export default function Chart(props: propsIF) {
         } else if (selectedDate) {
             props.setCurrentVolumeData(
                 unparsedCandleData.find(
-                    (item: CandleData) => item.time * 1000 === selectedDate,
+                    (item: CandleDataIF) => item.time * 1000 === selectedDate,
                 )?.volumeUSD,
             );
         }
@@ -3075,7 +3075,7 @@ export default function Chart(props: propsIF) {
 
     const selectedDateEvent = (
         isHoverCandleOrVolumeData: boolean,
-        nearest: CandleData | undefined,
+        nearest: CandleDataIF | undefined,
     ) => {
         if (isHoverCandleOrVolumeData && nearest) {
             const _selectedDate = nearest?.time * 1000;
@@ -3083,8 +3083,8 @@ export default function Chart(props: propsIF) {
                 props.setCurrentData(nearest);
 
                 const volumeData = unparsedCandleData.find(
-                    (item: CandleData) => item.time * 1000 === _selectedDate,
-                ) as CandleData;
+                    (item: CandleDataIF) => item.time * 1000 === _selectedDate,
+                ) as CandleDataIF;
 
                 props.setCurrentVolumeData(volumeData?.volumeUSD);
 
@@ -3095,14 +3095,14 @@ export default function Chart(props: propsIF) {
         }
     };
 
-    const minimum = (data: CandleData[], mouseX: number) => {
+    const minimum = (data: CandleDataIF[], mouseX: number) => {
         const xScale = scaleData?.xScale;
         if (xScale) {
-            const accessor = (d: CandleData) =>
+            const accessor = (d: CandleDataIF) =>
                 Math.abs(mouseX - xScale(d.time * 1000));
 
             return data
-                .map(function (dataPoint: CandleData) {
+                .map(function (dataPoint: CandleDataIF) {
                     return [accessor(dataPoint), dataPoint];
                 })
                 .reduce(
@@ -3210,7 +3210,7 @@ export default function Chart(props: propsIF) {
             const xmin = scaleData?.xScale.domain()[0];
 
             const filtered = unparsedCandleData?.filter(
-                (data: CandleData) => data.time * 1000 >= xmin,
+                (data: CandleDataIF) => data.time * 1000 >= xmin,
             );
 
             const minYBoundary = d3.min(filtered, (d) => d.volumeUSD);
@@ -3229,7 +3229,7 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         if (selectedDate !== undefined) {
             const candle = unparsedCandleData.find(
-                (candle: CandleData) => candle.time * 1000 === selectedDate,
+                (candle: CandleDataIF) => candle.time * 1000 === selectedDate,
             );
 
             if (candle !== undefined) {

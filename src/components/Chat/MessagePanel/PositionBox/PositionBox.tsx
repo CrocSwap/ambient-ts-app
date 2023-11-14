@@ -2,16 +2,15 @@
 
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { HiOutlineExternalLink } from 'react-icons/hi';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
-import trimString from '../../../../utils/functions/trimString';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import {
-    PositionIF,
-    TransactionIF,
-} from '../../../../utils/interfaces/exports';
+    trimString,
+    getFormattedNumber,
+    getUnicodeCharacter,
+} from '../../../../ambient-utils/src/dataLayer';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { PositionIF, TransactionIF } from '../../../../ambient-utils/src/types';
 import styles from './PositionBox.module.css';
 import { motion } from 'framer-motion';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     message: string;

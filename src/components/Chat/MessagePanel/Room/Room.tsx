@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import styles from './Room.module.css';
-import { PoolIF } from '../../../../utils/interfaces/exports';
+import { PoolIF } from '../../../../ambient-utils/src/types';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import { useState, useEffect, useContext } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';

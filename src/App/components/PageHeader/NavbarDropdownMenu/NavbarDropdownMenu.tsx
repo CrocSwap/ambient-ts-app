@@ -9,7 +9,7 @@ import { RiSpyFill } from 'react-icons/ri';
 import { FaDiscord } from 'react-icons/fa';
 import '../../../App.css';
 import useKeyPress from '../../../hooks/useKeyPress';
-import { openInNewTab } from '../../../../utils/functions/openInNewTab';
+import { openInNewTab } from '../../../../ambient-utils/src/dataLayer';
 import {
     DISCORD_LINK,
     DOCS_LINK,

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
-import { PoolIF, TokenIF } from '../../utils/interfaces/exports';
+import { PoolIF, TokenIF } from '../../ambient-utils/src/types';
 
 export interface favePoolsMethodsIF {
     pools: PoolIF[];

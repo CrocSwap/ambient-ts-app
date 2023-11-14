@@ -4,16 +4,16 @@ import { MdExpand, MdCloseFullscreen } from 'react-icons/md';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { CandleContext } from '../../../../contexts/CandleContext';
-import { CandleData } from '../../../../App/functions/fetchCandleSeries';
+import { CandleDataIF } from '../../../../ambient-utils/src/types';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { FlexContainer, Text } from '../../../../styled/Common';
 
 interface PositionsOnlyToggleProps {
-    setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
+    setTransactionFilter: Dispatch<SetStateAction<CandleDataIF | undefined>>;
     currentTab?: string;
     changeState: (
         isOpen: boolean | undefined,
-        candleData: CandleData | undefined,
+        candleData: CandleDataIF | undefined,
     ) => void;
     setSelectedDate: React.Dispatch<number | undefined>;
     setHasUserSelectedViewAll: Dispatch<SetStateAction<boolean>>;
