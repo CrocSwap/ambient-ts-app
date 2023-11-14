@@ -4,23 +4,25 @@ import { BsArrowLeft } from 'react-icons/bs';
 import { Button } from '@material-ui/core';
 import { IS_LOCAL_ENV } from '../../../constants';
 
-interface LimitActionSettingsPropsIF {
+interface propsIF {
     showSettings: boolean;
     setShowSettings: Dispatch<SetStateAction<boolean>>;
     onBackClick: () => void;
 }
 
-export default function LimitActionSettings(props: LimitActionSettingsPropsIF) {
+export default function LimitActionSettings(props: propsIF) {
     // eslint-disable-next-line
     const { showSettings, setShowSettings, onBackClick } = props;
-    const preset1 = '0.1';
-    const preset2 = '0.3';
-    const preset3 = '0.5';
+
+    // values to generate preset buttons
+    const presets: number[] = [0.1, 0.3, 0.5];
+    // type derived as number-literal union for defined presets
+    type presetValues = typeof presets[number];
 
     const slippageValue = 2;
 
-    const setSlippage = (val: string) => {
-        IS_LOCAL_ENV && console.debug(val);
+    const setSlippage = (val: number | string): void => {
+        IS_LOCAL_ENV && console.debug(val.toString());
     };
 
     return (
@@ -50,17 +52,20 @@ export default function LimitActionSettings(props: LimitActionSettingsPropsIF) {
                                     placeholder={'slippage'}
                                 />
                             </div>
-                            <button onClick={() => setSlippage(preset1)}>
-                                {preset1}%
-                            </button>
-                            <button onClick={() => setSlippage(preset2)}>
-                                {preset2}%
-                            </button>
-                            <button onClick={() => setSlippage(preset3)}>
-                                {preset3}%
-                            </button>
-                            {/* <button onClick={() => setSlippage('0.5')}>0.5%</button>
-                    <button onClick={() => setSlippage('1')}>1%</button> */}
+                            {presets.map((preset: presetValues) => {
+                                // convert raw preset to human-readable string
+                                const humanReadable: string = preset + '%';
+                                // create a <button> elem for each defined preset
+                                return (
+                                    <button
+                                        key={preset}
+                                        id={`limit_actions_slippage_tolerance_${preset}`}
+                                        onClick={() => setSlippage(preset)}
+                                    >
+                                        {humanReadable}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
                 </div>

@@ -87,12 +87,7 @@ function Ranges(props: propsIF) {
         else if (!showAllData)
             setRangeData(
                 userPositionsByPool?.positions.filter(
-                    (position) =>
-                        position.base.toLowerCase() ===
-                            baseTokenAddress.toLowerCase() &&
-                        position.quote.toLowerCase() ===
-                            quoteTokenAddress.toLowerCase() &&
-                        position.positionLiq != 0,
+                    (position) => position.positionLiq != 0,
                 ),
             );
         else {

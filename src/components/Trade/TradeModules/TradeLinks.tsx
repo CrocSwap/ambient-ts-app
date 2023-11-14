@@ -78,6 +78,7 @@ export default function TradeLinks(props: propsIF) {
             {routes.map((route: routeIF) => (
                 <TradeModuleLink
                     key={JSON.stringify(route)}
+                    id={`link_to_${route.name.toLowerCase()}_module`}
                     to={route.path}
                     isActive={location.pathname.includes(route.baseURL)}
                 >

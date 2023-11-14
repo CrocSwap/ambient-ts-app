@@ -398,6 +398,7 @@ export default function Deposit(props: propsIF) {
                 )}
             </FlexContainer>
             <Button
+                idForDOM='deposit_tokens_button'
                 title={buttonMessage}
                 action={() => {
                     !isTokenAllowanceSufficient ? approvalFn() : depositFn();

@@ -214,21 +214,25 @@ export default function ExampleForm() {
                 <RangeWidth {...rangeWidthProps} />
 
                 <Button
+                    idForDOM={'example_gradient_button}'}
                     title={'Gradient'}
                     action={() => console.log('Confirm')}
                 />
                 <Button
+                    idForDOM={'example_flat_button}'}
                     title={'Flat'}
                     action={() => console.log('Confirm')}
                     flat
                 />
                 <Button
+                    idForDOM={'example_thin_button}'}
                     title={'Thin'}
                     action={() => console.log('Confirm')}
                     flat
                     thin
                 />
                 <Button
+                    idForDOM={'example_disabled_button}'}
                     title={'Disabled'}
                     action={() => console.log('Confirm')}
                     flat
@@ -236,6 +240,7 @@ export default function ExampleForm() {
                 />
                 <FlexContainer fullWidth overlay='blur'>
                     <Button
+                        idForDOM={'example_blur_button}'}
                         title={'Blur'}
                         action={() => console.log('Confirm')}
                         flat

@@ -4,10 +4,12 @@ import { MdAccountBox, MdOutlineExplore } from 'react-icons/md';
 import { RiSwapBoxFill } from 'react-icons/ri';
 import { GiTrade } from 'react-icons/gi';
 import { BsFillChatDotsFill } from 'react-icons/bs';
-import { memo } from 'react';
+import { memo, useContext } from 'react';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import chainNumToString from '../../../../App/functions/chainNumToString';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { VscLayoutSidebarLeft } from 'react-icons/vsc';
 
 function SidebarFooter() {
     const location = useLocation();
@@ -37,7 +39,24 @@ function SidebarFooter() {
         tokenB: tradeData.tokenB.address,
     });
 
+    const { hideOnMobile, toggleMobileModeVisibility, sidebar } =
+        useContext(SidebarContext);
+
+    const handleSidebarCloseAndOpen = () => {
+        toggleMobileModeVisibility();
+
+        if (!sidebar.isOpen) {
+            sidebar.open(true);
+        }
+    };
+
     const linksData = [
+        {
+            title: 'Sidebar ',
+            onClick: handleSidebarCloseAndOpen,
+            icon: VscLayoutSidebarLeft,
+            isButton: true,
+        },
         {
             title: 'Swap',
             destination: '/swap/' + paramsSlug,
@@ -56,22 +75,33 @@ function SidebarFooter() {
         { title: 'Account', destination: '/account/', icon: MdAccountBox },
         { title: 'Chat', destination: '/chat/', icon: BsFillChatDotsFill },
     ];
-
     return (
-        <div className={`${styles.sidebar_footer} ${sidebarPositionStyle}`}>
-            {linksData.map((link) => (
-                <Link to={link.destination} key={link.destination}>
-                    <link.icon
-                        size={18}
-                        color={
-                            currentLocation === link.destination
-                                ? 'var(--accent1)'
-                                : 'var(--text-highlight)'
-                        }
-                    />
-                    <p> {link.title}</p>
-                </Link>
-            ))}
+        <div
+            className={`${styles.sidebar_footer} ${sidebarPositionStyle}`}
+            style={{ paddingLeft: !hideOnMobile ? '1.5rem' : '' }}
+        >
+            {linksData.map((link) =>
+                link.isButton ? (
+                    <span onClick={link.onClick} key={link.title}>
+                        <link.icon size={18} color='var(--text-highlight)' />
+                        <p>{link.title}</p>
+                    </span>
+                ) : link.destination ? (
+                    <Link to={link.destination} key={link.destination}>
+                        <link.icon
+                            size={18}
+                            color={
+                                currentLocation === link.destination
+                                    ? 'var(--accent1)'
+                                    : 'var(--text-highlight)'
+                            }
+                        />
+                        <p>{link.title}</p>
+                    </Link>
+                ) : (
+                    ''
+                ),
+            )}
         </div>
     );
 }

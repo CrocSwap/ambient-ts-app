@@ -2,95 +2,68 @@ import { Dispatch, SetStateAction } from 'react';
 import styles from './RemoveRangeWidth.module.css';
 import RangeSlider from '../../Form/RangeSlider';
 
-interface RemoveRangeWidthPropsIF {
+interface propsIF {
     removalPercentage: number;
     setRemovalPercentage: Dispatch<SetStateAction<number>>;
 }
 
-export default function RemoveRangeWidth(props: RemoveRangeWidthPropsIF) {
+export default function RemoveRangeWidth(props: propsIF) {
     const { removalPercentage, setRemovalPercentage } = props;
 
-    const handlePercentageUpdate = (percentage: number) => {
+    // values to generate remove liquidity preset buttons
+    const removalPresets: number[] = [10, 25, 50, 100];
+    // type annotation as union of number-literals in `removalPresets`
+    type presetValues = typeof removalPresets[number];
+
+    // id attribute for removal slider input (referenced in multiple places)
+    const sliderFieldId = 'remove-range-slider';
+
+    const handlePercentageUpdate = (percentage: number): void => {
         setRemovalPercentage(percentage);
-        const sliderInputField = document.getElementById('remove-range-slider');
+        const sliderInputField = document.getElementById(sliderFieldId);
         if (sliderInputField) {
             (sliderInputField as HTMLInputElement).value =
                 percentage.toString();
         }
     };
-    const PercentageOptionContent = (
-        <>
-            <div className={styles.percentage_options}>
-                <span
-                    className={styles.percentage_amount}
-                    id='remove-percentage-output'
-                >
-                    {removalPercentage}%
-                </span>
-                <button
-                    className={
-                        removalPercentage === 10
-                            ? `${styles.matching_percentage_button}`
-                            : styles.percentage_option_buttons
-                    }
-                    onClick={() => {
-                        handlePercentageUpdate(10);
-                    }}
-                >
-                    10%
-                </button>
-                <button
-                    className={
-                        removalPercentage === 25
-                            ? `${styles.matching_percentage_button}`
-                            : styles.percentage_option_buttons
-                    }
-                    onClick={() => {
-                        handlePercentageUpdate(25);
-                    }}
-                >
-                    25%
-                </button>
-                <button
-                    className={
-                        removalPercentage === 50
-                            ? `${styles.matching_percentage_button}`
-                            : styles.percentage_option_buttons
-                    }
-                    onClick={() => {
-                        handlePercentageUpdate(50);
-                    }}
-                >
-                    50%
-                </button>
-
-                <button
-                    className={
-                        removalPercentage === 100
-                            ? `${styles.matching_percentage_button}`
-                            : styles.percentage_option_buttons
-                    }
-                    onClick={() => {
-                        handlePercentageUpdate(100);
-                    }}
-                >
-                    100%
-                </button>
-            </div>
-        </>
-    );
 
     return (
         <div className={styles.range_width_container}>
             <span className={styles.title}>Amount</span>
             <div className={styles.range_width_content}>
-                {PercentageOptionContent}
+                <div className={styles.percentage_options}>
+                    <span
+                        className={styles.percentage_amount}
+                        id='remove-percentage-output'
+                    >
+                        {removalPercentage}%
+                    </span>
+                    {removalPresets.map((preset: presetValues) => {
+                        // convert raw preset to a human-readable string
+                        const humanReadable: string = preset + '%';
+                        // create a `<button>` element for each preset value
+                        return (
+                            <button
+                                key={preset.toString()}
+                                id={`remove_liq_preset_${humanReadable}`}
+                                className={
+                                    removalPercentage === preset
+                                        ? styles.matching_percentage_button
+                                        : styles.percentage_option_buttons
+                                }
+                                onClick={() => handlePercentageUpdate(preset)}
+                            >
+                                {humanReadable}
+                            </button>
+                        );
+                    })}
+                </div>
                 <div className={styles.range_width_input}>
                     <RangeSlider
                         percentageInput
                         aria-labelledby='input slider'
                         defaultValue={removalPercentage}
-                        id='remove-range-slider'
+                        id={sliderFieldId}
                         onChange={(e) =>
                             handlePercentageUpdate(parseInt(e.target.value))
                         }
