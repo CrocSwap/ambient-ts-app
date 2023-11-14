@@ -180,15 +180,21 @@ aside.emoji-picker-react {
 .css-1idz92c-MuiCircularProgress-svg {
     color: var(--title-gradient) !important;
 }
+.css-9tmuzo-MuiStepper-root{
+    gap: 4px !important;
+    font-size: 18px;
+
+  
+}
 
 .css-14sza3e-MuiStepLabel-root {
-    padding: 0;
-    gap: 32px;
+    padding: 0 !important;
+}
+.css-1u4zpwo-MuiSvgIcon-root-MuiStepIcon-root.Mui-completed{
+    color: var(--accent1) !important
 }
 
-.css-8t49rw-MuiStepConnector-line {
-    border-color: var(--accent1) !important;
-}
+
 .icon_hover:hover {
     color: var(--accent1) !important;
     cursor: pointer;
