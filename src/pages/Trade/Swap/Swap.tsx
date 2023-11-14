@@ -177,7 +177,9 @@ function Swap(props: propsIF) {
 
     const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
 
-    const amountToReduceEthMainnet = 0.005; // .005 ETH
+    // const amountToReduceEthMainnet = 0.01; // .01 ETH
+    const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
+        useState<number>(0.01);
     const amountToReduceEthScroll = 0.0003; // .0003 ETH
 
     const amountToReduceEth =
@@ -268,6 +270,11 @@ function Swap(props: propsIF) {
                 : isSaveAsDexSurplusChecked
                 ? 105000
                 : 110000;
+
+            const costOfMainnetSwapInETH =
+                gasPriceInGwei * averageSwapCostInGasDrops * 1e-9;
+
+            setAmountToReduceEthMainnet(1.75 * costOfMainnetSwapInETH);
 
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
@@ -505,6 +512,7 @@ function Swap(props: propsIF) {
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     setSwapAllowed={setSwapAllowed}
                     toggleDexSelection={toggleDexSelection}
+                    amountToReduceEth={amountToReduceEth}
                 />
             }
             transactionDetails={
