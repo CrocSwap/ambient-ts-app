@@ -14,6 +14,7 @@ import PageHeader from './components/PageHeader/PageHeader';
 import Sidebar from './components/Sidebar/Sidebar';
 import Home from '../pages/Home/Home';
 import Portfolio from '../pages/Portfolio/Portfolio';
+import TradeSwap from '../pages/Trade/Swap/Swap';
 import Limit from '../pages/Trade/Limit/Limit';
 import Range from '../pages/Trade/Range/Range';
 import Swap from '../pages/Swap/Swap';
@@ -23,12 +24,11 @@ import NotFound from '../pages/NotFound/NotFound';
 import Trade from '../pages/Trade/Trade';
 import InitPool from '../pages/InitPool/InitPool';
 import Reposition from '../pages/Trade/Reposition/Reposition';
-import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
+import SidebarFooter from '../components/Global/Sidebar/SidebarFooter/SidebarFooter';
 
 /** * **** Import Local Files *******/
 import './App.css';
 import { IS_LOCAL_ENV } from '../constants';
-import GlobalModal from './components/GlobalModal/GlobalModal';
 import ChatPanel from '../components/Chat/ChatPanel';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
@@ -43,6 +43,9 @@ import { ChartContext } from '../contexts/ChartContext';
 import PrivacyPolicy from '../pages/PrivacyPolicy/PrivacyPolicy';
 import SwitchNetwork from '../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
 import Explore from '../pages/Explore/Explore';
+import useMediaQuery from '../utils/hooks/useMediaQuery';
+import { FlexContainer } from '../styled/Common';
+import ExampleForm from '../pages/InitPool/FormExample';
 
 /** ***** React Function *******/
 export default function App() {
@@ -57,8 +60,10 @@ export default function App() {
             isEnabled: isChatEnabled,
         },
         theme: { selected: selectedTheme },
+        wagmiModal: { isOpen: isWagmiModalOpen },
     } = useContext(AppStateContext);
-    const { isChainSupported, defaultUrlParams } = useContext(CrocEnvContext);
+    const { isWalletChainSupported, defaultUrlParams } =
+        useContext(CrocEnvContext);
     const { isFullScreen: fullScreenChart } = useContext(ChartContext);
     const {
         sidebar: { isOpen: isSidebarOpen, toggle: toggleSidebar },
@@ -143,11 +148,16 @@ export default function App() {
             }
         }
     }, [isEscapePressed]);
+    const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
     return (
         <>
-            <div className={containerStyle} data-theme={selectedTheme}>
-                {!isChainSupported && <SwitchNetwork />}
+            <FlexContainer
+                flexDirection='column'
+                className={containerStyle}
+                data-theme={selectedTheme}
+            >
+                {!isWalletChainSupported && <SwitchNetwork />}
                 <AppOverlay />
                 <PageHeader />
                 <section
@@ -178,7 +188,7 @@ export default function App() {
                             />
                             <Route
                                 path='market/:params'
-                                element={<Swap isOnTradeRoute={true} />}
+                                element={<TradeSwap isOnTradeRoute={true} />}
                             />
                             <Route
                                 path='limit'
@@ -226,7 +236,6 @@ export default function App() {
                                 <ChatPanel isFullScreen={true} appPage={true} />
                             }
                         />
-
                         <Route
                             path='chat/:params'
                             element={
@@ -234,15 +243,11 @@ export default function App() {
                             }
                         />
                         <Route path='initpool/:params' element={<InitPool />} />
-                        <Route
-                            path='account'
-                            element={<Portfolio userAccount={true} />}
-                        />
+                        <Route path='account' element={<Portfolio />} />
                         <Route
                             path='account/:address'
-                            element={<Portfolio userAccount={false} />}
+                            element={<Portfolio />}
                         />
-
                         <Route
                             path='swap'
                             element={
@@ -256,10 +261,13 @@ export default function App() {
                         {IS_LOCAL_ENV && (
                             <Route path='testpage' element={<TestPage />} />
                         )}
-                        <Route
-                            path='/:address'
-                            element={<Portfolio userAccount={false} />}
-                        />
+                        {IS_LOCAL_ENV && (
+                            <Route
+                                path='template/form'
+                                element={<ExampleForm />}
+                            />
+                        )}
+                        <Route path='/:address' element={<Portfolio />} />
                         <Route path='/404' element={<NotFound />} />
                         <Route
                             path='*'
@@ -267,7 +275,7 @@ export default function App() {
                         />
                     </Routes>
                 </section>
-            </div>
+            </FlexContainer>
             <div className='footer_container'>
                 {currentLocation !== '/' &&
                     currentLocation !== '/404' &&
@@ -275,12 +283,13 @@ export default function App() {
                     currentLocation !== '/privacy' &&
                     !currentLocation.includes('/chat') &&
                     isChatEnabled && <ChatPanel isFullScreen={false} />}
+                {showMobileVersion && currentLocation !== '/' && (
+                    <SidebarFooter />
+                )}
             </div>
-            <SidebarFooter />
-            <GlobalModal />
             <GlobalPopup />
             <SnackbarComponent />
-            <WalletModalWagmi />
+            {isWagmiModalOpen && <WalletModalWagmi />}
         </>
     );
 }

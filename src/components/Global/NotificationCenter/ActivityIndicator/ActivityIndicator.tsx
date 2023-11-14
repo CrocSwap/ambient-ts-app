@@ -1,7 +1,12 @@
 import React, { useEffect, useRef, Dispatch, SetStateAction } from 'react';
-import { motion, AnimatePresence, useAnimation } from 'framer-motion';
+import { AnimatePresence, useAnimation } from 'framer-motion';
 
-import styles from './ActivityIndicator.module.css';
+import {
+    ActivityIndicatorDiv,
+    Circle,
+    CircleButton,
+    Ring,
+} from './ActivityIndicator.styles';
 
 interface AcitivtyIndicatorProps {
     value: number;
@@ -40,28 +45,26 @@ const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
     };
 
     const pendingCircle = (
-        <button className={styles.circle} onClick={toggleNotificationCenter}>
-            <div className={styles.ring} />
-        </button>
+        <Circle onClick={toggleNotificationCenter}>
+            <Ring />
+        </Circle>
     );
 
     if (pending) return pendingCircle;
     return (
         <AnimatePresence>
             {value > 0 && (
-                <motion.button
+                <CircleButton
                     initial={false}
                     exit='hidden'
                     animate='visible'
                     variants={animStates}
                     style={{ cursor: 'pointer' }}
                     onClick={toggleNotificationCenter}
-                    className={styles.circle_button}
                     tabIndex={0}
                     aria-label='Notification center'
                 >
-                    <motion.div
-                        className={styles.activity_indicator}
+                    <ActivityIndicatorDiv
                         animate={controls}
                         whileHover='hover'
                         whileTap='pressed'
@@ -74,8 +77,8 @@ const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
                         >
                             {value}
                         </span>
-                    </motion.div>
-                </motion.button>
+                    </ActivityIndicatorDiv>
+                </CircleButton>
             )}
         </AnimatePresence>
     );

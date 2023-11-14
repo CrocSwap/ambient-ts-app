@@ -1,8 +1,9 @@
-import styles from './SelectedRange.module.css';
-import { memo, useContext, useState } from 'react';
+import { Dispatch, SetStateAction, memo, useContext } from 'react';
 import { PoolContext } from '../../../../../contexts/PoolContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
+import { FlexContainer, Text } from '../../../../../styled/Common';
+import { SelectedRangeContainer } from '../../../../../styled/Components/TradeModules';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -11,38 +12,47 @@ interface propsIF {
     pinnedMinPriceDisplayTruncatedInQuote: string;
     pinnedMaxPriceDisplayTruncatedInBase: string;
     pinnedMaxPriceDisplayTruncatedInQuote: string;
+    showOnlyFeeTier?: boolean;
+    isDenomBase: boolean;
+    setIsDenomBase: Dispatch<SetStateAction<boolean>>;
+    initialPrice?: number;
+    isInitPage?: boolean;
 }
 function SelectedRange(props: propsIF) {
     const {
+        isDenomBase,
+        setIsDenomBase,
         isTokenABase,
         isAmbient,
         pinnedMinPriceDisplayTruncatedInBase,
         pinnedMinPriceDisplayTruncatedInQuote,
         pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote,
+        showOnlyFeeTier,
+        initialPrice,
+        isInitPage,
     } = props;
 
     const { poolPriceDisplay } = useContext(PoolContext);
-    const { isDenomBase, tokenA, tokenB } = useAppSelector(
-        (state) => state.tradeData,
-    );
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
-    const reverseDisplayDefault =
+    const reverseDisplay =
         (isTokenABase && isDenomBase) || (!isTokenABase && !isDenomBase);
 
-    const [denomInBase, setDenomInBase] = useState(isDenomBase);
-    const [reverseDisplay, setReverseDisplay] = useState(reverseDisplayDefault);
-
-    const minPrice = denomInBase
+    const minPrice = isDenomBase
         ? pinnedMinPriceDisplayTruncatedInBase
         : pinnedMinPriceDisplayTruncatedInQuote;
 
-    const maxPrice = denomInBase
+    const maxPrice = isDenomBase
         ? pinnedMaxPriceDisplayTruncatedInBase
         : pinnedMaxPriceDisplayTruncatedInQuote;
 
     const displayPriceWithDenom =
-        denomInBase && poolPriceDisplay
+        isInitPage && initialPrice
+            ? isDenomBase
+                ? initialPrice
+                : 1 / initialPrice
+            : isDenomBase && poolPriceDisplay
             ? 1 / poolPriceDisplay
             : poolPriceDisplay ?? 0;
 
@@ -57,33 +67,51 @@ function SelectedRange(props: propsIF) {
         tokens: string;
         currentToken: string;
     }
+
     const PriceRangeDisplay = (props: PriceRangeProps) => {
         const { title, value, tokens, currentToken } = props;
         return (
-            <div className={styles.price_range_container}>
-                <div
-                    className={styles.price_range_content}
-                    onClick={() => {
-                        setReverseDisplay(!reverseDisplay);
-                        setDenomInBase(!denomInBase);
-                    }}
+            <FlexContainer
+                fullWidth
+                flexDirection='column'
+                alignItems='center'
+                justifyContent='center'
+                background='dark2'
+                style={{
+                    borderRadius: 'var(--border-radius)',
+                    cursor: 'pointer',
+                }}
+                gap={isInitPage ? 10 : 4}
+                padding={'8px'}
+                onClick={() => {
+                    setIsDenomBase(!isDenomBase);
+                }}
+            >
+                <Text fontSize='body' color='text2'>
+                    {title}
+                </Text>
+                <Text fontSize='header2' color='text1'>
+                    {value}
+                </Text>
+                <Text fontSize='body' color='text2'>
+                    {tokens}
+                </Text>
+                <Text
+                    fontSize='body'
+                    color='accent5'
+                    style={{ textAlign: 'center' }}
                 >
-                    <p className={styles.price_range_title}>{title}</p>
-                    <p className={styles.price_range_amount}>{value}</p>
-                    <p className={styles.price_range_title}>{tokens}</p>
-                    <p className={styles.price_range_info}>
-                        Your position will be 100% {currentToken} at this price.
-                    </p>
-                </div>
-            </div>
+                    Your position will be 100% {currentToken} at this price.
+                </Text>
+            </FlexContainer>
         );
     };
 
     const selectedRangeDisplay = (
-        <div className={styles.selected_range_display}>
+        <SelectedRangeContainer margin={isInitPage ? '0' : '8px 0 0 0'} gap={8}>
             <PriceRangeDisplay
                 title='Min Price'
-                value={minPrice}
+                value={isAmbient ? '0' : minPrice}
                 tokens={
                     reverseDisplay
                         ? `${tokenB.symbol} per ${tokenA.symbol}`
@@ -93,7 +121,7 @@ function SelectedRange(props: propsIF) {
             />
             <PriceRangeDisplay
                 title='Max Price'
-                value={maxPrice}
+                value={isAmbient ? '∞' : maxPrice}
                 tokens={
                     reverseDisplay
                         ? `${tokenB.symbol} per ${tokenA.symbol}`
@@ -101,39 +129,53 @@ function SelectedRange(props: propsIF) {
                 }
                 currentToken={reverseDisplay ? tokenB.symbol : tokenA.symbol}
             />
-        </div>
+        </SelectedRangeContainer>
     );
 
     const extraInfoData = (
-        <div className={styles.extra_info_container}>
-            <div className={styles.row}>
-                <p>Current Price</p>
-                <p
+        <FlexContainer
+            flexDirection='column'
+            gap={8}
+            padding='8px'
+            margin={isInitPage ? '0' : '8px 0 0 0'}
+            style={{ border: '1px solid var(--dark3)', borderRadius: '4px' }}
+        >
+            <FlexContainer justifyContent='space-between' alignItems='center'>
+                <Text fontSize='body' color='text2'>
+                    {isInitPage ? 'Initial Price' : 'Current Price'}
+                </Text>
+                <Text
+                    fontSize='body'
+                    color='text2'
                     onClick={() => {
-                        setReverseDisplay(!reverseDisplay);
-                        setDenomInBase(!denomInBase);
+                        setIsDenomBase(!isDenomBase);
                     }}
                     style={{ cursor: 'pointer' }}
                 >
-                    {displayPriceString}
-                </p>
-            </div>
-            <div className={styles.row}>
-                <p>Current Fee Rate</p>
-                <p>0.05%</p>
-            </div>
-        </div>
+                    {`${displayPriceString} ${
+                        reverseDisplay ? tokenB.symbol : tokenA.symbol
+                    }`}
+                </Text>
+            </FlexContainer>
+            <FlexContainer justifyContent='space-between' alignItems='center'>
+                <Text fontSize='body' color='text2'>
+                    {isInitPage ? 'Initial Fee Rate' : 'Current Fee Rate'}
+                </Text>
+                <Text fontSize='body' color='text2'>
+                    {isInitPage ? 'Dynamic' : '0.05%'}
+                </Text>
+            </FlexContainer>
+        </FlexContainer>
     );
+    if (showOnlyFeeTier) return extraInfoData;
 
     return (
-        <>
-            <div className={styles.selected_range}>
-                {/* {switchButtons} */}
-                {<div />}
-                {!isAmbient ? selectedRangeDisplay : null}
-                <div style={{ padding: '0 1rem' }}>{extraInfoData}</div>
+        <FlexContainer flexDirection='column' gap={8}>
+            {selectedRangeDisplay}
+            <div style={{ padding: isInitPage ? '0 4rem' : '0 1rem' }}>
+                {extraInfoData}
             </div>
-        </>
+        </FlexContainer>
     );
 }
 

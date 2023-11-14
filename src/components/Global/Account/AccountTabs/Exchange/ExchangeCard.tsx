@@ -1,8 +1,7 @@
 import styles from './ExchangeCard.module.css';
-import { testTokenMap } from '../../../../../utils/data/testTokenMap';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { useContext, useEffect, useState } from 'react';
-import { ETH_ICON_URL, ZERO_ADDRESS } from '../../../../../constants';
+import { ZERO_ADDRESS } from '../../../../../constants';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
@@ -10,9 +9,10 @@ import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
 import uriToHttp from '../../../../../utils/functions/uriToHttp';
 import TokenIcon from '../../../TokenIcon/TokenIcon';
+import { toDisplayQty } from '@crocswap-libs/sdk';
 
 interface propsIF {
-    token?: TokenIF;
+    token: TokenIF;
     cachedFetchTokenPrice: TokenPriceFn;
 }
 
@@ -25,8 +25,6 @@ export default function ExchangeCard(props: propsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-
-    const tokenMapKey: string = token?.address + '_' + chainId;
 
     const tokenFromMap = token?.address
         ? getTokenByAddress(token.address)
@@ -49,17 +47,10 @@ export default function ExchangeCard(props: propsIF) {
     useEffect(() => {
         (async () => {
             try {
-                const tokenAddress = tokenMapKey.split('_')[0];
-                const chain = tokenMapKey.split('_')[1];
-                const isChainMainnet = chain === '0x1';
-                const mainnetAddress =
-                    isChainMainnet && tokenAddress !== ZERO_ADDRESS
-                        ? tokenMapKey.split('_')[0]
-                        : testTokenMap.get(tokenMapKey)?.split('_')[0];
-                if (mainnetAddress) {
+                if (tokenFromMap?.symbol) {
                     const price = await cachedFetchTokenPrice(
-                        mainnetAddress,
-                        '0x1',
+                        tokenFromMap.address,
+                        chainId,
                     );
                     if (price) setTokenPrice(price);
                 }
@@ -67,16 +58,23 @@ export default function ExchangeCard(props: propsIF) {
                 console.error(err);
             }
         })();
-    }, [tokenMapKey]);
+    }, [token?.address, chainId]);
 
     const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 
-    const exchangeBalanceNum = token?.dexBalanceDisplay
-        ? parseFloat(token?.dexBalanceDisplay)
-        : 0;
+    const dexBalanceDisplay = token.dexBalance
+        ? toDisplayQty(token.dexBalance, token.decimals)
+        : undefined;
 
-    const exchangeBalanceTruncated =
-        exchangeBalanceNum === 0 ? '0' : token?.dexBalanceDisplayTruncated;
+    const dexBalanceDisplayNum = dexBalanceDisplay
+        ? parseFloat(dexBalanceDisplay)
+        : undefined;
+
+    const dexBalanceTruncated = dexBalanceDisplayNum
+        ? getFormattedNumber({
+              value: dexBalanceDisplayNum,
+          })
+        : '0';
 
     const iconAndSymbolWithTooltip = (
         <DefaultTooltip
@@ -90,23 +88,12 @@ export default function ExchangeCard(props: propsIF) {
         >
             <div className={styles.token_icon}>
                 <TokenIcon
-                    src={uriToHttp(
-                        tokenFromMap?.logoURI
-                            ? tokenFromMap?.logoURI
-                            : token?.logoURI
-                            ? token?.logoURI
-                            : ETH_ICON_URL,
-                    )}
+                    token={token}
+                    src={uriToHttp(token.logoURI)}
                     alt={token?.symbol}
                     size='2xl'
                 />
-                <p className={styles.token_key}>
-                    {tokenFromMap?.symbol
-                        ? tokenFromMap?.symbol
-                        : token?.symbol
-                        ? token?.symbol
-                        : '???'}
-                </p>
+                <p className={styles.token_key}>{token.symbol}</p>
             </div>
         </DefaultTooltip>
     );
@@ -137,12 +124,11 @@ export default function ExchangeCard(props: propsIF) {
             {tokenInfo}
             <p className={styles.value}>
                 {getFormattedNumber({
-                    value: tokenUsdPrice * exchangeBalanceNum,
+                    value: tokenUsdPrice * (dexBalanceDisplayNum ?? 0),
                     isUSD: true,
-                    prefix: '$',
                 })}
             </p>
-            <p className={styles.amount}>{exchangeBalanceTruncated}</p>
+            <p className={styles.amount}>{dexBalanceTruncated}</p>
         </div>
     );
 }

@@ -1,13 +1,11 @@
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import {
-    GCGO_CANDLES_URL,
-    GRAPHCACHE_SMALL_URL,
+    GCGO_OVERRIDE_URL,
+    HISTORICAL_CANDLES_URL,
     GRAPHCACHE_URL,
 } from '../../constants';
-import {
-    getMainnetEquivalent,
-    translateMainnetForGraphcache,
-} from '../../utils/data/testTokenMap';
+import { translateTestnetToken } from '../../utils/data/testnetTokenMap';
+
 import { CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { TokenPriceFn } from './fetchTokenPrice';
 
@@ -27,7 +25,8 @@ interface CandleDataServerIF {
     isDecimalized: boolean;
 }
 
-const GCGO_CANDLES = process.env.REACT_APP_GCGO_CANDLES === 'true';
+const GCGO_CANDLES =
+    process.env.REACT_APP_GCGO_CANDLES?.toLowerCase() !== 'false';
 
 function fetchUniswapCandles(
     mainnetBaseTokenAddress: string,
@@ -39,21 +38,17 @@ function fetchUniswapCandles(
     baseTokenAddress: string,
     quoteTokenAddress: string,
 ) {
+    const mainnetBase = translateTestnetToken(baseTokenAddress);
+    const mainnetQuote = translateTestnetToken(quoteTokenAddress);
+    const { baseToken: baseTokenForUniswap, quoteToken: quoteTokenForUniswap } =
+        translateUniswapTokens(mainnetBase, mainnetQuote);
     if (GCGO_CANDLES) {
-        const { token: mainnetBase } = getMainnetEquivalent(
-            baseTokenAddress,
-            chainData.chainId,
-        );
-        const { token: mainnetQuote } = getMainnetEquivalent(
-            quoteTokenAddress,
-            chainData.chainId,
-        );
         return fetch(
-            GCGO_CANDLES_URL +
+            HISTORICAL_CANDLES_URL +
                 '/pool_candles?' +
                 new URLSearchParams({
-                    base: mainnetBase.toLowerCase(),
-                    quote: mainnetQuote.toLowerCase(),
+                    base: baseTokenForUniswap.toLowerCase(),
+                    quote: quoteTokenForUniswap.toLowerCase(),
                     poolIdx: '36000',
                     period: period.toString(),
                     time: time, // optional
@@ -62,17 +57,12 @@ function fetchUniswapCandles(
                 }),
         );
     } else {
-        const { baseToken: mainnetBase, quoteToken: mainnetQuote } =
-            translateMainnetForGraphcache(
-                mainnetBaseTokenAddress,
-                mainnetQuoteTokenAddress,
-            );
         return fetch(
             GRAPHCACHE_URL +
                 '/candle_series?' +
                 new URLSearchParams({
-                    base: mainnetBase.toLowerCase(),
-                    quote: mainnetQuote.toLowerCase(),
+                    base: baseTokenForUniswap.toLowerCase(),
+                    quote: quoteTokenForUniswap.toLowerCase(),
                     poolIdx: '36000',
                     period: period.toString(),
                     time: time, // optional
@@ -121,6 +111,7 @@ export interface CandleData {
 export async function fetchCandleSeriesHybrid(
     isFetchEnabled: boolean,
     chainData: ChainSpec,
+    graphCacheUrl: string,
     period: number,
     baseTokenAddress: string,
     quoteTokenAddress: string,
@@ -128,10 +119,12 @@ export async function fetchCandleSeriesHybrid(
     nCandles: number,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
+    signal?: AbortSignal,
 ): Promise<CandlesByPoolAndDuration | undefined> {
     const candles = await fetchCandleSeriesCroc(
         isFetchEnabled,
         chainData,
+        graphCacheUrl,
         period,
         baseTokenAddress,
         quoteTokenAddress,
@@ -139,6 +132,7 @@ export async function fetchCandleSeriesHybrid(
         nCandles,
         crocEnv,
         cachedFetchTokenPrice,
+        signal,
     );
 
     if (!candles) {
@@ -157,9 +151,8 @@ export async function fetchCandleSeriesHybrid(
     }
 
     try {
-        const stitchTime = Math.min(
-            endTime,
-            ...candles.candles.map((c) => c.time),
+        const stitchTime = Math.floor(
+            Math.min(endTime, ...candles.candles.map((c) => c.time)),
         );
 
         const stitchN = nCandles - candles.candles.length;
@@ -202,6 +195,7 @@ export async function fetchCandleSeriesHybrid(
 export async function fetchCandleSeriesCroc(
     isFetchEnabled: boolean,
     chainData: ChainSpec,
+    graphCacheUrl: string,
     period: number,
     baseTokenAddress: string,
     quoteTokenAddress: string,
@@ -209,11 +203,15 @@ export async function fetchCandleSeriesCroc(
     nCandles: number,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
+    signal?: AbortSignal,
 ): Promise<CandlesByPoolAndDuration | undefined> {
     if (!isFetchEnabled) {
         return undefined;
     }
-    const candleSeriesEndpoint = GRAPHCACHE_SMALL_URL + '/pool_candles';
+
+    const candleSeriesEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/pool_candles'
+        : graphCacheUrl + '/pool_candles';
 
     if (endTime == 0) {
         endTime = Math.floor(Date.now() / 1000);
@@ -232,7 +230,7 @@ export async function fetchCandleSeriesCroc(
         chainId: chainData.chainId,
     });
 
-    return fetch(candleSeriesEndpoint + '?' + reqOptions)
+    return fetch(candleSeriesEndpoint + '?' + reqOptions, { signal })
         .then((response) => response?.json())
         .then(async (json) => {
             if (!json?.data) {
@@ -296,19 +294,11 @@ async function expandPoolStats(
     cachedFetchTokenPrice: TokenPriceFn,
     isCrocData: boolean,
 ): Promise<CandleData[]> {
-    const mainnetBase = getMainnetEquivalent(base, chainId);
-    const mainnetQuote = getMainnetEquivalent(quote, chainId);
-    const basePricePromise = cachedFetchTokenPrice(
-        mainnetBase.token,
-        mainnetBase.chainId,
-    );
-    const quotePricePromise = cachedFetchTokenPrice(
-        mainnetQuote.token,
-        mainnetQuote.chainId,
-    );
-
     const baseDecimals = crocEnv.token(base).decimals;
     const quoteDecimals = crocEnv.token(quote).decimals;
+
+    const basePricePromise = cachedFetchTokenPrice(base, chainId);
+    const quotePricePromise = cachedFetchTokenPrice(quote, chainId);
 
     const basePrice = (await basePricePromise)?.usdPrice || 0.0;
     const quotePrice = (await quotePricePromise)?.usdPrice || 0.0;
@@ -390,6 +380,20 @@ function decorateCandleData(
                     1 / (p.priceClose * priceDecMult),
             };
         });
+}
+
+function translateUniswapTokens(
+    baseToken: string,
+    quoteToken: string,
+): { baseToken: string; quoteToken: string } {
+    const WETH = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
+    const ZERO = '0x0000000000000000000000000000000000000000';
+    if (baseToken === ZERO) {
+        const [baseAddr, quoteAddr] = sortBaseQuoteTokens(WETH, quoteToken);
+        return { baseToken: baseAddr, quoteToken: quoteAddr };
+    } else {
+        return { baseToken: baseToken, quoteToken: quoteToken };
+    }
 }
 
 async function fetchCandleSeriesUniswap(

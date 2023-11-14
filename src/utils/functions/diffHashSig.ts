@@ -1,5 +1,6 @@
 import { CandleData } from '../../App/functions/fetchCandleSeries';
 import { LiquidityDataIF } from '../../App/functions/fetchPoolLiquidity';
+import { scaleData } from '../../pages/Chart/ChartUtils/chartUtils';
 import { LimitOrderIF } from '../interfaces/LimitOrderIF';
 import { PositionIF } from '../interfaces/PositionIF';
 import { TransactionIF } from '../interfaces/TransactionIF';
@@ -41,8 +42,35 @@ export function diffHashSigChart(chartData?: CandleData[]) {
     if (chartData.length === 0) {
         return 'empty';
     }
+
     return diffHashSig({
         chartData,
+    });
+}
+
+export function diffHashSigScaleData(
+    scaleData?: scaleData,
+    axis: string | undefined = undefined,
+) {
+    if (!scaleData) {
+        return 'null';
+    }
+
+    if (axis === 'x') {
+        return JSON.stringify(scaleData?.xScale.domain());
+    }
+
+    if (axis === 'y') {
+        return JSON.stringify(scaleData?.yScale.domain());
+    }
+
+    return diffHashSig({
+        xScaleDomain: scaleData?.xScale.domain(),
+        xScaleRange: scaleData?.xScale.range(),
+        yScaleDomain: scaleData?.yScale.domain(),
+        yScaleRange: scaleData?.yScale.range(),
+        volumeScaleDomain: scaleData?.volumeScale.domain(),
+        volumeScaleRange: scaleData?.volumeScale.range(),
     });
 }
 

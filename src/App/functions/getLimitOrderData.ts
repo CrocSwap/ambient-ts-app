@@ -7,24 +7,26 @@ import {
     tickToPrice,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
-import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
 import { LimitOrderIF, TokenIF } from '../../utils/interfaces/exports';
 import { LimitOrderServerIF } from '../../utils/interfaces/LimitOrderIF';
 import { FetchAddrFn } from './fetchAddress';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
 import { SpotPriceFn } from './querySpotPrice';
+import { Provider } from '@ethersproject/providers';
 
 export const getLimitOrderData = async (
     order: LimitOrderServerIF,
     tokensOnChain: TokenIF[],
     crocEnv: CrocEnv,
+    provider: Provider,
     chainId: string,
     lastBlockNumber: number,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
     cachedEnsResolve: FetchAddrFn,
+    skipENSFetch?: boolean,
 ): Promise<LimitOrderIF> => {
     const newOrder = { ...order } as LimitOrderIF;
 
@@ -40,35 +42,15 @@ export const getLimitOrderData = async (
         lastBlockNumber,
     );
 
-    const baseMetadata = cachedTokenDetails(
-        (await crocEnv.context).provider,
-        order.base,
-        chainId,
-    );
-    const quoteMetadata = cachedTokenDetails(
-        (await crocEnv.context).provider,
-        order.quote,
-        chainId,
-    );
+    const baseMetadata = cachedTokenDetails(provider, order.base, chainId);
+    const quoteMetadata = cachedTokenDetails(provider, order.quote, chainId);
 
-    const ensRequest = cachedEnsResolve(
-        (await crocEnv.context).provider,
-        order.user,
-        '0x1',
-    );
+    newOrder.ensResolution = skipENSFetch
+        ? ''
+        : (await cachedEnsResolve(order.user)) ?? '';
 
-    newOrder.ensResolution = (await ensRequest) ?? '';
-
-    const basePricedToken = getMainnetEquivalent(baseTokenAddress, chainId);
-    const basePricePromise = cachedFetchTokenPrice(
-        basePricedToken.token,
-        basePricedToken.chainId,
-    );
-    const quotePricedToken = getMainnetEquivalent(quoteTokenAddress, chainId);
-    const quotePricePromise = cachedFetchTokenPrice(
-        quotePricedToken.token,
-        quotePricedToken.chainId,
-    );
+    const basePricePromise = cachedFetchTokenPrice(baseTokenAddress, chainId);
+    const quotePricePromise = cachedFetchTokenPrice(quoteTokenAddress, chainId);
 
     const DEFAULT_DECIMALS = 18;
     const baseTokenDecimals =
@@ -142,10 +124,51 @@ export const getLimitOrderData = async (
             tickToPrice(order.askTick),
         ),
     );
+
     newOrder.positionLiqQuote = bigNumToFloat(
         quoteTokenForConcLiq(
             await poolPriceNonDisplay,
             floatToBigNum(order.concLiq),
+            tickToPrice(order.bidTick),
+            tickToPrice(order.askTick),
+        ),
+    );
+    newOrder.originalPositionLiqBase = bigNumToFloat(
+        baseTokenForConcLiq(
+            !order.isBid
+                ? tickToPrice(order.bidTick - 1)
+                : tickToPrice(order.askTick + 1),
+            floatToBigNum(order.concLiq + order.claimableLiq),
+            tickToPrice(order.bidTick),
+            tickToPrice(order.askTick),
+        ),
+    );
+    newOrder.originalPositionLiqQuote = bigNumToFloat(
+        quoteTokenForConcLiq(
+            !order.isBid
+                ? tickToPrice(order.bidTick - 1)
+                : tickToPrice(order.askTick + 1),
+            floatToBigNum(order.concLiq + order.claimableLiq),
+            tickToPrice(order.bidTick),
+            tickToPrice(order.askTick),
+        ),
+    );
+    newOrder.expectedPositionLiqBase = bigNumToFloat(
+        baseTokenForConcLiq(
+            order.isBid
+                ? tickToPrice(order.bidTick - 1)
+                : tickToPrice(order.askTick + 1),
+            floatToBigNum(order.concLiq + order.claimableLiq),
+            tickToPrice(order.bidTick),
+            tickToPrice(order.askTick),
+        ),
+    );
+    newOrder.expectedPositionLiqQuote = bigNumToFloat(
+        quoteTokenForConcLiq(
+            order.isBid
+                ? tickToPrice(order.bidTick - 1)
+                : tickToPrice(order.askTick + 1),
+            floatToBigNum(order.concLiq + order.claimableLiq),
             tickToPrice(order.bidTick),
             tickToPrice(order.askTick),
         ),
@@ -183,6 +206,16 @@ export const getLimitOrderData = async (
         newOrder.positionLiqBase / Math.pow(10, baseTokenDecimals);
     newOrder.positionLiqQuoteDecimalCorrected =
         newOrder.positionLiqQuote / Math.pow(10, quoteTokenDecimals);
+
+    newOrder.originalPositionLiqBaseDecimalCorrected =
+        newOrder.originalPositionLiqBase / Math.pow(10, baseTokenDecimals);
+    newOrder.originalPositionLiqQuoteDecimalCorrected =
+        newOrder.originalPositionLiqQuote / Math.pow(10, quoteTokenDecimals);
+
+    newOrder.expectedPositionLiqBaseDecimalCorrected =
+        newOrder.expectedPositionLiqBase / Math.pow(10, baseTokenDecimals);
+    newOrder.expectedPositionLiqQuoteDecimalCorrected =
+        newOrder.expectedPositionLiqQuote / Math.pow(10, quoteTokenDecimals);
 
     newOrder.claimableLiqBaseDecimalCorrected =
         newOrder.claimableLiqBase / Math.pow(10, baseTokenDecimals);

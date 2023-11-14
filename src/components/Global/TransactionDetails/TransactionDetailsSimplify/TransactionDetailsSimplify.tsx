@@ -4,7 +4,7 @@ import { RiExternalLinkLine } from 'react-icons/ri';
 
 import styles from './TransactionDetailsSimplify.module.css';
 import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
+import { ZERO_ADDRESS } from '../../../../constants';
 import moment from 'moment';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useContext } from 'react';
@@ -45,6 +45,8 @@ export default function TransactionDetailsSimplify(
         isDenomBase,
         baseQuantityDisplay,
         quoteQuantityDisplay,
+        estimatedBaseFlowDisplay,
+        estimatedQuoteFlowDisplay,
         baseTokenAddress,
         quoteTokenAddress,
         usdValue,
@@ -149,7 +151,6 @@ export default function TransactionDetailsSimplify(
         </div>
     );
 
-    IS_LOCAL_ENV && console.debug({ tx });
     const changeType = tx.changeType;
     const positionType = tx.positionType;
     const entityType = tx.entityType;
@@ -226,8 +227,20 @@ export default function TransactionDetailsSimplify(
             content: (
                 <div style={{ cursor: 'default' }}>
                     {isBuy
-                        ? `${baseQuantityDisplay} ${baseTokenSymbol}`
-                        : `${quoteQuantityDisplay} ${quoteTokenSymbol}`}
+                        ? `${
+                              tx.entityType !== 'limitOrder' ||
+                              tx.changeType === 'burn' ||
+                              tx.changeType === 'mint'
+                                  ? baseQuantityDisplay
+                                  : estimatedBaseFlowDisplay || '0.00'
+                          } ${baseTokenSymbol}`
+                        : `${
+                              tx.entityType !== 'limitOrder' ||
+                              tx.changeType === 'burn' ||
+                              tx.changeType === 'mint'
+                                  ? quoteQuantityDisplay
+                                  : estimatedQuoteFlowDisplay || '0.00'
+                          } ${quoteTokenSymbol}`}
                 </div>
             ),
             explanation:
@@ -251,8 +264,18 @@ export default function TransactionDetailsSimplify(
             content: (
                 <div style={{ cursor: 'default' }}>
                     {!isBuy
-                        ? `${baseQuantityDisplay} ${baseTokenSymbol}`
-                        : `${quoteQuantityDisplay} ${quoteTokenSymbol}`}
+                        ? `${
+                              tx.entityType !== 'limitOrder' ||
+                              tx.changeType === 'recover'
+                                  ? baseQuantityDisplay
+                                  : estimatedBaseFlowDisplay || '0.00'
+                          } ${baseTokenSymbol}`
+                        : `${
+                              tx.entityType !== 'limitOrder' ||
+                              tx.changeType === 'recover'
+                                  ? quoteQuantityDisplay
+                                  : estimatedQuoteFlowDisplay || '0.00'
+                          } ${quoteTokenSymbol}`}
                 </div>
             ),
             explanation:

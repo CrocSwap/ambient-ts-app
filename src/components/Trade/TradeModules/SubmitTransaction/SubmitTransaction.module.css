@@ -1,0 +1,27 @@
+.close_icon_container {
+    margin-top: 8px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+}
+
+.close_icon_container button {
+}
+
+.close_icon_container button:hover {
+    color: var(--accent1);
+    border: 1px solid var(--accent1);
+}
+
+.extra_info_container {
+    padding: 12px;
+    background: var(--dark2);
+    margin-top: 8px;
+}
+
+.button_content div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}

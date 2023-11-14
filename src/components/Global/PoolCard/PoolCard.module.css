@@ -2,19 +2,19 @@
     cursor: pointer;
     position: relative;
     list-style: none;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
 }
 
 .main_container {
     width: 270px;
     height: 120px;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     background: var(--dark2);
     padding: 8px;
     z-index: 1;
     cursor: pointer;
     position: relative;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 
     display: flex;
     flex-direction: column;
@@ -46,11 +46,10 @@
     gap: 0.5rem;
 }
 
-
 .tokens_name {
     font-family: var(--font-logo);
     font-weight: 100;
-    font-size: 16px;
+    font-size: var(--header-size);
     line-height: 22px;
     display: flex;
     justify-content: center;
@@ -67,7 +66,7 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 12px;
+    font-size: var(--body-size);
     color: var(--text1);
     margin-left: 2px;
 }
@@ -76,8 +75,8 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 12px;
-    line-height: 15px;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
     /* identical to box height */
 
     display: flex;
@@ -91,7 +90,7 @@
 }
 
 .apr {
-    font-weight: 200;
+    font-weight: 300;
     font-size: 14px;
     line-height: 22px;
     letter-spacing: -0.02em;
@@ -103,7 +102,7 @@
     text-fill-color: transparent;
 }
 .vol {
-    font-weight: 200;
+    font-weight: 300;
     font-size: 14px;
     line-height: 22px;
     letter-spacing: -0.02em;
@@ -113,8 +112,8 @@
     color: var(--text1);
 }
 .change_positive {
-    font-weight: 200;
-    font-size: 12px;
+    font-weight: 300;
+    font-size: var(--body-size);
     line-height: 22px;
     letter-spacing: -0.02em;
 
@@ -123,8 +122,8 @@
     color: var(--positive);
 }
 .change_negative {
-    font-weight: 200;
-    font-size: 12px;
+    font-weight: 300;
+    font-size: var(--body-size);
     line-height: 22px;
     letter-spacing: -0.02em;
 
@@ -154,4 +153,28 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+@media only screen and (max-width: 600px) {
+    .main_container {
+        background-color: transparent;
+
+        background: var(--dark2);
+    }
+    /* .pool_card{
+        padding: 0 1rem;
+    } */
+    .pool_card,
+    .main_container {
+        width: 100%;
+    }
+
+    .pool_card:hover,
+    .pool_card:focus-visible {
+        box-shadow: none;
+    }
+
+    .column:first-of-type {
+        align-items: flex-start;
+    }
 }

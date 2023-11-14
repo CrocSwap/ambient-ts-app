@@ -1,10 +1,15 @@
-import styles from './PriceInput.module.css';
 import { FaMinus, FaPlus } from 'react-icons/fa';
 import { ChangeEvent, FocusEventHandler, memo, useContext } from 'react';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { exponentialNumRegEx } from '../../../../../utils/regex/exports';
+import { FlexContainer, Text } from '../../../../../styled/Common';
+import {
+    PriceInputButton,
+    PriceInputContainer,
+    PriceInput as PriceInputStyled,
+} from '../../../../../styled/Components/TradeModules';
 
-interface priceInputProps {
+interface propsIF {
     disable?: boolean;
     fieldId: string | number;
     title: string;
@@ -15,7 +20,12 @@ interface priceInputProps {
     decreaseTick: () => void;
 }
 
-function PriceInput(props: priceInputProps) {
+// this component is only used for min and max prices for a range position in
+// ... advanced mode of the Range module, for some reason its value is set from
+// ... a `useEffect()` hook in Range.tsx, I have not yet determined if there's
+// ... a good reason to handle this with a side effect
+
+function PriceInput(props: propsIF) {
     const {
         disable,
         fieldId,
@@ -34,26 +44,34 @@ function PriceInput(props: priceInputProps) {
             : percentageDifference.toString();
 
     return (
-        <div className={styles.minMax_container} id={`range_${fieldId}_price`}>
-            <span className={styles.title}>{title}</span>
-            <div className={styles.price_input_container}>
-                <button
-                    className={styles.sign}
+        <FlexContainer
+            flexDirection='column'
+            justifyContent='center'
+            alignItems='center'
+            style={{ width: '48%' }}
+            id={`range_${fieldId}_price`}
+            gap={4}
+        >
+            <Text fontSize='body' color='text2'>
+                {title}
+            </Text>
+            <PriceInputContainer>
+                <PriceInputButton
+                    id={`decrease_${fieldId}_price_button`}
                     onClick={decreaseTick}
                     aria-label={`decrease tick of ${fieldId} price.`}
                 >
                     <FaMinus size={16} />
-                </button>
-                <span
-                    className={
-                        showRangePulseAnimation && styles.pulse_animation
-                    }
+                </PriceInputButton>
+                <FlexContainer
+                    animation={showRangePulseAnimation ? 'pulse' : ''}
                 >
-                    <input
+                    <PriceInputStyled
                         id={`${fieldId}-price-input-quantity`}
-                        className={styles.price_quantity}
                         type='text'
-                        onChange={(event) => handleChangeEvent(event)}
+                        onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                            handleChangeEvent(event)
+                        }
                         onBlur={onBlur}
                         inputMode='decimal'
                         autoComplete='off'
@@ -65,17 +83,19 @@ function PriceInput(props: priceInputProps) {
                         disabled={disable}
                         aria-label={`${fieldId} price input quantity.`}
                     />
-                </span>
-                <button
-                    className={styles.sign}
+                </FlexContainer>
+                <PriceInputButton
+                    id={`increase_${fieldId}_price_button`}
                     onClick={increaseTick}
                     aria-label={`increase tick of ${fieldId} price.`}
                 >
                     <FaPlus size={16} />
-                </button>
-            </div>
-            <span
-                className={styles.percentage}
+                </PriceInputButton>
+            </PriceInputContainer>
+            <Text
+                id={`${fieldId}_price_of_range_advanced`}
+                fontSize='header2'
+                color='accent5'
                 tabIndex={0}
                 aria-label={`Percentage difference is ${percentageDifferenceString} percent.`}
                 aria-live='polite'
@@ -83,8 +103,8 @@ function PriceInput(props: priceInputProps) {
                 aria-relevant='all'
             >
                 {percentageDifferenceString}%
-            </span>
-        </div>
+            </Text>
+        </FlexContainer>
     );
 }
 

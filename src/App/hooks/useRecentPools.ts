@@ -1,16 +1,16 @@
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { useMemo, useState } from 'react';
-import { TokenIF } from '../../utils/interfaces/exports';
+import { PoolIF, TokenIF } from '../../utils/interfaces/exports';
 import sortTokens from '../../utils/functions/sortTokens';
 
-export interface SmallerPoolIF {
-    baseToken: TokenIF;
-    quoteToken: TokenIF;
-}
-
 export interface recentPoolsMethodsIF {
-    add: (tokenA: TokenIF, tokenB: TokenIF) => void;
-    get: (count: number) => SmallerPoolIF[];
+    add: (
+        tokenA: TokenIF,
+        tokenB: TokenIF,
+        chainId: string,
+        poolId: number,
+    ) => void;
+    get: (count: number) => PoolIF[];
     reset: () => void;
 }
 
@@ -25,10 +25,15 @@ export interface recentPoolsMethodsIF {
 //  pool-related page will bump that pool to the front of the list.
 export const useRecentPools = (chainId: string): recentPoolsMethodsIF => {
     // array of pools the user has interacted with in the current session
-    const [recentPools, setRecentPools] = useState<SmallerPoolIF[]>([]);
+    const [recentPools, setRecentPools] = useState<PoolIF[]>([]);
 
     // fn to add a token to the recentTokens array
-    function addPool(tokenA: TokenIF, tokenB: TokenIF): void {
+    function addPool(
+        tokenA: TokenIF,
+        tokenB: TokenIF,
+        chainId: string,
+        poolId: number,
+    ): void {
         // Necessary because tokenA and tokenB are dispatched separately and
         // during switch may temporarily have the same value
         if (tokenA.address === tokenB.address) {
@@ -42,15 +47,19 @@ export const useRecentPools = (chainId: string): recentPoolsMethodsIF => {
 
         const [baseToken, quoteToken] = sortTokens(tokenA, tokenB);
 
-        const nextPool = { baseToken: baseToken, quoteToken: quoteToken };
+        const nextPool: PoolIF = {
+            base: baseToken,
+            quote: quoteToken,
+            chainId,
+            poolIdx: poolId,
+        };
 
-        function matchPools(pool: SmallerPoolIF): boolean {
+        function matchPools(pool: PoolIF): boolean {
             return (
-                pool.baseToken.address.toLowerCase() ===
+                pool.base.address.toLowerCase() ===
                     baseTokenAddr.toLowerCase() &&
-                pool.quoteToken.address.toLowerCase() ===
-                    quoteTokenAddr.toLowerCase() &&
-                pool.baseToken.chainId === baseToken.chainId
+                pool.quote.address.toLowerCase() ===
+                    quoteTokenAddr.toLowerCase()
             );
         }
 
@@ -67,16 +76,16 @@ export const useRecentPools = (chainId: string): recentPoolsMethodsIF => {
     }
 
     // fn to return recent pools from local state
-    function getPools(count: number): SmallerPoolIF[] {
+    function getPools(count: number): PoolIF[] {
         // active conntected chain ID as an integer
         const currentChain: number = parseInt(chainId);
         // filter out pairs for which a pool does not yet exist
         // return a set number of pools on the current active chain
         return recentPools
             .filter(
-                (pool: SmallerPoolIF) =>
-                    pool.baseToken.chainId === currentChain &&
-                    pool.quoteToken.chainId === currentChain,
+                (pool: PoolIF) =>
+                    pool.base.chainId === currentChain &&
+                    pool.quote.chainId === currentChain,
             )
             .slice(0, count);
     }

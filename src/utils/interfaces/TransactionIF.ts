@@ -29,6 +29,7 @@ export interface TransactionIF {
     swapPrice: number;
     limitPriceDecimalCorrected: number;
     invLimitPriceDecimalCorrected: number;
+    middlePriceDisplayNum: number;
     swapPriceDecimalCorrected: number;
     swapInvPriceDecimalCorrected: number;
     baseFlowDecimalCorrected: number;

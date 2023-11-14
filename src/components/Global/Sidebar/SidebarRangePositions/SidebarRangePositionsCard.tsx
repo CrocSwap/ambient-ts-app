@@ -1,8 +1,11 @@
-import styles from './SidebarRangePositionsCard.module.css';
 import { PositionIF } from '../../../../utils/interfaces/exports';
-import { getRangeDisplay, getSymbols } from './functions/exports';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { getSymbols } from '../../../../App/functions/getSymbols';
+import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import { RangeItemContainer } from '../../../../styled/Components/Sidebar';
+import { FlexContainer } from '../../../../styled/Common';
+import { Status } from '../../../../styled/Components/Range';
 
 interface propsIF {
     position: PositionIF;
@@ -21,10 +24,19 @@ export default function SidebarRangePositionsCard(props: propsIF) {
     );
 
     // human-readable string indicating the range display
-    const [rangeDisplay, rangeStatusStyle] = getRangeDisplay(
-        position,
-        isDenomBase,
-    );
+    const baseTokenCharacter = position?.baseSymbol
+        ? getUnicodeCharacter(position?.baseSymbol)
+        : '';
+    const quoteTokenCharacter = position?.quoteSymbol
+        ? getUnicodeCharacter(position?.quoteSymbol)
+        : '';
+
+    const rangeDisplay =
+        position?.positionType === 'ambient'
+            ? 'ambient'
+            : isDenomBase
+            ? `${quoteTokenCharacter}${position?.lowRangeDisplayInBase}-${quoteTokenCharacter}${position?.highRangeDisplayInBase}`
+            : `${baseTokenCharacter}${position?.lowRangeDisplayInQuote}-${baseTokenCharacter}${position?.highRangeDisplayInQuote}`;
 
     // human-readable string showing total value of the position
     const value = getFormattedNumber({
@@ -33,17 +45,36 @@ export default function SidebarRangePositionsCard(props: propsIF) {
     });
 
     return (
-        <div className={styles.container} onClick={() => handleClick(position)}>
-            <div>{pair}</div>
-            <div>
-                {rangeDisplay}
-                <div className={styles.range_status_container}>
-                    <div className={rangeStatusStyle}>
-                        <div className={styles.inner_circle_2}></div>
-                    </div>
-                </div>
-            </div>
-            <div className={styles.status_display}>{value}</div>
-        </div>
+        <RangeItemContainer
+            numCols={4}
+            color='text2'
+            onClick={() => handleClick(position)}
+        >
+            {[pair, rangeDisplay, value].map((item) => (
+                <FlexContainer
+                    key={item}
+                    justifyContent='center'
+                    alignItems='center'
+                    padding='4px'
+                >
+                    {item}
+                </FlexContainer>
+            ))}
+            <FlexContainer
+                justifyContent='center'
+                alignItems='center'
+                padding='4px'
+            >
+                <Status
+                    status={
+                        position.positionType === 'ambient'
+                            ? 'ambient'
+                            : position.isPositionInRange
+                            ? 'positive'
+                            : 'negative'
+                    }
+                />
+            </FlexContainer>
+        </RangeItemContainer>
     );
 }

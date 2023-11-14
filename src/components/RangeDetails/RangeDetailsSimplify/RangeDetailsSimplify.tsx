@@ -12,6 +12,7 @@ import { FiCopy } from 'react-icons/fi';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { useMediaQuery } from '@material-ui/core';
 
 interface ItemRowPropsIF {
     title: string;
@@ -42,6 +43,7 @@ export default function RangeDetailsSimplify(
     );
 
     const {
+        ensName,
         isDenomBase,
         isBaseTokenMoneynessGreaterOrEqual,
         minRangeDenomByMoneyness,
@@ -70,6 +72,8 @@ export default function RangeDetailsSimplify(
         baseDisplayFrontend,
         quoteDisplayFrontend,
     } = useProcessRange(position, userAddress, isAccountView);
+
+    const showFullAddresses = useMediaQuery('(min-width: 768px)');
 
     const {
         snackbar: { open: openSnackbar },
@@ -137,13 +141,20 @@ export default function RangeDetailsSimplify(
             <FiCopy style={{ cursor: 'pointer' }} />
         </div>
     );
+
     const walletContent = (
         <div
             className={styles.link_row}
             onClick={handleOpenWallet}
             style={{ cursor: 'pointer' }}
         >
-            <p>{userNameToDisplay}</p>
+            <p style={!ensName ? { fontFamily: 'monospace' } : undefined}>
+                {showFullAddresses
+                    ? ensName
+                        ? ensName
+                        : ownerId
+                    : userNameToDisplay}
+            </p>
             <RiExternalLinkLine />
         </div>
     );
@@ -347,7 +358,6 @@ export default function RangeDetailsSimplify(
                     <p>{title}</p>
                     <TooltipComponent title={explanation} placement={'right'} />
                 </div>
-
                 <div>{content}</div>
             </div>
         );

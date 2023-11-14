@@ -1,5 +1,5 @@
 import styles from './WalletButton.module.css';
-import ambientLogo from '../../../../assets/images/logos/ambient_logo.png';
+import ambientLogo from '../../../../assets/images/logos/logo_mark.svg';
 
 interface WalletButtonPropsIF {
     disabled?: boolean;

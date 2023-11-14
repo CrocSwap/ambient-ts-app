@@ -19,11 +19,13 @@ import { getElapsedTime } from '../../App/functions/getElapsedTime';
 import { diffHashSig } from '../functions/diffHashSig';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import uriToHttp from '../functions/uriToHttp';
+import { getAddress } from 'ethers/lib/utils.js';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
     account = '',
     isAccountView = false,
+    fetchedEnsAddress?: string,
 ) => {
     const tradeData = useAppSelector((state) => state.tradeData);
     const blockExplorer = getChainExplorer(limitOrder.chainId);
@@ -44,30 +46,21 @@ export const useProcessOrder = (
         limitOrder.user.toLowerCase() === account?.toLowerCase();
     const isDenomBase = tradeData.isDenomBase;
 
-    const ownerId = limitOrder.ensResolution
-        ? limitOrder.ensResolution
-        : limitOrder.user;
-    const ensName = limitOrder.ensResolution ? limitOrder.ensResolution : null;
+    const ownerId = fetchedEnsAddress || getAddress(limitOrder.user) || '';
+
+    const ensName = fetchedEnsAddress || limitOrder.ensResolution || null;
 
     const isOrderFilled = limitOrder.claimableLiq > 0;
 
-    const posHash =
-        limitOrder.user &&
-        limitOrder.base &&
-        limitOrder.quote &&
-        limitOrder.bidTick &&
-        limitOrder.askTick
-            ? concPosSlot(
-                  limitOrder.user,
-                  limitOrder.base,
-                  limitOrder.quote,
-                  limitOrder.bidTick,
-                  limitOrder.askTick,
-                  limitOrder.poolIdx,
-              ).toString()
-            : '…';
-
-    const posHashTruncated = trimString(posHash ?? '', 6, 4, '…');
+    const posHash = concPosSlot(
+        limitOrder.user ?? '',
+        limitOrder.base ?? '',
+        limitOrder.quote ?? '',
+        limitOrder.bidTick ?? '',
+        limitOrder.askTick ?? '',
+        limitOrder.poolIdx ?? '',
+    ).toString();
+    const posHashTruncated = trimString(posHash ?? '', 9, 0, '…');
 
     const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<
         string | undefined
@@ -87,12 +80,8 @@ export const useProcessOrder = (
 
     const isBaseTokenMoneynessGreaterOrEqual = useMemo(
         () =>
-            getMoneynessRank(
-                limitOrder.base.toLowerCase() + '_' + limitOrder.chainId,
-            ) -
-                getMoneynessRank(
-                    limitOrder.quote.toLowerCase() + '_' + limitOrder.chainId,
-                ) >=
+            getMoneynessRank(limitOrder.baseSymbol) -
+                getMoneynessRank(limitOrder.quoteSymbol) >=
             0,
         [limitOrder.base, limitOrder.base, limitOrder.chainId],
     );
@@ -125,7 +114,7 @@ export const useProcessOrder = (
             ? 'priceBuy'
             : 'priceSell';
 
-    const sideType = isAccountView
+    const sideType: 'sell' | 'buy' = isAccountView
         ? isBaseTokenMoneynessGreaterOrEqual
             ? isBid
                 ? 'buy'
@@ -168,9 +157,33 @@ export const useProcessOrder = (
             ? limitOrder.positionLiqQuoteDecimalCorrected
             : limitOrder.claimableLiqQuoteDecimalCorrected;
 
+    const isLimitOrderPartiallyFilled = liqBaseNum !== 0 && liqQuoteNum !== 0;
+
     const baseQty = getFormattedNumber({
         value: liqBaseNum,
         zeroDisplay: '0',
+    });
+
+    const fillPercentage =
+        100 *
+        (limitOrder.isBid
+            ? liqQuoteNum / limitOrder.expectedPositionLiqQuoteDecimalCorrected
+            : liqBaseNum / limitOrder.expectedPositionLiqBaseDecimalCorrected);
+
+    const originalPositionLiqBase = getFormattedNumber({
+        value: limitOrder.originalPositionLiqBaseDecimalCorrected,
+    });
+
+    const originalPositionLiqQuote = getFormattedNumber({
+        value: limitOrder.originalPositionLiqQuoteDecimalCorrected,
+    });
+
+    const expectedPositionLiqBase = getFormattedNumber({
+        value: limitOrder.expectedPositionLiqBaseDecimalCorrected,
+    });
+
+    const expectedPositionLiqQuote = getFormattedNumber({
+        value: limitOrder.expectedPositionLiqQuoteDecimalCorrected,
     });
 
     const quoteQty = getFormattedNumber({
@@ -183,7 +196,6 @@ export const useProcessOrder = (
     const usdValue = getFormattedNumber({
         value: usdValueNum,
         isUSD: true,
-        prefix: '$',
     });
 
     // -----------------------------------------------------------------------------------------
@@ -214,10 +226,10 @@ export const useProcessOrder = (
     // ----------------------------------------------------------------------
 
     const ensNameOrOwnerTruncated = ensName
-        ? ensName.length > 15
-            ? trimString(ensName, 9, 3, '…')
+        ? ensName.length > 16
+            ? trimString(ensName, 11, 3, '…')
             : ensName
-        : trimString(ownerId, 7, 4, '…');
+        : trimString(ownerId, 6, 4, '…');
 
     const userNameToDisplay = isOwnerActiveAccount
         ? 'You'
@@ -413,6 +425,10 @@ export const useProcessOrder = (
         baseTokenLogo,
         baseDisplayFrontend,
         quoteDisplayFrontend,
+        originalPositionLiqBase,
+        originalPositionLiqQuote,
+        expectedPositionLiqBase,
+        expectedPositionLiqQuote,
         baseDisplay,
         quoteDisplay,
         baseTokenSymbol,
@@ -427,6 +443,8 @@ export const useProcessOrder = (
 
         // open order status
         isOrderFilled,
+        isLimitOrderPartiallyFilled,
+        fillPercentage,
 
         // price
         startPriceDisplay,
@@ -442,5 +460,7 @@ export const useProcessOrder = (
 
         elapsedTimeString,
         initialTokenQty,
+        baseTokenAddress: limitOrder.base,
+        quoteTokenAddress: limitOrder.quote,
     };
 };

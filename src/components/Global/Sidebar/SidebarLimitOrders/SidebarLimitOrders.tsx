@@ -1,4 +1,3 @@
-import styles from '../SidebarTable.module.css';
 import SidebarLimitOrdersCard from './SidebarLimitOrdersCard';
 import { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -8,9 +7,16 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import {
+    limitParamsIF,
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
+import { FlexContainer } from '../../../../styled/Common';
+import {
+    HeaderGrid,
+    ItemsContainer,
+    ViewMoreFlex,
+} from '../../../../styled/Components/Sidebar';
 
 interface propsIF {
     limitOrderByUser?: LimitOrderIF[];
@@ -56,11 +62,16 @@ export default function SidebarLimitOrders(props: propsIF) {
         setSelectedOutsideTab(1);
         setCurrentPositionActive(limitOrder.limitOrderId);
         setShowAllData(false);
-        linkGenLimit.navigate({
+        const { base, quote, isBid, bidTick, askTick } = limitOrder;
+        // URL params for link to limit page
+        const limitLinkParams: limitParamsIF = {
             chain: chainId,
-            tokenA: limitOrder.base,
-            tokenB: limitOrder.quote,
-        });
+            tokenA: base,
+            tokenB: quote,
+            limitTick: isBid ? bidTick : askTick,
+        };
+        // navigate user to limit page with URL params defined above
+        linkGenLimit.navigate(limitLinkParams);
     };
 
     const handleViewMoreClick = () => {
@@ -71,13 +82,15 @@ export default function SidebarLimitOrders(props: propsIF) {
     };
 
     return (
-        <div className={styles.container}>
-            <header className={styles.header}>
-                <div>Pool</div>
-                <div>Price</div>
-                <div>Value</div>
-            </header>
-            <div className={styles.content}>
+        <FlexContainer flexDirection='column' fontSize='body' fullHeight>
+            <HeaderGrid numCols={3} color='text2' padding='4px 0'>
+                {['Pool', 'Price', 'Value'].map((item) => (
+                    <FlexContainer key={item} justifyContent='center'>
+                        {item}
+                    </FlexContainer>
+                ))}
+            </HeaderGrid>
+            <ItemsContainer>
                 {limitOrderByUser &&
                     limitOrderByUser.map((order: LimitOrderIF) => (
                         <SidebarLimitOrdersCard
@@ -90,14 +103,15 @@ export default function SidebarLimitOrders(props: propsIF) {
                         />
                     ))}
                 {isUserConnected && (
-                    <div
-                        className={styles.view_more}
+                    <ViewMoreFlex
+                        justifyContent='center'
+                        color='accent4'
                         onClick={handleViewMoreClick}
                     >
                         View More
-                    </div>
+                    </ViewMoreFlex>
                 )}
-            </div>
-        </div>
+            </ItemsContainer>
+        </FlexContainer>
     );
 }

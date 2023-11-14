@@ -16,8 +16,9 @@ export interface candleDomain {
 
 export interface candleScale {
     lastCandleDate: number | undefined;
-    nCandle: number;
+    nCandles: number;
     isFetchForTimeframe: boolean;
+    isShowLatestCandle: boolean;
 }
 
 export interface TradeDataIF {
@@ -31,7 +32,6 @@ export interface TradeDataIF {
     shouldSwapConverterUpdate: boolean;
     shouldLimitConverterUpdate: boolean;
     shouldSwapDirectionReverse: boolean;
-    shouldLimitDirectionReverse: boolean;
     shouldRangeDirectionReverse: boolean;
     isDenomBase: boolean;
     advancedMode: boolean;
@@ -40,7 +40,6 @@ export interface TradeDataIF {
     isTokenAPrimaryRange: boolean;
     primaryQuantityRange: string;
     limitTick: number | undefined;
-    limitTickCopied: boolean;
     rangeTicksCopied: boolean;
     poolPriceNonDisplay: number;
     advancedLowTick: number;
@@ -56,8 +55,6 @@ export interface TradeDataIF {
     rangeHighLineTriggered: boolean | undefined;
     candleDomains: candleDomain;
     rescaleRangeBoundaries: boolean | undefined;
-    mainnetBaseTokenAddress: string;
-    mainnetQuoteTokenAddress: string;
 }
 
 // Have to set these values to something on load, so we use default pair
@@ -79,7 +76,6 @@ const initialState: TradeDataIF = {
     shouldSwapConverterUpdate: false,
     shouldLimitConverterUpdate: false,
     shouldSwapDirectionReverse: false,
-    shouldLimitDirectionReverse: false,
     shouldRangeDirectionReverse: false,
     isDenomBase: true,
     advancedMode: false,
@@ -88,7 +84,6 @@ const initialState: TradeDataIF = {
     isTokenAPrimaryRange: true,
     primaryQuantityRange: '',
     limitTick: undefined,
-    limitTickCopied: false,
     rangeTicksCopied: false,
     poolPriceNonDisplay: 0,
     advancedLowTick: 0,
@@ -110,8 +105,6 @@ const initialState: TradeDataIF = {
     isLinesSwitched: undefined,
     rangeHighLineTriggered: undefined,
     rescaleRangeBoundaries: undefined,
-    mainnetBaseTokenAddress: '',
-    mainnetQuoteTokenAddress: '',
 };
 
 sortTokens(initialState);
@@ -182,12 +175,6 @@ export const tradeDataSlice = createSlice({
         ) => {
             state.shouldSwapDirectionReverse = action.payload;
         },
-        setShouldLimitDirectionReverse: (
-            state,
-            action: PayloadAction<boolean>,
-        ) => {
-            state.shouldLimitDirectionReverse = action.payload;
-        },
         setShouldRangeDirectionReverse: (
             state,
             action: PayloadAction<boolean>,
@@ -226,9 +213,6 @@ export const tradeDataSlice = createSlice({
         },
         setLimitTick: (state, action: PayloadAction<number | undefined>) => {
             state.limitTick = action.payload;
-        },
-        setLimitTickCopied: (state, action: PayloadAction<boolean>) => {
-            state.limitTickCopied = action.payload;
         },
         setRangeTicksCopied: (state, action: PayloadAction<boolean>) => {
             state.rangeTicksCopied = action.payload;
@@ -295,7 +279,6 @@ export const {
     setShouldSwapConverterUpdate,
     setShouldLimitConverterUpdate,
     setShouldSwapDirectionReverse,
-    setShouldLimitDirectionReverse,
     setShouldRangeDirectionReverse,
     setDenomInBase,
     toggleDenomInBase,
@@ -307,7 +290,6 @@ export const {
     setIsTokenAPrimaryRange,
     setPrimaryQuantityRange,
     setLimitTick,
-    setLimitTickCopied,
     setRangeTicksCopied,
     setPoolPriceNonDisplay,
     setAdvancedLowTick,

@@ -1,23 +1,25 @@
-import styles from './AdvancedModeToggle.module.css';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toggleAdvancedMode } from '../../../../utils/state/tradeDataSlice';
-import Toggle from '../../../Global/Toggle/Toggle';
+import Toggle from '../../../Form/Toggle';
 import { memo } from 'react';
+import { FlexContainer, Text } from '../../../../styled/Common';
 
-interface advancedModePropsIF {
+interface propsIF {
     advancedMode: boolean;
 }
 
-function AdvancedModeToggle(props: advancedModePropsIF) {
+function AdvancedModeToggle(props: propsIF) {
     const { advancedMode } = props;
 
     const dispatch = useAppDispatch();
     const handleToggle = () => dispatch(toggleAdvancedMode());
 
     return (
-        <div
-            className={styles.advanced_toggle}
-            id='range_advance_mode_toggle'
+        <FlexContainer
+            fullWidth
+            alignItems='center'
+            gap={4}
+            id='range_advance_mode_toggle_container'
             aria-label='Advanced mode toggle'
         >
             <Toggle
@@ -25,8 +27,10 @@ function AdvancedModeToggle(props: advancedModePropsIF) {
                 handleToggle={handleToggle}
                 id='advanced_reposition'
             />
-            <h4 className={styles.advanced_toggle_title}>{'Balanced'}</h4>
-        </div>
+            <Text fontSize='body' color='text2'>
+                Balanced
+            </Text>
+        </FlexContainer>
     );
 }
 

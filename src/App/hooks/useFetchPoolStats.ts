@@ -26,6 +26,8 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
     } = useContext(CachedDataContext);
     const {
         crocEnv,
+        activeNetwork,
+        provider,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
@@ -36,8 +38,6 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
     const [shouldInvertDisplay, setShouldInvertDisplay] = useState<
         boolean | undefined
     >();
-
-    const poolName = `${pool?.base.symbol} / ${pool?.quote.symbol}`;
 
     const baseTokenCharacter = poolPriceDisplay
         ? getUnicodeCharacter(pool.base.symbol)
@@ -74,15 +74,11 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                     );
 
                     const isBaseTokenMoneynessGreaterOrEqual =
-                        getMoneynessRank(
-                            pool.base.address.toLowerCase() + '_' + chainId,
-                        ) -
-                            getMoneynessRank(
-                                pool.quote.address.toLowerCase() +
-                                    '_' +
-                                    chainId,
-                            ) >=
-                        0;
+                        pool.base.address && pool.quote.address
+                            ? getMoneynessRank(pool.base.symbol) -
+                                  getMoneynessRank(pool.quote.symbol) >=
+                              0
+                            : false;
 
                     const shouldInvertDisplay =
                         !isBaseTokenMoneynessGreaterOrEqual;
@@ -107,7 +103,20 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>(undefined);
     const [poolTvl, setPoolTvl] = useState<string | undefined>(undefined);
+    const [poolFeesTotal, setPoolFeesTotal] = useState<string | undefined>(
+        undefined,
+    );
     const [poolApy, setPoolApy] = useState<string | undefined>(undefined);
+    const [quoteTvlDecimal, setQuoteTvlDecimal] = useState<number | undefined>(
+        undefined,
+    );
+    const [baseTvlDecimal, setBaseTvlDecimal] = useState<number | undefined>(
+        undefined,
+    );
+    const [quoteTvlUsd, setQuoteTvlUsd] = useState<number | undefined>(
+        undefined,
+    );
+    const [baseTvlUsd, setBaseTvlUsd] = useState<number | undefined>(undefined);
 
     const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<
         string | undefined
@@ -123,6 +132,24 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         pool?.quote.address,
     );
 
+    // Reset pool metric states that require asynchronous updates when pool changes
+    const resetPoolStats = () => {
+        setPoolVolume(undefined);
+        setPoolTvl(undefined);
+        setPoolFeesTotal(undefined);
+        setPoolApy(undefined);
+        setQuoteTvlDecimal(undefined);
+        setBaseTvlDecimal(undefined);
+        setQuoteTvlUsd(undefined);
+        setBaseTvlUsd(undefined);
+        setPoolPriceChangePercent(undefined);
+        setIsPoolPriceChangePositive(true);
+    };
+
+    useEffect(() => {
+        resetPoolStats();
+    }, [JSON.stringify(pool)]);
+
     const fetchPoolStats = () => {
         (async () => {
             if (
@@ -130,7 +157,8 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                 chainId &&
                 lastBlockNumber &&
                 shouldInvertDisplay !== undefined &&
-                crocEnv
+                crocEnv &&
+                provider
             ) {
                 const RANGE_WIDTH = 0.1;
 
@@ -139,6 +167,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                     pool.base.address,
                     pool.quote.address,
                     crocEnv,
+                    provider,
                     lastBlockNumber,
                 );
 
@@ -149,12 +178,19 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                     poolIndex,
                     Math.floor(Date.now() / 60000),
                     crocEnv,
+                    activeNetwork.graphCacheUrl,
                     cachedFetchTokenPrice,
                 );
 
                 const tvlResult = poolStats?.tvlTotalUsd;
+                const feesTotalResult = poolStats?.feesTotalUsd;
                 const volumeResult = poolStats?.volumeTotalUsd; // display the 24 hour volume
                 const apyResult = await apyEst;
+
+                setQuoteTvlDecimal(poolStats.quoteTvlDecimal);
+                setBaseTvlDecimal(poolStats.baseTvlDecimal);
+                setQuoteTvlUsd(poolStats.quoteTvlUsd);
+                setBaseTvlUsd(poolStats.baseTvlUsd);
 
                 if (tvlResult) {
                     const tvlString = getFormattedNumber({
@@ -162,6 +198,13 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                         isTvl: true,
                     });
                     setPoolTvl(tvlString);
+                }
+                if (feesTotalResult) {
+                    const feesTotalString = getFormattedNumber({
+                        value: feesTotalResult,
+                        isTvl: false,
+                    });
+                    setPoolFeesTotal(feesTotalString);
                 }
                 if (volumeResult) {
                     const volumeString = getFormattedNumber({
@@ -184,6 +227,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                         quoteAddr,
                         poolIndex,
                         shouldInvertDisplay,
+                        activeNetwork.graphCacheUrl,
                     );
 
                     if (!priceChangeResult) {
@@ -237,8 +281,8 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
 
     const poolLink = linkGenMarket.getFullURL({
         chain: chainId,
-        tokenA: quoteAddr,
-        tokenB: baseAddr,
+        tokenA: baseAddr,
+        tokenB: quoteAddr,
     });
 
     useEffect(() => {
@@ -247,16 +291,17 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         isServerEnabled,
         shouldInvertDisplay,
         lastBlockNumber,
-        crocEnv,
+        !!crocEnv,
+        !!provider,
         poolIndex,
     ]);
 
     return {
-        poolName,
         baseLogoUri,
         quoteLogoUri,
         poolVolume,
         poolTvl,
+        poolFeesTotal,
         poolApy,
         poolPriceChangePercent,
         isPoolPriceChangePositive,
@@ -265,6 +310,10 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         poolPrice,
         poolLink,
         shouldInvertDisplay,
+        quoteTvlUsd,
+        baseTvlUsd,
+        quoteTvlDecimal,
+        baseTvlDecimal,
     };
 };
 export default useFetchPoolStats;

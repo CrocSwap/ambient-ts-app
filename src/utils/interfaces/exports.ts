@@ -9,3 +9,4 @@ export type { TokenListIF } from './TokenListIF';
 export type { TokenPairIF } from './TokenPairIF';
 export type { TransactionIF } from './TransactionIF';
 export type { PoolStatIF } from './PoolStatIF';
+export type { NetworkIF } from './NetworkIF';

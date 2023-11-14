@@ -5,7 +5,7 @@
     right: 0;
     bottom: 0;
     display: flex;
-    /* align-items: center; */
+    align-items: center;
     justify-content: center;
     background-color: rgba(0, 0, 0, 0.7);
     z-index: 99999;
@@ -15,16 +15,17 @@
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     border-radius: var(--border-radius);
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 }
 
 .modal_body {
+   
     border: solid 1px transparent;
     background-image: linear-gradient(
             rgba(189, 27, 27, 0),
             rgba(255, 255, 255, 0)
         ),
-        linear-gradient(101deg, var(--accent1), var(--accent5), var(--accent1));
+        linear-gradient(101deg, var(--accent1), var(--accent1), var(--accent1));
     background-origin: border-box;
     background-clip: content-box, border-box;
     box-shadow: 2px 1000px 1px var(--dark1) inset;
@@ -38,9 +39,12 @@
     position: relative;
     /* max-height: 80vh; */
     color: var(--text1);
-    top: 1rem;
 
     /* min-height: 80vh; */
+}
+
+.box_shadow{
+    box-shadow: var(--gradient-box-shadow);
 }
 
 .no_background_modal {
@@ -52,7 +56,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-weight: 200;
+    font-weight: 300;
     text-transform: capitalize;
     font-size: 14px;
     color: var(--text1);
@@ -62,15 +66,18 @@
 .modal_header h2 {
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
-    font-weight: 200;
+    font-weight: 300;
     color: var(--text1);
     padding-left: 27px;
 }
 
 .modal_content {
     /* padding: 20px; */
-    background: var(--dark2);
+   
     border-radius: var(--border-radius);
+   
+   
+    
 
     /* min-height: 250px; */
 }
@@ -85,7 +92,7 @@
 
 @media only screen and (min-width: 500px) {
     .modal_body {
-        top: 10rem;
         min-width: 400px;
+       
     }
 }

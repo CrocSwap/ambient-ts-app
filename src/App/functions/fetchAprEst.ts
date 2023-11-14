@@ -1,4 +1,5 @@
 import { capitalConcFactor, CrocEnv } from '@crocswap-libs/sdk';
+import { Provider } from '@ethersproject/providers';
 
 // Approximately 24 hours in Ethereum. TODO make this generalizable across
 // chains.
@@ -8,10 +9,9 @@ export async function estimateFrom24HrAmbientApr(
     base: string,
     quote: string,
     crocEnv: CrocEnv,
-    lastBlockNumber?: number,
+    provider: Provider,
+    lastBlockNumber: number,
 ): Promise<number> {
-    const provider = (await crocEnv.context).provider;
-
     if (!lastBlockNumber) {
         lastBlockNumber = await provider.getBlockNumber();
     }
@@ -38,12 +38,14 @@ export async function estimateFrom24HrRangeApr(
     base: string,
     quote: string,
     crocEnv: CrocEnv,
-    lastBlockNumber?: number,
+    provider: Provider,
+    lastBlockNumber: number,
 ): Promise<number> {
     const ambientApy = estimateFrom24HrAmbientApr(
         base,
         quote,
         crocEnv,
+        provider,
         lastBlockNumber,
     );
     const concFactor = capitalConcFactor(

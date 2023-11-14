@@ -1,11 +1,12 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
+import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../constants';
 import { TokenIF, TransactionIF } from '../../utils/interfaces/exports';
 import { FetchAddrFn } from './fetchAddress';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
 import { getTransactionData } from './getTransactionData';
 import { SpotPriceFn } from './querySpotPrice';
+import { Provider } from '@ethersproject/providers';
 
 interface argsIF {
     tokenList: TokenIF[];
@@ -20,6 +21,8 @@ interface argsIF {
     n?: number;
     page?: number;
     crocEnv: CrocEnv;
+    graphCacheUrl: string;
+    provider: Provider;
     lastBlockNumber: number;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedQuerySpotPrice: SpotPriceFn;
@@ -39,6 +42,8 @@ export const fetchUserRecentChanges = (args: argsIF) => {
         ensResolution,
         n,
         crocEnv,
+        graphCacheUrl,
+        provider,
         lastBlockNumber,
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
@@ -46,7 +51,9 @@ export const fetchUserRecentChanges = (args: argsIF) => {
         cachedEnsResolve,
     } = args;
 
-    const userRecentChangesCacheEndpoint = GRAPHCACHE_SMALL_URL + '/user_txs?';
+    const userRecentChangesCacheEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/user_txs?'
+        : graphCacheUrl + '/user_txs?';
 
     IS_LOCAL_ENV && console.debug('fetching user recent changes');
 
@@ -72,18 +79,21 @@ export const fetchUserRecentChanges = (args: argsIF) => {
                 return [] as TransactionIF[];
             }
 
+            const skipENSFetch = true;
             const updatedTransactions = Promise.all(
                 userTransactions.map((tx: TransactionIF) => {
                     return getTransactionData(
                         tx,
                         tokenList,
                         crocEnv,
+                        provider,
                         chainId,
                         lastBlockNumber,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
                         cachedEnsResolve,
+                        skipENSFetch,
                     );
                 }),
             ).then((updatedTransactions) => {

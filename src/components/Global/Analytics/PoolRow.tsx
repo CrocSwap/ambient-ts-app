@@ -1,146 +1,57 @@
 import TokenIcon from '../TokenIcon/TokenIcon';
 import uriToHttp from '../../../utils/functions/uriToHttp';
 import { PoolDataIF } from '../../../contexts/ExploreContext';
-import styled, { css } from 'styled-components';
+import { TokenIF } from '../../../utils/interfaces/exports';
+import {
+    PoolNameWrapper,
+    TradeButton,
+    TableRow,
+    TableCell,
+} from '../../../styled/Components/Analytics';
+import { FlexContainer } from '../../../styled/Common';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     pool: PoolDataIF;
     goToMarket: (tknA: string, tknB: string) => void;
 }
-interface TableCellProps {
-    hidden?: boolean;
-    sm?: boolean;
-    lg?: boolean;
-    xl?: boolean;
-    left?: boolean;
-}
-// Media queries
-const media = {
-    sm: '(min-width: 640px)',
-    lg: '(min-width: 1024px)',
-    xl: '(min-width: 1280px)',
-};
-// Styles for media queries
-const mediaStyles = {
-    sm: css`
-        @media ${media.sm} {
-            display: table-cell;
-        }
-    `,
-    lg: css`
-        @media ${media.lg} {
-            display: table-cell;
-        }
-    `,
-    xl: css`
-        @media ${media.xl} {
-            display: table-cell;
-        }
-    `,
-};
-const FlexCenter = styled.div`
-    display: flex;
-    align-items: center;
-`;
-
-const TableRow = styled.tr`
-    height: 40px;
-    cursor: pointer;
-    margin-bottom: 2px;
-  
-    &:hover {
-        background-color: var(--dark2);
-    }
-    position: relative;
- ]
-`;
-
-const TableCell = styled.td<TableCellProps>`
-    white-space: nowrap;
-    color: var(--text1);
-
-    text-align: ${({ left }) => (left ? 'left' : 'right')};
-
-    ${({ hidden }) =>
-        hidden &&
-        css`
-            display: none;
-        `}
-
-    ${({ sm }) => sm && mediaStyles.sm}
-${({ lg }) => lg && mediaStyles.lg}
-${({ xl }) => xl && mediaStyles.xl}
-`;
-
-const PoolNameWrapper = styled.p`
-    margin-left: 1rem;
-
-    @media (min-width: 640px) {
-        display: none;
-    }
-`;
-
-const TokenWrapper = styled.div`
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 5px;
-    flex-shrink: 0;
-`;
-
-const FlexEnd = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    height: 100%;
-`;
-
-const TradeButton = styled.button`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--dark1);
-    border: 1px solid var(--dark3);
-    border-radius: 999px;
-    cursor: pointer;
-    width: 48px;
-    height: 25px;
-    color: var(--text1);
-
-    &:hover {
-        color: var(--accent1);
-        border-color: var(--accent1);
-    }
-`;
 
 export default function PoolRow(props: propsIF) {
     const { pool, goToMarket } = props;
 
-    const [firstLogoURI, secondLogoURI]: [string, string] =
+    const [firstToken, secondToken]: [TokenIF, TokenIF] =
         pool.moneyness.base < pool.moneyness.quote
-            ? [pool.base.logoURI, pool.quote.logoURI]
-            : [pool.quote.logoURI, pool.base.logoURI];
+            ? [pool.base, pool.quote]
+            : [pool.quote, pool.base];
+
+    const mobileScrenView = useMediaQuery('(max-width: 500px)');
 
     return (
         <TableRow
             onClick={() => goToMarket(pool.base.address, pool.quote.address)}
         >
             <TableCell>
-                <FlexCenter>
-                    <TokenWrapper>
+                <FlexContainer alignItems='center'>
+                    <FlexContainer
+                        alignItems='center'
+                        gap={4}
+                        style={{ flexShrink: 0 }}
+                    >
                         <TokenIcon
-                            src={uriToHttp(firstLogoURI)}
-                            alt={'logo for token'}
-                            size='2xl'
+                            token={firstToken}
+                            src={uriToHttp(firstToken.logoURI)}
+                            alt={firstToken.symbol}
+                            size={mobileScrenView ? 's' : '2xl'}
                         />
                         <TokenIcon
-                            src={uriToHttp(secondLogoURI)}
-                            alt={'logo for token'}
-                            size='2xl'
+                            token={secondToken}
+                            src={uriToHttp(secondToken.logoURI)}
+                            alt={secondToken.symbol}
+                            size={mobileScrenView ? 's' : '2xl'}
                         />
-                    </TokenWrapper>
+                    </FlexContainer>
                     <PoolNameWrapper>{pool.name}</PoolNameWrapper>
-                </FlexCenter>
+                </FlexContainer>
             </TableCell>
             <TableCell hidden sm left>
                 <p>{pool.name}</p>
@@ -148,8 +59,8 @@ export default function PoolRow(props: propsIF) {
             <TableCell hidden sm>
                 <p>{pool.displayPrice ?? '...'}</p>
             </TableCell>
-            <TableCell hidden sm>
-                <p>{!pool.tvl ? '...' : pool.tvlStr}</p>
+            <TableCell>
+                <p>{!pool.tvl || pool.tvl < 0 ? '...' : pool.tvlStr}</p>
             </TableCell>
             <TableCell>
                 <p>{pool.volumeStr || '...'}</p>
@@ -171,10 +82,14 @@ export default function PoolRow(props: propsIF) {
                         : pool.priceChangeStr}
                 </p>
             </TableCell>
-            <TableCell>
-                <FlexEnd>
+            <TableCell hidden sm>
+                <FlexContainer
+                    fullHeight
+                    alignItems='center'
+                    justifyContent='flex-end'
+                >
                     <TradeButton>Trade</TradeButton>
-                </FlexEnd>
+                </FlexContainer>
             </TableCell>
         </TableRow>
     );

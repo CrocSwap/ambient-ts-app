@@ -7,7 +7,7 @@ export default function Medal(props: MedalPropsIF) {
     const { ranking } = props;
 
     const goldMedal = (
-        <li className={styles.quiz_medal}>
+        <div className={styles.quiz_medal}>
             <div
                 className={`${styles.quiz_medal__circle} ${styles.quiz_medal__circle__gold}`}
             >
@@ -19,10 +19,10 @@ export default function Medal(props: MedalPropsIF) {
             <div
                 className={`${styles.quiz_medal__ribbon} ${styles.quiz_medal__ribbon__right}`}
             />
-        </li>
+        </div>
     );
     const silverMedal = (
-        <li className={styles.quiz_medal}>
+        <div className={styles.quiz_medal}>
             <div
                 className={`${styles.quiz_medal__circle} ${styles.quiz_medal__circle__silver}`}
             >
@@ -34,10 +34,10 @@ export default function Medal(props: MedalPropsIF) {
             <div
                 className={`${styles.quiz_medal__ribbon} ${styles.quiz_medal__ribbon__right}`}
             />
-        </li>
+        </div>
     );
     const bronzeMedal = (
-        <li className={styles.quiz_medal}>
+        <div className={styles.quiz_medal}>
             <div
                 className={`${styles.quiz_medal__circle} ${styles.quiz_medal__circle__bronze}`}
             >
@@ -49,11 +49,11 @@ export default function Medal(props: MedalPropsIF) {
             <div
                 className={`${styles.quiz_medal__ribbon} ${styles.quiz_medal__ribbon__right}`}
             />
-        </li>
+        </div>
     );
 
     const simpleMedal = (
-        <li className={styles.quiz_medal}>
+        <div className={styles.quiz_medal}>
             <div
                 className={`${styles.quiz_medal__circle_simple} ${styles.quiz_medal__circle__simple}`}
             >
@@ -61,7 +61,7 @@ export default function Medal(props: MedalPropsIF) {
             </div>
             {/* <div className={`${styles.quiz_medal__ribbon} ${styles.quiz_medal__ribbon__left}`}/>
             <div className={`${styles.quiz_medal__ribbon} ${styles.quiz_medal__ribbon__right}`}/> */}
-        </li>
+        </div>
     );
 
     if (ranking === 1) {

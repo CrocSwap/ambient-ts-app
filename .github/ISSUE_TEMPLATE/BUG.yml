@@ -48,6 +48,7 @@ body:
               - Microsoft Edge
               - MetaMask Browser
               - Brave Browser
+              - Rabby Desktop
     - type: dropdown
       id: wallet
       attributes:
@@ -56,3 +57,4 @@ body:
           options:
               - MetaMask
               - Brave
+              - No wallet connected

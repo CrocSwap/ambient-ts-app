@@ -1,4 +1,3 @@
-import styles from '../SidebarTable.module.css';
 import SidebarRangePositionsCard from './SidebarRangePositionsCard';
 import { PositionIF } from '../../../../utils/interfaces/exports';
 import { useLocation } from 'react-router-dom';
@@ -10,7 +9,14 @@ import { useContext } from 'react';
 import {
     useLinkGen,
     linkGenMethodsIF,
+    poolParamsIF,
 } from '../../../../utils/hooks/useLinkGen';
+import { FlexContainer } from '../../../../styled/Common';
+import {
+    ItemsContainer,
+    RangeHeaderGrid,
+    ViewMoreFlex,
+} from '../../../../styled/Components/Sidebar';
 
 interface propsIF {
     userPositions?: PositionIF[];
@@ -56,11 +62,14 @@ export default function SidebarRangePositions(props: propsIF) {
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         setCurrentPositionActive(pos.firstMintTx);
         setShowAllData(false);
-        linkGenPool.navigate({
+        // URL params for link to pool page
+        const poolLinkParams: poolParamsIF = {
             chain: chainId,
             tokenA: pos.base,
             tokenB: pos.quote,
-        });
+        };
+        // navigate user to pool page with URL params defined above
+        linkGenPool.navigate(poolLinkParams);
     };
 
     const handleViewMoreClick = () => {
@@ -71,13 +80,15 @@ export default function SidebarRangePositions(props: propsIF) {
     };
 
     return (
-        <div className={styles.container}>
-            <header className={styles.header}>
-                <div>Pool</div>
-                <div>Range</div>
-                <div>Value</div>
-            </header>
-            <div className={styles.content}>
+        <FlexContainer flexDirection='column' fontSize='body' fullHeight>
+            <RangeHeaderGrid color='text2' padding='4px 0'>
+                {['Pool', 'Range', 'Value', ''].map((item) => (
+                    <FlexContainer key={item} justifyContent='center'>
+                        {item}
+                    </FlexContainer>
+                ))}
+            </RangeHeaderGrid>
+            <ItemsContainer>
                 {userPositions &&
                     userPositions.map((position, idx) => (
                         <SidebarRangePositionsCard
@@ -87,14 +98,15 @@ export default function SidebarRangePositions(props: propsIF) {
                         />
                     ))}
                 {isUserConnected && (
-                    <div
-                        className={styles.view_more}
+                    <ViewMoreFlex
+                        justifyContent='center'
+                        color='accent4'
                         onClick={handleViewMoreClick}
                     >
                         View More
-                    </div>
+                    </ViewMoreFlex>
                 )}
-            </div>
-        </div>
+            </ItemsContainer>
+        </FlexContainer>
     );
 }

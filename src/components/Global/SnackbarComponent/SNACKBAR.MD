@@ -18,4 +18,4 @@ Alert: https://mui.com/material-ui/react-alert/
 
 # Developer Notes
 
-The snackbar has been updated to be a global component (like globalModal and globalPopup). It can be accessed via the `appStateContext` and passing in `content` and `severity` into the `open` function. 
+The snackbar has been updated to be a global component (like globalPopup). It can be accessed via the `appStateContext` and passing in `content` and `severity` into the `open` function. 
