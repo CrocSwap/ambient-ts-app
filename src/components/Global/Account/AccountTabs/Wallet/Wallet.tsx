@@ -2,7 +2,6 @@ import styles from './Wallet.module.css';
 import WalletCard from './WalletCard';
 import WalletHeader from './WalletHeader';
 import { TokenIF } from '../../../../../ambient-utils/src/types';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { TokenPriceFn } from '../../../../../ambient-utils/src/api';
 import Spinner from '../../../Spinner/Spinner';
 import { useContext } from 'react';
@@ -10,6 +9,7 @@ import { TokenContext } from '../../../../../contexts/TokenContext';
 import { tokenListURIs } from '../../../../../ambient-utils/src/constants';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { isUsdcToken } from '../../../../../ambient-utils/src/dataLayer';
+import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
 
 interface propsIF {
     chainId: string;
@@ -28,9 +28,7 @@ export default function Wallet(props: propsIF) {
 
     const { tokens } = useContext(TokenContext);
 
-    const tokenBalances = useAppSelector(
-        (state) => state.userData.tokenBalances,
-    );
+    const { tokenBalances } = useContext(TokenBalanceContext);
 
     const tokensToRender: Array<TokenIF | undefined> | undefined =
         connectedAccountActive ? tokenBalances : resolvedAddressTokens;

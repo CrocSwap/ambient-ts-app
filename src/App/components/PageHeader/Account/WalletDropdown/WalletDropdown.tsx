@@ -7,7 +7,6 @@ import {
 } from '../../../../../ambient-utils/src/dataLayer';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../../../ambient-utils/src/types';
 import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
 import { LogoutButton } from '../../../../../components/Global/LogoutButton/LogoutButton';
@@ -34,13 +33,13 @@ import {
     mainnetUSDC,
 } from '../../../../../ambient-utils/src/constants';
 import IconWithTooltip from '../../../../../components/Global/IconWithTooltip/IconWithTooltip';
+import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
 
 interface WalletDropdownPropsIF {
     ensName: string;
     accountAddress: string;
     handleCopyAddress: () => void;
     clickOutsideHandler: () => void;
-    connectorName: string | undefined;
     clickLogout: () => void;
     accountAddressFull: string;
 }
@@ -58,7 +57,6 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         accountAddress,
         handleCopyAddress,
         clickOutsideHandler,
-        // connectorName,
         clickLogout,
         accountAddressFull,
     } = props;
@@ -66,11 +64,9 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
+    const { tokenBalances } = useContext(TokenBalanceContext);
     const defaultPair = supportedNetworks[chainId].defaultPair;
 
-    const tokenBalances: TokenIF[] | undefined = useAppSelector(
-        (state) => state.userData.tokenBalances,
-    );
     const nativeData: TokenIF | undefined =
         tokenBalances &&
         tokenBalances.find((tkn: TokenIF) => tkn.address === ZERO_ADDRESS);

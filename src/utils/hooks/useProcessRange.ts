@@ -9,9 +9,10 @@ import {
     getFormattedNumber,
 } from '../../ambient-utils/src/dataLayer';
 import { PositionIF } from '../../ambient-utils/src/types';
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import moment from 'moment';
 import { getAddress } from 'ethers/lib/utils.js';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 export const useProcessRange = (
     position: PositionIF,
@@ -25,7 +26,7 @@ export const useProcessRange = (
 
     const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
 
-    const isDenomBase = tradeData.isDenomBase;
+    const { isDenomBase } = useContext(TradeDataContext);
 
     const tokenAAddress = position.base;
     const tokenBAddress = position.quote;

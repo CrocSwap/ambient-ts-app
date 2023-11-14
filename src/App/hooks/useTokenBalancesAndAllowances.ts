@@ -8,10 +8,10 @@ import { ChartContext } from '../../contexts/ChartContext';
 import { RangeContext } from '../../contexts/RangeContext';
 import { TokenContext } from '../../contexts/TokenContext';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { useAccount } from 'wagmi';
 import { useTokenPairAllowance } from './useTokenPairAllowance';
 import { usePoolMetadata } from './usePoolMetadata';
 import { IS_LOCAL_ENV } from '../../constants';
+import { UserDataContext } from '../../contexts/UserDataContext';
 
 interface BalancesIF {
     baseTokenBalance: string;
@@ -49,7 +49,7 @@ export const useTokenBalancesAndAllowances = (
     const { tokens } = useContext(TokenContext);
 
     const { receiptData } = useAppSelector((state) => state);
-    const { address: userAddress, isConnected } = useAccount();
+    const { userAddress, isUserConnected } = useContext(UserDataContext);
 
     const {
         tokenAAllowance,
@@ -93,7 +93,7 @@ export const useTokenBalancesAndAllowances = (
             if (
                 crocEnv &&
                 userAddress &&
-                isConnected &&
+                isUserConnected &&
                 baseToken.address &&
                 quoteToken.address
             ) {
@@ -149,7 +149,7 @@ export const useTokenBalancesAndAllowances = (
         })();
     }, [
         crocEnv,
-        isConnected,
+        isUserConnected,
         userAddress,
         baseToken.address,
         quoteToken.address,

@@ -1,12 +1,7 @@
-import { useEffect, useMemo } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch } from './reduxToolkit';
-import {
-    setTokenA,
-    setTokenB,
-    setLimitTick,
-    setChainId,
-} from '../state/tradeDataSlice';
+import { setLimitTick } from '../state/tradeDataSlice';
 import { ethers } from 'ethers';
 import { fetchContractDetails } from '../../ambient-utils/src/api';
 import { useProvider, useSwitchNetwork } from 'wagmi';
@@ -18,6 +13,7 @@ import {
     validateAddress,
     validateChain,
 } from '../../ambient-utils/src/dataLayer';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 /* Hook to process GET-request style parameters passed to the URL. This includes
  * chain, tokens, and context-specific tick parameters. All action is intermediated
@@ -46,6 +42,7 @@ export const useUrlParams = (
     provider?: ethers.providers.Provider,
 ): urlParamsMethodsIF => {
     const { params } = useParams();
+    const { setTokenA, setTokenB } = useContext(TradeDataContext);
 
     // this is used for updating the URL bar
     // also for when params need to be re-parsed because the page has changed
@@ -249,8 +246,8 @@ export const useUrlParams = (
 
     function processDefaultTokens(chainToUse: string) {
         const [dfltA, dfltB] = getDefaultPairForChain(chainToUse);
-        dispatch(setTokenA(dfltA));
-        dispatch(setTokenB(dfltB));
+        setTokenA(dfltA);
+        setTokenB(dfltB);
     }
 
     useEffect((): (() => void) => {
@@ -273,8 +270,8 @@ export const useUrlParams = (
             // If both tokens are valid and have data for this chain, use those
             // Otherwise fallback to the chain's default pair.
             if (tokenPair && tokenPair[0].decimals && tokenPair[1].decimals) {
-                dispatch(setTokenA(tokenPair[0]));
-                dispatch(setTokenB(tokenPair[1]));
+                setTokenA(tokenPair[0]);
+                setTokenB(tokenPair[1]);
             } else {
                 processDefaultTokens(chainToUse);
             }
@@ -285,7 +282,6 @@ export const useUrlParams = (
 
             if (urlParamMap.has('chain')) {
                 switchNetwork && switchNetwork(parseInt(chainToUse));
-                dispatch(setChainId(chainToUse));
             }
 
             const tokenA = urlParamMap.get('tokenA');

@@ -1,12 +1,11 @@
 // START: Import React and Dongles
-import { memo, useState } from 'react';
+import { memo, useContext, useState } from 'react';
 
 // START: Import JSX Functional Components
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import SelectedRange from './SelectedRange/SelectedRange';
 
 // START: Import Local Files
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import {
     uriToHttp,
@@ -15,6 +14,7 @@ import {
 import TradeConfirmationSkeleton from '../../TradeModules/TradeConfirmationSkeleton';
 import { FlexContainer, GridContainer, Text } from '../../../../styled/Common';
 import { FeeTierDisplay } from '../../../../styled/Components/TradeModules';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     sendTransaction: () => Promise<void>;
@@ -58,9 +58,7 @@ function ConfirmRangeModal(props: propsIF) {
         onClose = () => null,
     } = props;
 
-    const { tokenA, tokenB, isDenomBase } = useAppSelector(
-        (state) => state.tradeData,
-    );
+    const { tokenA, tokenB, isDenomBase } = useContext(TradeDataContext);
 
     const [isDenomBaseLocalToRangeConfirm, setIsDenomBaseocalToRangeConfirm] =
         useState(isDenomBase);

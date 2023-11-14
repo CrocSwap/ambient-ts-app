@@ -26,10 +26,7 @@ import {
     isTransactionReplacedError,
 } from '../../../../utils/TransactionError';
 import { checkBlacklist } from '../../../../ambient-utils/src/constants';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../../ambient-utils/src/types';
 import {
     addPendingTx,
@@ -42,6 +39,7 @@ import Toggle from '../../../Form/Toggle';
 import CurrencySelector from '../../../Form/CurrencySelector';
 import TransferAddressInput from '../Transfer/TransferAddressInput';
 import Button from '../../../Form/Button';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -72,9 +70,7 @@ export default function Withdraw(props: propsIF) {
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
 
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
 
     const dispatch = useAppDispatch();
 
@@ -402,6 +398,7 @@ export default function Withdraw(props: propsIF) {
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}
             <Button
+                idForDOM='withdraw_tokens_button'
                 title={buttonMessage}
                 action={withdrawFn}
                 disabled={isButtonDisabled}

@@ -1,0 +1,1 @@
+export type chainType = '0x1' | '0x5' | '0x82750';

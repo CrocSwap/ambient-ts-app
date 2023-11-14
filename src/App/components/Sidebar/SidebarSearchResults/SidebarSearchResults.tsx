@@ -5,9 +5,10 @@ import TxSearchResults from './TxSearchResults/TxSearchResults';
 import { PoolStatsFn } from '../../../../ambient-utils/src/dataLayer';
 import { TokenPriceFn } from '../../../../ambient-utils/src/api';
 import { sidebarSearchIF } from '../../../hooks/useSidebarSearch';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { SearchResultsContainer } from '../../../../styled/Components/Sidebar';
 import { Text } from '../../../../styled/Common';
+import { useContext } from 'react';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 interface propsIF {
     cachedPoolStatsFetch: PoolStatsFn;
@@ -17,9 +18,7 @@ interface propsIF {
 
 export default function SidebarSearchResults(props: propsIF) {
     const { searchData, cachedPoolStatsFetch, cachedFetchTokenPrice } = props;
-    const { isLoggedIn: isUserConnected } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { isUserConnected } = useContext(UserDataContext);
 
     return (
         <SearchResultsContainer

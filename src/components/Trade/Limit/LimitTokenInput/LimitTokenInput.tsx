@@ -19,13 +19,14 @@ import { formatTokenInput } from '../../../../utils/numbers';
 import {
     setLimitTick,
     setPoolPriceNonDisplay,
-    setIsTokenAPrimary,
     setPrimaryQuantity,
-    setIsTokenAPrimaryRange,
 } from '../../../../utils/state/tradeDataSlice';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import TokenInputWithWalletBalance from '../../../Form/TokenInputWithWalletBalance';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { RangeContext } from '../../../../contexts/RangeContext';
 
 interface propsIF {
     tokenAInputQty: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -35,6 +36,7 @@ interface propsIF {
     isSaveAsDexSurplusChecked: boolean;
     handleLimitButtonMessage: (val: number) => void;
     toggleDexSelection: (tokenAorB: 'A' | 'B') => void;
+    amountToReduceEth: number;
 }
 
 function LimitTokenInput(props: propsIF) {
@@ -46,11 +48,14 @@ function LimitTokenInput(props: propsIF) {
         isSaveAsDexSurplusChecked,
         handleLimitButtonMessage,
         toggleDexSelection,
+        amountToReduceEth,
     } = props;
 
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { setIsTokenAPrimaryRange, isTokenAPrimaryRange } =
+        useContext(RangeContext);
     const { pool } = useContext(PoolContext);
     const {
         baseToken: {
@@ -67,17 +72,12 @@ function LimitTokenInput(props: propsIF) {
     const dispatch = useAppDispatch();
     // hook to generate navigation actions with pre-loaded path
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
-    const { isLoggedIn: isUserConnected } = useAppSelector(
-        (state) => state.userData,
-    );
-    const {
-        tokenA,
-        tokenB,
-        isTokenAPrimary,
-        isTokenAPrimaryRange,
-        primaryQuantity,
-        isDenomBase,
-    } = useAppSelector((state) => state.tradeData);
+    const { isUserConnected } = useContext(UserDataContext);
+
+    const { primaryQuantity } = useAppSelector((state) => state.tradeData);
+
+    const { tokenA, tokenB, isTokenAPrimary, isDenomBase, setIsTokenAPrimary } =
+        useContext(TradeDataContext);
 
     const isSellTokenBase = pool?.baseToken.tokenAddr === tokenA.address;
 
@@ -99,8 +99,8 @@ function LimitTokenInput(props: propsIF) {
         };
         // navigate user to limit page with URL params defined above
         linkGenLimit.navigate(limitLinkParams);
-        dispatch(setIsTokenAPrimary(!isTokenAPrimary));
-        dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
+        setIsTokenAPrimary(!isTokenAPrimary);
+        setIsTokenAPrimaryRange(!isTokenAPrimaryRange);
     };
 
     useEffect(() => {
@@ -125,7 +125,7 @@ function LimitTokenInput(props: propsIF) {
 
             // set token input quantity to be unparsed input
             setTokenAInputQty(value);
-            dispatch(setIsTokenAPrimary(true));
+            setIsTokenAPrimary(true);
             dispatch(setPrimaryQuantity(inputStr));
 
             if (!isDenomBase) {
@@ -168,7 +168,7 @@ function LimitTokenInput(props: propsIF) {
 
             // set token input quantity to be unparsed input
             setTokenBInputQty(value);
-            dispatch(setIsTokenAPrimary(false));
+            setIsTokenAPrimary(false);
             dispatch(setPrimaryQuantity(inputStr));
 
             if (!isDenomBase) {
@@ -222,12 +222,12 @@ function LimitTokenInput(props: propsIF) {
                     setTokenAInputQty(formatTokenInput(val, tokenA, isMax));
                 }}
                 showWallet={isUserConnected}
+                amountToReduceEth={amountToReduceEth}
             />
             <FlexContainer
                 fullWidth
                 justifyContent='center'
                 alignItems='center'
-                padding='0 0 8px 0'
             >
                 <IconWithTooltip title='Reverse tokens' placement='left'>
                     <TokensArrow

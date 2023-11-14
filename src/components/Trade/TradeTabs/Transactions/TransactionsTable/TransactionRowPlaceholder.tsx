@@ -3,7 +3,6 @@ import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { Chip } from '../../../../Form/Chip';
 import { FiExternalLink } from 'react-icons/fi';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { getPinnedPriceValuesFromTicks } from '../../../../../pages/Trade/Range/rangeFunctions';
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import {
@@ -16,6 +15,7 @@ import {
     TransactionRow,
 } from '../../../../../styled/Components/TransactionTable';
 import { FlexContainer } from '../../../../../styled/Common';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 
 interface PropsIF {
     transaction: {
@@ -44,7 +44,7 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
 
     const { showAllData } = useContext(TradeTableContext);
 
-    const { isDenomBase } = useAppSelector((state) => state.tradeData);
+    const { isDenomBase } = useContext(TradeDataContext);
 
     const {
         chainData: { blockExplorer },
@@ -114,7 +114,7 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                 placeholder
                 tabIndex={0}
             >
-                {tableView === 'large' && (
+                {tableView !== 'small' && (
                     <div>
                         <p>Now</p>
                     </div>

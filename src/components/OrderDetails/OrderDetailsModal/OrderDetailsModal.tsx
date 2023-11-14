@@ -9,7 +9,6 @@ import {
     LimitOrderServerIF,
 } from '../../../ambient-utils/src/types';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import OrderDetailsSimplify from '../OrderDetailsSimplify/OrderDetailsSimplify';
 import TransactionDetailsGraph from '../../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
@@ -26,6 +25,7 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import modalBackground from '../../../assets/images/backgrounds/background.png';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import Modal from '../../Global/Modal/Modal';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -56,9 +56,7 @@ export default function OrderDetailsModal(props: propsIF) {
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
 
     const {
         baseTokenSymbol,

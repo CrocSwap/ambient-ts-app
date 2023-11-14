@@ -1,5 +1,4 @@
 import { LimitOrderIF } from '../../../../ambient-utils/src/types';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useContext } from 'react';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import {
@@ -8,6 +7,7 @@ import {
 } from '../../../../ambient-utils/src/dataLayer';
 import { FlexContainer } from '../../../../styled/Common';
 import { ItemContainer } from '../../../../styled/Components/Sidebar';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     order: LimitOrderIF;
@@ -16,7 +16,7 @@ interface propsIF {
 export default function SidebarLimitOrdersCard(props: propsIF) {
     const { order, handleClick } = props;
     const { tokens } = useContext(TokenContext);
-    const { isDenomBase } = useAppSelector((state) => state.tradeData);
+    const { isDenomBase } = useContext(TradeDataContext);
 
     // human-readable limit price to display in the DOM
     const price = getLimitPrice(order, tokens, isDenomBase);

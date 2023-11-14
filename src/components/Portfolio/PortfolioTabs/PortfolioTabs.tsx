@@ -12,10 +12,6 @@ import TabComponent from '../../Global/TabComponent/TabComponent';
 
 // START: Import Local Files
 import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../utils/hooks/reduxToolkit';
-import {
     getPositionData,
     getLimitOrderData,
 } from '../../../ambient-utils/src/dataLayer';
@@ -32,7 +28,6 @@ import rangePositionsImage from '../../../assets/images/sidebarImages/rangePosit
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
 import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
-import { setDataLoadingStatus } from '../../../utils/state/graphDataSlice';
 import { fetchUserRecentChanges } from '../../../ambient-utils/src/api';
 import Orders from '../../Trade/TradeTabs/Orders/Orders';
 import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
@@ -43,6 +38,8 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { PortfolioTabsPortfolioTabsContainer } from '../../../styled/Components/Portfolio';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { DataLoadingContext } from '../../../contexts/DataLoadingContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -61,13 +58,13 @@ export default function PortfolioTabs(props: propsIF) {
         fullLayoutActive,
     } = props;
 
-    const dispatch = useAppDispatch();
     const {
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
+    const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const {
         crocEnv,
         activeNetwork,
@@ -76,18 +73,16 @@ export default function PortfolioTabs(props: propsIF) {
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
+    const { positionsByUser, limitOrdersByUser, changesByUser } =
+        useContext(GraphDataContext);
 
-    const graphData = useAppSelector((state) => state?.graphData);
-    const connectedAccountPositionData =
-        graphData.positionsByUser.positions.filter(
-            (position) => position.chainId === chainId,
-        );
-    const connectedAccountLimitOrderData =
-        graphData.limitOrdersByUser.limitOrders.filter(
-            (position) => position.chainId === chainId,
-        );
-    const connectedAccountTransactionData =
-        graphData.changesByUser.changes.filter((x) => x.chainId === chainId);
+    // TODO: can pull into GraphDataContext
+    const filterFn = <T extends { chainId: string }>(x: T) =>
+        x.chainId === chainId;
+
+    const _positionsByUser = positionsByUser.positions.filter(filterFn);
+    const _txsByUser = changesByUser.changes.filter(filterFn);
+    const _limitsByUser = limitOrdersByUser.limitOrders.filter(filterFn);
 
     const [lookupAccountPositionData, setLookupAccountPositionData] = useState<
         PositionIF[]
@@ -145,12 +140,10 @@ export default function PortfolioTabs(props: propsIF) {
                 IS_LOCAL_ENV && console.debug('dispatch');
             })
             .finally(() => {
-                dispatch(
-                    setDataLoadingStatus({
-                        datasetName: 'lookupUserRangeData',
-                        loadingStatus: false,
-                    }),
-                );
+                setDataLoadingStatus({
+                    datasetName: 'isLookupUserRangeDataLoading',
+                    loadingStatus: false,
+                });
             });
 
     const getLookupUserLimitOrders = async (accountToSearch: string) =>
@@ -190,12 +183,10 @@ export default function PortfolioTabs(props: propsIF) {
                 }
             })
             .finally(() => {
-                dispatch(
-                    setDataLoadingStatus({
-                        datasetName: 'lookupUserOrderData',
-                        loadingStatus: false,
-                    }),
-                );
+                setDataLoadingStatus({
+                    datasetName: 'isLookupUserOrderDataLoading',
+                    loadingStatus: false,
+                });
             });
 
     const getLookupUserTransactions = async (accountToSearch: string) => {
@@ -225,12 +216,10 @@ export default function PortfolioTabs(props: propsIF) {
                     }
                 })
                 .finally(() => {
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'lookupUserTxData',
-                            loadingStatus: false,
-                        }),
-                    );
+                    setDataLoadingStatus({
+                        datasetName: 'isLookupUserTxDataLoading',
+                        loadingStatus: false,
+                    });
                 });
         }
     };
@@ -265,15 +254,15 @@ export default function PortfolioTabs(props: propsIF) {
     ]);
 
     const activeAccountPositionData = connectedAccountActive
-        ? connectedAccountPositionData
+        ? _positionsByUser
         : lookupAccountPositionData;
     // eslint-disable-next-line
     const activeAccountLimitOrderData = connectedAccountActive
-        ? connectedAccountLimitOrderData
+        ? _limitsByUser
         : lookupAccountLimitOrderData;
 
     const activeAccountTransactionData = connectedAccountActive
-        ? connectedAccountTransactionData?.filter((tx) => {
+        ? _txsByUser?.filter((tx) => {
               if (tx.changeType !== 'fill' && tx.changeType !== 'cross') {
                   return true;
               } else {

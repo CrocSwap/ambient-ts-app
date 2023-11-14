@@ -57,6 +57,7 @@ function PriceInput(props: propsIF) {
             </Text>
             <PriceInputContainer>
                 <PriceInputButton
+                    id={`decrease_${fieldId}_price_button`}
                     onClick={decreaseTick}
                     aria-label={`decrease tick of ${fieldId} price.`}
                 >
@@ -84,6 +85,7 @@ function PriceInput(props: propsIF) {
                     />
                 </FlexContainer>
                 <PriceInputButton
+                    id={`increase_${fieldId}_price_button`}
                     onClick={increaseTick}
                     aria-label={`increase tick of ${fieldId} price.`}
                 >
@@ -91,6 +93,7 @@ function PriceInput(props: propsIF) {
                 </PriceInputButton>
             </PriceInputContainer>
             <Text
+                id={`${fieldId}_price_of_range_advanced`}
                 fontSize='header2'
                 color='accent5'
                 tabIndex={0}

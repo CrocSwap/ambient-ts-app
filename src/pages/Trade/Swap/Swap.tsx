@@ -6,7 +6,6 @@ import {
     getPriceImpactString,
     isStablePair,
 } from '../../../ambient-utils/src/dataLayer';
-import { useTradeData } from '../../../App/hooks/useTradeData';
 import Button from '../../../components/Form/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import TooltipComponent from '../../../components/Global/TooltipComponent/TooltipComponent';
@@ -44,6 +43,8 @@ import {
 import { swapTutorialSteps } from '../../../utils/tutorial/Swap';
 import { useApprove } from '../../../App/functions/approve';
 import { useUrlParams } from '../../../utils/hooks/useUrlParams';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -79,19 +80,18 @@ function Swap(props: propsIF) {
     // use URL pathway to determine if user is in swap or market page
     // depending on location we pull data on the tx in progress differently
     const {
-        tradeData: {
-            tokenA,
-            tokenB,
-            baseToken,
-            quoteToken,
-            isTokenAPrimary,
-            primaryQuantity,
-            isDenomBase,
-            liquidityFee,
-        },
-    } = pathname.includes('/trade')
-        ? useTradeData()
-        : useAppSelector((state) => state);
+        tradeData: { primaryQuantity },
+    } = useAppSelector((state) => state);
+    // TODO: confirm this doesn't break data that needs to be different when on trade page
+    const { liquidityFee } = useContext(GraphDataContext);
+    const {
+        tokenA,
+        tokenB,
+        baseToken,
+        quoteToken,
+        isTokenAPrimary,
+        isDenomBase,
+    } = useContext(TradeDataContext);
 
     const [sellQtyString, setSellQtyString] = useState<string>(
         isTokenAPrimary ? primaryQuantity : '',
@@ -179,7 +179,9 @@ function Swap(props: propsIF) {
 
     const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
 
-    const amountToReduceEthMainnet = 0.005; // .005 ETH
+    // const amountToReduceEthMainnet = 0.01; // .01 ETH
+    const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
+        useState<number>(0.01);
     const amountToReduceEthScroll = 0.0003; // .0003 ETH
 
     const amountToReduceEth =
@@ -270,6 +272,11 @@ function Swap(props: propsIF) {
                 : isSaveAsDexSurplusChecked
                 ? 105000
                 : 110000;
+
+            const costOfMainnetSwapInETH =
+                gasPriceInGwei * averageSwapCostInGasDrops * 1e-9;
+
+            setAmountToReduceEthMainnet(1.75 * costOfMainnetSwapInETH);
 
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
@@ -483,6 +490,7 @@ function Swap(props: propsIF) {
             }
             input={
                 <SwapTokenInput
+                    isLiquidityInsufficient={isLiquidityInsufficient}
                     setIsLiquidityInsufficient={setIsLiquidityInsufficient}
                     slippageTolerancePercentage={slippageTolerancePercentage}
                     setPriceImpact={setPriceImpact}
@@ -506,6 +514,7 @@ function Swap(props: propsIF) {
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     setSwapAllowed={setSwapAllowed}
                     toggleDexSelection={toggleDexSelection}
+                    amountToReduceEth={amountToReduceEth}
                 />
             }
             transactionDetails={
@@ -549,6 +558,7 @@ function Swap(props: propsIF) {
             }
             button={
                 <Button
+                    idForDOM='confirm_swap_button'
                     title={
                         areBothAckd
                             ? bypassConfirmSwap.isEnabled
@@ -597,6 +607,7 @@ function Swap(props: propsIF) {
                 parseFloat(sellQtyString) > 0 &&
                 sellQtyString !== 'Infinity' ? (
                     <Button
+                        idForDOM='approve_token_a_for_swap_module'
                         title={
                             !isApprovalPending
                                 ? `Approve ${tokenA.symbol}`
@@ -613,7 +624,9 @@ function Swap(props: propsIF) {
             warnings={
                 priceImpactWarning || liquidityInsufficientWarning ? (
                     <>
-                        {priceImpactWarning && priceImpactWarning}
+                        {priceImpactWarning &&
+                            sellQtyString !== '' &&
+                            priceImpactWarning}
                         {liquidityInsufficientWarning &&
                             liquidityInsufficientWarning}
                     </>

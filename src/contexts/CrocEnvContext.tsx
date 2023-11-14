@@ -6,7 +6,7 @@ import {
     useEffect,
     useState,
 } from 'react';
-import { useAccount, useProvider, useSigner } from 'wagmi';
+import { useProvider, useSigner } from 'wagmi';
 import { useAppChain } from '../App/hooks/useAppChain';
 import { useBlacklist } from '../App/hooks/useBlacklist';
 import { useTopPools } from '../App/hooks/useTopPools';
@@ -27,6 +27,7 @@ import {
     mainnetETH,
     getDefaultPairForChain,
 } from '../ambient-utils/src/constants';
+import { UserDataContext } from './UserDataContext';
 
 interface UrlRoutesTemplate {
     swap: string;
@@ -57,7 +58,7 @@ export const CrocEnvContext = createContext<CrocEnvContextIF>(
 export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
-    const { address: userAddress } = useAccount();
+    const { userAddress } = useContext(UserDataContext);
     const { data: signer, isError, error, status: signerStatus } = useSigner();
 
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();

@@ -12,9 +12,9 @@ import Button from '../../components/Form/Button';
 import { Chip } from '../../components/Form/Chip';
 import RangeWidth from '../../components/Form/RangeWidth/RangeWidth';
 import TokenInputQuantity from '../../components/Form/TokenInputQuantity';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import Toggle from '../../components/Form/Toggle';
 import FormFooter from './FormFooterExample';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 export default function ExampleForm() {
     const { dexBalRange } = useContext(UserPreferenceContext);
@@ -76,7 +76,7 @@ export default function ExampleForm() {
     const [minPrice, setMinPrice] = useState(10);
     const [maxPrice, setMaxPrice] = useState(100);
 
-    const { tokenA } = useAppSelector((state) => state.tradeData);
+    const { tokenA } = useContext(TradeDataContext);
 
     const rangeWidthProps = {
         rangeWidthPercentage: rangeWidthPercentage,
@@ -216,21 +216,25 @@ export default function ExampleForm() {
                 <RangeWidth {...rangeWidthProps} />
 
                 <Button
+                    idForDOM={'example_gradient_button}'}
                     title={'Gradient'}
                     action={() => console.log('Confirm')}
                 />
                 <Button
+                    idForDOM={'example_flat_button}'}
                     title={'Flat'}
                     action={() => console.log('Confirm')}
                     flat
                 />
                 <Button
+                    idForDOM={'example_thin_button}'}
                     title={'Thin'}
                     action={() => console.log('Confirm')}
                     flat
                     thin
                 />
                 <Button
+                    idForDOM={'example_disabled_button}'}
                     title={'Disabled'}
                     action={() => console.log('Confirm')}
                     flat
@@ -238,6 +242,7 @@ export default function ExampleForm() {
                 />
                 <FlexContainer fullWidth overlay='blur'>
                     <Button
+                        idForDOM={'example_blur_button}'}
                         title={'Blur'}
                         action={() => console.log('Confirm')}
                         flat

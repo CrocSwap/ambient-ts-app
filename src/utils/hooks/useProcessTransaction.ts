@@ -1,4 +1,3 @@
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import {
     getChainExplorer,
     getUnicodeCharacter,
@@ -16,6 +15,8 @@ import {
     priceHalfBelowTick,
 } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { useContext } from 'react';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 export const useProcessTransaction = (
     tx: TransactionIF,
@@ -23,10 +24,8 @@ export const useProcessTransaction = (
     isAccountView = false,
     fetchedEnsAddress?: string,
 ) => {
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB, isDenomBase } = useContext(TradeDataContext);
     const blockExplorer = getChainExplorer(tx.chainId);
-
-    const isDenomBase = tradeData.isDenomBase;
 
     const txHash = tx.txHash;
 
@@ -38,8 +37,8 @@ export const useProcessTransaction = (
     const isOwnerActiveAccount =
         ownerId.toLowerCase() === account?.toLowerCase();
 
-    const tokenAAddress = tradeData.tokenA.address;
-    const tokenBAddress = tradeData.tokenB.address;
+    const tokenAAddress = tokenA.address;
+    const tokenBAddress = tokenB.address;
 
     const transactionBaseAddressLowerCase = tx.base.toLowerCase();
     const transactionQuoteAddressLowerCase = tx.quote.toLowerCase();

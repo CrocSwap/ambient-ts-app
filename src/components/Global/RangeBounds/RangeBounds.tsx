@@ -1,11 +1,11 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useContext } from 'react';
 import styles from './RangeBounds.module.css';
 import RangeWidth from '../../Form/RangeWidth/RangeWidth';
 import RangePriceInfo from '../../Trade/Range/RangePriceInfo/RangePriceInfo';
 import MinMaxPrice from '../../Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
 import { motion } from 'framer-motion';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import AdvancedModeToggle from '../../Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
+import { RangeContext } from '../../../contexts/RangeContext';
 
 interface RangeBoundsProps {
     customSwitch?: boolean;
@@ -128,9 +128,7 @@ export default function RangeBounds(props: RangeBoundsProps) {
         maxPriceInputString,
     };
 
-    const {
-        tradeData: { advancedMode },
-    } = useAppSelector((state) => state);
+    const { advancedMode } = useContext(RangeContext);
 
     const baseModeContent = (
         <div className={styles.info_container}>
@@ -161,7 +159,7 @@ export default function RangeBounds(props: RangeBoundsProps) {
         <section className={isRangeBoundsDisabled && styles.advanced_disabled}>
             {!customSwitch && (
                 <div className={styles.denomination_switch_container}>
-                    <AdvancedModeToggle advancedMode={advancedMode} />
+                    <AdvancedModeToggle />
                 </div>
             )}
             {advancedMode ? advancedModeContent : baseModeContent}

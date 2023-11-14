@@ -8,8 +8,10 @@ import {
     useContext,
 } from 'react';
 import { fetchCandleSeriesHybrid } from '../ambient-utils/src/api';
-import { CandleDataIF } from '../ambient-utils/src/types';
-import { CandlesByPoolAndDuration } from '../utils/state/graphDataSlice';
+import {
+    CandleDataIF,
+    CandlesByPoolAndDurationIF,
+} from '../ambient-utils/src/types';
 import { candleDomain, candleScale } from '../utils/state/tradeDataSlice';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
@@ -18,9 +20,9 @@ import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
 
 interface CandleContextIF {
-    candleData: CandlesByPoolAndDuration | undefined;
+    candleData: CandlesByPoolAndDurationIF | undefined;
     setCandleData: Dispatch<
-        SetStateAction<CandlesByPoolAndDuration | undefined>
+        SetStateAction<CandlesByPoolAndDurationIF | undefined>
     >;
     isCandleDataNull: boolean;
     setIsCandleDataNull: Dispatch<SetStateAction<boolean>>;
@@ -59,7 +61,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         useState<AbortController | null>(null);
 
     const [candleData, setCandleData] = useState<
-        CandlesByPoolAndDuration | undefined
+        CandlesByPoolAndDurationIF | undefined
     >();
     const [isCandleDataNull, setIsCandleDataNull] = useState(false);
     const [isCandleSelected, setIsCandleSelected] = useState<

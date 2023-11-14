@@ -1,5 +1,4 @@
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useContext } from 'react';
 import {
     getChainExplorer,
     getUnicodeCharacter,
@@ -22,6 +21,7 @@ import {
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import moment from 'moment';
 import { getAddress } from 'ethers/lib/utils.js';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
@@ -29,11 +29,11 @@ export const useProcessOrder = (
     isAccountView = false,
     fetchedEnsAddress?: string,
 ) => {
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
     const blockExplorer = getChainExplorer(limitOrder.chainId);
 
-    const selectedBaseToken = tradeData.baseToken.address.toLowerCase();
-    const selectedQuoteToken = tradeData.quoteToken.address.toLowerCase();
+    const selectedBaseToken = baseToken.address.toLowerCase();
+    const selectedQuoteToken = quoteToken.address.toLowerCase();
 
     const baseTokenSymbol = limitOrder.baseSymbol;
     const quoteTokenSymbol = limitOrder.quoteSymbol;
@@ -46,7 +46,6 @@ export const useProcessOrder = (
 
     const isOwnerActiveAccount =
         limitOrder.user.toLowerCase() === account?.toLowerCase();
-    const isDenomBase = tradeData.isDenomBase;
 
     const ownerId = fetchedEnsAddress || getAddress(limitOrder.user) || '';
 

@@ -8,10 +8,7 @@ import {
 } from 'react';
 import { TokenIF } from '../../../ambient-utils/src/types';
 import TokenSelect from '../TokenSelect/TokenSelect';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../utils/hooks/reduxToolkit';
+import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import styles from './SoloTokenSelectModal.module.css';
 import SoloTokenImport from './SoloTokenImport';
 import { setSoloToken } from '../../../utils/state/soloTokenDataSlice';
@@ -27,6 +24,7 @@ import {
     isWethToken,
 } from '../../../ambient-utils/src/dataLayer';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface propsIF {
     showSoloSelectTokenButtons: boolean;
@@ -66,7 +64,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         getRecentTokens,
     } = useContext(TokenContext);
 
-    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB } = useContext(TradeDataContext);
 
     // instance of hook used to retrieve data from RTK
     const dispatch = useAppDispatch();

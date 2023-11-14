@@ -2,10 +2,7 @@
 import styles from './RangePriceInfo.module.css';
 // import truncateDecimals from '../../../../ambient-utils/src/dataLayer';
 // import makeCurrentPrice from './makeCurrentPrice';
-import {
-    // useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
+
 // import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import { memo, useContext, useEffect, useMemo, useState } from 'react';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
@@ -17,6 +14,7 @@ import {
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 // interface for component props
 interface propsIF {
@@ -60,7 +58,7 @@ function RangePriceInfo(props: propsIF) {
     } = useContext(CrocEnvContext);
 
     const { isDenomBase, tokenA, tokenB, baseToken, quoteToken } =
-        useAppSelector((state) => state.tradeData);
+        useContext(TradeDataContext);
 
     const [tokenAPrice, setTokenAPrice] = useState<number | undefined>();
     const [tokenBPrice, setTokenBPrice] = useState<number | undefined>();
@@ -200,13 +198,17 @@ function RangePriceInfo(props: propsIF) {
                     onClick={handleMinMaxPriceClick}
                 >
                     <h4 className={styles.price_title}>Min Price</h4>
-                    <span className={styles.min_price}>{minPrice}</span>
+                    <span id='min_price_readable' className={styles.min_price}>
+                        {minPrice}
+                    </span>
                 </div>
             </DefaultTooltip>
         ) : (
             <div className={styles.price_display} style={{ cursor: 'default' }}>
                 <h4 className={styles.price_title}>Min Price</h4>
-                <span className={styles.min_price}>{minPrice}</span>
+                <span id='min_price_readable' className={styles.min_price}>
+                    {minPrice}
+                </span>
             </div>
         );
 
@@ -228,15 +230,21 @@ function RangePriceInfo(props: propsIF) {
                     onClick={handleMinMaxPriceClick}
                 >
                     <h4 className={styles.price_title}>Max Price</h4>
-                    <span className={styles.max_price}>{maxPrice}</span>
+                    <span id='max_price_readable' className={styles.max_price}>
+                        {maxPrice}
+                    </span>
                 </div>
             </DefaultTooltip>
         ) : (
             <div className={styles.price_display} style={{ cursor: 'default' }}>
                 <h4 className={styles.price_title}>Max Price</h4>
-                <span className={styles.max_price}>{maxPrice}</span>
+                <span id='max_price_readable' className={styles.max_price}>
+                    {maxPrice}
+                </span>
             </div>
         );
+
+    // TODO: remove unnecessary top-level wrapper
 
     return (
         <div className={styles.price_info_container}>

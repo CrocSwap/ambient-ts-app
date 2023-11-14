@@ -5,9 +5,7 @@ import { Chip } from '../../../../Form/Chip';
 import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
 import { FiExternalLink } from 'react-icons/fi';
 import { getPinnedPriceValuesFromTicks } from '../../../../../pages/Trade/Range/rangeFunctions';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
-import { useAccount } from 'wagmi';
 import {
     trimString,
     getUnicodeCharacter,
@@ -17,6 +15,8 @@ import {
     RowItem,
 } from '../../../../../styled/Components/TransactionTable';
 import { FlexContainer } from '../../../../../styled/Common';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 
 interface PropsIF {
     transaction: {
@@ -49,7 +49,7 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
 
-    const { isDenomBase } = useAppSelector((state) => state.tradeData);
+    const { isDenomBase } = useContext(TradeDataContext);
 
     const baseTokenCharacter = transaction?.details?.baseSymbol
         ? getUnicodeCharacter(transaction.details.baseSymbol)
@@ -77,7 +77,7 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
 
     // -------------------------------POSITION HASH------------------------
 
-    const { address: userAddress } = useAccount();
+    const { userAddress } = useContext(UserDataContext);
 
     let posHash;
     if (isAmbient) {

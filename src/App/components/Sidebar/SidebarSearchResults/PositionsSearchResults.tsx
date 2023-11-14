@@ -1,7 +1,6 @@
 import { PositionIF } from '../../../../ambient-utils/src/types';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useContext } from 'react';
 import {
     useLinkGen,
@@ -17,6 +16,7 @@ import {
     Results,
     ResultsContainer,
 } from '../../../../styled/Components/Sidebar';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     searchedPositions: PositionIF[];
@@ -28,7 +28,7 @@ interface PositionLiPropsIF {
 
 function PositionLI(props: PositionLiPropsIF) {
     const { position, handleClick } = props;
-    const { isDenomBase } = useAppSelector((state) => state.tradeData);
+    const { isDenomBase } = useContext(TradeDataContext);
 
     const getRangeDisplay = (position: PositionIF, isDenomBase: boolean) => {
         const baseTokenCharacter = position?.baseSymbol

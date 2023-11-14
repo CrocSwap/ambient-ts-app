@@ -19,6 +19,7 @@ import {
     LimitRateButtonContainer,
     TokenQuantityInput,
 } from '../../../../styled/Components/TradeModules';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     previousDisplayPrice: string;
@@ -26,7 +27,6 @@ interface propsIF {
     displayPrice: string;
     setDisplayPrice: Dispatch<SetStateAction<string>>;
     setPriceInputFieldBlurred: Dispatch<SetStateAction<boolean>>;
-    fieldId: string;
     isSellTokenBase: boolean;
     disable?: boolean;
     updateURL: (changes: updatesIF) => void;
@@ -39,7 +39,6 @@ export default function LimitRate(props: propsIF) {
         previousDisplayPrice,
         isSellTokenBase,
         setPriceInputFieldBlurred,
-        fieldId,
         disable,
         updateURL,
     } = props;
@@ -51,11 +50,9 @@ export default function LimitRate(props: propsIF) {
     const { pool } = useContext(PoolContext);
     const { showOrderPulseAnimation } = useContext(TradeTableContext);
 
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const { limitTick } = useAppSelector((state) => state.tradeData);
     const isPoolInitialized = useSimulatedIsPoolInitialized();
-
-    const isDenomBase: boolean = tradeData.isDenomBase;
-    const limitTick: number | undefined = tradeData.limitTick;
+    const { isDenomBase } = useContext(TradeDataContext);
 
     const increaseTick = (): void => {
         if (limitTick !== undefined) {
@@ -126,14 +123,14 @@ export default function LimitRate(props: propsIF) {
                     fullWidth
                     background='dark2'
                     style={{ borderRadius: 'var(--border-radius)' }}
+                    padding='0 16px'
                 >
                     <TokenQuantityInput
-                        id={`${fieldId}-quantity`}
+                        id='limit_rate_input'
                         onFocus={() => {
                             const limitRateInputField = document.getElementById(
                                 'limit-rate-quantity',
                             );
-
                             (limitRateInputField as HTMLInputElement).select();
                         }}
                         onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -175,12 +172,14 @@ export default function LimitRate(props: propsIF) {
                     disabled={!isPoolInitialized}
                 >
                     <LimitRateButton
+                        id='increase_limit_rate_button'
                         onClick={!isDenomBase ? increaseTick : decreaseTick}
                         aria-label='Increase limit tick.'
                     >
                         <HiPlus />
                     </LimitRateButton>
                     <LimitRateButton
+                        id='decrease_limit_tick_button'
                         onClick={!isDenomBase ? decreaseTick : increaseTick}
                         aria-label='Decrease limit tick.'
                     >

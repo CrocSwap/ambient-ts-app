@@ -30,6 +30,8 @@ import {
     createLineSeries,
     decorateForLiquidityLine,
 } from './LiquiditySeries/LineSeries';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { RangeContext } from '../../../contexts/RangeContext';
 
 interface liquidityPropsIF {
     liqMode: string;
@@ -59,8 +61,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     const { pool: pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
     const tradeData = useAppSelector((state) => state.tradeData);
+    const { advancedMode } = useContext(RangeContext);
+    const { isDenomBase } = useContext(TradeDataContext);
 
-    const isDenomBase = tradeData.isDenomBase;
     const { poolPriceNonDisplay } = tradeData;
 
     const poolPriceDisplay = poolPriceWithoutDenom
@@ -128,14 +131,14 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     const liqDataBid = liquidityData?.liqBidData;
 
     const liqDataDepthBid = useMemo<LiquidityDataLocal[]>(() => {
-        return tradeData.advancedMode
+        return advancedMode
             ? liquidityData?.depthLiqBidData
             : liquidityData?.depthLiqBidData.filter(
                   (d: LiquidityDataLocal) =>
                       d.liqPrices <= liquidityData?.topBoundary,
               );
     }, [
-        tradeData.advancedMode,
+        advancedMode,
         liquidityData?.depthLiqBidData,
         liquidityData?.topBoundary,
     ]);
@@ -487,7 +490,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         liqDataBid,
         liqDataDepthBid,
         liqDataDepthAsk,
-        tradeData.advancedMode,
+        advancedMode,
         liqSeries,
         liqDepthBidSeries,
         liqDepthAskSeries,

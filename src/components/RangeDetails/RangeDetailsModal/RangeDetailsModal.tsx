@@ -3,7 +3,6 @@ import styles from './RangeDetailsModal.module.css';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { PositionIF, PositionServerIF } from '../../../ambient-utils/src/types';
 import RangeDetailsHeader from '.././RangeDetailsHeader/RangeDetailsHeader';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import RangeDetailsSimplify from '.././RangeDetailsSimplify/RangeDetailsSimplify';
 import TransactionDetailsGraph from '../../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
 import { useProcessRange } from '../../../utils/hooks/useProcessRange';
@@ -21,6 +20,7 @@ import { TokenContext } from '../../../contexts/TokenContext';
 import modalBackground from '../../../assets/images/backgrounds/background.png';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import Modal from '../../Global/Modal/Modal';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 interface propsIF {
     position: PositionIF;
@@ -67,9 +67,8 @@ export default function RangeDetailsModal(props: propsIF) {
         maxRangeDenomByMoneyness,
         onClose,
     } = props;
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
+
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);

@@ -34,6 +34,9 @@ import {
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
+import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     filter?: CandleDataIF | undefined;
@@ -92,14 +95,17 @@ function Transactions(props: propsIF) {
     const NUM_TRANSACTIONS_WHEN_COLLAPSED = isAccountView ? 13 : 10; // Number of transactions we show when the table is collapsed (i.e. half page)
     // NOTE: this is done to improve rendering speed for this page.
 
-    const graphData = useAppSelector((state) => state?.graphData);
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const dataLoadingStatus = useContext(DataLoadingContext);
+    const { changesByUser, changesByPool } = useContext(GraphDataContext);
     const { transactionsByType, pendingTransactions } = useAppSelector(
         (state) => state.receiptData,
     );
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
 
-    const selectedBase = tradeData.baseToken.address;
-    const selectedQuote = tradeData.quoteToken.address;
+    const selectedBaseAddress = baseToken.address;
+    const selectedQuoteAddress = quoteToken.address;
+    const quoteTokenSymbol = quoteToken?.symbol;
+    const baseTokenSymbol = baseToken?.symbol;
 
     const [transactionData, setTransactionData] = useState<TransactionIF[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -113,24 +119,24 @@ function Transactions(props: propsIF) {
             setTransactionData(activeAccountTransactionData || []);
         else if (!showAllData)
             setTransactionData(
-                graphData?.changesByUser?.changes.filter(
+                changesByUser.changes.filter(
                     (tx) =>
                         tx.base.toLowerCase() ===
-                            tradeData.baseToken.address.toLowerCase() &&
+                            baseToken.address.toLowerCase() &&
                         tx.quote.toLowerCase() ===
-                            tradeData.quoteToken.address.toLowerCase() &&
+                            quoteToken.address.toLowerCase() &&
                         tx.changeType !== 'fill' &&
                         tx.changeType !== 'cross',
                 ),
             );
         else {
             setTransactionData(
-                graphData?.changesByPool?.changes.filter(
+                changesByPool.changes.filter(
                     (tx) =>
                         tx.base.toLowerCase() ===
-                            tradeData.baseToken.address.toLowerCase() &&
+                            baseToken.address.toLowerCase() &&
                         tx.quote.toLowerCase() ===
-                            tradeData.quoteToken.address.toLowerCase() &&
+                            quoteToken.address.toLowerCase() &&
                         tx.changeType !== 'fill' &&
                         tx.changeType !== 'cross',
                 ),
@@ -140,8 +146,8 @@ function Transactions(props: propsIF) {
         showAllData,
         isCandleSelected,
         activeAccountTransactionData,
-        graphData?.changesByUser,
-        graphData?.changesByPool,
+        changesByUser,
+        changesByPool,
     ]);
 
     useEffect(() => {
@@ -150,28 +156,22 @@ function Transactions(props: propsIF) {
 
     useEffect(() => {
         if (isAccountView && connectedAccountActive)
-            setIsLoading(
-                graphData?.dataLoadingStatus.isConnectedUserTxDataLoading,
-            );
+            setIsLoading(dataLoadingStatus.isConnectedUserTxDataLoading);
         else if (isAccountView)
-            setIsLoading(
-                graphData?.dataLoadingStatus.isLookupUserTxDataLoading,
-            );
+            setIsLoading(dataLoadingStatus.isLookupUserTxDataLoading);
         else if (isCandleSelected) {
-            setIsLoading(graphData?.dataLoadingStatus.isCandleDataLoading);
+            setIsLoading(dataLoadingStatus.isCandleDataLoading);
         } else if (!showAllData)
-            setIsLoading(
-                graphData?.dataLoadingStatus.isConnectedUserTxDataLoading,
-            );
-        else setIsLoading(graphData?.dataLoadingStatus.isPoolTxDataLoading);
+            setIsLoading(dataLoadingStatus.isConnectedUserTxDataLoading);
+        else setIsLoading(dataLoadingStatus.isPoolTxDataLoading);
     }, [
         isCandleSelected,
         showAllData,
         connectedAccountActive,
-        graphData?.dataLoadingStatus.isConnectedUserTxDataLoading,
-        graphData?.dataLoadingStatus.isLookupUserTxDataLoading,
-        graphData?.dataLoadingStatus.isPoolTxDataLoading,
-        graphData?.dataLoadingStatus.isCandleDataLoading,
+        dataLoadingStatus.isConnectedUserTxDataLoading,
+        dataLoadingStatus.isLookupUserTxDataLoading,
+        dataLoadingStatus.isPoolTxDataLoading,
+        dataLoadingStatus.isCandleDataLoading,
     ]);
 
     const relevantTransactionsByType = transactionsByType.filter(
@@ -179,9 +179,9 @@ function Transactions(props: propsIF) {
             tx.txAction &&
             pendingTransactions.includes(tx.txHash) &&
             tx.txDetails?.baseAddress.toLowerCase() ===
-                tradeData.baseToken.address.toLowerCase() &&
+                baseToken.address.toLowerCase() &&
             tx.txDetails?.quoteAddress.toLowerCase() ===
-                tradeData.quoteToken.address.toLowerCase() &&
+                quoteToken.address.toLowerCase() &&
             tx.txDetails?.poolIdx === poolIndex,
     );
 
@@ -218,8 +218,8 @@ function Transactions(props: propsIF) {
         provider &&
         fetchPoolRecentChanges({
             tokenList: tokens.tokenUniv,
-            base: selectedBase,
-            quote: selectedQuote,
+            base: selectedBaseAddress,
+            quote: selectedQuoteAddress,
             poolIdx: poolIndex,
             chainId: chainId,
             annotate: true,
@@ -288,9 +288,6 @@ function Transactions(props: propsIF) {
         if (isCandleSelected) getCandleData();
     }, [lastBlockNumWait]);
 
-    const quoteTokenSymbol = tradeData.quoteToken?.symbol;
-    const baseTokenSymbol = tradeData.baseToken?.symbol;
-
     // Changed this to have the sort icon be inline with the last row rather than under it
     const walID = (
         <>
@@ -315,7 +312,7 @@ function Transactions(props: propsIF) {
     }[] = [
         {
             name: 'Timestamp',
-            show: tableView === 'large',
+            show: tableView !== 'small',
             slug: 'time',
             sortable: true,
         },
@@ -519,6 +516,7 @@ function Transactions(props: propsIF) {
         _DATA.currentData.map((tx, idx) => (
             <TransactionRow
                 key={idx}
+                idForDOM={`tx_row_${idx}`}
                 tx={tx}
                 tableView={tableView}
                 isAccountView={isAccountView}

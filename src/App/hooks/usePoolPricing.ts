@@ -2,13 +2,13 @@ import { ChainSpec, CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import {
-    setDidUserFlipDenom,
     setLimitTick,
     setPoolPriceNonDisplay,
-    setPrimaryQuantityRange,
 } from '../../utils/state/tradeDataSlice';
 import { get24hChange, SpotPriceFn } from '../../ambient-utils/src/dataLayer';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { RangeContext } from '../../contexts/RangeContext';
 
 interface PoolPricingPropsIF {
     crocEnv?: CrocEnv;
@@ -20,7 +20,6 @@ interface PoolPricingPropsIF {
     chainData: ChainSpec;
     receiptCount: number;
     isUserLoggedIn: boolean;
-    isUserIdle: boolean;
     lastBlockNumber: number;
     isServerEnabled: boolean;
     cachedQuerySpotPrice: SpotPriceFn;
@@ -30,7 +29,8 @@ interface PoolPricingPropsIF {
 export function usePoolPricing(props: PoolPricingPropsIF) {
     const dispatch = useAppDispatch();
     const tradeData = useAppSelector((state) => state.tradeData);
-
+    const { isDenomBase, setDidUserFlipDenom } = useContext(TradeDataContext);
+    const { setPrimaryQuantityRange } = useContext(RangeContext);
     const { activeNetwork } = useContext(CrocEnvContext);
 
     // value for whether a pool exists on current chain and token pair
@@ -79,9 +79,9 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
     useEffect(() => {
         setPoolPriceDisplay(0);
         setIsPoolInitialized(undefined);
-        dispatch(setPrimaryQuantityRange(''));
+        setPrimaryQuantityRange('');
         setPoolPriceDisplay(undefined);
-        dispatch(setDidUserFlipDenom(false)); // reset so a new token pair is re-evaluated for price > 1
+        setDidUserFlipDenom(false); // reset so a new token pair is re-evaluated for price > 1
         setPoolPriceChangePercent(undefined);
         if (!props.pathname.includes('limitTick')) {
             dispatch(setLimitTick(undefined));
@@ -126,7 +126,6 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
     // useEffect to asyncronously query spot price when tokens change and block updates
     useEffect(() => {
         if (
-            !props.isUserIdle &&
             props.crocEnv &&
             props.baseTokenAddress &&
             props.quoteTokenAddress &&
@@ -149,7 +148,6 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
             })();
         }
     }, [
-        props.isUserIdle,
         props.lastBlockNumber,
         props.baseTokenAddress,
         props.quoteTokenAddress,
@@ -174,7 +172,7 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
                         props.baseTokenAddress,
                         props.quoteTokenAddress,
                         props.chainData.poolIndex,
-                        tradeData.isDenomBase,
+                        isDenomBase,
                         activeNetwork.graphCacheUrl,
                     );
 
@@ -217,7 +215,7 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
         })();
     }, [
         props.isServerEnabled,
-        tradeData.isDenomBase,
+        isDenomBase,
         props.baseTokenAddress,
         props.quoteTokenAddress,
         props.lastBlockNumber,
