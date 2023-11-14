@@ -2,6 +2,10 @@ import React from 'react';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
+import StepConnector, {
+    stepConnectorClasses,
+} from '@mui/material/StepConnector';
+import styled from 'styled-components';
 
 import { FlexContainer } from '../../../styled/Common';
 import Spinner from '../Spinner/Spinner';
@@ -33,10 +37,50 @@ const StepperComponent: React.FC<StepperComponentProps> = ({
     const handleReset = () => {
         setActiveStep(0);
     };
+    const CustomConnector = styled(StepConnector)`
+        &.${stepConnectorClasses.alternativeLabel} {
+        }
+
+        &.${stepConnectorClasses.active} .${stepConnectorClasses.line} {
+            border-color: #7371fc;
+        }
+
+        &.${stepConnectorClasses.completed} .${stepConnectorClasses.line} {
+            border-color: #7371fc;
+        }
+        .${stepConnectorClasses.line} {
+            border-color: #61646f;
+
+            border-width: 2px;
+        }
+    `;
+
+    const CircularBorder = styled.div`
+        width: 24px;
+        height: 24px;
+        border: 2px solid #61646f;
+        border-radius: 50%;
+    `;
+
+    const CircularBorderWithExclamation = styled.div`
+        width: 24px;
+        height: 24px;
+        border: 2px solid red;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--header2-size);
+        color: #f6385b;
+    `;
 
     if (orientation === 'horizontal') {
         return (
-            <Stepper activeStep={activeStep} alternativeLabel>
+            <Stepper
+                activeStep={activeStep}
+                alternativeLabel
+                connector={<CustomConnector />}
+            >
                 {steps.map((label, index) => (
                     <Step key={label.label}>
                         {activeStep === index ? (
@@ -73,22 +117,33 @@ const StepperComponent: React.FC<StepperComponentProps> = ({
 
     return (
         <FlexContainer flexDirection='column'>
-            <Stepper activeStep={activeStep} orientation='vertical'>
+            <Stepper
+                activeStep={activeStep}
+                orientation='vertical'
+                connector={<CustomConnector />}
+            >
                 {steps.map((step, index) => (
                     <Step key={step.label}>
-                        {activeStep === index ? (
+                        {index > activeStep ? (
+                            <FlexContainer gap={8} alignItems='center'>
+                                <CircularBorder />
+                                {step.label}
+                            </FlexContainer>
+                        ) : activeStep === index ? (
                             isError ? (
-                                <StepLabel error={isError}>
+                                <FlexContainer gap={8} alignItems='center'>
+                                    <CircularBorderWithExclamation>
+                                        !
+                                    </CircularBorderWithExclamation>
                                     {step.label}
-                                </StepLabel>
+                                </FlexContainer>
                             ) : (
-                                <FlexContainer gap={32}>
+                                <FlexContainer gap={8} alignItems='center'>
                                     <Spinner
                                         size={24}
                                         bg='var(--dark2)'
                                         weight={2}
                                     />
-
                                     {step.label}
                                 </FlexContainer>
                             )
