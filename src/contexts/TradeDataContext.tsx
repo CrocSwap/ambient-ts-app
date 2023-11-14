@@ -1,10 +1,8 @@
 import React, { createContext, useEffect, useMemo } from 'react';
 import { TokenIF } from '../ambient-utils/src/types';
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
-import {
-    getDefaultChainId,
-    getDefaultPairForChain,
-} from '../ambient-utils/src/dataLayer';
+import { getDefaultChainId } from '../ambient-utils/src/dataLayer';
+import { getDefaultPairForChain } from '../ambient-utils/src/constants';
 import { useAppChain } from '../App/hooks/useAppChain';
 
 export interface TradeDataContextIF {
