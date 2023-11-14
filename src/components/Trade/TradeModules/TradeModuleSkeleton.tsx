@@ -17,6 +17,7 @@ import Button from '../../Form/Button';
 
 import TradeLinks from './TradeLinks';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface PropsIF {
@@ -62,9 +63,8 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
 
     const { isUserConnected } = useContext(UserDataContext);
 
-    const { tokenA, tokenB, limitTick } = useAppSelector(
-        (state) => state.tradeData,
-    );
+    const { limitTick } = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB } = useContext(TradeDataContext);
 
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 

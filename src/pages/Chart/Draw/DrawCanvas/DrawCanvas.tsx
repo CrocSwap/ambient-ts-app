@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import {
     bandLineData,
@@ -13,7 +13,7 @@ import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { createCircle } from '../../ChartUtils/circle';
 import { createLinearLineSeries } from './LinearLineSeries';
 import { createBandArea, createPointsOfBandLine } from './BandArea';
-import { TradeDataIF } from '../../../../utils/state/tradeDataSlice';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface DrawCanvasProps {
     scaleData: scaleData;
@@ -23,7 +23,6 @@ interface DrawCanvasProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setCrossHairDataFunc: any;
     activeDrawingType: string;
-    currentPool: TradeDataIF;
     setActiveDrawingType: React.Dispatch<React.SetStateAction<string>>;
     setSelectedDrawnShape: React.Dispatch<
         React.SetStateAction<selectedDrawnData | undefined>
@@ -44,7 +43,6 @@ function DrawCanvas(props: DrawCanvasProps) {
         activeDrawingType,
         setActiveDrawingType,
         setSelectedDrawnShape,
-        currentPool,
         denomInBase,
         addDrawActionStack,
     } = props;
@@ -62,6 +60,8 @@ function DrawCanvas(props: DrawCanvasProps) {
         scaleData?.yScale,
         denomInBase,
     );
+
+    const currentPool = useContext(TradeDataContext);
 
     function createScaleForBandArea(x: number, x2: number) {
         const newXScale = scaleData?.xScale.copy();

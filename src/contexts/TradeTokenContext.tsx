@@ -20,6 +20,7 @@ import { toDisplayQty } from '@crocswap-libs/sdk';
 import { BigNumber } from 'ethers';
 import { UserDataContext } from './UserDataContext';
 import { TokenBalanceContext } from './TokenBalanceContext';
+import { TradeDataContext } from './TradeDataContext';
 
 interface TradeTokenContextIF {
     baseToken: {
@@ -78,7 +79,9 @@ export const TradeTokenContextProvider = (props: {
     const { setSimpleRangeWidth } = useContext(RangeContext);
     const { tokens } = useContext(TokenContext);
 
-    const { tradeData, receiptData } = useAppSelector((state) => state);
+    const { receiptData } = useAppSelector((state) => state);
+    const { tokenA, tokenB, baseToken, quoteToken } =
+        useContext(TradeDataContext);
     const { userAddress, isUserConnected } = useContext(UserDataContext);
     const {
         tokenAAllowance,
@@ -143,8 +146,8 @@ export const TradeTokenContextProvider = (props: {
             ? quoteTokenDexBalance
             : baseTokenDexBalance;
 
-        const isTokenAEth = tradeData.tokenA.address === ZERO_ADDRESS;
-        const isTokenBEth = tradeData.tokenB.address === ZERO_ADDRESS;
+        const isTokenAEth = tokenA.address === ZERO_ADDRESS;
+        const isTokenBEth = tokenB.address === ZERO_ADDRESS;
         return {
             tokenABalance,
             tokenBBalance,
@@ -153,13 +156,7 @@ export const TradeTokenContextProvider = (props: {
             isTokenAEth,
             isTokenBEth,
         };
-    }, [
-        isTokenABase,
-        baseTokenBalance,
-        quoteTokenBalance,
-        tradeData.tokenA,
-        tradeData.tokenB,
-    ]);
+    }, [isTokenABase, baseTokenBalance, quoteTokenBalance, tokenA, tokenB]);
 
     const tradeTokenContext = {
         baseToken: {
@@ -199,13 +196,13 @@ export const TradeTokenContextProvider = (props: {
                 crocEnv &&
                 userAddress &&
                 isUserConnected &&
-                tradeData.baseToken.address &&
-                tradeData.quoteToken.address &&
+                baseToken.address &&
+                quoteToken.address &&
                 baseTokenDecimals &&
                 quoteTokenDecimals
             ) {
                 crocEnv
-                    .token(tradeData.baseToken.address)
+                    .token(baseToken.address)
                     .wallet(userAddress)
                     .then((bal: BigNumber) => {
                         const displayBalance = toDisplayQty(
@@ -220,14 +217,14 @@ export const TradeTokenContextProvider = (props: {
                             setBaseTokenBalance(displayBalance);
 
                             setTokenBalance({
-                                tokenAddress: tradeData.baseToken.address,
+                                tokenAddress: baseToken.address,
                                 walletBalance: bal.toString(),
                             });
                         }
                     })
                     .catch(console.error);
                 crocEnv
-                    .token(tradeData.baseToken.address)
+                    .token(baseToken.address)
                     .balance(userAddress)
                     .then((bal: BigNumber) => {
                         const displayBalance = toDisplayQty(
@@ -239,14 +236,14 @@ export const TradeTokenContextProvider = (props: {
                                 console.debug('setting base token dex balance');
                             setBaseTokenDexBalance(displayBalance);
                             setTokenBalance({
-                                tokenAddress: tradeData.baseToken.address,
+                                tokenAddress: baseToken.address,
                                 dexBalance: bal.toString(),
                             });
                         }
                     })
                     .catch(console.error);
                 crocEnv
-                    .token(tradeData.quoteToken.address)
+                    .token(quoteToken.address)
                     .wallet(userAddress)
                     .then((bal: BigNumber) => {
                         const displayBalance = toDisplayQty(
@@ -258,14 +255,14 @@ export const TradeTokenContextProvider = (props: {
                                 console.debug('setting quote token balance');
                             setQuoteTokenBalance(displayBalance);
                             setTokenBalance({
-                                tokenAddress: tradeData.quoteToken.address,
+                                tokenAddress: quoteToken.address,
                                 walletBalance: bal.toString(),
                             });
                         }
                     })
                     .catch(console.error);
                 crocEnv
-                    .token(tradeData.quoteToken.address)
+                    .token(quoteToken.address)
                     .balance(userAddress)
                     .then((bal: BigNumber) => {
                         const displayBalance = toDisplayQty(
@@ -279,7 +276,7 @@ export const TradeTokenContextProvider = (props: {
                                 );
                             setQuoteTokenDexBalance(displayBalance);
                             setTokenBalance({
-                                tokenAddress: tradeData.quoteToken.address,
+                                tokenAddress: quoteToken.address,
                                 dexBalance: bal.toString(),
                             });
                         }
@@ -291,8 +288,8 @@ export const TradeTokenContextProvider = (props: {
         crocEnv,
         isUserConnected,
         userAddress,
-        tradeData.baseToken.address,
-        tradeData.quoteToken.address,
+        baseToken.address,
+        quoteToken.address,
         lastBlockNumber,
         baseTokenDecimals,
         quoteTokenDecimals,

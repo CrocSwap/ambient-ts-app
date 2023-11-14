@@ -10,7 +10,6 @@ import {
 import { HiOutlineExternalLink } from 'react-icons/hi';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import trimString from '../../../../utils/functions/trimString';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import {
     PositionIF,
     TransactionIF,
@@ -19,6 +18,7 @@ import styles from './PositionBox.module.css';
 import { motion } from 'framer-motion';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     message: string;
@@ -44,7 +44,7 @@ export default function PositionBox(props: propsIF) {
     const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<
         string | undefined
     >();
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const { isDenomBase } = useContext(TradeDataContext);
     const { positionsByPool, changesByPool } = useContext(GraphDataContext);
 
     const transactionsData = changesByPool.changes;
@@ -97,8 +97,8 @@ export default function PositionBox(props: propsIF) {
     const sideType =
         position &&
         (position.entityType === 'swap' || position.entityType === 'limitOrder'
-            ? (tradeData.isDenomBase && !position.isBuy) ||
-              (!tradeData.isDenomBase && position.isBuy)
+            ? (isDenomBase && !position.isBuy) ||
+              (!isDenomBase && position.isBuy)
                 ? 'Buy'
                 : 'Sell'
             : position.changeType === 'burn'
@@ -150,7 +150,7 @@ export default function PositionBox(props: propsIF) {
                         value: invPriceDecimalCorrected,
                     });
 
-                    const truncatedDisplayPrice = tradeData.isDenomBase
+                    const truncatedDisplayPrice = isDenomBase
                         ? (position.quoteSymbol
                               ? getUnicodeCharacter(position.quoteSymbol)
                               : '') + invertedPriceTruncated

@@ -29,7 +29,7 @@ import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
-
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
 
@@ -66,13 +66,16 @@ function Ranges(props: propsIF) {
     const { userPositionsByPool, positionsByPool } =
         useContext(GraphDataContext);
     const dataLoadingStatus = useContext(DataLoadingContext);
-    const tradeData = useAppSelector((state) => state.tradeData);
     const { transactionsByType, pendingTransactions } = useAppSelector(
         (state) => state.receiptData,
     );
 
-    const baseTokenAddress = tradeData.baseToken.address;
-    const quoteTokenAddress = tradeData.quoteToken.address;
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
+
+    const baseTokenSymbol = baseToken.symbol;
+    const quoteTokenSymbol = quoteToken.symbol;
+    const baseTokenAddress = baseToken.address;
+    const quoteTokenAddress = quoteToken.address;
 
     const [rangeData, setRangeData] = useState<PositionIF[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -213,9 +216,6 @@ function Ranges(props: propsIF) {
                 )}
             </FlexContainer>
         );
-
-    const quoteTokenSymbol = tradeData.quoteToken?.symbol;
-    const baseTokenSymbol = tradeData.baseToken?.symbol;
 
     // Changed this to have the sort icon be inline with the last row rather than under it
     const walID = (
@@ -399,9 +399,9 @@ function Ranges(props: propsIF) {
             tx.txType === 'Range' &&
             pendingTransactions.includes(tx.txHash) &&
             tx.txDetails?.baseAddress.toLowerCase() ===
-                tradeData.baseToken.address.toLowerCase() &&
+                baseToken.address.toLowerCase() &&
             tx.txDetails?.quoteAddress.toLowerCase() ===
-                tradeData.quoteToken.address.toLowerCase() &&
+                quoteToken.address.toLowerCase() &&
             tx.txDetails?.poolIdx === poolIndex,
     );
 

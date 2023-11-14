@@ -4,7 +4,6 @@ import { useContext, useEffect, useState, memo } from 'react';
 // START: Import Local Files
 import Pagination from '../../../Global/Pagination/Pagination';
 
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
@@ -16,6 +15,7 @@ import { FlexContainer } from '../../../../styled/Common';
 import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 // react functional component
 function Leaderboard() {
@@ -25,10 +25,11 @@ function Leaderboard() {
     const { leaderboardByPool } = useContext(GraphDataContext);
 
     const { userAddress } = useContext(UserDataContext);
-    const tradeData = useAppSelector((state) => state.tradeData);
 
-    const baseTokenAddress = tradeData.baseToken.address;
-    const quoteTokenAddress = tradeData.quoteToken.address;
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
+
+    const baseTokenAddress = baseToken.address;
+    const quoteTokenAddress = quoteToken.address;
 
     const positionsByApy: string[] =
         [...leaderboardByPool?.positions]
@@ -70,8 +71,8 @@ function Leaderboard() {
         ? 'medium'
         : 'large';
 
-    const quoteTokenSymbol = tradeData.quoteToken?.symbol;
-    const baseTokenSymbol = tradeData.baseToken?.symbol;
+    const quoteTokenSymbol = quoteToken?.symbol;
+    const baseTokenSymbol = baseToken?.symbol;
 
     const walID = (
         <>

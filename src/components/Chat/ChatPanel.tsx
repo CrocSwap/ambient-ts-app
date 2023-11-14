@@ -8,7 +8,6 @@ import { memo, useContext, useEffect, useRef, useState } from 'react';
 import useChatSocket from './Service/useChatSocket';
 import { PoolIF } from '../../utils/interfaces/exports';
 import useChatApi from './Service/ChatApi';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { BsChatLeftFill } from 'react-icons/bs';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import FullChat from './FullChat/FullChat';
@@ -16,6 +15,7 @@ import trimString from '../../utils/functions/trimString';
 import NotFound from '../../pages/NotFound/NotFound';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -33,7 +33,7 @@ function ChatPanel(props: propsIF) {
         subscriptions: { isEnabled: isSubscriptionsEnabled },
     } = useContext(AppStateContext);
 
-    const currentPool = useAppSelector((state) => state.tradeData);
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     if (!isChatEnabled) return <NotFound />;
 
@@ -390,9 +390,7 @@ function ChatPanel(props: propsIF) {
             message={messages[0]}
             room={
                 room === 'Current Pool'
-                    ? currentPool.baseToken.symbol +
-                      ' / ' +
-                      currentPool.quoteToken.symbol
+                    ? baseToken.symbol + ' / ' + quoteToken.symbol
                     : room
             }
             ensName={ensName}

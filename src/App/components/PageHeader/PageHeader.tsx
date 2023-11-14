@@ -7,10 +7,7 @@ import trimString from '../../../utils/functions/trimString';
 import logo from '../../../assets/images/logos/logo_mark.svg';
 import mainLogo from '../../../assets/images/logos/large.svg';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../utils/hooks/reduxToolkit';
+import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { BiGitBranch } from 'react-icons/bi';
 import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../constants';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
@@ -48,6 +45,7 @@ import { UserDataContext } from '../../../contexts/UserDataContext';
 import { useSwitchNetwork } from 'wagmi';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 const PageHeader = function () {
     const {
@@ -122,27 +120,21 @@ const PageHeader = function () {
 
     const location = useLocation();
 
-    const tradeData = useAppSelector((state) => state.tradeData);
-
-    const baseSymbol = tradeData.baseToken.symbol;
-    const quoteSymbol = tradeData.quoteToken.symbol;
-    const isDenomBase = tradeData.isDenomBase;
-    const baseAddressInRtk = tradeData.baseToken.address;
-    const quoteAddressInRtk = tradeData.quoteToken.address;
+    const { tokenA, tokenB, baseToken, quoteToken, isDenomBase } =
+        useContext(TradeDataContext);
+    const baseSymbol = baseToken.symbol;
+    const quoteSymbol = quoteToken.symbol;
+    const baseAddressInRtk = baseToken.address;
+    const quoteAddressInRtk = quoteToken.address;
 
     useEffect(() => {
         if (baseAddressInRtk && quoteAddressInRtk && crocEnv) {
             const promise = crocEnv
-                .pool(tradeData.baseToken.address, tradeData.quoteToken.address)
+                .pool(baseToken.address, quoteToken.address)
                 .isInit();
             Promise.resolve(promise).then((poolExists: boolean) => {
                 poolExists &&
-                    recentPools.add(
-                        tradeData.baseToken,
-                        tradeData.quoteToken,
-                        chainId,
-                        poolId,
-                    );
+                    recentPools.add(baseToken, quoteToken, chainId, poolId);
             });
         }
     }, [baseAddressInRtk, quoteAddressInRtk, crocEnv]);
@@ -217,9 +209,9 @@ const PageHeader = function () {
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const swapParams: swapParamsIF = {
-        chain: chainNumToString(tradeData.tokenA.chainId),
-        tokenA: tradeData.tokenA.address,
-        tokenB: tradeData.tokenB.address,
+        chain: chainNumToString(tokenA.chainId),
+        tokenA: tokenA.address,
+        tokenB: tokenB.address,
     };
 
     interface linkDataIF {
