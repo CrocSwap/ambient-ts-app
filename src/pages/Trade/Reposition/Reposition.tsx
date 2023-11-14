@@ -669,6 +669,7 @@ function Reposition() {
                             />
                         ) : (
                             <Button
+                                idForDOM='confirm_reposition_button'
                                 title={
                                     isRepositionSent
                                         ? 'Reposition Sent'

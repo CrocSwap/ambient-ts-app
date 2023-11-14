@@ -196,13 +196,17 @@ function RangePriceInfo(props: propsIF) {
                     onClick={handleMinMaxPriceClick}
                 >
                     <h4 className={styles.price_title}>Min Price</h4>
-                    <span className={styles.min_price}>{minPrice}</span>
+                    <span id='min_price_readable' className={styles.min_price}>
+                        {minPrice}
+                    </span>
                 </div>
             </DefaultTooltip>
         ) : (
             <div className={styles.price_display} style={{ cursor: 'default' }}>
                 <h4 className={styles.price_title}>Min Price</h4>
-                <span className={styles.min_price}>{minPrice}</span>
+                <span id='min_price_readable' className={styles.min_price}>
+                    {minPrice}
+                </span>
             </div>
         );
 
@@ -224,15 +228,21 @@ function RangePriceInfo(props: propsIF) {
                     onClick={handleMinMaxPriceClick}
                 >
                     <h4 className={styles.price_title}>Max Price</h4>
-                    <span className={styles.max_price}>{maxPrice}</span>
+                    <span id='max_price_readable' className={styles.max_price}>
+                        {maxPrice}
+                    </span>
                 </div>
             </DefaultTooltip>
         ) : (
             <div className={styles.price_display} style={{ cursor: 'default' }}>
                 <h4 className={styles.price_title}>Max Price</h4>
-                <span className={styles.max_price}>{maxPrice}</span>
+                <span id='max_price_readable' className={styles.max_price}>
+                    {maxPrice}
+                </span>
             </div>
         );
+
+    // TODO: remove unnecessary top-level wrapper
 
     return (
         <div className={styles.price_info_container}>

@@ -19,8 +19,7 @@
 }
 
 .swap_main_content {
-   
-    padding: 24px;
+  
     box-shadow: var(--gradient-box-shadow);
 }
 
@@ -81,6 +80,12 @@
     .no_background:hover,
     .no_background:focus-within {
         box-shadow: none;
+    }
+
+    .swap_main_content {
+   
+        padding: 24px;
+       
     }
     
 }

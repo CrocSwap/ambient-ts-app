@@ -82,11 +82,7 @@ function Orders(props: propsIF) {
             setLimitOrderData(
                 userLimitOrdersByPool?.limitOrders.filter(
                     (order) =>
-                        order.base.toLowerCase() ===
-                            baseTokenAddress.toLowerCase() &&
-                        order.quote.toLowerCase() ===
-                            quoteTokenAddress.toLowerCase() &&
-                        (order.positionLiq != 0 || order.claimableLiq !== 0),
+                        order.positionLiq != 0 || order.claimableLiq !== 0,
                 ),
             );
         else {

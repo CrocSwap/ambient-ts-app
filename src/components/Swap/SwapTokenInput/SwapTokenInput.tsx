@@ -47,6 +47,7 @@ interface propsIF {
     isLiquidityInsufficient: boolean;
     setIsLiquidityInsufficient: Dispatch<SetStateAction<boolean>>;
     toggleDexSelection: (tokenAorB: 'A' | 'B') => void;
+    amountToReduceEth: number;
 }
 
 function SwapTokenInput(props: propsIF) {
@@ -63,6 +64,7 @@ function SwapTokenInput(props: propsIF) {
         isLiquidityInsufficient,
         setIsLiquidityInsufficient,
         toggleDexSelection,
+        amountToReduceEth,
     } = props;
 
     const {
@@ -173,6 +175,7 @@ function SwapTokenInput(props: propsIF) {
     ): Promise<number | undefined> {
         if (isNaN(parseFloat(input)) || parseFloat(input) === 0 || !crocEnv) {
             setIsLiquidityInsufficient(false);
+            setPriceImpact(undefined);
             return undefined;
         }
 
@@ -325,6 +328,7 @@ function SwapTokenInput(props: propsIF) {
                 parseTokenInput={(val: string, isMax?: boolean) => {
                     setSellQtyString(formatTokenInput(val, tokenA, isMax));
                 }}
+                amountToReduceEth={amountToReduceEth}
             />
             <FlexContainer
                 fullWidth
