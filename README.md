@@ -8,6 +8,7 @@ Welcome to the Ambient Finance platform! Please [click here](https://ambient.fin
 1. [Instructions for Use](#instructions)
 2. [Contributions](#contributions)
 3. [Version Notes](#version-notes)
+4. [Contact](#contact)
 
 [Back to Top](#top)
 <a id='instructions'></a>
@@ -83,5 +84,23 @@ Summary:
 * Refactored styling for easier future updates to add customizability.
 
 Code changes are viewable on GitHub [Link](https://github.com/CrocSwap/ambient-ts-app/pull/3039)
+
+[Back to Top](#top)
+<a id='contact'></a>
+
+# Contact
+
+### Social Media
+
+* [Twitter](https://twitter.com/ambient_finance)
+* [Discord](https://discord.com/invite/ambient-finance)
+* [Medium](https://crocswap.medium.com/)
+* [Corporate Site](https://www.crocswap.com/)
+
+### People
+
+* [Doug Colkitt](mailto:doug@crocodilelabs.io) is the Founder & CEO of Crocodile Labs
+* [Vee](mailto:vee@crocodilelabs.io) is our Community Manager and handles external communications
+* [Emily](mailto:emily@crocodilelabs.io) is the primary caretaker of this document
 
 [Back to Top](#top)
