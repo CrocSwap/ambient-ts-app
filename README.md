@@ -3,7 +3,14 @@
 # Introduction
 Welcome to the Ambient Finance platform! Please [click here](https://ambient.finance/) to launch the web app.
 
-## Ambient Finance Open Source Web Application
+# Table of Contents
+
+1. [Instructions for Use](#instructions)
+
+[Back to Top](#top)
+<a id='instructions'></a>
+
+# Instructions for Use
 
 ### `yarn start`
 
