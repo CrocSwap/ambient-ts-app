@@ -7,6 +7,7 @@ Welcome to the Ambient Finance platform! Please [click here](https://ambient.fin
 
 1. [Instructions for Use](#instructions)
 2. [Contributions](#contributions)
+3. [Version Notes](#version-notes)
 
 [Back to Top](#top)
 <a id='instructions'></a>
@@ -40,10 +41,29 @@ Notes:
   * Please use your own Infura key for development purposes.
 
 [Back to Top](#top)
-<a id='instructions'></a>
+<a id='contributions'></a>
 
 # Contributions
 
 Contributions are always welcome! Feel free to open a GitHub Issue or Pull Request.
 
 Please see the docs for our coding style guide: https://github.com/CrocSwap/ambient-ts-app/tree/develop/docs
+
+[Back to Top](#top)
+<a id='version-notes'></a>
+
+# Version Notes
+Release notes for app versions.
+Quick Links: [1.6](#v1.6) (Current)
+
+<a id='v1.6'></a>
+
+### version 1.6
+Summary:
+* Added the ability to switch to the Scroll network and a test network (Görli) using the network selector in the page header
+* Added an external link to [Canto](https://beta.canto.io/lp) in the network selector
+* Updated the pool initialization form to enable additionally minting an initial liquidity position
+* Fixed a bug preventing approvals of certain tokens (thanks [busimus](https://github.com/busimus)!)
+* Added the ability to annotate the price charts with trend lines and horizontal rays
+* Added USD $ value estimation calculations to the token selectors in the swap/limit/pool modules based on CoinGecko
+Code changes are viewable on GitHub [Link](https://github.com/CrocSwap/ambient-ts-app/pull/3225)
