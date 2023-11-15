@@ -10,7 +10,7 @@ import TransactionDetailsGraph from '../../Global/TransactionDetails/Transaction
 import { useProcessRange } from '../../../utils/hooks/useProcessRange';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { GRAPHCACHE_SMALL_URL } from '../../../constants';
+import { GCGO_OVERRIDE_URL } from '../../../constants';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
@@ -121,7 +121,7 @@ export default function RangeDetailsModal(props: propsIF) {
         number | undefined
     >(positionApy);
 
-    const { crocEnv } = useContext(CrocEnvContext);
+    const { crocEnv, activeNetwork } = useContext(CrocEnvContext);
 
     const { posHash } = useProcessRange(position, userAddress);
 
@@ -133,8 +133,9 @@ export default function RangeDetailsModal(props: propsIF) {
     }
 
     useEffect(() => {
-        const positionStatsCacheEndpoint =
-            GRAPHCACHE_SMALL_URL + '/position_stats?';
+        const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
+            ? GCGO_OVERRIDE_URL + '/position_stats?'
+            : activeNetwork.graphCacheUrl + '/position_stats?';
 
         if (position.positionType) {
             fetch(

@@ -33,6 +33,14 @@ export const ExtraInfo = (props: PropsIF) => {
 
     const [showExtraInfo, setShowExtraInfo] = useState<boolean>(false);
 
+    const arrowToRender = showDropdown ? (
+        showExtraInfo ? (
+            <RiArrowUpSLine size={22} />
+        ) : (
+            <RiArrowDownSLine size={22} />
+        )
+    ) : null;
+
     return (
         <>
             <ExtraInfoContainer
@@ -77,11 +85,7 @@ export const ExtraInfo = (props: PropsIF) => {
                 >
                     {conversionRate}
                 </FlexContainer>
-
-                {showDropdown && !showExtraInfo && (
-                    <RiArrowDownSLine size={22} />
-                )}
-                {showDropdown && showExtraInfo && <RiArrowUpSLine size={22} />}
+                <div style={{ height: '22px' }}>{arrowToRender}</div>
             </ExtraInfoContainer>
             {showExtraInfo && showDropdown && (
                 <ExtraDetailsContainer>

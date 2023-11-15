@@ -67,6 +67,7 @@ function Transactions(props: propsIF) {
     const { chartSettings, tradeTableState } = useContext(ChartContext);
     const {
         crocEnv,
+        activeNetwork,
         provider,
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
@@ -228,6 +229,7 @@ function Transactions(props: propsIF) {
             period: candleTime.time,
             time: filter?.time,
             crocEnv: crocEnv,
+            graphCacheUrl: activeNetwork.graphCacheUrl,
             provider,
             lastBlockNumber,
             cachedFetchTokenPrice: cachedFetchTokenPrice,
@@ -311,7 +313,7 @@ function Transactions(props: propsIF) {
     }[] = [
         {
             name: 'Timestamp',
-            show: tableView === 'large',
+            show: tableView !== 'small',
             slug: 'time',
             sortable: true,
         },
@@ -515,6 +517,7 @@ function Transactions(props: propsIF) {
         _DATA.currentData.map((tx, idx) => (
             <TransactionRow
                 key={idx}
+                idForDOM={`tx_row_${idx}`}
                 tx={tx}
                 tableView={tableView}
                 isAccountView={isAccountView}

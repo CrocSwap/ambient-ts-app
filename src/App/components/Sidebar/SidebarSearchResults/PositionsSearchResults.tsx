@@ -115,7 +115,7 @@ export default function PositionsSearchResults(props: propsIF) {
             gap={8}
         >
             <Text fontWeight='500' fontSize='body' color='accent5'>
-                My Range Positions
+                My Liquidity Positions
             </Text>
             {searchedPositions.length ? (
                 <FlexContainer flexDirection='column' fullWidth>

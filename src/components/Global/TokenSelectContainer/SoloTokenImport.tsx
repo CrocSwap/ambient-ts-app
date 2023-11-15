@@ -116,6 +116,7 @@ export default function SoloTokenImport(props: propsIF) {
             </p>
             <FlexContainer justifyContent='center'>
                 <Button
+                    idForDOM='import_unknown_token_button'
                     flat
                     title='Acknowledge'
                     action={() => chooseToken(customToken, true)}

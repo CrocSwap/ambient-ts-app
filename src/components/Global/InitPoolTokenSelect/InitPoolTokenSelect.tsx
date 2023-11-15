@@ -32,6 +32,7 @@ const MainContainer = styled.button`
     &:hover {
         background: var(--dark3);
         cursor: pointer;
+        color: var(--accent1);
     }
 `;
 
@@ -42,6 +43,12 @@ const LeftContainer = styled.p`
 
     & > p {
         color: var(--text1);
+    }
+    &:hover > p {
+        color: var(--accent1);
+    }
+    &:hover > svg {
+        color: var(--accent1);
     }
 `;
 

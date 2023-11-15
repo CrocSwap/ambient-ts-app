@@ -56,6 +56,7 @@
     --other-red: #e75670;
 
     /* border */
+    --color-border: 1px solid var(--accent1);
     --border: var(--dark2);
     --border-radius: 4px;
     --swap-border: var(--title-gradient);
@@ -74,6 +75,7 @@
 
     /* gradients, shadows */
     --shimmer: linear-gradient(to right, #141e30, #243b55);
+    --gradient-box-shadow: 0px 0px 20px 0px rgba(115, 113, 252, 0.25) inset;
 
     --title-gradient: linear-gradient(
         90deg,
