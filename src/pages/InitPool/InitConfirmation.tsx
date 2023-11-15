@@ -7,6 +7,7 @@ import { FlexContainer, GridContainer, Text } from '../../styled/Common';
 
 import { FeaturedBox } from '../../components/Trade/TableInfo/FeaturedBox';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { DISABLE_INIT_SETTINGS } from '../../constants';
 
 const Wrapper = styled.div<{ isLpContractCreationEnabled: boolean }>`
     width: 100%;
@@ -222,12 +223,15 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         },
     ];
 
-    const noMintLiqStepsToShow = isLpContractCreationEnabled
-        ? noMintLiqStepsWithLP
-        : noMintLiqSteps;
-    const mintLiqStepsToShow = isLpContractCreationEnabled
-        ? mintLiqStepsWithLP
-        : mintLiqSteps;
+    const noMintLiqStepsToShow =
+        isLpContractCreationEnabled && !DISABLE_INIT_SETTINGS
+            ? noMintLiqStepsWithLP
+            : noMintLiqSteps;
+
+    const mintLiqStepsToShow =
+        isLpContractCreationEnabled && !DISABLE_INIT_SETTINGS
+            ? mintLiqStepsWithLP
+            : mintLiqSteps;
 
     const steps = isMintLiqEnabled ? mintLiqStepsToShow : noMintLiqStepsToShow;
 
