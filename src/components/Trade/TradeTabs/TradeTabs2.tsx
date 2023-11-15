@@ -46,6 +46,7 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { FlexContainer } from '../../../styled/Common';
 import { ClearButton } from '../../../styled/Components/TransactionTable';
 import TableInfo from '../TableInfo/TableInfo';
+import Transactions2 from './Transactions2/Transactions2';
 interface propsIF {
     filter: CandleData | undefined;
     setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
@@ -346,7 +347,7 @@ function TradeTabs2(props: propsIF) {
         : [
               {
                   label: 'Transactions',
-                  content: <Transactions {...transactionsProps} />,
+                  content: <Transactions2 />,
                   icon: recentTransactionsImage,
                   showRightSideOption: true,
               },
