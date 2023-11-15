@@ -4476,6 +4476,7 @@ export default function Chart(props: propsIF) {
                     mainCanvasBoundingClientRect={mainCanvasBoundingClientRect}
                     setDrawnShapeHistory={setDrawnShapeHistory}
                     setSelectedDrawnShape={setSelectedDrawnShape}
+                    setIsDragActive={setIsDragActive}
                     deleteItem={deleteItem}
                     setIsShapeEdited={setIsShapeEdited}
                     addDrawActionStack={addDrawActionStack}

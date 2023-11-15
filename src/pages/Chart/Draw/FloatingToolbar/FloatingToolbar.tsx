@@ -37,6 +37,7 @@ interface FloatingToolbarProps {
     setSelectedDrawnShape: React.Dispatch<
         React.SetStateAction<selectedDrawnData | undefined>
     >;
+    setIsDragActive: React.Dispatch<boolean>;
     setIsShapeEdited: React.Dispatch<boolean>;
     deleteItem: (item: drawDataHistory) => void;
     addDrawActionStack: (item: drawDataHistory, isNewShape: boolean) => void;
@@ -47,6 +48,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         selectedDrawnShape,
         setDrawnShapeHistory,
         setSelectedDrawnShape,
+        setIsDragActive,
         deleteItem,
         setIsShapeEdited,
         addDrawActionStack,
@@ -148,6 +150,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                     (i) => i.time !== selectedDrawnShape?.data.time,
                 );
             });
+            setIsDragActive(false);
             setSelectedDrawnShape(undefined);
         }
     };
