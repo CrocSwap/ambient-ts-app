@@ -100,12 +100,8 @@ export const ENSAddressContextProvider = (props: { children: ReactNode }) => {
                     setRetryDelay(MIN_RETRY_DELAY);
                 } catch (error) {
                     console.log(error);
-                    if (serverReturnedErrorTimestamp < 0) {
-                        setServerReturnedErrorTimestamp(now);
-                        setRetryDelay(
-                            Math.min(retryDelay * 2, MAX_RETRY_DELAY),
-                        );
-                    }
+                    setServerReturnedErrorTimestamp(now);
+                    setRetryDelay(Math.min(retryDelay * 2, MAX_RETRY_DELAY));
                 }
             })();
         }
