@@ -10,14 +10,14 @@ import {
     memoizeTokenPrice,
     FetchBlockTimeFn,
     memoizeFetchBlockTime,
-} from '../ambient-utils/src/api';
+} from '../ambient-utils/api';
 
 import {
     PoolStatsFn,
     memoizePoolStats,
     SpotPriceFn,
     memoizeQuerySpotPrice,
-} from '../ambient-utils/src/dataLayer';
+} from '../ambient-utils/dataLayer';
 
 interface CachedDataIF {
     cachedFetchTokenBalances: TokenBalancesQueryFn;

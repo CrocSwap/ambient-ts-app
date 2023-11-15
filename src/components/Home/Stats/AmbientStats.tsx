@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import {
     getChainStats,
     getFormattedNumber,
-} from '../../../ambient-utils/src/dataLayer';
+} from '../../../ambient-utils/dataLayer';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';

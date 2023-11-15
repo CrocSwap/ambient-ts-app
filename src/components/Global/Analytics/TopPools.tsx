@@ -5,7 +5,7 @@ import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { SortedPoolMethodsIF, useSortedPools } from './useSortedPools';
 import TableHead from './TableHead';
 import checkPoolForWETH from '../../../App/functions/checkPoolForWETH';
-import { PoolIF } from '../../../ambient-utils/src/types';
+import { PoolIF } from '../../../ambient-utils/types';
 import Spinner from '../Spinner/Spinner';
 import {
     ScrollableContainer,

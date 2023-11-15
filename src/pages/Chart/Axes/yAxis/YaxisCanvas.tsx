@@ -19,7 +19,7 @@ import {
     diffHashSig,
     diffHashSigScaleData,
     getFormattedNumber,
-} from '../../../../ambient-utils/src/dataLayer';
+} from '../../../../ambient-utils/dataLayer';
 import {
     crosshair,
     fillLiqAdvanced,

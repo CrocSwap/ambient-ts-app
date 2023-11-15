@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react';
 import { RiArrowUpSLine, RiArrowDownSLine } from 'react-icons/ri';
-import { uriToHttp } from '../../../../ambient-utils/src/dataLayer';
+import { uriToHttp } from '../../../../ambient-utils/dataLayer';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import {
     CircleLoaderFailed,

@@ -14,7 +14,7 @@ import TabComponent from '../../Global/TabComponent/TabComponent';
 import {
     getPositionData,
     getLimitOrderData,
-} from '../../../ambient-utils/src/dataLayer';
+} from '../../../ambient-utils/dataLayer';
 import {
     LimitOrderIF,
     PositionIF,
@@ -22,13 +22,13 @@ import {
     TransactionIF,
     PositionServerIF,
     LimitOrderServerIF,
-} from '../../../ambient-utils/src/types';
+} from '../../../ambient-utils/types';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
 import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
-import { fetchUserRecentChanges } from '../../../ambient-utils/src/api';
+import { fetchUserRecentChanges } from '../../../ambient-utils/api';
 import Orders from '../../Trade/TradeTabs/Orders/Orders';
 import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
 import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';

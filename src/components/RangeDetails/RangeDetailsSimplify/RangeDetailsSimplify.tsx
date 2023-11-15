@@ -1,5 +1,5 @@
 import styles from './RangeDetailsSimplify.module.css';
-import { PositionIF } from '../../../ambient-utils/src/types';
+import { PositionIF } from '../../../ambient-utils/types';
 import { useProcessRange } from '../../../utils/hooks/useProcessRange';
 import { ZERO_ADDRESS } from '../../../constants';
 import { RiExternalLinkLine } from 'react-icons/ri';

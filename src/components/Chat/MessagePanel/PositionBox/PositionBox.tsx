@@ -12,8 +12,8 @@ import {
     trimString,
     getFormattedNumber,
     getUnicodeCharacter,
-} from '../../../../ambient-utils/src/dataLayer';
-import { PositionIF, TransactionIF } from '../../../../ambient-utils/src/types';
+} from '../../../../ambient-utils/dataLayer';
+import { PositionIF, TransactionIF } from '../../../../ambient-utils/types';
 import styles from './PositionBox.module.css';
 import { motion } from 'framer-motion';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';

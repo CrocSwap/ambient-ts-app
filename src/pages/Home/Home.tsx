@@ -6,10 +6,10 @@ import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import MobileLandingSections from '../../components/Home/Landing/MobileLandingSections';
 import { useSearchParams } from 'react-router-dom';
 import { useSwitchNetwork } from 'wagmi';
-import { supportedNetworks } from '../../ambient-utils/src/constants';
+import { supportedNetworks } from '../../ambient-utils/constants';
 import { useAppChain } from '../../App/hooks/useAppChain';
 import { useContext, useEffect } from 'react';
-import { lookupChainId } from '../../ambient-utils/src/dataLayer';
+import { lookupChainId } from '../../ambient-utils/dataLayer';
 import { UserDataContext } from '../../contexts/UserDataContext';
 
 export default function Home() {

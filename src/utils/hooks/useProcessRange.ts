@@ -7,8 +7,8 @@ import {
     trimString,
     getMoneynessRank,
     getFormattedNumber,
-} from '../../ambient-utils/src/dataLayer';
-import { PositionIF } from '../../ambient-utils/src/types';
+} from '../../ambient-utils/dataLayer';
+import { PositionIF } from '../../ambient-utils/types';
 import { useContext, useMemo } from 'react';
 import moment from 'moment';
 import { getAddress } from 'ethers/lib/utils.js';

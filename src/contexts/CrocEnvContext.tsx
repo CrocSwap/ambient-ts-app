@@ -19,14 +19,14 @@ import {
     swapParamsIF,
     useLinkGen,
 } from '../utils/hooks/useLinkGen';
-import { NetworkIF, PoolIF, TokenIF } from '../ambient-utils/src/types';
+import { NetworkIF, PoolIF, TokenIF } from '../ambient-utils/types';
 import {
     APP_ENVIRONMENT,
     IS_LOCAL_ENV,
     ethereumMainnet,
     mainnetETH,
     getDefaultPairForChain,
-} from '../ambient-utils/src/constants';
+} from '../ambient-utils/constants';
 import { UserDataContext } from './UserDataContext';
 
 interface UrlRoutesTemplate {

@@ -11,7 +11,7 @@ import PriceInput from '../PriceInput/PriceInput';
 
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
-import { exponentialNumRegEx } from '../../../../../ambient-utils/src/dataLayer';
+import { exponentialNumRegEx } from '../../../../../ambient-utils/dataLayer';
 import { FlexContainer, Text } from '../../../../../styled/Common';
 import { RangeContext } from '../../../../../contexts/RangeContext';
 

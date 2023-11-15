@@ -11,9 +11,9 @@ import {
     IS_LOCAL_ENV,
     SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
 } from '../constants';
-import { isJsonString } from '../ambient-utils/src/dataLayer';
-import { TokenIF } from '../ambient-utils/src/types';
-import { supportedNetworks } from '../ambient-utils/src/constants';
+import { isJsonString } from '../ambient-utils/dataLayer';
+import { TokenIF } from '../ambient-utils/types';
+import { supportedNetworks } from '../ambient-utils/constants';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';

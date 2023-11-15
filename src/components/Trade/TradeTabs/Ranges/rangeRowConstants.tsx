@@ -1,6 +1,6 @@
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
-import { PositionIF, TokenIF } from '../../../../ambient-utils/src/types';
+import { PositionIF, TokenIF } from '../../../../ambient-utils/types';
 import { NavLink } from 'react-router-dom';
 import { ZERO_ADDRESS } from '../../../../constants';
 import Medal from '../../../Global/Medal/Medal';

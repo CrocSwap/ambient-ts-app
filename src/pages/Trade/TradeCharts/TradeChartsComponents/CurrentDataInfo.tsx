@@ -1,8 +1,8 @@
 import styles from './CurrentDataInfo.module.css';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import { Dispatch, memo, SetStateAction, useContext } from 'react';
-import { CandleDataIF } from '../../../../ambient-utils/src/types';
-import { getFormattedNumber } from '../../../../ambient-utils/src/dataLayer';
+import { CandleDataIF } from '../../../../ambient-utils/types';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface CurrentDataInfoPropsIF {

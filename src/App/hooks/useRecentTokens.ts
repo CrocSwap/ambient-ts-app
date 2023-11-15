@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { TokenIF } from '../../ambient-utils/src/types';
+import { TokenIF } from '../../ambient-utils/types';
 
 export interface getRecentTokensParamsIF {
     onCurrentChain?: boolean;

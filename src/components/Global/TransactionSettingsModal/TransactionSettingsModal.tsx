@@ -4,7 +4,7 @@ import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { FlexContainer, Text } from '../../../styled/Common';
 import { SettingsContainer } from '../../../styled/Components/TradeModules';
-import { isStablePair } from '../../../ambient-utils/src/dataLayer';
+import { isStablePair } from '../../../ambient-utils/dataLayer';
 import Button from '../../Form/Button';
 import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationModalControl';
 import Modal from '../Modal/Modal';

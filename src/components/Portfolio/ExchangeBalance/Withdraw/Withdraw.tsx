@@ -9,7 +9,7 @@ import {
     useState,
 } from 'react';
 import { FaGasPump } from 'react-icons/fa';
-import { getFormattedNumber } from '../../../../ambient-utils/src/dataLayer';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
@@ -25,9 +25,9 @@ import {
     isTransactionFailedError,
     isTransactionReplacedError,
 } from '../../../../utils/TransactionError';
-import { checkBlacklist } from '../../../../ambient-utils/src/constants';
+import { checkBlacklist } from '../../../../ambient-utils/constants';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { TokenIF } from '../../../../ambient-utils/src/types';
+import { TokenIF } from '../../../../ambient-utils/types';
 import {
     addPendingTx,
     addReceipt,

@@ -9,7 +9,7 @@ import {
     getFormattedNumber,
     getUnicodeCharacter,
     trimString,
-} from '../../../../../ambient-utils/src/dataLayer';
+} from '../../../../../ambient-utils/dataLayer';
 import {
     OrderRow,
     RowItem,

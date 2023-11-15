@@ -9,7 +9,7 @@ import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 import {
     trimString,
     getUnicodeCharacter,
-} from '../../../../../ambient-utils/src/dataLayer';
+} from '../../../../../ambient-utils/dataLayer';
 import {
     RangeRow,
     RowItem,

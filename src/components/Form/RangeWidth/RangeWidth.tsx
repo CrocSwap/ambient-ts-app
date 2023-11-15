@@ -11,7 +11,7 @@ import RangeSlider from '../RangeSlider';
 import { Chip } from '../Chip';
 import { ExplanationButton } from '../Icons/Icons.styles';
 import { FlexContainer, Text } from '../../../styled/Common';
-import { truncateDecimals } from '../../../ambient-utils/src/dataLayer';
+import { truncateDecimals } from '../../../ambient-utils/dataLayer';
 
 // interface for React functional component props
 interface propsIF {

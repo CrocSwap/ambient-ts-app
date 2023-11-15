@@ -6,7 +6,7 @@ import {
     SetStateAction,
     useContext,
 } from 'react';
-import { TokenIF } from '../../../ambient-utils/src/types';
+import { TokenIF } from '../../../ambient-utils/types';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import styles from './SoloTokenSelect.module.css';
@@ -21,7 +21,7 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import {
     removeWrappedNative,
     isWethToken,
-} from '../../../ambient-utils/src/dataLayer';
+} from '../../../ambient-utils/dataLayer';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
 import { IoIosArrowBack } from 'react-icons/io';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';

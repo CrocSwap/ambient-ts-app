@@ -6,7 +6,7 @@ import React, {
     useMemo,
     useState,
 } from 'react';
-import { estimateFrom24HrAmbientApr } from '../ambient-utils/src/api';
+import { estimateFrom24HrAmbientApr } from '../ambient-utils/api';
 import { usePoolPricing } from '../App/hooks/usePoolPricing';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { AppStateContext } from './AppStateContext';
@@ -15,7 +15,7 @@ import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
 import { usePoolList } from '../App/hooks/usePoolList';
-import { PoolIF, PoolStatIF } from '../ambient-utils/src/types';
+import { PoolIF, PoolStatIF } from '../ambient-utils/types';
 import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
 import { UserDataContext } from './UserDataContext';
 import { TradeDataContext } from './TradeDataContext';

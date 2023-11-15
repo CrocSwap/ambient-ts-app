@@ -2,10 +2,10 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 
 // START: Import Other Local Files
-import { TokenPairIF } from '../../../ambient-utils/src/types';
+import { TokenPairIF } from '../../../ambient-utils/types';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { getFormattedNumber } from '../../../ambient-utils/src/dataLayer';
+import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import TradeConfirmationSkeleton from '../../Trade/TradeModules/TradeConfirmationSkeleton';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
 import { FlexContainer, Text } from '../../../styled/Common';

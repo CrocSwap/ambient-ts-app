@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { TokenIF } from '../../ambient-utils/src/types';
+import { TokenIF } from '../../ambient-utils/types';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';

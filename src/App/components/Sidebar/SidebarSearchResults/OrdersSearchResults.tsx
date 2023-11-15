@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { LimitOrderIF } from '../../../../ambient-utils/src/types';
+import { LimitOrderIF } from '../../../../ambient-utils/types';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import {
@@ -10,7 +10,7 @@ import {
 import {
     getFormattedNumber,
     getUnicodeCharacter,
-} from '../../../../ambient-utils/src/dataLayer';
+} from '../../../../ambient-utils/dataLayer';
 import { FlexContainer, GridContainer, Text } from '../../../../styled/Common';
 import {
     Results,

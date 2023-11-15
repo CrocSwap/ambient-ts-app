@@ -18,7 +18,7 @@ import { GlobalContexts } from './contexts/GlobalContexts';
 import {
     GLOBAL_MODAL_PORTAL_ID,
     supportedNetworks,
-} from './ambient-utils/src/constants';
+} from './ambient-utils/constants';
 
 /* Perform a single forcible reload when the page first loads. Without this, there
  * are issues with Metamask and Chrome preloading. This shortcircuits preloading, at the

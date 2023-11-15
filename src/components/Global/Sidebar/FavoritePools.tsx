@@ -1,8 +1,8 @@
-import { PoolStatsFn } from '../../../ambient-utils/src/dataLayer';
+import { PoolStatsFn } from '../../../ambient-utils/dataLayer';
 import { useContext } from 'react';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { TokenPriceFn } from '../../../ambient-utils/src/api';
+import { TokenPriceFn } from '../../../ambient-utils/api';
 import PoolsListItem from './PoolsListItem';
 import { FlexContainer } from '../../../styled/Common';
 import {

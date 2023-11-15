@@ -5,7 +5,7 @@ import {
     getFormattedNumber,
     getPriceImpactString,
     isStablePair,
-} from '../../../ambient-utils/src/dataLayer';
+} from '../../../ambient-utils/dataLayer';
 import Button from '../../../components/Form/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import TooltipComponent from '../../../components/Global/TooltipComponent/TooltipComponent';

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
-import { uriToHttp } from '../../ambient-utils/src/dataLayer';
+import { uriToHttp } from '../../ambient-utils/dataLayer';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
-import { TokenIF } from '../../ambient-utils/src/types';
+import { TokenIF } from '../../ambient-utils/types';
 import TokenIcon from '../Global/TokenIcon/TokenIcon';
 import styles from './NoChartData.module.css';
 import { FiRefreshCcw } from 'react-icons/fi';

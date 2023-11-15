@@ -1,7 +1,7 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useState } from 'react';
-import { PoolIF, GCServerPoolIF, TokenIF } from '../../ambient-utils/src/types';
-import { fetchPoolList } from '../../ambient-utils/src/api';
+import { PoolIF, GCServerPoolIF, TokenIF } from '../../ambient-utils/types';
+import { fetchPoolList } from '../../ambient-utils/api';
 import { TokenContext } from '../../contexts/TokenContext';
 
 export const usePoolList = (

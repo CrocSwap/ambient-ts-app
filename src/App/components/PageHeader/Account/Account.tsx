@@ -9,7 +9,7 @@ import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 import WalletDropdown from './WalletDropdown/WalletDropdown';
 import useKeyPress from '../../../hooks/useKeyPress';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
-import { trimString } from '../../../../ambient-utils/src/dataLayer';
+import { trimString } from '../../../../ambient-utils/dataLayer';
 import { ExchangeBalanceDropdown } from '../ExchangeBalanceDropdown/ExchangeBalanceDropdown';
 import {
     TitleGradientButton,

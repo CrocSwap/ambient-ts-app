@@ -2,12 +2,12 @@ import { ReactNode, createContext, useContext, useRef, useState } from 'react';
 import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
-import { PoolIF } from '../ambient-utils/src/types';
+import { PoolIF } from '../ambient-utils/types';
 import {
     getMoneynessRank,
     getFormattedNumber,
     get24hChange,
-} from '../ambient-utils/src/dataLayer';
+} from '../ambient-utils/dataLayer';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { CrocEnvContext } from './CrocEnvContext';
 

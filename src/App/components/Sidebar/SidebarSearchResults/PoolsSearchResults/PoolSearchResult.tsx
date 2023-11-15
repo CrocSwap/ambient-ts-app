@@ -1,6 +1,6 @@
-import { PoolIF } from '../../../../../ambient-utils/src/types';
-import { PoolStatsFn } from '../../../../../ambient-utils/src/dataLayer';
-import { TokenPriceFn } from '../../../../../ambient-utils/src/api';
+import { PoolIF } from '../../../../../ambient-utils/types';
+import { PoolStatsFn } from '../../../../../ambient-utils/dataLayer';
+import { TokenPriceFn } from '../../../../../ambient-utils/api';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { usePoolStats } from '../../../../hooks/usePoolStats';
 import { Results } from '../../../../../styled/Components/Sidebar';

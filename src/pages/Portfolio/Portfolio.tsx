@@ -9,12 +9,12 @@ import Button from '../../components/Form/Button';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 
 // START: Import Other Local Files
-import { TokenIF } from '../../ambient-utils/src/types';
-import { fetchEnsAddress } from '../../ambient-utils/src/api';
+import { TokenIF } from '../../ambient-utils/types';
+import { fetchEnsAddress } from '../../ambient-utils/api';
 import { Navigate, useParams } from 'react-router-dom';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { diffHashSig } from '../../ambient-utils/src/dataLayer';
+import { diffHashSig } from '../../ambient-utils/dataLayer';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { TokenContext } from '../../contexts/TokenContext';

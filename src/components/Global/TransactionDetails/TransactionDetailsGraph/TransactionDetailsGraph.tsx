@@ -10,8 +10,8 @@ import {
     formatPoolPriceAxis,
 } from '../../../../utils/numbers';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import { getFormattedNumber } from '../../../../ambient-utils/src/dataLayer';
-import { fetchCandleSeriesCroc } from '../../../../ambient-utils/src/api';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
+import { fetchCandleSeriesCroc } from '../../../../ambient-utils/api';
 import moment from 'moment';
 import {
     renderCanvasArray,

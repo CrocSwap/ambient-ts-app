@@ -16,7 +16,7 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { FlexContainer } from '../../../styled/Common';
-import { truncateDecimals } from '../../../ambient-utils/src/dataLayer';
+import { truncateDecimals } from '../../../ambient-utils/dataLayer';
 import {
     useAppSelector,
     useAppDispatch,

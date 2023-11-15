@@ -1,4 +1,4 @@
-import { checkBlacklist } from '../../ambient-utils/src/constants';
+import { checkBlacklist } from '../../ambient-utils/constants';
 import { useContext, useEffect } from 'react';
 import { UserDataContext } from '../../contexts/UserDataContext';
 

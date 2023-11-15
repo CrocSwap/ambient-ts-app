@@ -2,7 +2,7 @@
 import { DetailedHTMLProps, HTMLAttributes, MutableRefObject } from 'react';
 import * as d3 from 'd3';
 import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
-import { CandleDataIF } from '../../../ambient-utils/src/types';
+import { CandleDataIF } from '../../../ambient-utils/types';
 import { TradeDataContextIF } from '../../../contexts/TradeDataContext';
 
 declare global {

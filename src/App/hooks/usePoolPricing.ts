@@ -5,7 +5,7 @@ import {
     setLimitTick,
     setPoolPriceNonDisplay,
 } from '../../utils/state/tradeDataSlice';
-import { get24hChange, SpotPriceFn } from '../../ambient-utils/src/dataLayer';
+import { get24hChange, SpotPriceFn } from '../../ambient-utils/dataLayer';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { RangeContext } from '../../contexts/RangeContext';

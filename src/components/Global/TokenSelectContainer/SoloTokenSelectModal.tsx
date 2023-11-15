@@ -6,7 +6,7 @@ import {
     SetStateAction,
     useContext,
 } from 'react';
-import { TokenIF } from '../../../ambient-utils/src/types';
+import { TokenIF } from '../../../ambient-utils/types';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import styles from './SoloTokenSelectModal.module.css';
@@ -22,7 +22,7 @@ import Modal from '../Modal/Modal';
 import {
     removeWrappedNative,
     isWethToken,
-} from '../../../ambient-utils/src/dataLayer';
+} from '../../../ambient-utils/dataLayer';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 

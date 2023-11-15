@@ -5,8 +5,8 @@ import {
     getMoneynessRank,
     getElapsedTime,
     getFormattedNumber,
-} from '../../ambient-utils/src/dataLayer';
-import { TransactionIF } from '../../ambient-utils/src/types';
+} from '../../ambient-utils/dataLayer';
+import { TransactionIF } from '../../ambient-utils/types';
 import moment from 'moment';
 import { getAddress } from 'ethers/lib/utils.js';
 import {

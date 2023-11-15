@@ -1,9 +1,9 @@
-import { PositionIF } from '../../../../ambient-utils/src/types';
+import { PositionIF } from '../../../../ambient-utils/types';
 import {
     getFormattedNumber,
     getSymbols,
     getUnicodeCharacter,
-} from '../../../../ambient-utils/src/dataLayer';
+} from '../../../../ambient-utils/dataLayer';
 import { RangeItemContainer } from '../../../../styled/Components/Sidebar';
 import { FlexContainer } from '../../../../styled/Common';
 import { Status } from '../../../../styled/Components/Range';

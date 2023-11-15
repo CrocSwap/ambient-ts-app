@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
-import { TokenIF } from '../../../ambient-utils/src/types';
+import { TokenIF } from '../../../ambient-utils/types';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import {
@@ -19,7 +19,7 @@ import {
     trimString,
     uriToHttp,
     getChainExplorer,
-} from '../../../ambient-utils/src/dataLayer';
+} from '../../../ambient-utils/dataLayer';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { ZERO_ADDRESS } from '../../../constants';
 

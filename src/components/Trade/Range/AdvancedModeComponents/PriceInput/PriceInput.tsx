@@ -1,7 +1,7 @@
 import { FaMinus, FaPlus } from 'react-icons/fa';
 import { ChangeEvent, FocusEventHandler, memo, useContext } from 'react';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
-import { exponentialNumRegEx } from '../../../../../ambient-utils/src/dataLayer';
+import { exponentialNumRegEx } from '../../../../../ambient-utils/dataLayer';
 import { FlexContainer, Text } from '../../../../../styled/Common';
 import {
     PriceInputButton,

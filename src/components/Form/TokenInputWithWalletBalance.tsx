@@ -1,8 +1,8 @@
 import {
     getFormattedNumber,
     translateTestnetToken,
-} from '../../ambient-utils/src/dataLayer';
-import { TokenIF } from '../../ambient-utils/src/types';
+} from '../../ambient-utils/dataLayer';
+import { TokenIF } from '../../ambient-utils/types';
 import { memo, useContext, useEffect, useState } from 'react';
 import { formatTokenInput } from '../../utils/numbers';
 import TokenInputQuantity from './TokenInputQuantity';

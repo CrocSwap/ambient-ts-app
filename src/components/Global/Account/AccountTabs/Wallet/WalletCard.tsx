@@ -1,16 +1,16 @@
-import { TokenIF } from '../../../../../ambient-utils/src/types';
+import { TokenIF } from '../../../../../ambient-utils/types';
 import styles from './WalletCard.module.css';
 import { useContext, useEffect, useState } from 'react';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../../../contexts/TokenContext';
-import { TokenPriceFn } from '../../../../../ambient-utils/src/api';
+import { TokenPriceFn } from '../../../../../ambient-utils/api';
 import TokenIcon from '../../../TokenIcon/TokenIcon';
 import {
     getFormattedNumber,
     uriToHttp,
-} from '../../../../../ambient-utils/src/dataLayer';
+} from '../../../../../ambient-utils/dataLayer';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 
 interface propsIF {

@@ -4,11 +4,11 @@ import { motion } from 'framer-motion';
 import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
 import { AiOutlineLine } from 'react-icons/ai';
 
-import { TokenIF, TransactionIF } from '../../../../ambient-utils/src/types';
+import { TokenIF, TransactionIF } from '../../../../ambient-utils/types';
 import { useLocation } from 'react-router-dom';
 import { DefaultTooltip } from '../../StyledTooltip/StyledTooltip';
 import TokenIcon from '../../TokenIcon/TokenIcon';
-import { uriToHttp } from '../../../../ambient-utils/src/dataLayer';
+import { uriToHttp } from '../../../../ambient-utils/dataLayer';
 import Apy from '../../Tabs/Apy/Apy';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { useContext } from 'react';

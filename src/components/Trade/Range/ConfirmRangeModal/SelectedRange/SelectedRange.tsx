@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, memo, useContext } from 'react';
 import { PoolContext } from '../../../../../contexts/PoolContext';
-import { getFormattedNumber } from '../../../../../ambient-utils/src/dataLayer';
+import { getFormattedNumber } from '../../../../../ambient-utils/dataLayer';
 import { FlexContainer, Text } from '../../../../../styled/Common';
 import { SelectedRangeContainer } from '../../../../../styled/Components/TradeModules';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';

@@ -33,7 +33,7 @@ import {
     diffHashSig,
     diffHashSigChart,
     diffHashSigScaleData,
-} from '../../ambient-utils/src/dataLayer';
+} from '../../ambient-utils/dataLayer';
 import { CandleContext } from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../contexts/SidebarContext';
@@ -41,7 +41,7 @@ import { RangeContext } from '../../contexts/RangeContext';
 import {
     CandleDataIF,
     CandlesByPoolAndDurationIF,
-} from '../../ambient-utils/src/types';
+} from '../../ambient-utils/types';
 import CandleChart from './Candle/CandleChart';
 import LiquidityChart from './Liquidity/LiquidityChart';
 import VolumeBarCanvas from './Volume/VolumeBarCanvas';

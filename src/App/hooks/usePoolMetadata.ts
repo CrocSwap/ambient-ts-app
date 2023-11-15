@@ -13,20 +13,20 @@ import {
     PositionIF,
     PositionServerIF,
     TokenIF,
-} from '../../ambient-utils/src/types';
+} from '../../ambient-utils/types';
 import {
     TokenPriceFn,
     FetchAddrFn,
     FetchContractDetailsFn,
     fetchPoolRecentChanges,
     fetchPoolLiquidity,
-} from '../../ambient-utils/src/api';
+} from '../../ambient-utils/api';
 import {
     SpotPriceFn,
     getLimitOrderData,
     getPositionData,
     getLiquidityFee,
-} from '../../ambient-utils/src/dataLayer';
+} from '../../ambient-utils/dataLayer';
 import useDebounce from './useDebounce';
 import { Provider } from '@ethersproject/providers';
 import { DataLoadingContext } from '../../contexts/DataLoadingContext';

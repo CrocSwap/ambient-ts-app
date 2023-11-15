@@ -6,10 +6,10 @@ import {
     getDefaultChainId,
     validateChainId,
     chainNumToString,
-} from '../../ambient-utils/src/dataLayer';
+} from '../../ambient-utils/dataLayer';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
-import { NetworkIF } from '../../ambient-utils/src/types';
-import { supportedNetworks } from '../../ambient-utils/src/constants';
+import { NetworkIF } from '../../ambient-utils/types';
+import { supportedNetworks } from '../../ambient-utils/constants';
 import { useSearchParams } from 'react-router-dom';
 
 export const useAppChain = (): {

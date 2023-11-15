@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom';
 import {
     diffHashSig,
     diffHashSigScaleData,
-} from '../../../../ambient-utils/src/dataLayer';
+} from '../../../../ambient-utils/dataLayer';
 import {
     crosshair,
     renderCanvasArray,
@@ -16,7 +16,7 @@ import {
 import { CandleContext } from '../../../../contexts/CandleContext';
 import { correctStyleForData, xAxisTick } from './calculateXaxisTicks';
 import moment from 'moment';
-import { CandleDataIF } from '../../../../ambient-utils/src/types';
+import { CandleDataIF } from '../../../../ambient-utils/types';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { RangeContext } from '../../../../contexts/RangeContext';
 interface xAxisIF {

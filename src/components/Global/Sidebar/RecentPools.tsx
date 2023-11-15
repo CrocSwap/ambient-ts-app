@@ -1,8 +1,8 @@
-import { PoolStatsFn } from '../../../ambient-utils/src/dataLayer';
+import { PoolStatsFn } from '../../../ambient-utils/dataLayer';
 import { memo, useContext } from 'react';
 import { SidebarContext } from '../../../contexts/SidebarContext';
-import { TokenPriceFn } from '../../../ambient-utils/src/api';
-import { PoolIF } from '../../../ambient-utils/src/types';
+import { TokenPriceFn } from '../../../ambient-utils/api';
+import { PoolIF } from '../../../ambient-utils/types';
 import PoolsListItem from './PoolsListItem';
 import { HeaderGrid, ItemsContainer } from '../../../styled/Components/Sidebar';
 import { FlexContainer } from '../../../styled/Common';

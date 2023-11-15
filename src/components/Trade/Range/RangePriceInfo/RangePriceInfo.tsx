@@ -1,6 +1,6 @@
 // START: Import Local Files
 import styles from './RangePriceInfo.module.css';
-// import truncateDecimals from '../../../../ambient-utils/src/dataLayer';
+// import truncateDecimals from '../../../../ambient-utils/dataLayer';
 // import makeCurrentPrice from './makeCurrentPrice';
 
 // import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
@@ -9,7 +9,7 @@ import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import {
     isStableToken,
     getFormattedNumber,
-} from '../../../../ambient-utils/src/dataLayer';
+} from '../../../../ambient-utils/dataLayer';
 
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';

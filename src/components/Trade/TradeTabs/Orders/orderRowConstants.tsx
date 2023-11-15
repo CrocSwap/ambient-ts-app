@@ -1,7 +1,7 @@
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink } from 'react-router-dom';
-import { LimitOrderIF, TokenIF } from '../../../../ambient-utils/src/types';
+import { LimitOrderIF, TokenIF } from '../../../../ambient-utils/types';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import moment from 'moment';
 import OpenOrderStatus from '../../../Global/OpenOrderStatus/OpenOrderStatus';

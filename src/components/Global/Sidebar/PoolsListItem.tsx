@@ -1,5 +1,5 @@
-import { PoolIF } from '../../../ambient-utils/src/types';
-import { PoolStatsFn } from '../../../ambient-utils/src/dataLayer';
+import { PoolIF } from '../../../ambient-utils/types';
+import { PoolStatsFn } from '../../../ambient-utils/dataLayer';
 import { Link, useLocation } from 'react-router-dom';
 import { usePoolStats } from '../../../App/hooks/usePoolStats';
 import { useContext, useMemo } from 'react';
@@ -10,7 +10,7 @@ import {
     linkGenMethodsIF,
     pageNames,
 } from '../../../utils/hooks/useLinkGen';
-import { TokenPriceFn } from '../../../ambient-utils/src/api';
+import { TokenPriceFn } from '../../../ambient-utils/api';
 import { ItemContainer } from '../../../styled/Components/Sidebar';
 import { FlexContainer } from '../../../styled/Common';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';

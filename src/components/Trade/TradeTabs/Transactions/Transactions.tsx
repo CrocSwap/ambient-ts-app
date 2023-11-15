@@ -1,9 +1,6 @@
 /* eslint-disable no-irregular-whitespace */
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import {
-    TransactionIF,
-    CandleDataIF,
-} from '../../../../ambient-utils/src/types';
+import { TransactionIF, CandleDataIF } from '../../../../ambient-utils/types';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { Dispatch, useState, useEffect, useRef, useContext, memo } from 'react';
 
@@ -18,7 +15,7 @@ import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropd
 import Spinner from '../../../Global/Spinner/Spinner';
 import { CandleContext } from '../../../../contexts/CandleContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
-import { fetchPoolRecentChanges } from '../../../../ambient-utils/src/api';
+import { fetchPoolRecentChanges } from '../../../../ambient-utils/api';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../../contexts/TokenContext';

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getElapsedTime } from '../../ambient-utils/src/dataLayer';
+import { getElapsedTime } from '../../ambient-utils/dataLayer';
 import moment from 'moment';
 
 export interface useTimeElapsedIF {

@@ -4,7 +4,7 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import {
     getFormattedNumber,
     getPriceImpactString,
-} from '../../../ambient-utils/src/dataLayer';
+} from '../../../ambient-utils/dataLayer';
 import { ExtraInfo } from '../../Trade/TradeModules/ExtraInfo/ExtraInfo';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 

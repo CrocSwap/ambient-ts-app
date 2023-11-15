@@ -11,8 +11,8 @@ import {
 import {
     diffHashSig,
     diffHashSigScaleData,
-} from '../../../ambient-utils/src/dataLayer';
-import { CandleDataIF } from '../../../ambient-utils/src/types';
+} from '../../../ambient-utils/dataLayer';
+import { CandleDataIF } from '../../../ambient-utils/types';
 import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
 
 interface TvlData {

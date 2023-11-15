@@ -10,7 +10,7 @@ import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import {
     uriToHttp,
     getUnicodeCharacter,
-} from '../../../../ambient-utils/src/dataLayer';
+} from '../../../../ambient-utils/dataLayer';
 import TradeConfirmationSkeleton from '../../TradeModules/TradeConfirmationSkeleton';
 import { FlexContainer, GridContainer, Text } from '../../../../styled/Common';
 import { FeeTierDisplay } from '../../../../styled/Components/TradeModules';

@@ -5,12 +5,12 @@ import { useContext, useState } from 'react';
 import Button from '../../Form/Button';
 
 // START: Import Other Local Files
-import { TokenIF } from '../../../ambient-utils/src/types';
+import { TokenIF } from '../../../ambient-utils/types';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import {
     getFormattedNumber,
     uriToHttp,
-} from '../../../ambient-utils/src/dataLayer';
+} from '../../../ambient-utils/dataLayer';
 import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';

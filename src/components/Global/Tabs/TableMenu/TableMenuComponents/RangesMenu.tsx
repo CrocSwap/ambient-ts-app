@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { FiExternalLink } from 'react-icons/fi';
 import { CiCircleMore } from 'react-icons/ci';
 import styles from './TableMenus.module.css';
-import { PositionIF } from '../../../../../ambient-utils/src/types';
+import { PositionIF } from '../../../../../ambient-utils/types';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 

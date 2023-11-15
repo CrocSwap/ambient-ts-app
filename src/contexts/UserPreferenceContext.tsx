@@ -7,11 +7,11 @@ import { favePoolsMethodsIF, useFavePools } from '../App/hooks/useFavePools';
 import { skipConfirmIF, useSkipConfirm } from '../App/hooks/useSkipConfirm';
 import { SlippageMethodsIF, useSlippage } from '../App/hooks/useSlippage';
 import { IS_LOCAL_ENV } from '../constants';
-import { slippage } from '../ambient-utils/src/constants';
+import { slippage } from '../ambient-utils/constants';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
 import { TradeDataContext } from './TradeDataContext';
-import { getMoneynessRankByAddr } from '../ambient-utils/src/dataLayer';
+import { getMoneynessRankByAddr } from '../ambient-utils/dataLayer';
 
 interface UserPreferenceIF {
     favePools: favePoolsMethodsIF;

@@ -10,8 +10,8 @@ import {
 } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
-import { uriToHttp } from '../../ambient-utils/src/dataLayer';
-import { TokenIF } from '../../ambient-utils/src/types';
+import { uriToHttp } from '../../ambient-utils/dataLayer';
+import { TokenIF } from '../../ambient-utils/types';
 import Spinner from '../Global/Spinner/Spinner';
 import { DefaultTooltip } from '../Global/StyledTooltip/StyledTooltip';
 import TokenIcon from '../Global/TokenIcon/TokenIcon';

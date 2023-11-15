@@ -1,6 +1,6 @@
 import numbro from 'numbro';
-import { getFormattedNumber } from '../ambient-utils/src/dataLayer';
-import { TokenIF } from '../ambient-utils/src/types';
+import { getFormattedNumber } from '../ambient-utils/dataLayer';
+import { TokenIF } from '../ambient-utils/types';
 
 // using a currency library here in case we want to add more in future
 export const formatDollarAmount = (

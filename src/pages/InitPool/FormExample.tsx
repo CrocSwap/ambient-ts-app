@@ -7,7 +7,7 @@ import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import {
     getFormattedNumber,
     getUnicodeCharacter,
-} from '../../ambient-utils/src/dataLayer';
+} from '../../ambient-utils/dataLayer';
 import Button from '../../components/Form/Button';
 import { Chip } from '../../components/Form/Chip';
 import RangeWidth from '../../components/Form/RangeWidth/RangeWidth';

@@ -23,7 +23,7 @@ import {
     getFormattedNumber,
     chainNumToString,
     trimString,
-} from '../../../ambient-utils/src/dataLayer';
+} from '../../../ambient-utils/dataLayer';
 import {
     linkGenMethodsIF,
     swapParamsIF,

@@ -8,8 +8,8 @@ import {
     diffHashSig,
     getFormattedNumber,
     uriToHttp,
-} from '../../ambient-utils/src/dataLayer';
-import { LimitOrderIF } from '../../ambient-utils/src/types';
+} from '../../ambient-utils/dataLayer';
+import { LimitOrderIF } from '../../ambient-utils/types';
 
 import {
     concPosSlot,

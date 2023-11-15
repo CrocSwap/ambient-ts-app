@@ -7,11 +7,11 @@ import {
     useState,
     useContext,
 } from 'react';
-import { fetchCandleSeriesHybrid } from '../ambient-utils/src/api';
+import { fetchCandleSeriesHybrid } from '../ambient-utils/api';
 import {
     CandleDataIF,
     CandlesByPoolAndDurationIF,
-} from '../ambient-utils/src/types';
+} from '../ambient-utils/types';
 import { candleDomain, candleScale } from '../utils/state/tradeDataSlice';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';

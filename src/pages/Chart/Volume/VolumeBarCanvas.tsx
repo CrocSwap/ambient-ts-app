@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { CandleDataIF } from '../../../ambient-utils/src/types';
+import { CandleDataIF } from '../../../ambient-utils/types';
 import { scaleData, setCanvasResolution } from '../ChartUtils/chartUtils';
 
 interface propsIF {

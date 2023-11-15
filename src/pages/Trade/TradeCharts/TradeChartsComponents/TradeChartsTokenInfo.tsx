@@ -1,7 +1,7 @@
 import { NoColorTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
 import { memo, useContext } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import { IS_LOCAL_ENV } from '../../../../ambient-utils/src/constants';
+import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
@@ -9,8 +9,8 @@ import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
 import {
     getFormattedNumber,
     getUnicodeCharacter,
-} from '../../../../ambient-utils/src/dataLayer';
-import { TokenIF } from '../../../../ambient-utils/src/types';
+} from '../../../../ambient-utils/dataLayer';
+import { TokenIF } from '../../../../ambient-utils/types';
 import { FlexContainer } from '../../../../styled/Common';
 import { HeaderButtons, HeaderText } from '../../../../styled/Components/Chart';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';

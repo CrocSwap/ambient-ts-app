@@ -1,5 +1,5 @@
 import TooltipComponent from '../../TooltipComponent/TooltipComponent';
-import { TransactionIF } from '../../../../ambient-utils/src/types';
+import { TransactionIF } from '../../../../ambient-utils/types';
 import { RiExternalLinkLine } from 'react-icons/ri';
 
 import styles from './TransactionDetailsSimplify.module.css';

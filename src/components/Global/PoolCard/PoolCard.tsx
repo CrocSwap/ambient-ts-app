@@ -2,8 +2,8 @@ import styles from './PoolCard.module.css';
 import { Link } from 'react-router-dom';
 import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
 import TokenIcon from '../TokenIcon/TokenIcon';
-import { uriToHttp } from '../../../ambient-utils/src/dataLayer';
-import { PoolIF } from '../../../ambient-utils/src/types';
+import { uriToHttp } from '../../../ambient-utils/dataLayer';
+import { PoolIF } from '../../../ambient-utils/types';
 
 interface propsIF {
     pool: PoolIF;

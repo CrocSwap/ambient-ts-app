@@ -1,7 +1,7 @@
-import { PoolStatsFn } from '../../../ambient-utils/src/dataLayer';
+import { PoolStatsFn } from '../../../ambient-utils/dataLayer';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { TokenPriceFn } from '../../../ambient-utils/src/api';
+import { TokenPriceFn } from '../../../ambient-utils/api';
 import PoolsListItem from './PoolsListItem';
 import { useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { useLocation } from 'react-router-dom';

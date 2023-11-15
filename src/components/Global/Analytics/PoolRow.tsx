@@ -1,7 +1,7 @@
 import TokenIcon from '../TokenIcon/TokenIcon';
-import { uriToHttp } from '../../../ambient-utils/src/dataLayer';
+import { uriToHttp } from '../../../ambient-utils/dataLayer';
 import { PoolDataIF } from '../../../contexts/ExploreContext';
-import { TokenIF } from '../../../ambient-utils/src/types';
+import { TokenIF } from '../../../ambient-utils/types';
 import {
     PoolNameWrapper,
     TradeButton,

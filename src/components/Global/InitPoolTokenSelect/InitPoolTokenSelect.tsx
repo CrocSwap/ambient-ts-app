@@ -1,8 +1,8 @@
 import { useState, useEffect, memo, Dispatch, SetStateAction } from 'react';
 import styled from 'styled-components';
 import TokenIcon from '../TokenIcon/TokenIcon';
-import { TokenIF } from '../../../ambient-utils/src/types';
-import { uriToHttp } from '../../../ambient-utils/src/dataLayer';
+import { TokenIF } from '../../../ambient-utils/types';
+import { uriToHttp } from '../../../ambient-utils/dataLayer';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
 import { useModal } from '../Modal/useModal';

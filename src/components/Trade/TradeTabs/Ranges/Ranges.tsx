@@ -5,7 +5,7 @@ import { useEffect, useState, useContext, memo, useRef } from 'react';
 import { Pagination } from '@mui/material';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
-import { PositionIF } from '../../../../ambient-utils/src/types';
+import { PositionIF } from '../../../../ambient-utils/types';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';

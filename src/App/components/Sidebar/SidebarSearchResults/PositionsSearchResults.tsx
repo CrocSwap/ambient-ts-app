@@ -1,4 +1,4 @@
-import { PositionIF } from '../../../../ambient-utils/src/types';
+import { PositionIF } from '../../../../ambient-utils/types';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { useContext } from 'react';
@@ -10,7 +10,7 @@ import {
 import {
     getFormattedNumber,
     getUnicodeCharacter,
-} from '../../../../ambient-utils/src/dataLayer';
+} from '../../../../ambient-utils/dataLayer';
 import { FlexContainer, GridContainer, Text } from '../../../../styled/Common';
 import {
     Results,

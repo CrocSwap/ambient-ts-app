@@ -4,8 +4,8 @@ import Row from '../../Global/Row/Row';
 import styles from './LimitActionInfo.module.css';
 import { TokenContext } from '../../../contexts/TokenContext';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
-import { uriToHttp } from '../../../ambient-utils/src/dataLayer';
-import { TokenIF } from '../../../ambient-utils/src/types';
+import { uriToHttp } from '../../../ambient-utils/dataLayer';
+import { TokenIF } from '../../../ambient-utils/types';
 
 interface ILimitActionInfoProps {
     type: 'Remove' | 'Claim';

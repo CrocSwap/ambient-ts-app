@@ -3,11 +3,11 @@ import Row from '../../Global/Row/Row';
 import {
     getFormattedNumber,
     uriToHttp,
-} from '../../../ambient-utils/src/dataLayer';
+} from '../../../ambient-utils/dataLayer';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import { useContext } from 'react';
 import { TokenContext } from '../../../contexts/TokenContext';
-import { TokenIF } from '../../../ambient-utils/src/types';
+import { TokenIF } from '../../../ambient-utils/types';
 
 interface IHarvestPositionInfoProps {
     baseHarvestNum: number | undefined;

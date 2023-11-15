@@ -4,7 +4,7 @@ import RangeActionTokenHeader from './RangeActionTokenHeader/RangeActionTokenHea
 import RemoveRangeInfo from './RangeActionInfo/RemoveRangeInfo';
 import { useContext, useEffect, useMemo, useState } from 'react';
 
-import { PositionIF, PositionServerIF } from '../../ambient-utils/src/types';
+import { PositionIF, PositionServerIF } from '../../ambient-utils/types';
 import { BigNumber } from 'ethers';
 import {
     ambientPosSlot,
@@ -37,7 +37,7 @@ import {
     getPositionData,
     getFormattedNumber,
     isStablePair,
-} from '../../ambient-utils/src/dataLayer';
+} from '../../ambient-utils/dataLayer';
 import { TokenContext } from '../../contexts/TokenContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import HarvestPositionInfo from './RangeActionInfo/HarvestPositionInfo';

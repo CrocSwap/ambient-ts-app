@@ -1,9 +1,6 @@
 import React, { createContext, useContext, useEffect } from 'react';
-import { fetchUserRecentChanges } from '../ambient-utils/src/api';
-import {
-    getLimitOrderData,
-    getPositionData,
-} from '../ambient-utils/src/dataLayer';
+import { fetchUserRecentChanges } from '../ambient-utils/api';
+import { getLimitOrderData, getPositionData } from '../ambient-utils/dataLayer';
 import useDebounce from '../App/hooks/useDebounce';
 import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../constants';
 import {
@@ -14,7 +11,7 @@ import {
     LimitOrderIF,
     LimitOrderServerIF,
     LiquidityDataIF,
-} from '../ambient-utils/src/types';
+} from '../ambient-utils/types';
 
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';

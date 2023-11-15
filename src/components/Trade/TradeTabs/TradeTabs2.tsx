@@ -20,7 +20,7 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import Ranges from './Ranges/Ranges';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
-import { fetchUserRecentChanges } from '../../../ambient-utils/src/api';
+import { fetchUserRecentChanges } from '../../../ambient-utils/api';
 import Leaderboard from './Ranges/Leaderboard';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -31,12 +31,12 @@ import {
     diffHashSigLimits,
     diffHashSigPostions,
     diffHashSigTxs,
-} from '../../../ambient-utils/src/dataLayer';
+} from '../../../ambient-utils/dataLayer';
 import { CandleContext } from '../../../contexts/CandleContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { ChartContext } from '../../../contexts/ChartContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { CandleDataIF } from '../../../ambient-utils/src/types';
+import { CandleDataIF } from '../../../ambient-utils/types';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { FlexContainer } from '../../../styled/Common';
 import { ClearButton } from '../../../styled/Components/TransactionTable';

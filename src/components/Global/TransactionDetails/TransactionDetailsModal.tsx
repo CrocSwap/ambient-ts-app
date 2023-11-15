@@ -3,10 +3,7 @@ import { useState, useRef, useContext, useEffect } from 'react';
 import TransactionDetailsHeader from './TransactionDetailsHeader/TransactionDetailsHeader';
 import TransactionDetailsPriceInfo from './TransactionDetailsPriceInfo/TransactionDetailsPriceInfo';
 import TransactionDetailsGraph from './TransactionDetailsGraph/TransactionDetailsGraph';
-import {
-    TransactionIF,
-    PositionServerIF,
-} from '../../../ambient-utils/src/types';
+import { TransactionIF, PositionServerIF } from '../../../ambient-utils/types';
 import TransactionDetailsSimplify from './TransactionDetailsSimplify/TransactionDetailsSimplify';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
@@ -17,7 +14,7 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import {
     getPositionData,
     printDomToImage,
-} from '../../../ambient-utils/src/dataLayer';
+} from '../../../ambient-utils/dataLayer';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import Modal from '../Modal/Modal';

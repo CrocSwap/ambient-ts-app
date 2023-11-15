@@ -4,10 +4,10 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import {
     getChainExplorer,
     getFormattedNumber,
-} from '../../../../../ambient-utils/src/dataLayer';
+} from '../../../../../ambient-utils/dataLayer';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
-import { TokenIF } from '../../../../../ambient-utils/src/types';
+import { TokenIF } from '../../../../../ambient-utils/types';
 import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
 import { LogoutButton } from '../../../../../components/Global/LogoutButton/LogoutButton';
 import {
@@ -31,7 +31,7 @@ import {
     ethereumMainnet,
     supportedNetworks,
     mainnetUSDC,
-} from '../../../../../ambient-utils/src/constants';
+} from '../../../../../ambient-utils/constants';
 import IconWithTooltip from '../../../../../components/Global/IconWithTooltip/IconWithTooltip';
 import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
 

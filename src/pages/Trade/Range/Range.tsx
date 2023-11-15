@@ -26,9 +26,9 @@ import {
     diffHashSig,
     isStablePair,
     truncateDecimals,
-} from '../../../ambient-utils/src/dataLayer';
+} from '../../../ambient-utils/dataLayer';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { PositionIF } from '../../../ambient-utils/src/types';
+import { PositionIF } from '../../../ambient-utils/types';
 import { rangeTutorialSteps } from '../../../utils/tutorial/Range';
 import {
     getPinnedPriceValuesFromDisplayPrices,

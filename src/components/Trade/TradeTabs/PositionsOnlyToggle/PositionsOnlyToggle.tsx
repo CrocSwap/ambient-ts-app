@@ -3,7 +3,7 @@ import Toggle from '../../../Form/Toggle';
 import { MdExpand, MdCloseFullscreen } from 'react-icons/md';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { CandleContext } from '../../../../contexts/CandleContext';
-import { CandleDataIF } from '../../../../ambient-utils/src/types';
+import { CandleDataIF } from '../../../../ambient-utils/types';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { UserDataContext } from '../../../../contexts/UserDataContext';

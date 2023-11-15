@@ -20,7 +20,7 @@ import { IS_LOCAL_ENV } from '../../../constants';
 import {
     diffHashSig,
     diffHashSigLiquidity,
-} from '../../../ambient-utils/src/dataLayer';
+} from '../../../ambient-utils/dataLayer';
 import { CandleContext } from '../../../contexts/CandleContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
@@ -29,7 +29,7 @@ import { candleScale } from '../../../utils/state/tradeDataSlice';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import Spinner from '../../../components/Global/Spinner/Spinner';
 import { LiquidityDataLocal } from './TradeCharts';
-import { CandleDataIF } from '../../../ambient-utils/src/types';
+import { CandleDataIF } from '../../../ambient-utils/types';
 import {
     chartItemStates,
     liquidityChartData,

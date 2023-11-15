@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useContext, useEffect, memo } from 'react';
 import {
     getFormattedNumber,
     calculateSecondaryDepositQty,
-} from '../../../../ambient-utils/src/dataLayer';
+} from '../../../../ambient-utils/dataLayer';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';

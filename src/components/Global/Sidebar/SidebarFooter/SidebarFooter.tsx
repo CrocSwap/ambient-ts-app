@@ -6,7 +6,7 @@ import { GiTrade } from 'react-icons/gi';
 import { BsFillChatDotsFill } from 'react-icons/bs';
 import { memo, useContext } from 'react';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
-import { chainNumToString } from '../../../../ambient-utils/src/dataLayer';
+import { chainNumToString } from '../../../../ambient-utils/dataLayer';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { VscLayoutSidebarLeft } from 'react-icons/vsc';

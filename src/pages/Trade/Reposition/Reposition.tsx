@@ -18,7 +18,7 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
-import { PositionIF, PositionServerIF } from '../../../ambient-utils/src/types';
+import { PositionIF, PositionServerIF } from '../../../ambient-utils/types';
 import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import {
@@ -43,7 +43,7 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import {
     getPositionData,
     getFormattedNumber,
-} from '../../../ambient-utils/src/dataLayer';
+} from '../../../ambient-utils/dataLayer';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';

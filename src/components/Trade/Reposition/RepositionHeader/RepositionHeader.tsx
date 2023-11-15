@@ -9,7 +9,7 @@ import TransactionSettingsModal from '../../../Global/TransactionSettingsModal/T
 
 // START: Import Local Files
 import styles from './RepositionHeader.module.css';
-import { trimString } from '../../../../ambient-utils/src/dataLayer';
+import { trimString } from '../../../../ambient-utils/dataLayer';
 import { useRepoExitPath } from './useRepoExitPath';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { RangeContext } from '../../../../contexts/RangeContext';

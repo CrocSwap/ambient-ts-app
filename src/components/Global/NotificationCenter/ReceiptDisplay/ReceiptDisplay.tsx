@@ -4,7 +4,7 @@ import { MdErrorOutline } from 'react-icons/md';
 import {
     trimString,
     getChainExplorer,
-} from '../../../../ambient-utils/src/dataLayer';
+} from '../../../../ambient-utils/dataLayer';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { motion } from 'framer-motion';
 import { VscClose } from 'react-icons/vsc';

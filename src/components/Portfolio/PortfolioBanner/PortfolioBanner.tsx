@@ -5,7 +5,7 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import PortfolioBannerAccount from './PortfolioBannerAccount/PortfolioBannerAccount';
 
 // START: Import Other Local Files
-import { trimString } from '../../../ambient-utils/src/dataLayer';
+import { trimString } from '../../../ambient-utils/dataLayer';
 import { PortfolioBannerRectangleContainer } from '../../../styled/Components/Portfolio';
 import accountImage from '../../../assets/images/backgrounds/account_image.svg';
 import { UserDataContext } from '../../../contexts/UserDataContext';

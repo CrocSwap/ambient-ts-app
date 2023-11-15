@@ -8,7 +8,7 @@ import {
     poolParamsIF,
     baseURLs,
 } from '../../../utils/hooks/useLinkGen';
-import { TokenIF } from '../../../ambient-utils/src/types';
+import { TokenIF } from '../../../ambient-utils/types';
 
 interface propsIF {
     chainId: string;

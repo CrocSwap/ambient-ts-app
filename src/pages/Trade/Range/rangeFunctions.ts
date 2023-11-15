@@ -8,7 +8,7 @@ import {
 import {
     getFormattedNumber,
     truncateDecimals,
-} from '../../../ambient-utils/src/dataLayer';
+} from '../../../ambient-utils/dataLayer';
 
 export function roundDownTick(lowTick: number, nTicksGrid: number): number {
     const tickGrid = Math.floor(lowTick / nTicksGrid) * nTicksGrid;

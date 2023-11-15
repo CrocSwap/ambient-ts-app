@@ -1,10 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
-import { PoolIF } from '../../ambient-utils/src/types';
-import {
-    PoolStatsFn,
-    getFormattedNumber,
-} from '../../ambient-utils/src/dataLayer';
-import { TokenPriceFn } from '../../ambient-utils/src/api';
+import { PoolIF } from '../../ambient-utils/types';
+import { PoolStatsFn, getFormattedNumber } from '../../ambient-utils/dataLayer';
+import { TokenPriceFn } from '../../ambient-utils/api';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 

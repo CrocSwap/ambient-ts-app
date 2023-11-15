@@ -4,12 +4,12 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import '../Chart.css';
 import { scaleData, setCanvasResolution } from '../ChartUtils/chartUtils';
-import { CandleDataIF } from '../../../ambient-utils/src/types';
+import { CandleDataIF } from '../../../ambient-utils/types';
 import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
 import {
     diffHashSig,
     diffHashSigScaleData,
-} from '../../../ambient-utils/src/dataLayer';
+} from '../../../ambient-utils/dataLayer';
 
 interface FreeRateData {
     feeData: Array<CandleDataIF>;

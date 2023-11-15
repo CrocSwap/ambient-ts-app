@@ -14,9 +14,9 @@ import {
     useEffect,
     useContext,
 } from 'react';
-import { TokenIF } from '../../../ambient-utils/src/types';
+import { TokenIF } from '../../../ambient-utils/types';
 import { BigNumber } from 'ethers';
-import { fetchEnsAddress } from '../../../ambient-utils/src/api';
+import { fetchEnsAddress } from '../../../ambient-utils/api';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';

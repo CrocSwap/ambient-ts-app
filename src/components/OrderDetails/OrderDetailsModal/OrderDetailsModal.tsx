@@ -4,10 +4,7 @@ import styles from './OrderDetailsModal.module.css';
 import OrderDetailsHeader from '../OrderDetailsHeader/OrderDetailsHeader';
 import PriceInfo from '../PriceInfo/PriceInfo';
 import { useProcessOrder } from '../../../utils/hooks/useProcessOrder';
-import {
-    LimitOrderIF,
-    LimitOrderServerIF,
-} from '../../../ambient-utils/src/types';
+import { LimitOrderIF, LimitOrderServerIF } from '../../../ambient-utils/types';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import OrderDetailsSimplify from '../OrderDetailsSimplify/OrderDetailsSimplify';
 import TransactionDetailsGraph from '../../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
@@ -18,7 +15,7 @@ import {
     getLimitOrderData,
     getFormattedNumber,
     printDomToImage,
-} from '../../../ambient-utils/src/dataLayer';
+} from '../../../ambient-utils/dataLayer';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';

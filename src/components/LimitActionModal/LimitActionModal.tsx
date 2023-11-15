@@ -4,7 +4,7 @@ import { IS_LOCAL_ENV } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
-import { LimitOrderIF } from '../../ambient-utils/src/types';
+import { LimitOrderIF } from '../../ambient-utils/types';
 import {
     addPendingTx,
     addTransactionByType,
@@ -21,7 +21,7 @@ import LimitActionInfo from './LimitActionInfo/LimitActionInfo';
 import LimitActionSettings from './LimitActionSettings/LimitActionSettings';
 import LimitActionTokenHeader from './LimitActionTokenHeader/LimitActionTokenHeader';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
-import { getFormattedNumber } from '../../ambient-utils/src/dataLayer';
+import { getFormattedNumber } from '../../ambient-utils/dataLayer';
 import { CrocPositionView } from '@crocswap-libs/sdk';
 import ModalHeader from '../Global/ModalHeader/ModalHeader';
 import { LimitActionType } from '../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';

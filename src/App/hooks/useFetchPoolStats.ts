@@ -9,12 +9,12 @@ import {
     getMoneynessRank,
     getFormattedNumber,
     get24hChange,
-} from '../../ambient-utils/src/dataLayer';
-import { estimateFrom24HrRangeApr } from '../../ambient-utils/src/api';
+} from '../../ambient-utils/dataLayer';
+import { estimateFrom24HrRangeApr } from '../../ambient-utils/api';
 import { sortBaseQuoteTokens, toDisplayPrice } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
-import { PoolIF, PoolStatIF } from '../../ambient-utils/src/types';
+import { PoolIF, PoolStatIF } from '../../ambient-utils/types';
 
 const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
     const {

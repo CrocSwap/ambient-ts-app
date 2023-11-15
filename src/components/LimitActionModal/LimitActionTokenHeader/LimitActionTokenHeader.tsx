@@ -4,8 +4,8 @@ import { TokenContext } from '../../../contexts/TokenContext';
 import OpenOrderStatus from '../../Global/OpenOrderStatus/OpenOrderStatus';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import styles from './LimitActionTokenHeader.module.css';
-import { TokenIF } from '../../../ambient-utils/src/types';
-import { uriToHttp } from '../../../ambient-utils/src/dataLayer';
+import { TokenIF } from '../../../ambient-utils/types';
+import { uriToHttp } from '../../../ambient-utils/dataLayer';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface propsIF {

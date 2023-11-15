@@ -17,7 +17,7 @@ import {
     getUnicodeCharacter,
     getMoneynessRank,
     truncateDecimals,
-} from '../../ambient-utils/src/dataLayer';
+} from '../../ambient-utils/dataLayer';
 
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import InitPoolTokenSelect from '../../components/Global/InitPoolTokenSelect/InitPoolTokenSelect';

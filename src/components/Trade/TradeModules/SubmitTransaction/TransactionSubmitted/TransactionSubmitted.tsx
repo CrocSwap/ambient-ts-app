@@ -5,7 +5,7 @@ import addTokenToWallet from './addTokenToWallet';
 import Button from '../../../../Form/Button';
 import { FiExternalLink } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
-import { getChainExplorer } from '../../../../../ambient-utils/src/dataLayer';
+import { getChainExplorer } from '../../../../../ambient-utils/dataLayer';
 
 interface PropsIF {
     type:
