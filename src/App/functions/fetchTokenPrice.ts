@@ -27,6 +27,13 @@ export const fetchTokenPrice = async (
                     usdPrice: 0.9995309916951084,
                     usdPriceFormatted: 1,
                 };
+            } else if (
+                address.toLowerCase() === defaultPair[0].address.toLowerCase()
+            ) {
+                return {
+                    usdPrice: 2000,
+                    usdPriceFormatted: 2000,
+                };
             }
 
             const response = await fetch(
