@@ -22,6 +22,8 @@ import { UserDataContext } from './UserDataContext';
 import { DataLoadingContext } from './DataLoadingContext';
 import { LiquidityDataIF } from '../App/functions/fetchPoolLiquidity';
 
+import { UserPositions } from './datalayer';
+
 interface Changes {
     dataReceived: boolean;
     changes: Array<TransactionIF>;
@@ -169,10 +171,6 @@ export const GraphDataContextProvider = (props: {
         ? GCGO_OVERRIDE_URL + '/user_limit_orders?'
         : activeNetwork.graphCacheUrl + '/user_limit_orders?';
 
-    const userPositionsCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/user_positions?'
-        : activeNetwork.graphCacheUrl + '/user_positions?';
-
     const resetUserGraphData = () => {
         setPositionsByUser({
             dataReceived: false,
@@ -227,71 +225,57 @@ export const GraphDataContextProvider = (props: {
     const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
 
     useEffect(() => {
-        // This useEffect controls a series of other dispatches that fetch data on update of the user object
-        // user Postions, limit orders, and recent changes are all governed here
-        if (
-            isServerEnabled &&
-            isUserConnected &&
-            userAddress &&
-            crocEnv &&
-            provider &&
-            tokens.tokenUniv.length &&
-            chainData.chainId
-        ) {
+        const fetchData = async () => {
+            // This useEffect controls a series of other dispatches that fetch data on update of the user object
+            // user Postions, limit orders, and recent changes are all governed here
+            if (
+                !isServerEnabled ||
+                !isUserConnected ||
+                !userAddress ||
+                !crocEnv ||
+                !provider ||
+                !tokens.tokenUniv.length ||
+                !chainData.chainId
+            ) {
+                return;
+            }
+
             IS_LOCAL_ENV && console.debug('fetching user positions');
 
             try {
-                fetch(
-                    userPositionsCacheEndpoint +
-                        new URLSearchParams({
-                            user: userAddress,
-                            chainId: chainData.chainId,
-                            ensResolution: 'true',
-                            annotate: 'true',
-                            omitKnockout: 'true',
-                            addValue: 'true',
-                        }),
-                )
-                    .then((response) => response?.json())
-                    .then((json) => {
-                        const userPositions = json?.data;
-                        if (userPositions && crocEnv) {
-                            Promise.all(
-                                userPositions.map(
-                                    (position: PositionServerIF) => {
-                                        return getPositionData(
-                                            position,
-                                            tokens.tokenUniv,
-                                            crocEnv,
-                                            provider,
-                                            chainData.chainId,
-                                            lastBlockNumber,
-                                            cachedFetchTokenPrice,
-                                            cachedQuerySpotPrice,
-                                            cachedTokenDetails,
-                                            cachedEnsResolve,
-                                        );
-                                    },
-                                ),
-                            ).then((updatedPositions) => {
-                                setPositionsByUser({
-                                    dataReceived: true,
-                                    positions: updatedPositions,
-                                }),
-                                    setDataLoadingStatus({
-                                        datasetName:
-                                            'isConnectedUserRangeDataLoading',
-                                        loadingStatus: false,
-                                    });
-                            });
-                        }
-                    })
-                    .catch(console.error);
+                const userPositions = await UserPositions.fetchDecorated({
+                    user: userAddress,
+                    chainId: chainData.chainId,
+                    gcUrl: activeNetwork.graphCacheUrl,
+                    provider,
+                    chainId: chainData.chainId,
+                    lastBlockNumber,
+                    tokenUniv: tokens.tokenUniv,
+                    crocEnv,
+                    cachedFetchTokenPrice,
+                    cachedQuerySpotPrice,
+                    cachedTokenDetails,
+                    cachedEnsResolve,
+                });
+                if (userPositions) {
+                    setPositionsByUser({
+                        dataReceived: true,
+                        positions: updatedPositions,
+                    });
+
+                    setDataLoadingStatus({
+                        datasetName: 'isConnectedUserRangeDataLoading',
+                        loadingStatus: false,
+                    });
+                }
             } catch (error) {
+                console.log('JG. ENCOUNTERED USER POSITION ERR');
+                console.log({ error });
                 console.error;
             }
 
             IS_LOCAL_ENV && console.debug('fetching user limit orders ');
+            console.log('completing fetch!');
 
             fetch(
                 userLimitOrderStatesCacheEndpoint +
@@ -427,7 +411,8 @@ export const GraphDataContextProvider = (props: {
             } catch (error) {
                 console.error;
             }
-        }
+        };
+        fetchData();
     }, [
         isServerEnabled,
         tokens.tokenUniv.length,
