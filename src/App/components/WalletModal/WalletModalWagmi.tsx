@@ -172,6 +172,7 @@ export default function WalletModalWagmi() {
             <CircleLoaderFailed size='48' />
             <p>The connection to your wallet was rejected. </p>
             <Button
+                idForDOM='try_again_button_wallet_connection_error'
                 title='Try Again'
                 flat={true}
                 action={() => {
@@ -186,6 +187,7 @@ export default function WalletModalWagmi() {
             <CircleLoaderFailed size='48' />
             <p>Ambient is not available in the United States.</p>
             <Button
+                idForDOM='acknowledge_ambient_not_available_in_US_button'
                 title='Close'
                 flat={true}
                 action={() => {

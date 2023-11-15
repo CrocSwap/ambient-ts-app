@@ -72,9 +72,9 @@
 .mobile_version .footer_item_container {
     text-align: center;
 }
+
 .container {
     width: 100%;
-
     background: linear-gradient(
             180deg,
             #000000 0%,
@@ -84,12 +84,10 @@
         ),
         url('../../assets/images/home/home3.png') no-repeat center center;
     mix-blend-mode: lighten;
-
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
-
     background-position: top 30px right 0;
 }
 

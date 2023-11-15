@@ -14,9 +14,7 @@ const Wrapper = styled.div`
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-
     border-radius: 8px;
-
     text-align: center;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     padding-top: 64px;
@@ -156,8 +154,8 @@ export default function InitConfirmation(props: InitConfirmationProps) {
                 {tokensInfo}
                 {selectedRangeDisplay}
             </FlexContainer>
-
             <Button
+                idForDOM='initialize_new_pool_button'
                 flat
                 title='Initialize Pool'
                 action={handleConfirmed}
@@ -176,14 +174,14 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         : `${tokenB.symbol} / ${tokenA.symbol}`;
 
     const noMintLiqSteps = [
-        { label: 'Sign transaction to initialize pool.' },
+        { label: 'Sign transaction to initialize pool' },
         {
             label: `Submitting pool initialization for ${tokenSymbols}`,
         },
     ];
 
     const mintLiqSteps = [
-        { label: 'Sign transaction to initialize pool ' },
+        { label: 'Sign transaction to initialize pool' },
         {
             label: `Submitting pool initialization for ${tokenSymbols}`,
         },
@@ -261,10 +259,20 @@ export default function InitConfirmation(props: InitConfirmationProps) {
                 }
             />
             {isError && (
-                <Button title='Try Again' action={handleConfirmed} flat />
+                <Button
+                    idForDOM='retry_pool_initialization_button'
+                    title='Try Again'
+                    action={handleConfirmed}
+                    flat
+                />
             )}
             {activeStep === steps.length && (
-                <Button title='View Pool' action={handleNavigation} flat />
+                <Button
+                    idForDOM='view_new_pool_button'
+                    title='View Pool'
+                    action={handleNavigation}
+                    flat
+                />
             )}
         </Wrapper>
     );

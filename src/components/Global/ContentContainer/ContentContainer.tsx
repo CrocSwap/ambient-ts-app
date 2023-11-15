@@ -6,10 +6,19 @@ interface ContentContainerPropsIF {
     customWidth?: boolean;
     customWidthAuto?: boolean;
     isOnTradeRoute?: boolean;
+    noPadding?: boolean;
+    noStyle?: boolean;
 }
 
 export default function ContentContainer(props: ContentContainerPropsIF) {
-    const { children, isOnTradeRoute, customWidth, customWidthAuto } = props;
+    const {
+        children,
+        isOnTradeRoute,
+        customWidth,
+        customWidthAuto,
+        noPadding,
+        noStyle,
+    } = props;
 
     const customWidthStyle = customWidth ? styles.customWidth_container : null;
     const tradeRouteStyle = isOnTradeRoute
@@ -20,6 +29,8 @@ export default function ContentContainer(props: ContentContainerPropsIF) {
         ? styles.customWidthAuto
         : styles.container;
 
+    if (noStyle) return <>{children}</>;
+
     return (
         <section
             className={`$ ${customWidthStyle} ${customWidthAutoStyle} ${tradeRouteStyle} ${swapRouteStyle}`}
@@ -29,6 +40,7 @@ export default function ContentContainer(props: ContentContainerPropsIF) {
                     className={`${styles.main_content} ${
                         !isOnTradeRoute && styles.swap_main_content
                     }`}
+                    style={{ padding: noPadding ? '' : '8px 16px 16px 16px' }}
                 >
                     {children}
                 </div>

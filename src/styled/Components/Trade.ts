@@ -1,12 +1,17 @@
 import { Resizable } from 're-resizable';
 import styled from 'styled-components/macro';
 
-export const MainSection = styled.section`
-    display: grid;
-    grid-template-columns: auto 380px;
-    height: calc(100dvh - 156px);
+export const MainSection = styled.section<{
+    isDropdown?: boolean;
+    isSmallScreen?: boolean;
+}>`
+    display: ${(props) => (props.isDropdown ? 'flex' : 'grid')};
+    gap: ${(props) => (props.isDropdown ? '8px' : 'initial')};
 
-    border-top: 1px solid var(--dark2);
+    grid-template-columns: auto 380px;
+    height: calc(100dvh - 180px);
+
+    border-top: ${(props) => !props.isDropdown && '1px solid var(--dark2)'};
 
     @media (max-width: 1200px) {
         display: flex;
@@ -14,7 +19,7 @@ export const MainSection = styled.section`
     }
 
     @media only screen and (max-width: 1279px) {
-        padding-left: 30px;
+        padding-left: ${(props) => (props.isSmallScreen ? '' : '30px')};
     }
 
     @media (max-width: 600px) {
@@ -33,25 +38,31 @@ export const TradeDropdown = styled.div`
     border-radius: var(--border-radius);
     text-transform: capitalize;
     margin: 0 auto;
+    background: var(--dark2);
+
+    @media (max-width: 500px) {
+        width: 95%;
+    }
 `;
 
-export const TradeDropdownButton = styled.button`
-    background: var(--dark2);
+export const TradeDropdownButton = styled.button<{ activeText?: boolean }>`
+    background: transparent;
     outline: none;
     border: none;
-    color: var(--text2);
-    padding: 8px;
-    width: 90%;
-    margin: 0 auto;
+    padding: ${(props) => (props.activeText ? '0 8px' : '8px')};
     cursor: pointer;
     transition: var(--transition);
     border-radius: var(--border-radius);
     text-align: center;
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    cursor: pointer;
     text-transform: capitalize;
+
+    color: ${(props) => (props.activeText ? 'var(--text1)' : 'var(--text2)')};
+    font-size: ${(props) =>
+        props.activeText ? 'var(--header1-size)' : 'inherit'};
 `;
 
 export const ResizableContainer = styled(Resizable)<{

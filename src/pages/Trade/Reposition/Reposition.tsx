@@ -35,7 +35,7 @@ import {
 } from '../../../utils/TransactionError';
 import useDebounce from '../../../App/hooks/useDebounce';
 import { setAdvancedMode } from '../../../utils/state/tradeDataSlice';
-import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../../constants';
+import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { FiExternalLink } from 'react-icons/fi';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
@@ -402,8 +402,8 @@ function Reposition() {
         setCurrentQuoteQtyDisplayTruncated,
     ] = useState<string>(position?.positionLiqQuoteTruncated || '0.00');
 
-    const positionStatsCacheEndpoint = GRAPHCACHE_SMALL_URL
-        ? GRAPHCACHE_SMALL_URL + '/position_stats?'
+    const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/position_stats?'
         : activeNetwork.graphCacheUrl + '/position_stats?';
     const poolIndex = lookupChain(position.chainId).poolIndex;
 
@@ -671,6 +671,7 @@ function Reposition() {
                             />
                         ) : (
                             <Button
+                                idForDOM='confirm_reposition_button'
                                 title={
                                     isRepositionSent
                                         ? 'Reposition Sent'

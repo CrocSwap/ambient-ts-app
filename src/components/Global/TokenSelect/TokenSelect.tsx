@@ -59,6 +59,7 @@ export default function TokenSelect(props: propsIF) {
 
     return (
         <button
+            id={`token_select_button_${token.address}`}
             className={styles.main_container}
             onClick={() => chooseToken(token, false)}
             role='button'
