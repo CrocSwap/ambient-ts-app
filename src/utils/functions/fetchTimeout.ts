@@ -1,10 +1,12 @@
-export function fetchTimeout(url: string, timeout = 5000): Promise<any> {
+export function fetchTimeout(url: string, timeout = 3000): Promise<Response> {
     return new Promise((resolve, reject) => {
-        fetch(url).then(resolve).catch(reject);
-
-        setTimeout(() => {
-            throw new Error('request timed out');
-            resolve({ error: 'request timed out' });
+        const timeoutHandle = setTimeout(() => {
+            reject(new Error('utils.functions.fetchTimeout request timed out'));
         }, timeout);
+
+        fetch(url)
+            .then(resolve)
+            .catch(reject)
+            .finally(() => clearTimeout(timeoutHandle));
     });
 }
