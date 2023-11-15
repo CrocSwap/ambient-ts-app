@@ -7,7 +7,7 @@ import {
     mainnetDAI,
     mainnetUSDT,
 } from '../defaultTokens';
-import { NetworkIF } from '../types/NetworkIF';
+import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 
 export const ethereumMainnet: NetworkIF = {

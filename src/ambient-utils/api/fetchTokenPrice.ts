@@ -5,7 +5,6 @@ import { supportedNetworks } from '../constants/networks';
 import { ANALYTICS_URL } from '../constants';
 
 const randomNum = Math.random();
-
 export const fetchTokenPrice = async (
     dispToken: string,
     chain: string,

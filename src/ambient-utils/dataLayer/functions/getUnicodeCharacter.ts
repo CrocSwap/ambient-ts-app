@@ -1,4 +1,4 @@
-import { tokenUnicodeCharMap } from '../constants/tokenUnicodeCharMap';
+import { tokenUnicodeCharMap } from '../../constants/tokenUnicodeCharMap';
 
 export function getUnicodeCharacter(symbol: string) {
     const character = tokenUnicodeCharMap.filter((token) => {

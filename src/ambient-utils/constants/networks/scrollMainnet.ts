@@ -1,6 +1,6 @@
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { scrollETH, scrollUSDC } from '../defaultTokens';
-import { NetworkIF } from '../types/NetworkIF';
+import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 import { Provider } from '@ethersproject/providers';
 

@@ -1,4 +1,4 @@
-import { TokenIF, PoolIF } from '../types';
+import { TokenIF, PoolIF } from '../../types';
 import { sortTokens } from '../../dataLayer/functions/sortTokens';
 import { chainNumToString } from '../../dataLayer/functions/chainNumToString';
 

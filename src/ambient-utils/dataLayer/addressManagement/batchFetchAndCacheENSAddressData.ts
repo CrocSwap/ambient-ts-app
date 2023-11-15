@@ -1,6 +1,6 @@
-import { TradeTableDataRow } from '../types/TradeTableDataRow';
+import { TradeTableDataRow } from '../../types/TradeTableDataRow';
 import { getAddress } from 'ethers/lib/utils.js';
-import { fetchEnsAddresses } from '../api/fetchENSAddresses';
+import { fetchEnsAddresses } from '../../api/fetchENSAddresses';
 
 type AddressCache = Map<string, string>; // <address, ens address>
 type NullAddressCache = Map<string, number>; // <address, timestamp last fetched>

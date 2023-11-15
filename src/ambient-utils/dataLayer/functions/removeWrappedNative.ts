@@ -1,5 +1,5 @@
 import { isWethToken } from './stablePairs';
-import { TokenIF } from '../types';
+import { TokenIF } from '../../types';
 
 // fn to remove the wrapped native token of the current chain from a token array
 export function removeWrappedNative(

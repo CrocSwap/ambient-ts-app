@@ -1,4 +1,4 @@
-import { defaultTokens } from '../constants/defaultTokens';
+import { defaultTokens } from '../../constants/defaultTokens';
 
 export const getMoneynessRank = (tokenSymbol: string): number => {
     /* 

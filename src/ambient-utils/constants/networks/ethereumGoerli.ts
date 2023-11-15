@@ -7,7 +7,7 @@ import {
     goerliDAI,
     goerliUSDT,
 } from '../defaultTokens';
-import { NetworkIF } from '../types/NetworkIF';
+import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 
 export const ethereumGoerli: NetworkIF = {

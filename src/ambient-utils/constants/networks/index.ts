@@ -1,11 +1,11 @@
-import { TokenIF } from '../types/token/TokenIF';
+import { NetworkIF, TokenIF } from '../../types';
 import { arbitrumGoerli } from './arbitrumGoerli';
 import { ethereumGoerli } from './ethereumGoerli';
 import { ethereumMainnet } from './ethereumMainnet';
 import { scrollMainnet } from './scrollMainnet';
 import { scrollSepolia } from './scrollSepolia';
 
-export const supportedNetworks = {
+export const supportedNetworks: { [x: string]: NetworkIF } = {
     [ethereumMainnet.chainId]: ethereumMainnet,
     [ethereumGoerli.chainId]: ethereumGoerli,
     [arbitrumGoerli.chainId]: arbitrumGoerli,

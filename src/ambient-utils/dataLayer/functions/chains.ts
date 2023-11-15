@@ -1,5 +1,5 @@
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { supportedNetworks } from '../constants';
+import { supportedNetworks } from '../../constants';
 
 // function to validate any given value as a proper id for a supported chain
 export function validateChainId(chainIdToValidate: string): boolean {

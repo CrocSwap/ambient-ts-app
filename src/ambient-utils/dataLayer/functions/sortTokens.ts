@@ -1,5 +1,5 @@
 import { getBaseTokenAddress } from '@crocswap-libs/sdk';
-import { TokenIF } from '../types/token';
+import { TokenIF } from '../../types/token';
 
 export function sortTokens(
     firstToken: TokenIF,

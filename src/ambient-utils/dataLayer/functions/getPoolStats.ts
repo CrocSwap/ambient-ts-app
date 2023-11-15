@@ -1,6 +1,6 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { GRAPHCACHE_SMALL_URL } from '../constants';
-import { TokenPriceFn } from '../api';
+import { GRAPHCACHE_SMALL_URL } from '../../constants';
+import { TokenPriceFn } from '../../api';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 
 export const getLiquidityFee = async (

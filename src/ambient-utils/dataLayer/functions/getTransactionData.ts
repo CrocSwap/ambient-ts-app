@@ -1,6 +1,6 @@
 import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
-import { TokenIF, TransactionIF, TransactionServerIF } from '../types';
-import { FetchAddrFn, FetchContractDetailsFn, TokenPriceFn } from '../api';
+import { TokenIF, TransactionIF, TransactionServerIF } from '../../types';
+import { FetchAddrFn, FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { SpotPriceFn } from './querySpotPrice';
 import { Provider } from '@ethersproject/providers';
 

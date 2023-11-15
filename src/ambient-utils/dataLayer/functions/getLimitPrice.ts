@@ -1,4 +1,4 @@
-import { LimitOrderIF, TokenMethodsIF } from '../types';
+import { LimitOrderIF, TokenMethodsIF } from '../../types';
 import { getUnicodeCharacter } from './getUnicodeCharacter';
 import { getFormattedNumber } from './getFormattedNumber';
 

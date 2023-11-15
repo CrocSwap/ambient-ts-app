@@ -15,7 +15,7 @@ import {
     scrollAxlUSDC,
     scrollSepoliaUSDC,
     scrollUSDC,
-} from '../constants/defaultTokens';
+} from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
 export function isStablePair(addr1: string, addr2: string): boolean {

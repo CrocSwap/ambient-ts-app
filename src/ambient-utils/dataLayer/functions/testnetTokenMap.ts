@@ -1,4 +1,4 @@
-import { TokenIF } from '../types';
+import { TokenIF } from '../../types';
 import {
     goerliDAI,
     goerliUSDC,
@@ -7,7 +7,7 @@ import {
     mainnetUSDC,
     mainnetUSDT,
     scrollSepoliaUSDC,
-} from '../constants';
+} from '../../constants';
 
 /* Translates testnet token addresses to their canonical production network
  * representations. Note that chain ID is not required, sicne token addresses

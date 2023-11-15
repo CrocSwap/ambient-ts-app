@@ -7,8 +7,8 @@ import {
     tickToPrice,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
-import { PositionIF, PositionServerIF, TokenIF } from '../types';
-import { FetchAddrFn, FetchContractDetailsFn, TokenPriceFn } from '../api';
+import { PositionIF, PositionServerIF, TokenIF } from '../../types';
+import { FetchAddrFn, FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { SpotPriceFn } from './querySpotPrice';
 import { getFormattedNumber } from './getFormattedNumber';
 import { Provider } from '@ethersproject/providers';
