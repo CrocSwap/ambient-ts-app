@@ -5,12 +5,10 @@ Welcome to the Ambient Finance platform! Please [click here](https://ambient.fin
 
 # Table of Contents
 
-1. [Instructions for Use](#instructions)
+1. [Instructions for Use](#instructions-for-use)
 2. [Contributions](#contributions)
 3. [Version Notes](#version-notes)
 4. [Contact](#contact)
-
-<a id='instructions'></a>
 
 # Instructions for Use
 
@@ -47,7 +45,6 @@ Notes:
   * Please use your own Infura key for development purposes.
 
 [Back to Top](#top)
-<a id='contributions'></a>
 
 # Contributions
 
@@ -56,14 +53,11 @@ Contributions are always welcome! Feel free to open a GitHub Issue or Pull Reque
 Please see the docs for our coding style guide: https://github.com/CrocSwap/ambient-ts-app/tree/develop/docs
 
 [Back to Top](#top)
-<a id='version-notes'></a>
 
 # Version Notes
 Release notes for app versions.
 
-Quick Links: [1.6](#v1.6) (Current) | [1.5](#v1.5)
-
-<a id='v1.6'></a>
+Quick Links: [1.6](#version-1.6) (Current) | [1.5](#version-1.5)
 
 ### version 1.6
 Summary:
@@ -76,8 +70,6 @@ Summary:
 
 Code changes are viewable on GitHub [Link](https://github.com/CrocSwap/ambient-ts-app/pull/3225)
 
-<a id='v1.5'></a>
-
 ### version 1.5
 Summary:
 * Refactored styling for easier future updates to add customizability.
@@ -85,21 +77,20 @@ Summary:
 Code changes are viewable on GitHub [Link](https://github.com/CrocSwap/ambient-ts-app/pull/3039)
 
 [Back to Top](#top)
-<a id='contact'></a>
 
 # Contact
 
 ### Social Media
 
-* [Twitter](https://twitter.com/ambient_finance)
-* [Discord](https://discord.com/invite/ambient-finance)
-* [Medium](https://crocswap.medium.com/)
-* [Corporate Site](https://www.crocswap.com/)
+* [Twitter](https://twitter.com/ambient_finance "Ambient Finance on Twitter")
+* [Discord](https://discord.com/invite/ambient-finance "Ambient Finance on Discord")
+* [Medium](https://crocswap.medium.com/ "Crocodile Labs on Medium")
+* [Corporate Site](https://www.crocswap.com/ "About Crocodile Labs")
 
 ### People
 
-* [Doug Colkitt](mailto:doug@crocodilelabs.io) is the Founder & CEO of Crocodile Labs
-* [Vee](mailto:vee@crocodilelabs.io) is our Community Manager and handles external communications
-* [Emily](mailto:emily@crocodilelabs.io) is the primary caretaker of this document
+* [Doug Colkitt](mailto:doug@crocodilelabs.io "email Doug") is the Founder & CEO of Crocodile Labs
+* [Vee](mailto:vee@crocodilelabs.io "email Vee") is our Community Manager and handles external communications
+* [Emily](mailto:emily@crocodilelabs.io "email Emily") is the primary caretaker of this document
 
 [Back to Top](#top)
