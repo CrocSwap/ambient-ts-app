@@ -57,7 +57,7 @@ Please see the docs for our coding style guide: https://github.com/CrocSwap/ambi
 # Version Notes
 Release notes for app versions.
 
-Quick Links: [1.6](#version-1.6) (Current) | [1.5](#version-1.5)
+Quick Links: [1.6](#version-16) (Current) | [1.5](#version-15)
 
 ### version 1.6
 Summary:
