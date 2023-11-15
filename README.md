@@ -54,7 +54,7 @@ Please see the docs for our coding style guide: https://github.com/CrocSwap/ambi
 
 # Version Notes
 Release notes for app versions.
-Quick Links: [1.6](#v1.6) (Current)
+Quick Links: [1.6](#v1.6) (Current) | [1.5](#v1.5)
 
 <a id='v1.6'></a>
 
@@ -67,3 +67,12 @@ Summary:
 * Added the ability to annotate the price charts with trend lines and horizontal rays
 * Added USD $ value estimation calculations to the token selectors in the swap/limit/pool modules based on CoinGecko
 Code changes are viewable on GitHub [Link](https://github.com/CrocSwap/ambient-ts-app/pull/3225)
+
+<a id='v1.5'></a>
+
+### version 1.5
+Summary:
+* Refactored styling for easier future updates to add customizability.
+Code changes are viewable on GitHub [Link](https://github.com/CrocSwap/ambient-ts-app/pull/3039)
+
+[Back to Top](#top)
