@@ -8,6 +8,7 @@ export * from './fetchENSAddresses';
 export * from './fetchPoolLiquidity';
 export * from './fetchPoolList';
 export * from './fetchPoolRecentChanges';
+export * from './fetchTimeout';
 export * from './fetchTokenBalances';
 export * from './fetchTokenList';
 export * from './fetchTokenPrice';

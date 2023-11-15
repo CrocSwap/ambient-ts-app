@@ -5,6 +5,7 @@ import { supportedNetworks } from '../constants/networks';
 import { ANALYTICS_URL } from '../constants';
 
 const randomNum = Math.random();
+import { fetchTimeout } from '../api/fetchTimeout';
 export const fetchTokenPrice = async (
     dispToken: string,
     chain: string,
@@ -24,21 +25,30 @@ export const fetchTokenPrice = async (
                     usdPrice: 0.9995309916951084,
                     usdPriceFormatted: 1,
                 };
+            } else if (
+                address.toLowerCase() === defaultPair[0].address.toLowerCase()
+            ) {
+                return {
+                    usdPrice: 2000,
+                    usdPriceFormatted: 2000,
+                };
             }
 
-            const response = await fetch(
+            const url =
                 ANALYTICS_URL +
-                    new URLSearchParams({
-                        service: 'run',
-                        config_path: 'price',
-                        include_data: '0',
-                        token_address: address,
-                        asset_platform:
-                            chain === '0x82750' || chain === '0x8274f'
-                                ? 'scroll'
-                                : 'ethereum',
-                    }),
-            );
+                new URLSearchParams({
+                    service: 'run',
+                    config_path: 'price',
+                    include_data: '0',
+                    token_address: address,
+                    asset_platform:
+                        chain === '0x82750' || chain === '0x8274f'
+                            ? 'scroll'
+                            : 'ethereum',
+                });
+
+            const response = await fetchTimeout(url);
+
             const result = await response.json();
             return result?.value;
         }
