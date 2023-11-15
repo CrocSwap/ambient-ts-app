@@ -10,7 +10,6 @@ Welcome to the Ambient Finance platform! Please [click here](https://ambient.fin
 3. [Version Notes](#version-notes)
 4. [Contact](#contact)
 
-[Back to Top](#top)
 <a id='instructions'></a>
 
 # Instructions for Use
