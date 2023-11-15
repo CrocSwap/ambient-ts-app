@@ -20,15 +20,23 @@ Open [http://localhost:3000](http://localhost:3000) to view it in a browser.
 
 Note: Node v16+ is required
 
-### Environmental variables
+### Environmental Variables
 
 Configure your build environment by adding a dotfile (e.g. `.env.local`) with variable definitions to the top level directory before starting the server. Please reference `.gitignore` in the root directory for dotfile naming conventions.
 
-Environment variable examples:
+* Chain IDs
+This allows the app to interface with different networks as defined in the SDK (not all deployments support all networks).
+Format: `REACT_APP_CHAIN_IDS=0x1,0x82750,0x5`
+Notes:
+  * `0x1` → Ethereum Mainnet
+  * `0x82750` → Scroll (Ethereum L2 ZK Rollup)
+  * `0x5` → Görli Testnet
 
-REACT_APP_CHAIN_IDS=0x1,0x5 (Ethereum Mainnet and Ethereum Görli (testnet) are currently supported
-
-REACT_APP_INFURA_KEY=********************* (please use your own Infura key for development purposes)
+* Infura
+This is a key for the Infura API which is used to pull metadata from on-chain.
+Format: `REACT_APP_INFURA_KEY=*********************`
+Notes:
+  * Please use your own Infura key for development purposes.
 
 ### `Contributions` 
 
