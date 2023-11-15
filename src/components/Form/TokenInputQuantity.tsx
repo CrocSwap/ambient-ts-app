@@ -235,15 +235,14 @@ function TokenInputQuantity(props: propsIF) {
                 animation={showPulseAnimation ? 'pulse' : ''}
                 style={{ marginBottom: !includeWallet ? '8px' : '0' }}
             >
-                <div style={{ position: 'relative' }}>
-                    {isLoading ? (
-                        <FlexContainer fullWidth fullHeight alignItems='center'>
-                            <Spinner size={24} bg='var(--dark2)' weight={2} />
-                        </FlexContainer>
-                    ) : (
-                        inputContent
-                    )}
-                </div>
+                {isLoading ? (
+                    <FlexContainer fullWidth fullHeight alignItems='center'>
+                        <Spinner size={24} bg='var(--dark2)' weight={2} />
+                    </FlexContainer>
+                ) : (
+                    inputContent
+                )}
+
                 <TokenSelectButton
                     id={fieldId ? `${fieldId}_token_selector` : undefined}
                     onClick={openTokenSelect}

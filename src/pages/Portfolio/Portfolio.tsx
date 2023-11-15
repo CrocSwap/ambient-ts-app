@@ -134,8 +134,8 @@ function Portfolio() {
         TokenIF[]
     >([]);
 
-    // used to trigger token balance refreshes every 2 minutes
-    const everyTwoMinutes = Math.floor(Date.now() / 120000);
+    // used to trigger token balance refreshes every 5 minutes
+    const everyTwoMinutes = Math.floor(Date.now() / 300000);
 
     useEffect(() => {
         (async () => {
