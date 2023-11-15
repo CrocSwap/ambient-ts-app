@@ -2,7 +2,6 @@ import { toDisplayQty } from '@crocswap-libs/sdk';
 import { TokenIF } from '../../../../utils/interfaces/exports';
 import Button from '../../../Form/Button';
 import TransferAddressInput from './TransferAddressInput';
-// import { defaultTokens } from '../../../../utils/data/defaultTokens';
 import {
     Dispatch,
     SetStateAction,
@@ -12,7 +11,6 @@ import {
     useState,
 } from 'react';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-// import { setToken } from '../../../../utils/state/temp';
 import { BigNumber } from 'ethers';
 import { FaGasPump } from 'react-icons/fa';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
@@ -363,6 +361,7 @@ export default function Transfer(props: propsIF) {
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}
             <Button
+                idForDOM='transfer_tokens_button'
                 title={buttonMessage}
                 action={transferFn}
                 disabled={isButtonDisabled}

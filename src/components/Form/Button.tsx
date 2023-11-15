@@ -1,6 +1,7 @@
 import { ButtonBase } from './Form.styles';
 
 interface propsIF {
+    idForDOM: string;
     disabled?: boolean;
     title: string;
     action: () => void;
@@ -9,17 +10,19 @@ interface propsIF {
     thin?: boolean;
     black?: boolean;
     width?: string;
+    style?: React.CSSProperties;
 }
 
 export default function Button(props: propsIF) {
     const {
+        idForDOM,
         disabled,
         action,
         title,
         flat,
         customAriaLabel,
         width,
-
+        style,
         thin,
     } = props;
 
@@ -30,7 +33,11 @@ export default function Button(props: propsIF) {
         : '';
     return (
         <ButtonBase
-            style={thin ? { height: '28px', width: '156px', padding: 0 } : {}}
+            id={idForDOM}
+            style={{
+                ...(thin ? { height: '28px', width: '156px', padding: 0 } : {}),
+                ...style, // Merge with style prop
+            }}
             onClick={action}
             disabled={disabled}
             aria-label={ariaLabelToDisplay}

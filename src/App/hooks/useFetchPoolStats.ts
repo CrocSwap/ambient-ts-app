@@ -26,6 +26,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
     } = useContext(CachedDataContext);
     const {
         crocEnv,
+        activeNetwork,
         provider,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
@@ -177,6 +178,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                     poolIndex,
                     Math.floor(Date.now() / 60000),
                     crocEnv,
+                    activeNetwork.graphCacheUrl,
                     cachedFetchTokenPrice,
                 );
 
@@ -225,6 +227,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                         quoteAddr,
                         poolIndex,
                         shouldInvertDisplay,
+                        activeNetwork.graphCacheUrl,
                     );
 
                     if (!priceChangeResult) {

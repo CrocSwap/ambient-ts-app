@@ -7,15 +7,17 @@ import {
 } from '../../../../styled/Components/Home';
 
 interface propsIF {
+    fieldId: string;
     inNav?: boolean;
 }
 
 export default function TradeNowButton(props: propsIF) {
-    const { inNav } = props;
+    const { fieldId, inNav } = props;
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
     return (
         <StyledLink
+            id={fieldId}
             to={showMobileVersion ? '/trade' : '/trade/market'}
             tabIndex={0}
             aria-label='Go to trade page button'

@@ -37,6 +37,7 @@ interface propsIF {
     isInputDisabled: { tokenA: boolean; tokenB: boolean };
     toggleDexSelection: (tokenAorB: 'A' | 'B') => void;
     reverseTokens?: () => void;
+    isMintLiqEnabled?: boolean;
     isInitPage?: boolean;
 }
 
@@ -59,6 +60,7 @@ function RangeTokenInput(props: propsIF) {
         toggleDexSelection,
         hidePlus,
         reverseTokens,
+        isMintLiqEnabled = true,
         isInitPage,
     } = props;
 
@@ -211,7 +213,9 @@ function RangeTokenInput(props: propsIF) {
                 }}
                 showWallet={isUserConnected}
                 disabledContent={
-                    isTokenAInputDisabled ? disabledContent : undefined
+                    isTokenAInputDisabled && isMintLiqEnabled
+                        ? disabledContent
+                        : undefined
                 }
             />
             {!hidePlus && (
@@ -219,7 +223,6 @@ function RangeTokenInput(props: propsIF) {
                     fullWidth
                     justifyContent='center'
                     alignItems='center'
-                    padding='0 0 8px 0'
                 >
                     <img
                         style={{ cursor: 'default !important' }}
@@ -247,7 +250,9 @@ function RangeTokenInput(props: propsIF) {
                 }}
                 showWallet={isUserConnected}
                 disabledContent={
-                    isTokenBInputDisabled ? disabledContent : undefined
+                    isTokenBInputDisabled && isMintLiqEnabled
+                        ? disabledContent
+                        : undefined
                 }
                 isWithdraw
             />

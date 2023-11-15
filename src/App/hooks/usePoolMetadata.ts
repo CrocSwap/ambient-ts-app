@@ -1,6 +1,6 @@
 import { ChainSpec, CrocEnv, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
-import { GRAPHCACHE_SMALL_URL } from '../../constants';
+import { GCGO_OVERRIDE_URL } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { LimitOrderServerIF } from '../../utils/interfaces/LimitOrderIF';
 import {
@@ -39,6 +39,7 @@ import { Provider } from '@ethersproject/providers';
 
 interface PoolParamsHookIF {
     crocEnv?: CrocEnv;
+    graphCacheUrl: string;
     provider?: Provider;
     pathname: string;
     chainData: ChainSpec;
@@ -203,6 +204,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         sortedTokens[1],
                         props.chainData.poolIndex,
                         props.chainData.chainId,
+                        props.graphCacheUrl,
                     )
                         .then((liquidityFeeNum) => {
                             if (liquidityFeeNum)
@@ -211,8 +213,9 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .catch(console.error);
 
                     // retrieve pool_positions
-                    const allPositionsCacheEndpoint =
-                        GRAPHCACHE_SMALL_URL + '/pool_positions?';
+                    const allPositionsCacheEndpoint = GCGO_OVERRIDE_URL
+                        ? GCGO_OVERRIDE_URL + '/pool_positions?'
+                        : props.graphCacheUrl + '/pool_positions?';
                     fetch(
                         allPositionsCacheEndpoint +
                             new URLSearchParams({
@@ -287,8 +290,9 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .catch(console.error);
 
                     // retrieve positions for leaderboard
-                    const poolPositionsCacheEndpoint =
-                        GRAPHCACHE_SMALL_URL + '/pool_position_apy_leaders?';
+                    const poolPositionsCacheEndpoint = GCGO_OVERRIDE_URL
+                        ? GCGO_OVERRIDE_URL + '/pool_position_apy_leaders?'
+                        : props.graphCacheUrl + '/pool_position_apy_leaders?';
                     fetch(
                         poolPositionsCacheEndpoint +
                             new URLSearchParams({
@@ -373,6 +377,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         ensResolution: true,
                         n: 200,
                         crocEnv: props.crocEnv,
+                        graphCacheUrl: props.graphCacheUrl,
                         provider: props.provider,
                         lastBlockNumber: props.lastBlockNumber,
                         cachedFetchTokenPrice: props.cachedFetchTokenPrice,
@@ -399,8 +404,9 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .catch(console.error);
 
                     // retrieve pool limit order states
-                    const poolLimitOrderStatesCacheEndpoint =
-                        GRAPHCACHE_SMALL_URL + '/pool_limit_orders?';
+                    const poolLimitOrderStatesCacheEndpoint = GCGO_OVERRIDE_URL
+                        ? GCGO_OVERRIDE_URL + '/pool_limit_orders?'
+                        : props.graphCacheUrl + '/pool_limit_orders?';
 
                     fetch(
                         poolLimitOrderStatesCacheEndpoint +
@@ -470,8 +476,9 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .catch(console.error);
                     if (props.userAddress) {
                         // retrieve user_pool_positions
-                        const userPoolPositionsCacheEndpoint =
-                            GRAPHCACHE_SMALL_URL + '/user_pool_positions?';
+                        const userPoolPositionsCacheEndpoint = GCGO_OVERRIDE_URL
+                            ? GCGO_OVERRIDE_URL + '/user_pool_positions?'
+                            : props.graphCacheUrl + '/user_pool_positions?';
                         fetch(
                             userPoolPositionsCacheEndpoint +
                                 new URLSearchParams({
@@ -546,7 +553,10 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
                         // retrieve user_pool_limit_orders
                         const userPoolLimitOrdersCacheEndpoint =
-                            GRAPHCACHE_SMALL_URL + '/user_pool_limit_orders?';
+                            GCGO_OVERRIDE_URL
+                                ? GCGO_OVERRIDE_URL + '/user_pool_limit_orders?'
+                                : props.graphCacheUrl +
+                                  '/user_pool_limit_orders?';
                         fetch(
                             userPoolLimitOrdersCacheEndpoint +
                                 new URLSearchParams({
@@ -669,6 +679,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                 quoteTokenAddress.toLowerCase(),
                 props.chainData.poolIndex,
                 crocEnv,
+                props.graphCacheUrl,
                 props.cachedFetchTokenPrice,
             )
                 .then((liqCurve) => {
