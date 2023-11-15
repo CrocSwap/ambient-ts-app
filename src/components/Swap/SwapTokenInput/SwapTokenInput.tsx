@@ -1,4 +1,4 @@
-import { CrocImpact, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
+import { CrocImpact } from '@crocswap-libs/sdk';
 import {
     Dispatch,
     SetStateAction,
@@ -10,7 +10,6 @@ import {
 } from 'react';
 import { calcImpact } from '../../../App/functions/calcImpact';
 import useDebounce from '../../../App/hooks/useDebounce';
-import { ZERO_ADDRESS } from '../../../constants';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
@@ -31,7 +30,7 @@ import {
     setIsTokenAPrimaryRange,
     setLimitTick,
 } from '../../../utils/state/tradeDataSlice';
-import TokenInput from '../../Global/TokenInput/TokenInput';
+import TokenInputWithWalletBalance from '../../Form/TokenInputWithWalletBalance';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 
 interface propsIF {
@@ -44,8 +43,10 @@ interface propsIF {
     slippageTolerancePercentage: number;
     setSwapAllowed: Dispatch<SetStateAction<boolean>>;
     setPriceImpact: Dispatch<SetStateAction<CrocImpact | undefined>>;
+    isLiquidityInsufficient: boolean;
     setIsLiquidityInsufficient: Dispatch<SetStateAction<boolean>>;
     toggleDexSelection: (tokenAorB: 'A' | 'B') => void;
+    amountToReduceEth: number;
 }
 
 function SwapTokenInput(props: propsIF) {
@@ -59,8 +60,10 @@ function SwapTokenInput(props: propsIF) {
         slippageTolerancePercentage,
         setSwapAllowed,
         setPriceImpact,
+        isLiquidityInsufficient,
         setIsLiquidityInsufficient,
         toggleDexSelection,
+        amountToReduceEth,
     } = props;
 
     const {
@@ -70,15 +73,15 @@ function SwapTokenInput(props: propsIF) {
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { poolPriceDisplay, isPoolInitialized } = useContext(PoolContext);
     const {
-        baseToken: {
-            balance: baseTokenBalance,
-            dexBalance: baseTokenDexBalance,
-        },
-        quoteToken: {
-            balance: quoteTokenBalance,
-            dexBalance: quoteTokenDexBalance,
-        },
+        tokenABalance,
+        tokenBBalance,
+        tokenADexBalance,
+        tokenBDexBalance,
+        isTokenAEth: isSellTokenEth,
+        isTokenBEth: isBuyTokenEth,
+        rtkMatchesParams,
     } = useContext(TradeTokenContext);
+
     const { showSwapPulseAnimation } = useContext(TradeTableContext);
 
     const dispatch = useAppDispatch();
@@ -99,38 +102,8 @@ function SwapTokenInput(props: propsIF) {
     const [lastInput, setLastInput] = useState<string | undefined>();
     const [disableReverseTokens, setDisableReverseTokens] = useState(false);
 
-    const isSellTokenEth = tokenA.address === ZERO_ADDRESS;
-    const isBuyTokenEth = tokenB.address === ZERO_ADDRESS;
-    const sortedTokens = sortBaseQuoteTokens(tokenA.address, tokenB.address);
-    const isSellTokenBase = tokenA.address === sortedTokens[0];
-
-    const tokenABalance = isSellTokenBase
-        ? baseTokenBalance
-        : quoteTokenBalance;
-    const tokenBBalance = isSellTokenBase
-        ? quoteTokenBalance
-        : baseTokenBalance;
-    const tokenADexBalance = isSellTokenBase
-        ? baseTokenDexBalance
-        : quoteTokenDexBalance;
-    const tokenBDexBalance = isSellTokenBase
-        ? quoteTokenDexBalance
-        : baseTokenDexBalance;
-
     // Let input rest 3/4 of a second before triggering an update
     const debouncedLastInput = useDebounce(lastInput, 750);
-
-    useEffect(() => {
-        if (isTokenAPrimary) {
-            if (sellQtyString !== '') {
-                setIsBuyLoading(true);
-            }
-        } else {
-            if (buyQtyString !== '') {
-                setIsSellLoading(true);
-            }
-        }
-    }, []);
 
     useEffect(() => {
         handleBlockUpdate();
@@ -153,10 +126,12 @@ function SwapTokenInput(props: propsIF) {
 
     useEffect(() => {
         (async () => {
-            await refreshTokenData();
-            setDisableReverseTokens(false);
+            if (rtkMatchesParams) {
+                await refreshTokenData();
+                setDisableReverseTokens(false);
+            }
         })();
-    }, [tokenA, tokenB]);
+    }, [rtkMatchesParams]);
 
     const reverseTokens = (): void => {
         if (disableReverseTokens || !isPoolInitialized) return;
@@ -188,8 +163,12 @@ function SwapTokenInput(props: propsIF) {
     };
 
     const handleBlockUpdate = () => {
-        setDisableReverseTokens(true);
-        isTokenAPrimary ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
+        if (rtkMatchesParams) {
+            setDisableReverseTokens(true);
+            isTokenAPrimary
+                ? handleTokenAChangeEvent()
+                : handleTokenBChangeEvent();
+        }
     };
 
     async function refreshImpact(
@@ -197,6 +176,8 @@ function SwapTokenInput(props: propsIF) {
         sellToken: boolean,
     ): Promise<number | undefined> {
         if (isNaN(parseFloat(input)) || parseFloat(input) === 0 || !crocEnv) {
+            setIsLiquidityInsufficient(false);
+            setPriceImpact(undefined);
             return undefined;
         }
 
@@ -331,16 +312,16 @@ function SwapTokenInput(props: propsIF) {
 
     return (
         <FlexContainer flexDirection='column' gap={8}>
-            <TokenInput
+            <TokenInputWithWalletBalance
                 fieldId='swap_sell'
                 tokenAorB='A'
                 token={tokenA}
-                tokenInput={sellQtyString}
+                tokenInput={buyQtyString !== '' ? sellQtyString : ''}
                 tokenBalance={tokenABalance}
                 tokenDexBalance={tokenADexBalance}
                 isTokenEth={isSellTokenEth}
                 isDexSelected={isWithdrawFromDexChecked}
-                isLoading={isSellLoading}
+                isLoading={isSellLoading && buyQtyString !== ''}
                 showPulseAnimation={showSwapPulseAnimation}
                 handleTokenInputEvent={debouncedTokenAChangeEvent}
                 reverseTokens={reverseTokens}
@@ -349,12 +330,12 @@ function SwapTokenInput(props: propsIF) {
                 parseTokenInput={(val: string, isMax?: boolean) => {
                     setSellQtyString(formatTokenInput(val, tokenA, isMax));
                 }}
+                amountToReduceEth={amountToReduceEth}
             />
             <FlexContainer
                 fullWidth
                 justifyContent='center'
                 alignItems='center'
-                padding='0 0 8px 0'
             >
                 <TokensArrow
                     disabled={
@@ -363,16 +344,20 @@ function SwapTokenInput(props: propsIF) {
                     onClick={reverseTokens}
                 />
             </FlexContainer>
-            <TokenInput
+            <TokenInputWithWalletBalance
                 fieldId='swap_buy'
                 tokenAorB='B'
                 token={tokenB}
-                tokenInput={buyQtyString}
+                tokenInput={
+                    sellQtyString !== '' || isLiquidityInsufficient
+                        ? buyQtyString
+                        : ''
+                }
                 tokenBalance={tokenBBalance}
                 tokenDexBalance={tokenBDexBalance}
                 isTokenEth={isBuyTokenEth}
                 isDexSelected={isSaveAsDexSurplusChecked}
-                isLoading={isBuyLoading}
+                isLoading={isBuyLoading && sellQtyString !== ''}
                 showPulseAnimation={showSwapPulseAnimation}
                 handleTokenInputEvent={debouncedTokenBChangeEvent}
                 reverseTokens={reverseTokens}

@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
-import { useContext, useState, useMemo } from 'react';
+import { useContext, useState, useMemo, ReactNode } from 'react';
 import { FiExternalLink } from 'react-icons/fi';
-import { useTradeData } from '../../../App/hooks/useTradeData';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../contexts/TokenContext';
@@ -12,27 +11,32 @@ import {
 } from '../../../styled/Components/TradeModules';
 import { TutorialButton } from '../../../styled/Components/Tutorial';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { ConnectWalletButton } from '../../Global/Button/ConnectWalletButton';
 import ContentContainer from '../../Global/ContentContainer/ContentContainer';
 import TutorialOverlay from '../../Global/TutorialOverlay/TutorialOverlay';
+import Button from '../../Form/Button';
+
+import TradeLinks from './TradeLinks';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface PropsIF {
-    header: React.ReactNode;
-    input: React.ReactNode;
-    transactionDetails: React.ReactNode;
-    modal: React.ReactNode | undefined;
-    button: React.ReactNode;
-    bypassConfirm: React.ReactNode | undefined;
-    approveButton: React.ReactNode | undefined;
-    warnings?: React.ReactNode | undefined;
+    chainId: string;
+    header: ReactNode;
+    input: ReactNode;
+    transactionDetails: ReactNode;
+    modal: ReactNode | undefined;
+    button: ReactNode;
+    bypassConfirm: ReactNode | undefined;
+    approveButton: ReactNode | undefined;
+    warnings?: ReactNode | undefined;
     // eslint-disable-next-line
     tutorialSteps: any;
     isSwapPage?: boolean;
-    inputOptions?: React.ReactNode;
+    inputOptions?: ReactNode;
 }
 
 export const TradeModuleSkeleton = (props: PropsIF) => {
     const {
+        chainId,
         isSwapPage,
         header,
         input,
@@ -58,8 +62,9 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
-    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
-    const navigationMenu = !isSwapPage ? useTradeData().navigationMenu : null;
+    const { tokenA, tokenB, limitTick } = useAppSelector(
+        (state) => state.tradeData,
+    );
 
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
@@ -94,9 +99,10 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         /\b(not)\b/g,
         '<span style="color: var(--negative); text-transform: uppercase;">$1</span>',
     );
+    const smallScreen = useMediaQuery('(max-width: 500px)');
 
     return (
-        <section>
+        <>
             {isTutorialActive && (
                 <FlexContainer
                     fullWidth
@@ -109,9 +115,19 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     </TutorialButton>
                 </FlexContainer>
             )}{' '}
-            <ContentContainer isOnTradeRoute={!isSwapPage}>
+            <ContentContainer
+                isOnTradeRoute={!isSwapPage}
+                noPadding={smallScreen && !isSwapPage}
+            >
                 {header}
-                {navigationMenu}
+                {isSwapPage || (
+                    <TradeLinks
+                        chainId={chainId}
+                        tokenA={tokenA}
+                        tokenB={tokenB}
+                        limitTick={limitTick}
+                    />
+                )}
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -187,7 +203,12 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                             </>
                         )
                     ) : (
-                        <ConnectWalletButton onClick={openWagmiModal} />
+                        <Button
+                            idForDOM='connect_wallet_button_in_trade_configurator'
+                            action={openWagmiModal}
+                            title='Connect Wallet'
+                            flat
+                        />
                     )}
                     {warnings && warnings}
                 </FlexContainer>
@@ -198,6 +219,6 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                 setIsTutorialEnabled={setIsTutorialEnabled}
                 steps={tutorialSteps}
             />
-        </section>
+        </>
     );
 };

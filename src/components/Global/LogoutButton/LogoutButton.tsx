@@ -8,7 +8,7 @@ export const LogoutButton = (props: { onClick: () => void }) => {
             tabIndex={0}
             role='button'
         >
-            Logout
+            Disconnect
         </button>
     );
 };

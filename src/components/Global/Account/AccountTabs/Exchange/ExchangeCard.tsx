@@ -1,5 +1,4 @@
 import styles from './ExchangeCard.module.css';
-import { testTokenMap } from '../../../../../utils/data/testTokenMap';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { useContext, useEffect, useState } from 'react';
 import { ZERO_ADDRESS } from '../../../../../constants';
@@ -27,8 +26,6 @@ export default function ExchangeCard(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
-    const tokenMapKey: string = token?.address + '_' + chainId;
-
     const tokenFromMap = token?.address
         ? getTokenByAddress(token.address)
         : null;
@@ -50,17 +47,10 @@ export default function ExchangeCard(props: propsIF) {
     useEffect(() => {
         (async () => {
             try {
-                const tokenAddress = tokenMapKey.split('_')[0];
-                const chain = tokenMapKey.split('_')[1];
-                const isChainMainnet = chain === '0x1';
-                const mainnetAddress =
-                    isChainMainnet && tokenAddress !== ZERO_ADDRESS
-                        ? tokenMapKey.split('_')[0]
-                        : testTokenMap.get(tokenMapKey)?.split('_')[0];
-                if (mainnetAddress) {
+                if (tokenFromMap?.symbol) {
                     const price = await cachedFetchTokenPrice(
-                        mainnetAddress,
-                        '0x1',
+                        tokenFromMap.address,
+                        chainId,
                     );
                     if (price) setTokenPrice(price);
                 }
@@ -68,7 +58,7 @@ export default function ExchangeCard(props: propsIF) {
                 console.error(err);
             }
         })();
-    }, [tokenMapKey]);
+    }, [token?.address, chainId]);
 
     const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 

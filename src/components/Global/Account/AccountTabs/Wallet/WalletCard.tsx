@@ -1,4 +1,3 @@
-import { testTokenMap } from '../../../../../utils/data/testTokenMap';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import styles from './WalletCard.module.css';
 import { useContext, useEffect, useState } from 'react';
@@ -49,19 +48,12 @@ export default function WalletCard(props: propsIF) {
     useEffect(() => {
         (async () => {
             try {
-                const tokenAddress = tokenMapKey.split('_')[0];
-                const chain = tokenMapKey.split('_')[1];
-                const isChainMainnet = chain === '0x1';
-                const mainnetAddress =
-                    isChainMainnet && tokenAddress !== ZERO_ADDRESS
-                        ? tokenMapKey.split('_')[0]
-                        : testTokenMap.get(tokenMapKey)?.split('_')[0];
-                if (mainnetAddress) {
+                if (tokenFromMap?.symbol) {
                     const price = await cachedFetchTokenPrice(
-                        mainnetAddress,
-                        '0x1',
+                        tokenFromMap.address,
+                        chainId,
                     );
-                    price && setTokenPrice(price);
+                    if (price) setTokenPrice(price);
                 }
             } catch (err) {
                 console.error(err);
@@ -99,12 +91,10 @@ export default function WalletCard(props: propsIF) {
                 <TokenIcon
                     token={token}
                     src={uriToHttp(token.logoURI)}
-                    alt={token.symbol ?? 'unknown token'}
+                    alt={token.symbol ?? '?'}
                     size='2xl'
                 />
-                <p className={styles.token_key}>
-                    {token.symbol ?? 'unknown token'}
-                </p>
+                <p className={styles.token_key}>{token.symbol ?? '?'}</p>
             </div>
         </DefaultTooltip>
     );

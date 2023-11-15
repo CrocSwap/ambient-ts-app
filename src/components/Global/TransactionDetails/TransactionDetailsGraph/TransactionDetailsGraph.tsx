@@ -1,8 +1,6 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { ZERO_ADDRESS } from '../../../../constants';
-import { testTokenMap } from '../../../../utils/data/testTokenMap';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 import './TransactionDetailsGraph.css';
@@ -38,7 +36,7 @@ export default function TransactionDetailsGraph(
         isBaseTokenMoneynessGreaterOrEqual,
         isAccountView,
     } = props;
-    const { chainData, crocEnv } = useContext(CrocEnvContext);
+    const { chainData, crocEnv, activeNetwork } = useContext(CrocEnvContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const oneHourMiliseconds = 60 * 60 * 1000;
 
@@ -52,27 +50,8 @@ export default function TransactionDetailsGraph(
     const baseTokenAddress = tx.base;
     const quoteTokenAddress = tx.quote;
 
-    const chainId = tx.chainId;
-
     const tradeData = useAppSelector((state) => state.tradeData);
     const denominationsInBase = tradeData.isDenomBase;
-
-    const mainnetBaseTokenAddress =
-        chainId === '0x1'
-            ? baseTokenAddress
-            : baseTokenAddress === ZERO_ADDRESS
-            ? baseTokenAddress
-            : testTokenMap
-                  .get(baseTokenAddress.toLowerCase() + '_' + chainId)
-                  ?.split('_')[0];
-    const mainnetQuoteTokenAddress =
-        chainId === '0x1'
-            ? quoteTokenAddress
-            : quoteTokenAddress === ZERO_ADDRESS
-            ? quoteTokenAddress
-            : testTokenMap
-                  .get(quoteTokenAddress.toLowerCase() + '_' + chainId)
-                  ?.split('_')[0];
 
     const [graphData, setGraphData] = useState<any>();
 
@@ -113,9 +92,7 @@ export default function TransactionDetailsGraph(
         chainData &&
         isServerEnabled &&
         baseTokenAddress &&
-        quoteTokenAddress &&
-        mainnetBaseTokenAddress &&
-        mainnetQuoteTokenAddress
+        quoteTokenAddress
     );
 
     const [isDataEmpty, setIsDataEmpty] = useState(false);
@@ -202,6 +179,7 @@ export default function TransactionDetailsGraph(
                         const graphData = await fetchCandleSeriesCroc(
                             fetchEnabled,
                             chainData,
+                            activeNetwork.graphCacheUrl,
                             period,
                             baseTokenAddress,
                             quoteTokenAddress,
@@ -1067,7 +1045,7 @@ export default function TransactionDetailsGraph(
 
     const chartRender = (
         <div
-            className='main_layout_chart'
+            className='transaction_details_graph'
             ref={graphMainDiv}
             data-testid={'chart'}
             style={{

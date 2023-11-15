@@ -1,0 +1,20 @@
+.advanced_info_container {
+    padding: 0 32px;
+}
+.info_container {
+    margin-top: 8px;
+    padding: 0 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.advanced_disabled{
+    pointer-events: none;
+    opacity: 0.2;
+    filter: blur(2px);
+}
+.denomination_switch_container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

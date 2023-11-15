@@ -1,14 +1,21 @@
 import styles from './RangeActionInfo.module.css';
 import Row from '../../Global/Row/Row';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import TokenIcon from '../../Global/TokenIcon/TokenIcon';
+import uriToHttp from '../../../utils/functions/uriToHttp';
+import { useContext } from 'react';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
 interface IHarvestPositionInfoProps {
+    baseHarvestNum: number | undefined;
+    quoteHarvestNum: number | undefined;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
     baseTokenLogoURI: string;
     quoteTokenLogoURI: string;
-    baseHarvestNum: number | undefined;
-    quoteHarvestNum: number | undefined;
+    baseTokenAddress: string;
+    quoteTokenAddress: string;
 }
 
 export default function HarvestPositionInfo(props: IHarvestPositionInfoProps) {
@@ -19,10 +26,18 @@ export default function HarvestPositionInfo(props: IHarvestPositionInfoProps) {
         quoteTokenLogoURI,
         baseHarvestNum,
         quoteHarvestNum,
+        baseTokenAddress,
+        quoteTokenAddress,
     } = props;
 
     const baseHarvestString = getFormattedNumber({ value: baseHarvestNum });
     const quoteHarvestString = getFormattedNumber({ value: quoteHarvestNum });
+
+    const { tokens } = useContext(TokenContext);
+    const baseToken: TokenIF | undefined =
+        tokens.getTokenByAddress(baseTokenAddress);
+    const quoteToken: TokenIF | undefined =
+        tokens.getTokenByAddress(quoteTokenAddress);
 
     return (
         <div className={styles.row}>
@@ -33,7 +48,12 @@ export default function HarvestPositionInfo(props: IHarvestPositionInfoProps) {
                         {baseHarvestString !== undefined
                             ? baseHarvestString
                             : '…'}
-                        <img src={baseTokenLogoURI} alt='' />
+                        <TokenIcon
+                            token={baseToken}
+                            src={uriToHttp(baseTokenLogoURI)}
+                            alt={baseTokenSymbol}
+                            size='xs'
+                        />
                     </div>
                 </Row>
                 <Row>
@@ -42,7 +62,12 @@ export default function HarvestPositionInfo(props: IHarvestPositionInfoProps) {
                         {quoteHarvestString !== undefined
                             ? quoteHarvestString
                             : '…'}
-                        <img src={quoteTokenLogoURI} alt='' />
+                        <TokenIcon
+                            token={quoteToken}
+                            src={uriToHttp(quoteTokenLogoURI)}
+                            alt={quoteTokenSymbol}
+                            size='xs'
+                        />
                     </div>
                 </Row>
             </div>

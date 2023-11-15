@@ -9,11 +9,11 @@ import { skipConfirmIF, useSkipConfirm } from '../App/hooks/useSkipConfirm';
 import { SlippageMethodsIF, useSlippage } from '../App/hooks/useSlippage';
 import { IS_LOCAL_ENV } from '../constants';
 import { slippage } from '../utils/data/slippage';
-import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { setDenomInBase } from '../utils/state/tradeDataSlice';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
+import { getMoneynessRankByAddr } from '../utils/functions/getMoneynessRank';
 
 interface UserPreferenceIF {
     favePools: favePoolsMethodsIF;
@@ -71,19 +71,17 @@ export const UserPreferenceContextProvider = (props: {
         [...Object.values(userPreferencesProps)],
     );
 
-    const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(
-        () =>
-            baseTokenAddress && quoteTokenAddress
-                ? getMoneynessRank(
-                      baseTokenAddress.toLowerCase() + '_' + chainId,
-                  ) -
-                      getMoneynessRank(
-                          quoteTokenAddress.toLowerCase() + '_' + chainId,
-                      ) >=
-                  0
-                : false,
-        [baseTokenAddress, quoteTokenAddress, chainId],
-    );
+    const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(() => {
+        if (baseTokenAddress && quoteTokenAddress) {
+            return (
+                getMoneynessRankByAddr(baseTokenAddress) -
+                    getMoneynessRankByAddr(quoteTokenAddress) >=
+                0
+            );
+        }
+        return false;
+    }, [baseTokenAddress, quoteTokenAddress, chainId]);
+
     function updateDenomIsInBase() {
         // we need to know if the denom token is base or quote
         // currently the denom token is the cheaper one by default

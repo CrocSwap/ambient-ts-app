@@ -9,14 +9,14 @@ export const ClearButton = styled.button`
     display: flex;
     align-items: center;
     box-shadow: 2px 1000px 1px var(--dark2) inset;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 
     height: 23px;
     padding: 5px 8px;
     text-decoration: none;
     border-radius: 6.25rem;
     cursor: pointer;
-    font-size: 10px;
+    font-size: var(--mini-size);
     color: var(--text2);
 
     &:hover {
@@ -35,7 +35,7 @@ export const Row = styled(GridContainer)<{
     position: relative;
     width: 100%;
     min-height: 35px;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 
     padding: 0 8px;
     gap: 4px;
@@ -117,7 +117,7 @@ export const TransactionRow = styled(Row)`
                     minmax(85px, 1.5fr) minmax(45px, 1.3fr)
                     minmax(60px, 1fr) minmax(30px, 1fr)`
                 : size === 'medium'
-                ? `grid-template-columns: minmax(55px, 1.5fr)
+                ? `grid-template-columns: minmax(100px, 1fr) minmax(55px, 1.5fr)
                         minmax(85px, 1.5fr) minmax(80px, 1.3fr)
                         minmax(80px, 1fr) minmax(80px, 1.4fr) minmax(90px, 1.6fr) minmax(30px, 25%)`
                 : `grid-template-columns:
@@ -130,10 +130,10 @@ export const TransactionRow = styled(Row)`
                     minmax(90px, 1fr) minmax(5px, 1fr)`
             : size === 'medium'
             ? `grid-template-columns:
-                        minmax(100px, 1.5fr) minmax(80px, 1.3fr)
+                        minmax(100px, 1fr) minmax(100px, 1.5fr) minmax(80px, 1.3fr)
                         minmax(80px, 1fr) minmax(80px, 1.4fr) minmax(90px, 1.6fr) minmax(78px, 25%)`
             : `grid-template-columns:
-            minmax(80px, 1fr) minmax(90px, 1fr) minmax(80px, 1fr)
+            minmax(80px, 1fr) minmax(90px, 1fr) minmax(100px, 1fr)
                         minmax(80px, 1fr) minmax(64px, 1.5fr) minmax(65px, 1.3fr) minmax(80px,1.7fr)
                         minmax(86px, 2.2fr) minmax(80px, 2.2fr) minmax(100px, 20%)`};
 `;
@@ -289,7 +289,7 @@ export const ViewMoreButton = styled.button`
     border: none;
     outline: none;
     box-shadow: 2px 1000px 1px var(--dark2) inset;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
     white-space: nowrap;
     height: 23px;
     padding: 1px 12px;

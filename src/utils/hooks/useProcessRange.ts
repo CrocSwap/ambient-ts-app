@@ -15,6 +15,7 @@ export const useProcessRange = (
     position: PositionIF,
     account = '',
     isAccountView?: boolean,
+    fetchedEnsAddress?: string,
 ) => {
     const blockExplorer = getChainExplorer(position.chainId);
 
@@ -26,17 +27,11 @@ export const useProcessRange = (
 
     const tokenAAddress = position.base;
     const tokenBAddress = position.quote;
-    // const tokenAAddress = tradeData.tokenA.address;
-    // const tokenBAddress = tradeData.tokenB.address;
 
     const isBaseTokenMoneynessGreaterOrEqual = useMemo(
         () =>
-            getMoneynessRank(
-                position.base.toLowerCase() + '_' + position.chainId,
-            ) -
-                getMoneynessRank(
-                    position.quote.toLowerCase() + '_' + position.chainId,
-                ) >=
+            getMoneynessRank(position.baseSymbol) -
+                getMoneynessRank(position.quoteSymbol) >=
             0,
         [position.base, position.base, position.chainId],
     );
@@ -70,7 +65,12 @@ export const useProcessRange = (
     const apyClassname = apy > 0 ? 'apy_positive' : 'apy_negative';
     const isAmbient = position.positionType === 'ambient';
 
-    const ensName = position.ensResolution ? position.ensResolution : null;
+    const ensName = fetchedEnsAddress
+        ? fetchedEnsAddress
+        : position.ensResolution
+        ? position.ensResolution
+        : null;
+
     const ownerId = position.user ? getAddress(position.user) : position.user;
 
     const isOwnerActiveAccount =
@@ -87,21 +87,14 @@ export const useProcessRange = (
             position.poolIdx,
         );
     } else {
-        posHash =
-            position.user &&
-            position.base &&
-            position.quote &&
-            position.bidTick &&
-            position.askTick
-                ? concPosSlot(
-                      position.user,
-                      position.base,
-                      position.quote,
-                      position.bidTick,
-                      position.askTick,
-                      position.poolIdx,
-                  ).toString()
-                : '…';
+        posHash = concPosSlot(
+            position.user ?? '',
+            position.base ?? '',
+            position.quote ?? '',
+            position.bidTick ?? 0,
+            position.askTick ?? 0,
+            position.poolIdx ?? 0,
+        ).toString();
     }
 
     // -----------------------------POSITIONS RANGE--------------------
@@ -202,7 +195,7 @@ export const useProcessRange = (
         ? ensName.length > 16
             ? trimString(ensName, 11, 3, '…')
             : ensName
-        : trimString(ownerId, 5, 4, '…');
+        : trimString(ownerId, 6, 4, '…');
 
     const posHashTruncated = trimString(posHash.toString(), 9, 0, '…');
 

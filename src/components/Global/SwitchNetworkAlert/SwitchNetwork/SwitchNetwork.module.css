@@ -14,7 +14,7 @@
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 }
 
 .modal_container {
@@ -84,7 +84,7 @@
     width: 100%;
     display: flex;
     justify-content: center;
-    font-size: 18px;
+    font-size: var(--header2-size);
     line-height: 22.5px;
     font-weight: 300;
     text-align: center;

@@ -32,12 +32,13 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 import { FlexContainer, Text } from '../../../../styled/Common';
-import Button from '../../../Global/Button/Button';
-import CurrencySelector from '../CurrencySelector';
+import Button from '../../../Form/Button';
+import CurrencySelector from '../../../Form/CurrencySelector';
 import {
     SVGContainer,
     MaxButton,
 } from '../../../../styled/Components/Portfolio';
+import { useApprove } from '../../../../App/functions/approve';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -59,18 +60,29 @@ export default function Deposit(props: propsIF) {
         selectedTokenDecimals,
         setTokenModalOpen = () => null,
     } = props;
-    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const {
+        crocEnv,
+        ethMainnetUsdPrice,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
+    const { approve, isApprovalPending } = useApprove();
 
     const dispatch = useAppDispatch();
 
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
-    const amountToReduceEth = BigNumber.from(25).mul('1000000000000000'); // .025 ETH
+    const amountToReduceEthMainnet = BigNumber.from(50).mul('100000000000000'); // .005 ETH
+    const amountToReduceEthScroll = BigNumber.from(3).mul('100000000000000'); // .0003 ETH
+
+    const amountToReduceEth =
+        chainId === '0x82750' || chainId === '0x8274f'
+            ? amountToReduceEthScroll
+            : amountToReduceEthMainnet;
 
     const tokenWalletBalanceAdjustedNonDisplayString =
         isTokenEth && !!tokenWalletBalance
@@ -129,34 +141,29 @@ export default function Deposit(props: propsIF) {
     );
 
     const isWalletBalanceSufficientToCoverGas = useMemo(() => {
-        if (selectedToken.address !== ZERO_ADDRESS) {
+        if (selectedToken.address !== ZERO_ADDRESS || !depositQtyNonDisplay) {
             return true;
         }
         return tokenWalletBalance
-            ? BigNumber.from(tokenWalletBalance).gt(amountToReduceEth)
+            ? BigNumber.from(tokenWalletBalance).gte(
+                  amountToReduceEth.add(BigNumber.from(depositQtyNonDisplay)),
+              )
             : false;
-    }, [tokenWalletBalance, amountToReduceEth]);
+    }, [tokenWalletBalance, amountToReduceEth, depositQtyNonDisplay]);
 
     const isWalletBalanceSufficientToCoverDeposit = useMemo(
         () =>
-            tokenWalletBalanceAdjustedNonDisplayString && isDepositQtyValid
-                ? BigNumber.from(
-                      tokenWalletBalanceAdjustedNonDisplayString,
-                  ).gte(BigNumber.from(depositQtyNonDisplay))
-                : tokenWalletBalanceAdjustedNonDisplayString &&
-                  BigNumber.from(
-                      tokenWalletBalanceAdjustedNonDisplayString,
-                  ).gte(BigNumber.from(0))
+            tokenWalletBalance && isDepositQtyValid
+                ? BigNumber.from(tokenWalletBalance).gte(
+                      BigNumber.from(depositQtyNonDisplay),
+                  )
+                : tokenWalletBalance &&
+                  BigNumber.from(tokenWalletBalance).gte(BigNumber.from(0))
                 ? true
                 : false,
-        [
-            tokenWalletBalanceAdjustedNonDisplayString,
-            isDepositQtyValid,
-            depositQtyNonDisplay,
-        ],
+        [tokenWalletBalance, isDepositQtyValid, depositQtyNonDisplay],
     );
 
-    const [isApprovalPending, setIsApprovalPending] = useState(false);
     const [isDepositPending, setIsDepositPending] = useState(false);
 
     useEffect(() => {
@@ -177,17 +184,17 @@ export default function Deposit(props: propsIF) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Approval Pending`);
-        } else if (!isWalletBalanceSufficientToCoverGas) {
-            setIsButtonDisabled(true);
-            setIsCurrencyFieldDisabled(false);
-            setButtonMessage(
-                `${selectedToken.symbol} Wallet Balance Insufficient To Cover Gas`,
-            );
         } else if (!isWalletBalanceSufficientToCoverDeposit) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(false);
             setButtonMessage(
                 `${selectedToken.symbol} Wallet Balance Insufficient to Cover Deposit`,
+            );
+        } else if (!isWalletBalanceSufficientToCoverGas) {
+            setIsButtonDisabled(true);
+            setIsCurrencyFieldDisabled(false);
+            setButtonMessage(
+                `${selectedToken.symbol} Wallet Balance Insufficient To Cover Gas`,
             );
         } else if (!isTokenAllowanceSufficient) {
             setIsButtonDisabled(false);
@@ -292,66 +299,12 @@ export default function Deposit(props: propsIF) {
         if (depositQtyNonDisplay) await deposit(depositQtyNonDisplay);
     };
 
-    const approve = async (tokenAddress: string) => {
-        if (!crocEnv) return;
-        try {
-            setIsApprovalPending(true);
-            const tx = await crocEnv.token(tokenAddress).approve();
-            if (tx) dispatch(addPendingTx(tx?.hash));
-            if (tx?.hash)
-                dispatch(
-                    addTransactionByType({
-                        txHash: tx.hash,
-                        txType: 'Approve',
-                        txDescription: `Approval of ${selectedToken.symbol}`,
-                    }),
-                );
-            let receipt;
-            try {
-                if (tx) receipt = await tx.wait();
-            } catch (e) {
-                const error = e as TransactionError;
-                console.error({ error });
-                // The user used "speed up" or something similar
-                // in their client, but we now have the updated info
-                if (isTransactionReplacedError(error)) {
-                    IS_LOCAL_ENV && 'repriced';
-                    dispatch(removePendingTx(error.hash));
-
-                    const newTransactionHash = error.replacement.hash;
-                    dispatch(addPendingTx(newTransactionHash));
-                    dispatch(
-                        updateTransactionHash({
-                            oldHash: error.hash,
-                            newHash: error.replacement.hash,
-                        }),
-                    );
-
-                    IS_LOCAL_ENV && { newTransactionHash };
-                    receipt = error.receipt;
-                } else if (isTransactionFailedError(error)) {
-                    console.error({ error });
-                    receipt = error.receipt;
-                }
-            }
-
-            if (receipt) {
-                dispatch(addReceipt(JSON.stringify(receipt)));
-                dispatch(removePendingTx(receipt.transactionHash));
-            }
-        } catch (error) {
-            if (error.reason === 'sending a transaction requires a signer') {
-                location.reload();
-            }
-            console.error({ error });
-        } finally {
-            setIsApprovalPending(false);
-            setRecheckTokenAllowance(true);
-        }
-    };
-
     const approvalFn = async () => {
-        await approve(selectedToken.address);
+        await approve(
+            selectedToken.address,
+            selectedToken.symbol,
+            setRecheckTokenAllowance,
+        );
     };
 
     const resetDepositQty = () => {
@@ -425,25 +378,30 @@ export default function Deposit(props: propsIF) {
                     {tokenWalletBalance !== '0' && (
                         <MaxButton
                             onClick={handleBalanceClick}
-                            disabled={!isWalletBalanceSufficientToCoverDeposit}
+                            disabled={false}
                         >
                             Max
                         </MaxButton>
                     )}
                 </FlexContainer>
-                <FlexContainer
-                    alignItems='center'
-                    justifyContent='flex-end'
-                    color='text2'
-                    fontSize='body'
-                >
-                    <SVGContainer>
-                        <FaGasPump size={12} />
-                    </SVGContainer>
-                    {depositGasPriceinDollars ? depositGasPriceinDollars : '…'}
-                </FlexContainer>
+                {chainId === '0x1' && (
+                    <FlexContainer
+                        alignItems='center'
+                        justifyContent='flex-end'
+                        color='text2'
+                        fontSize='body'
+                    >
+                        <SVGContainer>
+                            <FaGasPump size={12} />
+                        </SVGContainer>
+                        {depositGasPriceinDollars
+                            ? depositGasPriceinDollars
+                            : '…'}
+                    </FlexContainer>
+                )}
             </FlexContainer>
             <Button
+                idForDOM='deposit_tokens_button'
                 title={buttonMessage}
                 action={() => {
                     !isTokenAllowanceSufficient ? approvalFn() : depositFn();

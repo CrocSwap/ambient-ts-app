@@ -14,41 +14,44 @@ import { TradeTokenContextProvider } from './TradeTokenContext';
 import { UserDataContextProvider } from './UserDataContext';
 import { UserPreferenceContextProvider } from './UserPreferenceContext';
 import { ExploreContextProvider } from './ExploreContext';
+import { ENSAddressContextProvider } from './ENSAddressContext';
 
 export const GlobalContexts = (props: { children: React.ReactNode }) => {
     return (
         <AppStateContextProvider>
-            <CachedDataContextProvider>
-                <CrocEnvContextProvider>
-                    <TokenContextProvider>
-                        <ChainDataContextProvider>
-                            <UserDataContextProvider>
-                                <ChartContextProvider>
-                                    <RangeContextProvider>
-                                        <TradeTokenContextProvider>
-                                            <PoolContextProvider>
-                                                <CandleContextProvider>
-                                                    <TradeTableContextProvider>
-                                                        <UserPreferenceContextProvider>
-                                                            <SidebarContextProvider>
-                                                                <ExploreContextProvider>
-                                                                    {
-                                                                        props.children
-                                                                    }
-                                                                </ExploreContextProvider>
-                                                            </SidebarContextProvider>
-                                                        </UserPreferenceContextProvider>
-                                                    </TradeTableContextProvider>
-                                                </CandleContextProvider>
-                                            </PoolContextProvider>
-                                        </TradeTokenContextProvider>
-                                    </RangeContextProvider>
-                                </ChartContextProvider>
-                            </UserDataContextProvider>
-                        </ChainDataContextProvider>
-                    </TokenContextProvider>
-                </CrocEnvContextProvider>
-            </CachedDataContextProvider>
+            <ENSAddressContextProvider>
+                <CachedDataContextProvider>
+                    <CrocEnvContextProvider>
+                        <TokenContextProvider>
+                            <ChainDataContextProvider>
+                                <UserDataContextProvider>
+                                    <ChartContextProvider>
+                                        <RangeContextProvider>
+                                            <TradeTokenContextProvider>
+                                                <PoolContextProvider>
+                                                    <CandleContextProvider>
+                                                        <TradeTableContextProvider>
+                                                            <UserPreferenceContextProvider>
+                                                                <SidebarContextProvider>
+                                                                    <ExploreContextProvider>
+                                                                        {
+                                                                            props.children
+                                                                        }
+                                                                    </ExploreContextProvider>
+                                                                </SidebarContextProvider>
+                                                            </UserPreferenceContextProvider>
+                                                        </TradeTableContextProvider>
+                                                    </CandleContextProvider>
+                                                </PoolContextProvider>
+                                            </TradeTokenContextProvider>
+                                        </RangeContextProvider>
+                                    </ChartContextProvider>
+                                </UserDataContextProvider>
+                            </ChainDataContextProvider>
+                        </TokenContextProvider>
+                    </CrocEnvContextProvider>
+                </CachedDataContextProvider>
+            </ENSAddressContextProvider>
         </AppStateContextProvider>
     );
 };

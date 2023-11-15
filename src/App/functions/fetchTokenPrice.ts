@@ -1,27 +1,49 @@
-import Moralis from 'moralis';
-import { EvmChain } from '@moralisweb3/common-evm-utils';
+/* eslint-disable camelcase */
 
 import { memoizePromiseFn } from './memoizePromiseFn';
 const randomNum = Math.random();
+import { ANALYTICS_URL } from '../../constants';
+import { translateTestnetToken } from '../../utils/data/testnetTokenMap';
+import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { supportedNetworks } from '../../utils/networks';
 
 export const fetchTokenPrice = async (
-    address: string,
-    chainId: string,
+    dispToken: string,
+    chain: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _lastTime: number,
 ) => {
-    const chain = chainId === '0x1' ? EvmChain.ETHEREUM : EvmChain.ETHEREUM;
+    const address = translateTestnetToken(dispToken);
+
+    const defaultPair: [TokenIF, TokenIF] =
+        supportedNetworks[chain].defaultPair;
 
     try {
-        if (address && chain) {
-            const response = await Moralis.EvmApi.token.getTokenPrice({
-                address,
-                chain,
-            });
+        if (address) {
+            if (
+                address.toLowerCase() === defaultPair[1].address.toLowerCase()
+            ) {
+                return {
+                    usdPrice: 0.9995309916951084,
+                    usdPriceFormatted: 1,
+                };
+            }
 
-            const result = response?.result;
-
-            return result;
+            const response = await fetch(
+                ANALYTICS_URL +
+                    new URLSearchParams({
+                        service: 'run',
+                        config_path: 'price',
+                        include_data: '0',
+                        token_address: address,
+                        asset_platform:
+                            chain === '0x82750' || chain === '0x8274f'
+                                ? 'scroll'
+                                : 'ethereum',
+                    }),
+            );
+            const result = await response.json();
+            return result?.value;
         }
     } catch (error) {
         return undefined;

@@ -7,7 +7,7 @@
     width: 100%;
 
     /* dark/tertiary */
-    border-radius: 4px;
+    border-radius: var(--border-radius);
 
     /* Inside auto layout */
     flex: none;
@@ -28,7 +28,7 @@
 
     /* dark/tertiary */
     background: var(--dark2);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
 
     /* Inside auto layout */
     flex: none;
@@ -62,7 +62,7 @@
     width: 97%;
     height: 25px;
     background: var(--dark3);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     flex: none;
     flex-grow: 0;
     position: relative;
@@ -79,7 +79,7 @@
     width: 97%;
     height: 25px;
     background: var(--dark3);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     flex: none;
     flex-grow: 0;
     position: relative;
@@ -117,7 +117,7 @@
     font-style: normal;
     font-weight: 300;
     font-size: var(--body-size);
-    line-height: 15px;
+    line-height: var(--body-lh);
     display: flex;
     align-items: center;
     outline: none;
@@ -167,7 +167,7 @@
     font-style: normal;
     font-weight: 300;
     font-size: calc(1vw - 1px);
-    line-height: 15px;
+    line-height: var(--body-lh);
     display: flex;
     align-items: center;
     outline: none;
@@ -192,7 +192,7 @@
     font-style: normal;
     font-weight: 300;
     font-size: var(--body-size);
-    line-height: 15px;
+    line-height: var(--body-lh);
     display: flex;
     align-items: center;
     outline: none;
@@ -218,7 +218,7 @@
     font-style: normal;
     font-weight: 300;
     font-size: var(--body-size);
-    line-height: 15px;
+    line-height: var(--body-lh);
     display: flex;
     align-items: center;
     outline: none;
