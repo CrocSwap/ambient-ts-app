@@ -1,8 +1,7 @@
-import { useContext, useState, KeyboardEvent } from 'react';
+import { useState, KeyboardEvent } from 'react';
 import { FiAlertTriangle } from 'react-icons/fi';
 import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { FlexContainer, Text } from '../../../styled/Common';
 import { SettingsContainer } from '../../../styled/Components/TradeModules';
 import { isStablePair } from '../../../utils/data/stablePairs';
@@ -28,12 +27,9 @@ interface propsIF {
 
 export default function TransactionSettingsModal(props: propsIF) {
     const { module, slippage, onClose, bypassConfirm } = props;
-    const {
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
     const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
-    const isPairStable = isStablePair(tokenA.address, tokenB.address, chainId);
+    const isPairStable = isStablePair(tokenA.address, tokenB.address);
 
     const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>): void => {
         event.code === 'Enter' && updateSettings();
@@ -68,7 +64,6 @@ export default function TransactionSettingsModal(props: propsIF) {
                 flexDirection='column'
                 justifyContent='space-between'
                 gap={12}
-                background='dark1'
                 padding='16px'
             >
                 <section>
@@ -114,6 +109,7 @@ export default function TransactionSettingsModal(props: propsIF) {
                 </section>
                 <div style={{ padding: '0 16px' }}>
                     <Button
+                        idForDOM='update_settings_button'
                         title={
                             module === 'Limit Order'
                                 ? 'Submit Settings'

@@ -47,6 +47,7 @@ import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
 import PositionReset from '../components/Global/PositionReset/PositionReset';
 import Settings from '../pages/Settings/Settings';
+import ExampleForm from '../pages/InitPool/FormExample';
 
 /** ***** React Function *******/
 export default function App() {
@@ -240,7 +241,6 @@ export default function App() {
                                 <ChatPanel isFullScreen={true} appPage={true} />
                             }
                         />
-
                         <Route
                             path='chat/:params'
                             element={
@@ -253,7 +253,6 @@ export default function App() {
                             path='account/:address'
                             element={<Portfolio />}
                         />
-
                         <Route
                             path='swap'
                             element={
@@ -266,6 +265,12 @@ export default function App() {
                         <Route path='privacy' element={<PrivacyPolicy />} />
                         {IS_LOCAL_ENV && (
                             <Route path='testpage' element={<TestPage />} />
+                        )}
+                        {IS_LOCAL_ENV && (
+                            <Route
+                                path='template/form'
+                                element={<ExampleForm />}
+                            />
                         )}
                         <Route path='/:address' element={<Portfolio />} />
                         <Route path='/404' element={<NotFound />} />

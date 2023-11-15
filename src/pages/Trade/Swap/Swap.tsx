@@ -127,7 +127,6 @@ function Swap(props: propsIF) {
     const slippageTolerancePercentage = isStablePair(
         tokenA.address,
         tokenB.address,
-        chainId,
     )
         ? swapSlippage.stable
         : swapSlippage.volatile;
@@ -176,6 +175,18 @@ function Swap(props: propsIF) {
         },
     );
 
+    const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
+
+    // const amountToReduceEthMainnet = 0.01; // .01 ETH
+    const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
+        useState<number>(0.01);
+    const amountToReduceEthScroll = 0.0003; // .0003 ETH
+
+    const amountToReduceEth =
+        chainId === '0x82750' || chainId === '0x8274f'
+            ? amountToReduceEthScroll
+            : amountToReduceEthMainnet;
+
     useEffect(() => {
         if (isSellLoading || isBuyLoading) {
             setSwapAllowed(false);
@@ -207,6 +218,15 @@ function Swap(props: propsIF) {
                 setSwapButtonErrorMessage(
                     `${tokenA.symbol} Amount Exceeds ${balanceLabel} Balance`,
                 );
+            } else if (
+                isSellTokenNativeToken &&
+                tokenAQtyCoveredByWalletBalance + amountToReduceEth >
+                    parseFloat(tokenABalance)
+            ) {
+                setSwapAllowed(false);
+                setSwapButtonErrorMessage(
+                    'Wallet Balance Insufficient to Cover Gas',
+                );
             } else {
                 setSwapAllowed(true);
             }
@@ -225,13 +245,14 @@ function Swap(props: propsIF) {
         isWithdrawFromDexChecked,
         isBuyLoading,
         isSellLoading,
+        isSellTokenNativeToken,
+        tokenABalance,
+        tokenAQtyCoveredByWalletBalance,
     ]);
 
     useEffect(() => {
         setNewSwapTransactionHash('');
     }, [baseToken.address + quoteToken.address]);
-
-    const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
 
     // calculate price of gas for swap
     useEffect(() => {
@@ -249,6 +270,11 @@ function Swap(props: propsIF) {
                 : isSaveAsDexSurplusChecked
                 ? 105000
                 : 110000;
+
+            const costOfMainnetSwapInETH =
+                gasPriceInGwei * averageSwapCostInGasDrops * 1e-9;
+
+            setAmountToReduceEthMainnet(1.75 * costOfMainnetSwapInETH);
 
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
@@ -462,6 +488,7 @@ function Swap(props: propsIF) {
             }
             input={
                 <SwapTokenInput
+                    isLiquidityInsufficient={isLiquidityInsufficient}
                     setIsLiquidityInsufficient={setIsLiquidityInsufficient}
                     slippageTolerancePercentage={slippageTolerancePercentage}
                     setPriceImpact={setPriceImpact}
@@ -485,6 +512,7 @@ function Swap(props: propsIF) {
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     setSwapAllowed={setSwapAllowed}
                     toggleDexSelection={toggleDexSelection}
+                    amountToReduceEth={amountToReduceEth}
                 />
             }
             transactionDetails={
@@ -528,6 +556,7 @@ function Swap(props: propsIF) {
             }
             button={
                 <Button
+                    idForDOM='confirm_swap_button'
                     title={
                         areBothAckd
                             ? bypassConfirmSwap.isEnabled
@@ -576,6 +605,7 @@ function Swap(props: propsIF) {
                 parseFloat(sellQtyString) > 0 &&
                 sellQtyString !== 'Infinity' ? (
                     <Button
+                        idForDOM='approve_token_a_for_swap_module'
                         title={
                             !isApprovalPending
                                 ? `Approve ${tokenA.symbol}`
@@ -592,7 +622,9 @@ function Swap(props: propsIF) {
             warnings={
                 priceImpactWarning || liquidityInsufficientWarning ? (
                     <>
-                        {priceImpactWarning && priceImpactWarning}
+                        {priceImpactWarning &&
+                            sellQtyString !== '' &&
+                            priceImpactWarning}
                         {liquidityInsufficientWarning &&
                             liquidityInsufficientWarning}
                     </>

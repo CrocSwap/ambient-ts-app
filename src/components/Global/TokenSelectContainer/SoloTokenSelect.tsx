@@ -20,12 +20,11 @@ import { ethers } from 'ethers';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { handleWETH } from '../../../utils/data/handleWETH';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import removeWrappedNative from '../../../utils/functions/removeWrappedNative';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
-import { supportedNetworks } from '../../../utils/networks';
 import { IoIosArrowBack } from 'react-icons/io';
+import { isWethToken } from '../../../utils/data/stablePairs';
 
 interface propsIF {
     showSoloSelectTokenButtons: boolean;
@@ -253,13 +252,12 @@ export const SoloTokenSelect = (props: propsIF) => {
     // arbitrary limit on number of tokens to display in DOM for performance
     const MAX_TOKEN_COUNT = 300;
 
-    const isInit = location.pathname.startsWith('/initpool');
+    const WETH_WARNING = ' Ambient uses Native Ether (ETH) to lower gas costs.';
+
+    // const isInit = location.pathname.startsWith('/initpool');
 
     return (
-        <section
-            className={styles.container}
-            style={{ margin: isInit ? '0 -1rem' : '' }}
-        >
+        <section className={styles.container}>
             <header className={styles.header}>
                 <IoIosArrowBack onClick={clearInputFieldAndCloseModal} />
                 <p>Select Token</p>
@@ -291,22 +289,22 @@ export const SoloTokenSelect = (props: propsIF) => {
                 )}
             </div>
             <div style={{ padding: '1rem' }}>
-                {handleWETH.check(validatedInput) && (
+                {isWethToken(validatedInput) && (
                     <WarningBox
                         title=''
-                        details={handleWETH.message}
+                        details={WETH_WARNING}
                         noBackground
                         button={
                             <button
                                 onClick={() => {
                                     try {
-                                        chooseToken(
+                                        const wethToken =
                                             tokens.getTokenByAddress(
-                                                supportedNetworks[chainId]
-                                                    .tokens.WETH,
-                                            ) as TokenIF,
-                                            false,
-                                        );
+                                                validatedInput,
+                                            );
+                                        if (wethToken) {
+                                            chooseToken(wethToken, false);
+                                        }
                                     } catch (err) {
                                         IS_LOCAL_ENV && console.warn(err);
                                         onClose();
@@ -319,7 +317,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                     />
                 )}
             </div>
-            {handleWETH.check(validatedInput) &&
+            {isWethToken(validatedInput) &&
                 [tokens.getTokenByAddress(ZERO_ADDRESS) as TokenIF].map(
                     (token: TokenIF) => (
                         <TokenSelect

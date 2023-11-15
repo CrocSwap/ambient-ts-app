@@ -7,6 +7,7 @@ export function useRangeInputDisable(
     defaultLowTick: number,
     defaultHighTick: number,
     isDenomBase: boolean,
+    isMintLiqEnabled = true,
 ) {
     const [isTokenAInputDisabled, setIsTokenAInputDisabled] = useState(false);
     const [isTokenBInputDisabled, setIsTokenBInputDisabled] = useState(false);
@@ -14,14 +15,17 @@ export function useRangeInputDisable(
     // TODO: this logic can likely be simplified
     // Or at least made more readable
     useEffect(() => {
-        if (!isAmbient) {
+        if (!isMintLiqEnabled) {
+            setIsTokenAInputDisabled(true);
+            setIsTokenBInputDisabled(true);
+        } else if (!isAmbient) {
             if (isTokenABase) {
-                if (defaultHighTick < currentPoolPriceTick) {
+                if (defaultHighTick <= currentPoolPriceTick) {
                     setIsTokenBInputDisabled(true);
                     if (defaultHighTick > defaultLowTick) {
                         setIsTokenAInputDisabled(false);
                     } else setIsTokenAInputDisabled(true);
-                } else if (defaultLowTick > currentPoolPriceTick) {
+                } else if (defaultLowTick >= currentPoolPriceTick) {
                     setIsTokenAInputDisabled(true);
                     if (defaultLowTick < defaultHighTick) {
                         setIsTokenBInputDisabled(false);
@@ -31,12 +35,12 @@ export function useRangeInputDisable(
                     setIsTokenBInputDisabled(false);
                 }
             } else {
-                if (defaultHighTick < currentPoolPriceTick) {
+                if (defaultHighTick <= currentPoolPriceTick) {
                     setIsTokenAInputDisabled(true);
                     if (defaultHighTick > defaultLowTick) {
                         setIsTokenBInputDisabled(false);
                     } else setIsTokenBInputDisabled(true);
-                } else if (defaultLowTick > currentPoolPriceTick) {
+                } else if (defaultLowTick >= currentPoolPriceTick) {
                     setIsTokenBInputDisabled(true);
                     if (defaultLowTick < defaultHighTick) {
                         setIsTokenAInputDisabled(false);
@@ -57,6 +61,7 @@ export function useRangeInputDisable(
         defaultLowTick,
         defaultHighTick,
         isDenomBase,
+        isMintLiqEnabled,
     ]);
     return {
         isTokenAInputDisabled,

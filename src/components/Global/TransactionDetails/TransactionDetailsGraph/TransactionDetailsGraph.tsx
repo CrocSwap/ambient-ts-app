@@ -18,8 +18,6 @@ import {
     setCanvasResolution,
 } from '../../../../pages/Chart/ChartUtils/chartUtils';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
-import { supportedNetworks } from '../../../../utils/networks';
-import { getMainnetAddress } from '../../../../utils/functions/getMainnetAddress';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -38,7 +36,7 @@ export default function TransactionDetailsGraph(
         isBaseTokenMoneynessGreaterOrEqual,
         isAccountView,
     } = props;
-    const { chainData, crocEnv } = useContext(CrocEnvContext);
+    const { chainData, crocEnv, activeNetwork } = useContext(CrocEnvContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const oneHourMiliseconds = 60 * 60 * 1000;
 
@@ -54,15 +52,6 @@ export default function TransactionDetailsGraph(
 
     const tradeData = useAppSelector((state) => state.tradeData);
     const denominationsInBase = tradeData.isDenomBase;
-
-    const mainnetBaseTokenAddress = getMainnetAddress(
-        baseTokenAddress,
-        supportedNetworks[tx.chainId],
-    );
-    const mainnetQuoteTokenAddress = getMainnetAddress(
-        quoteTokenAddress,
-        supportedNetworks[tx.chainId],
-    );
 
     const [graphData, setGraphData] = useState<any>();
 
@@ -103,9 +92,7 @@ export default function TransactionDetailsGraph(
         chainData &&
         isServerEnabled &&
         baseTokenAddress &&
-        quoteTokenAddress &&
-        mainnetBaseTokenAddress &&
-        mainnetQuoteTokenAddress
+        quoteTokenAddress
     );
 
     const [isDataEmpty, setIsDataEmpty] = useState(false);
@@ -192,6 +179,7 @@ export default function TransactionDetailsGraph(
                         const graphData = await fetchCandleSeriesCroc(
                             fetchEnabled,
                             chainData,
+                            activeNetwork.graphCacheUrl,
                             period,
                             baseTokenAddress,
                             quoteTokenAddress,
@@ -1057,7 +1045,7 @@ export default function TransactionDetailsGraph(
 
     const chartRender = (
         <div
-            className='main_layout_chart'
+            className='transaction_details_graph'
             ref={graphMainDiv}
             data-testid={'chart'}
             style={{

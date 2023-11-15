@@ -49,13 +49,15 @@ import {
     TopPoolsIcon,
     TransactionsIcon,
 } from '../../../styled/Components/Sidebar';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 function Sidebar() {
     const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
         useContext(CachedDataContext);
     const { chainData: chainData } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
-    const { sidebar } = useContext(SidebarContext);
+    const { sidebar, toggleMobileModeVisibility, hideOnMobile } =
+        useContext(SidebarContext);
 
     const graphData = useAppSelector((state) => state.graphData);
 
@@ -91,7 +93,6 @@ function Sidebar() {
         {
             name: 'Top Pools',
             icon: <TopPoolsIcon open={sidebar.isOpen} size={20} />,
-
             data: (
                 <TopPools
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
@@ -103,7 +104,7 @@ function Sidebar() {
 
     const rangePositions = [
         {
-            name: 'Range Positions',
+            name: 'Liquidity Positions',
             icon: <RangesIcon open={sidebar.isOpen} size={20} />,
             data: <SidebarRangePositions userPositions={mostRecentPositions} />,
         },
@@ -176,6 +177,7 @@ function Sidebar() {
     // id for search input HTML elem in the DOM
     // defined in a const because we reference this multiple places
     const searchInputElementId = 'sidebar_search_input';
+    const smallScreen = useMediaQuery('(max-width: 500px)');
 
     const searchContainer = (
         <SearchContainer
@@ -255,6 +257,8 @@ function Sidebar() {
         setOpenAllDefault(!openAllDefault);
     };
 
+    // TODO: why are we using an `<input>` as a clickable to close the sidebar?
+
     const searchContainerDisplay = (
         <FlexContainer
             flexDirection='row'
@@ -275,11 +279,13 @@ function Sidebar() {
                         >
                             {isLocked ? (
                                 <AiFillLock
+                                    id='sidebar_is_locked_clickable'
                                     size={18}
                                     onClick={toggleLockSidebar}
                                 />
                             ) : (
                                 <AiFillUnlock
+                                    id='sidebar_is_unlocked_clickable'
                                     size={18}
                                     onClick={toggleLockSidebar}
                                 />
@@ -292,11 +298,13 @@ function Sidebar() {
                         >
                             {openAllDefault ? (
                                 <BsChevronContract
+                                    id='sidebar_expand_all_button'
                                     size={18}
                                     onClick={toggleExpandCollapseAll}
                                 />
                             ) : (
                                 <BsChevronExpand
+                                    id='sidebar_collapse_all_button'
                                     size={18}
                                     onClick={toggleExpandCollapseAll}
                                 />
@@ -312,10 +320,16 @@ function Sidebar() {
                             }
                         >
                             <input
+                                id='close_sidebar_button'
                                 type='image'
                                 src={closeSidebarImage}
                                 alt='close sidebar'
-                                onClick={() => sidebar.close(true)}
+                                onClick={() => {
+                                    sidebar.close(true);
+                                    if (smallScreen) {
+                                        toggleMobileModeVisibility();
+                                    }
+                                }}
                                 disabled={isLocked}
                                 style={{ opacity: isLocked ? 0.5 : 1 }}
                             />
@@ -406,6 +420,8 @@ function Sidebar() {
             ))}
         </ContentContainer>
     );
+
+    if (hideOnMobile) return null;
 
     return (
         <FlexContainer

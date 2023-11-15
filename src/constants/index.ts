@@ -1,18 +1,5 @@
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
-// temporary! fixing USD accounting on subgraph - open issue if urgent
-export const TOKEN_HIDE = [
-    '0xd46ba6d942050d489dbd938a2c909a5d5039a161',
-    '0x7dfb72a2aad08c937706f21421b15bfc34cba9ca',
-    '0x12b32f10a499bf40db334efe04226cca00bf2d9b',
-];
-export const POOL_HIDE = [
-    '0x86d257cdb7bc9c0df10e84c8709697f92770b335',
-    '0xf8dbd52488978a79dfe6ffbd81a01fc5948bf9ee',
-    '0x8fe8d9bb8eeba3ed688069c3d6b556c9ca258248',
-    '0xa850478adaace4c08fc61de44d8cf3b64f359bec',
-];
-
 // allow a local environment variable to be defined in [app_repo]/.env.local to set a name for dev environment
 // NOTE: we use 'main' for staging (testnet) and 'production' for mainnet app. All other names are treated as 'local'
 export type AppEnvironment = 'local' | 'testnet' | 'production';
@@ -28,20 +15,19 @@ export const IS_LOCAL_ENV = APP_ENVIRONMENT === 'local';
 
 export const ANALYTICS_URL =
     process.env.REACT_APP_ANALYTICS_URL ||
-    'https://crocswap-analytics-tools-service-dfxb5x3tja-uc.a.run.app/run?';
+    'https://ambindexer.net/analytics/run?';
 
-export const GRAPHCACHE_URL =
-    process.env.REACT_APP_GRAPHCACHE_URL || 'https://ambindexer.net';
+export const GCGO_ETHEREUM_URL =
+    process.env.REACT_APP_GCGO_ETHEREUM_URL || 'https://ambindexer.net/gcgo';
+export const GCGO_SCROLL_URL =
+    process.env.GCGO_SCROLL_URL || 'https://ambindexer.net/scroll-gcgo';
+export const GCGO_OVERRIDE_URL = process.env.REACT_APP_GCGO_OVERRIDE_URL;
 
-export const GRAPHCACHE_SMALL_URL =
-    process.env.REACT_APP_GRAPHCACHE_SMALL_URL || 'https://ambindexer.net/gcgo';
-
-export const GRAPHCACHE_WSS_URL =
-    process.env.REACT_APP_GRAPHCACHE_WSS_URL ||
-    GRAPHCACHE_URL.replace('http', 'ws');
+export const HISTORICAL_CANDLES_URL =
+    process.env.REACT_APP_HISTORICAL_CANDLES_URL || 'https://ambindexer.net';
 
 export const CHAT_BACKEND_URL =
-    process.env.REACT_APP_CHAT_URL || `${GRAPHCACHE_URL}`;
+    process.env.REACT_APP_CHAT_URL || `${HISTORICAL_CANDLES_URL}`;
 
 export const CHAT_BACKEND_WSS_URL =
     process.env.REACT_APP_CHAT_WSS_URL ||
@@ -51,6 +37,11 @@ export const CHAT_ENABLED =
     process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
         ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
         : true;
+
+export const INCLUDE_CANTO_LINK =
+    process.env.REACT_APP_INCLUDE_CANTO_LINK !== undefined
+        ? process.env.REACT_APP_INCLUDE_CANTO_LINK.toLowerCase() === 'true'
+        : false;
 
 export const DISABLE_INIT_SETTINGS =
     process.env.REACT_APP_DISABLE_INIT_SETTINGS !== undefined
@@ -66,6 +57,7 @@ export const GITHUB_LINK = 'https://github.com/CrocSwap';
 export const TWITTER_LINK = 'https://twitter.com/ambient_finance';
 export const DISCORD_LINK = 'https://discord.gg/ambient-finance';
 export const MEDIUM_LINK = 'https://crocswap.medium.com/';
+export const CORPORATE_LINK = 'https://www.crocswap.com/';
 
 export const OVERRIDE_CANDLE_POOL_ID = 36000;
 

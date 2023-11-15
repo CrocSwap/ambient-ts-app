@@ -30,7 +30,7 @@ import {
     TransactionError,
 } from '../../utils/TransactionError';
 import { isStablePair } from '../../utils/data/stablePairs';
-import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
+import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
@@ -83,6 +83,7 @@ export default function RangeActionModal(props: propsIF) {
     } = useContext(CachedDataContext);
     const {
         crocEnv,
+        activeNetwork,
         provider,
         chainData: { chainId, poolIndex },
         ethMainnetUsdPrice,
@@ -106,8 +107,9 @@ export default function RangeActionModal(props: propsIF) {
         (feeLiqBaseDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0) >
         0;
 
-    const positionStatsCacheEndpoint =
-        GRAPHCACHE_SMALL_URL + '/position_stats?';
+    const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/position_stats?'
+        : activeNetwork.graphCacheUrl + '/position_stats?';
 
     const dispatch = useAppDispatch();
 
@@ -343,7 +345,6 @@ export default function RangeActionModal(props: propsIF) {
     const isPairStable: boolean = isStablePair(
         baseTokenAddress,
         quoteTokenAddress,
-        chainId,
     );
 
     const persistedSlippage: number = isPairStable
@@ -622,6 +623,7 @@ export default function RangeActionModal(props: propsIF) {
         <div className={styles.button_container}>
             {showSettings ? (
                 <Button
+                    idForDOM='update_settings_button_in_range_modal'
                     title={
                         currentSlippage > 0
                             ? 'Confirm'
@@ -653,6 +655,7 @@ export default function RangeActionModal(props: propsIF) {
                 />
             ) : (
                 <Button
+                    idForDOM='harvest_remove_fees_modal_button'
                     title={
                         !(
                             (type === 'Remove'
@@ -716,6 +719,8 @@ export default function RangeActionModal(props: propsIF) {
                 <div className={styles.info_container}>
                     {type === 'Remove' && (
                         <RemoveRangeInfo
+                            baseTokenAddress={props.baseTokenAddress}
+                            quoteTokenAddress={props.quoteTokenAddress}
                             baseTokenSymbol={props.baseTokenSymbol}
                             quoteTokenSymbol={props.quoteTokenSymbol}
                             baseTokenLogoURI={props.baseTokenLogoURI}
@@ -740,6 +745,8 @@ export default function RangeActionModal(props: propsIF) {
                     )}
                     {type === 'Harvest' && (
                         <HarvestPositionInfo
+                            baseTokenAddress={props.baseTokenAddress}
+                            quoteTokenAddress={props.quoteTokenAddress}
                             baseTokenSymbol={props.baseTokenSymbol}
                             quoteTokenSymbol={props.quoteTokenSymbol}
                             baseTokenLogoURI={props.baseTokenLogoURI}
@@ -754,14 +761,16 @@ export default function RangeActionModal(props: propsIF) {
                             <span>Slippage Tolerange</span>
                             <span>{currentSlippage}%</span>
                         </div>
-                        <div>
-                            <span>Network Fee</span>
-                            <span>
-                                {chainId === '0x1'
-                                    ? '~' + removalGasPriceinDollars
-                                    : '...'}
-                            </span>
-                        </div>
+                        {chainId === '0x1' && (
+                            <div>
+                                <span>Network Fee</span>
+                                <span>
+                                    {removalGasPriceinDollars
+                                        ? '~' + removalGasPriceinDollars
+                                        : '...'}
+                                </span>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
