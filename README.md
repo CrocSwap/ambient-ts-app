@@ -6,6 +6,7 @@ Welcome to the Ambient Finance platform! Please [click here](https://ambient.fin
 # Table of Contents
 
 1. [Instructions for Use](#instructions)
+2. [Contributions](#contributions)
 
 [Back to Top](#top)
 <a id='instructions'></a>
@@ -38,7 +39,10 @@ Format: `REACT_APP_INFURA_KEY=*********************`
 Notes:
   * Please use your own Infura key for development purposes.
 
-### `Contributions` 
+[Back to Top](#top)
+<a id='instructions'></a>
+
+# Contributions
 
 Contributions are always welcome! Feel free to open a GitHub Issue or Pull Request.
 
