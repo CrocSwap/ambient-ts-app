@@ -35,6 +35,7 @@ interface propsIF {
     isSaveAsDexSurplusChecked: boolean;
     handleLimitButtonMessage: (val: number) => void;
     toggleDexSelection: (tokenAorB: 'A' | 'B') => void;
+    amountToReduceEth: number;
 }
 
 function LimitTokenInput(props: propsIF) {
@@ -46,6 +47,7 @@ function LimitTokenInput(props: propsIF) {
         isSaveAsDexSurplusChecked,
         handleLimitButtonMessage,
         toggleDexSelection,
+        amountToReduceEth,
     } = props;
 
     const {
@@ -222,6 +224,7 @@ function LimitTokenInput(props: propsIF) {
                     setTokenAInputQty(formatTokenInput(val, tokenA, isMax));
                 }}
                 showWallet={isUserConnected}
+                amountToReduceEth={amountToReduceEth}
             />
             <FlexContainer
                 fullWidth
