@@ -32,8 +32,8 @@ interface PropsIF {
     isTokenBAllowanceSufficient: boolean;
     isInitPending: boolean;
     initialPriceDisplay: string;
-    advancedHighTick: number;
-    advancedLowTick: number;
+    defaultLowTick: number;
+    defaultHighTick: number;
     selectedPoolPriceTick: number;
 }
 export default function InitButton(props: PropsIF) {
@@ -45,11 +45,6 @@ export default function InitButton(props: PropsIF) {
     const {
         tokenA,
         tokenB,
-        // eslint-disable-next-line
-        // tokenACollateral,
-        // tokenBCollateral,
-        // isTokenAInputDisabled,
-        // isWithdrawTokenAFromDexChecked,
         isMintLiqEnabled,
         tokenAAllowed,
         tokenBAllowed,
@@ -67,13 +62,14 @@ export default function InitButton(props: PropsIF) {
         isTokenBAllowanceSufficient,
         initialPriceDisplay,
         isInitPending,
-        advancedHighTick,
-        advancedLowTick,
+        defaultLowTick,
+        defaultHighTick,
         selectedPoolPriceTick,
     } = props;
 
     const tokenAApprovalButton = (
         <Button
+            idForDOM='approve_token_A_button'
             title={
                 !isApprovalPending
                     ? `Approve ${tokenA.symbol}`
@@ -89,6 +85,7 @@ export default function InitButton(props: PropsIF) {
 
     const tokenBApprovalButton = (
         <Button
+            idForDOM='approve_token_b_for_init_page'
             title={
                 !isApprovalPending
                     ? `Approve ${tokenB.symbol}`
@@ -112,6 +109,7 @@ export default function InitButton(props: PropsIF) {
             : 'Confirm';
         return (
             <Button
+                idForDOM='confirm_new_pool_button'
                 title={title}
                 disabled={disabled}
                 action={() => setActiveContent('confirmation')}
@@ -132,6 +130,7 @@ export default function InitButton(props: PropsIF) {
 
     const poolExistsButton = (
         <Button
+            idForDOM='pool_already_initialized_button'
             title='Pool Already Initialized'
             disabled={true}
             action={() => {
@@ -143,6 +142,7 @@ export default function InitButton(props: PropsIF) {
 
     const enterInitialPriceButton = (
         <Button
+            idForDOM='enter_initial_price_button'
             title='Enter an Initial Price'
             disabled={true}
             action={() => {
@@ -154,6 +154,7 @@ export default function InitButton(props: PropsIF) {
 
     const initializationPendingButton = (
         <Button
+            idForDOM='initialization_pending_button'
             title='Initialization Pending'
             disabled={true}
             action={() => {
@@ -165,6 +166,7 @@ export default function InitButton(props: PropsIF) {
 
     const invalidRangeButton = (
         <Button
+            idForDOM='invalid_range_indicated_button'
             title='Invalid range'
             disabled={true}
             action={() => {
@@ -201,11 +203,12 @@ export default function InitButton(props: PropsIF) {
             }
 
             if (
-                (advancedHighTick === 0 &&
-                    advancedLowTick === 0 &&
+                isMintLiqEnabled &&
+                ((defaultHighTick === 0 &&
+                    defaultLowTick === 0 &&
                     selectedPoolPriceTick === 0) ||
-                (advancedHighTick <= advancedLowTick &&
-                    !(advancedHighTick === 0 && advancedLowTick === 0))
+                    (defaultHighTick <= defaultLowTick &&
+                        !(defaultHighTick === 0 && defaultLowTick === 0)))
             ) {
                 return invalidRangeButton;
             }
@@ -215,6 +218,7 @@ export default function InitButton(props: PropsIF) {
 
         return (
             <Button
+                idForDOM='connect_wallet_init_page_button'
                 title='Connect Wallet'
                 action={openWagmiModalWallet}
                 flat={true}

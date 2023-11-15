@@ -10,7 +10,7 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import OrderDetailsSimplify from '../OrderDetailsSimplify/OrderDetailsSimplify';
 import TransactionDetailsGraph from '../../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
-import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../../constants';
+import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { LimitOrderServerIF } from '../../../utils/interfaces/LimitOrderIF';
 import { getLimitOrderData } from '../../../App/functions/getLimitOrderData';
@@ -48,7 +48,7 @@ export default function OrderDetailsModal(props: propsIF) {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const { crocEnv, provider } = useContext(CrocEnvContext);
+    const { crocEnv, activeNetwork, provider } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
@@ -103,8 +103,9 @@ export default function OrderDetailsModal(props: propsIF) {
     const isFillStarted = isLimitOrderPartiallyFilled || isOrderFilled;
 
     useEffect(() => {
-        const positionStatsCacheEndpoint =
-            GRAPHCACHE_SMALL_URL + '/limit_stats?';
+        const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
+            ? GCGO_OVERRIDE_URL + '/limit_stats?'
+            : activeNetwork.graphCacheUrl + '/limit_stats?';
 
         const poolIndex = lookupChain(chainId).poolIndex;
         if (positionType && crocEnv && provider) {

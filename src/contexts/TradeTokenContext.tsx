@@ -49,6 +49,7 @@ interface TradeTokenContextIF {
     setRecheckTokenAApproval: (val: boolean) => void;
     setRecheckTokenBApproval: (val: boolean) => void;
     isTokenABase: boolean;
+    rtkMatchesParams: boolean;
 }
 
 export const TradeTokenContext = createContext<TradeTokenContextIF>(
@@ -67,7 +68,8 @@ export const TradeTokenContextProvider = (props: {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const { crocEnv, chainData, provider } = useContext(CrocEnvContext);
+    const { crocEnv, chainData, provider, activeNetwork } =
+        useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { isEnabled: isChartEnabled } = useContext(ChartContext);
     const { setSimpleRangeWidth } = useContext(RangeContext);
@@ -93,8 +95,10 @@ export const TradeTokenContextProvider = (props: {
         baseTokenDecimals,
         quoteTokenDecimals,
         isTokenABase,
+        rtkMatchesParams,
     } = usePoolMetadata({
         crocEnv,
+        graphCacheUrl: activeNetwork.graphCacheUrl,
         provider,
         pathname: location.pathname,
         chainData,
@@ -183,6 +187,7 @@ export const TradeTokenContextProvider = (props: {
         setRecheckTokenAApproval,
         setRecheckTokenBApproval,
         isTokenABase,
+        rtkMatchesParams,
     };
 
     // useEffect to update selected token balances

@@ -402,6 +402,7 @@ export default function Withdraw(props: propsIF) {
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}
             <Button
+                idForDOM='withdraw_tokens_button'
                 title={buttonMessage}
                 action={withdrawFn}
                 disabled={isButtonDisabled}
