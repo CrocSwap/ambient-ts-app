@@ -252,13 +252,10 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     const WETH_WARNING = ' Ambient uses Native Ether (ETH) to lower gas costs.';
 
-    const isInit = location.pathname.startsWith('/initpool');
+    // const isInit = location.pathname.startsWith('/initpool');
 
     return (
-        <section
-            className={styles.container}
-            style={{ margin: isInit ? '0 -1rem' : '' }}
-        >
+        <section className={styles.container}>
             <header className={styles.header}>
                 <IoIosArrowBack onClick={clearInputFieldAndCloseModal} />
                 <p>Select Token</p>

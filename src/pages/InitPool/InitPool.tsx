@@ -1643,6 +1643,7 @@ export default function InitPool() {
                 flexDirection='column'
                 gap={8}
                 justifyContent='space-between'
+                height='99%'
             >
                 {simpleTokenSelect}
                 {initPriceContainer}
@@ -1654,6 +1655,7 @@ export default function InitPool() {
                 padding='0 8px'
                 flexDirection='column'
                 justifyContent='space-between'
+                height='99%'
             >
                 <FlexContainer flexDirection='column' gap={8}>
                     {!showMobileVersion && mintInitialLiquidity}
