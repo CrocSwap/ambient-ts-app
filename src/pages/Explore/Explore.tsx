@@ -88,7 +88,7 @@ const MainWrapper = styled.div`
 const TitleText = styled.h2`
     /* Responsive font size for smaller screens */
     @media (max-width: 768px) {
-        font-size: 24px;
+        font-size: var(--header1-size);
     }
 
     /* Responsive font size for even smaller screens */
@@ -100,7 +100,7 @@ const Refresh = styled.div`
     display: flex;
     flex-direction: row;
     align-items: center;
-    font-size: 12px;
+    font-size: var(--body-size);
     font-style: italic;
     color: var(--text1);
     gap: 8px;
@@ -112,7 +112,7 @@ const RefreshButton = styled.button`
     justify-content: center;
     align-items: center;
     background-color: var(--dark3);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
 
     border: none;
     outline: none;
@@ -125,6 +125,6 @@ const RefreshButton = styled.button`
 //     }
 // `;
 const RefreshIcon = styled(FiRefreshCw)`
-    font-size: 18px;
+    font-size: var(--header2-size);
     cursor: pointer;
 `;

@@ -23,6 +23,7 @@ import { LS_KEY_SUBCHART_SETTINGS } from '../../../constants';
 import { getLocalStorageItem } from '../../../utils/functions/getLocalStorageItem';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
 import { TradeChartsHeader } from './TradeChartsHeader/TradeChartsHeader';
+import { updatesIF } from '../../../utils/hooks/useUrlParams';
 import { FlexContainer } from '../../../styled/Common';
 import { MainContainer } from '../../../styled/Components/Chart';
 import { TutorialButton } from '../../../styled/Components/Tutorial';
@@ -37,6 +38,7 @@ interface propsIF {
     setSelectedDate: Dispatch<number | undefined>;
     setIsChartLoading: Dispatch<React.SetStateAction<boolean>>;
     isChartLoading: boolean;
+    updateURL: (changes: updatesIF) => void;
 }
 export interface LiquidityDataLocal {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -64,7 +66,7 @@ export interface LiqSnap {
 
 // React functional component
 function TradeCharts(props: propsIF) {
-    const { selectedDate, setSelectedDate } = props;
+    const { selectedDate, setSelectedDate, updateURL } = props;
 
     const {
         tutorial: { isActive: isTutorialActive },
@@ -219,7 +221,7 @@ function TradeCharts(props: propsIF) {
                     reset={reset}
                 />
             </div>
-            <div style={{ width: '100%', height: '100%', zIndex: '2' }}>
+            <div style={{ width: '100%', height: '100%' }}>
                 <TradeCandleStickChart
                     changeState={props.changeState}
                     chartItemStates={chartItemStates}
@@ -238,6 +240,7 @@ function TradeCharts(props: propsIF) {
                     setShowTooltip={setShowTooltip}
                     isLoading={props.isChartLoading}
                     setIsLoading={props.setIsChartLoading}
+                    updateURL={updateURL}
                 />
             </div>
             <TutorialOverlay

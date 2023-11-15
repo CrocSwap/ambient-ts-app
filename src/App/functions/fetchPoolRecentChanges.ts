@@ -1,5 +1,5 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
+import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../constants';
 import { TokenIF } from '../../utils/interfaces/exports';
 import { TransactionServerIF } from '../../utils/interfaces/TransactionIF';
 import { FetchAddrFn } from './fetchAddress';
@@ -7,6 +7,7 @@ import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
 import { getTransactionData } from './getTransactionData';
 import { SpotPriceFn } from './querySpotPrice';
+import { Provider } from '@ethersproject/providers';
 
 interface argsIF {
     tokenList: TokenIF[];
@@ -24,6 +25,8 @@ interface argsIF {
     period?: number;
     time?: number;
     crocEnv: CrocEnv;
+    graphCacheUrl: string;
+    provider: Provider;
     lastBlockNumber: number;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedQuerySpotPrice: SpotPriceFn;
@@ -47,6 +50,8 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
         period,
         time,
         crocEnv,
+        graphCacheUrl,
+        provider,
         lastBlockNumber,
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
@@ -54,7 +59,9 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
         cachedEnsResolve,
     } = args;
 
-    const poolRecentChangesCacheEndpoint = GRAPHCACHE_SMALL_URL + '/pool_txs?';
+    const poolRecentChangesCacheEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/pool_txs?'
+        : graphCacheUrl + '/pool_txs?';
 
     IS_LOCAL_ENV && console.debug('fetching pool recent changes');
 
@@ -99,18 +106,21 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
                 return [];
             }
 
+            const skipENSFetch = true;
             return Promise.all(
                 userTransactions.map((tx: TransactionServerIF) => {
                     return getTransactionData(
                         tx,
                         tokenList,
                         crocEnv,
+                        provider,
                         chainId,
                         lastBlockNumber,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
                         cachedEnsResolve,
+                        skipENSFetch,
                     );
                 }),
             ).then((updatedTransactions) => {

@@ -3,7 +3,6 @@ import React, {
     SetStateAction,
     Dispatch,
     useEffect,
-    useMemo,
     useState,
     useContext,
 } from 'react';
@@ -16,6 +15,7 @@ import {
 import isJsonString from '../utils/functions/isJsonString';
 import { useAppDispatch } from '../utils/hooks/reduxToolkit';
 import { TokenIF } from '../utils/interfaces/TokenIF';
+import { supportedNetworks } from '../utils/networks';
 import { setLastBlock } from '../utils/state/graphDataSlice';
 import { setTokenBalances } from '../utils/state/userDataSlice';
 import { CachedDataContext } from './CachedDataContext';
@@ -38,9 +38,10 @@ export const ChainDataContext = createContext<ChainDataContextIF>(
 export const ChainDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
+    const { chainData, activeNetwork, crocEnv, provider } =
+        useContext(CrocEnvContext);
     const { cachedFetchTokenBalances, cachedTokenDetails } =
         useContext(CachedDataContext);
-    const { chainData, crocEnv } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
 
     const client = new Client(process.env.REACT_APP_COVALENT_API_KEY || '');
@@ -144,42 +145,42 @@ export const ChainDataContextProvider = (props: {
         }
     }, [lastNewHeadMessage]);
 
+    const fetchGasPrice = async () => {
+        const newGasPrice = await supportedNetworks[
+            chainData.chainId
+        ].getGasPriceInGwei(provider);
+        if (gasPriceInGwei !== newGasPrice) {
+            setGasPriceinGwei(newGasPrice);
+        }
+    };
+
     useEffect(() => {
-        fetch(
-            'https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=KNJM7A9ST1Q1EESYXPPQITIP7I8EFSY456',
-        )
-            .then((response) => response.json())
-            .then((response) => {
-                if (response.result.ProposeGasPrice) {
-                    const newGasPrice = parseInt(
-                        response.result.ProposeGasPrice,
-                    );
-                    if (gasPriceInGwei !== newGasPrice) {
-                        setGasPriceinGwei(newGasPrice);
-                    }
-                }
-            })
-            .catch(console.error);
+        fetchGasPrice();
     }, [lastBlockNumber]);
 
-    // prevents useEffect below from triggering every block update
-    const everyEigthBlock = useMemo(
-        () => Math.floor(lastBlockNumber / 8),
-        [lastBlockNumber],
-    );
+    // used to trigger token balance refreshes every 5 minutes
+    const everyTwoMinutes = Math.floor(Date.now() / 300000);
+
     useEffect(() => {
         (async () => {
             IS_LOCAL_ENV &&
                 console.debug('fetching native token and erc20 token balances');
-            if (crocEnv && isConnected && userAddress && chainData.chainId) {
+            if (
+                crocEnv &&
+                isConnected &&
+                userAddress &&
+                chainData.chainId &&
+                client
+            ) {
                 try {
                     const tokenBalances: TokenIF[] =
                         await cachedFetchTokenBalances(
                             userAddress,
                             chainData.chainId,
-                            everyEigthBlock,
+                            everyTwoMinutes,
                             cachedTokenDetails,
                             crocEnv,
+                            activeNetwork.graphCacheUrl,
                             client,
                         );
                     const tokensWithLogos = tokenBalances.map((token) => {
@@ -198,7 +199,15 @@ export const ChainDataContextProvider = (props: {
                 }
             }
         })();
-    }, [crocEnv, isConnected, userAddress, chainData.chainId, everyEigthBlock]);
+    }, [
+        crocEnv,
+        isConnected,
+        userAddress,
+        chainData.chainId,
+        everyTwoMinutes,
+        client !== undefined,
+        activeNetwork.graphCacheUrl,
+    ]);
 
     return (
         <ChainDataContext.Provider value={chainDataContext}>

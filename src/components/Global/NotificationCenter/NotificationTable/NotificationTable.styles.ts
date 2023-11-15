@@ -18,7 +18,7 @@ export const Container = styled(FlexContainer)`
     width: 100%;
     height: 400px;
     position: absolute;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     box-shadow: 0px 35px 20px rgba(0, 0, 0, 0.3);
     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     right: 0;
@@ -57,8 +57,8 @@ export const FooterButton = styled.button`
     background: transparent;
     text-transform: capitalize;
     color: var(--accent5);
-    border-radius: 4px;
-    transition: all var(--animation-speed) ease-in-out;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
     background: var(--accent1);
     background-position: 1% 50%;
     background-size: 300% 300%;

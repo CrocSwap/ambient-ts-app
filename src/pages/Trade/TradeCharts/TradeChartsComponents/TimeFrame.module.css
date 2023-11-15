@@ -13,13 +13,13 @@
 }
 
 .main_time_frame_container:not(:last-child) {
-    border-right: 1px solid var(--text2);
+    border-right: var(--grey-light-border);
 }
 
 .active_selected_button,
 .non_active_selected_button {
     background: transparent;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
     cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
@@ -52,7 +52,7 @@
     background: var(--dark2);
     color: var(--text1);
     padding: 2px 8px;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     border: 1px solid var(--dark3);
 }
 
@@ -73,7 +73,7 @@
     position: absolute;
     background: var(--dark2);
 
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     box-shadow: 10px 35px 20px rgba(0, 0, 0, 0.5);
     transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
@@ -110,9 +110,5 @@
 .main_time_frame_container button:focus-visible,
 .active_selected_button:focus-visible,
 .non_active_selected_button:focus-visible {
-    box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
-        0px 0px 21px rgba(205, 193, 255, 0.2),
-        0px 0px 12px rgba(205, 193, 255, 0.2),
-        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
-        0px 0px 2px rgba(205, 193, 255, 0.2);
+    box-shadow: var(--glow-light-box-shadow);
 }

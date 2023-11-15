@@ -5,7 +5,7 @@ import { fetchUserRecentChanges } from '../App/functions/fetchUserRecentChanges'
 import { getLimitOrderData } from '../App/functions/getLimitOrderData';
 import { getPositionData } from '../App/functions/getPositionData';
 import useDebounce from '../App/hooks/useDebounce';
-import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../constants';
+import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../constants';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { LimitOrderServerIF } from '../utils/interfaces/LimitOrderIF';
 import { PositionServerIF } from '../utils/interfaces/PositionIF';
@@ -46,7 +46,8 @@ export const UserDataContextProvider = (props: {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const { crocEnv, chainData } = useContext(CrocEnvContext);
+    const { crocEnv, activeNetwork, provider, chainData } =
+        useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
@@ -61,8 +62,9 @@ export const UserDataContextProvider = (props: {
         dispatch(resetUserGraphData());
     }, [isConnected, isLoggedIn, userAddress]);
 
-    const userLimitOrderStatesCacheEndpoint =
-        GRAPHCACHE_SMALL_URL + '/user_limit_orders?';
+    const userLimitOrderStatesCacheEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/user_limit_orders?'
+        : activeNetwork.graphCacheUrl + '/user_limit_orders?';
 
     // Wait 2 seconds before refreshing to give cache server time to sync from
     // last block
@@ -74,13 +76,15 @@ export const UserDataContextProvider = (props: {
             isConnected &&
             userAddress &&
             crocEnv &&
+            provider &&
             tokens.tokenUniv.length &&
             chainData.chainId
         ) {
             IS_LOCAL_ENV && console.debug('fetching user positions');
 
-            const userPositionsCacheEndpoint =
-                GRAPHCACHE_SMALL_URL + '/user_positions?';
+            const userPositionsCacheEndpoint = GCGO_OVERRIDE_URL
+                ? GCGO_OVERRIDE_URL + '/user_positions?'
+                : activeNetwork.graphCacheUrl + '/user_positions?';
 
             try {
                 fetch(
@@ -105,6 +109,7 @@ export const UserDataContextProvider = (props: {
                                             position,
                                             tokens.tokenUniv,
                                             crocEnv,
+                                            provider,
                                             chainData.chainId,
                                             lastBlockNumber,
                                             cachedFetchTokenPrice,
@@ -157,6 +162,7 @@ export const UserDataContextProvider = (props: {
                                         limitOrder,
                                         tokens.tokenUniv,
                                         crocEnv,
+                                        provider,
                                         chainData.chainId,
                                         lastBlockNumber,
                                         cachedFetchTokenPrice,
@@ -195,6 +201,8 @@ export const UserDataContextProvider = (props: {
                     annotateMEV: false,
                     ensResolution: true,
                     crocEnv: crocEnv,
+                    graphCacheUrl: activeNetwork.graphCacheUrl,
+                    provider,
                     lastBlockNumber: lastBlockNumber,
                     n: 100, // fetch last 100 changes,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
@@ -285,6 +293,7 @@ export const UserDataContextProvider = (props: {
         chainData.chainId,
         lastBlockNumWait,
         !!crocEnv,
+        !!provider,
     ]);
 
     return (

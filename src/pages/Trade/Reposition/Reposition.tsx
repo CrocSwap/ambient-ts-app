@@ -10,9 +10,8 @@ import {
 // START: Import JSX Components
 import RepositionHeader from '../../../components/Trade/Reposition/RepositionHeader/RepositionHeader';
 import RepositionPriceInfo from '../../../components/Trade/Reposition/RepositionPriceInfo/RepositionPriceInfo';
-import RepositionRangeWidth from '../../../components/Trade/Reposition/RepositionRangeWidth/RepositionRangeWidth';
 import ConfirmRepositionModal from '../../../components/Trade/Reposition/ConfirmRepositionModal/ConfirmRepositionModal';
-import Button from '../../../components/Global/Button/Button';
+import Button from '../../../components/Form/Button';
 // START: Import Other Local Files
 import styles from './Reposition.module.css';
 import {
@@ -36,7 +35,7 @@ import {
 } from '../../../utils/TransactionError';
 import useDebounce from '../../../App/hooks/useDebounce';
 import { setAdvancedMode } from '../../../utils/state/tradeDataSlice';
-import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../../constants';
+import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { FiExternalLink } from 'react-icons/fi';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
@@ -50,6 +49,7 @@ import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
+import RangeWidth from '../../../components/Form/RangeWidth/RangeWidth';
 
 function Reposition() {
     // current URL parameter string
@@ -63,6 +63,8 @@ function Reposition() {
     } = useContext(CachedDataContext);
     const {
         crocEnv,
+        activeNetwork,
+        provider,
         chainData: { blockExplorer },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
@@ -75,6 +77,7 @@ function Reposition() {
         setMaxRangePrice: setMaxPrice,
         setMinRangePrice: setMinPrice,
         setCurrentRangeInReposition,
+        setRescaleRangeBoundariesWithSlider,
     } = useContext(RangeContext);
 
     const [isOpen, openModal, closeModal] = useModal();
@@ -399,8 +402,9 @@ function Reposition() {
         setCurrentQuoteQtyDisplayTruncated,
     ] = useState<string>(position?.positionLiqQuoteTruncated || '0.00');
 
-    const positionStatsCacheEndpoint =
-        GRAPHCACHE_SMALL_URL + '/position_stats?';
+    const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/position_stats?'
+        : activeNetwork.graphCacheUrl + '/position_stats?';
     const poolIndex = lookupChain(position.chainId).poolIndex;
 
     const fetchCurrentCollateral = () => {
@@ -421,7 +425,7 @@ function Reposition() {
         )
             .then((response) => response?.json())
             .then(async (json) => {
-                if (!crocEnv || !json?.data) {
+                if (!crocEnv || !provider || !json?.data) {
                     setCurrentBaseQtyDisplayTruncated('...');
                     setCurrentQuoteQtyDisplayTruncated('...');
                     return;
@@ -431,6 +435,7 @@ function Reposition() {
                     json.data as PositionServerIF,
                     tokens.tokenUniv,
                     crocEnv,
+                    provider,
                     position.chainId,
                     lastBlockNumber,
                     cachedFetchTokenPrice,
@@ -457,7 +462,7 @@ function Reposition() {
 
     useEffect(() => {
         fetchCurrentCollateral();
-    }, [lastBlockNumber, JSON.stringify(position)]);
+    }, [lastBlockNumber, JSON.stringify(position), !!crocEnv, !!provider]);
 
     const [newBaseQtyDisplay, setNewBaseQtyDisplay] = useState<string>('...');
     const [newQuoteQtyDisplay, setNewQuoteQtyDisplay] = useState<string>('...');
@@ -618,9 +623,12 @@ function Reposition() {
                     resetTxHash={() => setNewRepositionTransactionHash('')}
                 />
                 <div className={styles.reposition_content}>
-                    <RepositionRangeWidth
+                    <RangeWidth
                         rangeWidthPercentage={rangeWidthPercentage}
                         setRangeWidthPercentage={setRangeWidthPercentage}
+                        setRescaleRangeBoundariesWithSlider={
+                            setRescaleRangeBoundariesWithSlider
+                        }
                     />
                     <RepositionPriceInfo
                         position={position}
@@ -663,6 +671,7 @@ function Reposition() {
                             />
                         ) : (
                             <Button
+                                idForDOM='confirm_reposition_button'
                                 title={
                                     isRepositionSent
                                         ? 'Reposition Sent'

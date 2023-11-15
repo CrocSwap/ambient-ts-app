@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useContext } from 'react';
-import Toggle from '../../../Global/Toggle/Toggle';
+import Toggle from '../../../Form/Toggle';
 import { MdExpand, MdCloseFullscreen } from 'react-icons/md';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';

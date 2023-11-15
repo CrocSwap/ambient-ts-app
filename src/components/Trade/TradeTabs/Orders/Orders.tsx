@@ -21,6 +21,7 @@ import {
     ViewMoreButton,
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
+import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 
 // interface for props for react functional component
 interface propsIF {
@@ -75,11 +76,7 @@ function Orders(props: propsIF) {
             setLimitOrderData(
                 graphData?.userLimitOrdersByPool?.limitOrders.filter(
                     (order) =>
-                        order.base.toLowerCase() ===
-                            baseTokenAddress.toLowerCase() &&
-                        order.quote.toLowerCase() ===
-                            quoteTokenAddress.toLowerCase() &&
-                        (order.positionLiq != 0 || order.claimableLiq !== 0),
+                        order.positionLiq != 0 || order.claimableLiq !== 0,
                 ),
             );
         else {
@@ -395,23 +392,23 @@ function Orders(props: propsIF) {
         </OrderRowStyled>
     );
 
-    const currentRowItemContent = _DATA.currentData.map((order, idx) => (
-        <OrderRow
-            tableView={tableView}
-            key={idx}
-            limitOrder={order}
-            isAccountView={isAccountView}
-        />
-    ));
+    // TODO: should not block rendering of table while fetching ENS addresses
+    const { ensAddressMapping, addData } = useENSAddresses();
 
-    const sortedRowItemContent = sortedLimits.map((order, idx) => (
-        <OrderRow
-            tableView={tableView}
-            key={idx}
-            limitOrder={order}
-            isAccountView={isAccountView}
-        />
-    ));
+    useEffect(() => {
+        addData(sortedLimits);
+    }, [sortedLimits]);
+
+    const currentRowItemContent = () =>
+        _DATA.currentData.map((order, idx) => (
+            <OrderRow
+                tableView={tableView}
+                key={idx}
+                limitOrder={order}
+                isAccountView={isAccountView}
+                fetchedEnsAddress={ensAddressMapping.get(order.user)}
+            />
+        ));
 
     const handleKeyDownViewOrder = (
         event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
@@ -442,7 +439,7 @@ function Orders(props: propsIF) {
         }
     };
     const orderDataOrNull = shouldDisplayNoTableData ? (
-        <NoTableData type='orders' isAccountView={isAccountView} />
+        <NoTableData type='limits' isAccountView={isAccountView} />
     ) : (
         <div onKeyDown={handleKeyDownViewOrder}>
             <ul ref={listRef}>
@@ -462,14 +459,14 @@ function Orders(props: propsIF) {
                             tableView={tableView}
                         />
                     ))}
-                {currentRowItemContent}
+                {currentRowItemContent()}
             </ul>
             {
                 // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
                 // TODO (#1804): we should instead be adding results to RTK
                 !isTradeTableExpanded &&
                     !isAccountView &&
-                    sortedRowItemContent.length > NUM_RANGES_WHEN_COLLAPSED && (
+                    sortedLimits.length > NUM_RANGES_WHEN_COLLAPSED && (
                         <FlexContainer
                             justifyContent='center'
                             alignItems='center'

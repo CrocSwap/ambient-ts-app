@@ -45,6 +45,7 @@ import SwitchNetwork from '../components/Global/SwitchNetworkAlert/SwitchNetwork
 import Explore from '../pages/Explore/Explore';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
+import ExampleForm from '../pages/InitPool/FormExample';
 
 /** ***** React Function *******/
 export default function App() {
@@ -61,7 +62,8 @@ export default function App() {
         theme: { selected: selectedTheme },
         wagmiModal: { isOpen: isWagmiModalOpen },
     } = useContext(AppStateContext);
-    const { isChainSupported, defaultUrlParams } = useContext(CrocEnvContext);
+    const { isWalletChainSupported, defaultUrlParams } =
+        useContext(CrocEnvContext);
     const { isFullScreen: fullScreenChart } = useContext(ChartContext);
     const {
         sidebar: { isOpen: isSidebarOpen, toggle: toggleSidebar },
@@ -155,7 +157,7 @@ export default function App() {
                 className={containerStyle}
                 data-theme={selectedTheme}
             >
-                {!isChainSupported && <SwitchNetwork />}
+                {!isWalletChainSupported && <SwitchNetwork />}
                 <AppOverlay />
                 <PageHeader />
                 <section
@@ -234,7 +236,6 @@ export default function App() {
                                 <ChatPanel isFullScreen={true} appPage={true} />
                             }
                         />
-
                         <Route
                             path='chat/:params'
                             element={
@@ -247,7 +248,6 @@ export default function App() {
                             path='account/:address'
                             element={<Portfolio />}
                         />
-
                         <Route
                             path='swap'
                             element={
@@ -260,6 +260,12 @@ export default function App() {
                         <Route path='privacy' element={<PrivacyPolicy />} />
                         {IS_LOCAL_ENV && (
                             <Route path='testpage' element={<TestPage />} />
+                        )}
+                        {IS_LOCAL_ENV && (
+                            <Route
+                                path='template/form'
+                                element={<ExampleForm />}
+                            />
                         )}
                         <Route path='/:address' element={<Portfolio />} />
                         <Route path='/404' element={<NotFound />} />

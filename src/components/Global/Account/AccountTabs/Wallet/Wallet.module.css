@@ -1,10 +1,9 @@
 .container {
     height: 100%;
-    height: calc(100vh - 26.5rem);
 }
 
 .item_container {
-    height: 100%;
+    height: calc(100% - 24px);
     overflow-y: scroll;
     overflow-x: hidden;
     padding: 0 8px;

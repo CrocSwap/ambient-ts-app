@@ -2,7 +2,7 @@ import styles from './TransactionSubmitted.module.css';
 import Animation from '../../../../Global/Animation/Animation';
 import completed from '../../../../../assets/animations/completed.json';
 import addTokenToWallet from './addTokenToWallet';
-import Button from '../../../../Global/Button/Button';
+import Button from '../../../../Form/Button';
 import { FiExternalLink } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
 import { getChainExplorer } from '../../../../../utils/data/chains';
@@ -56,12 +56,12 @@ export default function TransactionSubmitted(props: PropsIF) {
 
     const addToMetaMaskButton = (
         <Button
+            idForDOM='import_token_B_into_wallet_button'
             flat
             title={`Import ${tokenBSymbol} into Connected Wallet`}
-            // action={props.onClickFn}
             action={handleAddToMetaMask}
             disabled={false}
-        ></Button>
+        />
     );
 
     const etherscanButton = (

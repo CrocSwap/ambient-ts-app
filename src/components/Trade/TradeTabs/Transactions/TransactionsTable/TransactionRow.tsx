@@ -14,12 +14,14 @@ import { useModal } from '../../../../Global/Modal/useModal';
 import { TransactionRow as TransactionRowStyled } from '../../../../../styled/Components/TransactionTable';
 
 interface propsIF {
+    idForDOM: string;
     tx: TransactionIF;
     tableView: 'small' | 'medium' | 'large';
     isAccountView: boolean;
+    fetchedEnsAddress?: string;
 }
 function TransactionRow(props: propsIF) {
-    const { tableView, tx, isAccountView } = props;
+    const { idForDOM, tableView, tx, isAccountView, fetchedEnsAddress } = props;
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
@@ -46,18 +48,21 @@ function TransactionRow(props: propsIF) {
         truncatedLowDisplayPriceDenomByMoneyness,
         truncatedHighDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
-
         positiveDisplayColor,
         negativeDisplayColor,
         positiveArrow,
         negativeArrow,
         valueArrows,
-
         sideCharacter,
         priceCharacter,
         isBuy,
         elapsedTimeString,
-    } = useProcessTransaction(tx, userAddress, isAccountView);
+    } = useProcessTransaction(
+        tx,
+        userAddress,
+        isAccountView,
+        fetchedEnsAddress,
+    );
 
     const {
         snackbar: { open: openSnackbar },
@@ -87,12 +92,8 @@ function TransactionRow(props: propsIF) {
             ? 'accent1'
             : 'text1';
 
-    const txDomId =
-        tx.txId === currentTxActiveInTransactions ? `tx-${tx.txId}` : '';
-
     function scrollToDiv() {
-        const element = document.getElementById(txDomId);
-
+        const element = document.getElementById(idForDOM);
         element?.scrollIntoView({
             behavior: 'smooth',
             block: 'end',
@@ -215,22 +216,21 @@ function TransactionRow(props: propsIF) {
         setCurrentTxActiveInTransactions('');
         openDetailsModal();
     }
-    // TODO: use media queries and standardized styles
-    // end of portfolio page li element ---------------
+
     return (
         <>
             <TransactionRowStyled
+                id={idForDOM}
                 size={tableView}
                 account={isAccountView}
                 active={tx.txId === currentTxActiveInTransactions}
                 user={userNameToDisplay === 'You' && showAllData}
                 onClick={handleRowClick}
-                id={txDomId}
                 ref={currentTxActiveInTransactions ? activePositionRef : null}
                 tabIndex={0}
                 onKeyDown={handleKeyPress}
             >
-                {tableView === 'large' && TxTimeWithTooltip}
+                {tableView !== 'small' && TxTimeWithTooltip}
                 {isAccountView && tokenPair}
                 {tableView === 'large' && <div>{IDWithTooltip}</div>}
                 {tableView === 'large' && !isAccountView && (

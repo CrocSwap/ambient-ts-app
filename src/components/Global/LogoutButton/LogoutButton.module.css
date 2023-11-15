@@ -6,7 +6,7 @@
     color: var(--text1);
     border: none;
     outline: none;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
     background: var(--accent1);
     padding: 6px 8px;
     gap: 4px;

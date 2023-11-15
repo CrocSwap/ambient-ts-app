@@ -3,6 +3,11 @@ import backgroundImage from '../../../assets/images/backgrounds/tableInfoBg.png'
 
 // can be extracted to common
 
+interface BoxContainerProps {
+    isInit?: boolean;
+    style?: React.CSSProperties; // Allow style prop
+}
+
 const MainSection = styled.section`
     background: url(${backgroundImage}) no-repeat;
 
@@ -10,19 +15,22 @@ const MainSection = styled.section`
     padding: 8px;
 `;
 
-const BoxContainer = styled.div`
+const BoxContainer = styled.div<BoxContainerProps>`
     grid-column: span 1;
-    background: rgba(23, 29, 39, 0.4);
-    backdrop-filter: blur(10px);
-    border-radius: 0.25rem;
+    background: ${(props) =>
+        props.isInit ? 'var(--dark2)' : 'rgba(23, 29, 39, 0.4)'};
+    ${(props) =>
+        !props.isInit &&
+        `  backdrop-filter: blur(10px);
+        border-radius: 0.25rem;`}
     height: 100%;
 `;
 
-const FeaturedBoxInnerContainer = styled.div`
+const FeaturedBoxInnerContainer = styled.div<BoxContainerProps>`
     display: flex;
     flex-direction: column;
     gap: 8px;
-    padding: 1rem;
+    padding: 8px 16px;
 `;
 
 const InfoHeader = styled.div`
@@ -41,6 +49,7 @@ const FeaturedBoxInfoContainer = styled.div`
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    align-items: flex-start;
 `;
 const TokenSymbol = styled.p`
     margin-left: 0.5rem;

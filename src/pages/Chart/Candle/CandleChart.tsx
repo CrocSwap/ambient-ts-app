@@ -7,10 +7,7 @@ import {
     setCanvasResolution,
 } from '../ChartUtils/chartUtils';
 import { IS_LOCAL_ENV } from '../../../constants';
-import {
-    diffHashSig,
-    diffHashSigScaleData,
-} from '../../../utils/functions/diffHashSig';
+import { diffHashSigScaleData } from '../../../utils/functions/diffHashSig';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
@@ -30,7 +27,6 @@ interface candlePropsIF {
 
 export default function CandleChart(props: candlePropsIF) {
     const {
-        chartItemStates,
         setBandwidth,
         scaleData,
         selectedDate,
@@ -44,6 +40,8 @@ export default function CandleChart(props: candlePropsIF) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [candlestick, setCandlestick] = useState<any>();
+
+    const [isFirstRender, setIsFirstRender] = useState(true);
     const selectedCandleColor = '#E480FF';
     const crocCandleLightColor = '#CDC1FF';
     const crocCandleBorderLightColor = '#CDC1FF';
@@ -67,19 +65,22 @@ export default function CandleChart(props: candlePropsIF) {
 
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('re-rending chart');
-        if (tradeTableState === 'Expanded') return;
+        if (tradeTableState === 'Expanded' || isFirstRender) return;
         if (data && data.length > 0 && scaleData) {
             if (!showLatest) {
                 const domainLeft = scaleData?.xScale.domain()[0];
                 const domainRight = scaleData?.xScale.domain()[1];
-
                 scaleData?.xScale.domain([
                     domainLeft + period * 1000,
                     domainRight + period * 1000,
                 ]);
             }
         }
-    }, [diffHashSig(chartItemStates), tradeTableState, lastCandleData]);
+    }, [tradeTableState, lastCandleData?.time]);
+
+    useEffect(() => {
+        setIsFirstRender(false);
+    }, []);
 
     useEffect(() => {
         renderCanvasArray([d3CanvasCandle]);
