@@ -1,3 +1,8 @@
+<a id='top'></a>
+
+# Introduction
+Welcome to the Ambient Finance platform! Please [click here](https://ambient.finance/) to launch the web app.
+
 ## Ambient Finance Open Source Web Application
 
 ### `yarn start`
