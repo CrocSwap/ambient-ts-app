@@ -1,0 +1,23 @@
+{
+  "extends": "@tsconfig/recommended/tsconfig.json",
+  "include": ["src/**/*"],
+  "lib": ["dom", "dom.iterable", "esnext"],
+  "compilerOptions": {
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "useUnknownInCatchVariables": false,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "resolveJsonModule": true,
+    "target": "ES2021",
+    "baseUrl": "src",
+    "outDir": "dist",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "downlevelIteration": true,
+    "declaration": true,
+  },
+}
