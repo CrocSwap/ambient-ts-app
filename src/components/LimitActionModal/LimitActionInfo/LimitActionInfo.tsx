@@ -1,15 +1,21 @@
+import { useContext } from 'react';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import Row from '../../Global/Row/Row';
 import styles from './LimitActionInfo.module.css';
+import { TokenContext } from '../../../contexts/TokenContext';
+import TokenIcon from '../../Global/TokenIcon/TokenIcon';
+import uriToHttp from '../../../utils/functions/uriToHttp';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
 interface ILimitActionInfoProps {
     type: 'Remove' | 'Claim';
     usdValue: string;
     tokenQuantity: string | undefined;
-    tokenQuantityLogo: string;
+    tokenQuantityAddress: string;
     limitOrderPrice: string | undefined;
-    limitOrderPriceLogo: string;
+    limitOrderPriceAddress: string;
     receivingAmount: string | undefined;
-    receivingAmountLogo: string;
+    receivingAmountAddress: string;
     networkFee: string | undefined;
 }
 
@@ -18,13 +24,27 @@ export default function LimitActionInfo(props: ILimitActionInfoProps) {
         type,
         usdValue,
         tokenQuantity,
-        tokenQuantityLogo,
+        tokenQuantityAddress,
         limitOrderPrice,
-        limitOrderPriceLogo,
+        limitOrderPriceAddress,
         receivingAmount,
-        receivingAmountLogo,
+        receivingAmountAddress,
         networkFee,
     } = props;
+
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+
+    const { tokens } = useContext(TokenContext);
+    const tokenQuantityToken: TokenIF | undefined =
+        tokens.getTokenByAddress(tokenQuantityAddress);
+    const limitOrderPriceToken: TokenIF | undefined = tokens.getTokenByAddress(
+        limitOrderPriceAddress,
+    );
+    const receivingAmountToken: TokenIF | undefined = tokens.getTokenByAddress(
+        receivingAmountAddress,
+    );
 
     return (
         <div className={styles.row}>
@@ -40,7 +60,14 @@ export default function LimitActionInfo(props: ILimitActionInfoProps) {
                         <span>Token Quantity</span>
                         <div className={styles.align_center}>
                             <p className={styles.info_text}>{tokenQuantity}</p>
-                            <img src={tokenQuantityLogo} alt='' width='15px' />
+                            <TokenIcon
+                                token={tokenQuantityToken}
+                                src={uriToHttp(
+                                    tokenQuantityToken?.logoURI ?? '',
+                                )}
+                                alt={tokenQuantityToken?.symbol ?? '?'}
+                                size='xs'
+                            />
                         </div>
                     </Row>
                     <Row>
@@ -49,10 +76,13 @@ export default function LimitActionInfo(props: ILimitActionInfoProps) {
                             <p className={styles.info_text}>
                                 {limitOrderPrice}
                             </p>
-                            <img
-                                src={limitOrderPriceLogo}
-                                alt=''
-                                width='15px'
+                            <TokenIcon
+                                token={limitOrderPriceToken}
+                                src={uriToHttp(
+                                    limitOrderPriceToken?.logoURI ?? '',
+                                )}
+                                alt={limitOrderPriceToken?.symbol ?? '?'}
+                                size='xs'
                             />
                         </div>
                     </Row>
@@ -68,21 +98,26 @@ export default function LimitActionInfo(props: ILimitActionInfoProps) {
                             <p className={styles.info_text}>
                                 {receivingAmount}
                             </p>
-                            <img
-                                src={receivingAmountLogo}
-                                alt=''
-                                width='15px'
+                            <TokenIcon
+                                token={receivingAmountToken}
+                                src={uriToHttp(
+                                    receivingAmountToken?.logoURI ?? '',
+                                )}
+                                alt={receivingAmountToken?.symbol ?? '?'}
+                                size='xs'
                             />
                         </div>
                     </Row>
                 </div>
             </div>
-            <div className={styles.network_fee_container}>
-                <div>
-                    <span>Network Fee</span>
+            {chainId === '0x1' && (
+                <div className={styles.network_fee_container}>
+                    <div>
+                        <span>Network Fee</span>
+                    </div>
+                    <span>{networkFee ? '~' + networkFee : '...'}</span>
                 </div>
-                <span>~{networkFee}</span>
-            </div>
+            )}
         </div>
     );
 }

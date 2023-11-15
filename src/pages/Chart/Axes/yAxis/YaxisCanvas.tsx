@@ -21,6 +21,7 @@ import {
     renderCanvasArray,
     renderSubchartCrCanvas,
     scaleData,
+    selectedDrawnData,
     setCanvasResolution,
     standardDeviation,
 } from '../../ChartUtils/chartUtils';
@@ -60,6 +61,7 @@ interface yAxisIF {
     simpleRangeWidth: number;
     poolPriceDisplay: number;
     isChartZoom: boolean;
+    selectedDrawnShape: selectedDrawnData | undefined;
 }
 
 type yLabel = {
@@ -100,6 +102,7 @@ function YAxisCanvas(props: yAxisIF) {
         simpleRangeWidth,
         poolPriceDisplay,
         isChartZoom,
+        selectedDrawnShape,
     } = props;
 
     const d3Yaxis = useRef<HTMLInputElement | null>(null);
@@ -263,6 +266,7 @@ function YAxisCanvas(props: yAxisIF) {
 
         if (canvas !== null) {
             const height = canvas.height;
+            const width = canvas.width;
 
             const factor = height < 500 ? 5 : height.toString().length * 2;
 
@@ -473,12 +477,14 @@ function YAxisCanvas(props: yAxisIF) {
                 const { isSameLocation, sameLocationData } =
                     sameLocationLimit();
 
-                const isScientificLimitTick = limit.toString().includes('e');
-
                 let limitTick = getFormattedNumber({
                     value: limit,
                     abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
                 }).replace(',', '');
+
+                const isScientificLimitTick = limitTick
+                    .toString()
+                    .includes('e');
 
                 let limitSubString = undefined;
 
@@ -528,6 +534,69 @@ function YAxisCanvas(props: yAxisIF) {
                 addYaxisLabel(
                     isSameLocation ? sameLocationData : yScale(limit),
                 );
+            }
+
+            if (selectedDrawnShape) {
+                const shapeData = selectedDrawnShape.data;
+
+                shapeData.data.forEach((data) => {
+                    const isScientificShapeTick = data.y
+                        .toString()
+                        .includes('e');
+
+                    let shapePointSubString = undefined;
+                    const shapePoint =
+                        data.denomInBase === denomInBase
+                            ? Number(data.y.toString())
+                            : 1 / Number(data.y.toString());
+
+                    let shapePointTick = getFormattedNumber({
+                        value: shapePoint,
+                        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                    }).replace(',', '');
+                    if (isScientificShapeTick) {
+                        const splitNumber = data.y.toString().split('e');
+
+                        shapePointSubString =
+                            Math.abs(Number(splitNumber[1])) -
+                            (splitNumber.includes('.') ? 2 : 1);
+
+                        const textScientificArray = shapePointTick.split('0.0');
+                        shapePointTick = textScientificArray[1].slice(1, 4);
+                    }
+
+                    const secondPointInDenom =
+                        shapeData.data[1].denomInBase === denomInBase
+                            ? shapeData.data[1].y
+                            : 1 / shapeData.data[1].y;
+                    const firstPointInDenom =
+                        shapeData.data[0].denomInBase === denomInBase
+                            ? shapeData.data[0].y
+                            : 1 / shapeData.data[0].y;
+
+                    const rectHeight =
+                        yScale(secondPointInDenom) - yScale(firstPointInDenom);
+
+                    context.fillStyle = '#7674ff1e';
+                    context.fillRect(
+                        0,
+                        yScale(firstPointInDenom),
+                        width,
+                        rectHeight,
+                    );
+
+                    createRectLabel(
+                        context,
+                        yScale(shapePoint),
+                        X,
+                        '#5553be',
+                        'white',
+                        shapePointTick,
+                        undefined,
+                        yAxisCanvasWidth,
+                        shapePointSubString,
+                    );
+                });
             }
 
             if (crosshairActive === 'chart') {
@@ -774,13 +843,22 @@ function YAxisCanvas(props: yAxisIF) {
                 })
                 .filter((event) => {
                     const isWheel = event.type === 'wheel';
+                    let offsetY: number | undefined = undefined;
+                    if (event instanceof TouchEvent) {
+                        offsetY = event.touches[0].clientY - rectCanvas?.top;
+                    } else {
+                        offsetY = event.offsetY;
+                    }
 
                     const isLabel =
                         yAxisLabels?.find((element: yLabel) => {
-                            return (
-                                event.offsetY > element?.y &&
-                                event.offsetY < element?.y + element?.height
-                            );
+                            if (offsetY !== undefined) {
+                                return (
+                                    offsetY > element?.y &&
+                                    offsetY < element?.y + element?.height
+                                );
+                            }
+                            return false;
                         }) !== undefined;
 
                     return !isLabel || isWheel;
@@ -794,6 +872,7 @@ function YAxisCanvas(props: yAxisIF) {
         diffHashSigScaleData(scaleData, 'y'),
         liquidityData?.liqBidData,
         isChartZoom,
+        isLineDrag,
     ]);
 
     useEffect(() => {
@@ -806,12 +885,13 @@ function YAxisCanvas(props: yAxisIF) {
                 d3.select(d3Yaxis.current).on('.drag', null);
             }
             if (
-                location.pathname.includes('pool') ||
-                location.pathname.includes('reposition')
+                (location.pathname.includes('pool') ||
+                    location.pathname.includes('reposition')) &&
+                !isLineDrag
             ) {
                 d3.select(d3Yaxis.current).call(dragRange);
             }
-            if (location.pathname.includes('/limit')) {
+            if (location.pathname.includes('/limit') && !isLineDrag) {
                 d3.select(d3Yaxis.current).call(dragLimit);
             }
             renderCanvasArray([d3Yaxis]);
@@ -864,6 +944,7 @@ function YAxisCanvas(props: yAxisIF) {
         checkLimitOrder,
         location,
         crosshairActive,
+        selectedDrawnShape,
     ]);
 
     function addYaxisLabel(y: number) {
@@ -895,7 +976,7 @@ function YAxisCanvas(props: yAxisIF) {
             ref={d3Yaxis}
             style={{
                 width: yAxisWidth,
-                gridColumn: 4,
+                gridColumn: 5,
                 gridRow: 3,
             }}
         ></d3fc-canvas>

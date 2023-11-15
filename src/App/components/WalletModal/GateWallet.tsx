@@ -1,5 +1,5 @@
 import styles from './GateWallet.module.css';
-import Button from '../../../components/Global/Button/Button';
+import Button from '../../../components/Form/Button';
 import { TermsOfServiceUrls } from '../../hooks/useTermsAgreed';
 
 interface PropsIF {
@@ -8,6 +8,9 @@ interface PropsIF {
 }
 export default function GateWallet(props: PropsIF) {
     const { termUrls, recordAgreed } = props;
+
+    // TODO:    the two `<section>` elements are likely unnecessary and the
+    // TODO:    ... top-level return element should not be a generic `<div>`
 
     return (
         <div className={styles.main_container}>
@@ -50,7 +53,12 @@ export default function GateWallet(props: PropsIF) {
                 </p>
             </section>
             <section>
-                <Button flat title='Agree' action={recordAgreed} />
+                <Button
+                    idForDOM='agree_button_ToS'
+                    flat
+                    title='Agree'
+                    action={recordAgreed}
+                />
             </section>
         </div>
     );

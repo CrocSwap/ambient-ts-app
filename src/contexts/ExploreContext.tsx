@@ -7,6 +7,7 @@ import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
 import { getFormattedNumber } from '../App/functions/getFormattedNumber';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { get24hChange } from '../App/functions/getPoolStats';
+import { CrocEnvContext } from './CrocEnvContext';
 
 export interface ExploreContextIF {
     pools: {
@@ -49,6 +50,8 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         cachedFetchTokenPrice,
     } = useContext(CachedDataContext);
 
+    const { activeNetwork } = useContext(CrocEnvContext);
+
     const [allPools, setAllPools] = useState<PoolDataIF[]>([]);
     const [retrievedAt, setRetrievedAt] = useState<number | null>(null);
 
@@ -59,13 +62,9 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         chainId: string,
     ): Promise<PoolDataIF> {
         // moneyness of base token
-        const baseMoneyness: number = getMoneynessRank(
-            pool.base.address.toLowerCase() + '_' + chainId,
-        );
+        const baseMoneyness: number = getMoneynessRank(pool.base.symbol);
         // moneyness of quote token
-        const quoteMoneyness: number = getMoneynessRank(
-            pool.quote.address.toLowerCase() + '_' + chainId,
-        );
+        const quoteMoneyness: number = getMoneynessRank(pool.quote.symbol);
         // determination to invert based on relative moneyness
         const shouldInvert: boolean = quoteMoneyness - baseMoneyness >= 0;
         // spot price for pool
@@ -95,6 +94,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             poolIdx,
             Math.floor(Date.now() / 60000),
             crocEnv,
+            activeNetwork.graphCacheUrl,
             cachedFetchTokenPrice,
         );
         // format TVL, use empty string as backup value
@@ -120,6 +120,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             pool.quote.address,
             poolIdx,
             shouldInvert,
+            activeNetwork.graphCacheUrl,
         );
         if (!priceChangeRaw) {
             priceChangePercent = '';

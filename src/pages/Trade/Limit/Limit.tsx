@@ -8,7 +8,7 @@ import {
 import { useContext, useState, useEffect } from 'react';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { useTradeData } from '../../../App/hooks/useTradeData';
-import Button from '../../../components/Global/Button/Button';
+import Button from '../../../components/Form/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal/ConfirmLimitModal';
 import LimitExtraInfo from '../../../components/Trade/Limit/LimitExtraInfo/LimitExtraInfo';
@@ -36,16 +36,14 @@ import {
     addReceipt,
     updateTransactionHash,
 } from '../../../utils/state/receiptDataSlice';
-import {
-    setLimitTick,
-    setLimitTickCopied,
-} from '../../../utils/state/tradeDataSlice';
+import { setLimitTick } from '../../../utils/state/tradeDataSlice';
 import {
     TransactionError,
     isTransactionReplacedError,
     isTransactionFailedError,
 } from '../../../utils/TransactionError';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
+import { useApprove } from '../../../App/functions/approve';
 
 export default function Limit() {
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
@@ -59,7 +57,6 @@ export default function Limit() {
     const { tokens } = useContext(TokenContext);
     const {
         tokenAAllowance,
-        setRecheckTokenAApproval,
         baseToken: {
             balance: baseTokenBalance,
             dexBalance: baseTokenDexBalance,
@@ -85,10 +82,9 @@ export default function Limit() {
         poolPriceNonDisplay,
         liquidityFee,
         isDenomBase,
-        limitTickCopied,
         primaryQuantity,
     } = useAppSelector((state) => state.tradeData);
-    const { limitTickFromParams } = useTradeData();
+    const { urlParamMap, updateURL } = useTradeData();
 
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
     const [tokenAInputQty, setTokenAInputQty] = useState<string>(
@@ -118,8 +114,9 @@ export default function Limit() {
     const [displayPrice, setDisplayPrice] = useState('');
     const [previousDisplayPrice, setPreviousDisplayPrice] = useState('');
     const [isOrderValid, setIsOrderValid] = useState<boolean>(true);
-    const [isApprovalPending, setIsApprovalPending] = useState(false);
 
+    // TODO: is possible we can convert this to use the TradeTokenContext
+    // However, unsure if the fact that baseToken comes from pool affects this
     const isSellTokenBase = pool?.baseToken.tokenAddr === tokenA.address;
 
     const tokenABalance = isSellTokenBase
@@ -140,6 +137,9 @@ export default function Limit() {
     const isTokenAAllowanceSufficient =
         parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
 
+    const isTokenAWalletBalanceSufficient =
+        parseFloat(tokenABalance) >= tokenAQtyCoveredByWalletBalance;
+
     // TODO: @Emily refactor this to take a token data object
     // values if either token needs to be confirmed before transacting
     const needConfirmTokenA = !tokens.verify(tokenA.address);
@@ -155,25 +155,9 @@ export default function Limit() {
         },
     );
 
-    // trigger re-pinning to a default tick
-    useEffect(() => {
-        dispatch(setLimitTick(undefined));
-    }, [tokenA.address]);
-
-    useEffect(() => {
-        if (limitTickFromParams && limitTick === undefined) {
-            dispatch(setLimitTick(limitTickFromParams));
-        }
-    }, [limitTickFromParams, limitTick === undefined]);
-
     useEffect(() => {
         (async () => {
-            if (
-                limitTick === undefined &&
-                !!poolPriceNonDisplay &&
-                crocEnv &&
-                !limitTickCopied
-            ) {
+            if (limitTick === undefined && !!poolPriceNonDisplay && crocEnv) {
                 if (!pool) return;
 
                 const spotPrice = await cachedQuerySpotPrice(
@@ -257,7 +241,7 @@ export default function Limit() {
                         });
                     }
                 }
-            } else if (limitTick) {
+            } else if (limitTick !== undefined) {
                 if (!pool) return;
 
                 const tickPrice = tickToPrice(limitTick);
@@ -327,13 +311,11 @@ export default function Limit() {
                 }
 
                 setPriceInputFieldBlurred(false);
-                if (limitTickCopied) dispatch(setLimitTickCopied(false));
             }
         })();
     }, [
         !!crocEnv,
         pool,
-        limitTickCopied,
         limitTick,
         isDenomBase,
         priceInputFieldBlurred,
@@ -341,27 +323,72 @@ export default function Limit() {
         !!poolPriceNonDisplay,
     ]);
 
+    const updateOrderValidityStatus = async () => {
+        try {
+            if (!crocEnv) return;
+            if (limitTick === undefined) return;
+            if (tokenAInputQty === '' && tokenBInputQty === '') return;
+
+            const tknA: string = urlParamMap.get('tokenA') as string;
+            const tknB: string = urlParamMap.get('tokenB') as string;
+            const limitTickParam: string = urlParamMap.get(
+                'limitTick',
+            ) as string;
+            if (limitTickParam && limitTickParam !== limitTick.toString())
+                return;
+            const testOrder = isTokenAPrimary
+                ? crocEnv.sell(tknA, 0)
+                : crocEnv.buy(tknB, 0);
+
+            const ko = testOrder.atLimit(
+                isTokenAPrimary ? tknB : tknA,
+                limitTick,
+            );
+
+            if (await ko.willMintFail()) {
+                updateLimitErrorMessage();
+                setIsOrderValid(false);
+                return;
+            } else {
+                setIsOrderValid(true);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     useEffect(() => {
         updateOrderValidityStatus();
     }, [
         limitTick,
         poolPriceNonDisplay,
         tokenAInputQty === '' && tokenBInputQty === '',
+        urlParamMap,
     ]);
 
     useEffect(() => {
         setNewLimitOrderTransactionHash('');
     }, [baseToken.address + quoteToken.address]);
 
+    const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
+
     useEffect(() => {
         handleLimitButtonMessage(parseFloat(tokenAInputQty));
-    }, [isOrderValid, tokenAInputQty, isPoolInitialized, poolPriceNonDisplay]);
+    }, [
+        isOrderValid,
+        tokenAInputQty,
+        isPoolInitialized,
+        poolPriceNonDisplay,
+        limitTick,
+        isSellTokenBase,
+        isSellTokenNativeToken,
+        tokenAQtyCoveredByWalletBalance,
+        tokenABalance,
+    ]);
 
     useEffect(() => {
         setIsWithdrawFromDexChecked(parseFloat(tokenADexBalance) > 0);
     }, [tokenADexBalance]);
-
-    const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
@@ -372,6 +399,12 @@ export default function Limit() {
                     ? 120000
                     : 150000
                 : 150000;
+
+            const costOfMainnetLimitInETH =
+                gasPriceInGwei * averageLimitCostInGasDrops * 1e-9;
+
+            setAmountToReduceEthMainnet(1.75 * costOfMainnetLimitInETH);
+
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 averageLimitCostInGasDrops *
@@ -408,34 +441,6 @@ export default function Limit() {
                     : 'Below Minimum'
             }  Price`,
         );
-
-    const updateOrderValidityStatus = async () => {
-        try {
-            if (!crocEnv) return;
-            if (!limitTick) return;
-
-            if (tokenAInputQty === '' && tokenBInputQty === '') return;
-
-            const testOrder = isTokenAPrimary
-                ? crocEnv.sell(tokenA.address, 0)
-                : crocEnv.buy(tokenB.address, 0);
-
-            const ko = testOrder.atLimit(
-                isTokenAPrimary ? tokenB.address : tokenA.address,
-                limitTick,
-            );
-
-            if (await ko.willMintFail()) {
-                updateLimitErrorMessage();
-                setIsOrderValid(false);
-                return;
-            } else {
-                setIsOrderValid(true);
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
 
     const sendLimitOrder = async () => {
         if (!crocEnv) return;
@@ -539,6 +544,16 @@ export default function Limit() {
         }
     };
 
+    const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
+        useState<number>(0.01);
+
+    const amountToReduceEthScroll = 0.0003; // .0003 ETH
+
+    const amountToReduceEth =
+        chainId === '0x82750' || chainId === '0x8274f'
+            ? amountToReduceEthScroll
+            : amountToReduceEthMainnet;
+
     const handleLimitButtonMessage = (tokenAAmount: number) => {
         if (!isPoolInitialized) {
             setLimitAllowed(false);
@@ -578,6 +593,15 @@ export default function Limit() {
                     setLimitButtonErrorMessage(
                         `${tokenA.symbol} Amount Exceeds Wallet Balance`,
                     );
+                } else if (
+                    isSellTokenNativeToken &&
+                    tokenAQtyCoveredByWalletBalance + amountToReduceEth >
+                        parseFloat(tokenABalance)
+                ) {
+                    setLimitAllowed(false);
+                    setLimitButtonErrorMessage(
+                        'Wallet Balance Insufficient to Cover Gas',
+                    );
                 } else {
                     setLimitAllowed(true);
                 }
@@ -594,63 +618,7 @@ export default function Limit() {
         resetConfirmation();
         closeModal();
     };
-
-    const approve = async (tokenAddress: string, tokenSymbol: string) => {
-        if (!crocEnv) return;
-        try {
-            setIsApprovalPending(true);
-            const tx = await crocEnv.token(tokenAddress).approve();
-            if (tx) dispatch(addPendingTx(tx?.hash));
-            if (tx?.hash)
-                dispatch(
-                    addTransactionByType({
-                        txHash: tx.hash,
-                        txType: 'Approve',
-                        txDescription: `Approval of ${tokenSymbol}`,
-                    }),
-                );
-            let receipt;
-            try {
-                if (tx) receipt = await tx.wait();
-            } catch (e) {
-                const error = e as TransactionError;
-                console.error({ error });
-                // The user used 'speed up' or something similar
-                // in their client, but we now have the updated info
-                if (isTransactionReplacedError(error)) {
-                    IS_LOCAL_ENV && console.debug('repriced');
-                    dispatch(removePendingTx(error.hash));
-
-                    const newTransactionHash = error.replacement.hash;
-                    dispatch(addPendingTx(newTransactionHash));
-
-                    dispatch(
-                        updateTransactionHash({
-                            oldHash: error.hash,
-                            newHash: error.replacement.hash,
-                        }),
-                    );
-                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                    receipt = error.receipt;
-                } else if (isTransactionFailedError(error)) {
-                    console.error({ error });
-                    receipt = error.receipt;
-                }
-            }
-            if (receipt) {
-                dispatch(addReceipt(JSON.stringify(receipt)));
-                dispatch(removePendingTx(receipt.transactionHash));
-            }
-        } catch (error) {
-            if (error.reason === 'sending a transaction requires a signer') {
-                location.reload();
-            }
-            console.error({ error });
-        } finally {
-            setIsApprovalPending(false);
-            setRecheckTokenAApproval(true);
-        }
-    };
+    const { approve, isApprovalPending } = useApprove();
 
     const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
         if (tokenAorB === 'A') {
@@ -670,6 +638,7 @@ export default function Limit() {
 
     return (
         <TradeModuleSkeleton
+            chainId={chainId}
             header={
                 <TradeModuleHeader
                     slippage={mintSlippage}
@@ -692,6 +661,7 @@ export default function Limit() {
                     limitTickDisplayPrice={middleDisplayPrice}
                     handleLimitButtonMessage={handleLimitButtonMessage}
                     toggleDexSelection={toggleDexSelection}
+                    amountToReduceEth={amountToReduceEth}
                 />
             }
             inputOptions={
@@ -702,7 +672,7 @@ export default function Limit() {
                     setPreviousDisplayPrice={setPreviousDisplayPrice}
                     isSellTokenBase={isSellTokenBase}
                     setPriceInputFieldBlurred={setPriceInputFieldBlurred}
-                    fieldId='limit-rate'
+                    updateURL={updateURL}
                 />
             }
             transactionDetails={
@@ -742,6 +712,7 @@ export default function Limit() {
             }
             button={
                 <Button
+                    idForDOM='confirm_limit_order_button'
                     title={
                         areBothAckd
                             ? limitAllowed
@@ -780,9 +751,12 @@ export default function Limit() {
                 ) : undefined
             }
             approveButton={
+                isPoolInitialized &&
                 !isTokenAAllowanceSufficient &&
+                isTokenAWalletBalanceSufficient &&
                 parseFloat(tokenAInputQty) > 0 ? (
                     <Button
+                        idForDOM='approve_limit_order_button'
                         title={
                             !isApprovalPending
                                 ? `Approve ${tokenA.symbol}`

@@ -191,15 +191,10 @@ export default function ExchangeBalance(props: propsIF) {
                 sendToAddress &&
                 isSendToAddressHex &&
                 sendToAddress.length === 42 &&
-                sendToAddress.startsWith('0x') &&
-                mainnetProvider
+                sendToAddress.startsWith('0x')
             ) {
                 try {
-                    const ensName = await fetchEnsAddress(
-                        mainnetProvider,
-                        sendToAddress,
-                        '0x1',
-                    );
+                    const ensName = await fetchEnsAddress(sendToAddress);
                     if (ensName) {
                         setSecondaryEnsName(ensName);
                     } else setSecondaryEnsName(undefined);
@@ -265,6 +260,7 @@ export default function ExchangeBalance(props: propsIF) {
 
     const exchangeControl = (
         <PortfolioControlContainer
+            id='portfolio_sidebar_toggle'
             onClick={() => setFullLayoutActive(!fullLayoutActive)}
         >
             <IconWithTooltip title='Exchange Balance' placement='bottom'>
@@ -292,7 +288,7 @@ export default function ExchangeBalance(props: propsIF) {
                 background='dark1'
                 rounded
                 fullHeight
-                desktop={{ maxWidth: '400px%' }}
+                xl={{ maxWidth: '400px' }}
             >
                 <PortfolioMotionSubContainer
                     fullHeight

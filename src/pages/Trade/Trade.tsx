@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
-import { useParams, Outlet, NavLink } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { NumberSize } from 're-resizable';
 import {
     useEffect,
@@ -23,13 +23,12 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChartContext } from '../../contexts/ChartContext';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
-import { useProvider } from 'wagmi';
 import { TokenContext } from '../../contexts/TokenContext';
 import { CandleData } from '../../App/functions/fetchCandleSeries';
 import { NoChartData } from '../../components/NoChartData/NoChartData';
 import { TradeChartsHeader } from './TradeCharts/TradeChartsHeader/TradeChartsHeader';
 import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
-import { FlexContainer } from '../../styled/Common';
+import { FlexContainer, Text } from '../../styled/Common';
 import {
     ChartContainer,
     MainSection,
@@ -38,10 +37,10 @@ import {
     TradeDropdownButton,
 } from '../../styled/Components/Trade';
 import { Direction } from 're-resizable/lib/resizer';
-import {
-    SelectorWrapper,
-    SelectorContainer,
-} from '../../styled/Components/TradeModules';
+import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
+import { PoolContext } from '../../contexts/PoolContext';
+import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
+import { MdAutoGraph } from 'react-icons/md';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -49,6 +48,7 @@ const TRADE_CHART_MIN_HEIGHT = 175;
 function Trade() {
     const {
         chainData: { chainId },
+        provider,
     } = useContext(CrocEnvContext);
     const { setIsCandleSelected, isCandleDataNull } = useContext(CandleContext);
 
@@ -71,44 +71,15 @@ function Trade() {
         setActiveMobileComponent,
     } = useContext(TradeTableContext);
 
-    const routes = [
-        {
-            path: '/market',
-            name: 'Swap',
-        },
-        {
-            path: '/limit',
-            name: 'Limit',
-        },
-        {
-            path: '/pool',
-            name: 'Pool',
-        },
-    ];
+    const { tradeData } = useAppSelector((state) => state);
+    const { isDenomBase, limitTick } = tradeData;
 
-    const provider = useProvider();
-    const { params } = useParams();
-    useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
+    const { urlParamMap, updateURL } = useUrlParams(tokens, chainId, provider);
 
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
     const [selectedDate, setSelectedDate] = useState<number | undefined>();
 
-    const { tradeData } = useAppSelector((state) => state);
-    const { isDenomBase, limitTick } = tradeData;
-
     const tradeTableRef = useRef<HTMLDivElement>(null);
-
-    const navigationMenu = (
-        <SelectorContainer justifyContent='center' alignItems='center' gap={8}>
-            {routes.map((route, idx) => (
-                <SelectorWrapper key={idx}>
-                    <NavLink to={`/trade${route.path}/${params}`}>
-                        {route.name}
-                    </NavLink>
-                </SelectorWrapper>
-            ))}
-        </SelectorContainer>
-    );
 
     const [hasInitialized, setHasInitialized] = useState(false);
 
@@ -136,17 +107,20 @@ function Trade() {
         <TradeDropdown>
             <TradeDropdownButton
                 onClick={() => setMobileDropdown(!showMobileDropdown)}
+                activeText
             >
                 {activeMobileComponent}
 
                 <BsCaretDownFill />
             </TradeDropdownButton>
+
             {showMobileDropdown && (
                 <div
                     style={{
                         position: 'absolute',
                         marginTop: '8px',
                         width: '100%',
+                        background: 'var(--dark2)',
                     }}
                 >
                     {activeMobileComponent !== 'trade' && (
@@ -197,6 +171,7 @@ function Trade() {
     ]);
 
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
+    const smallScreen = useMediaQuery('(max-width: 500px)');
 
     const [isChartLoading, setIsChartLoading] = useState<boolean>(true);
 
@@ -206,6 +181,7 @@ function Trade() {
         setSelectedDate: setSelectedDate,
         isChartLoading,
         setIsChartLoading,
+        updateURL,
     };
 
     const tradeTabsProps = {
@@ -220,32 +196,67 @@ function Trade() {
         candleTime: chartSettings.candleTime.global,
         tokens,
     };
+    const { poolPriceDisplay } = useContext(PoolContext);
+    const baseTokenSymbol = tradeData.baseToken.symbol;
+    const quoteTokenSymbol = tradeData.quoteToken.symbol;
+    const displayPriceWithDenom =
+        isDenomBase && poolPriceDisplay
+            ? 1 / poolPriceDisplay
+            : poolPriceDisplay ?? 0;
+
+    const displayPriceString = getFormattedNumber({
+        value: displayPriceWithDenom,
+    });
+    const conversionRate = isDenomBase
+        ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
+        : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`;
 
     const mobileTrade = (
-        <MainSection>
+        <MainSection
+            style={{ marginTop: '32px' }}
+            isDropdown
+            isSmallScreen={smallScreen}
+        >
             {mobileTradeDropdown}
+
+            <Text
+                fontWeight='500'
+                fontSize='body'
+                color='accent5'
+                style={{
+                    margin: '0 auto',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                }}
+            >
+                <MdAutoGraph size={22} color='var(--accent5)' />
+                {conversionRate}
+            </Text>
             {activeMobileComponent === 'chart' && isPoolInitialized && (
-                <div style={{ marginLeft: '2rem', flex: 1 }}>
+                <div style={{ marginLeft: smallScreen ? '' : '2rem', flex: 1 }}>
                     <TradeChartsHeader />
                     {!isCandleDataNull && <TradeCharts {...tradeChartsProps} />}
                 </div>
             )}
 
             {activeMobileComponent === 'transactions' && (
-                <div style={{ marginLeft: '2rem', flex: 1 }}>
+                <div style={{ marginLeft: smallScreen ? '' : '2rem', flex: 1 }}>
                     <TradeChartsHeader />
                     <TradeTabs2 {...tradeTabsProps} />
                 </div>
             )}
 
             {activeMobileComponent === 'trade' && (
-                <Outlet
-                    context={{
-                        tradeData: tradeData,
-                        navigationMenu: navigationMenu,
-                        limitTick: limitTick,
-                    }}
-                />
+                <ContentContainer noPadding noStyle={smallScreen}>
+                    <Outlet
+                        context={{
+                            tradeData: tradeData,
+                            limitTick: limitTick,
+                            updateURL: updateURL,
+                        }}
+                    />
+                </ContentContainer>
             )}
         </MainSection>
     );
@@ -356,7 +367,9 @@ function Trade() {
                 <Outlet
                     context={{
                         tradeData: tradeData,
-                        navigationMenu: navigationMenu,
+                        urlParamMap: urlParamMap,
+                        limitTick: limitTick,
+                        updateURL: updateURL,
                     }}
                 />
             </FlexContainer>

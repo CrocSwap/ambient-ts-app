@@ -33,7 +33,7 @@ import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentCh
 import Orders from '../../Trade/TradeTabs/Orders/Orders';
 import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
 import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
-import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../../constants';
+import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
@@ -68,6 +68,8 @@ export default function PortfolioTabs(props: propsIF) {
     } = useContext(CachedDataContext);
     const {
         crocEnv,
+        activeNetwork,
+        provider,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
@@ -93,10 +95,12 @@ export default function PortfolioTabs(props: propsIF) {
     const [lookupAccountTransactionData, setLookupAccountTransactionData] =
         useState<TransactionIF[]>([]);
 
-    const userPositionsCacheEndpoint =
-        GRAPHCACHE_SMALL_URL + '/user_positions?';
-    const userLimitOrdersCacheEndpoint =
-        GRAPHCACHE_SMALL_URL + '/user_limit_orders?';
+    const userPositionsCacheEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/user_positions?'
+        : activeNetwork.graphCacheUrl + '/user_positions?';
+    const userLimitOrdersCacheEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/user_limit_orders?'
+        : activeNetwork.graphCacheUrl + '/user_limit_orders?';
 
     const getLookupUserPositions = async (accountToSearch: string) =>
         fetch(
@@ -114,13 +118,14 @@ export default function PortfolioTabs(props: propsIF) {
             .then((response) => response?.json())
             .then((json) => {
                 const userPositions = json?.data;
-                if (userPositions && crocEnv) {
+                if (userPositions && crocEnv && provider) {
                     Promise.all(
                         userPositions.map((position: PositionServerIF) => {
                             return getPositionData(
                                 position,
                                 tokens.tokenUniv,
                                 crocEnv,
+                                provider,
                                 chainId,
                                 lastBlockNumber,
                                 cachedFetchTokenPrice,
@@ -159,7 +164,7 @@ export default function PortfolioTabs(props: propsIF) {
             .then((response) => response?.json())
             .then((json) => {
                 const userLimitOrderStates = json?.data;
-                if (userLimitOrderStates && crocEnv) {
+                if (userLimitOrderStates && crocEnv && provider) {
                     Promise.all(
                         userLimitOrderStates.map(
                             (limitOrder: LimitOrderServerIF) => {
@@ -167,6 +172,7 @@ export default function PortfolioTabs(props: propsIF) {
                                     limitOrder,
                                     tokens.tokenUniv,
                                     crocEnv,
+                                    provider,
                                     chainId,
                                     lastBlockNumber,
                                     cachedFetchTokenPrice,
@@ -191,7 +197,7 @@ export default function PortfolioTabs(props: propsIF) {
             });
 
     const getLookupUserTransactions = async (accountToSearch: string) => {
-        if (crocEnv) {
+        if (crocEnv && provider) {
             fetchUserRecentChanges({
                 tokenList: tokens.tokenUniv,
                 user: accountToSearch,
@@ -203,6 +209,8 @@ export default function PortfolioTabs(props: propsIF) {
                 ensResolution: true,
                 n: 100, // fetch last 100 changes,
                 crocEnv: crocEnv,
+                graphCacheUrl: activeNetwork.graphCacheUrl,
+                provider,
                 lastBlockNumber: lastBlockNumber,
                 cachedFetchTokenPrice: cachedFetchTokenPrice,
                 cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -251,6 +259,7 @@ export default function PortfolioTabs(props: propsIF) {
         lastBlockNumber,
         !!tokens.tokenUniv,
         !!crocEnv,
+        !!provider,
     ]);
 
     const activeAccountPositionData = connectedAccountActive
@@ -330,7 +339,7 @@ export default function PortfolioTabs(props: propsIF) {
             icon: openOrdersImage,
         },
         {
-            label: 'Ranges',
+            label: 'Liquidity',
             content: <Ranges {...rangeProps} />,
             icon: rangePositionsImage,
         },

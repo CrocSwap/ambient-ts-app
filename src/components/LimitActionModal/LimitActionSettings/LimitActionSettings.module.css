@@ -61,7 +61,7 @@ text-align: center; */
 }
 .slippage_box {
     background-color: var(--dark2);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     /* border: 1px solid var(--text3); */
     padding: 0.5rem;
 }
@@ -77,9 +77,9 @@ text-align: center; */
 .slippage_content input {
     height: 100%;
     border: 0px;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     background: none;
-    font-size: 16px;
+    font-size: var(--header-size);
     width: auto;
     outline: none;
     color: rgb(255, 255, 255);

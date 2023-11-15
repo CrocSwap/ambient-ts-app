@@ -9,7 +9,7 @@ import TransactionDetailsSimplify from './TransactionDetailsSimplify/Transaction
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import modalBackground from '../../../assets/images/backgrounds/background.png';
-import { GRAPHCACHE_SMALL_URL } from '../../../constants';
+import { GCGO_OVERRIDE_URL } from '../../../constants';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
@@ -42,6 +42,8 @@ export default function TransactionDetailsModal(props: propsIF) {
     const { lastBlockNumber } = useContext(ChainDataContext);
     const {
         crocEnv,
+        activeNetwork,
+        provider,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
@@ -52,8 +54,9 @@ export default function TransactionDetailsModal(props: propsIF) {
     >(1.01);
 
     useEffect(() => {
-        const positionStatsCacheEndpoint =
-            GRAPHCACHE_SMALL_URL + '/position_stats?';
+        const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
+            ? GCGO_OVERRIDE_URL + '/position_stats?'
+            : activeNetwork.graphCacheUrl + '/position_stats?';
 
         fetch(
             positionStatsCacheEndpoint +
@@ -70,7 +73,7 @@ export default function TransactionDetailsModal(props: propsIF) {
         )
             .then((response) => response?.json())
             .then(async (json) => {
-                if (!crocEnv || !json?.data) {
+                if (!crocEnv || !provider || !json?.data) {
                     return;
                 }
 
@@ -79,6 +82,7 @@ export default function TransactionDetailsModal(props: propsIF) {
                     positionPayload,
                     tokens.tokenUniv,
                     crocEnv,
+                    provider,
                     chainId,
                     lastBlockNumber,
                     cachedFetchTokenPrice,
@@ -94,7 +98,7 @@ export default function TransactionDetailsModal(props: propsIF) {
                 );
             })
             .catch(console.error);
-    }, [lastBlockNumber, crocEnv, chainId]);
+    }, [lastBlockNumber, !!crocEnv, !!provider, chainId]);
 
     const [showSettings, setShowSettings] = useState(false);
     const [showShareComponent, setShowShareComponent] = useState(true);

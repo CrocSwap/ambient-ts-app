@@ -106,18 +106,18 @@
     padding: 8px 1rem;
     gap: 8px;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
 }
 
 .pool_display:hover,
 .option_item:hover {
     background: var(--dark2);
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
     cursor: pointer;
 }
 
 .current_pool {
-    font-size: 10px;
+    font-size: var(--mini-size);
     background: var(--dark2);
     padding: 0 4px;
     color: var(--text3);
@@ -147,7 +147,7 @@
 }
 
 .favorite_button svg {
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 }
 
 /* .chat_scrollable{
@@ -190,7 +190,7 @@
     padding: 4px;
     width: 100%;
     cursor: pointer;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
     margin: 8px 0;
     border-radius: var(--border-radius);
 }
@@ -218,12 +218,12 @@
         display: none;
     }
     .main_container {
-        transition: all var(--animation-speed) ease-in-out;
+        transition: var(--transition);
         display: grid;
         grid-template-columns: 296px auto;
     }
     .main_container_close {
-        transition: all var(--animation-speed) ease-in-out;
+        transition: var(--transition);
 
         display: grid;
         grid-template-columns: 60px auto;

@@ -89,6 +89,8 @@ function TradeTabs2(props: propsIF) {
 
     const {
         crocEnv,
+        activeNetwork,
+        provider,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
@@ -251,7 +253,13 @@ function TradeTabs2(props: propsIF) {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        if (userAddress && isServerEnabled && !showAllData && crocEnv) {
+        if (
+            userAddress &&
+            isServerEnabled &&
+            !showAllData &&
+            crocEnv &&
+            provider
+        ) {
             try {
                 fetchUserRecentChanges({
                     tokenList: tokens.tokenUniv,
@@ -264,6 +272,8 @@ function TradeTabs2(props: propsIF) {
                     ensResolution: true,
                     n: 100, // fetch last 100 changes,
                     crocEnv,
+                    graphCacheUrl: activeNetwork.graphCacheUrl,
+                    provider,
                     lastBlockNumber,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -285,7 +295,14 @@ function TradeTabs2(props: propsIF) {
                 console.error;
             }
         }
-    }, [isServerEnabled, userAddress, showAllData, lastBlockNumWait]);
+    }, [
+        isServerEnabled,
+        userAddress,
+        showAllData,
+        lastBlockNumWait,
+        !!crocEnv,
+        !!provider,
+    ]);
 
     // -------------------------------DATA-----------------------------------------
     // Props for <Ranges/> React Element
@@ -340,7 +357,7 @@ function TradeTabs2(props: propsIF) {
                   showRightSideOption: true,
               },
               {
-                  label: 'Ranges',
+                  label: 'Liquidity',
                   content: <Ranges {...rangesProps} />,
                   icon: rangePositionsImage,
                   showRightSideOption: true,

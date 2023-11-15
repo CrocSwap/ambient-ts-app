@@ -11,6 +11,7 @@ import {
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import {
+    limitParamsIF,
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
@@ -19,12 +20,11 @@ import {
     setLimitTick,
     setPoolPriceNonDisplay,
     setIsTokenAPrimary,
-    setShouldLimitDirectionReverse,
     setPrimaryQuantity,
     setIsTokenAPrimaryRange,
 } from '../../../../utils/state/tradeDataSlice';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
-import TokenInput from '../../../Global/TokenInput/TokenInput';
+import TokenInputWithWalletBalance from '../../../Form/TokenInputWithWalletBalance';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 
 interface propsIF {
@@ -35,6 +35,7 @@ interface propsIF {
     isSaveAsDexSurplusChecked: boolean;
     handleLimitButtonMessage: (val: number) => void;
     toggleDexSelection: (tokenAorB: 'A' | 'B') => void;
+    amountToReduceEth: number;
 }
 
 function LimitTokenInput(props: propsIF) {
@@ -46,6 +47,7 @@ function LimitTokenInput(props: propsIF) {
         isSaveAsDexSurplusChecked,
         handleLimitButtonMessage,
         toggleDexSelection,
+        amountToReduceEth,
     } = props;
 
     const {
@@ -76,8 +78,6 @@ function LimitTokenInput(props: propsIF) {
         isTokenAPrimary,
         isTokenAPrimaryRange,
         primaryQuantity,
-        limitTickCopied,
-        shouldLimitDirectionReverse,
         isDenomBase,
     } = useAppSelector((state) => state.tradeData);
 
@@ -91,28 +91,19 @@ function LimitTokenInput(props: propsIF) {
         : quoteTokenDexBalance;
 
     const reverseTokens = (): void => {
-        if (!location.pathname.includes('limitTick')) {
-            dispatch(setLimitTick(undefined));
-            dispatch(setPoolPriceNonDisplay(0));
-        }
+        dispatch(setLimitTick(undefined));
+        dispatch(setPoolPriceNonDisplay(0));
 
-        if (!limitTickCopied) {
-            linkGenLimit.navigate({
-                chain: chainId,
-                tokenA: tokenB.address,
-                tokenB: tokenA.address,
-            });
-        }
+        const limitLinkParams: limitParamsIF = {
+            chain: chainId,
+            tokenA: tokenB.address,
+            tokenB: tokenA.address,
+        };
+        // navigate user to limit page with URL params defined above
+        linkGenLimit.navigate(limitLinkParams);
         dispatch(setIsTokenAPrimary(!isTokenAPrimary));
         dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
     };
-
-    useEffect(() => {
-        if (shouldLimitDirectionReverse) {
-            reverseTokens();
-            dispatch(setShouldLimitDirectionReverse(false));
-        }
-    }, [shouldLimitDirectionReverse]);
 
     useEffect(() => {
         isTokenAPrimary
@@ -121,11 +112,7 @@ function LimitTokenInput(props: propsIF) {
     }, [tokenA.address, tokenB.address]);
 
     useEffect(() => {
-        if (!shouldLimitDirectionReverse) {
-            isTokenAPrimary
-                ? handleTokenAChangeEvent()
-                : handleTokenBChangeEvent();
-        }
+        isTokenAPrimary ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
     }, [limitTickDisplayPrice]);
 
     useEffect(() => {
@@ -195,7 +182,6 @@ function LimitTokenInput(props: propsIF) {
                     ? limitTickDisplayPrice * inputNum
                     : (1 / limitTickDisplayPrice) * inputNum;
             }
-
             handleLimitButtonMessage(rawTokenAQty);
         } else {
             if (!isDenomBase) {
@@ -208,7 +194,6 @@ function LimitTokenInput(props: propsIF) {
                     ? limitTickDisplayPrice * parseFloat(primaryQuantity)
                     : (1 / limitTickDisplayPrice) * parseFloat(primaryQuantity);
             }
-
             handleLimitButtonMessage(rawTokenAQty);
         }
         const truncatedTokenAQty = rawTokenAQty
@@ -222,7 +207,7 @@ function LimitTokenInput(props: propsIF) {
 
     return (
         <FlexContainer flexDirection='column' gap={8}>
-            <TokenInput
+            <TokenInputWithWalletBalance
                 fieldId='limit_sell'
                 tokenAorB='A'
                 token={tokenA}
@@ -239,12 +224,12 @@ function LimitTokenInput(props: propsIF) {
                     setTokenAInputQty(formatTokenInput(val, tokenA, isMax));
                 }}
                 showWallet={isUserConnected}
+                amountToReduceEth={amountToReduceEth}
             />
             <FlexContainer
                 fullWidth
                 justifyContent='center'
                 alignItems='center'
-                padding='0 0 8px 0'
             >
                 <IconWithTooltip title='Reverse tokens' placement='left'>
                     <TokensArrow
@@ -254,7 +239,7 @@ function LimitTokenInput(props: propsIF) {
                     />
                 </IconWithTooltip>
             </FlexContainer>
-            <TokenInput
+            <TokenInputWithWalletBalance
                 fieldId='limit_buy'
                 tokenAorB='B'
                 token={tokenB}

@@ -22,6 +22,7 @@ import { RangeContext } from '../../../../../contexts/RangeContext';
 import {
     useLinkGen,
     linkGenMethodsIF,
+    poolParamsIF,
 } from '../../../../../utils/hooks/useLinkGen';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
@@ -29,7 +30,7 @@ import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import RangeActionModal from '../../../../RangeActionModal/RangeActionModal';
 import { useModal } from '../../../Modal/useModal';
 import RangeDetailsModal from '../../../../RangeDetails/RangeDetailsModal/RangeDetailsModal';
-import { OptionButton } from '../../../Button/OptionButton';
+import { Chip } from '../../../../Form/Chip';
 import { FlexContainer } from '../../../../../styled/Common';
 
 // interface for React functional component props
@@ -157,6 +158,7 @@ export default function RangesMenu(props: propsIF) {
 
     const repositionButton = (
         <Link
+            id={`reposition_button_${position.positionId}`}
             className={styles.reposition_button}
             to={linkGenRepo.getFullURL({
                 chain: chainId,
@@ -183,16 +185,19 @@ export default function RangesMenu(props: propsIF) {
     );
 
     const removeButton = positionMatchesLoggedInUser ? (
-        <OptionButton
+        <Chip
+            id={`remove_position_${position.positionId}`}
             onClick={() => openActionModal('Remove')}
-            content='Remove'
-        />
+        >
+            Remove
+        </Chip>
     ) : null;
 
     const copyButton = position ? (
-        <OptionButton
+        <Chip
             onClick={() => {
-                linkGenPool.navigate({
+                // URL params for link to pool page
+                const poolLinkParams: poolParamsIF = {
                     chain: chainId,
                     tokenA:
                         rtkTokenA.toLowerCase() === position.quote.toLowerCase()
@@ -204,17 +209,22 @@ export default function RangesMenu(props: propsIF) {
                             : position.quote,
                     lowTick: position.bidTick.toString(),
                     highTick: position.askTick.toString(),
-                });
+                };
+                // navigate user to pool page with URL params defined above
+                linkGenPool.navigate(poolLinkParams);
                 handleCopyClick();
             }}
-            content={showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
-        />
+        >
+            {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
+        </Chip>
     ) : null;
 
     const addButton = (
-        <OptionButton
+        <Chip
+            id={`add_liquidity_position_${position.positionId}`}
             onClick={() => {
-                linkGenPool.navigate({
+                // URL params for link to pool page
+                const poolLinkParams: poolParamsIF = {
                     chain: chainId,
                     tokenA:
                         rtkTokenA.toLowerCase() === position.quote.toLowerCase()
@@ -226,42 +236,39 @@ export default function RangesMenu(props: propsIF) {
                             : position.quote,
                     lowTick: position.bidTick.toString(),
                     highTick: position.askTick.toString(),
-                });
+                };
+                // navigate user to pool page with URL params defined above
+                linkGenPool.navigate(poolLinkParams);
                 handleCopyClick();
                 setCurrentRangeInAdd(position.positionId);
             }}
-            content='Add'
-        />
+        >
+            Add
+        </Chip>
     );
 
-    const detailsButton = (
-        <OptionButton onClick={openDetailsModal} content='Details' />
-    );
+    const detailsButton = <Chip onClick={openDetailsModal}>Details</Chip>;
     const harvestButton =
         !isAmbient && positionMatchesLoggedInUser ? (
-            <OptionButton
+            <Chip
+                id={`harvest_position_${position.positionId}`}
                 onClick={() => openActionModal('Harvest')}
-                content='Harvest'
-            />
+            >
+                Harvest
+            </Chip>
         ) : null;
 
     // ----------------------
 
     const walletButton = (
-        <OptionButton
-            ariaLabel='View wallet.'
-            onClick={props.handleAccountClick}
-            content={
-                <>
-                    Wallet
-                    <FiExternalLink
-                        size={15}
-                        color='white'
-                        style={{ marginLeft: '.5rem' }}
-                    />
-                </>
-            }
-        />
+        <Chip ariaLabel='View wallet.' onClick={props.handleAccountClick}>
+            Wallet
+            <FiExternalLink
+                size={15}
+                color='white'
+                style={{ marginLeft: '.5rem' }}
+            />
+        </Chip>
     );
 
     const rangesMenu = (
@@ -324,6 +331,23 @@ export default function RangesMenu(props: propsIF) {
         } else return;
     }, [showDropdownMenu]);
 
+    const [cachedPosition, setCachedPosition] = useState<
+        PositionIF | undefined
+    >();
+
+    useEffect(() => {
+        if (isRangeActionModalOpen || isRangeDetailsModalOpen) {
+            if (
+                !cachedPosition ||
+                position.positionId === cachedPosition.positionId
+            ) {
+                setCachedPosition({ ...position } as PositionIF);
+            }
+        } else {
+            setCachedPosition(undefined);
+        }
+    }, [isRangeActionModalOpen, isRangeDetailsModalOpen, position]);
+
     return (
         <FlexContainer justifyContent='flex-end'>
             <div
@@ -334,19 +358,19 @@ export default function RangesMenu(props: propsIF) {
                 {rangesMenu}
                 {dropdownRangesMenu}
             </div>
-            {isRangeDetailsModalOpen && (
+            {isRangeDetailsModalOpen && cachedPosition && (
                 <RangeDetailsModal
-                    position={position}
+                    position={cachedPosition}
                     onClose={closeRangeDetailsModal}
                     {...rangeDetailsProps}
                 />
             )}
-            {isRangeActionModalOpen && (
+            {isRangeActionModalOpen && cachedPosition && (
                 <RangeActionModal
                     type={rangeModalAction}
                     isOpen={isRangeActionModalOpen}
                     onClose={handleActionModalClose}
-                    position={position}
+                    position={cachedPosition}
                     {...rangeDetailsProps}
                 />
             )}

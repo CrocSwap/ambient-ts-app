@@ -1,5 +1,6 @@
 import {
     ChangeEvent,
+    FocusEvent,
     Dispatch,
     memo,
     SetStateAction,
@@ -18,7 +19,7 @@ import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { exponentialNumRegEx } from '../../../../../utils/regex/exports';
 import { FlexContainer, Text } from '../../../../../styled/Common';
 
-interface MinMaxPriceIF {
+interface propsIF {
     minPricePercentage: number;
     maxPricePercentage: number;
     minPriceInputString: string;
@@ -37,7 +38,7 @@ interface MinMaxPriceIF {
     setMinPrice: Dispatch<SetStateAction<number>>;
 }
 
-function MinMaxPrice(props: MinMaxPriceIF) {
+function MinMaxPrice(props: propsIF) {
     const {
         minPricePercentage,
         maxPricePercentage,
@@ -61,63 +62,47 @@ function MinMaxPrice(props: MinMaxPriceIF) {
 
     const dispatch = useAppDispatch();
 
-    const handleSetMinTarget = (minPriceInput: string) => {
-        setMinPriceInputString(minPriceInput);
-        if (!isDenomBase) {
-            setMaxPrice(parseFloat(minPriceInput));
-        } else {
-            setMinPrice(parseFloat(minPriceInput));
-        }
-    };
-
-    const handleSetMaxTarget = (maxPriceInput: string) => {
-        setMaxPriceInputString(maxPriceInput);
-
-        if (!isDenomBase) {
-            setMinPrice(parseFloat(maxPriceInput));
-        } else {
-            setMaxPrice(parseFloat(maxPriceInput));
-        }
-    };
-
-    const handleMinPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
+    const handleMinPriceChangeEvent = (
+        evt?: ChangeEvent<HTMLInputElement>,
+    ): void => {
         if (evt) {
             const targetValue = evt.target.value.replaceAll(',', '');
             const input = targetValue.startsWith('.')
                 ? '0' + targetValue
                 : targetValue;
             const isValid = exponentialNumRegEx.test(input);
-
             if (isValid) {
-                handleSetMinTarget(targetValue);
+                setMinPriceInputString(targetValue);
+                const targetAsFloat: number = parseFloat(targetValue);
+                isDenomBase
+                    ? setMinPrice(targetAsFloat)
+                    : setMaxPrice(targetAsFloat);
             }
         } else {
             IS_LOCAL_ENV && console.debug('no event');
         }
     };
 
-    const handleMaxPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
+    const handleMaxPriceChangeEvent = (
+        evt?: ChangeEvent<HTMLInputElement>,
+    ): void => {
         if (evt) {
             const targetValue = evt.target.value.replaceAll(',', '');
             const input = targetValue.startsWith('.')
                 ? '0' + targetValue
                 : targetValue;
-
             const isValid = exponentialNumRegEx.test(input);
             if (isValid) {
-                handleSetMaxTarget(targetValue);
+                setMaxPriceInputString(targetValue);
+                const targetAsFloat: number = parseFloat(targetValue);
+                isDenomBase
+                    ? setMaxPrice(targetAsFloat)
+                    : setMinPrice(targetAsFloat);
             }
         } else {
             IS_LOCAL_ENV && console.debug('no event');
         }
     };
-
-    const disableInputContent = (
-        <Text fontSize='body' color='negative'>
-            Invalid range selected. The min price must be lower than the max
-            price.
-        </Text>
-    );
 
     useEffect(() => {
         if (maxPrice !== undefined && minPrice !== undefined) {
@@ -130,17 +115,46 @@ function MinMaxPrice(props: MinMaxPriceIF) {
         }
     }, [maxPrice, minPrice]);
 
-    const increaseLowTick = () => {
-        dispatch(setAdvancedLowTick(rangeLowTick + tickSize));
+    const increaseLowTick = (): void => {
+        const updatedTick: number = rangeLowTick + tickSize;
+        dispatch(setAdvancedLowTick(updatedTick));
     };
-    const increaseHighTick = () => {
-        dispatch(setAdvancedHighTick(rangeHighTick + tickSize));
+
+    const increaseHighTick = (): void => {
+        const updatedTick: number = rangeHighTick + tickSize;
+        dispatch(setAdvancedHighTick(updatedTick));
     };
-    const decreaseLowTick = () => {
-        dispatch(setAdvancedLowTick(rangeLowTick - tickSize));
+
+    const decreaseLowTick = (): void => {
+        const updatedTick: number = rangeLowTick - tickSize;
+        dispatch(setAdvancedLowTick(updatedTick));
     };
-    const decreaseHighTick = () => {
-        dispatch(setAdvancedHighTick(rangeHighTick - tickSize));
+
+    const decreaseHighTick = (): void => {
+        const updatedTick: number = rangeHighTick - tickSize;
+        dispatch(setAdvancedHighTick(updatedTick));
+    };
+
+    // event handler for blurring the `Min Price` input field
+    const blurLowBoundInput = (
+        event: FocusEvent<HTMLInputElement, Element>,
+    ): void => {
+        isDenomBase
+            ? handleMinPriceChangeEvent(event)
+            : handleMaxPriceChangeEvent(event);
+        // flip an arbitrary bool in local state of `Range.tsx`
+        lowBoundOnBlur();
+    };
+
+    // event handler for blurring the `Max Price` input field
+    const blurHighBoundInput = (
+        event: FocusEvent<HTMLInputElement, Element>,
+    ): void => {
+        isDenomBase
+            ? handleMaxPriceChangeEvent(event)
+            : handleMinPriceChangeEvent(event);
+        // flip an arbitrary bool in local state of `Range.tsx`
+        highBoundOnBlur();
     };
 
     return (
@@ -158,17 +172,12 @@ function MinMaxPrice(props: MinMaxPriceIF) {
                     title='Min Price'
                     percentageDifference={minPricePercentage}
                     handleChangeEvent={() => undefined}
-                    onBlur={(event) => {
-                        !isDenomBase
-                            ? handleMaxPriceChangeEvent(event)
-                            : handleMinPriceChangeEvent(event);
-                        lowBoundOnBlur();
-                    }}
+                    onBlur={blurLowBoundInput}
                     increaseTick={
-                        !isDenomBase ? increaseLowTick : decreaseHighTick
+                        isDenomBase ? decreaseHighTick : increaseLowTick
                     }
                     decreaseTick={
-                        !isDenomBase ? decreaseLowTick : increaseHighTick
+                        isDenomBase ? increaseHighTick : decreaseLowTick
                     }
                 />
                 <PriceInput
@@ -176,21 +185,21 @@ function MinMaxPrice(props: MinMaxPriceIF) {
                     title='Max Price'
                     percentageDifference={maxPricePercentage}
                     handleChangeEvent={() => undefined}
-                    onBlur={(event) => {
-                        !isDenomBase
-                            ? handleMinPriceChangeEvent(event)
-                            : handleMaxPriceChangeEvent(event);
-                        highBoundOnBlur();
-                    }}
+                    onBlur={blurHighBoundInput}
                     increaseTick={
-                        !isDenomBase ? increaseHighTick : decreaseLowTick
+                        isDenomBase ? decreaseLowTick : increaseHighTick
                     }
                     decreaseTick={
-                        !isDenomBase ? decreaseHighTick : increaseLowTick
+                        isDenomBase ? increaseLowTick : decreaseHighTick
                     }
                 />
             </FlexContainer>
-            {disable && disableInputContent}
+            {disable && (
+                <Text fontSize='body' color='negative'>
+                    Invalid range selected. The min price must be lower than the
+                    max price.
+                </Text>
+            )}
         </FlexContainer>
     );
 }

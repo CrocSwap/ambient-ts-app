@@ -10,7 +10,7 @@ import TransactionDetailsGraph from '../../Global/TransactionDetails/Transaction
 import { useProcessRange } from '../../../utils/hooks/useProcessRange';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { GRAPHCACHE_SMALL_URL } from '../../../constants';
+import { GCGO_OVERRIDE_URL } from '../../../constants';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
@@ -80,6 +80,7 @@ export default function RangeDetailsModal(props: propsIF) {
     } = useContext(CachedDataContext);
     const {
         chainData: { chainId, poolIndex },
+        provider,
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
 
@@ -120,7 +121,7 @@ export default function RangeDetailsModal(props: propsIF) {
         number | undefined
     >(positionApy);
 
-    const { crocEnv } = useContext(CrocEnvContext);
+    const { crocEnv, activeNetwork } = useContext(CrocEnvContext);
 
     const { posHash } = useProcessRange(position, userAddress);
 
@@ -132,8 +133,9 @@ export default function RangeDetailsModal(props: propsIF) {
     }
 
     useEffect(() => {
-        const positionStatsCacheEndpoint =
-            GRAPHCACHE_SMALL_URL + '/position_stats?';
+        const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
+            ? GCGO_OVERRIDE_URL + '/position_stats?'
+            : activeNetwork.graphCacheUrl + '/position_stats?';
 
         if (position.positionType) {
             fetch(
@@ -151,7 +153,7 @@ export default function RangeDetailsModal(props: propsIF) {
             )
                 .then((response) => response?.json())
                 .then(async (json) => {
-                    if (!crocEnv || !json?.data) {
+                    if (!crocEnv || !provider || !json?.data) {
                         setBaseCollateralDisplay(undefined);
                         setQuoteCollateralDisplay(undefined);
                         setUsdValue(undefined);
@@ -165,6 +167,7 @@ export default function RangeDetailsModal(props: propsIF) {
                         positionPayload,
                         tokens.tokenUniv,
                         crocEnv,
+                        provider,
                         chainId,
                         lastBlockNumber,
                         cachedFetchTokenPrice,
@@ -219,7 +222,7 @@ export default function RangeDetailsModal(props: propsIF) {
                 })
                 .catch(console.error);
         }
-    }, [lastBlockNumber, crocEnv, chainId]);
+    }, [lastBlockNumber, !!crocEnv, !!provider, chainId]);
 
     const shareComponent = (
         <div ref={detailsRef} className={styles.main_outer_container}>

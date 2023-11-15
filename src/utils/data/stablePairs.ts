@@ -1,42 +1,68 @@
-// Arbitrary list of stable or stabl-ish USD pegged coins indexed by chain ID
-const STABLE_TOKENS_BY_CHAIN = {
-    '0x1': [
-        '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
-        '0x6B175474E89094C44Da98b954EedeAC495271d0F', // DAI
-    ],
-    '0x5': [
-        '0xdc31Ee1784292379Fbb2964b3B9C4124D8F89C60', // DAI
-        '0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C', // USDC
-    ],
-    '0x66eed': [
-        '0xc944b73fba33a773a4a07340333a3184a70af1ae', // USDC
-    ],
-};
-
-type StableMapKey = keyof typeof STABLE_TOKENS_BY_CHAIN;
-
 // @return true if the two tokens constitute a stable pair (USD based stables only for now)
 //
 // NOTE: Definition of what constitutes a "stable pair" is arbitrary and just based
 //       on the devs discretion. Users should not assume that true/false implies
+
+import {
+    arbGoerliDAI,
+    arbGoerliUSDC,
+    goerliDAI,
+    goerliUSDC,
+    goerliUSDT,
+    mainnetDAI,
+    mainnetUSDC,
+    mainnetUSDT,
+    scrollAxlUSDC,
+    scrollSepoliaUSDC,
+    scrollUSDC,
+} from './defaultTokens';
+
 //       any sort of specific guaranteed relation between the tokens.
-export function isStablePair(
-    addr1: string,
-    addr2: string,
-    chain: string,
-): boolean {
-    return isStableToken(addr1, chain) && isStableToken(addr2, chain);
+export function isStablePair(addr1: string, addr2: string): boolean {
+    return isStableToken(addr1) && isStableToken(addr2);
 }
 
 // @return true if the token represents a USD-based stablecoin
 // NOTE: Decision of whether a token counts as stable or not is arbitrary and just at the
 //       discretion of the app authors
-export function isStableToken(addr: string, chain: string): boolean {
-    if (!(chain in STABLE_TOKENS_BY_CHAIN)) {
-        return false;
-    }
-
-    return STABLE_TOKENS_BY_CHAIN[chain as StableMapKey]
-        .map((x: string) => x.toLowerCase())
-        .includes(addr.toLowerCase());
+export function isStableToken(addr: string): boolean {
+    return STABLE_USD_TOKENS.includes(addr.toLowerCase());
 }
+
+export function isUsdcToken(addr: string): boolean {
+    return USDC_TOKENS.includes(addr.toLowerCase());
+}
+
+// @return true if the token is a WETH or wrapped native token asset
+export function isWethToken(addr: string): boolean {
+    return WETH_TOKENS.includes(addr.toLowerCase());
+}
+
+// No need to specify chain ID because token address is unique even across chains
+export const STABLE_USD_TOKENS = [
+    mainnetDAI.address,
+    mainnetUSDC.address,
+    mainnetUSDT.address,
+    goerliDAI.address,
+    goerliUSDC.address,
+    goerliUSDT.address,
+    arbGoerliDAI.address,
+    arbGoerliUSDC.address,
+    scrollUSDC.address,
+    scrollAxlUSDC.address,
+    scrollSepoliaUSDC.address,
+].map((x) => x.toLowerCase());
+
+export const USDC_TOKENS = [
+    mainnetUSDC.address,
+    goerliUSDC.address,
+    arbGoerliUSDC.address,
+    scrollSepoliaUSDC.address,
+    scrollUSDC.address,
+].map((x) => x.toLowerCase());
+
+export const WETH_TOKENS = [
+    '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // Mainnet
+    '0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6', // Goerli
+    '0x5300000000000000000000000000000000000004', // Scroll (test and main)
+].map((x) => x.toLowerCase());
