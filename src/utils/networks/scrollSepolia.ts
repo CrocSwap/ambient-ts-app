@@ -3,6 +3,7 @@ import { scrollSepoliaETH, scrollSepoliaUSDC } from '../data/defaultTokens';
 import { TopPool } from '../data/defaultTopPools';
 import { NetworkIF } from '../interfaces/NetworkIF';
 import { Provider } from '@ethersproject/providers';
+import { GCGO_SCROLL_URL } from '../../constants';
 
 const wagmiChain = {
     id: 534351,
@@ -15,10 +16,10 @@ const wagmiChain = {
     },
     rpcUrls: {
         default: {
-            http: ['https://sepolia-rpc.scroll.io'],
+            http: ['https://sepolia-rpc.scroll.io/'],
         },
         public: {
-            http: ['https://sepolia-rpc.scroll.io'],
+            http: ['https://sepolia-rpc.scroll.io/'],
         },
     },
     blockExplorers: {
@@ -32,6 +33,7 @@ const wagmiChain = {
 
 export const scrollSepolia: NetworkIF = {
     chainId: '0x8274f',
+    graphCacheUrl: GCGO_SCROLL_URL,
     wagmiChain,
     shouldPollBlock: true,
     marketData: '0x1',

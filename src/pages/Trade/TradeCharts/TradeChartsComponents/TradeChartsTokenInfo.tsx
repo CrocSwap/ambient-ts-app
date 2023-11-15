@@ -182,10 +182,15 @@ function TradeChartsTokenInfo() {
 
     const denomToggleButton = (
         <HeaderButtons
+            id='token_pair_in_chart_header'
             aria-label='flip denomination.'
             onClick={() => dispatch(toggleDidUserFlipDenom())}
         >
-            <FlexContainer id='trade_token_pair' role='button' gap={4}>
+            <FlexContainer
+                id='trade_chart_header_token_pair_logos'
+                role='button'
+                gap={4}
+            >
                 <TokenIcon
                     token={topToken}
                     src={topToken.logoURI}
@@ -200,6 +205,7 @@ function TradeChartsTokenInfo() {
                 />
             </FlexContainer>
             <HeaderText
+                id='trade_chart_header_token_pair_symbols'
                 fontSize='header1'
                 fontWeight='300'
                 color='text1'

@@ -27,9 +27,10 @@ export const fetchTokenBalances = async (
     address: string,
     chain: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _lastBlockNumber: number,
+    _refreshTime: number,
     cachedTokenDetails: FetchContractDetailsFn,
     crocEnv: CrocEnv | undefined,
+    graphCacheUrl: string,
     client: Client,
 ): Promise<TokenIF[] | undefined> => {
     if (!crocEnv) return;
@@ -53,6 +54,7 @@ export const fetchTokenBalances = async (
         chainId: chain,
         user: address,
         crocEnv: crocEnv,
+        graphCacheUrl: graphCacheUrl,
         cachedTokenDetails: cachedTokenDetails,
     });
 
@@ -129,12 +131,13 @@ export const fetchTokenBalances = async (
 };
 
 export type TokenBalancesQueryFn = (
-    token: string,
+    address: string,
     chain: string,
-    lastBlock: number,
+    refreshTime: number,
     cachedTokenDetails: FetchContractDetailsFn,
     crocEnv: CrocEnv | undefined,
-    client?: Client,
+    graphCacheUrl: string,
+    client: Client,
 ) => Promise<TokenIF[]>;
 
 export function memoizeFetchTokenBalances(): TokenBalancesQueryFn {

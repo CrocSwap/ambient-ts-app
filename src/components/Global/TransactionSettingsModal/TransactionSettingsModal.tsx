@@ -64,7 +64,6 @@ export default function TransactionSettingsModal(props: propsIF) {
                 flexDirection='column'
                 justifyContent='space-between'
                 gap={12}
-                background='dark1'
                 padding='16px'
             >
                 <section>
@@ -110,6 +109,7 @@ export default function TransactionSettingsModal(props: propsIF) {
                 </section>
                 <div style={{ padding: '0 16px' }}>
                     <Button
+                        idForDOM='update_settings_button'
                         title={
                             module === 'Limit Order'
                                 ? 'Submit Settings'

@@ -15,20 +15,19 @@ export const IS_LOCAL_ENV = APP_ENVIRONMENT === 'local';
 
 export const ANALYTICS_URL =
     process.env.REACT_APP_ANALYTICS_URL ||
-    'https://crocswap-analytics-tools-service-dfxb5x3tja-uc.a.run.app/run?';
+    'https://ambindexer.net/analytics/run?';
 
-export const GRAPHCACHE_URL =
-    process.env.REACT_APP_GRAPHCACHE_URL || 'https://ambindexer.net';
+export const GCGO_ETHEREUM_URL =
+    process.env.REACT_APP_GCGO_ETHEREUM_URL || 'https://ambindexer.net/gcgo';
+export const GCGO_SCROLL_URL =
+    process.env.GCGO_SCROLL_URL || 'https://ambindexer.net/scroll-gcgo';
+export const GCGO_OVERRIDE_URL = process.env.REACT_APP_GCGO_OVERRIDE_URL;
 
-export const GRAPHCACHE_SMALL_URL =
-    process.env.REACT_APP_GRAPHCACHE_SMALL_URL || 'https://ambindexer.net/gcgo';
-
-export const GRAPHCACHE_WSS_URL =
-    process.env.REACT_APP_GRAPHCACHE_WSS_URL ||
-    GRAPHCACHE_URL.replace('http', 'ws');
+export const HISTORICAL_CANDLES_URL =
+    process.env.REACT_APP_HISTORICAL_CANDLES_URL || 'https://ambindexer.net';
 
 export const CHAT_BACKEND_URL =
-    process.env.REACT_APP_CHAT_URL || `${GRAPHCACHE_URL}`;
+    process.env.REACT_APP_CHAT_URL || `${HISTORICAL_CANDLES_URL}`;
 
 export const CHAT_BACKEND_WSS_URL =
     process.env.REACT_APP_CHAT_WSS_URL ||
@@ -38,6 +37,11 @@ export const CHAT_ENABLED =
     process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
         ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
         : true;
+
+export const INCLUDE_CANTO_LINK =
+    process.env.REACT_APP_INCLUDE_CANTO_LINK !== undefined
+        ? process.env.REACT_APP_INCLUDE_CANTO_LINK.toLowerCase() === 'true'
+        : false;
 
 export const DISABLE_INIT_SETTINGS =
     process.env.REACT_APP_DISABLE_INIT_SETTINGS !== undefined
@@ -53,6 +57,7 @@ export const GITHUB_LINK = 'https://github.com/CrocSwap';
 export const TWITTER_LINK = 'https://twitter.com/ambient_finance';
 export const DISCORD_LINK = 'https://discord.gg/ambient-finance';
 export const MEDIUM_LINK = 'https://crocswap.medium.com/';
+export const CORPORATE_LINK = 'https://www.crocswap.com/';
 
 export const OVERRIDE_CANDLE_POOL_ID = 36000;
 

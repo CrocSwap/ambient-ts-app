@@ -12,6 +12,7 @@ import { NetworkIF } from '../interfaces/exports';
 
 export const ethereumGoerli: NetworkIF = {
     chainId: '0x5',
+    graphCacheUrl: 'https://ambindexer.net/gcgo',
     wagmiChain,
     shouldPollBlock: false,
     marketData: '0x1',

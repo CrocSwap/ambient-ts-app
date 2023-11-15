@@ -12,6 +12,7 @@ import { Provider } from '@ethersproject/providers';
 
 export const arbitrumGoerli: NetworkIF = {
     chainId: '0x66eed',
+    graphCacheUrl: 'https://ambindexer.net/gcgo',
     wagmiChain,
     shouldPollBlock: true,
     marketData: '0x1',
