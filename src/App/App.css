@@ -48,7 +48,7 @@ html {
 
 svg {
     color: var(--text2);
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 }
 
 svg:hover {
@@ -64,13 +64,18 @@ button:hover > svg {
 button,
 svg,
 a {
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 }
 
 a {
     color: unset;
     text-decoration: none;
     /* position: relative;  */
+}
+
+input:disabled {
+    color: var(--text3);
+    cursor: default;
 }
 
 body {
@@ -169,7 +174,7 @@ p:focus-visible {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-radius: var(--border-radius);
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 }
 /* CSSTransition classes  */
 .menu-primary-enter {
@@ -254,19 +259,22 @@ input[type='number'] {
 
 @media only screen and (min-width: 1280px) {
     .sidebar_content_layout {
-        transition: all var(--animation-speed) ease-in-out;
+        transition: var(--transition);
         display: grid;
         grid-template-columns: 296px auto;
+        overflow-y: hidden;
     }
     .sidebar_content_layout_close {
-        transition: all var(--animation-speed) ease-in-out;
+        transition: var(--transition);
 
         display: grid;
         grid-template-columns: 32px auto;
+        overflow-y: hidden;
     }
 
     .content-container {
-        overflow: auto;
+        overflow-y: auto;
+        overflow-x: hidden;
         height: 100vh;
 
         background: var(--dark1);

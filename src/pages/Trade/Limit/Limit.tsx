@@ -36,10 +36,7 @@ import {
     addReceipt,
     updateTransactionHash,
 } from '../../../utils/state/receiptDataSlice';
-import {
-    setLimitTick,
-    setLimitTickCopied,
-} from '../../../utils/state/tradeDataSlice';
+import { setLimitTick } from '../../../utils/state/tradeDataSlice';
 import {
     TransactionError,
     isTransactionReplacedError,
@@ -85,10 +82,9 @@ export default function Limit() {
         poolPriceNonDisplay,
         liquidityFee,
         isDenomBase,
-        limitTickCopied,
         primaryQuantity,
     } = useAppSelector((state) => state.tradeData);
-    const { limitTickFromParams } = useTradeData();
+    const { urlParamMap, updateURL } = useTradeData();
 
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
     const [tokenAInputQty, setTokenAInputQty] = useState<string>(
@@ -119,6 +115,8 @@ export default function Limit() {
     const [previousDisplayPrice, setPreviousDisplayPrice] = useState('');
     const [isOrderValid, setIsOrderValid] = useState<boolean>(true);
 
+    // TODO: is possible we can convert this to use the TradeTokenContext
+    // However, unsure if the fact that baseToken comes from pool affects this
     const isSellTokenBase = pool?.baseToken.tokenAddr === tokenA.address;
 
     const tokenABalance = isSellTokenBase
@@ -139,6 +137,9 @@ export default function Limit() {
     const isTokenAAllowanceSufficient =
         parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
 
+    const isTokenAWalletBalanceSufficient =
+        parseFloat(tokenABalance) >= tokenAQtyCoveredByWalletBalance;
+
     // TODO: @Emily refactor this to take a token data object
     // values if either token needs to be confirmed before transacting
     const needConfirmTokenA = !tokens.verify(tokenA.address);
@@ -154,25 +155,9 @@ export default function Limit() {
         },
     );
 
-    // trigger re-pinning to a default tick
-    useEffect(() => {
-        dispatch(setLimitTick(undefined));
-    }, [tokenA.address]);
-
-    useEffect(() => {
-        if (limitTickFromParams && limitTick === undefined) {
-            dispatch(setLimitTick(limitTickFromParams));
-        }
-    }, [limitTickFromParams, limitTick === undefined]);
-
     useEffect(() => {
         (async () => {
-            if (
-                limitTick === undefined &&
-                !!poolPriceNonDisplay &&
-                crocEnv &&
-                !limitTickCopied
-            ) {
+            if (limitTick === undefined && !!poolPriceNonDisplay && crocEnv) {
                 if (!pool) return;
 
                 const spotPrice = await cachedQuerySpotPrice(
@@ -256,7 +241,7 @@ export default function Limit() {
                         });
                     }
                 }
-            } else if (limitTick) {
+            } else if (limitTick !== undefined) {
                 if (!pool) return;
 
                 const tickPrice = tickToPrice(limitTick);
@@ -326,13 +311,11 @@ export default function Limit() {
                 }
 
                 setPriceInputFieldBlurred(false);
-                if (limitTickCopied) dispatch(setLimitTickCopied(false));
             }
         })();
     }, [
         !!crocEnv,
         pool,
-        limitTickCopied,
         limitTick,
         isDenomBase,
         priceInputFieldBlurred,
@@ -340,27 +323,72 @@ export default function Limit() {
         !!poolPriceNonDisplay,
     ]);
 
+    const updateOrderValidityStatus = async () => {
+        try {
+            if (!crocEnv) return;
+            if (limitTick === undefined) return;
+            if (tokenAInputQty === '' && tokenBInputQty === '') return;
+
+            const tknA: string = urlParamMap.get('tokenA') as string;
+            const tknB: string = urlParamMap.get('tokenB') as string;
+            const limitTickParam: string = urlParamMap.get(
+                'limitTick',
+            ) as string;
+            if (limitTickParam && limitTickParam !== limitTick.toString())
+                return;
+            const testOrder = isTokenAPrimary
+                ? crocEnv.sell(tknA, 0)
+                : crocEnv.buy(tknB, 0);
+
+            const ko = testOrder.atLimit(
+                isTokenAPrimary ? tknB : tknA,
+                limitTick,
+            );
+
+            if (await ko.willMintFail()) {
+                updateLimitErrorMessage();
+                setIsOrderValid(false);
+                return;
+            } else {
+                setIsOrderValid(true);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     useEffect(() => {
         updateOrderValidityStatus();
     }, [
         limitTick,
         poolPriceNonDisplay,
         tokenAInputQty === '' && tokenBInputQty === '',
+        urlParamMap,
     ]);
 
     useEffect(() => {
         setNewLimitOrderTransactionHash('');
     }, [baseToken.address + quoteToken.address]);
 
+    const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
+
     useEffect(() => {
         handleLimitButtonMessage(parseFloat(tokenAInputQty));
-    }, [isOrderValid, tokenAInputQty, isPoolInitialized, poolPriceNonDisplay]);
+    }, [
+        isOrderValid,
+        tokenAInputQty,
+        isPoolInitialized,
+        poolPriceNonDisplay,
+        limitTick,
+        isSellTokenBase,
+        isSellTokenNativeToken,
+        tokenAQtyCoveredByWalletBalance,
+        tokenABalance,
+    ]);
 
     useEffect(() => {
         setIsWithdrawFromDexChecked(parseFloat(tokenADexBalance) > 0);
     }, [tokenADexBalance]);
-
-    const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
@@ -407,34 +435,6 @@ export default function Limit() {
                     : 'Below Minimum'
             }  Price`,
         );
-
-    const updateOrderValidityStatus = async () => {
-        try {
-            if (!crocEnv) return;
-            if (!limitTick) return;
-
-            if (tokenAInputQty === '' && tokenBInputQty === '') return;
-
-            const testOrder = isTokenAPrimary
-                ? crocEnv.sell(tokenA.address, 0)
-                : crocEnv.buy(tokenB.address, 0);
-
-            const ko = testOrder.atLimit(
-                isTokenAPrimary ? tokenB.address : tokenA.address,
-                limitTick,
-            );
-
-            if (await ko.willMintFail()) {
-                updateLimitErrorMessage();
-                setIsOrderValid(false);
-                return;
-            } else {
-                setIsOrderValid(true);
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
 
     const sendLimitOrder = async () => {
         if (!crocEnv) return;
@@ -538,6 +538,14 @@ export default function Limit() {
         }
     };
 
+    const amountToReduceEthMainnet = 0.005; // .005 ETH
+    const amountToReduceEthScroll = 0.0003; // .0003 ETH
+
+    const amountToReduceEth =
+        chainId === '0x82750' || chainId === '0x8274f'
+            ? amountToReduceEthScroll
+            : amountToReduceEthMainnet;
+
     const handleLimitButtonMessage = (tokenAAmount: number) => {
         if (!isPoolInitialized) {
             setLimitAllowed(false);
@@ -577,6 +585,15 @@ export default function Limit() {
                     setLimitButtonErrorMessage(
                         `${tokenA.symbol} Amount Exceeds Wallet Balance`,
                     );
+                } else if (
+                    isSellTokenNativeToken &&
+                    tokenAQtyCoveredByWalletBalance + amountToReduceEth >
+                        parseFloat(tokenABalance)
+                ) {
+                    setLimitAllowed(false);
+                    setLimitButtonErrorMessage(
+                        'Wallet Balance Insufficient to Cover Gas',
+                    );
                 } else {
                     setLimitAllowed(true);
                 }
@@ -613,6 +630,7 @@ export default function Limit() {
 
     return (
         <TradeModuleSkeleton
+            chainId={chainId}
             header={
                 <TradeModuleHeader
                     slippage={mintSlippage}
@@ -645,7 +663,7 @@ export default function Limit() {
                     setPreviousDisplayPrice={setPreviousDisplayPrice}
                     isSellTokenBase={isSellTokenBase}
                     setPriceInputFieldBlurred={setPriceInputFieldBlurred}
-                    fieldId='limit-rate'
+                    updateURL={updateURL}
                 />
             }
             transactionDetails={
@@ -685,6 +703,7 @@ export default function Limit() {
             }
             button={
                 <Button
+                    idForDOM='confirm_limit_order_button'
                     title={
                         areBothAckd
                             ? limitAllowed
@@ -723,9 +742,12 @@ export default function Limit() {
                 ) : undefined
             }
             approveButton={
+                isPoolInitialized &&
                 !isTokenAAllowanceSufficient &&
+                isTokenAWalletBalanceSufficient &&
                 parseFloat(tokenAInputQty) > 0 ? (
                     <Button
+                        idForDOM='approve_limit_order_button'
                         title={
                             !isApprovalPending
                                 ? `Approve ${tokenA.symbol}`

@@ -28,7 +28,6 @@ export default function Menu(props: propsIF) {
     };
 
     const setReplyMessage = () => {
-        console.log(props.message);
         props.setIsReplyButtonPressed(!props.isReplyButtonPressed);
         props.setReplyMessageContent(props.message);
     };
@@ -75,15 +74,12 @@ export default function Menu(props: propsIF) {
         ${props.riseToBottom ? styles.rise_to_bottom : ''}
         `}
             onMouseOver={() => {
-                console.log('mouse over');
                 props.setIsMoreButtonPressed(true);
             }}
             onMouseEnter={() => {
-                console.log('mouse enter');
                 props.setIsMoreButtonPressed(true);
             }}
             onMouseLeave={() => {
-                console.log('mouse leave');
                 props.setIsMoreButtonPressed(false);
             }}
         >

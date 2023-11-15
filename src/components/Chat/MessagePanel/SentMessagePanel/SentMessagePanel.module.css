@@ -51,7 +51,7 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 10px;
+    font-size: var(--mini-size);
     line-height: 10px;
     align-self: flex-end;
 
@@ -72,8 +72,8 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 10px;
-    line-height: 12px;
+    font-size: var(--mini-size);
+    line-height: var(--mini-lh);
     text-align: center;
 
     /* text/grey dark */
@@ -94,8 +94,8 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 12px;
-    line-height: 15px;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
     flex-grow: 5px !important;
     margin-left: 10px;
     width: 85%;
@@ -141,8 +141,8 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 12px;
-    line-height: 15px;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
     flex-grow: 5px !important;
     margin: 2px 10px;
     width: 85%;
@@ -211,8 +211,8 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 12px;
-    line-height: 15px;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
     flex-grow: 5px !important;
     margin: 10px;
     width: 85%;
@@ -234,6 +234,7 @@
     width: 80%;
     height: 80%;
 }
+
 
 .right_image_box {
     display: flex;
@@ -261,6 +262,11 @@
     padding: .2rem 0;
     
 }
+
+.not_verified{
+    opacity: .5;
+}
+
 
 .sent_message_body_with_mention {
     flex-grow: 5 !important;
@@ -290,7 +296,7 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 12px;
+    font-size: var(--body-size);
     line-height: 16px;
     display: flex;
     align-items: center;
@@ -309,7 +315,19 @@
 }
 
 .current_user_name {
-  
+    width: 82px;
+    height: 14px;
+    cursor: pointer;
+
+    /* small */
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: var(--body-size);
+    line-height: 16px;
+    display: flex;
+    align-items: center;
+
     /* accent/secondary */
     color: var(--accent1);
 
@@ -792,6 +810,10 @@
     /* color: var(--text1); */
     align-self: stretch;
     word-break: break-word;
+}
+
+.message_block.not_verified{
+    opacity: .5;
 }
 
 .message_token{

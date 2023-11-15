@@ -24,6 +24,7 @@ const useChatSocket = (
     isChatOpen = true,
     address?: string,
     ensName?: string | null,
+    currentUserID?: string,
 ) => {
     // eslint-disable-next-line
     const socketRef: any = useRef();
@@ -37,6 +38,7 @@ const useChatSocket = (
     const [userMap, setUserMap] = useState<Map<string, User>>(
         new Map<string, User>(),
     );
+    const [userVrfToken, setUserVrfToken] = useState<string>('');
 
     const messagesRef = useRef<Message[]>([]);
     messagesRef.current = messages;
@@ -222,6 +224,8 @@ const useChatSocket = (
         });
         setUserMap(usmp);
         setUsers(userListData);
+        const userToken = localStorage.getItem('vrfTkn' + address);
+        setUserVrfToken(userToken ? userToken : '');
     }
 
     async function getUserSummaryDetails(walletID: string) {
@@ -239,11 +243,10 @@ const useChatSocket = (
     useEffect(() => {
         async function checkVerified() {
             const data = await isUserVerified();
+            const userToken = localStorage.getItem('vrfTkn' + address);
+            setUserVrfToken(userToken ? userToken : '');
             if (!data) return;
-            setIsVerified(
-                localStorage.getItem('vrfTkn' + address) == data.vrfTkn &&
-                    data.vrfTkn != null,
-            );
+            setIsVerified(userToken == data.vrfTkn && data.vrfTkn != null);
         }
 
         checkVerified();
@@ -287,6 +290,18 @@ const useChatSocket = (
         if (socketRef && socketRef.current) {
             // eslint-disable-next-line
             socketRef.current.on('msg-recieve-2', (data: any) => {
+                if (
+                    data &&
+                    data.sender &&
+                    data.sender === currentUserID &&
+                    !data.verified
+                ) {
+                    console.log('thats not a verified msg');
+                    let nfList = localStorage.getItem('nfList');
+                    const newMsgToken = ', ' + data._id;
+                    nfList = nfList ? (nfList += newMsgToken) : data._id + '';
+                    localStorage.setItem('nfList', nfList);
+                }
                 setMessages([...messagesRef.current, data]);
                 if (messagesRef.current[messagesRef.current.length - 1]) {
                     setLastMessage(data);
@@ -397,6 +412,7 @@ const useChatSocket = (
             mentionedWalletID,
             repliedMessage: repliedMessage,
             repliedMessageRoomInfo: repliedMessageRoomInfo,
+            senderToken: userVrfToken,
         });
     }
 

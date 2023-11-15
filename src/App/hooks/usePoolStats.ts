@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { PoolIF } from '../../utils/interfaces/exports';
 import { PoolStatsFn } from '../functions/getPoolStats';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { TokenPriceFn } from '../functions/fetchTokenPrice';
 import { getFormattedNumber } from '../functions/getFormattedNumber';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 export const usePoolStats = (
     pool: PoolIF,
@@ -14,6 +15,8 @@ export const usePoolStats = (
 ): [string, string] => {
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
     const [poolTvl, setPoolTvl] = useState<string | undefined>();
+
+    const { activeNetwork } = useContext(CrocEnvContext);
 
     const fetchPoolStats = () => {
         (async () => {
@@ -27,6 +30,7 @@ export const usePoolStats = (
                 pool.poolIdx,
                 Math.floor(Date.now() / 60000),
                 crocEnv,
+                activeNetwork.graphCacheUrl,
                 cachedFetchTokenPrice,
             );
             const volume = poolStatsFresh?.volumeTotalUsd; // display the total volume for all time

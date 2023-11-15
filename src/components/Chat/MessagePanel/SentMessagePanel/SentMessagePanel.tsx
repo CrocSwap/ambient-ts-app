@@ -519,7 +519,15 @@ function SentMessagePanel(props: SentMessageProps) {
                                 }
         `}
             >
-                <div className={styles.message_block}>
+                <div
+                    className={
+                        styles.message_block +
+                        ' ' +
+                        (!props.message.isVerified == true
+                            ? styles.not_verified
+                            : '')
+                    }
+                >
                     {messagesArray.map((e, i) => {
                         return (
                             <span key={i} className={styles.message_token}>
@@ -893,7 +901,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                     >
                                         {showName && getName()}
                                         {showAvatar &&
-                                            verificationDateCheck() && (
+                                            props.message.isVerified && (
                                                 <div
                                                     className={
                                                         styles.verified_icon
@@ -907,7 +915,8 @@ function SentMessagePanel(props: SentMessageProps) {
                                             )}
                                     </div>
                                     {showAvatar &&
-                                        !verificationDateCheck() &&
+                                        // !verificationDateCheck() &&
+                                        !props.message.isVerified &&
                                         props.isCurrentUser && (
                                             <>
                                                 <DefaultTooltip

@@ -1,8 +1,14 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, {
+    createContext,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import { useAccount } from 'wagmi';
 import { usePoolMetadata } from '../App/hooks/usePoolMetadata';
 import { useTokenPairAllowance } from '../App/hooks/useTokenPairAllowance';
-import { IS_LOCAL_ENV } from '../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../constants';
 import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
@@ -18,7 +24,6 @@ import { BigNumber } from 'ethers';
 interface TradeTokenContextIF {
     baseToken: {
         address: string;
-        mainnetAddress: string;
         balance: string;
         setBalance: (val: string) => void;
         dexBalance: string;
@@ -27,18 +32,24 @@ interface TradeTokenContextIF {
     };
     quoteToken: {
         address: string;
-        mainnetAddress: string;
         balance: string;
         setBalance: (val: string) => void;
         dexBalance: string;
         setDexBalance: (val: string) => void;
         decimals: number;
     };
+    tokenABalance: string;
+    tokenBBalance: string;
+    tokenADexBalance: string;
+    tokenBDexBalance: string;
+    isTokenAEth: boolean;
+    isTokenBEth: boolean;
     tokenAAllowance: string;
     tokenBAllowance: string;
     setRecheckTokenAApproval: (val: boolean) => void;
     setRecheckTokenBApproval: (val: boolean) => void;
     isTokenABase: boolean;
+    rtkMatchesParams: boolean;
 }
 
 export const TradeTokenContext = createContext<TradeTokenContextIF>(
@@ -57,7 +68,8 @@ export const TradeTokenContextProvider = (props: {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const { crocEnv, chainData, provider } = useContext(CrocEnvContext);
+    const { crocEnv, chainData, provider, activeNetwork } =
+        useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { isEnabled: isChartEnabled } = useContext(ChartContext);
     const { setSimpleRangeWidth } = useContext(RangeContext);
@@ -80,13 +92,13 @@ export const TradeTokenContextProvider = (props: {
     const {
         baseTokenAddress,
         quoteTokenAddress,
-        mainnetBaseTokenAddress,
-        mainnetQuoteTokenAddress,
         baseTokenDecimals,
         quoteTokenDecimals,
         isTokenABase,
+        rtkMatchesParams,
     } = usePoolMetadata({
         crocEnv,
+        graphCacheUrl: activeNetwork.graphCacheUrl,
         provider,
         pathname: location.pathname,
         chainData,
@@ -108,11 +120,48 @@ export const TradeTokenContextProvider = (props: {
     const [baseTokenDexBalance, setBaseTokenDexBalance] = useState<string>('');
     const [quoteTokenDexBalance, setQuoteTokenDexBalance] =
         useState<string>('');
+    const {
+        tokenABalance,
+        tokenBBalance,
+        tokenADexBalance,
+        tokenBDexBalance,
+        isTokenAEth,
+        isTokenBEth,
+    } = useMemo(() => {
+        const tokenABalance = isTokenABase
+            ? baseTokenBalance
+            : quoteTokenBalance;
+        const tokenBBalance = isTokenABase
+            ? quoteTokenBalance
+            : baseTokenBalance;
+        const tokenADexBalance = isTokenABase
+            ? baseTokenDexBalance
+            : quoteTokenDexBalance;
+        const tokenBDexBalance = isTokenABase
+            ? quoteTokenDexBalance
+            : baseTokenDexBalance;
+
+        const isTokenAEth = tradeData.tokenA.address === ZERO_ADDRESS;
+        const isTokenBEth = tradeData.tokenB.address === ZERO_ADDRESS;
+        return {
+            tokenABalance,
+            tokenBBalance,
+            tokenADexBalance,
+            tokenBDexBalance,
+            isTokenAEth,
+            isTokenBEth,
+        };
+    }, [
+        isTokenABase,
+        baseTokenBalance,
+        quoteTokenBalance,
+        tradeData.tokenA,
+        tradeData.tokenB,
+    ]);
 
     const tradeTokenContext = {
         baseToken: {
             address: baseTokenAddress,
-            mainnetAddress: mainnetBaseTokenAddress,
             balance: baseTokenBalance,
             setBalance: setBaseTokenBalance,
             dexBalance: baseTokenDexBalance,
@@ -121,18 +170,24 @@ export const TradeTokenContextProvider = (props: {
         },
         quoteToken: {
             address: quoteTokenAddress,
-            mainnetAddress: mainnetQuoteTokenAddress,
             balance: quoteTokenBalance,
             setBalance: setQuoteTokenBalance,
             dexBalance: quoteTokenDexBalance,
             setDexBalance: setQuoteTokenDexBalance,
             decimals: quoteTokenDecimals,
         },
+        tokenABalance,
+        tokenBBalance,
+        tokenADexBalance,
+        tokenBDexBalance,
+        isTokenAEth,
+        isTokenBEth,
         tokenAAllowance,
         tokenBAllowance,
         setRecheckTokenAApproval,
         setRecheckTokenBApproval,
         isTokenABase,
+        rtkMatchesParams,
     };
 
     // useEffect to update selected token balances

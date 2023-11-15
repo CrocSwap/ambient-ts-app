@@ -19,4 +19,5 @@ export interface Message {
     isDeleted: boolean;
     deletedMessageText: string;
     reactions: ReactionModel;
+    isVerified?: boolean;
 }

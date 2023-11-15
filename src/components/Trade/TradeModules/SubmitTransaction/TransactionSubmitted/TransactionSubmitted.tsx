@@ -8,7 +8,14 @@ import { useLocation } from 'react-router-dom';
 import { getChainExplorer } from '../../../../../utils/data/chains';
 
 interface PropsIF {
-    type: 'Swap' | 'Limit' | 'Range' | 'Reposition';
+    type:
+        | 'Swap'
+        | 'Limit'
+        | 'Range'
+        | 'Reposition'
+        | 'Remove'
+        | 'Harvest'
+        | 'Reset';
     hash: string;
     tokenBAddress: string;
     tokenBSymbol: string;
@@ -49,12 +56,12 @@ export default function TransactionSubmitted(props: PropsIF) {
 
     const addToMetaMaskButton = (
         <Button
+            idForDOM='import_token_B_into_wallet_button'
             flat
             title={`Import ${tokenBSymbol} into Connected Wallet`}
-            // action={props.onClickFn}
             action={handleAddToMetaMask}
             disabled={false}
-        ></Button>
+        />
     );
 
     const etherscanButton = (
@@ -98,6 +105,14 @@ export default function TransactionSubmitted(props: PropsIF) {
                       }`
                     : type === 'Reposition'
                     ? `Reposition ${
+                          isConfirmed ? 'Confirmed' : 'Successfully Submitted'
+                      }`
+                    : type === 'Reset'
+                    ? `Reset ${
+                          isConfirmed ? 'Confirmed' : 'Successfully Submitted'
+                      }`
+                    : type === 'Remove'
+                    ? `Removal ${
                           isConfirmed ? 'Confirmed' : 'Successfully Submitted'
                       }`
                     : `Swap Transaction ${

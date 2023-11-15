@@ -45,14 +45,15 @@ function Portfolio() {
         useContext(CachedDataContext);
     const {
         crocEnv,
+        activeNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { lastBlockNumber, client } = useContext(ChainDataContext);
+    const { client } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
     const dispatch = useAppDispatch();
 
-    const { provider } = useContext(CrocEnvContext);
+    const { mainnetProvider } = useContext(CrocEnvContext);
 
     const { address: addressFromParams } = useParams();
 
@@ -82,11 +83,10 @@ function Portfolio() {
 
     useEffect(() => {
         (async () => {
-            if (addressFromParams && isAddressEns && provider) {
+            if (addressFromParams && isAddressEns && mainnetProvider) {
                 try {
-                    const newResolvedAddress = await provider.resolveName(
-                        addressFromParams,
-                    );
+                    const newResolvedAddress =
+                        await mainnetProvider.resolveName(addressFromParams);
                     setResolvedAddress(newResolvedAddress ?? '');
                     dispatch(setResolvedAddressRedux(newResolvedAddress ?? ''));
                 } catch (error) {
@@ -100,7 +100,7 @@ function Portfolio() {
                 dispatch(setResolvedAddressRedux(''));
             }
         })();
-    }, [addressFromParams, isAddressHex, isAddressEns, provider]);
+    }, [addressFromParams, isAddressHex, isAddressEns, mainnetProvider]);
 
     const [secondaryEnsName, setSecondaryEnsName] = useState('');
     // check for ENS name account changes
@@ -136,57 +136,20 @@ function Portfolio() {
             : setFullLayoutActive(false);
     }, [connectedAccountActive]);
 
-    // const fullLayerToggle = (
-    //     <FlexContainer
-    //         gap={32}
-    //         background='dark2'
-    //         padding='4px'
-    //         rounded
-    //         transition
-    //         cursor='pointer'
-    //         onClick={() => setFullLayoutActive(!fullLayoutActive)}
-    //     >
-    //         <FlexContainer
-    //             width='40px'
-    //             height='20px'
-    //             rounded
-    //             transition
-    //             cursor='pointer'
-    //             background={fullLayoutActive ? 'title-gradient' : 'dark2'}
-    //         />
-    //         <FlexContainer
-    //             gap={2}
-    //             position='relative'
-    //             transition
-    //             className={styles.shared_layout_svg}
-    //         >
-    //             <FlexContainer
-    //                 width='30px'
-    //                 height='20px'
-    //                 rounded
-    //                 background={fullLayoutActive ? 'title-gradient' : 'dark2'}
-    //             />
-    //             <FlexContainer
-    //                 width='20px'
-    //                 height='20px'
-    //                 rounded
-    //                 background={fullLayoutActive ? 'title-gradient' : 'dark2'}
-    //             />
-    //         </FlexContainer>
-    //     </FlexContainer>
-    // );
-
     const [resolvedAddressTokens, setResolvedAddressTokens] = useState<
         TokenIF[]
     >([]);
+
+    // used to trigger token balance refreshes every 2 minutes
+    const everyTwoMinutes = Math.floor(Date.now() / 120000);
 
     useEffect(() => {
         (async () => {
             if (
                 crocEnv &&
+                client &&
                 resolvedAddress &&
                 chainId &&
-                lastBlockNumber &&
                 !connectedAccountActive
             ) {
                 try {
@@ -195,9 +158,10 @@ function Portfolio() {
                     const tokenBalanceResults = await cachedFetchTokenBalances(
                         resolvedAddress,
                         chainId,
-                        lastBlockNumber,
+                        everyTwoMinutes,
                         cachedTokenDetails,
                         crocEnv,
+                        activeNetwork.graphCacheUrl,
                         client,
                     );
 
@@ -235,10 +199,12 @@ function Portfolio() {
         })();
     }, [
         crocEnv,
+        client !== undefined,
         resolvedAddress,
         chainId,
-        lastBlockNumber,
+        everyTwoMinutes,
         connectedAccountActive,
+        activeNetwork.graphCacheUrl,
     ]);
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);
@@ -284,6 +250,7 @@ function Portfolio() {
         >
             <Text>Please connect your wallet.</Text>
             <Button
+                idForDOM='connect_wallet_in_account_page'
                 flat
                 title='Connect Wallet'
                 action={() => openModalWallet()}

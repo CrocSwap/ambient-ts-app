@@ -11,7 +11,6 @@ import {
     CandleData,
     fetchCandleSeriesHybrid,
 } from '../App/functions/fetchCandleSeries';
-import useDebounce from '../App/hooks/useDebounce';
 import { CandlesByPoolAndDuration } from '../utils/state/graphDataSlice';
 import { candleDomain, candleScale } from '../utils/state/tradeDataSlice';
 import { AppStateContext } from './AppStateContext';
@@ -51,7 +50,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     } = useContext(AppStateContext);
     const { chartSettings, isEnabled: isChartEnabled } =
         useContext(ChartContext);
-    const { chainData, crocEnv } = useContext(CrocEnvContext);
+    const { chainData, crocEnv, activeNetwork } = useContext(CrocEnvContext);
     const {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
@@ -170,6 +169,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             fetchCandleSeriesHybrid(
                 true,
                 chainData,
+                activeNetwork.graphCacheUrl,
                 candleTimeLocal,
                 baseTokenAddress,
                 quoteTokenAddress,
@@ -197,18 +197,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         (candleDomains?.domainBoundry || 0) / 1000,
     );
 
-    const domainBoundaryInSecondsDebounced = useDebounce(
-        domainBoundaryInSeconds,
-        500,
-    );
-
     const lastCandleDateInSeconds = Math.floor(
         (candleDomains?.lastCandleDate || 0) / 1000,
-    );
-
-    const lastCandleDateInSecondsDebounced = useDebounce(
-        lastCandleDateInSeconds,
-        500,
     );
 
     const minTimeMemo = useMemo(() => {
@@ -220,7 +210,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         ).getTime();
 
         return lastDate;
-    }, [candleData?.candles?.length, lastCandleDateInSecondsDebounced]);
+    }, [candleData?.candles?.length, lastCandleDateInSeconds]);
 
     const numDurationsNeeded = useMemo(() => {
         if (!minTimeMemo || !domainBoundaryInSeconds) return;
@@ -229,7 +219,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         );
 
         return numDurations > 2999 ? 2999 : numDurations;
-    }, [minTimeMemo, domainBoundaryInSecondsDebounced]);
+    }, [minTimeMemo, domainBoundaryInSeconds]);
 
     const fetchCandlesByNumDurations = (numDurations: number) => {
         if (!crocEnv) {
@@ -244,6 +234,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         fetchCandleSeriesHybrid(
             true,
             chainData,
+            activeNetwork.graphCacheUrl,
             candleTimeLocal,
             baseTokenAddress,
             quoteTokenAddress,
@@ -309,7 +300,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         if (numDurationsNeeded > 0 && numDurationsNeeded < 3000) {
             fetchCandlesByNumDurations(numDurationsNeeded);
         }
-    }, [numDurationsNeeded]);
+    }, [numDurationsNeeded, isZoomRequestCanceled]);
 
     useEffect(() => {
         if (abortController && isZoomRequestCanceled) {

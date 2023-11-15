@@ -28,6 +28,9 @@ import { ZERO_ADDRESS } from '../../../../../constants';
 import { BigNumber } from 'ethers';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { ethereumMainnet } from '../../../../../utils/networks/ethereumMainnet';
+import { mainnetUSDC } from '../../../../../utils/data/defaultTokens';
+import IconWithTooltip from '../../../../../components/Global/IconWithTooltip/IconWithTooltip';
+import { supportedNetworks } from '../../../../../utils/networks';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -52,14 +55,16 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         accountAddress,
         handleCopyAddress,
         clickOutsideHandler,
-        connectorName,
+        // connectorName,
         clickLogout,
         accountAddressFull,
     } = props;
     const {
-        selectedNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+
+    const defaultPair: [TokenIF, TokenIF] =
+        supportedNetworks[chainId].defaultPair;
 
     const tokenBalances: TokenIF[] | undefined = useAppSelector(
         (state) => state.userData.tokenBalances,
@@ -67,12 +72,11 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     const nativeData: TokenIF | undefined =
         tokenBalances &&
         tokenBalances.find((tkn: TokenIF) => tkn.address === ZERO_ADDRESS);
-    const usdcAddr: string = selectedNetwork.tokens.USDC;
     const usdcData: TokenIF | undefined = useMemo(() => {
         return tokenBalances?.find(
             (tkn: TokenIF) =>
-                tkn.address.toLowerCase() === usdcAddr.toLowerCase() &&
-                tkn.chainId === parseInt(chainId),
+                tkn.address.toLowerCase() ===
+                defaultPair[1].address.toLowerCase(),
         );
     }, [tokenBalances]);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
@@ -132,10 +136,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         setUsdcBalanceForDom(usdcCombinedBalanceDisplayTruncated);
 
         Promise.resolve(
-            cachedFetchTokenPrice(
-                ethereumMainnet.tokens.USDC,
-                ethereumMainnet.chainId,
-            ),
+            cachedFetchTokenPrice(mainnetUSDC.address, ethereumMainnet.chainId),
         ).then((price) => {
             if (price?.usdPrice !== undefined) {
                 const usdValueNum: number =
@@ -237,23 +238,34 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 <FlexContainer alignItems='center' flexDirection='column'>
                     <NameDisplay gap={16} alignItems='center'>
                         <h2>{ensName !== '' ? ensName : accountAddress}</h2>
-                        <a
-                            target='_blank'
-                            rel='noreferrer'
-                            href={`${blockExplorer}address/${accountAddressFull}`}
-                            aria-label='View address on Etherscan'
+                        <IconWithTooltip
+                            title={`${'View wallet address on block explorer'}`}
+                            placement='right'
                         >
-                            <FiExternalLink />
-                        </a>
-                        <CopyButton
-                            onClick={handleCopyAddress}
-                            aria-label='Copy address to clipboard'
+                            <a
+                                target='_blank'
+                                rel='noreferrer'
+                                href={`${blockExplorer}address/${accountAddressFull}`}
+                                aria-label='View address on Etherscan'
+                            >
+                                <FiExternalLink />
+                            </a>
+                        </IconWithTooltip>
+
+                        <IconWithTooltip
+                            title={`${'Copy wallet address to clipboard'}`}
+                            placement='right'
                         >
-                            <FiCopy />
-                        </CopyButton>
+                            <CopyButton
+                                onClick={handleCopyAddress}
+                                aria-label='Copy address to clipboard'
+                            >
+                                <FiCopy />
+                            </CopyButton>
+                        </IconWithTooltip>
                     </NameDisplay>
                     <WalletDisplay gap={16} alignItems='center'>
-                        <p>{connectorName}</p>
+                        <p>Connected Wallet Address:</p>
                         <p>{props.accountAddress}</p>
                     </WalletDisplay>
                 </FlexContainer>

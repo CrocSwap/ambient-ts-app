@@ -148,7 +148,7 @@ export default function MessageInput(props: MessageInputProps) {
         if (isConnected && address) {
             return 'Type to chat. Enter to submit.';
         } else {
-            return 'Please log in to chat.';
+            return 'Please connect wallet to chat.';
         }
     }
 
@@ -225,10 +225,6 @@ export default function MessageInput(props: MessageInputProps) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const _handleKeyDown = (e: any) => {
-        console.log(mentPanelActive);
-        console.log('possible', possibleMentUser?.walletID);
-        console.log('selected', mentUser?.walletID);
-        console.log('................');
         if (props.isInputDisabled) {
             if (message !== '') {
                 setMessage('');
@@ -378,8 +374,6 @@ export default function MessageInput(props: MessageInputProps) {
     });
 
     const handleSendMsg = async (msg: string, roomId: string) => {
-        // console.log(msg);
-        // console.log(mentUser);
         if (msg !== '' && address) {
             if (
                 (isRoomAdmins && props.replyMessageContent !== undefined) ||
@@ -428,8 +422,6 @@ export default function MessageInput(props: MessageInputProps) {
             }
             // setMentPanelQueryStr();
             const filteredUsers = filterUsers(e.target.value.split('@')[1]);
-            console.log('.... filtered uesrs..............');
-            console.log(filteredUsers);
             setFilteredUsers(filteredUsers);
             if (filteredUsers.length < 1) {
                 setPossibleMentUser(null);
@@ -438,7 +430,6 @@ export default function MessageInput(props: MessageInputProps) {
                 setMentUser(null);
             }
         } else {
-            console.log('hotfix in code');
             if (mentPanelActive) setMentPanelActive(false);
             setPossibleMentUser(null);
             setMentUser(null);

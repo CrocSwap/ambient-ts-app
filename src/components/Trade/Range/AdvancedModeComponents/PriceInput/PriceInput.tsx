@@ -9,7 +9,7 @@ import {
     PriceInput as PriceInputStyled,
 } from '../../../../../styled/Components/TradeModules';
 
-interface priceInputProps {
+interface propsIF {
     disable?: boolean;
     fieldId: string | number;
     title: string;
@@ -20,7 +20,12 @@ interface priceInputProps {
     decreaseTick: () => void;
 }
 
-function PriceInput(props: priceInputProps) {
+// this component is only used for min and max prices for a range position in
+// ... advanced mode of the Range module, for some reason its value is set from
+// ... a `useEffect()` hook in Range.tsx, I have not yet determined if there's
+// ... a good reason to handle this with a side effect
+
+function PriceInput(props: propsIF) {
     const {
         disable,
         fieldId,
@@ -52,6 +57,7 @@ function PriceInput(props: priceInputProps) {
             </Text>
             <PriceInputContainer>
                 <PriceInputButton
+                    id={`decrease_${fieldId}_price_button`}
                     onClick={decreaseTick}
                     aria-label={`decrease tick of ${fieldId} price.`}
                 >
@@ -79,6 +85,7 @@ function PriceInput(props: priceInputProps) {
                     />
                 </FlexContainer>
                 <PriceInputButton
+                    id={`increase_${fieldId}_price_button`}
                     onClick={increaseTick}
                     aria-label={`increase tick of ${fieldId} price.`}
                 >
@@ -86,6 +93,7 @@ function PriceInput(props: priceInputProps) {
                 </PriceInputButton>
             </PriceInputContainer>
             <Text
+                id={`${fieldId}_price_of_range_advanced`}
                 fontSize='header2'
                 color='accent5'
                 tabIndex={0}

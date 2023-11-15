@@ -5,24 +5,23 @@ import { AiOutlineInfoCircle } from 'react-icons/ai';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 
-import {
-    updateRangeWithButton,
-    handleRangeSlider,
-} from './rangeWidthFunctions';
+// START: Import Local Files
+import { handleRangeSlider } from './rangeWidthFunctions';
 import RangeSlider from '../RangeSlider';
 import { Chip } from '../Chip';
 import { ExplanationButton } from '../Icons/Icons.styles';
-import { FlexContainer } from '../../../styled/Common';
+import { FlexContainer, Text } from '../../../styled/Common';
+import truncateDecimals from '../../../utils/data/truncateDecimals';
 
 // interface for React functional component props
-interface RangeWidthPropsIF {
+interface propsIF {
     rangeWidthPercentage: number;
     setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
     setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
 }
 
 // React functional component
-function RangeWidth(props: RangeWidthPropsIF) {
+function RangeWidth(props: propsIF) {
     const {
         rangeWidthPercentage,
         setRangeWidthPercentage,
@@ -33,8 +32,38 @@ function RangeWidth(props: RangeWidthPropsIF) {
     } = useContext(AppStateContext);
     const { showRangePulseAnimation } = useContext(TradeTableContext);
 
-    const PercentageOptionContent = (
-        <>
+    // values to generate balanced mode preset buttons
+    const balancedPresets: number[] = [5, 10, 25, 50, 100];
+    // type annotation as union of number-literals in `balancedPresets`
+    type presetValues = typeof balancedPresets[number];
+
+    // fn to update the width of range (balanced mode) from buttons
+    function updateRangeWithButton(value: presetValues): void {
+        // convert the numerical input to a string
+        const valueString: string = value.toString();
+        // locate the range adjustment slider in the DOM
+        const inputSlider: HTMLElement | null =
+            document.getElementById('input-slider-range');
+        // set the range adjustment slider to the value provided in args
+        if (inputSlider) {
+            (inputSlider as HTMLInputElement).value = valueString;
+        }
+        // set the input value to two decimals of precision
+        const truncatedValue: string = truncateDecimals(value, 2);
+        // convert input value to a float and update range width
+        setRangeWidthPercentage(parseFloat(truncatedValue));
+        setRescaleRangeBoundariesWithSlider(true);
+    }
+
+    return (
+        <FlexContainer
+            fullWidth
+            transition
+            flexDirection='column'
+            gap={16}
+            id='range_width'
+            margin='0 0 16px 0'
+        >
             <FlexContainer
                 fullWidth
                 wrap
@@ -42,79 +71,27 @@ function RangeWidth(props: RangeWidthPropsIF) {
                 alignItems='center'
                 gap={4}
             >
-                <Chip
-                    variant={
-                        rangeWidthPercentage === 5 ? 'filled' : 'secondary'
-                    }
-                    onClick={() => {
-                        updateRangeWithButton(
-                            (1 / 20) * 100,
-                            setRangeWidthPercentage,
-                        );
-                        setRescaleRangeBoundariesWithSlider(true);
-                    }}
-                    aria-label='Set range width to 5%.'
-                >
-                    5%
-                </Chip>
-                <Chip
-                    variant={
-                        rangeWidthPercentage === 10 ? 'filled' : 'secondary'
-                    }
-                    onClick={() => {
-                        updateRangeWithButton(
-                            (1 / 10) * 100,
-                            setRangeWidthPercentage,
-                        );
-                        setRescaleRangeBoundariesWithSlider(true);
-                    }}
-                    aria-label='Set range width to 10%.'
-                >
-                    10%
-                </Chip>
-                <Chip
-                    variant={
-                        rangeWidthPercentage === 25 ? 'filled' : 'secondary'
-                    }
-                    onClick={() => {
-                        updateRangeWithButton(
-                            (1 / 4) * 100,
-                            setRangeWidthPercentage,
-                        );
-                        setRescaleRangeBoundariesWithSlider(true);
-                    }}
-                    aria-label='Set range width to 25%.'
-                >
-                    25%
-                </Chip>
-                <Chip
-                    variant={
-                        rangeWidthPercentage === 50 ? 'filled' : 'secondary'
-                    }
-                    onClick={() => {
-                        updateRangeWithButton(
-                            (1 / 2) * 100,
-                            setRangeWidthPercentage,
-                        );
-                        setRescaleRangeBoundariesWithSlider(true);
-                    }}
-                    aria-label='Set range width to 50%.'
-                >
-                    50%
-                </Chip>
-
-                <Chip
-                    variant={
-                        rangeWidthPercentage === 100 ? 'filled' : 'secondary'
-                    }
-                    onClick={() => {
-                        updateRangeWithButton(100, setRangeWidthPercentage);
-                        setRescaleRangeBoundariesWithSlider(true);
-                    }}
-                    aria-label='use Ambient range width.'
-                >
-                    Ambient
-                </Chip>
+                {balancedPresets.map((preset: presetValues) => {
+                    // convert raw preset data to human-readable strings
+                    const humanReadable: string =
+                        preset === 100 ? 'Ambient' : preset.toString() + '%';
+                    // return a JSX element clickable for each preset
+                    return (
+                        <Chip
+                            key={humanReadable}
+                            id={`range_width_preset_${humanReadable}`}
+                            variant={
+                                rangeWidthPercentage === preset
+                                    ? 'filled'
+                                    : 'secondary'
+                            }
+                            onClick={() => updateRangeWithButton(preset)}
+                            aria-label={`Set range width to ${humanReadable}.`}
+                        >
+                            {humanReadable}
+                        </Chip>
+                    );
+                })}
                 <ExplanationButton
                     onClick={() =>
                         openGlobalPopup(
@@ -132,43 +109,6 @@ function RangeWidth(props: RangeWidthPropsIF) {
                     <AiOutlineInfoCircle color='var(--text2)' />
                 </ExplanationButton>
             </FlexContainer>
-        </>
-    );
-
-    const rangeWidthTooltip = (
-        <ExplanationButton
-            style={{ margin: '0 8px', cursor: 'pointer' }}
-            onClick={() =>
-                openGlobalPopup(
-                    <div>
-                        <p>
-                            Percentage width of the range around current pool
-                            price.
-                        </p>
-                        <p>
-                            Tighter ranges accumulate rewards at faster rates,
-                            but are more likely to suffer divergence losses.
-                        </p>
-                    </div>,
-                    'Range Width',
-                    'right',
-                )
-            }
-        >
-            <AiOutlineInfoCircle size={17} />
-        </ExplanationButton>
-    );
-
-    return (
-        <FlexContainer
-            fullWidth
-            transition
-            flexDirection='column'
-            gap={16}
-            id='range_width'
-            margin='0 0 16px 0'
-        >
-            {PercentageOptionContent}
             <FlexContainer
                 justifyContent='center'
                 fontWeight='100'
@@ -180,10 +120,33 @@ function RangeWidth(props: RangeWidthPropsIF) {
                 aria-atomic='true'
                 aria-relevant='all'
             >
-                {rangeWidthPercentage === 100
-                    ? 'Ambient'
-                    : '± ' + rangeWidthPercentage + '%'}
-                {rangeWidthTooltip}
+                <Text color='text2' fontWeight='100' id='bal_range_width'>
+                    {rangeWidthPercentage === 100
+                        ? 'Ambient'
+                        : `± ${rangeWidthPercentage}%`}
+                </Text>
+                <ExplanationButton
+                    style={{ margin: '0 8px', cursor: 'pointer' }}
+                    onClick={() =>
+                        openGlobalPopup(
+                            <div>
+                                <p>
+                                    Percentage width of the range around current
+                                    pool price.
+                                </p>
+                                <p>
+                                    Tighter ranges accumulate rewards at faster
+                                    rates, but are more likely to suffer
+                                    divergence losses.
+                                </p>
+                            </div>,
+                            'Range Width',
+                            'right',
+                        )
+                    }
+                >
+                    <AiOutlineInfoCircle size={17} />
+                </ExplanationButton>
             </FlexContainer>
             <FlexContainer
                 alignItems='center'

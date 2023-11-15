@@ -22,7 +22,7 @@ export default function Hero() {
                 gap={32}
             >
                 <img src={logoText} alt='ambient' />
-                <TradeNowButton />
+                <TradeNowButton fieldId='trade_now_btn_in_hero' />
             </FlexContainer>
         </HeroContainer>
     );

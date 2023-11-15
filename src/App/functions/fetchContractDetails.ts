@@ -15,7 +15,6 @@ export interface ContractDetails {
 export const fetchContractDetails = async (
     provider: ethers.providers.Provider,
     address: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _chainId: string,
 ): Promise<TokenIF> => {
     if (address === ZERO_ADDRESS) {

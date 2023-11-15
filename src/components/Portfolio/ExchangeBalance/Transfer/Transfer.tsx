@@ -2,7 +2,6 @@ import { toDisplayQty } from '@crocswap-libs/sdk';
 import { TokenIF } from '../../../../utils/interfaces/exports';
 import Button from '../../../Form/Button';
 import TransferAddressInput from './TransferAddressInput';
-// import { defaultTokens } from '../../../../utils/data/defaultTokens';
 import {
     Dispatch,
     SetStateAction,
@@ -12,7 +11,6 @@ import {
     useState,
 } from 'react';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-// import { setToken } from '../../../../utils/state/temp';
 import { BigNumber } from 'ethers';
 import { FaGasPump } from 'react-icons/fa';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
@@ -63,7 +61,11 @@ export default function Transfer(props: propsIF) {
         secondaryEnsName,
         setTokenModalOpen,
     } = props;
-    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const {
+        crocEnv,
+        ethMainnetUsdPrice,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
     const { gasPriceInGwei } = useContext(ChainDataContext);
 
@@ -345,18 +347,21 @@ export default function Transfer(props: propsIF) {
                         <MaxButton onClick={handleBalanceClick}>Max</MaxButton>
                     )}
                 </FlexContainer>
-                <GasPump>
-                    <SVGContainer>
-                        <FaGasPump size={12} />{' '}
-                    </SVGContainer>
-                    {transferGasPriceinDollars
-                        ? transferGasPriceinDollars
-                        : '…'}
-                </GasPump>
+                {chainId === '0x1' && (
+                    <GasPump>
+                        <SVGContainer>
+                            <FaGasPump size={12} />{' '}
+                        </SVGContainer>
+                        {transferGasPriceinDollars
+                            ? transferGasPriceinDollars
+                            : '…'}
+                    </GasPump>
+                )}
             </FlexContainer>
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}
             <Button
+                idForDOM='transfer_tokens_button'
                 title={buttonMessage}
                 action={transferFn}
                 disabled={isButtonDisabled}

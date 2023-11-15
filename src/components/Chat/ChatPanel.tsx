@@ -119,7 +119,14 @@ function ChatPanel(props: propsIF) {
         deleteMsgFromList,
         fetchForNotConnectedUser,
         getUserSummaryDetails,
-    } = useChatSocket(room, isSubscriptionsEnabled, isChatOpen, address, ens);
+    } = useChatSocket(
+        room,
+        isSubscriptionsEnabled,
+        isChatOpen,
+        address,
+        ens,
+        currentUser,
+    );
 
     const { getID, updateUser, updateMessageUser } = useChatApi();
 
@@ -388,7 +395,6 @@ function ChatPanel(props: propsIF) {
                 setIsInputDisabled(false);
             }
         }, 1000);
-        console.log('is tttt');
         setMessageCheckerInterval(checkerInterval);
     }, [messages, setMessages]);
 

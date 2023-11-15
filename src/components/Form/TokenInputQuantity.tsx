@@ -9,6 +9,7 @@ import {
     SetStateAction,
 } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
+
 import uriToHttp from '../../utils/functions/uriToHttp';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import Spinner from '../Global/Spinner/Spinner';
@@ -16,7 +17,7 @@ import { DefaultTooltip } from '../Global/StyledTooltip/StyledTooltip';
 import TokenIcon from '../Global/TokenIcon/TokenIcon';
 import { SoloTokenSelectModal } from '../Global/TokenSelectContainer/SoloTokenSelectModal';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
@@ -28,6 +29,7 @@ import {
     TokenQuantityInput,
     TokenSelectButton,
 } from '../../styled/Components/TradeModules';
+import { SoloTokenSelect } from '../Global/TokenSelectContainer/SoloTokenSelect';
 
 interface propsIF {
     tokenAorB: 'A' | 'B' | null;
@@ -44,6 +46,7 @@ interface propsIF {
     disable?: boolean;
     disabledContent?: React.ReactNode;
     setTokenModalOpen?: Dispatch<SetStateAction<boolean>>;
+    onInitPage?: boolean;
 }
 
 function TokenInputQuantity(props: propsIF) {
@@ -64,6 +67,8 @@ function TokenInputQuantity(props: propsIF) {
         setTokenModalOpen = () => null,
     } = props;
     const isPoolInitialized = useSimulatedIsPoolInitialized();
+    const location = useLocation();
+
     const { tradeData } = useAppSelector((state) => state);
     const {
         chainData: { chainId },
@@ -72,6 +77,8 @@ function TokenInputQuantity(props: propsIF) {
     const linkGenInitPool: linkGenMethodsIF = useLinkGen('initpool');
 
     const [isTokenSelectOpen, openTokenSelect, closeTokenSelect] = useModal();
+
+    const onInitPage = location.pathname.startsWith('/initpool');
 
     // needed to not dismiss exchangebalance modal when closing the token select modal
     useEffect(() => {
@@ -104,6 +111,7 @@ function TokenInputQuantity(props: propsIF) {
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
         const isPrecisionGreaterThanDecimals =
             precisionOfInput(event.target.value) > token.decimals;
+        if (event.target.value === '.') event.target.value = '0.';
         if (!isPrecisionGreaterThanDecimals && !isNaN(+event.target.value)) {
             handleTokenInputEvent(event.target.value);
             setDisplayValue(event.target.value);
@@ -119,14 +127,10 @@ function TokenInputQuantity(props: propsIF) {
                 enterDelay={700}
                 leaveDelay={200}
             >
-                <Text fontSize='header2' color='text1'>
-                    {token.symbol}
-                </Text>
+                <>{token.symbol}</>
             </DefaultTooltip>
         ) : (
-            <Text fontSize='header2' color='text1'>
-                {token.symbol}
-            </Text>
+            <>{token.symbol}</>
         );
 
     const tokenSelectRef = useRef(null);
@@ -163,7 +167,7 @@ function TokenInputQuantity(props: propsIF) {
                 onBlur(event.target.value)
             }
             value={isLoading ? '' : displayValue}
-            type='number'
+            type='string'
             step='any'
             inputMode='decimal'
             autoComplete='off'
@@ -175,7 +179,9 @@ function TokenInputQuantity(props: propsIF) {
     );
     const inputContent = (() => {
         switch (true) {
-            case !isPoolInitialized && fieldId !== 'exchangeBalance':
+            case !isPoolInitialized &&
+                fieldId !== 'exchangeBalance' &&
+                !onInitPage:
                 return poolNotInitializedContent;
             case disabledContent !== undefined:
                 return disabledContent;
@@ -185,8 +191,41 @@ function TokenInputQuantity(props: propsIF) {
                 return input;
         }
     })();
+
+    const isInit = location.pathname.startsWith('/initpool');
+
+    const modalOrNoModal = isInit ? (
+        <SoloTokenSelect
+            onClose={closeTokenSelect}
+            showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+            setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
+            isSingleToken={!tokenAorB}
+            tokenAorB={tokenAorB}
+            reverseTokens={reverseTokens}
+        />
+    ) : (
+        <SoloTokenSelectModal
+            onClose={closeTokenSelect}
+            showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+            setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
+            isSingleToken={!tokenAorB}
+            tokenAorB={tokenAorB}
+            reverseTokens={reverseTokens}
+        />
+    );
+
     return (
-        <FlexContainer flexDirection='column' color='text1' id={fieldId}>
+        <FlexContainer
+            flexDirection='column'
+            id={fieldId}
+            style={{
+                background: 'var(--dark2)',
+                borderRadius: '1rem',
+                gap: '8px',
+                padding: '8px 8px 8px 16px ',
+                minHeight: '81px',
+            }}
+        >
             {label && (
                 <Text margin='4px 0' fontSize='body' color='text1'>
                     {label}
@@ -198,12 +237,7 @@ function TokenInputQuantity(props: propsIF) {
             >
                 <div style={{ position: 'relative' }}>
                     {isLoading ? (
-                        <FlexContainer
-                            fullWidth
-                            fullHeight
-                            alignItems='center'
-                            margin='0 32px'
-                        >
+                        <FlexContainer fullWidth fullHeight alignItems='center'>
                             <Spinner size={24} bg='var(--dark2)' weight={2} />
                         </FlexContainer>
                     ) : (
@@ -229,18 +263,7 @@ function TokenInputQuantity(props: propsIF) {
             </TokenQuantityContainer>
 
             {includeWallet && includeWallet}
-            {isTokenSelectOpen && (
-                <SoloTokenSelectModal
-                    onClose={closeTokenSelect}
-                    showSoloSelectTokenButtons={showSoloSelectTokenButtons}
-                    setShowSoloSelectTokenButtons={
-                        setShowSoloSelectTokenButtons
-                    }
-                    isSingleToken={!tokenAorB}
-                    tokenAorB={tokenAorB}
-                    reverseTokens={reverseTokens}
-                />
-            )}
+            {isTokenSelectOpen && modalOrNoModal}
         </FlexContainer>
     );
 }

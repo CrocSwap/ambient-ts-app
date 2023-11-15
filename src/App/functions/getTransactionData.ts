@@ -1,8 +1,6 @@
 import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
-import { getMainnetAddress } from '../../utils/functions/getMainnetAddress';
 import { TokenIF, TransactionIF } from '../../utils/interfaces/exports';
 import { TransactionServerIF } from '../../utils/interfaces/TransactionIF';
-import { supportedNetworks } from '../../utils/networks';
 import { FetchAddrFn } from './fetchAddress';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
@@ -20,6 +18,7 @@ export const getTransactionData = async (
     cachedQuerySpotPrice: SpotPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
     cachedEnsResolve: FetchAddrFn,
+    skipENSFetch?: boolean,
 ): Promise<TransactionIF> => {
     const newTx = { ...tx } as TransactionIF;
 
@@ -39,20 +38,14 @@ export const getTransactionData = async (
     const baseMetadata = cachedTokenDetails(provider, tx.base, chainId);
     const quoteMetadata = cachedTokenDetails(provider, tx.quote, chainId);
 
-    const ensRequest = cachedEnsResolve(tx.user);
+    // const ensRequest = cachedEnsResolve(tx.user);
 
-    const basePricedToken = getMainnetAddress(
-        baseTokenAddress,
-        supportedNetworks[chainId],
-    );
-    const basePricePromise = cachedFetchTokenPrice(basePricedToken, chainId);
-    const quotePricedToken = getMainnetAddress(
-        quoteTokenAddress,
-        supportedNetworks[chainId],
-    );
-    const quotePricePromise = cachedFetchTokenPrice(quotePricedToken, chainId);
+    const basePricePromise = cachedFetchTokenPrice(baseTokenAddress, chainId);
+    const quotePricePromise = cachedFetchTokenPrice(quoteTokenAddress, chainId);
 
-    newTx.ensResolution = (await ensRequest) ?? '';
+    newTx.ensResolution = skipENSFetch
+        ? ''
+        : (await cachedEnsResolve(tx.user)) ?? '';
 
     const baseTokenName = tokenList.find(
         (token) =>

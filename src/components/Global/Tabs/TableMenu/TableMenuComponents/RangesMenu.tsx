@@ -22,6 +22,7 @@ import { RangeContext } from '../../../../../contexts/RangeContext';
 import {
     useLinkGen,
     linkGenMethodsIF,
+    poolParamsIF,
 } from '../../../../../utils/hooks/useLinkGen';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
@@ -157,6 +158,7 @@ export default function RangesMenu(props: propsIF) {
 
     const repositionButton = (
         <Link
+            id={`reposition_button_${position.positionId}`}
             className={styles.reposition_button}
             to={linkGenRepo.getFullURL({
                 chain: chainId,
@@ -183,13 +185,19 @@ export default function RangesMenu(props: propsIF) {
     );
 
     const removeButton = positionMatchesLoggedInUser ? (
-        <Chip onClick={() => openActionModal('Remove')}>Remove</Chip>
+        <Chip
+            id={`remove_position_${position.positionId}`}
+            onClick={() => openActionModal('Remove')}
+        >
+            Remove
+        </Chip>
     ) : null;
 
     const copyButton = position ? (
         <Chip
             onClick={() => {
-                linkGenPool.navigate({
+                // URL params for link to pool page
+                const poolLinkParams: poolParamsIF = {
                     chain: chainId,
                     tokenA:
                         rtkTokenA.toLowerCase() === position.quote.toLowerCase()
@@ -201,7 +209,9 @@ export default function RangesMenu(props: propsIF) {
                             : position.quote,
                     lowTick: position.bidTick.toString(),
                     highTick: position.askTick.toString(),
-                });
+                };
+                // navigate user to pool page with URL params defined above
+                linkGenPool.navigate(poolLinkParams);
                 handleCopyClick();
             }}
         >
@@ -211,8 +221,10 @@ export default function RangesMenu(props: propsIF) {
 
     const addButton = (
         <Chip
+            id={`add_liquidity_position_${position.positionId}`}
             onClick={() => {
-                linkGenPool.navigate({
+                // URL params for link to pool page
+                const poolLinkParams: poolParamsIF = {
                     chain: chainId,
                     tokenA:
                         rtkTokenA.toLowerCase() === position.quote.toLowerCase()
@@ -224,7 +236,9 @@ export default function RangesMenu(props: propsIF) {
                             : position.quote,
                     lowTick: position.bidTick.toString(),
                     highTick: position.askTick.toString(),
-                });
+                };
+                // navigate user to pool page with URL params defined above
+                linkGenPool.navigate(poolLinkParams);
                 handleCopyClick();
                 setCurrentRangeInAdd(position.positionId);
             }}
@@ -236,7 +250,12 @@ export default function RangesMenu(props: propsIF) {
     const detailsButton = <Chip onClick={openDetailsModal}>Details</Chip>;
     const harvestButton =
         !isAmbient && positionMatchesLoggedInUser ? (
-            <Chip onClick={() => openActionModal('Harvest')}>Harvest</Chip>
+            <Chip
+                id={`harvest_position_${position.positionId}`}
+                onClick={() => openActionModal('Harvest')}
+            >
+                Harvest
+            </Chip>
         ) : null;
 
     // ----------------------
@@ -312,6 +331,23 @@ export default function RangesMenu(props: propsIF) {
         } else return;
     }, [showDropdownMenu]);
 
+    const [cachedPosition, setCachedPosition] = useState<
+        PositionIF | undefined
+    >();
+
+    useEffect(() => {
+        if (isRangeActionModalOpen || isRangeDetailsModalOpen) {
+            if (
+                !cachedPosition ||
+                position.positionId === cachedPosition.positionId
+            ) {
+                setCachedPosition({ ...position } as PositionIF);
+            }
+        } else {
+            setCachedPosition(undefined);
+        }
+    }, [isRangeActionModalOpen, isRangeDetailsModalOpen, position]);
+
     return (
         <FlexContainer justifyContent='flex-end'>
             <div
@@ -322,19 +358,19 @@ export default function RangesMenu(props: propsIF) {
                 {rangesMenu}
                 {dropdownRangesMenu}
             </div>
-            {isRangeDetailsModalOpen && (
+            {isRangeDetailsModalOpen && cachedPosition && (
                 <RangeDetailsModal
-                    position={position}
+                    position={cachedPosition}
                     onClose={closeRangeDetailsModal}
                     {...rangeDetailsProps}
                 />
             )}
-            {isRangeActionModalOpen && (
+            {isRangeActionModalOpen && cachedPosition && (
                 <RangeActionModal
                     type={rangeModalAction}
                     isOpen={isRangeActionModalOpen}
                     onClose={handleActionModalClose}
-                    position={position}
+                    position={cachedPosition}
                     {...rangeDetailsProps}
                 />
             )}
