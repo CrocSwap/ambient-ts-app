@@ -9,6 +9,7 @@ import styled from 'styled-components';
 
 import { FlexContainer } from '../../../styled/Common';
 import Spinner from '../Spinner/Spinner';
+import { StepConnectorProps } from '@material-ui/core';
 
 interface Step {
     label: string;
@@ -22,8 +23,11 @@ interface StepperComponentProps {
     orientation: 'vertical' | 'horizontal';
     completedDisplay?: React.ReactNode;
     errorDisplay?: React.ReactNode;
+    connectorLineHeight?: string;
 }
-
+interface CustomConnectorProps extends StepConnectorProps {
+    connectorLineHeight?: string | undefined;
+}
 const StepperComponent: React.FC<StepperComponentProps> = ({
     steps,
     activeStep,
@@ -32,12 +36,17 @@ const StepperComponent: React.FC<StepperComponentProps> = ({
     orientation,
     completedDisplay,
     errorDisplay,
+    connectorLineHeight,
 }) => {
     // eslint-disable-next-line
     const handleReset = () => {
         setActiveStep(0);
     };
-    const CustomConnector = styled(StepConnector)`
+    const CustomConnector = styled(StepConnector).attrs<CustomConnectorProps>(
+        (props) => ({
+            connectorLineHeight: props.connectorLineHeight || '',
+        }),
+    )<CustomConnectorProps>`
         &.${stepConnectorClasses.alternativeLabel} {
         }
 
@@ -52,7 +61,7 @@ const StepperComponent: React.FC<StepperComponentProps> = ({
             border-color: #61646f;
 
             border-width: 2px;
-        }
+            min-height: ${(props) => props.connectorLineHeight}
     `;
 
     const CircularBorder = styled.div`
@@ -79,7 +88,11 @@ const StepperComponent: React.FC<StepperComponentProps> = ({
             <Stepper
                 activeStep={activeStep}
                 orientation='vertical'
-                connector={<CustomConnector />}
+                connector={
+                    <CustomConnector
+                        connectorLineHeight={connectorLineHeight}
+                    />
+                }
             >
                 {steps.map((step, index) => (
                     <Step key={step.label}>
@@ -124,7 +137,11 @@ const StepperComponent: React.FC<StepperComponentProps> = ({
             <Stepper
                 activeStep={activeStep}
                 orientation='vertical'
-                connector={<CustomConnector />}
+                connector={
+                    <CustomConnector
+                        connectorLineHeight={connectorLineHeight}
+                    />
+                }
             >
                 {steps.map((step, index) => (
                     <Step key={step.label}>

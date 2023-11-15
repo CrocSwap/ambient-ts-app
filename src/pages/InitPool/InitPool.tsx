@@ -7,7 +7,11 @@ import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitP
 // START: Import Local Files
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../constants';
+import {
+    IS_LOCAL_ENV,
+    ZERO_ADDRESS,
+    DISABLE_INIT_SETTINGS,
+} from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { useAccount } from 'wagmi';
@@ -81,6 +85,7 @@ import {
     isTransactionFailedError,
     isTransactionReplacedError,
 } from '../../utils/TransactionError';
+import InitSettings from './InitSettings';
 // react functional component
 export default function InitPool() {
     const {
@@ -127,7 +132,8 @@ export default function InitPool() {
     useEffect(() => {
         setIsWithdrawTokenBFromDexChecked(parseFloat(tokenBDexBalance) > 0);
     }, [tokenBDexBalance]);
-
+    const [isLpContractCreationEnabled, setIsLpContractCreationEnabled] =
+        useState(true);
     const { urlParamMap } = useUrlParams(tokens, chainId, provider);
 
     const tknA: string = urlParamMap.get('tokenA') as string;
@@ -1045,17 +1051,30 @@ export default function InitPool() {
             setIsTxCompletedRange: setIsTxCompletedRange,
         };
         console.log('Debug, calling createRangePosition', params);
-        createRangePosition(params);
+        return createRangePosition(params);
     };
 
     const sendTransaction = isMintLiqEnabled
         ? async () => {
               console.log('initializing and minting');
-              sendInit(initialPriceInBaseDenom, sendRangePosition);
+              console.log({
+                  isLpContractCreationEnabled,
+                  DISABLE_INIT_SETTINGS,
+              });
+              sendInit(initialPriceInBaseDenom, [
+                  sendRangePosition,
+                  () => alert('Fired Second Callback A'),
+              ]);
           }
-        : () => {
+        : async () => {
               console.log('initializing');
-              sendInit(initialPriceInBaseDenom);
+              console.log({
+                  isLpContractCreationEnabled,
+                  DISABLE_INIT_SETTINGS,
+              });
+              sendInit(initialPriceInBaseDenom, [
+                  () => alert('Fired Second Callback B'),
+              ]);
           };
 
     const initButtonPropsIF = {
@@ -1073,6 +1092,7 @@ export default function InitPool() {
         rangeButtonErrorMessageTokenB,
         setActiveContent,
         initialPriceInBaseDenom,
+        isLpContractCreationEnabled,
         sendRangePosition,
         sendInit,
         poolExists,
@@ -1770,16 +1790,14 @@ export default function InitPool() {
     );
 
     const settingsContent = (
-        <InitSkeleton
+        <InitSettings
             isTokenModalOpen={tokenModalOpen}
             handleGoBack={handleGoBack}
-            isConfirmation={true}
             activeContent={activeContent}
             setActiveContent={setActiveContent}
-            title='Settings'
-        >
-            I AM SETTINGS
-        </InitSkeleton>
+            isLpContractCreationEnabled={isLpContractCreationEnabled}
+            setIsLpContractCreationEnabled={setIsLpContractCreationEnabled}
+        />
     );
 
     return (
