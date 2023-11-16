@@ -416,7 +416,7 @@ function Ranges(props: propsIF) {
 
     const rangeDataOrNull = !shouldDisplayNoTableData ? (
         <div>
-            <ul ref={listRef}>
+            <ul ref={listRef} id='current_row_scroll'>
                 {!isAccountView &&
                     pendingTransactions.length > 0 &&
                     relevantTransactionsByType.reverse().map((tx, idx) => (

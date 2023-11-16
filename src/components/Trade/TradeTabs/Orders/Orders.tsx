@@ -442,7 +442,7 @@ function Orders(props: propsIF) {
         <NoTableData type='limits' isAccountView={isAccountView} />
     ) : (
         <div onKeyDown={handleKeyDownViewOrder}>
-            <ul ref={listRef}>
+            <ul ref={listRef} id='current_row_scroll'>
                 {!isAccountView &&
                     pendingTransactions.length > 0 &&
                     relevantTransactionsByType.reverse().map((tx, idx) => (

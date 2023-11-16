@@ -32,7 +32,6 @@ import {
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
-import styled from 'styled-components';
 
 interface propsIF {
     filter?: CandleData | undefined;
@@ -413,15 +412,7 @@ function Transactions(props: propsIF) {
             sortable: false,
         },
     ];
-    const StyledList = styled.ul`
-        height: 100%; /* Set default height to 100% */
-        overflow-y: auto; /* Set default overflow-y to auto */
 
-        @media (max-width: 500px) {
-            height: 60%;
-            overflow-y: scroll;
-        }
-    `;
     const headerColumnsDisplay = (
         <TransactionRowStyled size={tableView} header account={isAccountView}>
             {headerColumns.map((header, idx) => (
