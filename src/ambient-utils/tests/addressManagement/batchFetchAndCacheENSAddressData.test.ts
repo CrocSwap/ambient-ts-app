@@ -3,7 +3,7 @@ import { fetchEnsAddresses } from '../../api/fetchENSAddresses';
 import { getAddress } from 'ethers/lib/utils.js';
 import { TradeTableDataRow } from '../../types';
 
-jest.mock('../../src/api/fetchENSAddresses');
+jest.mock('../../api/fetchENSAddresses');
 jest.mock('ethers/lib/utils.js');
 
 describe('batchFetchAndCacheENSAddressData', () => {
