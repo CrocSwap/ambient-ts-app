@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useContext } from 'react';
 import { RiArrowUpSLine, RiArrowDownSLine } from 'react-icons/ri';
 import uriToHttp from '../../../../utils/functions/uriToHttp';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
@@ -19,6 +19,7 @@ import {
 import { FlexContainer, Text } from '../../../../styled/Common';
 import StepperComponent from '../../../Global/MultiStepTransaction/StepperComponent';
 import Button from '../../../Form/Button';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     type:
@@ -76,7 +77,7 @@ export default function SubmitTransaction(props: propsIF) {
         isTransactionApproved &&
         !receiptData.pendingTransactions.includes(newTransactionHash);
 
-    const { tokenB } = useAppSelector((state) => state.tradeData);
+    const { tokenB } = useContext(TradeDataContext);
 
     const confirmSendMessage = (
         <WaitingConfirmation
@@ -87,9 +88,9 @@ export default function SubmitTransaction(props: propsIF) {
 
     function handleReset() {
         resetConfirmation();
-        setShowExtraInfo(false);
-        setActiveStep && setActiveStep(0);
         handleSetActiveContent && handleSetActiveContent('main');
+        setActiveStep && setActiveStep(0);
+        setShowExtraInfo(false);
     }
 
     const transactionDenied = <TransactionDenied noAnimation />;
@@ -216,6 +217,7 @@ export default function SubmitTransaction(props: propsIF) {
                     : handleReset();
             }}
             flat
+            idForDOM='stepper_action_button'
         />
     );
 
@@ -235,7 +237,13 @@ export default function SubmitTransaction(props: propsIF) {
 
     if (stepperComponent)
         return (
-            <FlexContainer flexDirection='column' gap={8} alignItems='center'>
+            <FlexContainer
+                flexDirection='column'
+                gap={8}
+                alignItems='center'
+                justifyContent='space-between'
+                minHeight='300px'
+            >
                 <StepperComponent
                     orientation='vertical'
                     steps={steps}
@@ -243,12 +251,9 @@ export default function SubmitTransaction(props: propsIF) {
                     setActiveStep={setActiveStep}
                     isError={isError}
                 />
-                {/* {confirmationDisplay} */}
                 {stepperTokensDisplay}
                 {stepperMessage}
-                {/* <p>isTransactionApproved: {  isTransactionApproved ? 'true' : 'false'}</p>
-                <p>isTransactionConfirmed: {  isTransactionConfirmed ? 'true' : 'false'}</p>
-                <p>isError: {  isTransactionConfirmed ? 'true' : 'false'}</p> */}
+
                 {(isError || isTransactionConfirmed) && stepperActionButton}
             </FlexContainer>
         );

@@ -13,14 +13,11 @@ import ConfirmationModalControl from '../../Global/ConfirmationModalControl/Conf
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import SubmitTransaction from './SubmitTransaction/SubmitTransaction';
-import Modal from '../../Global/Modal/Modal';
 import { FlexContainer, Text } from '../../../styled/Common';
 import {
     ConfirmationDetailsContainer,
     ConfirmationQuantityContainer,
-    ModalContainer,
 } from '../../../styled/Components/TradeModules';
-import { BiArrowBack } from 'react-icons/bi';
 
 interface propsIF {
     type: 'Swap' | 'Limit' | 'Range' | 'Reposition';
@@ -47,7 +44,6 @@ interface propsIF {
 
 export default function TradeConfirmationSkeleton(props: propsIF) {
     const {
-        onClose = () => null,
         type,
         initiate,
         tokenA: { token: tokenA, quantity: tokenAQuantity },
@@ -182,6 +178,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
             </Text>
         </FlexContainer>
     );
+    console.log({ showConfirmation });
 
     return (
         <FlexContainer
@@ -217,17 +214,14 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                                 }}
                                 flat
                                 disabled={!!acknowledgeUpdate}
+                                idForDOM='trade_conf_skeleton_btn'
                             />
                         </>
                     ) : (
                         acknowledgeUpdate
                     )
                 ) : (
-                    <FlexContainer
-                        flexDirection='column'
-                        justifyContent='space-between'
-                        alignItems='center'
-                    >
+                    <FlexContainer flexDirection='column' alignItems='center'>
                         <SubmitTransaction
                             type={type}
                             newTransactionHash={transactionHash}

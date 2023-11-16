@@ -1,5 +1,4 @@
 import { TokenIF } from '../interfaces/exports';
-import { supportedNetworks } from '../networks';
 
 export const mainnetETH: TokenIF = {
     address: '0x0000000000000000000000000000000000000000',
@@ -250,10 +249,3 @@ export const defaultTokens: TokenIF[] = [
     scrollSepoliaETH,
     scrollSepoliaUSDC,
 ];
-
-export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
-    return [
-        supportedNetworks[chainId].defaultPair[0],
-        supportedNetworks[chainId].defaultPair[1],
-    ];
-}

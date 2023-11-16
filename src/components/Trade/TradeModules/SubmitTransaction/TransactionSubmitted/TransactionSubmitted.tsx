@@ -2,8 +2,6 @@ import styles from './TransactionSubmitted.module.css';
 import Animation from '../../../../Global/Animation/Animation';
 import completed from '../../../../../assets/animations/completed.json';
 import addTokenToWallet from './addTokenToWallet';
-import Button from '../../../../Form/Button';
-import { FiExternalLink } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
 import { getChainExplorer } from '../../../../../utils/data/chains';
 import { Text } from '../../../../../styled/Common';
@@ -39,7 +37,6 @@ export default function TransactionSubmitted(props: PropsIF) {
         noAnimation,
         chainId,
         isConfirmed,
-        stepperComponent,
     } = props;
 
     const blockExplorer = getChainExplorer(chainId);

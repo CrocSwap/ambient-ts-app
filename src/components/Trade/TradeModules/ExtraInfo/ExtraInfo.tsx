@@ -6,10 +6,10 @@ import {
     ExtraDetailsContainer,
     ExtraInfoContainer,
 } from '../../../../styled/Components/TradeModules';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
+
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface PropsIF {
     extraInfo: {
@@ -29,9 +29,17 @@ export const ExtraInfo = (props: PropsIF) => {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
-    const dispatch = useAppDispatch();
+    const { toggleDidUserFlipDenom } = useContext(TradeDataContext);
 
     const [showExtraInfo, setShowExtraInfo] = useState<boolean>(false);
+
+    const arrowToRender = showDropdown ? (
+        showExtraInfo ? (
+            <RiArrowUpSLine size={22} />
+        ) : (
+            <RiArrowDownSLine size={22} />
+        )
+    ) : null;
 
     return (
         <>
@@ -71,17 +79,13 @@ export const ExtraInfo = (props: PropsIF) => {
                 <FlexContainer
                     alignItems='center'
                     onClick={(e: MouseEvent<HTMLDivElement>) => {
-                        dispatch(toggleDidUserFlipDenom());
+                        toggleDidUserFlipDenom();
                         e.stopPropagation();
                     }}
                 >
                     {conversionRate}
                 </FlexContainer>
-
-                {showDropdown && !showExtraInfo && (
-                    <RiArrowDownSLine size={22} />
-                )}
-                {showDropdown && showExtraInfo && <RiArrowUpSLine size={22} />}
+                <div style={{ height: '22px' }}>{arrowToRender}</div>
             </ExtraInfoContainer>
             {showExtraInfo && showDropdown && (
                 <ExtraDetailsContainer>

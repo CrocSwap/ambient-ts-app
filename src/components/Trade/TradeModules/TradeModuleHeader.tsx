@@ -1,15 +1,10 @@
-import { memo } from 'react';
+import { memo, useContext } from 'react';
 import { AiOutlineShareAlt } from 'react-icons/ai';
 import TransactionSettingsModal, {
     TransactionModuleType,
 } from '../../Global/TransactionSettingsModal/TransactionSettingsModal';
-import ShareModal from '../../Global/ShareModal/ShareModal';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../utils/hooks/reduxToolkit';
-import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
+
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 import { useModal } from '../../Global/Modal/useModal';
@@ -17,6 +12,7 @@ import { TradeModuleHeaderContainer } from '../../../styled/Components/TradeModu
 import { Text } from '../../../styled/Common';
 import { SettingsSvg } from '../../../assets/images/icons/settingsSvg';
 import { BiArrowBack } from 'react-icons/bi';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface propsIF {
     slippage: SlippageMethodsIF;
@@ -40,14 +36,14 @@ function TradeModuleHeader(props: propsIF) {
     const [isSettingsModalOpen, openSettingsModal, closeSettingsModal] =
         useModal();
 
-    const [isShareModalOpen, openShareModal, closeShareModal] = useModal();
+    const { baseToken, quoteToken, isDenomBase, toggleDidUserFlipDenom } =
+        useContext(TradeDataContext);
 
-    const dispatch = useAppDispatch();
+    const baseTokenSymbol = baseToken.symbol;
+    const quoteTokenSymbol = quoteToken.symbol;
 
-    const tradeData = useAppSelector((state) => state.tradeData);
-    const isDenomBase = tradeData.isDenomBase;
-    const baseTokenSymbol = tradeData.baseToken.symbol;
-    const quoteTokenSymbol = tradeData.quoteToken.symbol;
+    // TODO:    refactor this file to have only a single top-level return and remove
+    // TODO:    ... the `<div>` wrapper around the `TradeModuleHeaderContainer` element
 
     const generateTitle = (
         activeContent: string,
@@ -109,7 +105,7 @@ function TradeModuleHeader(props: propsIF) {
                         role='button'
                         onClick={
                             activeContent === 'main'
-                                ? () => dispatch(toggleDidUserFlipDenom())
+                                ? () => toggleDidUserFlipDenom()
                                 : undefined
                         }
                     >

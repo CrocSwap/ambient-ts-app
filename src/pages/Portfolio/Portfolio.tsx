@@ -1,6 +1,5 @@
 // START: Import React and Dongles
 import { useEffect, useState, useContext, memo, useMemo } from 'react';
-import { useEnsName } from 'wagmi';
 
 // START: Import JSX Components
 import ExchangeBalance from '../../components/Portfolio/ExchangeBalance/ExchangeBalance';
@@ -13,8 +12,6 @@ import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileS
 import { TokenIF } from '../../utils/interfaces/exports';
 import { fetchEnsAddress } from '../../App/functions/fetchAddress';
 import { Navigate, useParams } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { setResolvedAddressRedux } from '../../utils/state/userDataSlice';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../utils/functions/diffHashSig';
@@ -29,12 +26,11 @@ import {
     PortfolioTabsContainer,
 } from '../../styled/Components/Portfolio';
 import { FlexContainer, Text } from '../../styled/Common';
+import { UserDataContext } from '../../contexts/UserDataContext';
 
 function Portfolio() {
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
-    const { data: ensName } = useEnsName({ address: userAddress });
+    const { userAddress, setResolvedAddressInContext, ensName } =
+        useContext(UserDataContext);
 
     const isUserConnected = useSimulatedIsUserConnected();
 
@@ -48,10 +44,8 @@ function Portfolio() {
         activeNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { lastBlockNumber, client } = useContext(ChainDataContext);
+    const { client } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
-
-    const dispatch = useAppDispatch();
 
     const { mainnetProvider } = useContext(CrocEnvContext);
 
@@ -88,16 +82,16 @@ function Portfolio() {
                     const newResolvedAddress =
                         await mainnetProvider.resolveName(addressFromParams);
                     setResolvedAddress(newResolvedAddress ?? '');
-                    dispatch(setResolvedAddressRedux(newResolvedAddress ?? ''));
+                    setResolvedAddressInContext(newResolvedAddress ?? '');
                 } catch (error) {
                     console.error({ error });
                 }
             } else if (addressFromParams && isAddressHex && !isAddressEns) {
                 setResolvedAddress(addressFromParams);
-                dispatch(setResolvedAddressRedux(addressFromParams));
+                setResolvedAddressInContext(addressFromParams);
             } else {
                 setResolvedAddress('');
-                dispatch(setResolvedAddressRedux(''));
+                setResolvedAddressInContext('');
             }
         })();
     }, [addressFromParams, isAddressHex, isAddressEns, mainnetProvider]);
@@ -136,49 +130,12 @@ function Portfolio() {
             : setFullLayoutActive(false);
     }, [connectedAccountActive]);
 
-    // const fullLayerToggle = (
-    //     <FlexContainer
-    //         gap={32}
-    //         background='dark2'
-    //         padding='4px'
-    //         rounded
-    //         transition
-    //         cursor='pointer'
-    //         onClick={() => setFullLayoutActive(!fullLayoutActive)}
-    //     >
-    //         <FlexContainer
-    //             width='40px'
-    //             height='20px'
-    //             rounded
-    //             transition
-    //             cursor='pointer'
-    //             background={fullLayoutActive ? 'title-gradient' : 'dark2'}
-    //         />
-    //         <FlexContainer
-    //             gap={2}
-    //             position='relative'
-    //             transition
-    //             className={styles.shared_layout_svg}
-    //         >
-    //             <FlexContainer
-    //                 width='30px'
-    //                 height='20px'
-    //                 rounded
-    //                 background={fullLayoutActive ? 'title-gradient' : 'dark2'}
-    //             />
-    //             <FlexContainer
-    //                 width='20px'
-    //                 height='20px'
-    //                 rounded
-    //                 background={fullLayoutActive ? 'title-gradient' : 'dark2'}
-    //             />
-    //         </FlexContainer>
-    //     </FlexContainer>
-    // );
-
     const [resolvedAddressTokens, setResolvedAddressTokens] = useState<
         TokenIF[]
     >([]);
+
+    // used to trigger token balance refreshes every 5 minutes
+    const everyFiveMinutes = Math.floor(Date.now() / 300000);
 
     useEffect(() => {
         (async () => {
@@ -187,7 +144,6 @@ function Portfolio() {
                 client &&
                 resolvedAddress &&
                 chainId &&
-                lastBlockNumber &&
                 !connectedAccountActive
             ) {
                 try {
@@ -196,7 +152,7 @@ function Portfolio() {
                     const tokenBalanceResults = await cachedFetchTokenBalances(
                         resolvedAddress,
                         chainId,
-                        lastBlockNumber,
+                        everyFiveMinutes,
                         cachedTokenDetails,
                         crocEnv,
                         activeNetwork.graphCacheUrl,
@@ -240,7 +196,7 @@ function Portfolio() {
         client !== undefined,
         resolvedAddress,
         chainId,
-        lastBlockNumber,
+        everyFiveMinutes,
         connectedAccountActive,
         activeNetwork.graphCacheUrl,
     ]);
@@ -288,6 +244,7 @@ function Portfolio() {
         >
             <Text>Please connect your wallet.</Text>
             <Button
+                idForDOM='connect_wallet_in_account_page'
                 flat
                 title='Connect Wallet'
                 action={() => openModalWallet()}

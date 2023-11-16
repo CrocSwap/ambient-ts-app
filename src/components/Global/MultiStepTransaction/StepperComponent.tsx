@@ -2,6 +2,10 @@ import React from 'react';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
+import StepConnector, {
+    stepConnectorClasses,
+} from '@mui/material/StepConnector';
+import styled from 'styled-components';
 
 import { FlexContainer } from '../../../styled/Common';
 import Spinner from '../Spinner/Spinner';
@@ -31,35 +35,82 @@ const StepperComponent: React.FC<StepperComponentProps> = ({
 }) => {
     if (!steps) return null;
     // eslint-disable-next-line
+    const handleReset = () => {
+        setActiveStep && setActiveStep(0);
+    };
+    const CustomConnector = styled(StepConnector)`
+        &.${stepConnectorClasses.alternativeLabel} {
+        }
+
+        &.${stepConnectorClasses.active} .${stepConnectorClasses.line} {
+            border-color: #7371fc;
+        }
+
+        &.${stepConnectorClasses.completed} .${stepConnectorClasses.line} {
+            border-color: #7371fc;
+        }
+        .${stepConnectorClasses.line} {
+            border-color: #61646f;
+
+            border-width: 2px;
+        }
+    `;
+
+    const CircularBorder = styled.div`
+        width: 24px;
+        height: 24px;
+        border: 2px solid #61646f;
+        border-radius: 50%;
+    `;
+
+    const CircularBorderWithExclamation = styled.div`
+        width: 24px;
+        height: 24px;
+        border: 2px solid red;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--header2-size);
+        color: #f6385b;
+    `;
 
     if (orientation === 'horizontal') {
         return (
-            <Stepper activeStep={activeStep} alternativeLabel>
-                {steps.map((label, index) => (
-                    <Step key={label.label}>
-                        {activeStep === index ? (
+            <Stepper
+                activeStep={activeStep}
+                orientation='vertical'
+                connector={<CustomConnector />}
+            >
+                {steps.map((step, index) => (
+                    <Step key={step.label}>
+                        {activeStep && index > activeStep ? (
+                            <FlexContainer gap={8} alignItems='center'>
+                                <CircularBorder />
+                                {step.label}
+                            </FlexContainer>
+                        ) : activeStep === index ? (
                             isError ? (
-                                <StepLabel error={isError}>
-                                    {label.label}
-                                </StepLabel>
+                                <FlexContainer gap={8} alignItems='center'>
+                                    <CircularBorderWithExclamation>
+                                        !
+                                    </CircularBorderWithExclamation>
+                                    {step.label}
+                                </FlexContainer>
                             ) : (
-                                <FlexContainer
-                                    gap={16}
-                                    flexDirection='column'
-                                    alignItems='center'
-                                >
+                                <FlexContainer gap={8} alignItems='center'>
                                     <Spinner
                                         size={24}
                                         bg='var(--dark2)'
                                         weight={2}
                                     />
-                                    {label.label}
+                                    {step.label}
                                 </FlexContainer>
                             )
                         ) : (
                             <StepLabel>
                                 <p style={{ color: 'var(--text3)' }}>
-                                    {label.label}
+                                    {step.label}
                                 </p>
                             </StepLabel>
                         )}
@@ -71,23 +122,38 @@ const StepperComponent: React.FC<StepperComponentProps> = ({
 
     return (
         <FlexContainer flexDirection='column'>
-            <Stepper activeStep={activeStep} orientation='vertical'>
-                {steps?.map((step, index) => (
-                    <Step key={step?.label}>
-                        {activeStep === index ? (
+            <Stepper
+                activeStep={activeStep}
+                orientation='vertical'
+                connector={<CustomConnector />}
+            >
+                {steps.map((step, index) => (
+                    <Step key={step.label}>
+                        {activeStep && index > activeStep ? (
+                            <FlexContainer gap={8} alignItems='center'>
+                                <CircularBorder />
+                                {step.label}
+                            </FlexContainer>
+                        ) : activeStep === index ? (
                             isError ? (
-                                <StepLabel error={isError}>
-                                    {step?.label}
-                                </StepLabel>
+                                <FlexContainer
+                                    gap={8}
+                                    alignItems='center'
+                                    style={{ color: '#f6385b' }}
+                                >
+                                    <CircularBorderWithExclamation>
+                                        !
+                                    </CircularBorderWithExclamation>
+                                    {step.label}
+                                </FlexContainer>
                             ) : (
-                                <FlexContainer gap={32}>
+                                <FlexContainer gap={8} alignItems='center'>
                                     <Spinner
                                         size={24}
                                         bg='var(--dark2)'
                                         weight={2}
                                     />
-
-                                    {step?.label}
+                                    {step.label}
                                 </FlexContainer>
                             )
                         ) : (

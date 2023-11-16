@@ -45,7 +45,6 @@ const MultiContentComponent: React.FC<MultiContentComponentProps> = ({
         })),
     ];
 
-    console.log('activeContent', activeContent);
     const activeKeyFromOtherContent = otherContents.find(
         (content) => content.activeKey === activeContent,
     )?.activeKey;

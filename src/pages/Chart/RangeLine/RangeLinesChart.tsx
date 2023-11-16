@@ -7,7 +7,6 @@ import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { getPinnedPriceValuesFromTicks } from '../../Trade/Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { RangeContext } from '../../../contexts/RangeContext';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { createTriangle } from '../ChartUtils/triangle';
 import {
     lineValue,
@@ -67,13 +66,11 @@ export default function RangeLinesChart(props: propsIF) {
     const location = useLocation();
     const position = location?.state?.position;
 
-    const tradeData = useAppSelector((state) => state.tradeData);
-
     const {
         minRangePrice: minPrice,
         maxRangePrice: maxPrice,
         rescaleRangeBoundariesWithSlider,
-
+        advancedMode,
         simpleRangeWidth,
     } = useContext(RangeContext);
 
@@ -151,21 +148,19 @@ export default function RangeLinesChart(props: propsIF) {
                 newTargets.filter(
                     (target: lineValue) => target.name === 'Max',
                 )[0].value =
-                    !tradeData.advancedMode && simpleRangeWidth === 100
+                    !advancedMode && simpleRangeWidth === 100
                         ? topBoundary
                         : maxPrice;
 
                 newTargets.filter(
                     (target: lineValue) => target.name === 'Min',
                 )[0].value =
-                    !tradeData.advancedMode && simpleRangeWidth === 100
-                        ? 0
-                        : minPrice;
+                    !advancedMode && simpleRangeWidth === 100 ? 0 : minPrice;
 
                 return newTargets;
             });
         }
-    }, [minPrice, maxPrice, tradeData.advancedMode, simpleRangeWidth]);
+    }, [minPrice, maxPrice, advancedMode, simpleRangeWidth]);
 
     useEffect(() => {
         if (position !== undefined) {
@@ -187,13 +182,7 @@ export default function RangeLinesChart(props: propsIF) {
         d3.select(d3CanvasRangeLine.current)
             .select('canvas')
             .style('display', isRange ? 'inline' : 'none');
-    }, [
-        location,
-        location.pathname,
-        period,
-        simpleRangeWidth,
-        tradeData.advancedMode,
-    ]);
+    }, [location, location.pathname, period, simpleRangeWidth, advancedMode]);
 
     useEffect(() => {
         if (
@@ -280,14 +269,14 @@ export default function RangeLinesChart(props: propsIF) {
 
     useEffect(() => {
         displayHorizontalLines();
-    }, [simpleRangeWidth, tradeData.advancedMode, location]);
+    }, [simpleRangeWidth, advancedMode, location]);
 
     const displayHorizontalLines = () => {
         if (
             location.pathname.includes('reposition') ||
             location.pathname.includes('pool')
         ) {
-            if (tradeData.advancedMode || simpleRangeWidth !== 100) {
+            if (advancedMode || simpleRangeWidth !== 100) {
                 d3.select(d3CanvasRangeLine.current)
                     .select('canvas')
                     .style('display', 'inline');

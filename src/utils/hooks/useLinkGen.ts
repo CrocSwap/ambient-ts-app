@@ -120,9 +120,6 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
         } else if (pathname.startsWith(BASE_URL_PATHS.privacy)) {
             pageName = 'privacy';
         } else {
-            console.warn(
-                `Could not find page name corresponding to URL path <<${pathname}>> in fn getPageFromLocation() in useLinkGen.ts file. Returning value 'home' as backup value.`,
-            );
             pageName = 'home';
         }
         return pageName;

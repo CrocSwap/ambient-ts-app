@@ -6,7 +6,6 @@ import { useLocation } from 'react-router-dom';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { DISCORD_LINK } from '../../../constants';
-import Modal from '../Modal/Modal';
 import { FlexContainer, Text } from '../../../styled/Common';
 import {
     IconButton,

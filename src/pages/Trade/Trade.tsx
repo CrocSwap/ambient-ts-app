@@ -28,7 +28,7 @@ import { CandleData } from '../../App/functions/fetchCandleSeries';
 import { NoChartData } from '../../components/NoChartData/NoChartData';
 import { TradeChartsHeader } from './TradeCharts/TradeChartsHeader/TradeChartsHeader';
 import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
-import { FlexContainer } from '../../styled/Common';
+import { FlexContainer, Text } from '../../styled/Common';
 import {
     ChartContainer,
     MainSection,
@@ -37,6 +37,11 @@ import {
     TradeDropdownButton,
 } from '../../styled/Components/Trade';
 import { Direction } from 're-resizable/lib/resizer';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
+import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
+import { PoolContext } from '../../contexts/PoolContext';
+import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
+import { MdAutoGraph } from 'react-icons/md';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -68,7 +73,8 @@ function Trade() {
     } = useContext(TradeTableContext);
 
     const { tradeData } = useAppSelector((state) => state);
-    const { isDenomBase, limitTick } = tradeData;
+    const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
+    const { limitTick } = tradeData;
 
     const { urlParamMap, updateURL } = useUrlParams(tokens, chainId, provider);
 
@@ -103,17 +109,20 @@ function Trade() {
         <TradeDropdown>
             <TradeDropdownButton
                 onClick={() => setMobileDropdown(!showMobileDropdown)}
+                activeText
             >
                 {activeMobileComponent}
 
                 <BsCaretDownFill />
             </TradeDropdownButton>
+
             {showMobileDropdown && (
                 <div
                     style={{
                         position: 'absolute',
                         marginTop: '8px',
                         width: '100%',
+                        background: 'var(--dark2)',
                     }}
                 >
                     {activeMobileComponent !== 'trade' && (
@@ -157,13 +166,10 @@ function Trade() {
 
     useEffect(() => {
         unselectCandle();
-    }, [
-        chartSettings.candleTime.global.time,
-        tradeData.baseToken.name,
-        tradeData.quoteToken.name,
-    ]);
+    }, [chartSettings.candleTime.global.time, baseToken.name, quoteToken.name]);
 
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
+    const smallScreen = useMediaQuery('(max-width: 500px)');
 
     const [isChartLoading, setIsChartLoading] = useState<boolean>(true);
 
@@ -188,32 +194,67 @@ function Trade() {
         candleTime: chartSettings.candleTime.global,
         tokens,
     };
+    const { poolPriceDisplay } = useContext(PoolContext);
+    const baseTokenSymbol = baseToken.symbol;
+    const quoteTokenSymbol = quoteToken.symbol;
+    const displayPriceWithDenom =
+        isDenomBase && poolPriceDisplay
+            ? 1 / poolPriceDisplay
+            : poolPriceDisplay ?? 0;
+
+    const displayPriceString = getFormattedNumber({
+        value: displayPriceWithDenom,
+    });
+    const conversionRate = isDenomBase
+        ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
+        : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`;
 
     const mobileTrade = (
-        <MainSection>
+        <MainSection
+            style={{ marginTop: '32px' }}
+            isDropdown
+            isSmallScreen={smallScreen}
+        >
             {mobileTradeDropdown}
+
+            <Text
+                fontWeight='500'
+                fontSize='body'
+                color='accent5'
+                style={{
+                    margin: '0 auto',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                }}
+            >
+                <MdAutoGraph size={22} color='var(--accent5)' />
+                {conversionRate}
+            </Text>
             {activeMobileComponent === 'chart' && isPoolInitialized && (
-                <div style={{ marginLeft: '2rem', flex: 1 }}>
+                <div style={{ marginLeft: smallScreen ? '' : '2rem', flex: 1 }}>
                     <TradeChartsHeader />
                     {!isCandleDataNull && <TradeCharts {...tradeChartsProps} />}
                 </div>
             )}
 
             {activeMobileComponent === 'transactions' && (
-                <div style={{ marginLeft: '2rem', flex: 1 }}>
+                <div style={{ marginLeft: smallScreen ? '' : '2rem', flex: 1 }}>
                     <TradeChartsHeader />
                     <TradeTabs2 {...tradeTabsProps} />
                 </div>
             )}
 
             {activeMobileComponent === 'trade' && (
-                <Outlet
-                    context={{
-                        tradeData: tradeData,
-                        limitTick: limitTick,
-                        updateURL: updateURL,
-                    }}
-                />
+                <ContentContainer noPadding noStyle={smallScreen}>
+                    <Outlet
+                        context={{
+                            tradeData: tradeData,
+                            limitTick: limitTick,
+                            updateURL: updateURL,
+                        }}
+                    />
+                </ContentContainer>
             )}
         </MainSection>
     );
@@ -283,16 +324,8 @@ function Trade() {
                         {showNoChartData && (
                             <NoChartData
                                 chainId={chainId}
-                                tokenA={
-                                    isDenomBase
-                                        ? tradeData.baseToken
-                                        : tradeData.quoteToken
-                                }
-                                tokenB={
-                                    isDenomBase
-                                        ? tradeData.quoteToken
-                                        : tradeData.baseToken
-                                }
+                                tokenA={isDenomBase ? baseToken : quoteToken}
+                                tokenB={isDenomBase ? quoteToken : baseToken}
                                 isCandleDataNull
                                 isTableExpanded={tradeTableState == 'Expanded'}
                             />

@@ -44,6 +44,8 @@ import {
 } from '../../../utils/TransactionError';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
 import { useApprove } from '../../../App/functions/approve';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 export default function Limit() {
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
@@ -71,19 +73,20 @@ export default function Limit() {
     );
 
     const dispatch = useAppDispatch();
+    // eslint-disable-next-line
     const [isOpen, openModal, closeModal] = useModal();
+    const { limitTick, poolPriceNonDisplay, primaryQuantity } = useAppSelector(
+        (state) => state.tradeData,
+    );
     const {
         baseToken,
         quoteToken,
         tokenA,
         tokenB,
         isTokenAPrimary,
-        limitTick,
-        poolPriceNonDisplay,
-        liquidityFee,
         isDenomBase,
-        primaryQuantity,
-    } = useAppSelector((state) => state.tradeData);
+    } = useContext(TradeDataContext);
+    const { liquidityFee } = useContext(GraphDataContext);
     const { urlParamMap, updateURL } = useTradeData();
 
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
@@ -399,6 +402,12 @@ export default function Limit() {
                     ? 120000
                     : 150000
                 : 150000;
+
+            const costOfMainnetLimitInETH =
+                gasPriceInGwei * averageLimitCostInGasDrops * 1e-9;
+
+            setAmountToReduceEthMainnet(1.75 * costOfMainnetLimitInETH);
+
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 averageLimitCostInGasDrops *
@@ -538,7 +547,9 @@ export default function Limit() {
         }
     };
 
-    const amountToReduceEthMainnet = 0.005; // .005 ETH
+    const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
+        useState<number>(0.01);
+
     const amountToReduceEthScroll = 0.0003; // .0003 ETH
 
     const amountToReduceEth =
@@ -599,11 +610,6 @@ export default function Limit() {
                 }
             }
         }
-    };
-
-    const handleModalOpen = () => {
-        resetConfirmation();
-        openModal();
     };
 
     const handleModalClose = (): void => {
@@ -671,6 +677,7 @@ export default function Limit() {
                     limitTickDisplayPrice={middleDisplayPrice}
                     handleLimitButtonMessage={handleLimitButtonMessage}
                     toggleDexSelection={toggleDexSelection}
+                    amountToReduceEth={amountToReduceEth}
                 />
             }
             inputOptions={
@@ -681,7 +688,6 @@ export default function Limit() {
                     setPreviousDisplayPrice={setPreviousDisplayPrice}
                     isSellTokenBase={isSellTokenBase}
                     setPriceInputFieldBlurred={setPriceInputFieldBlurred}
-                    fieldId='limit-rate'
                     updateURL={updateURL}
                 />
             }
@@ -716,6 +722,7 @@ export default function Limit() {
             }
             button={
                 <Button
+                    idForDOM='confirm_limit_order_button'
                     title={
                         areBothAckd
                             ? limitAllowed
@@ -762,6 +769,7 @@ export default function Limit() {
                 isTokenAWalletBalanceSufficient &&
                 parseFloat(tokenAInputQty) > 0 ? (
                     <Button
+                        idForDOM='approve_limit_order_button'
                         title={
                             !isApprovalPending
                                 ? `Approve ${tokenA.symbol}`

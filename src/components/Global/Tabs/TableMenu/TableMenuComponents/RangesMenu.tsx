@@ -7,16 +7,7 @@ import styles from './TableMenus.module.css';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../../utils/hooks/reduxToolkit';
-import {
-    setAdvancedHighTick,
-    setAdvancedLowTick,
-    setAdvancedMode,
-    setRangeTicksCopied,
-} from '../../../../../utils/state/tradeDataSlice';
+
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { RangeContext } from '../../../../../contexts/RangeContext';
 import {
@@ -32,6 +23,8 @@ import { useModal } from '../../../Modal/useModal';
 import RangeDetailsModal from '../../../../RangeDetails/RangeDetailsModal/RangeDetailsModal';
 import { Chip } from '../../../../Form/Chip';
 import { FlexContainer } from '../../../../../styled/Common';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -67,17 +60,19 @@ export default function RangesMenu(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const {
+        setRangeTicksCopied,
         setSimpleRangeWidth,
         setCurrentRangeInReposition,
         setCurrentRangeInAdd,
+        setAdvancedHighTick,
+        setAdvancedLowTick,
+        setAdvancedMode,
     } = useContext(RangeContext);
     const { sidebar } = useContext(SidebarContext);
     const { handlePulseAnimation, setActiveMobileComponent } =
         useContext(TradeTableContext);
 
     const { isAmbient } = rangeDetailsProps;
-
-    const dispatch = useAppDispatch();
 
     // ---------------------MODAL FUNCTIONALITY----------------
 
@@ -110,10 +105,11 @@ export default function RangesMenu(props: propsIF) {
         closeRangeActionModal();
     };
 
-    const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
-    const tradeData = useAppSelector((state) => state.tradeData);
-    const rtkTokenA = tradeData.tokenA.address;
-    const rtkTokenB = tradeData.tokenB.address;
+    const { isUserConnected } = useContext(UserDataContext);
+
+    const { tokenA, tokenB } = useContext(TradeDataContext);
+    const tokenAAddress = tokenA.address;
+    const tokenBAddress = tokenB.address;
 
     // ----------------------
 
@@ -132,22 +128,22 @@ export default function RangesMenu(props: propsIF) {
         : useMediaQuery('(max-width: 1150px)');
 
     const positionMatchesLoggedInUser =
-        userMatchesConnectedAccount && isUserLoggedIn;
+        userMatchesConnectedAccount && isUserConnected;
 
     const handleCopyClick = () => {
         setActiveMobileComponent('trade');
 
-        dispatch(setRangeTicksCopied(true));
+        setRangeTicksCopied(true);
         handlePulseAnimation('range');
 
         if (position.positionType === 'ambient') {
             setSimpleRangeWidth(100);
-            dispatch(setAdvancedMode(false));
+            setAdvancedMode(false);
         } else {
             IS_LOCAL_ENV && console.debug({ position });
-            dispatch(setAdvancedLowTick(position.bidTick));
-            dispatch(setAdvancedHighTick(position.askTick));
-            dispatch(setAdvancedMode(true));
+            setAdvancedLowTick(position.bidTick);
+            setAdvancedHighTick(position.askTick);
+            setAdvancedMode(true);
         }
         setShowDropdownMenu(false);
     };
@@ -158,15 +154,16 @@ export default function RangesMenu(props: propsIF) {
 
     const repositionButton = (
         <Link
+            id={`reposition_button_${position.positionId}`}
             className={styles.reposition_button}
             to={linkGenRepo.getFullURL({
                 chain: chainId,
                 tokenA:
-                    rtkTokenA.toLowerCase() === position.quote.toLowerCase()
+                    tokenAAddress.toLowerCase() === position.quote.toLowerCase()
                         ? position.quote
                         : position.base,
                 tokenB:
-                    rtkTokenB.toLowerCase() === position.base.toLowerCase()
+                    tokenBAddress.toLowerCase() === position.base.toLowerCase()
                         ? position.base
                         : position.quote,
                 lowTick: position.bidTick.toString(),
@@ -184,7 +181,12 @@ export default function RangesMenu(props: propsIF) {
     );
 
     const removeButton = positionMatchesLoggedInUser ? (
-        <Chip onClick={() => openActionModal('Remove')}>Remove</Chip>
+        <Chip
+            id={`remove_position_${position.positionId}`}
+            onClick={() => openActionModal('Remove')}
+        >
+            Remove
+        </Chip>
     ) : null;
 
     const copyButton = position ? (
@@ -194,11 +196,13 @@ export default function RangesMenu(props: propsIF) {
                 const poolLinkParams: poolParamsIF = {
                     chain: chainId,
                     tokenA:
-                        rtkTokenA.toLowerCase() === position.quote.toLowerCase()
+                        tokenAAddress.toLowerCase() ===
+                        position.quote.toLowerCase()
                             ? position.quote
                             : position.base,
                     tokenB:
-                        rtkTokenA.toLowerCase() === position.quote.toLowerCase()
+                        tokenAAddress.toLowerCase() ===
+                        position.quote.toLowerCase()
                             ? position.base
                             : position.quote,
                     lowTick: position.bidTick.toString(),
@@ -215,16 +219,19 @@ export default function RangesMenu(props: propsIF) {
 
     const addButton = (
         <Chip
+            id={`add_liquidity_position_${position.positionId}`}
             onClick={() => {
                 // URL params for link to pool page
                 const poolLinkParams: poolParamsIF = {
                     chain: chainId,
                     tokenA:
-                        rtkTokenA.toLowerCase() === position.quote.toLowerCase()
+                        tokenAAddress.toLowerCase() ===
+                        position.quote.toLowerCase()
                             ? position.quote
                             : position.base,
                     tokenB:
-                        rtkTokenA.toLowerCase() === position.quote.toLowerCase()
+                        tokenAAddress.toLowerCase() ===
+                        position.quote.toLowerCase()
                             ? position.base
                             : position.quote,
                     lowTick: position.bidTick.toString(),
@@ -243,7 +250,12 @@ export default function RangesMenu(props: propsIF) {
     const detailsButton = <Chip onClick={openDetailsModal}>Details</Chip>;
     const harvestButton =
         !isAmbient && positionMatchesLoggedInUser ? (
-            <Chip onClick={() => openActionModal('Harvest')}>Harvest</Chip>
+            <Chip
+                id={`harvest_position_${position.positionId}`}
+                onClick={() => openActionModal('Harvest')}
+            >
+                Harvest
+            </Chip>
         ) : null;
 
     // ----------------------

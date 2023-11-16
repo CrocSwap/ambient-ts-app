@@ -18,6 +18,9 @@ import Button from '../../Form/Button';
 import TradeLinks from './TradeLinks';
 import MultiContentComponent from '../../Global/MultiStepTransaction/MultiContentComponent';
 import ShareModal from '../../Global/ShareModal/ShareModal';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface PropsIF {
     chainId: string;
@@ -54,7 +57,6 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         warnings,
         tutorialSteps,
         activeContent,
-        setActiveContent,
         handleSetActiveContent,
     } = props;
 
@@ -67,12 +69,10 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
 
-    const { isLoggedIn: isUserConnected } = useAppSelector(
-        (state) => state.userData,
-    );
-    const { tokenA, tokenB, limitTick } = useAppSelector(
-        (state) => state.tradeData,
-    );
+    const { isUserConnected } = useContext(UserDataContext);
+
+    const { limitTick } = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB } = useContext(TradeDataContext);
 
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
@@ -107,6 +107,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         /\b(not)\b/g,
         '<span style="color: var(--negative); text-transform: uppercase;">$1</span>',
     );
+    const smallScreen = useMediaQuery('(max-width: 500px)');
 
     const mainContent = (
         <section>
@@ -122,7 +123,10 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     </TutorialButton>
                 </FlexContainer>
             )}{' '}
-            <ContentContainer isOnTradeRoute={!isSwapPage}>
+            <ContentContainer
+                isOnTradeRoute={!isSwapPage}
+                noPadding={smallScreen && !isSwapPage}
+            >
                 {header}
                 {isSwapPage || (
                     <TradeLinks
@@ -208,6 +212,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                         )
                     ) : (
                         <Button
+                            idForDOM='connect_wallet_button_in_trade_configurator'
                             action={openWagmiModal}
                             title='Connect Wallet'
                             flat
@@ -239,8 +244,6 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     );
 
     const settingsContent = <div>I am settings</div>;
-
-    console.log({ activeContent });
 
     return (
         <section>

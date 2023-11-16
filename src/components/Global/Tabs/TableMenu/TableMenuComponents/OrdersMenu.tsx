@@ -11,14 +11,6 @@ import LimitActionModal from '../../../../LimitActionModal/LimitActionModal';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../../utils/hooks/reduxToolkit';
-import {
-    TradeDataIF,
-    setIsTokenAPrimary,
-} from '../../../../../utils/state/tradeDataSlice';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import {
     useLinkGen,
@@ -30,6 +22,7 @@ import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useModal } from '../../../Modal/useModal';
 import { Chip } from '../../../../Form/Chip';
 import { FlexContainer } from '../../../../../styled/Common';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -63,11 +56,10 @@ export default function OrdersMenu(props: propsIF) {
     const { handlePulseAnimation, setActiveMobileComponent } =
         useContext(TradeTableContext);
 
-    const tradeData: TradeDataIF = useAppSelector((state) => state.tradeData);
-
+    const { tokenA, isTokenAPrimary, setIsTokenAPrimary } =
+        useContext(TradeDataContext);
     // hook to generate navigation actions with pre-loaded path
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
-    const dispatch = useAppDispatch();
 
     // -----------------SNACKBAR----------------
 
@@ -123,7 +115,12 @@ export default function OrdersMenu(props: propsIF) {
         ) : null;
     const claimButton =
         limitOrder && isOwnerActiveAccount && isOrderFilled ? (
-            <Chip onClick={() => openLimitActionModal('Claim')}>Claim</Chip>
+            <Chip
+                id={`claim_limit_button_${limitOrder.limitOrderId}`}
+                onClick={() => openLimitActionModal('Claim')}
+            >
+                Claim
+            </Chip>
         ) : null;
     const copyButton = limitOrder ? (
         <Chip
@@ -133,9 +130,8 @@ export default function OrdersMenu(props: propsIF) {
                 const newTokenB: string = isBid ? quote : base;
                 // determine if old token A === new token A
                 // no => flip `isTokenAPrimary`
-                tradeData.tokenA.address.toLowerCase() !==
-                    newTokenA.toLowerCase() &&
-                    dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
+                tokenA.address.toLowerCase() !== newTokenA.toLowerCase() &&
+                    setIsTokenAPrimary(!isTokenAPrimary);
                 // URL params for link to limit page
                 const limitLinkParams: limitParamsIF = {
                     chain: chainData.chainId,
@@ -154,15 +150,6 @@ export default function OrdersMenu(props: propsIF) {
         </Chip>
     ) : null;
     const detailsButton = <Chip onClick={openLimitDetailsModal}>Details</Chip>;
-
-    const ordersMenu = (
-        <div className={styles.actions_menu}>
-            {(view3 || view2WithNoSidebar) && detailsButton}
-            {minView && claimButton}
-            {minView && removeButton}
-            {minView && copyButton}
-        </div>
-    );
 
     const menuContent = (
         <div className={styles.menu_column}>
@@ -184,17 +171,6 @@ export default function OrdersMenu(props: propsIF) {
     };
 
     UseOnClickOutside(menuItemRef, clickOutsideHandler);
-    const dropdownOrdersMenu = (
-        <div className={styles.dropdown_menu} ref={menuItemRef}>
-            <div
-                onClick={() => setShowDropdownMenu(!showDropdownMenu)}
-                className={styles.dropdown_button}
-            >
-                <CiCircleMore size={25} color='var(--text1)' />
-            </div>
-            <div className={wrapperStyle}>{menuContent}</div>
-        </div>
-    );
 
     useEffect(() => {
         if (showDropdownMenu) {
@@ -211,8 +187,21 @@ export default function OrdersMenu(props: propsIF) {
                 style={{ width: 'min-content', cursor: 'default' }}
                 className={styles.main_container}
             >
-                {ordersMenu}
-                {dropdownOrdersMenu}
+                <div className={styles.actions_menu}>
+                    {(view3 || view2WithNoSidebar) && detailsButton}
+                    {minView && claimButton}
+                    {minView && removeButton}
+                    {minView && copyButton}
+                </div>
+                <div className={styles.dropdown_menu} ref={menuItemRef}>
+                    <div
+                        onClick={() => setShowDropdownMenu(!showDropdownMenu)}
+                        className={styles.dropdown_button}
+                    >
+                        <CiCircleMore size={25} color='var(--text1)' />
+                    </div>
+                    <div className={wrapperStyle}>{menuContent}</div>
+                </div>
             </div>
             {isDetailsModalOpen && (
                 <OrderDetailsModal
