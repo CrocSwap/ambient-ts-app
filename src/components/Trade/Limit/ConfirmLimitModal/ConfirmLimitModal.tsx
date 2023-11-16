@@ -1,9 +1,9 @@
 import { useContext } from 'react';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 import TradeConfirmationSkeleton from '../../TradeModules/TradeConfirmationSkeleton';
 import { FlexContainer, Text } from '../../../../styled/Common';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     initiateLimitOrderMethod: () => Promise<void>;
@@ -43,7 +43,7 @@ export default function ConfirmLimitModal(props: propsIF) {
         isDenomBase,
         baseToken: { symbol: baseTokenSymbol },
         quoteToken: { symbol: quoteTokenSymbol },
-    } = useAppSelector((state) => state.tradeData);
+    } = useContext(TradeDataContext);
 
     const displayPoolPriceWithDenom =
         isDenomBase && poolPriceDisplay

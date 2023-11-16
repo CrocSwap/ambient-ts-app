@@ -4,12 +4,13 @@ import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { PositionIF } from '../../utils/interfaces/exports';
 import trimString from '../../utils/functions/trimString';
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
 import { getChainExplorer } from '../data/chains';
 import moment from 'moment';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { getAddress } from 'ethers/lib/utils.js';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 export const useProcessRange = (
     position: PositionIF,
@@ -23,7 +24,7 @@ export const useProcessRange = (
 
     const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
 
-    const isDenomBase = tradeData.isDenomBase;
+    const { isDenomBase } = useContext(TradeDataContext);
 
     const tokenAAddress = position.base;
     const tokenBAddress = position.quote;

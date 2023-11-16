@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { RiArrowUpSLine, RiArrowDownSLine } from 'react-icons/ri';
 import uriToHttp from '../../../../utils/functions/uriToHttp';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
@@ -17,6 +17,7 @@ import {
     SubmitTransactionExtraButton,
 } from '../../../../styled/Components/TradeModules';
 import { FlexContainer } from '../../../../styled/Common';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     type:
@@ -59,7 +60,7 @@ export default function SubmitTransaction(props: propsIF) {
         isTransactionApproved &&
         !receiptData.pendingTransactions.includes(newTransactionHash);
 
-    const { tokenB } = useAppSelector((state) => state.tradeData);
+    const { tokenB } = useContext(TradeDataContext);
 
     const confirmSendMessage = (
         <WaitingConfirmation
