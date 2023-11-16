@@ -141,7 +141,7 @@ function Portfolio() {
     >([]);
 
     // used to trigger token balance refreshes every 5 minutes
-    const everyTwoMinutes = Math.floor(Date.now() / 300000);
+    const everyFiveMinutes = Math.floor(Date.now() / 300000);
 
     useEffect(() => {
         (async () => {
@@ -158,7 +158,7 @@ function Portfolio() {
                     const tokenBalanceResults = await cachedFetchTokenBalances(
                         resolvedAddress,
                         chainId,
-                        everyTwoMinutes,
+                        everyFiveMinutes,
                         cachedTokenDetails,
                         crocEnv,
                         activeNetwork.graphCacheUrl,
@@ -202,7 +202,7 @@ function Portfolio() {
         client !== undefined,
         resolvedAddress,
         chainId,
-        everyTwoMinutes,
+        everyFiveMinutes,
         connectedAccountActive,
         activeNetwork.graphCacheUrl,
     ]);
