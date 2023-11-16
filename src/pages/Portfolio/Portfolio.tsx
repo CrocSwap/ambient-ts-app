@@ -44,7 +44,7 @@ function Portfolio() {
         activeNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { lastBlockNumber, client } = useContext(ChainDataContext);
+    const { client } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
     const { mainnetProvider } = useContext(CrocEnvContext);
@@ -130,49 +130,12 @@ function Portfolio() {
             : setFullLayoutActive(false);
     }, [connectedAccountActive]);
 
-    // const fullLayerToggle = (
-    //     <FlexContainer
-    //         gap={32}
-    //         background='dark2'
-    //         padding='4px'
-    //         rounded
-    //         transition
-    //         cursor='pointer'
-    //         onClick={() => setFullLayoutActive(!fullLayoutActive)}
-    //     >
-    //         <FlexContainer
-    //             width='40px'
-    //             height='20px'
-    //             rounded
-    //             transition
-    //             cursor='pointer'
-    //             background={fullLayoutActive ? 'title-gradient' : 'dark2'}
-    //         />
-    //         <FlexContainer
-    //             gap={2}
-    //             position='relative'
-    //             transition
-    //             className={styles.shared_layout_svg}
-    //         >
-    //             <FlexContainer
-    //                 width='30px'
-    //                 height='20px'
-    //                 rounded
-    //                 background={fullLayoutActive ? 'title-gradient' : 'dark2'}
-    //             />
-    //             <FlexContainer
-    //                 width='20px'
-    //                 height='20px'
-    //                 rounded
-    //                 background={fullLayoutActive ? 'title-gradient' : 'dark2'}
-    //             />
-    //         </FlexContainer>
-    //     </FlexContainer>
-    // );
-
     const [resolvedAddressTokens, setResolvedAddressTokens] = useState<
         TokenIF[]
     >([]);
+
+    // used to trigger token balance refreshes every 5 minutes
+    const everyFiveMinutes = Math.floor(Date.now() / 300000);
 
     useEffect(() => {
         (async () => {
@@ -181,7 +144,6 @@ function Portfolio() {
                 client &&
                 resolvedAddress &&
                 chainId &&
-                lastBlockNumber &&
                 !connectedAccountActive
             ) {
                 try {
@@ -190,7 +152,7 @@ function Portfolio() {
                     const tokenBalanceResults = await cachedFetchTokenBalances(
                         resolvedAddress,
                         chainId,
-                        lastBlockNumber,
+                        everyFiveMinutes,
                         cachedTokenDetails,
                         crocEnv,
                         activeNetwork.graphCacheUrl,
@@ -234,7 +196,7 @@ function Portfolio() {
         client !== undefined,
         resolvedAddress,
         chainId,
-        lastBlockNumber,
+        everyFiveMinutes,
         connectedAccountActive,
         activeNetwork.graphCacheUrl,
     ]);
@@ -282,6 +244,7 @@ function Portfolio() {
         >
             <Text>Please connect your wallet.</Text>
             <Button
+                idForDOM='connect_wallet_in_account_page'
                 flat
                 title='Connect Wallet'
                 action={() => openModalWallet()}

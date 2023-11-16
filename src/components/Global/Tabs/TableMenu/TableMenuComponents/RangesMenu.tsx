@@ -154,6 +154,7 @@ export default function RangesMenu(props: propsIF) {
 
     const repositionButton = (
         <Link
+            id={`reposition_button_${position.positionId}`}
             className={styles.reposition_button}
             to={linkGenRepo.getFullURL({
                 chain: chainId,
@@ -180,7 +181,12 @@ export default function RangesMenu(props: propsIF) {
     );
 
     const removeButton = positionMatchesLoggedInUser ? (
-        <Chip onClick={() => openActionModal('Remove')}>Remove</Chip>
+        <Chip
+            id={`remove_position_${position.positionId}`}
+            onClick={() => openActionModal('Remove')}
+        >
+            Remove
+        </Chip>
     ) : null;
 
     const copyButton = position ? (
@@ -213,6 +219,7 @@ export default function RangesMenu(props: propsIF) {
 
     const addButton = (
         <Chip
+            id={`add_liquidity_position_${position.positionId}`}
             onClick={() => {
                 // URL params for link to pool page
                 const poolLinkParams: poolParamsIF = {
@@ -243,7 +250,12 @@ export default function RangesMenu(props: propsIF) {
     const detailsButton = <Chip onClick={openDetailsModal}>Details</Chip>;
     const harvestButton =
         !isAmbient && positionMatchesLoggedInUser ? (
-            <Chip onClick={() => openActionModal('Harvest')}>Harvest</Chip>
+            <Chip
+                id={`harvest_position_${position.positionId}`}
+                onClick={() => openActionModal('Harvest')}
+            >
+                Harvest
+            </Chip>
         ) : null;
 
     // ----------------------

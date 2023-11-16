@@ -76,6 +76,8 @@ export default function TransactionDetailsModal(props: propsIF) {
                 if (!crocEnv || !provider || !json?.data) {
                     return;
                 }
+                // temporarily skip ENS fetch
+                const skipENSFetch = true;
 
                 const positionPayload = json?.data as PositionServerIF;
                 const positionStats = await getPositionData(
@@ -89,6 +91,7 @@ export default function TransactionDetailsModal(props: propsIF) {
                     cachedQuerySpotPrice,
                     cachedTokenDetails,
                     cachedEnsResolve,
+                    skipENSFetch,
                 );
 
                 setUpdatedPositionApy(

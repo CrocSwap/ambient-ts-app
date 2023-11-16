@@ -428,7 +428,8 @@ function Reposition() {
                     setCurrentQuoteQtyDisplayTruncated('...');
                     return;
                 }
-
+                // temporarily skip ENS fetch
+                const skipENSFetch = true;
                 const positionStats = await getPositionData(
                     json.data as PositionServerIF,
                     tokens.tokenUniv,
@@ -440,6 +441,7 @@ function Reposition() {
                     cachedQuerySpotPrice,
                     cachedTokenDetails,
                     cachedEnsResolve,
+                    skipENSFetch,
                 );
                 const liqBaseNum =
                     positionStats.positionLiqBaseDecimalCorrected;
@@ -669,6 +671,7 @@ function Reposition() {
                             />
                         ) : (
                             <Button
+                                idForDOM='confirm_reposition_button'
                                 title={
                                     isRepositionSent
                                         ? 'Reposition Sent'

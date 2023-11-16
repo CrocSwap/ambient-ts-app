@@ -13,7 +13,7 @@ function AdvancedModeToggle() {
             fullWidth
             alignItems='center'
             gap={4}
-            id='range_advance_mode_toggle'
+            id='range_advance_mode_toggle_container'
             aria-label='Advanced mode toggle'
         >
             <Toggle
@@ -22,7 +22,7 @@ function AdvancedModeToggle() {
                 id='advanced_reposition'
             />
             <Text fontSize='body' color='text2'>
-                {'Balanced'}
+                Balanced
             </Text>
         </FlexContainer>
     );

@@ -36,6 +36,7 @@ import {
     scaleData,
 } from '../../Chart/ChartUtils/chartUtils';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useUndoRedo } from '../../Chart/ChartUtils/useUndoRedo';
 import { updatesIF } from '../../../utils/hooks/useUrlParams';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
@@ -107,11 +108,23 @@ function TradeCandleStickChart(props: propsIF) {
     const [liqBoundary, setLiqBoundary] = useState<number | undefined>(
         undefined,
     );
-
     const tradeData = useAppSelector((state) => state.tradeData);
     const { tokenA, tokenB, isDenomBase } = useContext(TradeDataContext);
+
     const { liquidityData: unparsedLiquidityData } =
         useContext(GraphDataContext);
+    const denominationsInBase = isDenomBase;
+
+    const {
+        undo,
+        redo,
+        drawnShapeHistory,
+        setDrawnShapeHistory,
+        deleteItem,
+        addDrawActionStack,
+        drawActionStack,
+        undoStack,
+    } = useUndoRedo(denominationsInBase);
 
     const tokenPair = useMemo(
         () => ({
@@ -828,7 +841,15 @@ function TradeCandleStickChart(props: propsIF) {
                         liquidityDepthScale={liquidityDepthScale}
                         candleTime={chartSettings.candleTime.global}
                         unparsedData={candleData}
+                        undo={undo}
+                        redo={redo}
+                        drawnShapeHistory={drawnShapeHistory}
+                        setDrawnShapeHistory={setDrawnShapeHistory}
+                        deleteItem={deleteItem}
                         updateURL={updateURL}
+                        addDrawActionStack={addDrawActionStack}
+                        drawActionStack={drawActionStack}
+                        undoStack={undoStack}
                     />
                 ) : (
                     <Spinner size={100} bg='var(--dark2)' centered />

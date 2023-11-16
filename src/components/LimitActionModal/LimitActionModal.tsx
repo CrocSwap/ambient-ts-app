@@ -466,6 +466,7 @@ export default function LimitActionModal(props: propsIF) {
                         />
                     ) : (
                         <Button
+                            idForDOM='claim_remove_limit_button'
                             title={
                                 !currentLiquidity
                                     ? '...'

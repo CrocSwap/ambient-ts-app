@@ -56,12 +56,12 @@ export default function TransactionSubmitted(props: PropsIF) {
 
     const addToMetaMaskButton = (
         <Button
+            idForDOM='import_token_B_into_wallet_button'
             flat
             title={`Import ${tokenBSymbol} into Connected Wallet`}
-            // action={props.onClickFn}
             action={handleAddToMetaMask}
             disabled={false}
-        ></Button>
+        />
     );
 
     const etherscanButton = (

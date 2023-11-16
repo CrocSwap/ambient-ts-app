@@ -427,7 +427,6 @@ function Range() {
 
     useEffect(() => {
         if (simpleRangeWidth !== rangeWidthPercentage) {
-            // dispatch(setRangeModuleTriggered(true));
             setSimpleRangeWidth(rangeWidthPercentage);
         }
     }, [rangeWidthPercentage]);
@@ -958,31 +957,29 @@ function Range() {
                 />
             }
             input={
-                <>
-                    <RangeTokenInput
-                        isAmbient={isAmbient}
-                        depositSkew={depositSkew}
-                        poolPriceNonDisplay={poolPriceNonDisplay}
-                        isWithdrawFromDexChecked={{
-                            tokenA: isWithdrawTokenAFromDexChecked,
-                            tokenB: isWithdrawTokenBFromDexChecked,
-                        }}
-                        isOutOfRange={isOutOfRange}
-                        tokenAInputQty={{
-                            value: tokenAInputQty,
-                            set: setTokenAInputQty,
-                        }}
-                        tokenBInputQty={{
-                            value: tokenBInputQty,
-                            set: setTokenBInputQty,
-                        }}
-                        toggleDexSelection={toggleDexSelection}
-                        isInputDisabled={{
-                            tokenA: isTokenAInputDisabled,
-                            tokenB: isTokenBInputDisabled,
-                        }}
-                    />
-                </>
+                <RangeTokenInput
+                    isAmbient={isAmbient}
+                    depositSkew={depositSkew}
+                    poolPriceNonDisplay={poolPriceNonDisplay}
+                    isWithdrawFromDexChecked={{
+                        tokenA: isWithdrawTokenAFromDexChecked,
+                        tokenB: isWithdrawTokenBFromDexChecked,
+                    }}
+                    isOutOfRange={isOutOfRange}
+                    tokenAInputQty={{
+                        value: tokenAInputQty,
+                        set: setTokenAInputQty,
+                    }}
+                    tokenBInputQty={{
+                        value: tokenBInputQty,
+                        set: setTokenBInputQty,
+                    }}
+                    toggleDexSelection={toggleDexSelection}
+                    isInputDisabled={{
+                        tokenA: isTokenAInputDisabled,
+                        tokenB: isTokenBInputDisabled,
+                    }}
+                />
             }
             inputOptions={
                 <RangeBounds
@@ -1032,6 +1029,7 @@ function Range() {
             }
             button={
                 <Button
+                    idForDOM='submit_range_position_button'
                     title={
                         areBothAckd
                             ? tokenAAllowed && tokenBAllowed
@@ -1086,6 +1084,7 @@ function Range() {
                 isTokenAWalletBalanceSufficient &&
                 !isTokenAAllowanceSufficient ? (
                     <Button
+                        idForDOM='approve_token_for_range'
                         title={
                             !isApprovalPending
                                 ? `Approve ${tokenA.symbol}`
@@ -1102,6 +1101,7 @@ function Range() {
                   isTokenBWalletBalanceSufficient &&
                   !isTokenBAllowanceSufficient ? (
                     <Button
+                        idForDOM='approve_token_for_range'
                         title={
                             !isApprovalPending
                                 ? `Approve ${tokenB.symbol}`

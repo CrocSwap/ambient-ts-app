@@ -15,7 +15,7 @@ export const IS_LOCAL_ENV = APP_ENVIRONMENT === 'local';
 
 export const ANALYTICS_URL =
     process.env.REACT_APP_ANALYTICS_URL ||
-    'https://crocswap-analytics-tools-service-dfxb5x3tja-uc.a.run.app/run?';
+    'https://ambindexer.net/analytics/run?';
 
 export const GCGO_ETHEREUM_URL =
     process.env.REACT_APP_GCGO_ETHEREUM_URL || 'https://ambindexer.net/gcgo';
@@ -37,6 +37,11 @@ export const CHAT_ENABLED =
     process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
         ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
         : true;
+
+export const INCLUDE_CANTO_LINK =
+    process.env.REACT_APP_INCLUDE_CANTO_LINK !== undefined
+        ? process.env.REACT_APP_INCLUDE_CANTO_LINK.toLowerCase() === 'true'
+        : false;
 
 export const DISABLE_INIT_SETTINGS =
     process.env.REACT_APP_DISABLE_INIT_SETTINGS !== undefined

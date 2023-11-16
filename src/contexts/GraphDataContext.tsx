@@ -254,6 +254,8 @@ export const GraphDataContextProvider = (props: {
                 )
                     .then((response) => response?.json())
                     .then((json) => {
+                        // temporarily skip ENS fetch
+                        const skipENSFetch = true;
                         const userPositions = json?.data;
                         if (userPositions && crocEnv) {
                             Promise.all(
@@ -270,6 +272,7 @@ export const GraphDataContextProvider = (props: {
                                             cachedQuerySpotPrice,
                                             cachedTokenDetails,
                                             cachedEnsResolve,
+                                            skipENSFetch,
                                         );
                                     },
                                 ),
@@ -304,6 +307,8 @@ export const GraphDataContextProvider = (props: {
             )
                 .then((response) => response?.json())
                 .then((json) => {
+                    // temporarily skip ENS fetch
+                    const skipENSFetch = true;
                     const userLimitOrderStates = json?.data;
                     if (userLimitOrderStates) {
                         Promise.all(
@@ -320,6 +325,7 @@ export const GraphDataContextProvider = (props: {
                                         cachedQuerySpotPrice,
                                         cachedTokenDetails,
                                         cachedEnsResolve,
+                                        skipENSFetch,
                                     );
                                 },
                             ),

@@ -48,7 +48,7 @@ html {
 
 svg {
     color: var(--text2);
-    transition: var(--transition);
+    /* transition: var(--transition); */
 }
 
 svg:hover {
@@ -61,11 +61,11 @@ button:hover > svg {
     cursor: pointer;
 }
 
-button,
+/* button,
 svg,
 a {
     transition: var(--transition);
-}
+} */
 
 a {
     color: unset;
