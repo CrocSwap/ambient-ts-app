@@ -148,7 +148,7 @@ export const ChainDataContextProvider = (props: {
     }, [lastBlockNumber]);
 
     // used to trigger token balance refreshes every 5 minutes
-    const everyTwoMinutes = Math.floor(Date.now() / 300000);
+    const everyFiveMinutes = Math.floor(Date.now() / 300000);
 
     useEffect(() => {
         (async () => {
@@ -166,7 +166,7 @@ export const ChainDataContextProvider = (props: {
                         await cachedFetchTokenBalances(
                             userAddress,
                             chainData.chainId,
-                            everyTwoMinutes,
+                            everyFiveMinutes,
                             cachedTokenDetails,
                             crocEnv,
                             activeNetwork.graphCacheUrl,
@@ -193,7 +193,7 @@ export const ChainDataContextProvider = (props: {
         isUserConnected,
         userAddress,
         chainData.chainId,
-        everyTwoMinutes,
+        everyFiveMinutes,
         client !== undefined,
         activeNetwork.graphCacheUrl,
     ]);

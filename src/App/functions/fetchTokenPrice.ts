@@ -6,6 +6,7 @@ import { ANALYTICS_URL } from '../../constants';
 import { translateTestnetToken } from '../../utils/data/testnetTokenMap';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { supportedNetworks } from '../../utils/networks';
+import { fetchTimeout } from '../../utils/functions/fetchTimeout';
 
 export const fetchTokenPrice = async (
     dispToken: string,
@@ -36,19 +37,21 @@ export const fetchTokenPrice = async (
                 };
             }
 
-            const response = await fetch(
+            const url =
                 ANALYTICS_URL +
-                    new URLSearchParams({
-                        service: 'run',
-                        config_path: 'price',
-                        include_data: '0',
-                        token_address: address,
-                        asset_platform:
-                            chain === '0x82750' || chain === '0x8274f'
-                                ? 'scroll'
-                                : 'ethereum',
-                    }),
-            );
+                new URLSearchParams({
+                    service: 'run',
+                    config_path: 'price',
+                    include_data: '0',
+                    token_address: address,
+                    asset_platform:
+                        chain === '0x82750' || chain === '0x8274f'
+                            ? 'scroll'
+                            : 'ethereum',
+                });
+
+            const response = await fetchTimeout(url);
+
             const result = await response.json();
             return result?.value;
         }
