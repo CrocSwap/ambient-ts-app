@@ -4,7 +4,6 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import printDomToImage from '../../../utils/functions/printDomToImage';
 import { PositionIF } from '../../../utils/interfaces/exports';
 import RangeDetailsHeader from '.././RangeDetailsHeader/RangeDetailsHeader';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import RangeDetailsSimplify from '.././RangeDetailsSimplify/RangeDetailsSimplify';
 import TransactionDetailsGraph from '../../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
 import { useProcessRange } from '../../../utils/hooks/useProcessRange';
@@ -20,6 +19,7 @@ import modalBackground from '../../../assets/images/backgrounds/background.png';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import Modal from '../../Global/Modal/Modal';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 interface propsIF {
     position: PositionIF;
@@ -66,9 +66,8 @@ export default function RangeDetailsModal(props: propsIF) {
         maxRangeDenomByMoneyness,
         onClose,
     } = props;
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
+
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
@@ -161,7 +160,8 @@ export default function RangeDetailsModal(props: propsIF) {
                         setQuoteFeesDisplay(undefined);
                         return;
                     }
-
+                    // temporarily skip ENS fetch
+                    const skipENSFetch = true;
                     const positionPayload = json?.data as PositionServerIF;
                     const positionStats = await getPositionData(
                         positionPayload,
@@ -174,6 +174,7 @@ export default function RangeDetailsModal(props: propsIF) {
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
                         cachedEnsResolve,
+                        skipENSFetch,
                     );
                     const liqBaseNum =
                         positionStats.positionLiqBaseDecimalCorrected;

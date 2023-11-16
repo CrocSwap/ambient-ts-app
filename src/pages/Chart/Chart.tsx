@@ -11,15 +11,10 @@ import {
 } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import {
     setLimitTick,
-    setIsLinesSwitched,
     candleScale,
     candleDomain,
-    TradeDataIF,
-    setIsTokenAPrimary,
-    setIsTokenAPrimaryRange,
 } from '../../utils/state/tradeDataSlice';
 
 import { PoolContext } from '../../contexts/PoolContext';
@@ -39,7 +34,10 @@ import {
     diffHashSigChart,
     diffHashSigScaleData,
 } from '../../utils/functions/diffHashSig';
-import { CandleContext } from '../../contexts/CandleContext';
+import {
+    CandleContext,
+    CandlesByPoolAndDuration,
+} from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../contexts/SidebarContext';
 import { RangeContext } from '../../contexts/RangeContext';
@@ -96,6 +94,8 @@ import Toolbar from './Draw/Toolbar/Toolbar';
 import FloatingToolbar from './Draw/FloatingToolbar/FloatingToolbar';
 import { updatesIF } from '../../utils/hooks/useUrlParams';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
+import { UserDataContext } from '../../contexts/UserDataContext';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { actionKeyIF } from './ChartUtils/useUndoRedo';
 
 interface propsIF {
@@ -140,7 +140,6 @@ interface propsIF {
     setDrawnShapeHistory: React.Dispatch<
         React.SetStateAction<drawDataHistory[]>
     >;
-    currentPool: TradeDataIF;
     deleteItem: (item: drawDataHistory) => void;
     updateURL: (changes: updatesIF) => void;
     addDrawActionStack: (item: drawDataHistory, isNewShape: boolean) => void;
@@ -174,7 +173,6 @@ export default function Chart(props: propsIF) {
         redo,
         drawnShapeHistory,
         setDrawnShapeHistory,
-        currentPool,
         deleteItem,
         updateURL,
         addDrawActionStack,
@@ -192,6 +190,8 @@ export default function Chart(props: propsIF) {
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
 
+    const { setIsTokenAPrimaryRange, setIsLinesSwitched } =
+        useContext(RangeContext);
     const [isUpdatingShape, setIsUpdatingShape] = useState(false);
 
     const [isDragActive, setIsDragActive] = useState(false);
@@ -214,22 +214,30 @@ export default function Chart(props: propsIF) {
     } = useContext(RangeContext);
     // const { handlePulseAnimation } = useContext(TradeTableContext);
 
+    const currentPool = useContext(TradeDataContext);
+
+    const {
+        tokenA,
+        tokenB,
+        isDenomBase,
+        isTokenABase: isBid,
+        isTokenAPrimary,
+        setIsTokenAPrimary,
+    } = currentPool;
+
     const [isChartZoom, setIsChartZoom] = useState(false);
 
     const [chartHeights, setChartHeights] = useState(0);
-    const { isLoggedIn: isUserConnected } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { isUserConnected } = useContext(UserDataContext);
 
     const tradeData = useAppSelector((state) => state.tradeData);
+    const { isTokenAPrimaryRange, advancedMode } = useContext(RangeContext);
 
     const [minTickForLimit, setMinTickForLimit] = useState<number>(0);
     const [maxTickForLimit, setMaxTickForLimit] = useState<number>(0);
     const [isShowFloatingToolbar, setIsShowFloatingToolbar] = useState(false);
     const period = unparsedData.duration;
 
-    const isDenomBase = tradeData.isDenomBase;
-    const isBid = tradeData.isTokenABase;
     const side =
         (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'buy' : 'sell';
     const sellOrderStyle = side === 'sell' ? 'order_sell' : 'order_buy';
@@ -267,7 +275,6 @@ export default function Chart(props: propsIF) {
     const simpleRangeWidth = rangeSimpleRangeWidth;
     const setSimpleRangeWidth = setRangeSimpleRangeWidth;
 
-    const { tokenA, tokenB } = tradeData;
     const tokenADecimals = tokenA.decimals;
     const tokenBDecimals = tokenB.decimals;
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
@@ -563,7 +570,7 @@ export default function Chart(props: propsIF) {
             mainCanvasBoundingClientRect &&
             (location.pathname.includes('pool') ||
                 location.pathname.includes('reposition')) &&
-            !(!tradeData.advancedMode && simpleRangeWidth === 100) &&
+            !(!advancedMode && simpleRangeWidth === 100) &&
             scaleData
         ) {
             const offsetY =
@@ -595,7 +602,7 @@ export default function Chart(props: propsIF) {
         chartMousemoveEvent,
         mainCanvasBoundingClientRect,
         location.pathname,
-        tradeData.advancedMode,
+        advancedMode,
         simpleRangeWidth,
     ]);
 
@@ -905,10 +912,7 @@ export default function Chart(props: propsIF) {
                                         setYaxisDomain(domain[0], domain[1]);
                                     }
 
-                                    if (
-                                        tradeData.advancedMode &&
-                                        liquidityData
-                                    ) {
+                                    if (advancedMode && liquidityData) {
                                         const liqAllBidPrices =
                                             liquidityData?.liqBidData.map(
                                                 (
@@ -1062,7 +1066,7 @@ export default function Chart(props: propsIF) {
         canUserDragLimit,
         unparsedCandleData,
         period,
-        tradeData.advancedMode,
+        advancedMode,
         isChartZoom,
     ]);
 
@@ -1144,7 +1148,7 @@ export default function Chart(props: propsIF) {
 
     // calculate range value for denom
     useEffect(() => {
-        if (!tradeData.advancedMode && simpleRangeWidth === 100) {
+        if (!advancedMode && simpleRangeWidth === 100) {
             const lowTick = currentPoolPriceTick - simpleRangeWidth * 100;
             const highTick = currentPoolPriceTick + simpleRangeWidth * 100;
 
@@ -1203,7 +1207,7 @@ export default function Chart(props: propsIF) {
         if (
             (location.pathname.includes('pool') ||
                 location.pathname.includes('reposition')) &&
-            tradeData.advancedMode
+            advancedMode
         ) {
             if (chartTriggeredBy === '' || rescaleRangeBoundariesWithSlider) {
                 setAdvancedLines();
@@ -1215,13 +1219,13 @@ export default function Chart(props: propsIF) {
         minPrice,
         maxPrice,
         rescaleRangeBoundariesWithSlider,
-        tradeData.advancedMode,
+        advancedMode,
         chartTriggeredBy,
     ]);
 
     useEffect(() => {
         if (
-            tradeData.advancedMode &&
+            advancedMode &&
             scaleData &&
             liquidityData &&
             denomInBase === boundaries
@@ -1236,7 +1240,7 @@ export default function Chart(props: propsIF) {
             setBoundaries(denomInBase);
         }
     }, [
-        tradeData.advancedMode,
+        advancedMode,
         ranges,
         liquidityData?.liqBidData,
         diffHashSigScaleData(scaleData, 'y'),
@@ -1541,7 +1545,7 @@ export default function Chart(props: propsIF) {
                         let pinnedDisplayPrices: any;
 
                         if (
-                            !tradeData.advancedMode ||
+                            !advancedMode ||
                             location.pathname.includes('reposition')
                         ) {
                             if (
@@ -1802,7 +1806,7 @@ export default function Chart(props: propsIF) {
 
                     if (!cancelDrag) {
                         if (
-                            (!tradeData.advancedMode ||
+                            (!advancedMode ||
                                 location.pathname.includes('reposition')) &&
                             rangeWidthPercentage
                         ) {
@@ -1855,7 +1859,7 @@ export default function Chart(props: propsIF) {
     }, [
         poolPriceDisplay,
         location,
-        tradeData.advancedMode,
+        advancedMode,
         ranges,
         limit,
         minPrice,
@@ -2006,7 +2010,7 @@ export default function Chart(props: propsIF) {
     }, [
         poolPriceDisplay,
         location,
-        tradeData.advancedMode,
+        advancedMode,
         limit,
         minPrice,
         maxPrice,
@@ -2226,10 +2230,7 @@ export default function Chart(props: propsIF) {
                 lineToBeSet = clickedValue > displayValue ? 'Max' : 'Min';
             }
 
-            if (
-                !tradeData.advancedMode ||
-                location.pathname.includes('reposition')
-            ) {
+            if (!advancedMode || location.pathname.includes('reposition')) {
                 let rangeWidthPercentage;
                 let tickValue;
                 if (
@@ -3152,10 +3153,7 @@ export default function Chart(props: propsIF) {
                         location.pathname.includes('pool') ||
                         location.pathname.includes('reposition')
                     ) {
-                        if (
-                            simpleRangeWidth !== 100 ||
-                            tradeData.advancedMode
-                        ) {
+                        if (simpleRangeWidth !== 100 || advancedMode) {
                             const min = ranges.filter(
                                 (target: lineValue) => target.name === 'Min',
                             )[0].value;
@@ -3490,7 +3488,7 @@ export default function Chart(props: propsIF) {
         liquidityDepthScale,
         isLineDrag,
         unparsedCandleData?.length,
-        tradeData.advancedMode,
+        advancedMode,
         lastCrDate,
         showVolume,
         xAxisActiveTooltip,
@@ -4089,7 +4087,7 @@ export default function Chart(props: propsIF) {
             } else if (highLineMoved) {
                 setChartTriggeredBy('high_line');
             }
-            dispatch(setIsLinesSwitched(isLinesSwitched));
+            setIsLinesSwitched(isLinesSwitched);
         }
     };
 
@@ -4126,18 +4124,14 @@ export default function Chart(props: propsIF) {
             // ... pair; else just update the `limitTick` value in the URL
             reverseTokenForChart(limitPreviousData, newLimitValue)
                 ? (() => {
-                      dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
-                      dispatch(
-                          setIsTokenAPrimaryRange(
-                              !tradeData.isTokenAPrimaryRange,
-                          ),
-                      );
-                      linkGenLimit.redirect({
-                          chain: chainData.chainId,
-                          tokenA: tokenB.address,
-                          tokenB: tokenA.address,
-                          limitTick: pinnedTick,
-                      });
+                      setIsTokenAPrimary(!isTokenAPrimary);
+                      setIsTokenAPrimaryRange(!isTokenAPrimaryRange),
+                          linkGenLimit.redirect({
+                              chain: chainData.chainId,
+                              tokenA: tokenB.address,
+                              tokenB: tokenA.address,
+                              limitTick: pinnedTick,
+                          });
                   })()
                 : updateURL({ update: [['limitTick', pinnedTick]] });
 
@@ -4236,7 +4230,7 @@ export default function Chart(props: propsIF) {
         lineBuyColor,
         ranges,
         limit,
-        isAmbientOrAdvanced: simpleRangeWidth !== 100 || tradeData.advancedMode,
+        isAmbientOrAdvanced: simpleRangeWidth !== 100 || advancedMode,
         checkLimitOrder,
         sellOrderStyle,
         crosshairActive,
@@ -4350,7 +4344,6 @@ export default function Chart(props: propsIF) {
                                 activeDrawingType={activeDrawingType}
                                 setActiveDrawingType={setActiveDrawingType}
                                 setSelectedDrawnShape={setSelectedDrawnShape}
-                                currentPool={currentPool}
                                 denomInBase={denomInBase}
                                 addDrawActionStack={addDrawActionStack}
                             />

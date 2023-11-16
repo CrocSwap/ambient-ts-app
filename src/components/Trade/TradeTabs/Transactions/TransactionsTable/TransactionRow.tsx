@@ -2,7 +2,6 @@ import { memo, useContext, useEffect, useRef } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 import TransactionDetailsModal from '../../../../Global/TransactionDetails/TransactionDetailsModal';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
@@ -12,6 +11,7 @@ import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useModal } from '../../../../Global/Modal/useModal';
 import { TransactionRow as TransactionRowStyled } from '../../../../../styled/Components/TransactionTable';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
 
 interface propsIF {
     idForDOM: string;
@@ -23,9 +23,7 @@ interface propsIF {
 function TransactionRow(props: propsIF) {
     const { idForDOM, tableView, tx, isAccountView, fetchedEnsAddress } = props;
 
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
 
     const {
         txHash,

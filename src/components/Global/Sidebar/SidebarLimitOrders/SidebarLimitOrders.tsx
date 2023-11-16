@@ -2,7 +2,6 @@ import SidebarLimitOrdersCard from './SidebarLimitOrdersCard';
 import { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import { LimitOrderIF } from '../../../../utils/interfaces/exports';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
@@ -17,6 +16,7 @@ import {
     ItemsContainer,
     ViewMoreFlex,
 } from '../../../../styled/Components/Sidebar';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 interface propsIF {
     limitOrderByUser?: LimitOrderIF[];
@@ -25,9 +25,7 @@ interface propsIF {
 export default function SidebarLimitOrders(props: propsIF) {
     const { limitOrderByUser } = props;
 
-    const { isLoggedIn: isUserConnected } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { isUserConnected } = useContext(UserDataContext);
 
     const {
         chainData: { chainId },
