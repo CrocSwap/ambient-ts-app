@@ -161,7 +161,8 @@ export default function RangeDetailsModal(props: propsIF) {
                         setQuoteFeesDisplay(undefined);
                         return;
                     }
-
+                    // temporarily skip ENS fetch
+                    const skipENSFetch = true;
                     const positionPayload = json?.data as PositionServerIF;
                     const positionStats = await getPositionData(
                         positionPayload,
@@ -174,6 +175,7 @@ export default function RangeDetailsModal(props: propsIF) {
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
                         cachedEnsResolve,
+                        skipENSFetch,
                     );
                     const liqBaseNum =
                         positionStats.positionLiqBaseDecimalCorrected;
