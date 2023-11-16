@@ -101,6 +101,8 @@ export const UserDataContextProvider = (props: {
                     .then((response) => response?.json())
                     .then((json) => {
                         const userPositions = json?.data;
+                        // temporarily skip ENS fetch
+                        const skipENSFetch = true;
                         if (userPositions && crocEnv) {
                             Promise.all(
                                 userPositions.map(
@@ -116,6 +118,7 @@ export const UserDataContextProvider = (props: {
                                             cachedQuerySpotPrice,
                                             cachedTokenDetails,
                                             cachedEnsResolve,
+                                            skipENSFetch,
                                         );
                                     },
                                 ),
