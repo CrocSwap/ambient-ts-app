@@ -140,7 +140,7 @@ export default function OrderDetailsModal(props: propsIF) {
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
-                        cachedEnsResolve, // temporarily skip ENS fetch
+                        cachedEnsResolve,
                         skipENSFetch,
                     );
                 })
