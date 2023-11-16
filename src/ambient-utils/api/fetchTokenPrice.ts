@@ -5,7 +5,7 @@ import { supportedNetworks } from '../constants/networks';
 import { ANALYTICS_URL } from '../constants';
 
 const randomNum = Math.random();
-import { fetchTimeout } from '../api/fetchTimeout';
+import { fetchTimeout } from './fetchTimeout';
 export const fetchTokenPrice = async (
     dispToken: string,
     chain: string,
