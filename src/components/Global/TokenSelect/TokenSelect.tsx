@@ -1,11 +1,13 @@
 // START: Import Local Files
 import styles from './TokenSelect.module.css';
 import { TokenIF } from '../../../utils/interfaces/exports';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../TokenIcon/TokenIcon';
 import { BigNumber } from 'ethers';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import { useContext } from 'react';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 
 interface propsIF {
     token: TokenIF;
@@ -16,36 +18,32 @@ interface propsIF {
 export default function TokenSelect(props: propsIF) {
     const { token, chooseToken, fromListsText } = props;
 
-    const userData = useAppSelector((state) => state.userData);
-
-    const connectedUserTokens = userData.tokenBalances;
-    const isUserLoggedIn = userData.isLoggedIn;
+    const { isUserConnected } = useContext(UserDataContext);
+    const { tokenBalances } = useContext(TokenBalanceContext);
 
     const isMatchingToken = (tokenInRtk: TokenIF) =>
         tokenInRtk.address.toLowerCase() === token.address.toLowerCase();
 
-    const indexOfToken = connectedUserTokens
-        ? connectedUserTokens.findIndex(isMatchingToken)
+    const indexOfToken = tokenBalances
+        ? tokenBalances.findIndex(isMatchingToken)
         : -1;
 
     const combinedBalance =
-        connectedUserTokens && indexOfToken !== -1
-            ? BigNumber.from(
-                  connectedUserTokens[indexOfToken].walletBalance ?? '0',
-              )
+        tokenBalances && indexOfToken !== -1
+            ? BigNumber.from(tokenBalances[indexOfToken].walletBalance ?? '0')
                   .add(
                       BigNumber.from(
-                          connectedUserTokens[indexOfToken].dexBalance ?? '0',
+                          tokenBalances[indexOfToken].dexBalance ?? '0',
                       ),
                   )
                   .toString()
             : undefined;
 
     const combinedBalanceDisplay =
-        combinedBalance && connectedUserTokens
+        combinedBalance && tokenBalances
             ? toDisplayQty(
                   combinedBalance,
-                  connectedUserTokens[indexOfToken]?.decimals,
+                  tokenBalances[indexOfToken]?.decimals,
               )
             : undefined;
 
@@ -88,8 +86,8 @@ export default function TokenSelect(props: propsIF) {
             </section>
             <div className={styles.modal_tokens_amount}>
                 <p>
-                    {isUserLoggedIn
-                        ? connectedUserTokens !== undefined
+                    {isUserConnected
+                        ? tokenBalances !== undefined
                             ? combinedBalanceDisplayNum === 0
                                 ? '0'
                                 : combinedBalanceDisplayTruncated

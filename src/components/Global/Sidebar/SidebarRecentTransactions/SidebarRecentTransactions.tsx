@@ -2,7 +2,6 @@
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 
@@ -21,6 +20,7 @@ import {
     ItemsContainer,
     ViewMoreFlex,
 } from '../../../../styled/Components/Sidebar';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 interface propsIF {
     mostRecentTransactions: TransactionIF[];
@@ -29,9 +29,7 @@ interface propsIF {
 export default function SidebarRecentTransactions(props: propsIF) {
     const { mostRecentTransactions } = props;
 
-    const { isLoggedIn: isUserConnected } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { isUserConnected } = useContext(UserDataContext);
 
     const {
         chainData: { chainId },

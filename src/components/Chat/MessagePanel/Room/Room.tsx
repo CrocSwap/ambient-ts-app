@@ -7,7 +7,7 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import useChatApi from '../../Service/ChatApi';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     selectedRoom: any;
@@ -38,7 +38,7 @@ export default function Room(props: propsIF) {
     } = props;
     const { topPools: rooms } = useContext(CrocEnvContext);
     const { favePools } = useContext(UserPreferenceContext);
-    const currentPool = useAppSelector((state) => state.tradeData);
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     // eslint-disable-next-line @typescript-eslint/ban-types
     const [roomArray] = useState<PoolIF[]>([]);
@@ -101,11 +101,7 @@ export default function Room(props: propsIF) {
     }
 
     useEffect(() => {
-        props.setUserCurrentPool(
-            currentPool.baseToken.symbol +
-                ' / ' +
-                currentPool.quoteToken.symbol,
-        );
+        props.setUserCurrentPool(baseToken.symbol + ' / ' + quoteToken.symbol);
         updateUser(
             props.currentUser as string,
             props.ensName,
@@ -123,8 +119,8 @@ export default function Room(props: propsIF) {
         }
     }, [
         isCurrentPool,
-        currentPool.baseToken.symbol,
-        currentPool.quoteToken.symbol,
+        baseToken.symbol,
+        quoteToken.symbol,
         props.selectedRoom,
         props.userCurrentPool,
     ]);
@@ -242,11 +238,7 @@ export default function Room(props: propsIF) {
     }
 
     function handleRoomClickCurrentPool() {
-        props.setRoom(
-            currentPool.baseToken.symbol +
-                ' / ' +
-                currentPool.quoteToken.symbol,
-        );
+        props.setRoom(baseToken.symbol + ' / ' + quoteToken.symbol);
         setShowCurrentPoolButton(false);
         setIsActive(false);
         setIsCurrentPool(true);

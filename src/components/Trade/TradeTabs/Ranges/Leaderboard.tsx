@@ -4,7 +4,6 @@ import { useContext, useEffect, useState, memo } from 'react';
 // START: Import Local Files
 import Pagination from '../../../Global/Pagination/Pagination';
 
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
@@ -14,29 +13,31 @@ import { ChartContext } from '../../../../contexts/ChartContext';
 import { RangeRow as RangeRowStyled } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer } from '../../../../styled/Common';
 import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 // react functional component
 function Leaderboard() {
     const { showAllData } = useContext(TradeTableContext);
 
     const { tradeTableState } = useContext(ChartContext);
+    const { leaderboardByPool } = useContext(GraphDataContext);
 
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state?.userData,
-    );
-    const graphData = useAppSelector((state) => state?.graphData);
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const { userAddress } = useContext(UserDataContext);
 
-    const baseTokenAddress = tradeData.baseToken.address;
-    const quoteTokenAddress = tradeData.quoteToken.address;
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
+
+    const baseTokenAddress = baseToken.address;
+    const quoteTokenAddress = quoteToken.address;
 
     const positionsByApy: string[] =
-        [...graphData?.leaderboardByPool?.positions]
+        [...leaderboardByPool?.positions]
             .sort((a, b) => b.apy - a.apy)
             .map((pos) => pos.positionId) ?? [];
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =
-        useSortedPositions('apr', graphData?.leaderboardByPool?.positions);
+        useSortedPositions('apr', leaderboardByPool?.positions);
 
     // ---------------------
     const [currentPage, setCurrentPage] = useState(1);
@@ -70,8 +71,8 @@ function Leaderboard() {
         ? 'medium'
         : 'large';
 
-    const quoteTokenSymbol = tradeData.quoteToken?.symbol;
-    const baseTokenSymbol = tradeData.baseToken?.symbol;
+    const quoteTokenSymbol = quoteToken?.symbol;
+    const baseTokenSymbol = baseToken?.symbol;
 
     const walID = (
         <>

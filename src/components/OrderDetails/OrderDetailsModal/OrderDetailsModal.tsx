@@ -6,7 +6,6 @@ import PriceInfo from '../PriceInfo/PriceInfo';
 import { useProcessOrder } from '../../../utils/hooks/useProcessOrder';
 import { LimitOrderIF } from '../../../utils/interfaces/exports';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import OrderDetailsSimplify from '../OrderDetailsSimplify/OrderDetailsSimplify';
 import TransactionDetailsGraph from '../../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
@@ -22,6 +21,7 @@ import printDomToImage from '../../../utils/functions/printDomToImage';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import Modal from '../../Global/Modal/Modal';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -52,9 +52,7 @@ export default function OrderDetailsModal(props: propsIF) {
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
 
     const {
         baseTokenSymbol,
@@ -128,6 +126,8 @@ export default function OrderDetailsModal(props: propsIF) {
             )
                 .then((response) => response?.json())
                 .then((json) => {
+                    // temporarily skip ENS fetch
+                    const skipENSFetch = true;
                     const positionPayload = json?.data as LimitOrderServerIF;
                     return getLimitOrderData(
                         positionPayload,
@@ -140,6 +140,7 @@ export default function OrderDetailsModal(props: propsIF) {
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
                         cachedEnsResolve,
+                        skipENSFetch,
                     );
                 })
                 .then((positionStats: LimitOrderIF) => {
