@@ -24,14 +24,15 @@ import {
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { formatTokenInput } from '../../../utils/numbers';
 import {
-    setIsTokenAPrimary,
     setShouldSwapDirectionReverse,
     setPrimaryQuantity,
-    setIsTokenAPrimaryRange,
     setLimitTick,
 } from '../../../utils/state/tradeDataSlice';
 import TokenInputWithWalletBalance from '../../Form/TokenInputWithWalletBalance';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { RangeContext } from '../../../contexts/RangeContext';
 
 interface propsIF {
     sellQtyString: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -83,19 +84,16 @@ function SwapTokenInput(props: propsIF) {
     } = useContext(TradeTokenContext);
 
     const { showSwapPulseAnimation } = useContext(TradeTableContext);
-
+    const { setIsTokenAPrimaryRange, isTokenAPrimaryRange } =
+        useContext(RangeContext);
     const dispatch = useAppDispatch();
-    const { isLoggedIn: isUserConnected } = useAppSelector(
-        (state) => state.userData,
+    const { isUserConnected } = useContext(UserDataContext);
+
+    const { primaryQuantity, shouldSwapDirectionReverse } = useAppSelector(
+        (state) => state.tradeData,
     );
-    const {
-        tokenA,
-        tokenB,
-        primaryQuantity,
-        isTokenAPrimary,
-        isTokenAPrimaryRange,
-        shouldSwapDirectionReverse,
-    } = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB, isTokenAPrimary, setIsTokenAPrimary } =
+        useContext(TradeDataContext);
     // hook to generate navigation actions with pre-loaded path
     const linkGenAny: linkGenMethodsIF = useLinkGen();
 
@@ -158,8 +156,8 @@ function SwapTokenInput(props: propsIF) {
         } else {
             setBuyQtyString(primaryQuantity);
         }
-        dispatch(setIsTokenAPrimary(!isTokenAPrimary));
-        dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
+        setIsTokenAPrimary(!isTokenAPrimary);
+        setIsTokenAPrimaryRange(!isTokenAPrimaryRange);
     };
 
     const handleBlockUpdate = () => {
@@ -210,7 +208,7 @@ function SwapTokenInput(props: propsIF) {
         setDisableReverseTokens(true);
         setLastInput(value);
 
-        dispatch(setIsTokenAPrimary(true));
+        setIsTokenAPrimary(true);
     };
 
     const debouncedTokenBChangeEvent = (value: string) => {
@@ -220,7 +218,7 @@ function SwapTokenInput(props: propsIF) {
         setDisableReverseTokens(true);
         setLastInput(value);
 
-        dispatch(setIsTokenAPrimary(false));
+        setIsTokenAPrimary(false);
     };
 
     const handleTokenAChangeEvent = useMemo(

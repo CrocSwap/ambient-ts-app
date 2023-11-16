@@ -1,5 +1,6 @@
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { supportedNetworks } from '../networks';
+import { TokenIF } from '../interfaces/TokenIF';
 
 // function to validate any given value as a proper id for a supported chain
 export function validateChainId(chainIdToValidate: string): boolean {
@@ -18,7 +19,12 @@ export function getSupportedChainIds(): Array<string> {
 export function getDefaultChainId(): string {
     return getSupportedChainIds()[0];
 }
-
+export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
+    return [
+        supportedNetworks[chainId].defaultPair[0],
+        supportedNetworks[chainId].defaultPair[1],
+    ];
+}
 // Given a chain ID returns the relevant block explorer URL
 export function getChainExplorer(chainId: string | number): string {
     try {

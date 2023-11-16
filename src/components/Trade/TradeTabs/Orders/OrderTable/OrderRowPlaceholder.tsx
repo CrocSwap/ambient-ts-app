@@ -4,17 +4,17 @@ import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { Chip } from '../../../../Form/Chip';
 import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus';
 import { FiExternalLink } from 'react-icons/fi';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import trimString from '../../../../../utils/functions/trimString';
 import { concPosSlot, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
-import { useAccount } from 'wagmi';
 import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
 import {
     OrderRow,
     RowItem,
 } from '../../../../../styled/Components/TransactionTable';
 import { FlexContainer } from '../../../../../styled/Common';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 
 interface PropsIF {
     transaction: {
@@ -46,12 +46,12 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
     const { transaction, tableView } = props;
 
     const { showAllData } = useContext(TradeTableContext);
-    const { address: userAddress } = useAccount();
+    const { userAddress } = useContext(UserDataContext);
     const {
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
 
-    const { isDenomBase } = useAppSelector((state) => state.tradeData);
+    const { isDenomBase } = useContext(TradeDataContext);
 
     const baseTokenCharacter = transaction.baseSymbol
         ? getUnicodeCharacter(transaction.baseSymbol)

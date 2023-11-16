@@ -3,7 +3,6 @@ import OrdersMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/Or
 import OrderDetailsModal from '../../../../OrderDetails/OrderDetailsModal/OrderDetailsModal';
 import { memo, useContext, useEffect, useRef } from 'react';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { orderRowConstants } from '../orderRowConstants';
@@ -11,6 +10,7 @@ import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useModal } from '../../../../Global/Modal/useModal';
 import { OrderRow as OrderRowStyled } from '../../../../../styled/Components/TransactionTable';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
 interface propsIF {
     limitOrder: LimitOrderIF;
     isAccountView: boolean;
@@ -32,9 +32,7 @@ function OrderRow(props: propsIF) {
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
 
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
 
     const {
         posHash,

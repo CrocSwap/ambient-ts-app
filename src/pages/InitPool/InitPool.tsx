@@ -10,7 +10,6 @@ import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
-import { useAccount } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { exponentialNumRegEx } from '../../utils/regex/exports';
@@ -21,7 +20,6 @@ import InitPoolTokenSelect from '../../components/Global/InitPoolTokenSelect/Ini
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { PoolContext } from '../../contexts/PoolContext';
 import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
-// import { toggleAdvancedMode } from '../../utils/state/tradeDataSlice';
 import { LuEdit2 } from 'react-icons/lu';
 import { FiExternalLink, FiRefreshCw } from 'react-icons/fi';
 import { FlexContainer, Text } from '../../styled/Common';
@@ -56,10 +54,7 @@ import {
     DEFAULT_MAX_PRICE_DIFF_PERCENTAGE,
     DEFAULT_MIN_PRICE_DIFF_PERCENTAGE,
 } from '../Trade/Range/Range';
-import {
-    setAdvancedLowTick,
-    setAdvancedHighTick,
-} from '../../utils/state/tradeDataSlice';
+
 import { concDepositSkew, fromDisplayPrice } from '@crocswap-libs/sdk';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 
@@ -68,6 +63,7 @@ import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useRangeInputDisable } from '../Trade/Range/useRangeInputDisable';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 import InitButton from './InitButton';
+import { UserDataContext } from '../../contexts/UserDataContext';
 import Button from '../../components/Form/Button';
 import {
     addPendingTx,
@@ -81,6 +77,8 @@ import {
     isTransactionFailedError,
     isTransactionReplacedError,
 } from '../../utils/TransactionError';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { RangeContext } from '../../contexts/RangeContext';
 // react functional component
 export default function InitPool() {
     const {
@@ -108,17 +106,16 @@ export default function InitPool() {
     } = useContext(TradeTokenContext);
 
     const { sessionReceipts } = useAppSelector((state) => state.receiptData);
+
     const {
-        tradeData: {
-            tokenA,
-            tokenB,
-            baseToken,
-            quoteToken,
-            advancedMode,
-            advancedHighTick,
-            advancedLowTick,
-        },
-    } = useAppSelector((state) => state);
+        advancedMode,
+        advancedHighTick,
+        advancedLowTick,
+        setAdvancedHighTick,
+        setAdvancedLowTick,
+    } = useContext(RangeContext);
+    const { tokenA, tokenB, baseToken, quoteToken } =
+        useContext(TradeDataContext);
 
     useEffect(() => {
         setIsWithdrawTokenAFromDexChecked(parseFloat(tokenADexBalance) > 0);
@@ -137,7 +134,7 @@ export default function InitPool() {
         tknA.toLowerCase() === tokenA.address.toLowerCase() &&
         tknB.toLowerCase() === tokenB.address.toLowerCase();
 
-    const { isConnected, address: userAddress } = useAccount();
+    const { isUserConnected, userAddress } = useContext(UserDataContext);
 
     const {
         baseTokenDexBalance,
@@ -319,12 +316,8 @@ export default function InitPool() {
                   );
 
             isDenomBase
-                ? dispatch(
-                      setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick),
-                  )
-                : dispatch(
-                      setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick),
-                  );
+                ? setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick)
+                : setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
 
             const highGeometricDifferencePercentage = parseFloat(
                 truncateDecimals(
@@ -392,12 +385,8 @@ export default function InitPool() {
                   );
 
             !isDenomBase
-                ? dispatch(
-                      setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick),
-                  )
-                : dispatch(
-                      setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick),
-                  );
+                ? setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick)
+                : setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
 
             !isDenomBase
                 ? setMinPrice(
@@ -706,8 +695,8 @@ export default function InitPool() {
                 pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
             );
 
-            dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
-            dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
+            setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick);
+            setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
 
             const highTickDiff =
                 pinnedDisplayPrices.pinnedHighTick - selectedPoolPriceTick;
@@ -1076,7 +1065,7 @@ export default function InitPool() {
         sendRangePosition,
         sendInit,
         poolExists,
-        isConnected,
+        isConnected: !!isUserConnected,
         connectButtonDelayElapsed,
         isTokenAAllowanceSufficient,
         isTokenBAllowanceSufficient,
@@ -1144,8 +1133,8 @@ export default function InitPool() {
                 pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
             );
 
-            dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
-            dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
+            setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick);
+            setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
 
             setMaxPrice(
                 parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
@@ -1673,7 +1662,7 @@ export default function InitPool() {
                     <FlexContainer
                         overlay={isRangeBoundsAndCollateralDisabled && 'blur'}
                     >
-                        <AdvancedModeToggle advancedMode={advancedMode} />
+                        <AdvancedModeToggle />
                     </FlexContainer>
 
                     {!hideContentOnMobile && (

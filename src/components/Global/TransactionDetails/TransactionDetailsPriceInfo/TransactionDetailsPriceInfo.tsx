@@ -7,12 +7,12 @@ import { AiOutlineLine } from 'react-icons/ai';
 import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
 import { useLocation } from 'react-router-dom';
 import { DefaultTooltip } from '../../StyledTooltip/StyledTooltip';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../../TokenIcon/TokenIcon';
 import uriToHttp from '../../../../utils/functions/uriToHttp';
 import Apy from '../../Tabs/Apy/Apy';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { useContext } from 'react';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 type ItemIF = {
     slug: string;
@@ -28,9 +28,7 @@ interface propsIF {
 
 export default function TransactionDetailsPriceInfo(props: propsIF) {
     const { tx, controlItems, positionApy } = props;
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
 
     const { tokens } = useContext(TokenContext);
 
