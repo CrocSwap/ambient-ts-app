@@ -5,6 +5,7 @@ import {
     calculateFibRetracement,
     calculateFibRetracementBandAreas,
     drawDataHistory,
+    fibLevels,
     lineData,
     renderCanvasArray,
     scaleData,
@@ -230,7 +231,22 @@ function DrawCanvas(props: DrawCanvasProps) {
                         color: 'rgba(115, 113, 252, 1)',
                         background: 'rgba(115, 113, 252, 0.15)',
                         lineWidth: 1.5,
-                        style: [0, 0],
+                        style:
+                            activeDrawingType === 'FibRetracement'
+                                ? [6, 6]
+                                : [0, 0],
+                        showGuideLine: !['DPRange', 'Rect'].includes(
+                            activeDrawingType,
+                        ),
+                        showBorder: ['Rect'].includes(activeDrawingType),
+                        showBackground: ['Rect', 'DPRange'].includes(
+                            activeDrawingType,
+                        ),
+                        extraData: ['FibRetracement'].includes(
+                            activeDrawingType,
+                        )
+                            ? structuredClone(fibLevels)
+                            : [],
                     };
 
                     setDrawnShapeHistory((prevData: drawDataHistory[]) => {
@@ -291,6 +307,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                             denomInBase: denomInBase,
                         };
                     }
+
                     setSelectedDrawnShape({
                         data: {
                             data: tempLineData,
@@ -306,7 +323,22 @@ function DrawCanvas(props: DrawCanvasProps) {
                             color: 'rgba(115, 113, 252, 1)',
                             background: 'rgba(115, 113, 252, 0.15)',
                             lineWidth: 1.5,
-                            style: [0, 0],
+                            style:
+                                activeDrawingType === 'FibRetracement'
+                                    ? [6, 6]
+                                    : [0, 0],
+                            showGuideLine: !['DPRange', 'Rect'].includes(
+                                activeDrawingType,
+                            ),
+                            showBorder: ['Rect'].includes(activeDrawingType),
+                            showBackground: ['Rect', 'DPRange'].includes(
+                                activeDrawingType,
+                            ),
+                            extraData: ['FibRetracement'].includes(
+                                activeDrawingType,
+                            )
+                                ? structuredClone(fibLevels)
+                                : [],
                         },
                         selectedCircle: undefined,
                     });
@@ -454,7 +486,7 @@ function DrawCanvas(props: DrawCanvasProps) {
         if (
             scaleData &&
             lineData.length > 1 &&
-            (activeDrawingType === 'Square' || activeDrawingType === 'DPRange')
+            (activeDrawingType === 'Rect' || activeDrawingType === 'DPRange')
         ) {
             d3.select(d3DrawCanvas.current)
                 .on('draw', () => {
@@ -468,7 +500,7 @@ function DrawCanvas(props: DrawCanvasProps) {
 
                     bandArea && bandArea([bandData]);
 
-                    if (activeDrawingType === 'Square') {
+                    if (activeDrawingType === 'Rect') {
                         const lineOfBand = createPointsOfBandLine(lineData);
 
                         lineOfBand?.forEach((item) => {
@@ -539,12 +571,17 @@ function DrawCanvas(props: DrawCanvasProps) {
                     });
                     lineSeries(lineData);
 
-                    const fibLineData = calculateFibRetracement(lineData);
+                    const fibLineData = calculateFibRetracement(
+                        lineData,
+                        fibLevels,
+                    );
 
                     if (ctx) ctx.setLineDash([0, 0]);
 
-                    const bandAreaData =
-                        calculateFibRetracementBandAreas(lineData);
+                    const bandAreaData = calculateFibRetracementBandAreas(
+                        lineData,
+                        fibLevels,
+                    );
 
                     bandAreaData.forEach((bandData) => {
                         const color = d3.color(bandData.color);
