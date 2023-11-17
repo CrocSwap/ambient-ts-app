@@ -41,25 +41,34 @@ export const fetchEnsAddresses = async (addresses: string[]) => {
             }),
         },
     });
-
-    const response = await fetch(
-        ANALYTICS_URL +
-            new URLSearchParams({
-                service: 'run',
-                config_path: 'batch_requests',
-                include_data: '0',
-            }),
-        {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
+    try {
+        const response = await fetch(
+            ANALYTICS_URL +
+                new URLSearchParams({
+                    service: 'run',
+                    config_path: 'batch_requests',
+                    include_data: '0',
+                }),
+            {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: addressQueryBody,
             },
-            body: addressQueryBody,
-        },
-    );
+        );
 
-    const result = await response.json();
-    const parsedResult = parseBatchedEnsReq(result as BatchedENSResult);
-    return parsedResult;
+        if (!response.ok) {
+            throw new Error(
+                `fetch ens error: ${response.status}: ${response.statusText}`,
+            );
+        }
+
+        const result = await response.json();
+        const parsedResult = parseBatchedEnsReq(result as BatchedENSResult);
+        return parsedResult;
+    } catch (error) {
+        throw new Error(`Error: ${error}`);
+    }
 };
