@@ -182,7 +182,7 @@ function Swap(props: propsIF) {
     // const amountToReduceEthMainnet = 0.01; // .01 ETH
     const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
         useState<number>(0.01);
-    const amountToReduceEthScroll = 0.0003; // .0003 ETH
+    const amountToReduceEthScroll = 0.0005; // .0005 ETH
 
     const amountToReduceEth =
         chainId === '0x82750' || chainId === '0x8274f'
