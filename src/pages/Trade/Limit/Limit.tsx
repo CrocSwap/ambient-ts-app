@@ -325,15 +325,22 @@ export default function Limit() {
         !!poolPriceNonDisplay,
     ]);
 
+    // patch limit tick into URL if it is missing, this value isn't available
+    // ... on firstload so we need to update the URL once the SDK returns it
     useEffect(() => {
-        const limitTickKey = 'limitTick';
-        const tickFromURL: string | undefined = urlParamMap.get(limitTickKey);
+        // key for limit tick in the URL param map
+        const LIMIT_TICK_KEY = 'limitTick';
+        // get the current limit tick value from the URL (`undefined` if not present)
+        const tickFromURL: string | undefined = urlParamMap.get(LIMIT_TICK_KEY);
+        // if we have a limit tick and it's not present in the URL, trigger an update
+        // new value only be pushed into the URL if it doesn't match the current value
+        // gatekeeping prevents unnecessary updates from being pushed
         if (limitTick) {
             if (tickFromURL !== limitTick.toString()) {
-                updateURL({ update: [[limitTickKey, limitTick]] });
+                updateURL({ update: [[LIMIT_TICK_KEY, limitTick]] });
             }
         } else {
-            tickFromURL && updateURL({ delete: [limitTickKey] });
+            tickFromURL && updateURL({ delete: [LIMIT_TICK_KEY] });
         }
     }, [limitTick]);
 
