@@ -169,6 +169,8 @@ export default function Limit() {
                     chainId,
                     lastBlockNumber,
                 );
+                // if the spot price is 0, the pool is uninitialized and we can't calculate a limit price
+                if (spotPrice === 0) return;
 
                 const initialLimitRateNonDisplay =
                     spotPrice * (isSellTokenBase ? 0.985 : 1.015);
