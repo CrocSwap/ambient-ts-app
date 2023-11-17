@@ -66,6 +66,7 @@ import {
     defaultCandleBandwith,
     drawDataHistory,
     fillLiqAdvanced,
+    getXandYLocationForChart,
     lineData,
     lineValue,
     liquidityChartData,
@@ -192,6 +193,9 @@ export default function Chart(props: propsIF) {
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
 
+    const [liqMaxActiveLiq, setLiqMaxActiveLiq] = useState<
+        number | undefined
+    >();
     const [isUpdatingShape, setIsUpdatingShape] = useState(false);
 
     const [isDragActive, setIsDragActive] = useState(false);
@@ -794,7 +798,6 @@ export default function Chart(props: propsIF) {
                     .zoom()
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .on('start', (event: any) => {
-                        setIsChartZoom(true);
                         if (event.sourceEvent.type.includes('touch')) {
                             // mobile
                             previousTouch = event.sourceEvent.touches[0];
@@ -809,6 +812,8 @@ export default function Chart(props: propsIF) {
                                 previousDeltaTouchLocation =
                                     event.sourceEvent.touches[0].pageX;
                             }
+                        } else {
+                            setIsChartZoom(true);
                         }
                         zoomTimeout = event.sourceEvent.timeStamp;
                         if (
@@ -1008,8 +1013,16 @@ export default function Chart(props: propsIF) {
                                 event.targetTouches[0].clientY -
                                 rectCanvas?.top;
 
+                            const eventPointX =
+                                event.targetTouches[0].clientX -
+                                rectCanvas.left;
+
                             const mousePlacement =
                                 scaleData?.yScale.invert(eventPoint);
+
+                            const isHoverLiqidite = liqMaxActiveLiq
+                                ? eventPointX <= liqMaxActiveLiq
+                                : false;
 
                             const limitLineValue = limit;
 
@@ -1035,7 +1048,12 @@ export default function Chart(props: propsIF) {
                                 mousePlacement < maxRangeValue + lineBuffer &&
                                 mousePlacement > maxRangeValue - lineBuffer;
 
-                            return !isOnLimit && !isOnRangeMin && !isOnRangeMax;
+                            return (
+                                !isOnLimit &&
+                                !isOnRangeMin &&
+                                !isOnRangeMax &&
+                                isHoverLiqidite
+                            );
                         } else {
                             return !canUserDragRange && !canUserDragLimit;
                         }
@@ -1064,6 +1082,7 @@ export default function Chart(props: propsIF) {
         period,
         tradeData.advancedMode,
         isChartZoom,
+        liqMaxActiveLiq,
     ]);
 
     useEffect(() => {
@@ -3310,6 +3329,13 @@ export default function Chart(props: propsIF) {
                     mousemove(event);
                 },
             );
+
+            d3.select(d3CanvasMain.current).on(
+                'touchmove',
+                function (event: MouseEvent<HTMLDivElement>) {
+                    mousemove(event);
+                },
+            );
         }
     }, [
         diffHashSigChart(visibleCandleData),
@@ -3360,6 +3386,17 @@ export default function Chart(props: propsIF) {
                 }
             },
         );
+
+        d3.select(d3CanvasMain.current).on(
+            'touchend',
+            (event: MouseEvent<HTMLDivElement>) => {
+                if (!isChartZoom) {
+                    mouseLeaveCanvas();
+                    setChartMousemoveEvent(undefined);
+                    setMouseLeaveEvent(event);
+                }
+            },
+        );
     }, [isChartZoom]);
 
     // mouseenter
@@ -3388,10 +3425,8 @@ export default function Chart(props: propsIF) {
                     candleOrVolumeDataHoverStatus(event.offsetX, event.offsetY);
                 selectedDateEvent(isHoverCandleOrVolumeData, nearest);
 
-                setCrosshairActive('none');
-                // Check if the location pathname includes 'pool' or 'reposition' and handle the click event.
-
                 setSelectedDrawnShape(undefined);
+                // Check if the location pathname includes 'pool' or 'reposition' and handle the click event.
 
                 if (
                     (location.pathname.includes('pool') ||
@@ -3431,7 +3466,6 @@ export default function Chart(props: propsIF) {
                     onClickCanvas(event);
                 },
             );
-            render();
 
             d3.select(d3Container.current).on(
                 'mouseleave',
@@ -3912,6 +3946,7 @@ export default function Chart(props: propsIF) {
             } else {
                 setSelectedDate(undefined);
             }
+            render();
         }
     };
 
@@ -3968,8 +4003,11 @@ export default function Chart(props: propsIF) {
     };
     const mousemove = (event: MouseEvent<HTMLDivElement>) => {
         if (scaleData && mainCanvasBoundingClientRect) {
-            const offsetY = event.clientY - mainCanvasBoundingClientRect?.top;
-            const offsetX = event.clientX - mainCanvasBoundingClientRect?.left;
+            const { offsetX, offsetY } = getXandYLocationForChart(
+                event,
+                mainCanvasBoundingClientRect,
+            );
+
             if (!isLineDrag) {
                 setChartMousemoveEvent(event);
                 setCrossHairDataFunc(offsetX, offsetY);
@@ -4317,6 +4355,7 @@ export default function Chart(props: propsIF) {
                                 mainCanvasBoundingClientRect={
                                     mainCanvasBoundingClientRect
                                 }
+                                setLiqMaxActiveLiq={setLiqMaxActiveLiq}
                             />
                         )}
                         <d3fc-canvas
