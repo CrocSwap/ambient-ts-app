@@ -1,7 +1,6 @@
 import SidebarRangePositionsCard from './SidebarRangePositionsCard';
 import { PositionIF } from '../../../../utils/interfaces/exports';
 import { useLocation } from 'react-router-dom';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
@@ -17,6 +16,7 @@ import {
     RangeHeaderGrid,
     ViewMoreFlex,
 } from '../../../../styled/Components/Sidebar';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 interface propsIF {
     userPositions?: PositionIF[];
@@ -37,9 +37,7 @@ export default function SidebarRangePositions(props: propsIF) {
     const {
         sidebar: { close: closeSidebar },
     } = useContext(SidebarContext);
-    const { isLoggedIn: isUserConnected } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { isUserConnected } = useContext(UserDataContext);
 
     const location = useLocation();
 

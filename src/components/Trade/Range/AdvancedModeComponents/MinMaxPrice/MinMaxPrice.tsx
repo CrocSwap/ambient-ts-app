@@ -9,15 +9,11 @@ import {
 } from 'react';
 import PriceInput from '../PriceInput/PriceInput';
 
-import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
-import {
-    setAdvancedHighTick,
-    setAdvancedLowTick,
-} from '../../../../../utils/state/tradeDataSlice';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { exponentialNumRegEx } from '../../../../../utils/regex/exports';
 import { FlexContainer, Text } from '../../../../../styled/Common';
+import { RangeContext } from '../../../../../contexts/RangeContext';
 
 interface propsIF {
     minPricePercentage: number;
@@ -59,8 +55,8 @@ function MinMaxPrice(props: propsIF) {
     const {
         chainData: { gridSize: tickSize },
     } = useContext(CrocEnvContext);
-
-    const dispatch = useAppDispatch();
+    const { setAdvancedHighTick, setAdvancedLowTick } =
+        useContext(RangeContext);
 
     const handleMinPriceChangeEvent = (
         evt?: ChangeEvent<HTMLInputElement>,
@@ -117,22 +113,22 @@ function MinMaxPrice(props: propsIF) {
 
     const increaseLowTick = (): void => {
         const updatedTick: number = rangeLowTick + tickSize;
-        dispatch(setAdvancedLowTick(updatedTick));
+        setAdvancedLowTick(updatedTick);
     };
 
     const increaseHighTick = (): void => {
         const updatedTick: number = rangeHighTick + tickSize;
-        dispatch(setAdvancedHighTick(updatedTick));
+        setAdvancedHighTick(updatedTick);
     };
 
     const decreaseLowTick = (): void => {
         const updatedTick: number = rangeLowTick - tickSize;
-        dispatch(setAdvancedLowTick(updatedTick));
+        setAdvancedLowTick(updatedTick);
     };
 
     const decreaseHighTick = (): void => {
         const updatedTick: number = rangeHighTick - tickSize;
-        dispatch(setAdvancedHighTick(updatedTick));
+        setAdvancedHighTick(updatedTick);
     };
 
     // event handler for blurring the `Min Price` input field

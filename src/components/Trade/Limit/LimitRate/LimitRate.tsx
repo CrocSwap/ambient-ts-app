@@ -19,6 +19,7 @@ import {
     LimitRateButtonContainer,
     TokenQuantityInput,
 } from '../../../../styled/Components/TradeModules';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     previousDisplayPrice: string;
@@ -49,11 +50,9 @@ export default function LimitRate(props: propsIF) {
     const { pool } = useContext(PoolContext);
     const { showOrderPulseAnimation } = useContext(TradeTableContext);
 
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const { limitTick } = useAppSelector((state) => state.tradeData);
     const isPoolInitialized = useSimulatedIsPoolInitialized();
-
-    const isDenomBase: boolean = tradeData.isDenomBase;
-    const limitTick: number | undefined = tradeData.limitTick;
+    const { isDenomBase } = useContext(TradeDataContext);
 
     const increaseTick = (): void => {
         if (limitTick !== undefined) {

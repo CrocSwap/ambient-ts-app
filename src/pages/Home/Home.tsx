@@ -5,18 +5,19 @@ import TopPools from '../../components/Home/TopPools/TopPools';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import MobileLandingSections from '../../components/Home/Landing/MobileLandingSections';
 import { useSearchParams } from 'react-router-dom';
-import { useAccount, useSwitchNetwork } from 'wagmi';
+import { useSwitchNetwork } from 'wagmi';
 import { supportedNetworks } from '../../utils/networks/index';
 import { useAppChain } from '../../App/hooks/useAppChain';
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { lookupChainId } from '../../utils/functions/lookupChainId';
+import { UserDataContext } from '../../contexts/UserDataContext';
 
 export default function Home() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
     // hook from wagmi to switch connected wallet in extension
     const { switchNetwork } = useSwitchNetwork();
     // hook from wagmi indicating if user is connected
-    const { isConnected } = useAccount();
+    const { isUserConnected } = useContext(UserDataContext);
     // hook managing chain data between the app and external APIs
     const { chooseNetwork, chainData } = useAppChain();
     // hook to consume and alter search params on the index page
@@ -42,7 +43,7 @@ export default function Home() {
                 // use wagmi if wallet is connected, otherwise use in-app toggle
                 if (switchNetwork) {
                     switchNetwork(parseInt(targetChain));
-                } else if (!isConnected) {
+                } else if (!isUserConnected) {
                     chooseNetwork(supportedNetworks[targetChain]);
                 }
             } else {

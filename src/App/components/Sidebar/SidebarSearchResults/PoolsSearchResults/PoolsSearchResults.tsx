@@ -3,7 +3,6 @@ import { PoolStatsFn } from '../../../../functions/getPoolStats';
 import PoolSearchResult from './PoolSearchResult';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import {
     useLinkGen,
     linkGenMethodsIF,
@@ -16,6 +15,7 @@ import {
     Text,
 } from '../../../../../styled/Common';
 import { ResultsContainer } from '../../../../../styled/Components/Sidebar';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 
 interface propsIF {
     searchedPools: PoolIF[];
@@ -26,7 +26,7 @@ interface propsIF {
 export default function PoolsSearchResults(props: propsIF) {
     const { searchedPools, cachedPoolStatsFetch, cachedFetchTokenPrice } =
         props;
-    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB } = useContext(TradeDataContext);
     const {
         crocEnv,
         chainData: { chainId },

@@ -4,7 +4,7 @@ import { scaleData } from '../../pages/Chart/ChartUtils/chartUtils';
 import { LimitOrderIF } from '../interfaces/LimitOrderIF';
 import { PositionIF } from '../interfaces/PositionIF';
 import { TransactionIF } from '../interfaces/TransactionIF';
-import { CandlesByPoolAndDuration } from '../state/graphDataSlice';
+import { CandlesByPoolAndDuration } from '../../contexts/CandleContext';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function diffHashSig(x: any): string {

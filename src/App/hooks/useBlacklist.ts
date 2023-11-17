@@ -1,13 +1,13 @@
-import { useEffect } from 'react';
-import { useDisconnect } from 'wagmi';
+import { useContext, useEffect } from 'react';
 import { checkBlacklist } from '../../utils/data/blacklist';
+import { UserDataContext } from '../../contexts/UserDataContext';
 
 export function useBlacklist(account: `0x${string}` | undefined): void {
-    const { disconnect } = useDisconnect();
+    const { disconnectUser } = useContext(UserDataContext);
 
     useEffect(() => {
         if (account && checkBlacklist(account)) {
-            disconnect();
+            disconnectUser();
             location.replace('https://ofac.treasury.gov');
         }
     }, [account]);

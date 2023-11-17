@@ -1,7 +1,7 @@
 import { CHART_ANNOTATIONS_LS_KEY, drawDataHistory } from './chartUtils';
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 export interface actionKeyIF {
     poolIndex: number;
@@ -28,13 +28,15 @@ export function useUndoRedo(denomInBase: boolean) {
 
     const [undoStack] = useState(new Map<actionKeyIF, drawDataHistory[]>());
 
-    const currentPool = useAppSelector((state) => state.tradeData);
+    const currentPool = useContext(TradeDataContext);
+
+    const { tokenA, tokenB } = currentPool;
 
     const actionKey = useMemo(() => {
         const newActionKey = {
             poolIndex: poolIndex,
-            tokenA: currentPool.tokenA.address,
-            tokenB: currentPool.tokenB.address,
+            tokenA: tokenA.address,
+            tokenB: tokenB.address,
         };
         let existingKey = null;
 
@@ -50,7 +52,7 @@ export function useUndoRedo(denomInBase: boolean) {
         }
 
         return newActionKey;
-    }, [poolIndex, currentPool.tokenA, currentPool.tokenB]);
+    }, [poolIndex, tokenA, tokenB]);
 
     useEffect(() => {
         initialArray.forEach((element: drawDataHistory) => {

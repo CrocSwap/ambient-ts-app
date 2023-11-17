@@ -7,21 +7,19 @@ import React, {
     useContext,
 } from 'react';
 import useWebSocket from 'react-use-websocket';
-import { useAccount } from 'wagmi';
 import {
     IS_LOCAL_ENV,
     SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
 } from '../constants';
 import isJsonString from '../utils/functions/isJsonString';
-import { useAppDispatch } from '../utils/hooks/reduxToolkit';
 import { TokenIF } from '../utils/interfaces/TokenIF';
 import { supportedNetworks } from '../utils/networks';
-import { setLastBlock } from '../utils/state/graphDataSlice';
-import { setTokenBalances } from '../utils/state/userDataSlice';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
 import { Client } from '@covalenthq/client-sdk';
+import { UserDataContext } from './UserDataContext';
+import { TokenBalanceContext } from './TokenBalanceContext';
 
 interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
@@ -38,6 +36,8 @@ export const ChainDataContext = createContext<ChainDataContextIF>(
 export const ChainDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
+    const { setTokenBalances } = useContext(TokenBalanceContext);
+
     const { chainData, activeNetwork, crocEnv, provider } =
         useContext(CrocEnvContext);
     const { cachedFetchTokenBalances, cachedTokenDetails } =
@@ -46,19 +46,10 @@ export const ChainDataContextProvider = (props: {
 
     const client = new Client(process.env.REACT_APP_COVALENT_API_KEY || '');
 
-    const dispatch = useAppDispatch();
-    const { address: userAddress, isConnected } = useAccount();
+    const { userAddress, isUserConnected } = useContext(UserDataContext);
 
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
-
-    const chainDataContext = {
-        lastBlockNumber,
-        setLastBlockNumber,
-        gasPriceInGwei,
-        setGasPriceinGwei,
-        client,
-    };
 
     async function pollBlockNum(): Promise<void> {
         // if default RPC is Infura, use key from env variable
@@ -88,7 +79,6 @@ export const ChainDataContextProvider = (props: {
             .then((blockNum) => {
                 if (blockNum > lastBlockNumber) {
                     setLastBlockNumber(blockNum);
-                    dispatch(setLastBlock(blockNum));
                 }
             })
             .catch(console.error);
@@ -138,7 +128,6 @@ export const ChainDataContextProvider = (props: {
                     const newBlockNum = parseInt(lastBlockNumberHex);
                     if (lastBlockNumber !== newBlockNum) {
                         setLastBlockNumber(parseInt(lastBlockNumberHex));
-                        dispatch(setLastBlock(parseInt(lastBlockNumberHex)));
                     }
                 }
             }
@@ -167,7 +156,7 @@ export const ChainDataContextProvider = (props: {
                 console.debug('fetching native token and erc20 token balances');
             if (
                 crocEnv &&
-                isConnected &&
+                isUserConnected &&
                 userAddress &&
                 chainData.chainId &&
                 client
@@ -192,22 +181,30 @@ export const ChainDataContextProvider = (props: {
                         return newToken;
                     });
 
-                    dispatch(setTokenBalances(tokensWithLogos));
+                    setTokenBalances(tokensWithLogos);
                 } catch (error) {
-                    dispatch(setTokenBalances([]));
+                    setTokenBalances([]);
                     console.error({ error });
                 }
             }
         })();
     }, [
         crocEnv,
-        isConnected,
+        isUserConnected,
         userAddress,
         chainData.chainId,
         everyFiveMinutes,
         client !== undefined,
         activeNetwork.graphCacheUrl,
     ]);
+
+    const chainDataContext = {
+        lastBlockNumber,
+        setLastBlockNumber,
+        gasPriceInGwei,
+        setGasPriceinGwei,
+        client,
+    };
 
     return (
         <ChainDataContext.Provider value={chainDataContext}>
