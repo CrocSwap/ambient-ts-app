@@ -21,11 +21,12 @@ import {
     ViewMoreButton,
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
-import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { getAddress } from 'ethers/lib/utils.js';
+import { fetchBatchENSAddresses } from '../../../../utils/functions/fetchBatch';
 
 // interface for props for react functional component
 interface propsIF {
@@ -388,11 +389,24 @@ function Orders(props: propsIF) {
         </OrderRowStyled>
     );
 
-    // TODO: should not block rendering of table while fetching ENS addresses
-    const { ensAddressMapping, addData } = useENSAddresses();
-
+    const [ensAddressesMap, setENSAddressesMap] = useState<Map<string, string>>(
+        new Map(),
+    );
     useEffect(() => {
-        addData(sortedLimits);
+        if (sortedLimits.length === 0) return;
+        (async () => {
+            const ensAddressesMap = new Map<string, string>();
+            // TODO: promise.allsetted? for better error handling
+            await Promise.all(
+                sortedLimits.map(async (tx) => {
+                    const ensAddress = await fetchBatchENSAddresses(
+                        tx.user ?? getAddress(tx.user),
+                    );
+                    ensAddressesMap.set(tx.user, ensAddress ?? '');
+                }),
+            );
+            setENSAddressesMap(ensAddressesMap);
+        })();
     }, [sortedLimits]);
 
     const currentRowItemContent = () =>
@@ -402,7 +416,7 @@ function Orders(props: propsIF) {
                 key={idx}
                 limitOrder={order}
                 isAccountView={isAccountView}
-                fetchedEnsAddress={ensAddressMapping.get(order.user)}
+                fetchedEnsAddress={ensAddressesMap.get(order.user) ?? ''}
             />
         ));
 

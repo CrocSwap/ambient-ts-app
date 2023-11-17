@@ -12,10 +12,11 @@ import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { RangeRow as RangeRowStyled } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer } from '../../../../styled/Common';
-import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { getAddress } from 'ethers/lib/utils.js';
+import { fetchBatchENSAddresses } from '../../../../utils/functions/fetchBatch';
 
 // react functional component
 function Leaderboard() {
@@ -199,12 +200,24 @@ function Leaderboard() {
         },
     ];
 
-    const { ensAddressMapping, addData } = useENSAddresses();
-
+    const [ensAddressesMap, setENSAddressesMap] = useState<Map<string, string>>(
+        new Map(),
+    );
     useEffect(() => {
-        if (usePaginateDataOrNull.length > 0) {
-            addData(usePaginateDataOrNull);
-        }
+        if (usePaginateDataOrNull.length === 0) return;
+        (async () => {
+            const ensAddressesMap = new Map<string, string>();
+            // TODO: promise.allsetted? for better error handling
+            await Promise.all(
+                usePaginateDataOrNull.map(async (tx) => {
+                    const ensAddress = await fetchBatchENSAddresses(
+                        tx.user ?? getAddress(tx.user),
+                    );
+                    ensAddressesMap.set(tx.user, ensAddress ?? '');
+                }),
+            );
+            setENSAddressesMap(ensAddressesMap);
+        })();
     }, [usePaginateDataOrNull]);
 
     const rowItemContent = usePaginateDataOrNull?.map((position, idx) => (
@@ -219,7 +232,7 @@ function Leaderboard() {
             isAccountView={false}
             isLeaderboard={true}
             tableView={tableView}
-            fetchedEnsAddress={ensAddressMapping.get(position.user)}
+            fetchedEnsAddress={ensAddressesMap.get(position.user) ?? ''}
         />
     ));
 

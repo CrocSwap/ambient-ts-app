@@ -3,7 +3,10 @@
 // ^ ...(JG) (╯°□°)╯︵ ┻━┻
 import { ANALYTICS_URL } from '../../constants';
 
+type SupportedBatchRequests = 'fetchTokenPrice' | 'fetchENSAddresses';
+
 interface RequestData {
+    requestId: SupportedBatchRequests;
     body: any;
     timestamp: number;
     promise: Promise<Response> | null;
@@ -26,6 +29,7 @@ class BatchRequestManager {
     static sentBatches = 0;
     static parsedBatches = 0;
     static timeoutHandle: ReturnType<typeof setTimeout> | null = null;
+    static intervalHandle: ReturnType<typeof setInterval> | null = null;
 
     static async send(): Promise<void> {
         const requests = BatchRequestManager.pendingRequests;
@@ -43,6 +47,8 @@ class BatchRequestManager {
             }
         });
 
+        if (sendableNonce.length === 0) return;
+
         const addressQueryBody = JSON.stringify({
             service: 'run',
             config_path: 'batch_requests',
@@ -58,6 +64,7 @@ class BatchRequestManager {
                 }),
             },
         });
+
         BatchRequestManager.sentBatches = BatchRequestManager.sentBatches + 1;
         const response = await fetch(ANALYTICS_URL, {
             method: 'POST',
@@ -80,22 +87,25 @@ class BatchRequestManager {
             BatchRequestManager.parsedBatches + 1;
     }
 
-    static manageRequests(): void {
-        if (BatchRequestManager.timeoutHandle != null) {
-            return;
+    static startManagingRequests(): void {
+        if (BatchRequestManager.intervalHandle == null) {
+            BatchRequestManager.intervalHandle = setInterval(async () => {
+                try {
+                    await BatchRequestManager.send();
+                    BatchRequestManager.clean();
+                } catch (error) {
+                    console.error('Error in send function:', error);
+                }
+            }, BatchRequestManager.sendFrequency);
         }
+    }
 
-        BatchRequestManager.timeoutHandle = setTimeout(async () => {
-            try {
-                await BatchRequestManager.send();
-                BatchRequestManager.clean();
-            } catch (error) {
-                console.error('Error in send function:', error);
-            }
-
-            BatchRequestManager.timeoutHandle = null;
-            BatchRequestManager.manageRequests();
-        }, BatchRequestManager.sendFrequency);
+    // TODO: return this from a App useEffect for cleanup
+    static stopManagingRequests(): void {
+        if (BatchRequestManager.intervalHandle != null) {
+            clearInterval(BatchRequestManager.intervalHandle);
+            BatchRequestManager.intervalHandle = null;
+        }
     }
 
     static clean(): void {
@@ -112,8 +122,14 @@ class BatchRequestManager {
         });
     }
 
-    static async register(body: any, nonce: string, expiry = 0): Promise<any> {
+    static async register(
+        requestId: SupportedBatchRequests,
+        body: any,
+        nonce: string,
+        expiry = 0,
+    ): Promise<any> {
         BatchRequestManager.pendingRequests[nonce] = {
+            requestId: requestId,
             body: body,
             timestamp: Date.now(),
             promise: null, // This will hold the promise itself
@@ -128,7 +144,7 @@ class BatchRequestManager {
                 BatchRequestManager.pendingRequests[nonce].reject = reject;
             },
         );
-        BatchRequestManager.manageRequests();
+        BatchRequestManager.startManagingRequests();
         return BatchRequestManager.pendingRequests[nonce].promise;
     }
 }
@@ -145,11 +161,39 @@ function simpleHash(json: any): string {
     return 'hash_' + Math.abs(hash).toString(16);
 }
 
-export async function fetchBatch(
-    body: any,
-    nonce: string | null = null,
+export async function fetchBatchENSAddresses(
+    address: string,
+    nonce?: string,
     expiry = 0,
-): Promise<any> {
+) {
+    try {
+        const body = { config_path: 'ens_address', address: address };
+        const { ens_address: ensAddress } = await fetchBatch({
+            requestId: 'fetchENSAddresses',
+            body,
+            nonce,
+            expiry,
+        });
+        return ensAddress as string;
+    } catch (error) {
+        console.error('Error in fetchBatchENSAddresses:', error);
+        return null;
+    }
+}
+
+type FetchBatchParams = {
+    requestId: SupportedBatchRequests;
+    body: any;
+    nonce?: string;
+    expiry?: number;
+};
+
+export async function fetchBatch({
+    requestId,
+    body = {},
+    nonce = undefined,
+    expiry = 0,
+}: FetchBatchParams): Promise<any> {
     const requests = BatchRequestManager.pendingRequests;
     nonce = nonce || simpleHash(body);
 
@@ -160,7 +204,7 @@ export async function fetchBatch(
     ) {
         return requests[nonce].promise;
     }
-    return BatchRequestManager.register(body, nonce, expiry);
+    return BatchRequestManager.register(requestId, body, nonce, expiry);
 }
 
 export async function testBatchSystem() {
@@ -189,23 +233,25 @@ export async function testBatchSystem() {
         },
     ];
 
-    const promises = testData.map((data) => fetchBatch(data.request));
+    const promises = testData.map((data) =>
+        fetchBatchENSAddresses(data.request.address),
+    );
 
     Promise.all(promises).then((results) => {
         let matches = 0;
         results.forEach((result, index) => {
             if (
                 JSON.stringify(result) ===
-                JSON.stringify(testData[index].expected)
+                JSON.stringify(testData[index].expected.ens_address)
             )
                 matches = matches + 1;
             console.assert(
                 JSON.stringify(result) ===
-                    JSON.stringify(testData[index].expected),
+                    JSON.stringify(testData[index].expected.ens_address),
                 `Test failed for request ${
                     index + 1
                 }: Expected ${JSON.stringify(
-                    testData[index].expected,
+                    testData[index].expected.ens_address,
                 )}, got ${JSON.stringify(result)}`,
             );
         });

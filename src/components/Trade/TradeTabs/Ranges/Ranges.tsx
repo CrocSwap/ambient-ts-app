@@ -25,11 +25,12 @@ import {
     ViewMoreButton,
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
-import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { fetchBatchENSAddresses } from '../../../../utils/functions/fetchBatch';
+import { getAddress } from 'ethers/lib/utils.js';
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
 
@@ -367,10 +368,24 @@ function Ranges(props: propsIF) {
         </RangeRowStyled>
     );
 
-    const { ensAddressMapping, addData } = useENSAddresses();
-
+    const [ensAddressesMap, setENSAddressesMap] = useState<Map<string, string>>(
+        new Map(),
+    );
     useEffect(() => {
-        addData(sortedPositions);
+        if (sortedPositions.length === 0) return;
+        (async () => {
+            const ensAddressesMap = new Map<string, string>();
+            // TODO: promise.allsetted? for better error handling
+            await Promise.all(
+                sortedPositions.map(async (tx) => {
+                    const ensAddress = await fetchBatchENSAddresses(
+                        tx.user ?? getAddress(tx.user),
+                    );
+                    ensAddressesMap.set(tx.user, ensAddress ?? '');
+                }),
+            );
+            setENSAddressesMap(ensAddressesMap);
+        })();
     }, [sortedPositions]);
 
     const currentRowItemContent = () =>
@@ -380,7 +395,7 @@ function Ranges(props: propsIF) {
                 position={position}
                 isAccountView={isAccountView}
                 tableView={tableView}
-                fetchedEnsAddress={ensAddressMapping.get(position.user)}
+                fetchedEnsAddress={ensAddressesMap.get(position.user) ?? ''}
             />
         ));
 

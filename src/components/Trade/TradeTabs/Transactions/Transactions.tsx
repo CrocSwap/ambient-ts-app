@@ -35,6 +35,8 @@ import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { fetchBatchENSAddresses } from '../../../../utils/functions/fetchBatch';
+import { getAddress } from 'ethers/lib/utils.js';
 
 interface propsIF {
     filter?: CandleData | undefined;
@@ -504,10 +506,23 @@ function Transactions(props: propsIF) {
             </FlexContainer>
         );
 
-    const { ensAddressMapping, addData } = useENSAddresses();
-
+    const [ensAddressesMap, setENSAddressesMap] = useState<Map<string, string>>(
+        new Map(),
+    );
     useEffect(() => {
-        addData(sortedTransactions);
+        (async () => {
+            const ensAddressesMap = new Map<string, string>();
+            // TODO: promise.allsetted? for better error handling
+            await Promise.all(
+                sortedTransactions.map(async (tx) => {
+                    const ensAddress = await fetchBatchENSAddresses(
+                        tx.user ?? getAddress(tx.user),
+                    );
+                    ensAddressesMap.set(tx.user, ensAddress ?? '');
+                }),
+            );
+            setENSAddressesMap(ensAddressesMap);
+        })();
     }, [sortedTransactions]);
 
     const currentRowItemContent = () =>
@@ -518,7 +533,7 @@ function Transactions(props: propsIF) {
                 tx={tx}
                 tableView={tableView}
                 isAccountView={isAccountView}
-                fetchedEnsAddress={ensAddressMapping.get(tx.user)}
+                fetchedEnsAddress={ensAddressesMap.get(tx.user) ?? ''}
             />
         ));
 
