@@ -31,7 +31,6 @@ import {
     ViewMoreButton,
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
-import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
@@ -509,18 +508,27 @@ function Transactions(props: propsIF) {
     const [ensAddressesMap, setENSAddressesMap] = useState<Map<string, string>>(
         new Map(),
     );
+
     useEffect(() => {
+        if (sortedTransactions.length === 0) return;
         (async () => {
             const ensAddressesMap = new Map<string, string>();
-            // TODO: promise.allsetted? for better error handling
-            await Promise.all(
-                sortedTransactions.map(async (tx) => {
-                    const ensAddress = await fetchBatchENSAddresses(
-                        tx.user ?? getAddress(tx.user),
-                    );
-                    ensAddressesMap.set(tx.user, ensAddress ?? '');
-                }),
+
+            const results = await Promise.allSettled(
+                sortedTransactions.map((tx) =>
+                    fetchBatchENSAddresses(tx.user ?? getAddress(tx.user)),
+                ),
             );
+
+            results.forEach((result, index) => {
+                if (result.status === 'fulfilled' && result.value) {
+                    const user =
+                        sortedTransactions[index].user ??
+                        getAddress(sortedTransactions[index].user);
+                    ensAddressesMap.set(user, result.value);
+                }
+            });
+
             setENSAddressesMap(ensAddressesMap);
         })();
     }, [sortedTransactions]);

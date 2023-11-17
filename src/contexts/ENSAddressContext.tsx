@@ -16,6 +16,7 @@ const ENSAddressContext = createContext<ENSAddressContextValue | undefined>(
     undefined,
 );
 
+// TODO: deprecate in favour of fetchBatch
 export const ENSAddressContextProvider = (props: { children: ReactNode }) => {
     const [ensAddressMapping, setEnsAddressMapping] = useState<
         Map<string, string>

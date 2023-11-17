@@ -1,7 +1,8 @@
 /* eslint-disable camelcase */
 /* eslint-disable @typescript-eslint/no-explicit-any  */
 // ^ ...(JG) (╯°□°)╯︵ ┻━┻
-import { ANALYTICS_URL } from '../../constants';
+import { ANALYTICS_URL, BATCH_ENS_CACHE_EXPIRY } from '../../constants';
+import { fetchTimeout } from './fetchTimeout';
 
 type SupportedBatchRequests = 'fetchTokenPrice' | 'fetchENSAddresses';
 
@@ -28,7 +29,6 @@ class BatchRequestManager {
     static sendFrequency = 10000;
     static sentBatches = 0;
     static parsedBatches = 0;
-    static timeoutHandle: ReturnType<typeof setTimeout> | null = null;
     static intervalHandle: ReturnType<typeof setInterval> | null = null;
 
     static async send(): Promise<void> {
@@ -65,37 +65,46 @@ class BatchRequestManager {
             },
         });
 
-        BatchRequestManager.sentBatches = BatchRequestManager.sentBatches + 1;
-        const response = await fetch(ANALYTICS_URL, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: addressQueryBody,
-        });
+        try {
+            BatchRequestManager.sentBatches =
+                BatchRequestManager.sentBatches + 1;
+            const response = await fetchTimeout(
+                ANALYTICS_URL,
+                {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: addressQueryBody,
+                },
+                BatchRequestManager.sendFrequency + 3000,
+            );
 
-        const jsonResponse = await response.json();
-        const innerResponse = jsonResponse.value.data;
-        innerResponse.forEach((resp: any) => {
-            if (requests[resp.req_id]) {
-                requests[resp.req_id].resolve(resp.results); // Resolving the promise with the response
-                requests[resp.req_id].response = resp.results;
-            }
-        });
-        BatchRequestManager.parsedBatches =
-            BatchRequestManager.parsedBatches + 1;
+            const jsonResponse = await response.json();
+            const innerResponse = jsonResponse.value.data;
+            innerResponse.forEach((resp: any) => {
+                if (requests[resp.req_id]) {
+                    requests[resp.req_id].resolve(resp.results); // Resolving the promise with the response
+                    requests[resp.req_id].response = resp.results;
+                }
+            });
+            BatchRequestManager.parsedBatches =
+                BatchRequestManager.parsedBatches + 1;
+        } catch (error) {
+            sendableNonce.forEach((nonce) => {
+                if (requests[nonce]) {
+                    requests[nonce].reject(error); // Rejecting the promise with the error
+                }
+            });
+        }
     }
 
     static startManagingRequests(): void {
         if (BatchRequestManager.intervalHandle == null) {
             BatchRequestManager.intervalHandle = setInterval(async () => {
-                try {
-                    await BatchRequestManager.send();
-                    BatchRequestManager.clean();
-                } catch (error) {
-                    console.error('Error in send function:', error);
-                }
+                await BatchRequestManager.send();
+                BatchRequestManager.clean();
             }, BatchRequestManager.sendFrequency);
         }
     }
@@ -126,7 +135,7 @@ class BatchRequestManager {
         requestId: SupportedBatchRequests,
         body: any,
         nonce: string,
-        expiry = 0,
+        expiry = BATCH_ENS_CACHE_EXPIRY,
     ): Promise<any> {
         BatchRequestManager.pendingRequests[nonce] = {
             requestId: requestId,
@@ -164,7 +173,7 @@ function simpleHash(json: any): string {
 export async function fetchBatchENSAddresses(
     address: string,
     nonce?: string,
-    expiry = 0,
+    expiry = BATCH_ENS_CACHE_EXPIRY,
 ) {
     try {
         const body = { config_path: 'ens_address', address: address };
@@ -176,7 +185,6 @@ export async function fetchBatchENSAddresses(
         });
         return ensAddress as string;
     } catch (error) {
-        console.error('Error in fetchBatchENSAddresses:', error);
         return null;
     }
 }
@@ -192,7 +200,7 @@ export async function fetchBatch({
     requestId,
     body = {},
     nonce = undefined,
-    expiry = 0,
+    expiry = BATCH_ENS_CACHE_EXPIRY,
 }: FetchBatchParams): Promise<any> {
     const requests = BatchRequestManager.pendingRequests;
     nonce = nonce || simpleHash(body);

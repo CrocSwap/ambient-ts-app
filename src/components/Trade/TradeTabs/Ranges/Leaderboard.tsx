@@ -203,19 +203,27 @@ function Leaderboard() {
     const [ensAddressesMap, setENSAddressesMap] = useState<Map<string, string>>(
         new Map(),
     );
+
     useEffect(() => {
         if (usePaginateDataOrNull.length === 0) return;
         (async () => {
             const ensAddressesMap = new Map<string, string>();
-            // TODO: promise.allsetted? for better error handling
-            await Promise.all(
-                usePaginateDataOrNull.map(async (tx) => {
-                    const ensAddress = await fetchBatchENSAddresses(
-                        tx.user ?? getAddress(tx.user),
-                    );
-                    ensAddressesMap.set(tx.user, ensAddress ?? '');
-                }),
+
+            const results = await Promise.allSettled(
+                sortedPositions.map((tx) =>
+                    fetchBatchENSAddresses(tx.user ?? getAddress(tx.user)),
+                ),
             );
+
+            results.forEach((result, index) => {
+                if (result.status === 'fulfilled' && result.value) {
+                    const user =
+                        usePaginateDataOrNull[index].user ??
+                        getAddress(usePaginateDataOrNull[index].user);
+                    ensAddressesMap.set(user, result.value);
+                }
+            });
+
             setENSAddressesMap(ensAddressesMap);
         })();
     }, [usePaginateDataOrNull]);

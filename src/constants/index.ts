@@ -72,3 +72,8 @@ export const ETH_ICON_URL =
 // Modal IDS
 export const GLOBAL_MODAL_PORTAL_ID = 'ambient_global_modal_portal';
 export const GLOBAL_MODAL_COMPONENT_ID = 'Modal_Global';
+
+// BatchRequestManager config
+export const BATCH_ENS_CACHE_EXPIRY = process.env.BATCH_ENS_CACHE_EXPIRY
+    ? parseFloat(process.env.BATCH_ENS_CACHE_EXPIRY)
+    : 1 * 60 * 60 * 1000;
