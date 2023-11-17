@@ -286,7 +286,7 @@ export default function DragCanvas(props: DragCanvasProps) {
 
                     if (
                         hoveredDrawnShape &&
-                        (hoveredDrawnShape.data.type === 'Square' ||
+                        (hoveredDrawnShape.data.type === 'Rect' ||
                             hoveredDrawnShape.data.type === 'DPRange')
                     ) {
                         const selectedCircle = hoveredDrawnShape.selectedCircle;
@@ -362,7 +362,7 @@ export default function DragCanvas(props: DragCanvasProps) {
 
                         if (
                             hoveredDrawnShape &&
-                            (hoveredDrawnShape.data.type === 'Square' ||
+                            (hoveredDrawnShape.data.type === 'Rect' ||
                                 hoveredDrawnShape.data.type === 'DPRange')
                         ) {
                             if (!hoveredDrawnShape.selectedCircle) {

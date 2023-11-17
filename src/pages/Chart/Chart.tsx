@@ -2747,7 +2747,7 @@ export default function Chart(props: propsIF) {
                                 }
 
                                 if (
-                                    item.type === 'Square' ||
+                                    item.type === 'Rect' ||
                                     item.type === 'DPRange'
                                 ) {
                                     const range = [
@@ -2757,33 +2757,35 @@ export default function Chart(props: propsIF) {
 
                                     bandArea.xScale().range(range);
 
-                                    const checkDenom =
-                                        item.data[0].denomInBase ===
-                                        denomInBase;
-                                    const bandData = {
-                                        fromValue: checkDenom
-                                            ? item.data[0].y
-                                            : 1 / item.data[0].y,
-                                        toValue: checkDenom
-                                            ? item.data[1].y
-                                            : 1 / item.data[1].y,
-                                        denomInBase: denomInBase,
-                                    } as bandLineData;
+                                    if (item.showBackground) {
+                                        const checkDenom =
+                                            item.data[0].denomInBase ===
+                                            denomInBase;
+                                        const bandData = {
+                                            fromValue: checkDenom
+                                                ? item.data[0].y
+                                                : 1 / item.data[0].y,
+                                            toValue: checkDenom
+                                                ? item.data[1].y
+                                                : 1 / item.data[1].y,
+                                            denomInBase: denomInBase,
+                                        } as bandLineData;
 
-                                    if (item.background) {
-                                        bandArea.decorate(
-                                            (
-                                                context: CanvasRenderingContext2D,
-                                            ) => {
-                                                context.fillStyle =
-                                                    item.background;
-                                            },
-                                        );
+                                        if (item.background) {
+                                            bandArea.decorate(
+                                                (
+                                                    context: CanvasRenderingContext2D,
+                                                ) => {
+                                                    context.fillStyle =
+                                                        item.background;
+                                                },
+                                            );
+                                        }
+
+                                        bandArea([bandData]);
                                     }
 
-                                    bandArea([bandData]);
-
-                                    if (item.type === 'Square') {
+                                    if (item.showBorder) {
                                         const lineOfBand =
                                             createPointsOfBandLine(item.data);
 
@@ -2802,64 +2804,68 @@ export default function Chart(props: propsIF) {
                                             );
                                             lineSeries(line);
 
-                                            if (
-                                                (hoveredDrawnShape &&
-                                                    hoveredDrawnShape.data
-                                                        .time === item.time) ||
-                                                (selectedDrawnShape &&
-                                                    selectedDrawnShape.data
-                                                        .time === item.time)
-                                            ) {
-                                                line.forEach(
-                                                    (element, _index) => {
-                                                        const selectedCircleIsActive =
-                                                            hoveredDrawnShape &&
-                                                            hoveredDrawnShape.selectedCircle &&
-                                                            hoveredDrawnShape
-                                                                .selectedCircle
-                                                                .x ===
-                                                                element.x &&
-                                                            Number(
-                                                                element.y.toFixed(
-                                                                    12,
-                                                                ),
-                                                            ) ===
-                                                                (element.denomInBase ===
-                                                                denomInBase
-                                                                    ? Number(
-                                                                          hoveredDrawnShape?.selectedCircle.y.toFixed(
-                                                                              12,
-                                                                          ),
-                                                                      )
-                                                                    : Number(
-                                                                          (
-                                                                              1 /
-                                                                              hoveredDrawnShape
-                                                                                  ?.selectedCircle
-                                                                                  .y
-                                                                          ).toFixed(
-                                                                              12,
-                                                                          ),
-                                                                      ));
+                                            if (item.type === 'Rect')
+                                                if (
+                                                    (hoveredDrawnShape &&
+                                                        hoveredDrawnShape.data
+                                                            .time ===
+                                                            item.time) ||
+                                                    (selectedDrawnShape &&
+                                                        selectedDrawnShape.data
+                                                            .time === item.time)
+                                                ) {
+                                                    line.forEach(
+                                                        (element, _index) => {
+                                                            const selectedCircleIsActive =
+                                                                hoveredDrawnShape &&
+                                                                hoveredDrawnShape.selectedCircle &&
+                                                                hoveredDrawnShape
+                                                                    .selectedCircle
+                                                                    .x ===
+                                                                    element.x &&
+                                                                Number(
+                                                                    element.y.toFixed(
+                                                                        12,
+                                                                    ),
+                                                                ) ===
+                                                                    (element.denomInBase ===
+                                                                    denomInBase
+                                                                        ? Number(
+                                                                              hoveredDrawnShape?.selectedCircle.y.toFixed(
+                                                                                  12,
+                                                                              ),
+                                                                          )
+                                                                        : Number(
+                                                                              (
+                                                                                  1 /
+                                                                                  hoveredDrawnShape
+                                                                                      ?.selectedCircle
+                                                                                      .y
+                                                                              ).toFixed(
+                                                                                  12,
+                                                                              ),
+                                                                          ));
 
-                                                        if (
-                                                            selectedCircleIsActive
-                                                        ) {
                                                             if (
-                                                                !isUpdatingShape
+                                                                selectedCircleIsActive
                                                             ) {
-                                                                selectedCircleSeries(
-                                                                    [element],
-                                                                );
+                                                                if (
+                                                                    !isUpdatingShape
+                                                                ) {
+                                                                    selectedCircleSeries(
+                                                                        [
+                                                                            element,
+                                                                        ],
+                                                                    );
+                                                                }
+                                                            } else {
+                                                                circleSeries([
+                                                                    element,
+                                                                ]);
                                                             }
-                                                        } else {
-                                                            circleSeries([
-                                                                element,
-                                                            ]);
-                                                        }
-                                                    },
-                                                );
-                                            }
+                                                        },
+                                                    );
+                                                }
                                         });
                                     }
 
@@ -2997,12 +3003,31 @@ export default function Chart(props: propsIF) {
                                             ctx.textAlign = 'center';
                                             ctx.textBaseline = 'middle';
 
+                                            const dpRangeTickPrice =
+                                                Math.floor(
+                                                    Math.log(
+                                                        Math.max(
+                                                            firstPointYAxisData,
+                                                            secondPointYAxisData,
+                                                        ),
+                                                    ) / Math.log(1.0001),
+                                                ) -
+                                                Math.floor(
+                                                    Math.log(
+                                                        Math.min(
+                                                            firstPointYAxisData,
+                                                            secondPointYAxisData,
+                                                        ),
+                                                    ) / Math.log(1.0001),
+                                                );
+
                                             ctx.fillText(
                                                 heightAsPrice.toFixed(2) +
                                                     ' ' +
-                                                    '(' +
+                                                    ' (' +
                                                     heightAsPercentage.toString() +
-                                                    '%)',
+                                                    '%)  ' +
+                                                    dpRangeTickPrice,
                                                 scaleData.xScale(
                                                     infoLabelXAxisData,
                                                 ),
@@ -3180,21 +3205,27 @@ export default function Chart(props: propsIF) {
 
                                 bandArea.xScale().range(range);
 
-                                if (ctx) ctx.setLineDash([6, 6]);
-                                lineSeries.decorate(
-                                    (context: CanvasRenderingContext2D) => {
-                                        context.strokeStyle = '#7371FC';
-                                        context.lineWidth = 1.5;
-                                    },
-                                );
-                                lineSeries(item.data);
+                                if (item.showGuideLine) {
+                                    if (ctx) ctx.setLineDash(item.style);
+                                    lineSeries.decorate(
+                                        (context: CanvasRenderingContext2D) => {
+                                            context.strokeStyle = item.color;
+                                            context.lineWidth = item.lineWidth;
+                                        },
+                                    );
+                                    lineSeries(item.data);
+                                }
 
                                 const fibLineData = calculateFibRetracement(
                                     item.data,
+                                    item.extraData,
                                 );
 
                                 const bandAreaData =
-                                    calculateFibRetracementBandAreas(item.data);
+                                    calculateFibRetracementBandAreas(
+                                        item.data,
+                                        item.extraData,
+                                    );
 
                                 bandAreaData.forEach((bandData) => {
                                     const color = d3.color(bandData.color);
@@ -3220,15 +3251,32 @@ export default function Chart(props: propsIF) {
                                 fibLineData.forEach((lineData) => {
                                     lineSeries.decorate(
                                         (context: CanvasRenderingContext2D) => {
-                                            context.strokeStyle =
-                                                lineData[0].color;
+                                            const color = d3.color(
+                                                lineData[0].color,
+                                            );
+
+                                            if (color) {
+                                                color.opacity = 1;
+                                                context.strokeStyle =
+                                                    color.toString();
+                                            }
                                             context.lineWidth = 1.5;
                                         },
                                     );
                                     lineSeries(lineData);
 
+                                    const textColor = d3.color(
+                                        lineData[0].color,
+                                    );
+
+                                    if (textColor) {
+                                        textColor.opacity = 1;
+                                    }
+
                                     if (ctx) {
-                                        ctx.fillStyle = lineData[0].color;
+                                        ctx.fillStyle = textColor
+                                            ? textColor.toString()
+                                            : lineData[0].color;
                                         ctx.font = '12px Lexend Deca';
                                         ctx.textAlign = 'right';
                                         ctx.textBaseline = 'middle';
@@ -3954,6 +4002,7 @@ export default function Chart(props: propsIF) {
                     if (element.type === 'FibRetracement') {
                         const fibLineData = calculateFibRetracement(
                             element.data,
+                            element.extraData,
                         );
                         fibLineData.forEach((fibData) =>
                             lineData.push(fibData),
@@ -3969,7 +4018,7 @@ export default function Chart(props: propsIF) {
                     });
                 }
 
-                if (element.type === 'Square' || element.type === 'DPRange') {
+                if (element.type === 'Rect' || element.type === 'DPRange') {
                     if (checkRectLocation(element.data, mouseX, mouseY)) {
                         resElement = element;
                     }

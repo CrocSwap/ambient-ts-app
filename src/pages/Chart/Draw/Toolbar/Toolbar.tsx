@@ -64,7 +64,7 @@ function Toolbar(props: ToolbarProps) {
         // },
         {
             icon: drawRect,
-            label: 'Square',
+            label: 'Rect',
         },
         {
             icon: horizontalRay,

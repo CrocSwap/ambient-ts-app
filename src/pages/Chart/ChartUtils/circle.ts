@@ -87,7 +87,7 @@ function createCirclePoints(element: drawDataHistory, denomInBase: boolean) {
         return data;
     }
 
-    if (element.type === 'Square') {
+    if (element.type === 'Rect') {
         const startX = element.data[0].x;
         const startY =
             element.data[0].denomInBase === denomInBase

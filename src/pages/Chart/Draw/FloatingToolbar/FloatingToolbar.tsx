@@ -28,6 +28,8 @@ import { IoCloseOutline } from 'react-icons/io5';
 import useKeyPress from '../../../../App/hooks/useKeyPress';
 import { IoMdColorFilter } from 'react-icons/io';
 import { CgColorBucket } from 'react-icons/cg';
+import { BsGear } from 'react-icons/bs';
+import FloatingToolbarSettings from './FloatingToolbarSettings';
 
 interface FloatingToolbarProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -67,7 +69,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
     const [isSizeOptionTabActive, setIsSizeOptionTabActive] = useState(false);
     const [isColorPickerTabActive, setIsColorPickerTabActive] = useState(false);
     const [isBackgroundTabActive, setIsBackgroundTabActive] = useState(false);
-    // const [isSettingsTabActive, setIsSettingsTabActive] = useState(false);
+    const [isSettingsTabActive, setIsSettingsTabActive] = useState(false);
 
     const isDeletePressed = useKeyPress('Delete');
 
@@ -78,11 +80,12 @@ function FloatingToolbar(props: FloatingToolbarProps) {
     }, [isDeletePressed]);
 
     useEffect(() => {
+        setIsStyleOptionTabActive(false);
+        setIsColorPickerTabActive(false);
+        setIsSizeOptionTabActive(false);
+        setIsBackgroundTabActive(false);
+        setIsSettingsTabActive(false);
         if (selectedDrawnShape === undefined) {
-            setIsStyleOptionTabActive(false);
-            setIsColorPickerTabActive(false);
-            setIsSizeOptionTabActive(false);
-            setIsBackgroundTabActive(false);
             setBackgroundColorPicker(() => 'rgba(115, 113, 252, 0.15)');
             setBorderColorPicker(() => '#7371fc');
         } else {
@@ -148,6 +151,26 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         }
     };
 
+    const handleEditLines = (value: boolean, type: string) => {
+        if (selectedDrawnShape?.data) {
+            setDrawnShapeHistory((item: drawDataHistory[]) => {
+                const changedItemIndex = item.findIndex(
+                    (i) => i.time === selectedDrawnShape?.data.time,
+                );
+
+                type === 'guideLine' &&
+                    (item[changedItemIndex].showGuideLine = value);
+                type === 'border' &&
+                    (item[changedItemIndex].showBorder = value);
+                type === 'background' &&
+                    (item[changedItemIndex].showBackground = value);
+                addDrawActionStack(item[changedItemIndex], false);
+                return item;
+            });
+            setIsShapeEdited(true);
+        }
+    };
+
     const handleEditStyle = (array: number[]) => {
         if (selectedDrawnShape?.data) {
             setDrawnShapeHistory((item: drawDataHistory[]) => {
@@ -180,6 +203,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         exclude !== 'size' && setIsSizeOptionTabActive(false);
         exclude !== 'color' && setIsColorPickerTabActive(false);
         exclude !== 'background' && setIsBackgroundTabActive(false);
+        exclude !== 'settings' && setIsSettingsTabActive(false);
     };
 
     const editShapeOptions = [
@@ -205,7 +229,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
             icon: <CgColorBucket />,
             hover: '#434c58',
             exclude: [''],
-            include: ['Square', 'DPRange'],
+            include: ['Rect', 'DPRange'],
         },
         {
             name: 'Size',
@@ -231,18 +255,18 @@ function FloatingToolbar(props: FloatingToolbarProps) {
             exclude: ['FibRetracement'],
             include: [''],
         },
-        // {
-        //     name: 'Settings',
-        //     type: 'settings',
-        //     operation: () => {
-        //         closeAllOptions('settings');
-        //         setIsSettingsTabActive((prev) => !prev);
-        //     },
-        //     icon: <BsGear />,
-        //     hover: '#434c58',
-        //     exclude: [''],
-        //     include: ['FibRetracement'],
-        // },
+        {
+            name: 'Settings',
+            type: 'settings',
+            operation: () => {
+                closeAllOptions('settings');
+                setIsSettingsTabActive((prev) => !prev);
+            },
+            icon: <BsGear />,
+            hover: '#434c58',
+            exclude: [''],
+            include: ['FibRetracement', 'Brush', 'DPRange'],
+        },
         {
             name: 'Delete',
             type: 'delete',
@@ -317,6 +341,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
             const floatingDivDrag = d3
                 .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
                 .on('start', function (event) {
+                    console.log('drag');
                     offsetX =
                         event.sourceEvent.clientX -
                         floatingDiv.getBoundingClientRect().left;
@@ -365,10 +390,10 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 .select(floatingDivRef.current)
                 .node() as HTMLDivElement;
 
-            setDivLeft(mainCanvasBoundingClientRect?.width / 1.3);
+            setDivLeft(mainCanvasBoundingClientRect?.width);
             setDivTop(
                 mainCanvasBoundingClientRect?.top -
-                    (floatingDiv.getBoundingClientRect().height + 10),
+                    floatingDiv.getBoundingClientRect().height,
             );
         }
     }, [
@@ -382,7 +407,6 @@ function FloatingToolbar(props: FloatingToolbarProps) {
             style={{
                 left: divLeft + 'px',
                 top: divTop + 'px',
-                gridTemplateColumns: '1fr 1fr 1fr 1fr',
                 visibility:
                     selectedDrawnShape !== undefined && divLeft && divTop
                         ? 'visible'
@@ -469,6 +493,23 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                         </OptionsTabStyle>
                     ))}
                 </OptionsTab>
+            )}
+
+            {isSettingsTabActive && (
+                <FloatingToolbarSettings
+                    selectedDrawnShape={selectedDrawnShape}
+                    handleEditColor={handleEditColor}
+                    borderColorPicker={borderColorPicker}
+                    handleEditSize={handleEditSize}
+                    handleEditStyle={handleEditStyle}
+                    sizeOptions={sizeOptions}
+                    styleOptions={styleOptions}
+                    handleEditLines={handleEditLines}
+                    backgroundColorPicker={backgroundColorPicker}
+                    setIsShapeEdited={setIsShapeEdited}
+                    setDrawnShapeHistory={setDrawnShapeHistory}
+                    addDrawActionStack={addDrawActionStack}
+                />
             )}
         </FloatingDivContainer>
     );
