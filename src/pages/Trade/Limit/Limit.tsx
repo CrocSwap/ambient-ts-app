@@ -335,7 +335,7 @@ export default function Limit() {
         // if we have a limit tick and it's not present in the URL, trigger an update
         // if we don't have a limit tick value in data, remove the URL param
         // gatekeeping prevents unnecessary updates from being pushed
-        if (limitTick) {
+        if (limitTick !== undefined) {
             if (tickFromURL !== limitTick.toString()) {
                 updateURL({ update: [[LIMIT_TICK_KEY, limitTick]] });
             }
