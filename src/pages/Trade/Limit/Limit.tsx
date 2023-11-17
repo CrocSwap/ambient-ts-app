@@ -325,6 +325,18 @@ export default function Limit() {
         !!poolPriceNonDisplay,
     ]);
 
+    useEffect(() => {
+        const limitTickKey = 'limitTick';
+        const tickFromURL: string | undefined = urlParamMap.get(limitTickKey);
+        if (limitTick) {
+            if (tickFromURL !== limitTick.toString()) {
+                updateURL({ update: [[limitTickKey, limitTick]] });
+            }
+        } else {
+            tickFromURL && updateURL({ delete: [limitTickKey] });
+        }
+    }, [limitTick]);
+
     const updateOrderValidityStatus = async () => {
         try {
             if (!crocEnv) return;

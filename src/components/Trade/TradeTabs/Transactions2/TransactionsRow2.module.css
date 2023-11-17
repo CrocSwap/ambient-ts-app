@@ -1,8 +1,0 @@
-.line_item {
-    display: flex;
-    flex-direction: row;
-}
-
-.cell {
-    width: auto;
-}
