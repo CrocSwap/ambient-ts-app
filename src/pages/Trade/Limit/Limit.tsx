@@ -332,17 +332,16 @@ export default function Limit() {
     useEffect(() => {
         // key for limit tick in the URL param map
         const LIMIT_TICK_KEY = 'limitTick';
-        // get the current limit tick value from the URL (`undefined` if not present)
-        const tickFromURL: string | undefined = urlParamMap.get(LIMIT_TICK_KEY);
         // if we have a limit tick and it's not present in the URL, trigger an update
         // if we don't have a limit tick value in data, remove the URL param
         // gatekeeping prevents unnecessary updates from being pushed
         if (limitTick !== undefined) {
-            if (tickFromURL !== limitTick.toString()) {
+            if (urlParamMap.get(LIMIT_TICK_KEY) !== limitTick.toString()) {
                 updateURL({ update: [[LIMIT_TICK_KEY, limitTick]] });
             }
         } else {
-            tickFromURL && updateURL({ delete: [LIMIT_TICK_KEY] });
+            urlParamMap.has(LIMIT_TICK_KEY) &&
+                updateURL({ delete: [LIMIT_TICK_KEY] });
         }
     }, [limitTick]);
 
