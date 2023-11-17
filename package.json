@@ -1,6 +1,6 @@
 {
     "name": "ambient-ts-app",
-    "version": "1.6.1",
+    "version": "1.7.0",
     "private": true,
     "dependencies": {
         "@covalenthq/client-sdk": "^0.2.6",
@@ -45,10 +45,13 @@
         "web-vitals": "^2.1.0"
     },
     "scripts": {
-        "start": "yarn && react-scripts --openssl-legacy-provider start",
-        "start-only": "react-scripts --openssl-legacy-provider start",
-        "build": "react-scripts --max_old_space_size=4096 build",
-        "test": "react-scripts test ",
+        "start": "node -v | grep -q \"v16\" && yarn run start:regular || yarn run start:legacy",
+        "start:legacy": "yarn && react-scripts --openssl-legacy-provider start",
+        "start:regular": "yarn && react-scripts start",
+        "build": "node -v | grep -q \"v16\" && yarn run build:regular || yarn run build:legacy",
+        "build:legacy": "react-scripts --openssl-legacy-provider --max_old_space_size=4096 build",
+        "build:regular": "react-scripts --max_old_space_size=4096 build",
+        "test": "react-scripts test",
         "test:nowatch": "react-scripts test --watchAll=false",
         "eject": "react-scripts eject",
         "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",

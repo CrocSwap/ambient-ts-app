@@ -6,9 +6,10 @@ import PortfolioBannerAccount from './PortfolioBannerAccount/PortfolioBannerAcco
 
 // START: Import Other Local Files
 import trimString from '../../../utils/functions/trimString';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { PortfolioBannerRectangleContainer } from '../../../styled/Components/Portfolio';
 import accountImage from '../../../assets/images/backgrounds/account_image.svg';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { useContext } from 'react';
 interface propsIF {
     ensName: string;
     resolvedAddress: string;
@@ -17,9 +18,7 @@ interface propsIF {
 
 export default function PortfolioBanner(props: propsIF) {
     const { ensName, resolvedAddress, connectedAccountActive } = props;
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
 
     const ensNameAvailable = ensName !== '';
 

@@ -5,9 +5,9 @@ import {
 } from '../App/hooks/useRecentTokens';
 import { tokenMethodsIF, useTokens } from '../App/hooks/useTokens';
 import { useTokenSearch } from '../App/hooks/useTokenSearch';
-import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { TokenIF } from '../utils/interfaces/TokenIF';
 import { CrocEnvContext } from './CrocEnvContext';
+import { TokenBalanceContext } from './TokenBalanceContext';
 
 interface TokenContextIF {
     tokens: tokenMethodsIF;
@@ -25,10 +25,8 @@ export const TokenContext = createContext<TokenContextIF>({} as TokenContextIF);
 
 export const TokenContextProvider = (props: { children: React.ReactNode }) => {
     const { chainData } = useContext(CrocEnvContext);
-    const connectedUserTokens = useAppSelector(
-        (state) => state.userData.tokenBalances,
-    );
-
+    // TODO: possible option to merge TokenBalanceContext with TokenContext
+    const { tokenBalances } = useContext(TokenBalanceContext);
     const tokens: tokenMethodsIF = useTokens(chainData.chainId);
     const { addRecentToken, getRecentTokens } = useRecentTokens(
         chainData.chainId,
@@ -38,7 +36,7 @@ export const TokenContextProvider = (props: { children: React.ReactNode }) => {
         useTokenSearch(
             chainData.chainId,
             tokens,
-            connectedUserTokens ?? [],
+            tokenBalances ?? [],
             getRecentTokens,
         );
 
