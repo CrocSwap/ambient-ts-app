@@ -8,6 +8,7 @@ import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { DetailedBox } from './DetailedBox';
 import { FeaturedBox } from './FeaturedBox';
 import { PoolContext } from '../../../contexts/PoolContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 export default function TableInfo() {
@@ -36,11 +37,16 @@ export default function TableInfo() {
             value: getFormattedNumber({ value: quoteTvlUsd }),
         },
     ];
+    const smallScreen = useMediaQuery('(max-width: 500px)');
 
     return (
         <MainSection>
             <ScrollContainer>
-                <GridContainer numCols={2} gap={8} height={'200px'}>
+                <GridContainer
+                    numCols={smallScreen ? 1 : 2}
+                    gap={8}
+                    height={'200px'}
+                >
                     <GridContainer numCols={2} gap={8}>
                         {featuredData.map((data, idx) => (
                             <FeaturedBox
