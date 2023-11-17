@@ -333,7 +333,7 @@ export default function Limit() {
         // get the current limit tick value from the URL (`undefined` if not present)
         const tickFromURL: string | undefined = urlParamMap.get(LIMIT_TICK_KEY);
         // if we have a limit tick and it's not present in the URL, trigger an update
-        // new value only be pushed into the URL if it doesn't match the current value
+        // if we don't have a limit tick value in data, remove the URL param
         // gatekeeping prevents unnecessary updates from being pushed
         if (limitTick) {
             if (tickFromURL !== limitTick.toString()) {
