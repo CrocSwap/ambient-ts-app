@@ -7,6 +7,7 @@ import { translateTestnetToken } from '../../utils/data/testnetTokenMap';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { supportedNetworks } from '../../utils/networks';
 import { fetchTimeout } from '../../utils/functions/fetchTimeout';
+import { useBatchSystemIrresponsibly } from '../../utils/functions/fetchBatch';
 
 export const fetchTokenPrice = async (
     dispToken: string,
@@ -19,6 +20,7 @@ export const fetchTokenPrice = async (
     const defaultPair: [TokenIF, TokenIF] =
         supportedNetworks[chain].defaultPair;
 
+    useBatchSystemIrresponsibly();
     try {
         if (address) {
             if (
