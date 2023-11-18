@@ -18,7 +18,7 @@ const ENSAddressContext = createContext<ENSAddressContextValue | undefined>(
 
 export const ENSAddressContextProvider = (props: { children: ReactNode }) => {
     const DEADLINE = 1 * 60 * 60 * 1000; // 1 hour
-    const MIN_RETRY_DELAY = 2 * 1000; // 2 seconds
+    const MIN_RETRY_DELAY = 3 * 1000; // 3 seconds
     const MAX_RETRY_DELAY = 10 * 60 * 1000; // 10 minutes
 
     const [ensAddressMapping, setEnsAddressMapping] = useState<
@@ -32,11 +32,9 @@ export const ENSAddressContextProvider = (props: { children: ReactNode }) => {
     const nullCacheRef = useRef<Map<string, number>>(new Map());
 
     const addData = (data: TradeTableDataRow[]) => {
-        const now = Date.now();
-
         if (
             serverReturnedErrorTimestamp > 0 &&
-            now - serverReturnedErrorTimestamp < retryDelay
+            Date.now() - serverReturnedErrorTimestamp <= retryDelay
         ) {
             // If the server returned an error less than RETRY_DELAY ago, we don't fetch ENS addresses
             return;
@@ -54,7 +52,7 @@ export const ENSAddressContextProvider = (props: { children: ReactNode }) => {
             return (
                 addr &&
                 !cacheRef.current.has(addr) &&
-                (!nullTimestamp || now - nullTimestamp >= DEADLINE)
+                (!nullTimestamp || Date.now() - nullTimestamp >= DEADLINE)
             );
         });
 
@@ -79,7 +77,7 @@ export const ENSAddressContextProvider = (props: { children: ReactNode }) => {
 
                         // Update nullCache with the addresses that returned null and current timestamp
                         nullAddresses.forEach((addr) =>
-                            nullCacheRef.current.set(addr, now),
+                            nullCacheRef.current.set(addr, Date.now()),
                         );
 
                         // Update the state with the newly fetched addresses
@@ -96,8 +94,8 @@ export const ENSAddressContextProvider = (props: { children: ReactNode }) => {
                     setServerReturnedErrorTimestamp(-1);
                     setRetryDelay(MIN_RETRY_DELAY);
                 } catch (error) {
-                    console.log(error);
-                    setServerReturnedErrorTimestamp(now);
+                    console.log(`Error in ENSAddressContext: ${error}`);
+                    setServerReturnedErrorTimestamp(Date.now());
                     setRetryDelay(Math.min(retryDelay * 2, MAX_RETRY_DELAY));
                 }
             })();

@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import { ANALYTICS_URL } from '../../constants';
+import { fetchWithTimeout } from './fetchWithTimeout';
 
 type BatchedENSResult = {
     value: {
@@ -42,7 +43,7 @@ export const fetchEnsAddresses = async (addresses: string[]) => {
         },
     });
     try {
-        const response = await fetch(
+        const response = await fetchWithTimeout(
             ANALYTICS_URL +
                 new URLSearchParams({
                     service: 'run',
@@ -57,6 +58,7 @@ export const fetchEnsAddresses = async (addresses: string[]) => {
                 },
                 body: addressQueryBody,
             },
+            5000,
         );
 
         if (!response.ok) {
@@ -69,6 +71,6 @@ export const fetchEnsAddresses = async (addresses: string[]) => {
         const parsedResult = parseBatchedEnsReq(result as BatchedENSResult);
         return parsedResult;
     } catch (error) {
-        throw new Error(`Error: ${error}`);
+        throw new Error(`Error in fetchENSAddresses: ${error}`);
     }
 };
