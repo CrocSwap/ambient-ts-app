@@ -72,3 +72,8 @@ export const ETH_ICON_URL =
 // Modal IDS
 export const GLOBAL_MODAL_PORTAL_ID = 'ambient_global_modal_portal';
 export const GLOBAL_MODAL_COMPONENT_ID = 'Modal_Global';
+
+// Fetch with timeout
+export const REQUEST_TIMEOUT_DELAY = process.env.REACT_APP_REQUEST_TIMEOUT_DELAY
+    ? parseFloat(process.env.REACT_APP_REQUEST_TIMEOUT_DELAY)
+    : 3000;

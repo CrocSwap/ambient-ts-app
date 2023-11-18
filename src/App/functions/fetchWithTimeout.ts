@@ -1,7 +1,9 @@
+import { REQUEST_TIMEOUT_DELAY } from '../../constants';
+
 export async function fetchWithTimeout(
     url: string,
     options = {},
-    timeout = 3000,
+    timeout = REQUEST_TIMEOUT_DELAY,
 ) {
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeout);
