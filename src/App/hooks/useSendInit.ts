@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 import {
@@ -16,6 +16,7 @@ import {
     TransactionError,
 } from '../../utils/TransactionError';
 import { IS_LOCAL_ENV } from '../../constants';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
 export function useSendInit(
     setNewInitTransactionHash: React.Dispatch<
         React.SetStateAction<string | undefined>
@@ -27,10 +28,7 @@ export function useSendInit(
 ) {
     const dispatch = useAppDispatch();
     const { crocEnv } = useContext(CrocEnvContext);
-
-    const {
-        tradeData: { baseToken, quoteToken },
-    } = useAppSelector((state) => state);
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     const sendInit = async (
         initialPriceInBaseDenom: number | undefined,

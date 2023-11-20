@@ -1,11 +1,6 @@
 import { NoColorTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
-import {
-    useAppSelector,
-    useAppDispatch,
-} from '../../../../utils/hooks/reduxToolkit';
 import { memo, useContext } from 'react';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
-import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { IS_LOCAL_ENV } from '../../../../constants';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
@@ -16,11 +11,10 @@ import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber
 import { TokenIF } from '../../../../utils/interfaces/exports';
 import { FlexContainer } from '../../../../styled/Common';
 import { HeaderButtons, HeaderText } from '../../../../styled/Components/Chart';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 function TradeChartsTokenInfo() {
-    const dispatch = useAppDispatch();
-
-    const { tradeData } = useAppSelector((state) => state);
+    const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
     const {
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
@@ -30,21 +24,22 @@ function TradeChartsTokenInfo() {
         poolPriceChangePercent,
     } = useContext(PoolContext);
     const { favePools } = useContext(UserPreferenceContext);
+    const { toggleDidUserFlipDenom } = useContext(TradeDataContext);
 
-    const denomInBase = tradeData.isDenomBase;
+    const denomInBase = isDenomBase;
 
     const [topToken, bottomToken]: [TokenIF, TokenIF] = denomInBase
-        ? [tradeData.baseToken, tradeData.quoteToken]
-        : [tradeData.quoteToken, tradeData.baseToken];
+        ? [baseToken, quoteToken]
+        : [quoteToken, baseToken];
 
     const currencyCharacter = denomInBase
         ? // denom in a, return token b character
-          getUnicodeCharacter(tradeData.quoteToken.symbol)
+          getUnicodeCharacter(quoteToken.symbol)
         : // denom in b, return token a character
-          getUnicodeCharacter(tradeData.baseToken.symbol);
+          getUnicodeCharacter(baseToken.symbol);
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
-        ? tradeData.isDenomBase
+        ? isDenomBase
             ? 1 / poolPriceDisplay
             : poolPriceDisplay
         : 0;
@@ -65,7 +60,7 @@ function TradeChartsTokenInfo() {
 
     const currentAmountDisplay = (
         <span
-            onClick={() => dispatch(toggleDidUserFlipDenom())}
+            onClick={() => toggleDidUserFlipDenom()}
             style={{ cursor: 'pointer' }}
             aria-label={poolPrice}
         >
@@ -106,8 +101,8 @@ function TradeChartsTokenInfo() {
 
     // fav button-------------------------------
     const currentPoolData = {
-        base: tradeData.baseToken,
-        quote: tradeData.quoteToken,
+        base: baseToken,
+        quote: quoteToken,
         chainId: chainId,
         poolId: poolIndex,
     };
@@ -121,19 +116,9 @@ function TradeChartsTokenInfo() {
 
     function handleFavButton() {
         isButtonFavorited
-            ? favePools.remove(
-                  tradeData.baseToken,
-                  tradeData.quoteToken,
-                  chainId,
-                  poolIndex,
-              )
-            : favePools.add(
-                  tradeData.quoteToken,
-                  tradeData.baseToken,
-                  chainId,
-                  poolIndex,
-              );
-        IS_LOCAL_ENV && console.debug(tradeData);
+            ? favePools.remove(baseToken, quoteToken, chainId, poolIndex)
+            : favePools.add(quoteToken, baseToken, chainId, poolIndex);
+        IS_LOCAL_ENV && console.debug({ baseToken, quoteToken });
     }
 
     const favButton = (
@@ -184,7 +169,7 @@ function TradeChartsTokenInfo() {
         <HeaderButtons
             id='token_pair_in_chart_header'
             aria-label='flip denomination.'
-            onClick={() => dispatch(toggleDidUserFlipDenom())}
+            onClick={() => toggleDidUserFlipDenom()}
         >
             <FlexContainer
                 id='trade_chart_header_token_pair_logos'

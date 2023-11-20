@@ -1,9 +1,13 @@
 // eslint-disable-next-line quotes
-import { DetailedHTMLProps, HTMLAttributes, MutableRefObject } from 'react';
+import {
+    DetailedHTMLProps,
+    HTMLAttributes,
+    MouseEvent,
+    MutableRefObject,
+} from 'react';
 import * as d3 from 'd3';
 import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
-
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace JSX {
@@ -366,4 +370,19 @@ export function calculateFibRetracementBandAreas(
     );
 
     return fibLineData;
+}
+
+export function getXandYLocationForChart(
+    event: MouseEvent<HTMLDivElement>,
+    rect: DOMRect,
+) {
+    let offsetY = event.clientY - rect?.top;
+    let offsetX = event.clientX - rect?.left;
+
+    if (event instanceof TouchEvent) {
+        offsetY = event.targetTouches[0].clientY - rect?.top;
+        offsetX = event.targetTouches[0].clientX - rect?.left;
+    }
+
+    return { offsetX: offsetX, offsetY: offsetY };
 }

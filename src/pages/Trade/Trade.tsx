@@ -37,6 +37,7 @@ import {
     TradeDropdownButton,
 } from '../../styled/Components/Trade';
 import { Direction } from 're-resizable/lib/resizer';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
 import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
 import { PoolContext } from '../../contexts/PoolContext';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
@@ -72,7 +73,8 @@ function Trade() {
     } = useContext(TradeTableContext);
 
     const { tradeData } = useAppSelector((state) => state);
-    const { isDenomBase, limitTick } = tradeData;
+    const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
+    const { limitTick } = tradeData;
 
     const { urlParamMap, updateURL } = useUrlParams(tokens, chainId, provider);
 
@@ -164,11 +166,7 @@ function Trade() {
 
     useEffect(() => {
         unselectCandle();
-    }, [
-        chartSettings.candleTime.global.time,
-        tradeData.baseToken.name,
-        tradeData.quoteToken.name,
-    ]);
+    }, [chartSettings.candleTime.global.time, baseToken.name, quoteToken.name]);
 
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
     const smallScreen = useMediaQuery('(max-width: 500px)');
@@ -197,8 +195,8 @@ function Trade() {
         tokens,
     };
     const { poolPriceDisplay } = useContext(PoolContext);
-    const baseTokenSymbol = tradeData.baseToken.symbol;
-    const quoteTokenSymbol = tradeData.quoteToken.symbol;
+    const baseTokenSymbol = baseToken.symbol;
+    const quoteTokenSymbol = quoteToken.symbol;
     const displayPriceWithDenom =
         isDenomBase && poolPriceDisplay
             ? 1 / poolPriceDisplay
@@ -212,7 +210,7 @@ function Trade() {
         : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`;
 
     const mobileTrade = (
-        <MainSection style={{ marginTop: '32px' }} isDropdown>
+        <MainSection isDropdown isSmallScreen={smallScreen}>
             {mobileTradeDropdown}
 
             <Text
@@ -230,14 +228,14 @@ function Trade() {
                 {conversionRate}
             </Text>
             {activeMobileComponent === 'chart' && isPoolInitialized && (
-                <div style={{ marginLeft: '2rem', flex: 1 }}>
+                <div style={{ marginLeft: smallScreen ? '' : '2rem', flex: 1 }}>
                     <TradeChartsHeader />
                     {!isCandleDataNull && <TradeCharts {...tradeChartsProps} />}
                 </div>
             )}
 
             {activeMobileComponent === 'transactions' && (
-                <div style={{ marginLeft: '2rem', flex: 1 }}>
+                <div style={{ marginLeft: smallScreen ? '' : '2rem', flex: 1 }}>
                     <TradeChartsHeader />
                     <TradeTabs2 {...tradeTabsProps} />
                 </div>
@@ -322,16 +320,8 @@ function Trade() {
                         {showNoChartData && (
                             <NoChartData
                                 chainId={chainId}
-                                tokenA={
-                                    isDenomBase
-                                        ? tradeData.baseToken
-                                        : tradeData.quoteToken
-                                }
-                                tokenB={
-                                    isDenomBase
-                                        ? tradeData.quoteToken
-                                        : tradeData.baseToken
-                                }
+                                tokenA={isDenomBase ? baseToken : quoteToken}
+                                tokenB={isDenomBase ? quoteToken : baseToken}
                                 isCandleDataNull
                                 isTableExpanded={tradeTableState == 'Expanded'}
                             />

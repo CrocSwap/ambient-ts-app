@@ -31,7 +31,6 @@ import {
 } from '../../hooks/useSidebarSearch';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
@@ -49,30 +48,33 @@ import {
     TopPoolsIcon,
     TransactionsIcon,
 } from '../../../styled/Components/Sidebar';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 function Sidebar() {
     const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
         useContext(CachedDataContext);
     const { chainData: chainData } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
-    const { sidebar } = useContext(SidebarContext);
+    const { sidebar, toggleMobileModeVisibility, hideOnMobile } =
+        useContext(SidebarContext);
 
-    const graphData = useAppSelector((state) => state.graphData);
+    const { positionsByUser, limitOrdersByUser, changesByUser } =
+        useContext(GraphDataContext);
 
+    // TODO: can pull into GraphDataContext
     const filterFn = <T extends { chainId: string }>(x: T) =>
         x.chainId === chainData.chainId;
 
-    const positionsByUser =
-        graphData.positionsByUser.positions.filter(filterFn);
-    const txsByUser = graphData.changesByUser.changes.filter(filterFn);
-    const limitsByUser =
-        graphData.limitOrdersByUser.limitOrders.filter(filterFn);
+    const _positionsByUser = positionsByUser.positions.filter(filterFn);
+    const _txsByUser = changesByUser.changes.filter(filterFn);
+    const _limitsByUser = limitOrdersByUser.limitOrders.filter(filterFn);
 
-    const mostRecentTxs = txsByUser.slice(0, 4);
-    const mostRecentPositions = positionsByUser
+    const mostRecentTxs = _txsByUser.slice(0, 4);
+    const mostRecentPositions = _positionsByUser
         .filter((p) => p.positionLiq > 0)
         .slice(0, 4);
-    const mostRecentLimitOrders = limitsByUser.slice(0, 4);
+    const mostRecentLimitOrders = _limitsByUser.slice(0, 4);
 
     const recentPoolsData = [
         {
@@ -145,9 +147,9 @@ function Sidebar() {
     ];
 
     const searchData: sidebarSearchIF = useSidebarSearch(
-        positionsByUser,
-        txsByUser,
-        limitsByUser,
+        _positionsByUser,
+        _txsByUser,
+        _limitsByUser,
         tokens,
     );
 
@@ -175,6 +177,7 @@ function Sidebar() {
     // id for search input HTML elem in the DOM
     // defined in a const because we reference this multiple places
     const searchInputElementId = 'sidebar_search_input';
+    const smallScreen = useMediaQuery('(max-width: 500px)');
 
     const searchContainer = (
         <SearchContainer
@@ -321,7 +324,12 @@ function Sidebar() {
                                 type='image'
                                 src={closeSidebarImage}
                                 alt='close sidebar'
-                                onClick={() => sidebar.close(true)}
+                                onClick={() => {
+                                    sidebar.close(true);
+                                    if (smallScreen) {
+                                        toggleMobileModeVisibility();
+                                    }
+                                }}
                                 disabled={isLocked}
                                 style={{ opacity: isLocked ? 0.5 : 1 }}
                             />
@@ -412,6 +420,8 @@ function Sidebar() {
             ))}
         </ContentContainer>
     );
+
+    if (hideOnMobile) return null;
 
     return (
         <FlexContainer

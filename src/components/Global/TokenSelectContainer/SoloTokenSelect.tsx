@@ -8,10 +8,7 @@ import {
 } from 'react';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import TokenSelect from '../TokenSelect/TokenSelect';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../utils/hooks/reduxToolkit';
+import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import styles from './SoloTokenSelect.module.css';
 import SoloTokenImport from './SoloTokenImport';
 import { setSoloToken } from '../../../utils/state/soloTokenDataSlice';
@@ -25,6 +22,7 @@ import removeWrappedNative from '../../../utils/functions/removeWrappedNative';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
 import { IoIosArrowBack } from 'react-icons/io';
 import { isWethToken } from '../../../utils/data/stablePairs';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface propsIF {
     showSoloSelectTokenButtons: boolean;
@@ -62,7 +60,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         getRecentTokens,
     } = useContext(TokenContext);
 
-    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB } = useContext(TradeDataContext);
 
     // instance of hook used to retrieve data from RTK
     const dispatch = useAppDispatch();
@@ -254,13 +252,10 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     const WETH_WARNING = ' Ambient uses Native Ether (ETH) to lower gas costs.';
 
-    const isInit = location.pathname.startsWith('/initpool');
+    // const isInit = location.pathname.startsWith('/initpool');
 
     return (
-        <section
-            className={styles.container}
-            style={{ margin: isInit ? '0 -1rem' : '' }}
-        >
+        <section className={styles.container}>
             <header className={styles.header}>
                 <IoIosArrowBack onClick={clearInputFieldAndCloseModal} />
                 <p>Select Token</p>
