@@ -307,7 +307,8 @@ function SwapTokenInput(props: propsIF) {
                 token={tokenA}
                 tokenInput={
                     buyQtyString !== '' ||
-                    (sellQtyString !== '' && isBuyLoading)
+                    (sellQtyString !== '' &&
+                        (isBuyLoading || parseFloat(sellQtyString) === 0))
                         ? sellQtyString
                         : ''
                 }
