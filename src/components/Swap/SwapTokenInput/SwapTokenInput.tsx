@@ -103,7 +103,7 @@ function SwapTokenInput(props: propsIF) {
     // Let input rest 3/4 of a second before triggering an update
     const debouncedLastInput = useDebounce(lastInput, 750);
 
-    const reverseTokens = (): void => {
+    const reverseTokens = (skipQuantityReverse?: boolean): void => {
         if (disableReverseTokens || !isPoolInitialized) return;
         setDisableReverseTokens(true);
 
@@ -113,31 +113,26 @@ function SwapTokenInput(props: propsIF) {
             tokenB: tokenA.address,
         });
 
-        isTokenAPrimary
-            ? sellQtyString !== '' && parseFloat(sellQtyString) > 0
-                ? setIsSellLoading(true)
-                : null
-            : buyQtyString !== '' && parseFloat(buyQtyString) > 0
-            ? setIsBuyLoading(true)
-            : null;
-
-        if (!isTokenAPrimary) {
-            setSellQtyString(primaryQuantity);
-        } else {
-            setBuyQtyString(primaryQuantity);
+        if (!skipQuantityReverse) {
+            !isTokenAPrimary
+                ? sellQtyString !== '' && parseFloat(sellQtyString) > 0
+                    ? setIsSellLoading(true)
+                    : null
+                : buyQtyString !== '' && parseFloat(buyQtyString) > 0
+                ? setIsBuyLoading(true)
+                : null;
+            if (isTokenAPrimary) {
+                setSellQtyString(primaryQuantity);
+            } else {
+                setBuyQtyString(primaryQuantity);
+            }
         }
-        setIsTokenAPrimary(!isTokenAPrimary);
         setIsTokenAPrimaryRange(!isTokenAPrimaryRange);
 
         dispatch(setLimitTick(undefined));
     };
 
     const handleBlockUpdate = () => {
-        console.log({
-            contextMatchesParams,
-            isTokenAPrimary,
-            disableReverseTokens,
-        });
         if (contextMatchesParams) {
             setDisableReverseTokens(true);
             isTokenAPrimary
@@ -147,13 +142,12 @@ function SwapTokenInput(props: propsIF) {
     };
 
     useEffect(() => {
-        console.log({ isTokenAPrimary });
         handleBlockUpdate();
-    }, [lastBlockNumber, isTokenAPrimary]);
+    }, [lastBlockNumber, contextMatchesParams, isTokenAPrimary]);
 
     useEffect(() => {
         if (shouldSwapDirectionReverse) {
-            reverseTokens();
+            reverseTokens(false);
             dispatch(setShouldSwapDirectionReverse(false));
         }
     }, [shouldSwapDirectionReverse]);
@@ -337,7 +331,26 @@ function SwapTokenInput(props: propsIF) {
                     disabled={
                         disableReverseTokens || isBuyLoading || isSellLoading
                     }
-                    onClick={reverseTokens}
+                    onClick={() => {
+                        isTokenAPrimary
+                            ? sellQtyString !== '' &&
+                              parseFloat(sellQtyString) > 0
+                                ? setIsSellLoading(true)
+                                : null
+                            : buyQtyString !== '' &&
+                              parseFloat(buyQtyString) > 0
+                            ? setIsBuyLoading(true)
+                            : null;
+
+                        if (!isTokenAPrimary) {
+                            setSellQtyString(primaryQuantity);
+                        } else {
+                            setBuyQtyString(primaryQuantity);
+                        }
+                        setIsTokenAPrimary(!isTokenAPrimary);
+
+                        reverseTokens(true);
+                    }}
                 />
             </FlexContainer>
             <TokenInputWithWalletBalance
