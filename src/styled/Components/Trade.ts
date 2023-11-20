@@ -1,12 +1,15 @@
 import { Resizable } from 're-resizable';
 import styled from 'styled-components/macro';
 
-export const MainSection = styled.section<{ isDropdown?: boolean }>`
+export const MainSection = styled.section<{
+    isDropdown?: boolean;
+    isSmallScreen?: boolean;
+}>`
     display: ${(props) => (props.isDropdown ? 'flex' : 'grid')};
     gap: ${(props) => (props.isDropdown ? '8px' : 'initial')};
 
     grid-template-columns: auto 380px;
-    height: calc(100dvh - 156px);
+    height: calc(100dvh - 180px);
 
     border-top: ${(props) => !props.isDropdown && '1px solid var(--dark2)'};
 
@@ -16,9 +19,11 @@ export const MainSection = styled.section<{ isDropdown?: boolean }>`
     }
 
     @media only screen and (max-width: 1279px) {
-        padding-left: 30px;
+        padding-left: ${(props) => (props.isSmallScreen ? '' : '30px')};
     }
-
+    @media (min-width: 500px) {
+        margin-top: 32px;
+    }
     @media (max-width: 600px) {
         display: flex;
         flex-direction: column;

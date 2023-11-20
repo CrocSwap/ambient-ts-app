@@ -21,7 +21,7 @@ import {
     createPointsOfBandLine,
     createPointsOfDPRangeLine,
 } from './BandArea';
-import { TradeDataIF } from '../../../../utils/state/tradeDataSlice';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 interface DrawCanvasProps {
@@ -32,7 +32,6 @@ interface DrawCanvasProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setCrossHairDataFunc: any;
     activeDrawingType: string;
-    currentPool: TradeDataIF;
     setActiveDrawingType: React.Dispatch<React.SetStateAction<string>>;
     setSelectedDrawnShape: React.Dispatch<
         React.SetStateAction<selectedDrawnData | undefined>
@@ -53,7 +52,6 @@ function DrawCanvas(props: DrawCanvasProps) {
         activeDrawingType,
         setActiveDrawingType,
         setSelectedDrawnShape,
-        currentPool,
         denomInBase,
         addDrawActionStack,
     } = props;
@@ -71,6 +69,8 @@ function DrawCanvas(props: DrawCanvasProps) {
         scaleData?.yScale,
         denomInBase,
     );
+
+    const currentPool = useContext(TradeDataContext);
 
     function createScaleForBandArea(x: number, x2: number) {
         const newXScale = scaleData?.xScale.copy();

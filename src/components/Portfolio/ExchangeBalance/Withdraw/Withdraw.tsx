@@ -26,10 +26,7 @@ import {
     isTransactionReplacedError,
 } from '../../../../utils/TransactionError';
 import { checkBlacklist } from '../../../../utils/data/blacklist';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../../utils/interfaces/exports';
 import {
     addPendingTx,
@@ -42,6 +39,7 @@ import Toggle from '../../../Form/Toggle';
 import CurrencySelector from '../../../Form/CurrencySelector';
 import TransferAddressInput from '../Transfer/TransferAddressInput';
 import Button from '../../../Form/Button';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -72,9 +70,7 @@ export default function Withdraw(props: propsIF) {
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
 
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
 
     const dispatch = useAppDispatch();
 

@@ -1,8 +1,5 @@
 import { TokenIF } from '../../../../utils/interfaces/exports';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import {
     Dispatch,
@@ -39,6 +36,7 @@ import {
     MaxButton,
 } from '../../../../styled/Components/Portfolio';
 import { useApprove } from '../../../../App/functions/approve';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -67,9 +65,8 @@ export default function Deposit(props: propsIF) {
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
 
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
+
     const { approve, isApprovalPending } = useApprove();
 
     const dispatch = useAppDispatch();
@@ -77,7 +74,7 @@ export default function Deposit(props: propsIF) {
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
     const amountToReduceEthMainnet = BigNumber.from(50).mul('100000000000000'); // .005 ETH
-    const amountToReduceEthScroll = BigNumber.from(3).mul('100000000000000'); // .0003 ETH
+    const amountToReduceEthScroll = BigNumber.from(5).mul('100000000000000'); // .0005 ETH
 
     const amountToReduceEth =
         chainId === '0x82750' || chainId === '0x8274f'

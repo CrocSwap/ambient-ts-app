@@ -22,6 +22,10 @@ import {
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 // interface for props for react functional component
 interface propsIF {
@@ -54,18 +58,20 @@ function Orders(props: propsIF) {
     const isTradeTableExpanded =
         !isAccountView && tradeTableState === 'Expanded';
 
-    const graphData = useAppSelector((state) => state?.graphData);
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userLimitOrdersByPool, limitOrdersByPool } =
+        useContext(GraphDataContext);
+    const dataLoadingStatus = useContext(DataLoadingContext);
+    const { userAddress } = useContext(UserDataContext);
 
-    const tradeData = useAppSelector((state) => state.tradeData);
     const { transactionsByType, pendingTransactions } = useAppSelector(
         (state) => state.receiptData,
     );
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
 
-    const baseTokenAddress = tradeData.baseToken.address;
-    const quoteTokenAddress = tradeData.quoteToken.address;
+    const baseTokenSymbol = baseToken.symbol;
+    const quoteTokenSymbol = quoteToken.symbol;
+    const baseTokenAddress = baseToken.address;
+    const quoteTokenAddress = quoteToken.address;
 
     const [limitOrderData, setLimitOrderData] = useState<LimitOrderIF[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -74,45 +80,38 @@ function Orders(props: propsIF) {
         if (isAccountView) setLimitOrderData(activeAccountLimitOrderData || []);
         else if (!showAllData)
             setLimitOrderData(
-                graphData?.userLimitOrdersByPool?.limitOrders.filter(
+                userLimitOrdersByPool?.limitOrders.filter(
                     (order) =>
                         order.positionLiq != 0 || order.claimableLiq !== 0,
                 ),
             );
         else {
-            setLimitOrderData(graphData?.limitOrdersByPool.limitOrders);
+            setLimitOrderData(limitOrdersByPool.limitOrders);
         }
     }, [
         showAllData,
         isAccountView,
         activeAccountLimitOrderData,
-        graphData?.limitOrdersByPool,
-        graphData?.userLimitOrdersByPool,
+        limitOrdersByPool,
+        userLimitOrdersByPool,
     ]);
 
     useEffect(() => {
         if (isAccountView && connectedAccountActive)
-            setIsLoading(
-                graphData?.dataLoadingStatus.isConnectedUserOrderDataLoading,
-            );
+            setIsLoading(dataLoadingStatus.isConnectedUserOrderDataLoading);
         else if (isAccountView)
-            setIsLoading(
-                graphData?.dataLoadingStatus.isLookupUserOrderDataLoading,
-            );
+            setIsLoading(dataLoadingStatus.isLookupUserOrderDataLoading);
         else if (!showAllData)
-            setIsLoading(
-                graphData?.dataLoadingStatus
-                    .isConnectedUserPoolOrderDataLoading,
-            );
-        else setIsLoading(graphData?.dataLoadingStatus.isPoolOrderDataLoading);
+            setIsLoading(dataLoadingStatus.isConnectedUserPoolOrderDataLoading);
+        else setIsLoading(dataLoadingStatus.isPoolOrderDataLoading);
     }, [
         showAllData,
         isAccountView,
         connectedAccountActive,
-        graphData?.dataLoadingStatus.isConnectedUserOrderDataLoading,
-        graphData?.dataLoadingStatus.isConnectedUserPoolOrderDataLoading,
-        graphData?.dataLoadingStatus.isLookupUserOrderDataLoading,
-        graphData?.dataLoadingStatus.isPoolOrderDataLoading,
+        dataLoadingStatus.isConnectedUserOrderDataLoading,
+        dataLoadingStatus.isConnectedUserPoolOrderDataLoading,
+        dataLoadingStatus.isLookupUserOrderDataLoading,
+        dataLoadingStatus.isPoolOrderDataLoading,
     ]);
 
     const relevantTransactionsByType = transactionsByType.filter(
@@ -121,9 +120,9 @@ function Orders(props: propsIF) {
             tx.txType === 'Limit' &&
             pendingTransactions.includes(tx.txHash) &&
             tx.txDetails?.baseAddress.toLowerCase() ===
-                tradeData.baseToken.address.toLowerCase() &&
+                baseToken.address.toLowerCase() &&
             tx.txDetails?.quoteAddress.toLowerCase() ===
-                tradeData.quoteToken.address.toLowerCase() &&
+                quoteToken.address.toLowerCase() &&
             tx.txDetails?.poolIdx === poolIndex,
     );
 
@@ -147,9 +146,6 @@ function Orders(props: propsIF) {
               (isAccountView && isLargeScreen && isSidebarOpen)
             ? 'medium'
             : 'large';
-
-    const quoteTokenSymbol = tradeData.quoteToken?.symbol;
-    const baseTokenSymbol = tradeData.baseToken?.symbol;
 
     // Changed this to have the sort icon be inline with the last row rather than under it
     const walID = (
@@ -345,8 +341,9 @@ function Orders(props: propsIF) {
                 alignItems='center'
                 justifyContent='center'
                 gap={isSmallScreen ? 4 : 8}
-                margin='16px auto'
+                margin={isSmallScreen ? 'auto' : '16px auto'}
                 background='dark1'
+                flexDirection={isSmallScreen ? 'column' : 'row'}
             >
                 <RowsPerPageDropdown
                     rowsPerPage={rowsPerPage}
@@ -442,7 +439,7 @@ function Orders(props: propsIF) {
         <NoTableData type='limits' isAccountView={isAccountView} />
     ) : (
         <div onKeyDown={handleKeyDownViewOrder}>
-            <ul ref={listRef}>
+            <ul ref={listRef} id='current_row_scroll'>
                 {!isAccountView &&
                     pendingTransactions.length > 0 &&
                     relevantTransactionsByType.reverse().map((tx, idx) => (
@@ -490,7 +487,7 @@ function Orders(props: propsIF) {
     }, [isTradeTableExpanded]);
 
     return (
-        <FlexContainer flexDirection='column' fullHeight>
+        <FlexContainer flexDirection='column' fullHeight={!isSmallScreen}>
             <div>{headerColumnsDisplay}</div>
 
             <div style={{ flex: 1, overflow: 'auto' }}>
