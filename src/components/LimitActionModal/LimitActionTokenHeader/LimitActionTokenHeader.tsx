@@ -1,12 +1,12 @@
 import { useContext } from 'react';
 import { TokenContext } from '../../../contexts/TokenContext';
-import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
+
 import OpenOrderStatus from '../../Global/OpenOrderStatus/OpenOrderStatus';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import styles from './LimitActionTokenHeader.module.css';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import uriToHttp from '../../../utils/functions/uriToHttp';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface propsIF {
     isOrderFilled: boolean;
@@ -34,8 +34,8 @@ export default function LimitActionTokenHeader(props: propsIF) {
         fillPercentage,
     } = props;
 
-    const dispatch = useAppDispatch();
     const { tokens } = useContext(TokenContext);
+    const { toggleDidUserFlipDenom } = useContext(TradeDataContext);
     const baseToken: TokenIF | undefined =
         tokens.getTokenByAddress(baseTokenAddress);
     const quoteToken: TokenIF | undefined =
@@ -46,7 +46,7 @@ export default function LimitActionTokenHeader(props: propsIF) {
             <div
                 className={styles.token_info}
                 onClick={() => {
-                    dispatch(toggleDidUserFlipDenom());
+                    toggleDidUserFlipDenom();
                 }}
             >
                 <TokenIcon

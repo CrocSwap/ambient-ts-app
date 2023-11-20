@@ -26,7 +26,10 @@ import {
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
-
+import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
 
@@ -58,17 +61,21 @@ function Ranges(props: propsIF) {
     const isTradeTableExpanded =
         !isAccountView && tradeTableState === 'Expanded';
 
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
-    const graphData = useAppSelector((state) => state?.graphData);
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const { userAddress } = useContext(UserDataContext);
+
+    const { userPositionsByPool, positionsByPool } =
+        useContext(GraphDataContext);
+    const dataLoadingStatus = useContext(DataLoadingContext);
     const { transactionsByType, pendingTransactions } = useAppSelector(
         (state) => state.receiptData,
     );
 
-    const baseTokenAddress = tradeData.baseToken.address;
-    const quoteTokenAddress = tradeData.quoteToken.address;
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
+
+    const baseTokenSymbol = baseToken.symbol;
+    const quoteTokenSymbol = quoteToken.symbol;
+    const baseTokenAddress = baseToken.address;
+    const quoteTokenAddress = quoteToken.address;
 
     const [rangeData, setRangeData] = useState<PositionIF[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -82,44 +89,37 @@ function Ranges(props: propsIF) {
         if (isAccountView) setRangeData(activeAccountPositionData || []);
         else if (!showAllData)
             setRangeData(
-                graphData?.userPositionsByPool?.positions.filter(
+                userPositionsByPool?.positions.filter(
                     (position) => position.positionLiq != 0,
                 ),
             );
         else {
-            setRangeData(graphData?.positionsByPool.positions);
+            setRangeData(positionsByPool.positions);
         }
     }, [
         showAllData,
         isAccountView,
         activeAccountPositionData,
-        graphData?.positionsByPool,
-        graphData?.userPositionsByPool,
+        positionsByPool,
+        userPositionsByPool,
     ]);
 
     useEffect(() => {
         if (isAccountView && connectedAccountActive)
-            setIsLoading(
-                graphData?.dataLoadingStatus.isConnectedUserRangeDataLoading,
-            );
+            setIsLoading(dataLoadingStatus.isConnectedUserRangeDataLoading);
         else if (isAccountView)
-            setIsLoading(
-                graphData?.dataLoadingStatus.isLookupUserRangeDataLoading,
-            );
+            setIsLoading(dataLoadingStatus.isLookupUserRangeDataLoading);
         else if (!showAllData)
-            setIsLoading(
-                graphData?.dataLoadingStatus
-                    .isConnectedUserPoolRangeDataLoading,
-            );
-        else setIsLoading(graphData?.dataLoadingStatus.isPoolRangeDataLoading);
+            setIsLoading(dataLoadingStatus.isConnectedUserPoolRangeDataLoading);
+        else setIsLoading(dataLoadingStatus.isPoolRangeDataLoading);
     }, [
         showAllData,
         isAccountView,
         connectedAccountActive,
-        graphData?.dataLoadingStatus.isConnectedUserRangeDataLoading,
-        graphData?.dataLoadingStatus.isConnectedUserPoolRangeDataLoading,
-        graphData?.dataLoadingStatus.isLookupUserRangeDataLoading,
-        graphData?.dataLoadingStatus.isPoolRangeDataLoading,
+        dataLoadingStatus.isConnectedUserRangeDataLoading,
+        dataLoadingStatus.isConnectedUserPoolRangeDataLoading,
+        dataLoadingStatus.isLookupUserRangeDataLoading,
+        dataLoadingStatus.isPoolRangeDataLoading,
     ]);
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =
@@ -187,8 +187,9 @@ function Ranges(props: propsIF) {
                 alignItems='center'
                 justifyContent='center'
                 gap={isSmallScreen ? 4 : 8}
-                margin='16px auto'
+                margin={isSmallScreen ? 'auto' : '16px auto'}
                 background='dark1'
+                flexDirection={isSmallScreen ? 'column' : 'row'}
             >
                 <RowsPerPageDropdown
                     rowsPerPage={rowsPerPage}
@@ -216,9 +217,6 @@ function Ranges(props: propsIF) {
                 )}
             </FlexContainer>
         );
-
-    const quoteTokenSymbol = tradeData.quoteToken?.symbol;
-    const baseTokenSymbol = tradeData.baseToken?.symbol;
 
     // Changed this to have the sort icon be inline with the last row rather than under it
     const walID = (
@@ -402,9 +400,9 @@ function Ranges(props: propsIF) {
             tx.txType === 'Range' &&
             pendingTransactions.includes(tx.txHash) &&
             tx.txDetails?.baseAddress.toLowerCase() ===
-                tradeData.baseToken.address.toLowerCase() &&
+                baseToken.address.toLowerCase() &&
             tx.txDetails?.quoteAddress.toLowerCase() ===
-                tradeData.quoteToken.address.toLowerCase() &&
+                quoteToken.address.toLowerCase() &&
             tx.txDetails?.poolIdx === poolIndex,
     );
 
@@ -416,7 +414,7 @@ function Ranges(props: propsIF) {
 
     const rangeDataOrNull = !shouldDisplayNoTableData ? (
         <div>
-            <ul ref={listRef}>
+            <ul ref={listRef} id='current_row_scroll'>
                 {!isAccountView &&
                     pendingTransactions.length > 0 &&
                     relevantTransactionsByType.reverse().map((tx, idx) => (
@@ -456,7 +454,7 @@ function Ranges(props: propsIF) {
     );
 
     return (
-        <FlexContainer flexDirection='column' fullHeight>
+        <FlexContainer flexDirection='column' fullHeight={!isSmallScreen}>
             <div>{headerColumnsDisplay}</div>
 
             <div style={{ flex: 1, overflow: 'auto' }}>

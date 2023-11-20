@@ -2,7 +2,7 @@ import { BigNumber } from 'ethers';
 import { useState, useEffect, useContext } from 'react';
 import { IS_LOCAL_ENV } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
+import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
 import { LimitOrderIF } from '../../utils/interfaces/LimitOrderIF';
 import {
@@ -29,6 +29,7 @@ import Modal from '../Global/Modal/Modal';
 import SubmitTransaction from '../Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import Button from '../Form/Button';
 import styles from './LimitActionModal.module.css';
+import { UserDataContext } from '../../contexts/UserDataContext';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -40,9 +41,8 @@ interface propsIF {
 
 export default function LimitActionModal(props: propsIF) {
     const { limitOrder, type, isOpen, onClose, isAccountView } = props;
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
+
     const {
         baseTokenSymbol,
         quoteTokenSymbol,

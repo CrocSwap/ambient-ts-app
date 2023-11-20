@@ -3,7 +3,6 @@ import { useContext, useState, useEffect, memo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { getPriceImpactString } from '../../../App/functions/swap/getPriceImpactString';
-import { useTradeData } from '../../../App/hooks/useTradeData';
 import Button from '../../../components/Form/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import TooltipComponent from '../../../components/Global/TooltipComponent/TooltipComponent';
@@ -42,6 +41,8 @@ import {
 import { swapTutorialSteps } from '../../../utils/tutorial/Swap';
 import { useApprove } from '../../../App/functions/approve';
 import { useUrlParams } from '../../../utils/hooks/useUrlParams';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -77,19 +78,18 @@ function Swap(props: propsIF) {
     // use URL pathway to determine if user is in swap or market page
     // depending on location we pull data on the tx in progress differently
     const {
-        tradeData: {
-            tokenA,
-            tokenB,
-            baseToken,
-            quoteToken,
-            isTokenAPrimary,
-            primaryQuantity,
-            isDenomBase,
-            liquidityFee,
-        },
-    } = pathname.includes('/trade')
-        ? useTradeData()
-        : useAppSelector((state) => state);
+        tradeData: { primaryQuantity },
+    } = useAppSelector((state) => state);
+    // TODO: confirm this doesn't break data that needs to be different when on trade page
+    const { liquidityFee } = useContext(GraphDataContext);
+    const {
+        tokenA,
+        tokenB,
+        baseToken,
+        quoteToken,
+        isTokenAPrimary,
+        isDenomBase,
+    } = useContext(TradeDataContext);
 
     const [sellQtyString, setSellQtyString] = useState<string>(
         isTokenAPrimary ? primaryQuantity : '',
@@ -180,7 +180,7 @@ function Swap(props: propsIF) {
     // const amountToReduceEthMainnet = 0.01; // .01 ETH
     const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
         useState<number>(0.01);
-    const amountToReduceEthScroll = 0.0003; // .0003 ETH
+    const amountToReduceEthScroll = 0.0005; // .0005 ETH
 
     const amountToReduceEth =
         chainId === '0x82750' || chainId === '0x8274f'

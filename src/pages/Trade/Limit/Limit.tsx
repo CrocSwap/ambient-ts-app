@@ -44,6 +44,8 @@ import {
 } from '../../../utils/TransactionError';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
 import { useApprove } from '../../../App/functions/approve';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 export default function Limit() {
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
@@ -72,18 +74,18 @@ export default function Limit() {
 
     const dispatch = useAppDispatch();
     const [isOpen, openModal, closeModal] = useModal();
+    const { limitTick, poolPriceNonDisplay, primaryQuantity } = useAppSelector(
+        (state) => state.tradeData,
+    );
     const {
         baseToken,
         quoteToken,
         tokenA,
         tokenB,
         isTokenAPrimary,
-        limitTick,
-        poolPriceNonDisplay,
-        liquidityFee,
         isDenomBase,
-        primaryQuantity,
-    } = useAppSelector((state) => state.tradeData);
+    } = useContext(TradeDataContext);
+    const { liquidityFee } = useContext(GraphDataContext);
     const { urlParamMap, updateURL } = useTradeData();
 
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
@@ -547,7 +549,7 @@ export default function Limit() {
     const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
         useState<number>(0.01);
 
-    const amountToReduceEthScroll = 0.0003; // .0003 ETH
+    const amountToReduceEthScroll = 0.0005; // .0005 ETH
 
     const amountToReduceEth =
         chainId === '0x82750' || chainId === '0x8274f'
