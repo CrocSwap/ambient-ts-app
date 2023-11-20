@@ -170,6 +170,8 @@ export default function Limit() {
                     chainId,
                     lastBlockNumber,
                 );
+                // if the spot price is 0, the pool is uninitialized and we can't calculate a limit price
+                if (spotPrice === 0) return;
 
                 const initialLimitRateNonDisplay =
                     spotPrice * (isSellTokenBase ? 0.985 : 1.015);
@@ -325,6 +327,18 @@ export default function Limit() {
         isSellTokenBase,
         !!poolPriceNonDisplay,
     ]);
+
+    // patch limit tick into URL if it is missing, this value isn't available
+    // ... on firstload so we need to update the URL once the SDK returns it
+    useEffect(() => {
+        // key for limit tick in the URL param map
+        const LIMIT_TICK_KEY = 'limitTick';
+        const urlHasLimitTick: boolean = urlParamMap.has(LIMIT_TICK_KEY);
+        // if we have a limit tick and it's not present in the URL, trigger an update
+        if (!urlHasLimitTick && limitTick !== undefined) {
+            updateURL({ update: [[LIMIT_TICK_KEY, limitTick]] });
+        }
+    }, [limitTick]);
 
     const updateOrderValidityStatus = async () => {
         try {
