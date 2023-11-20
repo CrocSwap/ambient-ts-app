@@ -341,7 +341,6 @@ function FloatingToolbar(props: FloatingToolbarProps) {
             const floatingDivDrag = d3
                 .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
                 .on('start', function (event) {
-                    console.log('drag');
                     offsetX =
                         event.sourceEvent.clientX -
                         floatingDiv.getBoundingClientRect().left;
