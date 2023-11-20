@@ -314,7 +314,12 @@ function SwapTokenInput(props: propsIF) {
                 fieldId='swap_sell'
                 tokenAorB='A'
                 token={tokenA}
-                tokenInput={buyQtyString !== '' ? sellQtyString : ''}
+                tokenInput={
+                    buyQtyString !== '' ||
+                    (sellQtyString !== '' && isBuyLoading)
+                        ? sellQtyString
+                        : ''
+                }
                 tokenBalance={tokenABalance}
                 tokenDexBalance={tokenADexBalance}
                 isTokenEth={isSellTokenEth}
