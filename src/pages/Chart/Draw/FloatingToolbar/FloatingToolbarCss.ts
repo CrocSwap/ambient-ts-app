@@ -5,7 +5,7 @@ const FloatingDivContainer = styled.div`
 
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: start;
 
     opacity: 1;
     position: fixed;
