@@ -3025,10 +3025,7 @@ export default function Chart(props: propsIF) {
                                             ctx.textBaseline = 'middle';
 
                                             const maxPrice =
-                                                Math.max(
-                                                    firstPointYAxisData,
-                                                    secondPointYAxisData,
-                                                ) *
+                                                secondPointYAxisData *
                                                 Math.pow(
                                                     10,
                                                     baseTokenDecimals -
@@ -3036,10 +3033,7 @@ export default function Chart(props: propsIF) {
                                                 );
 
                                             const minPrice =
-                                                Math.min(
-                                                    firstPointYAxisData,
-                                                    secondPointYAxisData,
-                                                ) *
+                                                firstPointYAxisData *
                                                 Math.pow(
                                                     10,
                                                     baseTokenDecimals -
