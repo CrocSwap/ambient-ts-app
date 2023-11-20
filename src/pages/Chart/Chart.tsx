@@ -798,6 +798,8 @@ export default function Chart(props: propsIF) {
                     .zoom()
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .on('start', (event: any) => {
+                        setIsChartZoom(true);
+
                         if (event.sourceEvent.type.includes('touch')) {
                             // mobile
                             previousTouch = event.sourceEvent.touches[0];
@@ -812,8 +814,6 @@ export default function Chart(props: propsIF) {
                                 previousDeltaTouchLocation =
                                     event.sourceEvent.touches[0].pageX;
                             }
-                        } else {
-                            setIsChartZoom(true);
                         }
                         zoomTimeout = event.sourceEvent.timeStamp;
                         if (
