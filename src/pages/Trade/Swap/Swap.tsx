@@ -305,7 +305,7 @@ function Swap(props: propsIF) {
     }, [tokenADexBalance]);
 
     const resetConfirmation = () => {
-        setShowConfirmation(false);
+        // setShowConfirmation(false);
         setTxErrorCode('');
         setNewSwapTransactionHash('');
     };
@@ -516,13 +516,6 @@ function Swap(props: propsIF) {
             setActiveStep(2);
         }
     }, [isTransactionApproved, isTransactionPending, isTransactionConfirmed]);
-
-    useEffect(() => {
-        if (activeContent === 'main') {
-            setActiveStep(0);
-            resetConfirmation();
-        }
-    }, [activeContent]);
 
     return (
         <TradeModuleSkeleton
