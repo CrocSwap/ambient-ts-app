@@ -21,7 +21,9 @@ export const MainSection = styled.section<{
     @media only screen and (max-width: 1279px) {
         padding-left: ${(props) => (props.isSmallScreen ? '' : '30px')};
     }
-
+    @media (min-width: 500px) {
+        margin-top: 32px;
+    }
     @media (max-width: 600px) {
         display: flex;
         flex-direction: column;
