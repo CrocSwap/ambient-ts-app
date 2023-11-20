@@ -2967,8 +2967,18 @@ export default function Chart(props: propsIF) {
                                                 ? '-'
                                                 : '') +
                                             formatTimeDifference(
-                                                new Date(item.data[0].x),
-                                                new Date(item.data[1].x),
+                                                new Date(
+                                                    Math.min(
+                                                        item.data[1].x,
+                                                        item.data[0].x,
+                                                    ),
+                                                ),
+                                                new Date(
+                                                    Math.max(
+                                                        item.data[1].x,
+                                                        item.data[0].x,
+                                                    ),
+                                                ),
                                             );
 
                                         const heightAsPrice =
