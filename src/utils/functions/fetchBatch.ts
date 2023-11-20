@@ -81,6 +81,12 @@ class BatchRequestManager {
                 BatchRequestManager.sendFrequency + 3000,
             );
 
+            if (!response.ok) {
+                throw new Error(
+                    `Error: ${response.status}: ${response.statusText}`,
+                );
+            }
+
             const jsonResponse = await response.json();
             const innerResponse = jsonResponse.value.data;
             innerResponse.forEach((resp: any) => {
