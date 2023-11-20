@@ -2976,6 +2976,7 @@ export default function Chart(props: propsIF) {
                                                 item.data[0].x - item.data[1].x,
                                             ) /
                                                 2;
+
                                         const infoLabelYAxisData =
                                             scaleData.yScale(
                                                 secondPointYAxisData,
@@ -3003,23 +3004,39 @@ export default function Chart(props: propsIF) {
                                             ctx.textAlign = 'center';
                                             ctx.textBaseline = 'middle';
 
-                                            const dpRangeTickPrice =
-                                                Math.floor(
-                                                    Math.log(
-                                                        Math.max(
-                                                            firstPointYAxisData,
-                                                            secondPointYAxisData,
-                                                        ),
-                                                    ) / Math.log(1.0001),
-                                                ) -
-                                                Math.floor(
-                                                    Math.log(
-                                                        Math.min(
-                                                            firstPointYAxisData,
-                                                            secondPointYAxisData,
-                                                        ),
-                                                    ) / Math.log(1.0001),
+                                            const maxPrice =
+                                                Math.max(
+                                                    firstPointYAxisData,
+                                                    secondPointYAxisData,
+                                                ) *
+                                                Math.pow(
+                                                    10,
+                                                    baseTokenDecimals -
+                                                        quoteTokenDecimals,
                                                 );
+
+                                            const minPrice =
+                                                Math.min(
+                                                    firstPointYAxisData,
+                                                    secondPointYAxisData,
+                                                ) *
+                                                Math.pow(
+                                                    10,
+                                                    baseTokenDecimals -
+                                                        quoteTokenDecimals,
+                                                );
+
+                                            const dpRangeTickPrice =
+                                                maxPrice && minPrice
+                                                    ? Math.floor(
+                                                          Math.log(maxPrice) /
+                                                              Math.log(1.0001),
+                                                      ) -
+                                                      Math.floor(
+                                                          Math.log(minPrice) /
+                                                              Math.log(1.0001),
+                                                      )
+                                                    : 0;
 
                                             ctx.fillText(
                                                 heightAsPrice.toFixed(2) +

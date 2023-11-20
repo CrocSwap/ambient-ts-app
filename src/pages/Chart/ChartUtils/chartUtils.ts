@@ -52,6 +52,7 @@ export type drawDataHistory = {
     showGuideLine: boolean;
     showBorder: boolean;
     showBackground: boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     extraData: Array<any>;
 };
 export type bandLineData = {
@@ -272,6 +273,7 @@ export function formatTimeDifference(startDate: Date, endDate: Date): string {
 
 export function calculateFibRetracement(
     lineData: lineData[],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     fibLevels: Array<any>,
 ) {
     const retracementIsUp = lineData[0].y > lineData[1].y;
@@ -325,6 +327,7 @@ export function calculateFibRetracement(
 
 export function calculateFibRetracementBandAreas(
     lineData: lineData[],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     fibLevels: Array<any>,
 ) {
     const retracementIsUp = lineData[0].y > lineData[1].y;
