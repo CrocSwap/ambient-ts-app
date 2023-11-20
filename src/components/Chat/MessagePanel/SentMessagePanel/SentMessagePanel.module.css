@@ -12,7 +12,7 @@
 
 .avatar_jazzicons {
     display: flex;
-    margin-top: 1rem;
+    margin-top: .5rem;
 }
 
 .avatar_jazzicons canvas {
@@ -261,10 +261,6 @@
     padding-top: 10px; */
     padding: .2rem 0;
     
-}
-
-.not_verified{
-    opacity: .5;
 }
 
 
@@ -623,7 +619,6 @@
     position: absolute;
     top: 4px;
     left: 90px;
-    margin-top: 0.4rem;
     cursor: pointer;
     border-radius: .2rem;
     height: 16px;
@@ -632,6 +627,10 @@
 .update_verify_date_icon:hover{
     transform: scale(1.2);
     background: rgba(255,255,255,.2);
+}
+
+.has_day_separator .update_verify_date_icon{
+    margin-top: 0.4rem;
 }
 
 .container {
@@ -669,7 +668,7 @@
     /* box-shadow: 0px 0px 4px var(--accent1); */
     display: block;
     width: 30%;
-    height: 100%;
+    height: calc(100% - 2px);
     top: 0;
 
 /*     
@@ -680,6 +679,11 @@
 
 .has_separator .options_button {
     transform: translateY(0rem); 
+}
+
+
+.has_day_separator .options_button {
+    transform: translateY(-.5rem);
 }
 
   .roomInfo {
@@ -812,16 +816,19 @@
     word-break: break-word;
 }
 
-.message_block.not_verified{
-    opacity: .5;
-}
 
 .message_token{
     margin-right: 1px;
 }
 
-.mentioned_name_token{
-    font-weight: bold;
+.link_token{
     color: #7371FC;
+    text-decoration: underline;
     cursor: pointer;
 }
+
+.mentioned_name_token{
+    font-weight: bold;
+    cursor: pointer;
+}
+

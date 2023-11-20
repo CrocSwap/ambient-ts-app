@@ -277,14 +277,19 @@ function SentMessagePanel(props: SentMessageProps) {
         }
     };
 
-    function getName() {
-        if (
+    function hasEns() {
+        return !(
+            props.message.ensName === '' ||
             props.message.ensName === 'defaultValue' ||
             props.message.ensName === null ||
             props.message.ensName === 'null' ||
             props.message.ensName === undefined ||
             props.message.ensName === 'undefined'
-        ) {
+        );
+    }
+
+    function getShownName() {
+        if (!hasEns()) {
             return props.message.walletID.slice(0, 6) + '...';
         } else {
             return props.message.ensName;
@@ -475,8 +480,20 @@ function SentMessagePanel(props: SentMessageProps) {
 
     function buildMessageToken(word: string, mentFound: any) {
         let ret = <></>;
-        if (props.isLinkInCrocodileLabsLinks(word)) {
-            ret = <span>{word}</span>;
+        if (
+            props.isLinkInCrocodileLabsLinks(word) ||
+            props.isLinkInCrocodileLabsLinksForInput(word)
+        ) {
+            ret = (
+                <span
+                    className={styles.link_token}
+                    onClick={() => {
+                        handleOpenExplorerAddHttp(word);
+                    }}
+                >
+                    {word}
+                </span>
+            );
         } else {
             if (
                 mentFound.val == false &&
@@ -716,6 +733,7 @@ function SentMessagePanel(props: SentMessageProps) {
                     ? styles.rise_to_bottom_wrapper
                     : ''
             }
+            ${daySeparator !== '' ? styles.has_day_separator : ''}
             
             `}
             // style={messageStyle()}
@@ -887,9 +905,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                                     `/${
                                                         props.isCurrentUser
                                                             ? 'account'
-                                                            : props.message
-                                                                  .ensName ===
-                                                              'defaultValue'
+                                                            : !hasEns()
                                                             ? props.message
                                                                   .walletID
                                                             : props.message
@@ -899,7 +915,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                             }
                                         }}
                                     >
-                                        {showName && getName()}
+                                        {showName && getShownName()}
                                         {showAvatar &&
                                             props.message.isVerified && (
                                                 <div
@@ -957,7 +973,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                         isInput={false}
                                         isPosition={isPosition}
                                         setIsPosition={setIsPosition}
-                                        walletExplorer={getName()}
+                                        walletExplorer={getShownName()}
                                         isCurrentUser={props.isCurrentUser}
                                         showAvatar={showAvatar}
                                     />
