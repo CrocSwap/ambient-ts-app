@@ -113,6 +113,7 @@ export default function TransactionsMenu(props: propsIF) {
                 tokenA.address.toLowerCase() ===
                 (tx.isBuy ? tx.quote.toLowerCase() : tx.base.toLowerCase());
             if (shouldReverse) {
+                setIsTokenAPrimary(!isTokenAPrimary);
                 dispatch(setShouldSwapDirectionReverse(true));
             }
         } else if (tx.entityType === 'limitOrder') {
