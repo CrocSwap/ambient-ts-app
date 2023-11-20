@@ -222,7 +222,6 @@ function SwapTokenInput(props: propsIF) {
                     rawTokenBQty = await refreshImpact(truncatedInputStr, true);
                 }
             } else {
-                console.log({ primaryQuantity });
                 rawTokenBQty = await refreshImpact(primaryQuantity, true);
             }
 
