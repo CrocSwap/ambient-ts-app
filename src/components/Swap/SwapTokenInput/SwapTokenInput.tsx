@@ -80,7 +80,7 @@ function SwapTokenInput(props: propsIF) {
         tokenBDexBalance,
         isTokenAEth: isSellTokenEth,
         isTokenBEth: isBuyTokenEth,
-        rtkMatchesParams,
+        contextMatchesParams,
     } = useContext(TradeTokenContext);
 
     const { showSwapPulseAnimation } = useContext(TradeTableContext);
@@ -103,9 +103,53 @@ function SwapTokenInput(props: propsIF) {
     // Let input rest 3/4 of a second before triggering an update
     const debouncedLastInput = useDebounce(lastInput, 750);
 
+    const reverseTokens = (): void => {
+        if (disableReverseTokens || !isPoolInitialized) return;
+        setDisableReverseTokens(true);
+
+        linkGenAny.navigate({
+            chain: chainId,
+            tokenA: tokenB.address,
+            tokenB: tokenA.address,
+        });
+
+        isTokenAPrimary
+            ? sellQtyString !== '' && parseFloat(sellQtyString) > 0
+                ? setIsSellLoading(true)
+                : null
+            : buyQtyString !== '' && parseFloat(buyQtyString) > 0
+            ? setIsBuyLoading(true)
+            : null;
+
+        if (!isTokenAPrimary) {
+            setSellQtyString(primaryQuantity);
+        } else {
+            setBuyQtyString(primaryQuantity);
+        }
+        setIsTokenAPrimary(!isTokenAPrimary);
+        setIsTokenAPrimaryRange(!isTokenAPrimaryRange);
+
+        dispatch(setLimitTick(undefined));
+    };
+
+    const handleBlockUpdate = () => {
+        console.log({
+            contextMatchesParams,
+            isTokenAPrimary,
+            disableReverseTokens,
+        });
+        if (contextMatchesParams) {
+            setDisableReverseTokens(true);
+            isTokenAPrimary
+                ? handleTokenAChangeEvent()
+                : handleTokenBChangeEvent();
+        }
+    };
+
     useEffect(() => {
+        console.log({ isTokenAPrimary });
         handleBlockUpdate();
-    }, [lastBlockNumber]);
+    }, [lastBlockNumber, isTokenAPrimary]);
 
     useEffect(() => {
         if (shouldSwapDirectionReverse) {
@@ -121,53 +165,6 @@ function SwapTokenInput(props: propsIF) {
                 : handleTokenBChangeEvent(debouncedLastInput);
         }
     }, [debouncedLastInput]);
-
-    useEffect(() => {
-        (async () => {
-            if (rtkMatchesParams) {
-                await refreshTokenData();
-                setDisableReverseTokens(false);
-            }
-        })();
-    }, [rtkMatchesParams]);
-
-    const reverseTokens = (): void => {
-        if (disableReverseTokens || !isPoolInitialized) return;
-
-        dispatch(setLimitTick(undefined));
-
-        setDisableReverseTokens(true);
-
-        isTokenAPrimary
-            ? sellQtyString !== '' && parseFloat(sellQtyString) > 0
-                ? setIsSellLoading(true)
-                : null
-            : buyQtyString !== '' && parseFloat(buyQtyString) > 0
-            ? setIsBuyLoading(true)
-            : null;
-
-        linkGenAny.navigate({
-            chain: chainId,
-            tokenA: tokenB.address,
-            tokenB: tokenA.address,
-        });
-        if (!isTokenAPrimary) {
-            setSellQtyString(primaryQuantity);
-        } else {
-            setBuyQtyString(primaryQuantity);
-        }
-        setIsTokenAPrimary(!isTokenAPrimary);
-        setIsTokenAPrimaryRange(!isTokenAPrimaryRange);
-    };
-
-    const handleBlockUpdate = () => {
-        if (rtkMatchesParams) {
-            setDisableReverseTokens(true);
-            isTokenAPrimary
-                ? handleTokenAChangeEvent()
-                : handleTokenBChangeEvent();
-        }
-    };
 
     async function refreshImpact(
         input: string,
@@ -231,6 +228,7 @@ function SwapTokenInput(props: propsIF) {
                     rawTokenBQty = await refreshImpact(truncatedInputStr, true);
                 }
             } else {
+                console.log({ primaryQuantity });
                 rawTokenBQty = await refreshImpact(primaryQuantity, true);
             }
 
