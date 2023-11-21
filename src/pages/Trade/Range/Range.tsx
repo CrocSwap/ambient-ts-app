@@ -945,10 +945,10 @@ function Range() {
         setActiveContent(newActiveContent);
     };
 
-    const swapSteps = [
-        { label: 'Sign transaction to initialize swap.' },
+    const rangeSteps = [
+        { label: 'Sign transaction.' },
         {
-            label: 'something for something',
+            label: 'Submitting liquidity.',
         },
     ];
 
@@ -1085,7 +1085,7 @@ function Range() {
                         }.`}
                         activeStep={activeStep}
                         setActiveStep={setActiveStep}
-                        steps={swapSteps}
+                        steps={rangeSteps}
                     />
                 ) : undefined
             }

@@ -9,6 +9,7 @@ import WalletBalanceSubinfo from './WalletBalanceSubinfo';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { translateTestnetToken } from '../../utils/data/testnetTokenMap';
+import { Text } from '../../styled/Common';
 interface propsIF {
     tokenAorB: 'A' | 'B';
     token: TokenIF;
@@ -133,6 +134,17 @@ function TokenInputWithWalletBalance(props: propsIF) {
             );
         }
     };
+    // This is only to help with developmenet on local and can be removed
+
+    const handleLocalPopulate = () => {
+        if (
+            formatTokenInput('0.00001', token, true) !== tokenInput &&
+            parseFloat('0.00001') > 0
+        ) {
+            parseTokenInput && parseTokenInput('0.00001', true);
+            handleTokenInputEvent(formatTokenInput('0.00001', token, true));
+        }
+    };
 
     const handleToggleDex = () => {
         // if the sell token quantity is maximized and the user switches to use exchange balance,
@@ -178,6 +190,18 @@ function TokenInputWithWalletBalance(props: propsIF) {
 
     return (
         <>
+            {tokenAorB === 'A' && (
+                <Text
+                    fontWeight='300'
+                    fontSize='body'
+                    color='accent1'
+                    align='end'
+                    onClick={handleLocalPopulate}
+                >
+                    populate value
+                </Text>
+            )}
+
             <TokenInputQuantity
                 fieldId={fieldId}
                 token={token}

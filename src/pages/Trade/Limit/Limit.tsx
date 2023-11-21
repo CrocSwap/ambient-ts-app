@@ -86,6 +86,8 @@ export default function Limit() {
         isTokenAPrimary,
         isDenomBase,
     } = useContext(TradeDataContext);
+    const receiptData = useAppSelector((state) => state.receiptData);
+
     const { liquidityFee } = useContext(GraphDataContext);
     const { urlParamMap, updateURL } = useTradeData();
 
@@ -651,15 +653,43 @@ export default function Limit() {
     const handleSetActiveContent = (newActiveContent: string) => {
         setActiveContent(newActiveContent);
     };
+    const isTransactionApproved = newLimitOrderTransactionHash !== '';
+    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
+    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
 
-    const swapSteps = [
-        { label: 'Sign transaction to initialize swap.' },
+    const isTransactionPending = !(
+        isTransactionApproved ||
+        isTransactionDenied ||
+        isTransactionException
+    );
+    const isTransactionConfirmed =
+        isTransactionApproved &&
+        !receiptData.pendingTransactions.includes(newLimitOrderTransactionHash);
+
+    const limitSteps = [
+        { label: 'Sign transaction.' },
         {
-            label: 'something for something',
+            label: 'Submitting limit order.',
         },
     ];
 
     const [activeStep, setActiveStep] = useState(0);
+
+    useEffect(() => {
+        console.log({
+            isTransactionApproved,
+            isTransactionConfirmed,
+            isTransactionPending,
+        });
+
+        setActiveStep(0);
+        if (isTransactionApproved) {
+            setActiveStep(1);
+        }
+        if (isTransactionConfirmed) {
+            setActiveStep(2);
+        }
+    }, [isTransactionApproved, isTransactionPending, isTransactionConfirmed]);
 
     return (
         <TradeModuleSkeleton
@@ -732,6 +762,10 @@ export default function Limit() {
                     startDisplayPrice={startDisplayPrice}
                     middleDisplayPrice={middleDisplayPrice}
                     endDisplayPrice={endDisplayPrice}
+                    activeStep={activeStep}
+                    setActiveStep={setActiveStep}
+                    steps={limitSteps}
+                    handleSetActiveContent={handleSetActiveContent}
                 />
             }
             button={
@@ -773,7 +807,7 @@ export default function Limit() {
                         transactionPendingDisplayString={`Submitting Limit Order to Swap ${tokenAInputQty} ${tokenA.symbol} for ${tokenBInputQty} ${tokenB.symbol}`}
                         activeStep={activeStep}
                         setActiveStep={setActiveStep}
-                        steps={swapSteps}
+                        steps={limitSteps}
                     />
                 ) : undefined
             }

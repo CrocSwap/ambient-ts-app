@@ -18,6 +18,12 @@ interface propsIF {
     middleDisplayPrice: number;
     endDisplayPrice: number;
     onClose: () => void;
+    activeStep: number;
+    setActiveStep: React.Dispatch<React.SetStateAction<number>>;
+    steps: {
+        label: string;
+    }[];
+    handleSetActiveContent: (newActiveContent: string) => void;
 }
 
 export default function ConfirmLimitModal(props: propsIF) {
@@ -33,6 +39,10 @@ export default function ConfirmLimitModal(props: propsIF) {
         tokenAInputQty,
         tokenBInputQty,
         onClose = () => null,
+        activeStep,
+        setActiveStep,
+        steps,
+        handleSetActiveContent,
     } = props;
 
     const { poolPriceDisplay } = useContext(PoolContext);
@@ -141,6 +151,10 @@ export default function ConfirmLimitModal(props: propsIF) {
             }
             showConfirmation={showConfirmation}
             resetConfirmation={resetConfirmation}
+            activeStep={activeStep}
+            setActiveStep={setActiveStep}
+            steps={steps}
+            handleSetActiveContent={handleSetActiveContent}
         />
     );
 }

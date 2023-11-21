@@ -492,7 +492,7 @@ function Swap(props: propsIF) {
     const swapSteps = [
         { label: 'Sign transaction to initialize swap.' },
         {
-            label: `Swapping ${sellQtyString} ${tokenA.symbol} for ${buyQtyString} ${tokenB.symbol}`,
+            label: 'Submitting Swap',
         },
     ];
 
