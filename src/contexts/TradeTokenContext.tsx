@@ -50,7 +50,7 @@ interface TradeTokenContextIF {
     setRecheckTokenAApproval: (val: boolean) => void;
     setRecheckTokenBApproval: (val: boolean) => void;
     isTokenABase: boolean;
-    rtkMatchesParams: boolean;
+    contextMatchesParams: boolean;
 }
 
 export const TradeTokenContext = createContext<TradeTokenContextIF>(
@@ -100,7 +100,7 @@ export const TradeTokenContextProvider = (props: {
         baseTokenDecimals,
         quoteTokenDecimals,
         isTokenABase,
-        rtkMatchesParams,
+        contextMatchesParams,
     } = usePoolMetadata({
         crocEnv,
         graphCacheUrl: activeNetwork.graphCacheUrl,
@@ -186,7 +186,7 @@ export const TradeTokenContextProvider = (props: {
         setRecheckTokenAApproval,
         setRecheckTokenBApproval,
         isTokenABase,
-        rtkMatchesParams,
+        contextMatchesParams,
     };
 
     // useEffect to update selected token balances

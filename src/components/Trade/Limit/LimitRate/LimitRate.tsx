@@ -75,6 +75,7 @@ export default function LimitRate(props: propsIF) {
     const handleLimitChange = async (value: string) => {
         IS_LOCAL_ENV && console.debug({ value });
         if (pool) {
+            if (parseFloat(value) === 0 || isNaN(parseFloat(value))) return;
             const limit = await pool.fromDisplayPrice(
                 isDenomBase ? parseFloat(value) : 1 / parseFloat(value),
             );
@@ -128,9 +129,8 @@ export default function LimitRate(props: propsIF) {
                     <TokenQuantityInput
                         id='limit_rate_input'
                         onFocus={() => {
-                            const limitRateInputField = document.getElementById(
-                                'limit-rate-quantity',
-                            );
+                            const limitRateInputField =
+                                document.getElementById('limit_rate_input');
                             (limitRateInputField as HTMLInputElement).select();
                         }}
                         onChange={(e: ChangeEvent<HTMLInputElement>) =>
