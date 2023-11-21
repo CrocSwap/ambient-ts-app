@@ -31,12 +31,16 @@ import Divider from '../../../../components/Global/Divider/Divider';
 interface FloatingToolbarSettingsProps {
     selectedDrawnShape: selectedDrawnData | undefined;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    handleEditColor: (color: any, type: string) => void;
-    handleEditSize: (value: number) => void;
-    handleEditStyle: (array: number[]) => void;
+    handleEditColor: (
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        color: any,
+        line: boolean,
+        border: boolean,
+        background: boolean,
+    ) => void;
+    handleEditSize: (value: number, line: boolean, border: boolean) => void;
+    handleEditStyle: (array: number[], line: boolean, border: boolean) => void;
     handleEditLines: (value: boolean, type: string) => void;
-    borderColorPicker: string;
-    backgroundColorPicker: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     sizeOptions: Array<any>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -46,32 +50,51 @@ interface FloatingToolbarSettingsProps {
         React.SetStateAction<drawDataHistory[]>
     >;
     addDrawActionStack: (item: drawDataHistory, isNewShape: boolean) => void;
+    colorPicker: { lineColor: string; borderColor: string; background: string };
 }
 
 function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
     const {
         selectedDrawnShape,
         handleEditColor,
-        borderColorPicker,
         handleEditSize,
         sizeOptions,
         styleOptions,
         handleEditStyle,
         handleEditLines,
-        backgroundColorPicker,
         setIsShapeEdited,
         setDrawnShapeHistory,
         addDrawActionStack,
+        colorPicker,
     } = props;
 
-    const lineOptions = ['Brush', 'Ray', 'FibRetracement'];
-    const lineOptionDisabled = ['Brush'];
+    // disabled options
+    const lineOptionDisabled = ['Brush', 'DPRange'];
+    const borderOptionDisabled = ['Rect'];
+
+    // special options
+    const borderOptions = ['Rect', 'DPRange'];
     const backgroundOptions = ['Rect', 'DPRange'];
 
-    const [isStyleOptionTabActive, setIsStyleOptionTabActive] = useState(false);
-    const [isSizeOptionTabActive, setIsSizeOptionTabActive] = useState(false);
-    const [isColorPickerTabActive, setIsColorPickerTabActive] = useState(false);
-    const [isBackgroundTabActive, setIsBackgroundTabActive] = useState(false);
+    const [isLineStyleOptionTabActive, setIsLineStyleOptionTabActive] =
+        useState(false);
+    const [isBorderStyleOptionTabActive, setIsBorderStyleOptionTabActive] =
+        useState(false);
+
+    const [isLineSizeOptionTabActive, setLineIsSizeOptionTabActive] =
+        useState(false);
+    const [isBorderSizeOptionTabActive, setBorderIsSizeOptionTabActive] =
+        useState(false);
+
+    const [isLineColorPickerTabActive, setIsLineColorPickerTabActive] =
+        useState(false);
+    const [isBorderColorPickerTabActive, setIsBorderColorPickerTabActive] =
+        useState(false);
+    const [
+        isBackgroundColorPickerTabActive,
+        setIsBackgroundColorPickerTabActive,
+    ] = useState(false);
+
     const [isFibBackgroundTabActive, setIsFibBackgroundTabActive] =
         useState(false);
 
@@ -81,10 +104,26 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
         exclude: string,
         value: number | undefined = undefined,
     ) => {
-        setIsStyleOptionTabActive((prev) => !prev && exclude === 'style');
-        setIsSizeOptionTabActive((prev) => !prev && exclude === 'size');
-        setIsColorPickerTabActive((prev) => !prev && exclude === 'color');
-        setIsBackgroundTabActive((prev) => !prev && exclude === 'background');
+        setIsLineStyleOptionTabActive(
+            (prev) => !prev && exclude === 'lineStyle',
+        );
+        setIsBorderStyleOptionTabActive(
+            (prev) => !prev && exclude === 'borderStyle',
+        );
+
+        setLineIsSizeOptionTabActive((prev) => !prev && exclude === 'lineSize');
+        setBorderIsSizeOptionTabActive(
+            (prev) => !prev && exclude === 'borderSize',
+        );
+
+        setIsLineColorPickerTabActive((prev) => !prev && exclude === 'line');
+        setIsBorderColorPickerTabActive(
+            (prev) => !prev && exclude === 'border',
+        );
+        setIsBackgroundColorPickerTabActive(
+            (prev) => !prev && exclude === 'background',
+        );
+
         setIsFibBackgroundTabActive((prev) => !prev && exclude === 'fib');
 
         if (value && exclude === 'fib') {
@@ -94,9 +133,8 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleEditFibColor = (color: any, type: string) => {
-        console.log(color);
         if (selectedDrawnShape?.data) {
-            const rgbaValues = backgroundColorPicker.match(/\d+(\.\d+)?/g);
+            const rgbaValues = colorPicker.background.match(/\d+(\.\d+)?/g);
 
             const alfaValue =
                 type === 'background' && color.source === 'hex' && rgbaValues
@@ -140,66 +178,100 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                             <LineSettingsLeft>
                                 <Toggle
                                     key={'toggle'}
-                                    isOn={
-                                        lineOptions.includes(
-                                            selectedDrawnShape?.data.type,
-                                        )
-                                            ? selectedDrawnShape.data
-                                                  .showGuideLine
-                                            : selectedDrawnShape.data.showBorder
-                                    }
+                                    isOn={selectedDrawnShape.data.line.active}
                                     disabled={lineOptionDisabled.includes(
                                         selectedDrawnShape?.data.type,
                                     )}
                                     handleToggle={() => {
                                         handleEditLines(
-                                            lineOptions.includes(
-                                                selectedDrawnShape?.data.type,
-                                            )
-                                                ? !selectedDrawnShape.data
-                                                      .showGuideLine
-                                                : !selectedDrawnShape.data
-                                                      .showBorder,
-                                            lineOptions.includes(
-                                                selectedDrawnShape?.data.type,
-                                            )
-                                                ? 'guideLine'
-                                                : 'border',
+                                            !selectedDrawnShape.data.line
+                                                .active,
+                                            'line',
                                         );
                                     }}
                                     id='is_guide_line_visible'
                                     aria-label={'aria-label'}
                                 />
-                                <label>
-                                    {lineOptions.includes(
-                                        selectedDrawnShape?.data.type,
-                                    )
-                                        ? 'Line'
-                                        : 'Border'}
-                                </label>
+                                <label>Line</label>
                             </LineSettingsLeft>
 
                             <LineSettingsRight>
                                 <OptionColorContainer>
                                     <OptionColor
-                                        backgroundColor={selectedDrawnShape?.data.color.toString()}
-                                        onClick={() => closeAllOptions('color')}
+                                        backgroundColor={selectedDrawnShape?.data.line.color.toString()}
+                                        onClick={() => closeAllOptions('line')}
                                     ></OptionColor>
                                 </OptionColorContainer>
 
                                 <OptionStyleContainer
-                                    onClick={() => closeAllOptions('size')}
+                                    onClick={() => closeAllOptions('lineSize')}
                                 >
                                     <AiOutlineMinus color='white' />
                                 </OptionStyleContainer>
 
                                 <OptionStyleContainer
-                                    onClick={() => closeAllOptions('style')}
+                                    onClick={() => closeAllOptions('lineStyle')}
                                 >
                                     <AiOutlineDash color='white' />
                                 </OptionStyleContainer>
                             </LineSettingsRight>
                         </LineSettings>
+
+                        {borderOptions.includes(
+                            selectedDrawnShape.data.type,
+                        ) && (
+                            <LineSettings>
+                                <LineSettingsLeft>
+                                    <Toggle
+                                        key={'toggle'}
+                                        isOn={
+                                            selectedDrawnShape.data.border
+                                                .active
+                                        }
+                                        disabled={borderOptionDisabled.includes(
+                                            selectedDrawnShape?.data.type,
+                                        )}
+                                        handleToggle={() => {
+                                            handleEditLines(
+                                                !selectedDrawnShape.data.border
+                                                    .active,
+                                                'border',
+                                            );
+                                        }}
+                                        id='is_background_visible'
+                                        aria-label={'aria-label'}
+                                    />
+                                    <label>Border</label>
+                                </LineSettingsLeft>
+
+                                <LineSettingsRight>
+                                    <OptionColorContainer>
+                                        <OptionColor
+                                            backgroundColor={selectedDrawnShape?.data.border.color.toString()}
+                                            onClick={() =>
+                                                closeAllOptions('border')
+                                            }
+                                        ></OptionColor>
+                                    </OptionColorContainer>
+
+                                    <OptionStyleContainer
+                                        onClick={() =>
+                                            closeAllOptions('borderSize')
+                                        }
+                                    >
+                                        <AiOutlineMinus color='white' />
+                                    </OptionStyleContainer>
+
+                                    <OptionStyleContainer
+                                        onClick={() =>
+                                            closeAllOptions('borderStyle')
+                                        }
+                                    >
+                                        <AiOutlineDash color='white' />
+                                    </OptionStyleContainer>
+                                </LineSettingsRight>
+                            </LineSettings>
+                        )}
 
                         {backgroundOptions.includes(
                             selectedDrawnShape.data.type,
@@ -209,14 +281,14 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                     <Toggle
                                         key={'toggle'}
                                         isOn={
-                                            selectedDrawnShape.data
-                                                .showBackground
+                                            selectedDrawnShape.data.background
+                                                .active
                                         }
                                         disabled={false}
                                         handleToggle={() => {
                                             handleEditLines(
                                                 !selectedDrawnShape.data
-                                                    .showBackground,
+                                                    .background.active,
                                                 'background',
                                             );
                                         }}
@@ -228,7 +300,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                 <LineSettingsRight>
                                     <OptionColorContainer>
                                         <OptionColor
-                                            backgroundColor={selectedDrawnShape?.data.background.toString()}
+                                            backgroundColor={selectedDrawnShape?.data.background.color.toString()}
                                             onClick={() =>
                                                 closeAllOptions('background')
                                             }
@@ -305,7 +377,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                                           .extraData[
                                                                           selectedFibLevel
                                                                       ].color
-                                                                    : backgroundColorPicker
+                                                                    : colorPicker.background
                                                             }
                                                             width={'170px'}
                                                             onChange={(item) =>
@@ -325,27 +397,32 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                     )}
             </FloatingToolbarSettingsContainer>
 
-            {isColorPickerTabActive && (
+            {(isLineColorPickerTabActive ||
+                isBorderColorPickerTabActive ||
+                isBackgroundColorPickerTabActive) && (
                 <ColorPickerTab>
                     <SketchPicker
-                        color={borderColorPicker}
+                        color={
+                            isLineColorPickerTabActive
+                                ? colorPicker.lineColor
+                                : isBorderColorPickerTabActive
+                                ? colorPicker.borderColor
+                                : colorPicker.background
+                        }
                         width={'170px'}
-                        onChange={(item) => handleEditColor(item, 'color')}
+                        onChange={(item) =>
+                            handleEditColor(
+                                item,
+                                isLineColorPickerTabActive,
+                                isBorderColorPickerTabActive,
+                                isBackgroundColorPickerTabActive,
+                            )
+                        }
                     />
                 </ColorPickerTab>
             )}
 
-            {isBackgroundTabActive && (
-                <ColorPickerTab>
-                    <SketchPicker
-                        color={backgroundColorPicker}
-                        width={'170px'}
-                        onChange={(item) => handleEditColor(item, 'background')}
-                    />
-                </ColorPickerTab>
-            )}
-
-            {isSizeOptionTabActive && (
+            {(isLineSizeOptionTabActive || isBorderSizeOptionTabActive) && (
                 <OptionsTab
                     style={{
                         marginLeft: '70px',
@@ -354,7 +431,13 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                     {sizeOptions.map((item, index) => (
                         <OptionsTabSize
                             key={index}
-                            onClick={() => handleEditSize(item.value)}
+                            onClick={() =>
+                                handleEditSize(
+                                    item.value,
+                                    isLineSizeOptionTabActive,
+                                    isBorderSizeOptionTabActive,
+                                )
+                            }
                         >
                             {item.icon} {item.name}
                         </OptionsTabSize>
@@ -362,7 +445,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                 </OptionsTab>
             )}
 
-            {isStyleOptionTabActive && (
+            {(isLineStyleOptionTabActive || isBorderStyleOptionTabActive) && (
                 <OptionsTab
                     style={{
                         marginLeft: '70px',
@@ -371,7 +454,13 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                     {styleOptions.map((item, index) => (
                         <OptionsTabStyle
                             key={index}
-                            onClick={() => handleEditStyle(item.value)}
+                            onClick={() =>
+                                handleEditStyle(
+                                    item.value,
+                                    isLineStyleOptionTabActive,
+                                    isBorderStyleOptionTabActive,
+                                )
+                            }
                         >
                             {item.icon} {item.name}
                         </OptionsTabStyle>

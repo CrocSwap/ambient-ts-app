@@ -44,21 +44,26 @@ export type poolDataChart = {
     isTokenABase: boolean;
     denomInBase: boolean;
 };
+
+export type drawnShapeEditAttributes = {
+    active: boolean;
+    color: string;
+    lineWidth: number;
+    dash: number[];
+};
+
 export type drawDataHistory = {
     data: lineData[];
     type: string;
     time: number;
     pool: poolDataChart;
-    color: string;
-    background: string;
-    lineWidth: number;
-    style: number[];
-    showGuideLine: boolean;
-    showBorder: boolean;
-    showBackground: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     extraData: Array<any>;
+    border: drawnShapeEditAttributes;
+    line: drawnShapeEditAttributes;
+    background: drawnShapeEditAttributes;
 };
+
 export type bandLineData = {
     fromValue: number;
     toValue: number;

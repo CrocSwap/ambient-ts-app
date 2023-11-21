@@ -5,6 +5,7 @@ import {
     calculateFibRetracement,
     calculateFibRetracementBandAreas,
     drawDataHistory,
+    drawnShapeEditAttributes,
     fibLevels,
     lineData,
     renderCanvasArray,
@@ -228,20 +229,32 @@ function DrawCanvas(props: DrawCanvasProps) {
                             isTokenABase: currentPool.isTokenABase,
                             denomInBase: currentPool.isDenomBase,
                         },
-                        color: 'rgba(115, 113, 252, 1)',
-                        background: 'rgba(115, 113, 252, 0.15)',
-                        lineWidth: 1.5,
-                        style:
-                            activeDrawingType === 'FibRetracement'
-                                ? [6, 6]
-                                : [0, 0],
-                        showGuideLine: !['DPRange', 'Rect'].includes(
-                            activeDrawingType,
-                        ),
-                        showBorder: ['Rect'].includes(activeDrawingType),
-                        showBackground: ['Rect', 'DPRange'].includes(
-                            activeDrawingType,
-                        ),
+                        line: {
+                            active: !['Rect'].includes(activeDrawingType),
+                            color: 'rgba(115, 113, 252, 1)',
+                            lineWidth: 1.5,
+                            dash:
+                                activeDrawingType === 'FibRetracement'
+                                    ? [6, 6]
+                                    : [0, 0],
+                        } as drawnShapeEditAttributes,
+
+                        border: {
+                            active: ['Rect'].includes(activeDrawingType),
+                            color: 'rgba(115, 113, 252, 1)',
+                            lineWidth: 0,
+                            dash: [0, 0],
+                        } as drawnShapeEditAttributes,
+
+                        background: {
+                            active: ['Rect', 'DPRange'].includes(
+                                activeDrawingType,
+                            ),
+                            color: 'rgba(115, 113, 252, 0.15)',
+                            lineWidth: 1.5,
+                            dash: [0, 0],
+                        } as drawnShapeEditAttributes,
+
                         extraData: ['FibRetracement'].includes(
                             activeDrawingType,
                         )
@@ -320,20 +333,32 @@ function DrawCanvas(props: DrawCanvasProps) {
                                 isTokenABase: currentPool.isTokenABase,
                                 denomInBase: currentPool.isDenomBase,
                             },
-                            color: 'rgba(115, 113, 252, 1)',
-                            background: 'rgba(115, 113, 252, 0.15)',
-                            lineWidth: 1.5,
-                            style:
-                                activeDrawingType === 'FibRetracement'
-                                    ? [6, 6]
-                                    : [0, 0],
-                            showGuideLine: !['DPRange', 'Rect'].includes(
-                                activeDrawingType,
-                            ),
-                            showBorder: ['Rect'].includes(activeDrawingType),
-                            showBackground: ['Rect', 'DPRange'].includes(
-                                activeDrawingType,
-                            ),
+
+                            line: {
+                                active: !['Rect'].includes(activeDrawingType),
+                                color: 'rgba(115, 113, 252, 1)',
+                                lineWidth: 1.5,
+                                dash:
+                                    activeDrawingType === 'FibRetracement'
+                                        ? [6, 6]
+                                        : [0, 0],
+                            } as drawnShapeEditAttributes,
+
+                            border: {
+                                active: ['Rect'].includes(activeDrawingType),
+                                color: 'rgba(115, 113, 252, 1)',
+                                lineWidth: 0,
+                                dash: [0, 0],
+                            } as drawnShapeEditAttributes,
+
+                            background: {
+                                active: ['Rect', 'DPRange'].includes(
+                                    activeDrawingType,
+                                ),
+                                color: 'rgba(115, 113, 252, 0.15)',
+                                lineWidth: 1.5,
+                                dash: [0, 0],
+                            } as drawnShapeEditAttributes,
                             extraData: ['FibRetracement'].includes(
                                 activeDrawingType,
                             )
