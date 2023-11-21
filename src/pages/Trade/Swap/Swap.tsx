@@ -116,6 +116,7 @@ function Swap(props: propsIF) {
 
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
+    const [txErrorMessage, setTxErrorMessage] = useState('');
     const [swapButtonErrorMessage, setSwapButtonErrorMessage] =
         useState<string>('');
 
@@ -305,6 +306,7 @@ function Swap(props: propsIF) {
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setTxErrorCode('');
+        setTxErrorMessage('');
         setNewSwapTransactionHash('');
     };
 
@@ -365,6 +367,7 @@ function Swap(props: propsIF) {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
+            setTxErrorMessage(error?.data?.message);
         }
 
         let receipt;
@@ -539,6 +542,7 @@ function Swap(props: propsIF) {
                         initiateSwapMethod={initiateSwap}
                         newSwapTransactionHash={newSwapTransactionHash}
                         txErrorCode={txErrorCode}
+                        txErrorMessage={txErrorMessage}
                         showConfirmation={showConfirmation}
                         resetConfirmation={resetConfirmation}
                         slippageTolerancePercentage={
@@ -592,6 +596,7 @@ function Swap(props: propsIF) {
                         type='Swap'
                         newTransactionHash={newSwapTransactionHash}
                         txErrorCode={txErrorCode}
+                        txErrorMessage={txErrorMessage}
                         resetConfirmation={resetConfirmation}
                         sendTransaction={initiateSwap}
                         transactionPendingDisplayString={`Swapping ${sellQtyString} ${tokenA.symbol} for ${buyQtyString} ${tokenB.symbol}`}

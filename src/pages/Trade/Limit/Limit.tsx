@@ -106,6 +106,7 @@ export default function Limit() {
     const [newLimitOrderTransactionHash, setNewLimitOrderTransactionHash] =
         useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
+    const [txErrorMessage, setTxErrorMessage] = useState('');
     const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
     const [endDisplayPrice, setEndDisplayPrice] = useState<number>(0);
     const [startDisplayPrice, setStartDisplayPrice] = useState<number>(0);
@@ -445,6 +446,7 @@ export default function Limit() {
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setTxErrorCode('');
+        setTxErrorMessage('');
         setNewLimitOrderTransactionHash('');
     };
 
@@ -522,6 +524,7 @@ export default function Limit() {
             }
             console.error({ error });
             setTxErrorCode(error.code);
+            setTxErrorMessage(error.message);
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
@@ -716,6 +719,7 @@ export default function Limit() {
                             newLimitOrderTransactionHash
                         }
                         txErrorCode={txErrorCode}
+                        txErrorMessage={txErrorMessage}
                         showConfirmation={showConfirmation}
                         resetConfirmation={resetConfirmation}
                         startDisplayPrice={startDisplayPrice}
@@ -760,6 +764,7 @@ export default function Limit() {
                         type='Limit'
                         newTransactionHash={newLimitOrderTransactionHash}
                         txErrorCode={txErrorCode}
+                        txErrorMessage={txErrorMessage}
                         resetConfirmation={resetConfirmation}
                         sendTransaction={sendLimitOrder}
                         transactionPendingDisplayString={`Submitting Limit Order to Swap ${tokenAInputQty} ${tokenA.symbol} for ${tokenBInputQty} ${tokenB.symbol}`}
