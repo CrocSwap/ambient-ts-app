@@ -2616,11 +2616,13 @@ export default function Chart(props: propsIF) {
                                     item.type === 'Brush' ||
                                     item.type === 'Angle'
                                 ) {
-                                    if (ctx) ctx.setLineDash(item.style);
+                                    if (ctx) ctx.setLineDash(item.line.dash);
                                     lineSeries.decorate(
                                         (context: CanvasRenderingContext2D) => {
-                                            context.strokeStyle = item.color;
-                                            context.lineWidth = item.lineWidth;
+                                            context.strokeStyle =
+                                                item.line.color;
+                                            context.lineWidth =
+                                                item.line.lineWidth;
                                         },
                                     );
 
@@ -2713,7 +2715,7 @@ export default function Chart(props: propsIF) {
                                                     context: CanvasRenderingContext2D,
                                                 ) => {
                                                     context.strokeStyle =
-                                                        item.color;
+                                                        item.line.color;
                                                     context.lineWidth = 1;
                                                 },
                                             );
@@ -2777,7 +2779,7 @@ export default function Chart(props: propsIF) {
 
                                     bandArea.xScale().range(range);
 
-                                    if (item.showBackground) {
+                                    if (item.background.active) {
                                         const checkDenom =
                                             item.data[0].denomInBase ===
                                             denomInBase;
@@ -2797,7 +2799,7 @@ export default function Chart(props: propsIF) {
                                                     context: CanvasRenderingContext2D,
                                                 ) => {
                                                     context.fillStyle =
-                                                        item.background;
+                                                        item.background.color;
                                                 },
                                             );
                                         }
@@ -2805,21 +2807,23 @@ export default function Chart(props: propsIF) {
                                         bandArea([bandData]);
                                     }
 
-                                    if (item.showBorder) {
+                                    if (item.border.active) {
                                         const lineOfBand =
                                             createPointsOfBandLine(item.data);
 
                                         lineOfBand?.forEach((line) => {
                                             if (ctx)
-                                                ctx.setLineDash(item.style);
+                                                ctx.setLineDash(
+                                                    item.border.dash,
+                                                );
                                             lineSeries.decorate(
                                                 (
                                                     context: CanvasRenderingContext2D,
                                                 ) => {
                                                     context.strokeStyle =
-                                                        item.color;
+                                                        item.border.color;
                                                     context.lineWidth =
-                                                        item.lineWidth;
+                                                        item.border.lineWidth;
                                                 },
                                             );
                                             lineSeries(line);
@@ -2889,6 +2893,25 @@ export default function Chart(props: propsIF) {
                                         });
                                     }
 
+                                    if (
+                                        item.type === 'Rect' &&
+                                        item.line.active
+                                    ) {
+                                        if (ctx)
+                                            ctx.setLineDash(item.line.dash);
+                                        lineSeries.decorate(
+                                            (
+                                                context: CanvasRenderingContext2D,
+                                            ) => {
+                                                context.strokeStyle =
+                                                    item.line.color;
+                                                context.lineWidth =
+                                                    item.line.lineWidth;
+                                            },
+                                        );
+                                        lineSeries(item.data);
+                                    }
+
                                     if (item.type === 'DPRange') {
                                         const lineOfDPRange =
                                             createPointsOfDPRangeLine(
@@ -2897,15 +2920,15 @@ export default function Chart(props: propsIF) {
 
                                         lineOfDPRange?.forEach((line) => {
                                             if (ctx)
-                                                ctx.setLineDash(item.style);
+                                                ctx.setLineDash(item.line.dash);
                                             lineSeries.decorate(
                                                 (
                                                     context: CanvasRenderingContext2D,
                                                 ) => {
                                                     context.strokeStyle =
-                                                        item.color;
+                                                        item.line.color;
                                                     context.lineWidth =
-                                                        item.lineWidth;
+                                                        item.line.lineWidth;
                                                 },
                                             );
                                             lineSeries(line);
@@ -3173,11 +3196,11 @@ export default function Chart(props: propsIF) {
                                 ];
 
                                 rayLine.xScale().range(range);
-                                if (ctx) ctx.setLineDash(item.style);
+                                if (ctx) ctx.setLineDash(item.line.dash);
                                 rayLine.decorate(
                                     (context: CanvasRenderingContext2D) => {
-                                        context.strokeStyle = item.color;
-                                        context.lineWidth = item.lineWidth;
+                                        context.strokeStyle = item.line.color;
+                                        context.lineWidth = item.line.lineWidth;
                                     },
                                 );
 
@@ -3246,12 +3269,14 @@ export default function Chart(props: propsIF) {
 
                                 bandArea.xScale().range(range);
 
-                                if (item.showGuideLine) {
-                                    if (ctx) ctx.setLineDash(item.style);
+                                if (item.line.active) {
+                                    if (ctx) ctx.setLineDash(item.line.dash);
                                     lineSeries.decorate(
                                         (context: CanvasRenderingContext2D) => {
-                                            context.strokeStyle = item.color;
-                                            context.lineWidth = item.lineWidth;
+                                            context.strokeStyle =
+                                                item.line.color;
+                                            context.lineWidth =
+                                                item.line.lineWidth;
                                         },
                                     );
                                     lineSeries(item.data);
