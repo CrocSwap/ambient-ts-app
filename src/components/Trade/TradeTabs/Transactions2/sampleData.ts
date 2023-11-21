@@ -1,4 +1,4 @@
-const sampleData = {
+export const sampleData = {
     data: [
         {
             blockNum: 18592422,
