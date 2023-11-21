@@ -507,8 +507,8 @@ export default function Limit() {
                 location.reload();
             }
             console.error({ error });
-            setTxErrorCode(error.code);
-            setTxErrorMessage(error.message);
+            setTxErrorCode(error?.code);
+            setTxErrorMessage(error?.data?.message);
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
@@ -550,7 +550,7 @@ export default function Limit() {
     const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
         useState<number>(0.01);
 
-    const amountToReduceEthScroll = 0.0005; // .0005 ETH
+    const amountToReduceEthScroll = 0.0007; // .0007 ETH
 
     const amountToReduceEth =
         chainId === '0x82750' || chainId === '0x8274f'
