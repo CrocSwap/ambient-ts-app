@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { AppStateContextProvider } from './AppStateContext';
 import { CachedDataContextProvider } from './CachedDataContext';
 import { CandleContextProvider } from './CandleContext';
@@ -19,8 +19,15 @@ import { GraphDataContextProvider } from './GraphDataContext';
 import { DataLoadingContextProvider } from './DataLoadingContext';
 import { TokenBalanceContextProvider } from './TokenBalanceContext';
 import { TradeDataContextProvider } from './TradeDataContext';
+import { cleanupBatchManager } from '../utils/functions/fetchBatch';
 
 export const GlobalContexts = (props: { children: React.ReactNode }) => {
+    useEffect(() => {
+        return () => {
+            (async () => await cleanupBatchManager())();
+        };
+    }, []);
+
     return (
         <AppStateContextProvider>
             <ENSAddressContextProvider>

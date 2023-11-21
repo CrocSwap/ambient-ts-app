@@ -368,15 +368,11 @@ function Ranges(props: propsIF) {
         </RangeRowStyled>
     );
 
-    const [ensAddressesMap, setENSAddressesMap] = useState<Map<string, string>>(
-        new Map(),
-    );
+    const [ensAddressesMap] = useState<Map<string, string>>(new Map());
 
     useEffect(() => {
         if (sortedPositions.length === 0) return;
         (async () => {
-            const ensAddressesMap = new Map<string, string>();
-
             const results = await Promise.allSettled(
                 sortedPositions.map((tx) =>
                     fetchBatchENSAddresses(tx.user ?? getAddress(tx.user)),
@@ -391,8 +387,6 @@ function Ranges(props: propsIF) {
                     ensAddressesMap.set(user, result.value);
                 }
             });
-
-            setENSAddressesMap(ensAddressesMap);
         })();
     }, [sortedPositions]);
 
@@ -403,7 +397,7 @@ function Ranges(props: propsIF) {
                 position={position}
                 isAccountView={isAccountView}
                 tableView={tableView}
-                fetchedEnsAddress={ensAddressesMap.get(position.user) ?? ''}
+                fetchedEnsAddress={ensAddressesMap.get(position.user)}
             />
         ));
 

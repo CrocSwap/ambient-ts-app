@@ -389,15 +389,11 @@ function Orders(props: propsIF) {
         </OrderRowStyled>
     );
 
-    const [ensAddressesMap, setENSAddressesMap] = useState<Map<string, string>>(
-        new Map(),
-    );
+    const [ensAddressesMap] = useState<Map<string, string>>(new Map());
 
     useEffect(() => {
         if (sortedLimits.length === 0) return;
         (async () => {
-            const ensAddressesMap = new Map<string, string>();
-
             const results = await Promise.allSettled(
                 sortedLimits.map((tx) =>
                     fetchBatchENSAddresses(tx.user ?? getAddress(tx.user)),
@@ -412,8 +408,6 @@ function Orders(props: propsIF) {
                     ensAddressesMap.set(user, result.value);
                 }
             });
-
-            setENSAddressesMap(ensAddressesMap);
         })();
     }, [sortedLimits]);
 
@@ -424,7 +418,7 @@ function Orders(props: propsIF) {
                 key={idx}
                 limitOrder={order}
                 isAccountView={isAccountView}
-                fetchedEnsAddress={ensAddressesMap.get(order.user) ?? ''}
+                fetchedEnsAddress={ensAddressesMap.get(order.user)}
             />
         ));
 

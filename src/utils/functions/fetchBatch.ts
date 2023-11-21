@@ -24,6 +24,8 @@ interface RequestData {
 // [ ] TODO - Harden the response parser with typing. Ensure it makes a best effort to process the valid responses, and does not let a bad response ruin the batch
 // [ ] TODO - Add in Timeout support, so individual requests can expire and not block the whole app.
 
+// TODO: cleanup all the retry_delay logic  (use expiry instead) tbd resolve/reject and experiment with wrapping the fetchensaddresses call in a memoizefn
+
 class BatchRequestManager {
     static pendingRequests: Record<string, RequestData> = {};
     static sendFrequency = 10000;
@@ -39,9 +41,8 @@ class BatchRequestManager {
         Object.keys(requests).forEach((nonce) => {
             const request = requests[nonce];
             if (
-                !request.response &&
-                (!request.expiry ||
-                    request.timestamp + request.expiry > Date.now())
+                !request.response ||
+                Date.now() - request.timestamp > request.expiry
             ) {
                 sendableNonce.push(nonce);
             }
@@ -91,28 +92,33 @@ class BatchRequestManager {
             const innerResponse = jsonResponse.value.data;
             innerResponse.forEach((resp: any) => {
                 if (requests[resp.req_id]) {
+                    requests[resp.req_id].timestamp = Date.now(); // Updating the timestamp
                     requests[resp.req_id].resolve(resp.results); // Resolving the promise with the response
                     requests[resp.req_id].response = resp.results;
                 }
             });
             BatchRequestManager.parsedBatches =
                 BatchRequestManager.parsedBatches + 1;
+
+            console.log('successfully retrieved and parsed batch request');
         } catch (error) {
-            sendableNonce.forEach((nonce) => {
-                if (requests[nonce]) {
+            console.log('request failed with: ', sendableNonce);
+            Object.keys(requests).forEach((nonce) => {
+                if (!requests[nonce].response) {
+                    requests[nonce].timestamp = Date.now(); // Updating the timestamp
                     requests[nonce].reject(error); // Rejecting the promise with the error
+                    requests[nonce].response = new Response(); // Default response
                 }
             });
         }
     }
 
     static startManagingRequests(): void {
-        if (BatchRequestManager.intervalHandle == null) {
-            BatchRequestManager.intervalHandle = setInterval(async () => {
-                await BatchRequestManager.send();
-                BatchRequestManager.clean();
-            }, BatchRequestManager.sendFrequency);
-        }
+        console.log('starting to manage requests');
+        BatchRequestManager.intervalHandle = setInterval(async () => {
+            await BatchRequestManager.send();
+            BatchRequestManager.clean();
+        }, BatchRequestManager.sendFrequency);
     }
 
     // TODO: return this from a App useEffect for cleanup
@@ -129,29 +135,28 @@ class BatchRequestManager {
             const request = requests[nonce];
             if (
                 request.response &&
-                request.timestamp + request.expiry <= Date.now()
+                Date.now() - request.timestamp > request.expiry
             ) {
                 delete requests[nonce];
             }
-            // if I am timedout, reject({})
         });
+        console.log('num cached requests:', Object.keys(requests)?.length);
     }
 
     static async register(
         requestId: SupportedBatchRequests,
         body: any,
         nonce: string,
-        expiry = BATCH_ENS_CACHE_EXPIRY,
     ): Promise<any> {
         BatchRequestManager.pendingRequests[nonce] = {
             requestId: requestId,
             body: body,
-            timestamp: Date.now(),
+            timestamp: Date.now(), // This should get updated with each send()
             promise: null, // This will hold the promise itself
             resolve: null, // Store the resolve function
             reject: null, // Store the reject function
             response: null,
-            expiry: expiry,
+            expiry: BATCH_ENS_CACHE_EXPIRY, // Expire in BATCH_ENS_CACHE_EXPIRY ms
         };
         BatchRequestManager.pendingRequests[nonce].promise = new Promise(
             (resolve, reject) => {
@@ -159,7 +164,9 @@ class BatchRequestManager {
                 BatchRequestManager.pendingRequests[nonce].reject = reject;
             },
         );
-        BatchRequestManager.startManagingRequests();
+        if (BatchRequestManager.intervalHandle == null) {
+            BatchRequestManager.startManagingRequests();
+        }
         return BatchRequestManager.pendingRequests[nonce].promise;
     }
 }
@@ -176,19 +183,19 @@ function simpleHash(json: any): string {
     return 'hash_' + Math.abs(hash).toString(16);
 }
 
-export async function fetchBatchENSAddresses(
-    address: string,
-    nonce?: string,
-    expiry = BATCH_ENS_CACHE_EXPIRY,
-) {
+export async function cleanupBatchManager() {
+    BatchRequestManager.stopManagingRequests();
+}
+
+export async function fetchBatchENSAddresses(address: string, nonce?: string) {
     try {
         const body = { config_path: 'ens_address', address: address };
         const { ens_address: ensAddress } = await fetchBatch({
             requestId: 'fetchENSAddresses',
             body,
-            nonce,
-            expiry,
+            nonce: nonce || address.toLowerCase(),
         });
+
         return ensAddress as string;
     } catch (error) {
         return null;
@@ -199,26 +206,23 @@ type FetchBatchParams = {
     requestId: SupportedBatchRequests;
     body: any;
     nonce?: string;
-    expiry?: number;
 };
 
 export async function fetchBatch({
     requestId,
     body = {},
     nonce = undefined,
-    expiry = BATCH_ENS_CACHE_EXPIRY,
 }: FetchBatchParams): Promise<any> {
     const requests = BatchRequestManager.pendingRequests;
     nonce = nonce || simpleHash(body);
 
     if (
         requests[nonce] &&
-        (!requests[nonce].expiry ||
-            requests[nonce].timestamp + requests[nonce].expiry > Date.now())
+        Date.now() - requests[nonce].timestamp > requests[nonce].expiry
     ) {
         return requests[nonce].promise;
     }
-    return BatchRequestManager.register(requestId, body, nonce, expiry);
+    return BatchRequestManager.register(requestId, body, nonce);
 }
 
 export async function testBatchSystem() {

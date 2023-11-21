@@ -200,17 +200,13 @@ function Leaderboard() {
         },
     ];
 
-    const [ensAddressesMap, setENSAddressesMap] = useState<Map<string, string>>(
-        new Map(),
-    );
+    const [ensAddressesMap] = useState<Map<string, string>>(new Map());
 
     useEffect(() => {
         if (usePaginateDataOrNull.length === 0) return;
         (async () => {
-            const ensAddressesMap = new Map<string, string>();
-
             const results = await Promise.allSettled(
-                sortedPositions.map((tx) =>
+                usePaginateDataOrNull.map((tx) =>
                     fetchBatchENSAddresses(tx.user ?? getAddress(tx.user)),
                 ),
             );
@@ -223,8 +219,6 @@ function Leaderboard() {
                     ensAddressesMap.set(user, result.value);
                 }
             });
-
-            setENSAddressesMap(ensAddressesMap);
         })();
     }, [usePaginateDataOrNull]);
 

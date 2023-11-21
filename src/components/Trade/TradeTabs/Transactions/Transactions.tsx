@@ -505,19 +505,13 @@ function Transactions(props: propsIF) {
             </FlexContainer>
         );
 
-    const [ensAddressesMap, setENSAddressesMap] = useState<Map<string, string>>(
-        new Map(),
-    );
+    const [ensAddressesMap] = useState<Map<string, string>>(new Map());
 
     useEffect(() => {
         if (sortedTransactions.length === 0) return;
         (async () => {
-            const ensAddressesMap = new Map<string, string>();
-
             const results = await Promise.allSettled(
-                sortedTransactions.map((tx) =>
-                    fetchBatchENSAddresses(tx.user ?? getAddress(tx.user)),
-                ),
+                sortedTransactions.map((tx) => fetchBatchENSAddresses(tx.user)),
             );
 
             results.forEach((result, index) => {
@@ -528,8 +522,6 @@ function Transactions(props: propsIF) {
                     ensAddressesMap.set(user, result.value);
                 }
             });
-
-            setENSAddressesMap(ensAddressesMap);
         })();
     }, [sortedTransactions]);
 
@@ -541,7 +533,7 @@ function Transactions(props: propsIF) {
                 tx={tx}
                 tableView={tableView}
                 isAccountView={isAccountView}
-                fetchedEnsAddress={ensAddressesMap.get(tx.user) ?? ''}
+                fetchedEnsAddress={ensAddressesMap.get(tx.user)}
             />
         ));
 
