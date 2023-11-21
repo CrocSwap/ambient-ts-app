@@ -203,6 +203,7 @@
     width: 82px;
     height: 14px;
     cursor: pointer;
+    user-select: all;
 
     /* small */
     font-family: 'Lexend Deca';

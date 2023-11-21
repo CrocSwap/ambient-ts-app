@@ -126,7 +126,12 @@ export const txRowConstants = (props: propsIF) => {
                             event.stopPropagation()
                         }
                     >
-                        <span onClick={handleOpenExplorer}>{tx.txHash}</span>
+                        <span
+                            onClick={handleOpenExplorer}
+                            style={{ userSelect: 'text' }}
+                        >
+                            {tx.txHash}
+                        </span>
                         <FiCopy size={'12px'} onClick={handleCopyTxHash} />{' '}
                         <FiExternalLink
                             size={'12px'}
@@ -179,7 +184,7 @@ export const txRowConstants = (props: propsIF) => {
                         <Text
                             font='roboto'
                             onClick={handleWalletClick}
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: 'pointer', userSelect: 'text' }}
                         >
                             {ownerId}
                         </Text>

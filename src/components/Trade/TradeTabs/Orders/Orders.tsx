@@ -151,7 +151,7 @@ function Orders(props: propsIF) {
     const walID = (
         <>
             <p>Position ID</p>
-            Wallet
+            <p>Wallet</p>
         </>
     );
     const sideType = (
@@ -164,8 +164,8 @@ function Orders(props: propsIF) {
         <>Tokens</>
     ) : (
         <>
-            <p>{`${baseTokenSymbol}`}</p>
-            <p>{`${quoteTokenSymbol}`}</p>
+            <p>{baseTokenSymbol}</p>
+            <p>{quoteTokenSymbol}</p>
         </>
     );
     const headerColumns = [

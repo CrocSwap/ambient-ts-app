@@ -173,12 +173,20 @@ export default function TransactionDetailsSimplify(
             ? 'Claim from Limit'
             : 'Market';
 
+    interface infoContentIF {
+        title: string;
+        content: JSX.Element | string;
+        explanation: string;
+    }
+
     // Create a data array for the info and map through it here
-    const infoContent = [
+    const infoContent: infoContentIF[] = [
         {
             title: 'Transaction Type ',
             content: (
-                <div style={{ cursor: 'default' }}>{changeTypeDisplay}</div>
+                <div style={{ cursor: 'default', userSelect: 'text' }}>
+                    {changeTypeDisplay}
+                </div>
             ),
             explanation: 'Transaction type explanation',
         },
@@ -188,43 +196,38 @@ export default function TransactionDetailsSimplify(
             content: walletContent,
             explanation: 'The account of the transaction owner',
         },
-
         {
             title: 'Transaction ',
             content: txContent,
             explanation: 'The transaction hash',
         },
-
         {
             title: 'Time ',
             content: (
-                <div style={{ cursor: 'default' }}>
+                <div style={{ cursor: 'default', userSelect: 'text' }}>
                     {moment(tx.txTime * 1000).format('MM/DD/YYYY HH:mm')}
                 </div>
             ),
             explanation: 'The transaction confirmation time',
         },
-
         {
             title: isSwap ? 'From Token ' : 'Token 1 ',
             content: (
-                <div style={{ cursor: 'default' }}>
+                <div style={{ cursor: 'default', userSelect: 'text' }}>
                     {isBuy ? baseTokenSymbol : quoteTokenSymbol}
                 </div>
             ),
             explanation: 'The symbol (short name) of the sell token',
         },
-
         {
             title: isSwap ? 'From Address ' : 'Token 1 Address',
             content: isBuy ? baseAddressContent : quoteAddressContent,
             explanation: 'Address of the From/Sell Token',
         },
-
         {
             title: isSwap ? 'From Qty ' : 'Token 1 Qty',
             content: (
-                <div style={{ cursor: 'default' }}>
+                <div style={{ cursor: 'default', userSelect: 'text' }}>
                     {isBuy
                         ? `${
                               tx.entityType !== 'limitOrder' ||
@@ -245,19 +248,20 @@ export default function TransactionDetailsSimplify(
             explanation:
                 'The quantity of the sell token (scaled by its decimals value)',
         },
-
         {
             title: isSwap ? 'To Token ' : 'Token 2 ',
-            content: !isBuy ? baseTokenSymbol : quoteTokenSymbol,
+            content: (
+                <div style={{ cursor: 'default', userSelect: 'text' }}>
+                    {!isBuy ? baseTokenSymbol : quoteTokenSymbol}
+                </div>
+            ),
             explanation: 'The symbol (short name) of the buy token',
         },
-
         {
             title: isSwap ? 'To Address ' : 'Token 2 Address',
             content: !isBuy ? baseAddressContent : quoteAddressContent,
             explanation: 'Address of the To/Buy Token',
         },
-
         {
             title: isSwap ? 'To Qty ' : 'Token 2 Qty ',
             content: (
@@ -307,42 +311,46 @@ export default function TransactionDetailsSimplify(
                 ? 'The transaction price'
                 : 'The low price boundary',
         },
-
-        // {
-        //     title: 'Liquidity Provider Fee ',
-        //     content: 'liquidity fee',
-        //     explanation: 'this is explanation',
-        // },
-
-        // { title: 'Network Fee ', content: 'network fee', explanation: 'this is explanation' },
     ];
 
     if (isSwap) {
         infoContent.push({
             title: 'Value ',
-            content: <div style={{ cursor: 'default' }}>{usdValue}</div>,
-            explanation: 'The appoximate US dollar value of the transaction',
+            content: (
+                <div style={{ cursor: 'default', userSelect: 'text' }}>
+                    {usdValue}
+                </div>
+            ),
+            explanation: 'The approximate US dollar value of the transaction',
         });
     } else {
         infoContent.push(
             {
                 title: 'High Price Boundary',
-                content: isAccountView
-                    ? isBaseTokenMoneynessGreaterOrEqual
-                        ? `1 ${quoteTokenSymbol} = ${truncatedHighDisplayPriceDenomByMoneyness} ${baseTokenSymbol}`
-                        : `1 ${baseTokenSymbol} = ${truncatedHighDisplayPriceDenomByMoneyness} ${quoteTokenSymbol}`
-                    : isAmbient
-                    ? '∞'
-                    : isDenomBase
-                    ? `1 ${baseTokenSymbol} = ${truncatedHighDisplayPrice} ${quoteTokenSymbol}`
-                    : `1 ${quoteTokenSymbol} = ${truncatedHighDisplayPrice} ${baseTokenSymbol}`,
+                content: (
+                    <div style={{ cursor: 'default', userSelect: 'text' }}>
+                        {isAccountView
+                            ? isBaseTokenMoneynessGreaterOrEqual
+                                ? `1 ${quoteTokenSymbol} = ${truncatedHighDisplayPriceDenomByMoneyness} ${baseTokenSymbol}`
+                                : `1 ${baseTokenSymbol} = ${truncatedHighDisplayPriceDenomByMoneyness} ${quoteTokenSymbol}`
+                            : isAmbient
+                            ? '∞'
+                            : isDenomBase
+                            ? `1 ${baseTokenSymbol} = ${truncatedHighDisplayPrice} ${quoteTokenSymbol}`
+                            : `1 ${quoteTokenSymbol} = ${truncatedHighDisplayPrice} ${baseTokenSymbol}`}
+                    </div>
+                ),
                 explanation: 'The high price boundary',
             },
             {
                 title: 'Value ',
-                content: <div style={{ cursor: 'default' }}>{usdValue}</div>,
+                content: (
+                    <div style={{ cursor: 'default', userSelect: 'text' }}>
+                        {usdValue}
+                    </div>
+                ),
                 explanation:
-                    'The appoximate US dollar value of the transaction',
+                    'The approximate US dollar value of the transaction',
             },
         );
     }
@@ -356,7 +364,6 @@ export default function TransactionDetailsSimplify(
                     <p>{title}</p>
                     <TooltipComponent title={explanation} placement={'right'} />
                 </div>
-
                 <div>{content}</div>
             </div>
         );

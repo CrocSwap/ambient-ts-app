@@ -290,7 +290,7 @@ function Transactions(props: propsIF) {
     const walID = (
         <>
             <p>ID</p>
-            Wallet
+            <p>Wallet</p>
         </>
     );
     const sideType = (
@@ -698,7 +698,6 @@ function Transactions(props: propsIF) {
     return (
         <FlexContainer flexDirection='column' fullHeight={!isSmallScreen}>
             <div>{headerColumnsDisplay}</div>
-
             <div style={{ flex: 1, overflow: 'auto' }}>
                 {isLoading ? (
                     <Spinner size={100} bg='var(--dark1)' centered />
@@ -706,7 +705,6 @@ function Transactions(props: propsIF) {
                     transactionDataOrNull
                 )}
             </div>
-
             {footerDisplay}
         </FlexContainer>
     );

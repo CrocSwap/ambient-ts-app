@@ -337,8 +337,7 @@ export default function OrderDetailsSimplify(
                     <p>{title}</p>
                     <TooltipComponent title={explanation} placement={'right'} />
                 </div>
-
-                <div>{content}</div>
+                <div style={{ userSelect: 'text' }}>{content}</div>
             </div>
         );
     }
