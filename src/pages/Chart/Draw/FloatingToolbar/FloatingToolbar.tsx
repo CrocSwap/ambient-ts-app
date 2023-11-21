@@ -394,15 +394,30 @@ function FloatingToolbar(props: FloatingToolbarProps) {
             const floatingDivDrag = d3
                 .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
                 .on('start', function (event) {
+                    const clientX =
+                        event.sourceEvent.type === 'touchstart'
+                            ? event.sourceEvent.changedTouches[0].clientX
+                            : event.sourceEvent.clientX;
+                    const clientY =
+                        event.sourceEvent.type === 'touchstart'
+                            ? event.sourceEvent.changedTouches[0].clientY
+                            : event.sourceEvent.clientY;
+
                     offsetX =
-                        event.sourceEvent.clientX -
-                        floatingDiv.getBoundingClientRect().left;
-                    offsetY =
-                        event.sourceEvent.clientY -
-                        floatingDiv.getBoundingClientRect().top;
+                        clientX - floatingDiv.getBoundingClientRect().left;
+                    offsetY = clientY - floatingDiv.getBoundingClientRect().top;
                 })
                 .on('drag', function (event) {
                     if (floatingDivRef.current) {
+                        const clientX =
+                            event.sourceEvent.type === 'touchmove'
+                                ? event.sourceEvent.changedTouches[0].clientX
+                                : event.sourceEvent.clientX;
+                        const clientY =
+                            event.sourceEvent.type === 'touchmove'
+                                ? event.sourceEvent.changedTouches[0].clientY
+                                : event.sourceEvent.clientY;
+
                         setIsDragging(true);
                         const screenWidth = window.innerWidth;
                         const screenHeight = window.innerHeight;
@@ -412,8 +427,8 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                         const divHeight =
                             floatingDiv.getBoundingClientRect().height;
 
-                        let divLeft = event.sourceEvent.clientX - offsetX;
-                        let divTop = event.sourceEvent.clientY - offsetY;
+                        let divLeft = clientX - offsetX;
+                        let divTop = clientY - offsetY;
 
                         divLeft = Math.max(
                             1,
@@ -423,6 +438,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                             1,
                             Math.min(screenHeight - divHeight, divTop),
                         );
+
                         setDivLeft(divLeft);
                         setDivTop(divTop);
                     }
@@ -442,7 +458,14 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 .select(floatingDivRef.current)
                 .node() as HTMLDivElement;
 
-            setDivLeft(mainCanvasBoundingClientRect?.width);
+            const yAxis = d3.select('#y-axis-canvas').node() as HTMLDivElement;
+
+            setDivLeft(
+                mainCanvasBoundingClientRect.x +
+                    mainCanvasBoundingClientRect.width / 2 -
+                    floatingDiv.getBoundingClientRect().width / 2 +
+                    yAxis.getBoundingClientRect().width / 2,
+            );
             setDivTop(
                 mainCanvasBoundingClientRect?.top -
                     floatingDiv.getBoundingClientRect().height,
