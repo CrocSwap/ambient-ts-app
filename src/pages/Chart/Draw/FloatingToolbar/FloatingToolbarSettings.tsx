@@ -69,7 +69,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
     } = props;
 
     // disabled options
-    const lineOptionDisabled = ['Brush', 'DPRange'];
+    const lineOptionDisabled = ['Brush', 'DPRange', 'Ray'];
     const borderOptionDisabled = ['Rect'];
 
     // special options
