@@ -163,19 +163,20 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     ]);
 
     useEffect(() => {
-        if (provider) {
+        if (provider && crocEnv) {
             (async () => {
                 IS_LOCAL_ENV &&
                     console.debug('fetching WETH price from mainnet');
                 const mainnetEthPrice = await cachedFetchTokenPrice(
                     mainnetETH.address,
                     ethereumMainnet.chainId,
+                    crocEnv,
                 );
                 const usdPrice = mainnetEthPrice?.usdPrice;
                 setEthMainnetUsdPrice(usdPrice);
             })();
         }
-    }, [provider]);
+    }, [crocEnv, provider]);
     useEffect(() => {
         setDefaultUrlParams(createDefaultUrlParams(chainData.chainId));
     }, [chainData.chainId]);

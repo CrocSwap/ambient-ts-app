@@ -49,8 +49,16 @@ export const getLimitOrderData = async (
         ? ''
         : (await cachedEnsResolve(order.user)) ?? '';
 
-    const basePricePromise = cachedFetchTokenPrice(baseTokenAddress, chainId);
-    const quotePricePromise = cachedFetchTokenPrice(quoteTokenAddress, chainId);
+    const basePricePromise = cachedFetchTokenPrice(
+        baseTokenAddress,
+        chainId,
+        crocEnv,
+    );
+    const quotePricePromise = cachedFetchTokenPrice(
+        quoteTokenAddress,
+        chainId,
+        crocEnv,
+    );
 
     const DEFAULT_DECIMALS = 18;
     const baseTokenDecimals =
