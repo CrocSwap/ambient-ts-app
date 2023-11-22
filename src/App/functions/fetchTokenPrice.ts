@@ -9,6 +9,7 @@ import { supportedNetworks } from '../../utils/networks';
 import { fetchTimeout } from '../../utils/functions/fetchTimeout';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { querySpotPrice } from './querySpotPrice';
+import truncateDecimals from '../../utils/data/truncateDecimals';
 
 export const fetchTokenPrice = async (
     dispToken: string,
@@ -61,7 +62,11 @@ export const fetchTokenPrice = async (
             );
             const displayPrice: number =
                 1 / toDisplayPrice(spotPrice ?? 0.0005, 18, 6);
-            return displayPrice;
+            const usdPriceFormatted = truncateDecimals(displayPrice, 2);
+            return {
+                usdPrice: displayPrice,
+                usdPriceFormatted: usdPriceFormatted,
+            };
         }
         return undefined;
     }
