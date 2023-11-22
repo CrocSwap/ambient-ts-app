@@ -27,8 +27,6 @@ import { FlexContainer } from '../../../../../styled/Common';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { BigNumber } from 'ethers';
 import { toDisplayQty } from '@crocswap-libs/sdk';
-import { ethereumMainnet } from '../../../../../utils/networks/ethereumMainnet';
-import { mainnetUSDC } from '../../../../../utils/data/defaultTokens';
 import IconWithTooltip from '../../../../../components/Global/IconWithTooltip/IconWithTooltip';
 import { supportedNetworks } from '../../../../../utils/networks';
 
@@ -107,10 +105,23 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         string | undefined
     >();
 
-    const { ethMainnetUsdPrice, crocEnv } = useContext(CrocEnvContext);
+    const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
+        number | undefined
+    >();
+
+    const { crocEnv } = useContext(CrocEnvContext);
 
     useEffect(() => {
         if (!crocEnv) return;
+        Promise.resolve(
+            cachedFetchTokenPrice(ZERO_ADDRESS, chainId, crocEnv),
+        ).then((price) => {
+            if (price?.usdPrice !== undefined) {
+                setEthMainnetUsdPrice(price.usdPrice);
+            } else {
+                setEthMainnetUsdPrice(undefined);
+            }
+        });
         if (usdcData === undefined) {
             setUsdcUsdValueForDom(undefined);
             setUsdcBalanceForDom(undefined);
@@ -139,11 +150,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
 
         setUsdcBalanceForDom(usdcCombinedBalanceDisplayTruncated);
         Promise.resolve(
-            cachedFetchTokenPrice(
-                mainnetUSDC.address,
-                ethereumMainnet.chainId,
-                crocEnv,
-            ),
+            cachedFetchTokenPrice(usdcData.address, chainId, crocEnv),
         ).then((price) => {
             if (price?.usdPrice !== undefined) {
                 const usdValueNum: number =
