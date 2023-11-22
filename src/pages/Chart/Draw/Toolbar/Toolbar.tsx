@@ -63,20 +63,20 @@ function Toolbar(props: ToolbarProps) {
         //     label: 'Angle',
         // },
         {
-            icon: drawRect,
-            label: 'Rect',
-        },
-        {
             icon: horizontalRay,
             label: 'Ray',
         },
         {
-            icon: dprange,
-            label: 'DPRange',
+            icon: drawRect,
+            label: 'Rect',
         },
         {
             icon: fibRetracement,
             label: 'FibRetracement',
+        },
+        {
+            icon: dprange,
+            label: 'DPRange',
         },
 
         // Add more icons here
