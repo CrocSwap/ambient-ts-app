@@ -47,8 +47,8 @@ export const fetchTokenPrice = async (
             address.toLowerCase() === defaultPair[0].address.toLowerCase()
         ) {
             return {
-                usdPrice: 1976.21,
-                usdPriceFormatted: 1976.21,
+                usdPrice: 1945.77,
+                usdPriceFormatted: 1945.77,
             };
         }
         return undefined;
