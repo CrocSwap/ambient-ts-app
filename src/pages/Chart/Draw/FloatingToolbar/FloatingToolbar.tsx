@@ -8,6 +8,7 @@ import {
     OptionsTab,
     OptionsTabSize,
     OptionsTabStyle,
+    ColorPickerTab,
 } from './FloatingToolbarCss';
 import dragButton from '../../../../assets/images/icons/draw/floating_button.svg';
 import {
@@ -22,10 +23,13 @@ import {
     AiOutlineMinus,
     AiOutlineSmallDash,
 } from 'react-icons/ai';
-import { TbBrush } from 'react-icons/tb';
 import { SketchPicker } from 'react-color';
 import { IoCloseOutline } from 'react-icons/io5';
 import useKeyPress from '../../../../App/hooks/useKeyPress';
+import { IoMdColorFilter } from 'react-icons/io';
+import { CgColorBucket } from 'react-icons/cg';
+import { BsGear } from 'react-icons/bs';
+import FloatingToolbarSettings from './FloatingToolbarSettings';
 
 interface FloatingToolbarProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -37,16 +41,19 @@ interface FloatingToolbarProps {
     setSelectedDrawnShape: React.Dispatch<
         React.SetStateAction<selectedDrawnData | undefined>
     >;
+    setIsDragActive: React.Dispatch<boolean>;
     setIsShapeEdited: React.Dispatch<boolean>;
     deleteItem: (item: drawDataHistory) => void;
     addDrawActionStack: (item: drawDataHistory, isNewShape: boolean) => void;
 }
+
 function FloatingToolbar(props: FloatingToolbarProps) {
     const {
         mainCanvasBoundingClientRect,
         selectedDrawnShape,
         setDrawnShapeHistory,
         setSelectedDrawnShape,
+        setIsDragActive,
         deleteItem,
         setIsShapeEdited,
         addDrawActionStack,
@@ -56,12 +63,26 @@ function FloatingToolbar(props: FloatingToolbarProps) {
     const [isDragging, setIsDragging] = useState(false);
     const [divLeft, setDivLeft] = useState(0);
     const [divTop, setDivTop] = useState(0);
-    const [backgroundColorPicker, setBackgroundColorPicker] =
-        useState('#7371fc');
+
+    const [colorPicker, setColorPicker] = useState({
+        lineColor: '#7371fc',
+        borderColor: '#7371fc',
+        background: '#7371fc',
+    });
 
     const [isStyleOptionTabActive, setIsStyleOptionTabActive] = useState(false);
     const [isSizeOptionTabActive, setIsSizeOptionTabActive] = useState(false);
-    const [isColorPickerTabActive, setIsColorPickerTabActive] = useState(false);
+
+    const [isLineColorPickerTabActive, setIsLineColorPickerTabActive] =
+        useState(false);
+    const [isBorderColorPickerTabActive, setIsBorderColorPickerTabActive] =
+        useState(false);
+    const [
+        isBackgroundColorPickerTabActive,
+        setIsBackgroundColorPickerTabActive,
+    ] = useState(false);
+
+    const [isSettingsTabActive, setIsSettingsTabActive] = useState(false);
 
     const isDeletePressed = useKeyPress('Delete');
 
@@ -72,19 +93,46 @@ function FloatingToolbar(props: FloatingToolbarProps) {
     }, [isDeletePressed]);
 
     useEffect(() => {
+        setIsStyleOptionTabActive(false);
+        setIsLineColorPickerTabActive(false);
+        setIsSizeOptionTabActive(false);
+        setIsBorderColorPickerTabActive(false);
+        setIsBackgroundColorPickerTabActive(false);
+        setIsSettingsTabActive(false);
         if (selectedDrawnShape === undefined) {
-            setIsStyleOptionTabActive(false);
-            setIsColorPickerTabActive(false);
-            setIsSizeOptionTabActive(false);
-            setBackgroundColorPicker(() => '#7371fc');
+            const colorCodes = {
+                lineColor: '#7371fc',
+                borderColor: '#7371fc',
+                background: 'rgba(115, 113, 252, 0.15)',
+            };
+
+            setColorPicker(() => colorCodes);
         } else {
-            setBackgroundColorPicker(() => selectedDrawnShape?.data.color);
+            const colorCodes = {
+                lineColor: selectedDrawnShape?.data.line.color,
+                borderColor: selectedDrawnShape?.data.border.color,
+                background: selectedDrawnShape?.data.background.color,
+            };
+
+            setColorPicker(() => colorCodes);
         }
     }, [selectedDrawnShape]);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleEditColor = (color: any) => {
+    const handleEditColor = (
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        color: any,
+        line: boolean,
+        border: boolean,
+        background: boolean,
+    ) => {
         if (selectedDrawnShape?.data) {
+            const rgbaValues = colorPicker.background.match(/\d+(\.\d+)?/g);
+
+            const alfaValue =
+                background && color.source === 'hex' && rgbaValues
+                    ? rgbaValues[3].toString()
+                    : color.rgb.a;
+
             const colorRgbaCode =
                 'rgba(' +
                 color.rgb.r +
@@ -93,15 +141,25 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 ',' +
                 color.rgb.b +
                 ',' +
-                color.rgb.a +
+                alfaValue +
                 ')';
-            setBackgroundColorPicker(colorRgbaCode);
+
+            colorPicker;
+
+            line && (colorPicker.lineColor = colorRgbaCode);
+            border && (colorPicker.borderColor = colorRgbaCode);
+            background && (colorPicker.background = colorRgbaCode);
+
             setDrawnShapeHistory((item: drawDataHistory[]) => {
                 const changedItemIndex = item.findIndex(
                     (i) => i.time === selectedDrawnShape?.data.time,
                 );
 
-                item[changedItemIndex].color = colorRgbaCode;
+                line && (item[changedItemIndex].line.color = colorRgbaCode);
+                border && (item[changedItemIndex].border.color = colorRgbaCode);
+                background &&
+                    (item[changedItemIndex].background.color = colorRgbaCode);
+
                 addDrawActionStack(item[changedItemIndex], false);
 
                 return item;
@@ -110,14 +168,16 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         }
     };
 
-    const handleEditSize = (value: number) => {
+    const handleEditSize = (value: number, line: boolean, border = false) => {
         if (selectedDrawnShape?.data) {
             setDrawnShapeHistory((item: drawDataHistory[]) => {
                 const changedItemIndex = item.findIndex(
                     (i) => i.time === selectedDrawnShape?.data.time,
                 );
 
-                item[changedItemIndex].lineWidth = value;
+                line && (item[changedItemIndex].line.lineWidth = value);
+                border && (item[changedItemIndex].border.lineWidth = value);
+
                 addDrawActionStack(item[changedItemIndex], false);
                 return item;
             });
@@ -125,14 +185,39 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         }
     };
 
-    const handleEditStyle = (array: number[]) => {
+    const handleEditLines = (value: boolean, type: string) => {
         if (selectedDrawnShape?.data) {
             setDrawnShapeHistory((item: drawDataHistory[]) => {
                 const changedItemIndex = item.findIndex(
                     (i) => i.time === selectedDrawnShape?.data.time,
                 );
 
-                item[changedItemIndex].style = array;
+                type === 'line' && (item[changedItemIndex].line.active = value);
+                type === 'border' &&
+                    (item[changedItemIndex].border.active = value);
+                type === 'background' &&
+                    (item[changedItemIndex].background.active = value);
+
+                addDrawActionStack(item[changedItemIndex], false);
+                return item;
+            });
+            setIsShapeEdited(true);
+        }
+    };
+
+    const handleEditStyle = (
+        array: number[],
+        line: boolean,
+        border = false,
+    ) => {
+        if (selectedDrawnShape?.data) {
+            setDrawnShapeHistory((item: drawDataHistory[]) => {
+                const changedItemIndex = item.findIndex(
+                    (i) => i.time === selectedDrawnShape?.data.time,
+                );
+
+                line && (item[changedItemIndex].line.dash = array);
+                border && (item[changedItemIndex].border.dash = array);
                 addDrawActionStack(item[changedItemIndex], false);
                 return item;
             });
@@ -148,43 +233,92 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                     (i) => i.time !== selectedDrawnShape?.data.time,
                 );
             });
+            setIsDragActive(false);
             setSelectedDrawnShape(undefined);
         }
+    };
+
+    const closeAllOptions = (exclude: string) => {
+        exclude !== 'style' && setIsStyleOptionTabActive(false);
+        exclude !== 'size' && setIsSizeOptionTabActive(false);
+        exclude !== 'line' && setIsLineColorPickerTabActive(false);
+        exclude !== 'border' && setIsBorderColorPickerTabActive(false);
+        exclude !== 'background' && setIsBackgroundColorPickerTabActive(false);
+        exclude !== 'settings' && setIsSettingsTabActive(false);
     };
 
     const editShapeOptions = [
         {
             name: 'Color',
-            type: 'color',
+            type: 'line',
             operation: () => {
-                setIsStyleOptionTabActive(false);
-                setIsSizeOptionTabActive(false);
-                setIsColorPickerTabActive((prev) => !prev);
+                closeAllOptions(
+                    selectedDrawnShape &&
+                        ['Rect'].includes(selectedDrawnShape?.data.type)
+                        ? 'border'
+                        : 'line',
+                );
+                if (
+                    selectedDrawnShape &&
+                    ['Rect'].includes(selectedDrawnShape?.data.type)
+                ) {
+                    setIsBorderColorPickerTabActive((prev) => !prev);
+                } else {
+                    setIsLineColorPickerTabActive((prev) => !prev);
+                }
             },
-            icon: <TbBrush />,
+            icon: <IoMdColorFilter />,
             hover: '#434c58',
+            exclude: [''],
+            include: [''],
+        },
+        {
+            name: 'Background',
+            type: 'background',
+            operation: () => {
+                closeAllOptions('background');
+                setIsBackgroundColorPickerTabActive((prev) => !prev);
+            },
+            icon: <CgColorBucket />,
+            hover: '#434c58',
+            exclude: [''],
+            include: ['Rect', 'DPRange'],
         },
         {
             name: 'Size',
             type: 'size',
             operation: () => {
-                setIsStyleOptionTabActive(false);
-                setIsColorPickerTabActive(false);
+                closeAllOptions('size');
                 setIsSizeOptionTabActive((prev) => !prev);
             },
             icon: <AiOutlineMinus color='white' />,
             hover: '#434c58',
+            exclude: [''],
+            include: [''],
         },
         {
             name: 'Style',
             type: 'style',
             operation: () => {
-                setIsSizeOptionTabActive(false);
-                setIsColorPickerTabActive(false);
+                closeAllOptions('style');
                 setIsStyleOptionTabActive((prev) => !prev);
             },
             icon: <AiOutlineDash color='white' />,
             hover: '#434c58',
+            exclude: ['FibRetracement'],
+            include: [''],
+        },
+        {
+            name: 'Settings',
+            type: 'settings',
+            operation: () => {
+                closeAllOptions('settings');
+                setIsSettingsTabActive((prev) => !prev);
+            },
+            icon: <BsGear />,
+            hover: '#434c58',
+            exclude: [''],
+            include: [''],
         },
         {
             name: 'Delete',
@@ -192,6 +326,8 @@ function FloatingToolbar(props: FloatingToolbarProps) {
             operation: deleteDrawnShape,
             icon: <AiOutlineDelete />,
             hover: '#434c58',
+            exclude: [''],
+            include: [''],
         },
         {
             name: 'Close',
@@ -199,6 +335,8 @@ function FloatingToolbar(props: FloatingToolbarProps) {
             operation: () => setSelectedDrawnShape(undefined),
             icon: <IoCloseOutline />,
             hover: '#c21937',
+            exclude: [''],
+            include: [''],
         },
     ];
 
@@ -256,15 +394,30 @@ function FloatingToolbar(props: FloatingToolbarProps) {
             const floatingDivDrag = d3
                 .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
                 .on('start', function (event) {
+                    const clientX =
+                        event.sourceEvent.type === 'touchstart'
+                            ? event.sourceEvent.changedTouches[0].clientX
+                            : event.sourceEvent.clientX;
+                    const clientY =
+                        event.sourceEvent.type === 'touchstart'
+                            ? event.sourceEvent.changedTouches[0].clientY
+                            : event.sourceEvent.clientY;
+
                     offsetX =
-                        event.sourceEvent.clientX -
-                        floatingDiv.getBoundingClientRect().left;
-                    offsetY =
-                        event.sourceEvent.clientY -
-                        floatingDiv.getBoundingClientRect().top;
+                        clientX - floatingDiv.getBoundingClientRect().left;
+                    offsetY = clientY - floatingDiv.getBoundingClientRect().top;
                 })
                 .on('drag', function (event) {
                     if (floatingDivRef.current) {
+                        const clientX =
+                            event.sourceEvent.type === 'touchmove'
+                                ? event.sourceEvent.changedTouches[0].clientX
+                                : event.sourceEvent.clientX;
+                        const clientY =
+                            event.sourceEvent.type === 'touchmove'
+                                ? event.sourceEvent.changedTouches[0].clientY
+                                : event.sourceEvent.clientY;
+
                         setIsDragging(true);
                         const screenWidth = window.innerWidth;
                         const screenHeight = window.innerHeight;
@@ -274,8 +427,8 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                         const divHeight =
                             floatingDiv.getBoundingClientRect().height;
 
-                        let divLeft = event.sourceEvent.clientX - offsetX;
-                        let divTop = event.sourceEvent.clientY - offsetY;
+                        let divLeft = clientX - offsetX;
+                        let divTop = clientY - offsetY;
 
                         divLeft = Math.max(
                             1,
@@ -285,6 +438,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                             1,
                             Math.min(screenHeight - divHeight, divTop),
                         );
+
                         setDivLeft(divLeft);
                         setDivTop(divTop);
                     }
@@ -304,10 +458,17 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 .select(floatingDivRef.current)
                 .node() as HTMLDivElement;
 
-            setDivLeft(mainCanvasBoundingClientRect?.width / 1.3);
+            const yAxis = d3.select('#y-axis-canvas').node() as HTMLDivElement;
+
+            setDivLeft(
+                mainCanvasBoundingClientRect.x +
+                    mainCanvasBoundingClientRect.width / 2 -
+                    floatingDiv.getBoundingClientRect().width / 2 +
+                    yAxis.getBoundingClientRect().width / 2,
+            );
             setDivTop(
                 mainCanvasBoundingClientRect?.top -
-                    (floatingDiv.getBoundingClientRect().height + 10),
+                    floatingDiv.getBoundingClientRect().height,
             );
         }
     }, [
@@ -321,7 +482,6 @@ function FloatingToolbar(props: FloatingToolbarProps) {
             style={{
                 left: divLeft + 'px',
                 top: divTop + 'px',
-                gridTemplateColumns: '1fr 1fr 1fr 1fr',
                 visibility:
                     selectedDrawnShape !== undefined && divLeft && divTop
                         ? 'visible'
@@ -334,28 +494,54 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                     <Divider></Divider>
                 </FloatingButtonDiv>
 
-                {editShapeOptions.map((item, index) => (
-                    <FloatingOptions
-                        key={index}
-                        onClick={item.operation}
-                        hoverColor={item.hover}
-                    >
-                        {item.icon}
-                    </FloatingOptions>
-                ))}
+                {editShapeOptions.map(
+                    (item, index) =>
+                        selectedDrawnShape?.data.type &&
+                        ((!item.exclude.includes(
+                            selectedDrawnShape?.data.type,
+                        ) &&
+                            item.include.includes('')) ||
+                            (item.exclude.includes('') &&
+                                item.include.includes(
+                                    selectedDrawnShape?.data.type,
+                                ))) && (
+                            <FloatingOptions
+                                key={index}
+                                onClick={item.operation}
+                                hoverColor={item.hover}
+                            >
+                                {item.icon}
+                            </FloatingOptions>
+                        ),
+                )}
             </FloatingDiv>
 
-            {isColorPickerTabActive && (
-                <OptionsTab>
+            {(isLineColorPickerTabActive ||
+                isBorderColorPickerTabActive ||
+                isBackgroundColorPickerTabActive) && (
+                <ColorPickerTab>
                     <SketchPicker
-                        color={backgroundColorPicker}
+                        color={
+                            isLineColorPickerTabActive
+                                ? colorPicker.lineColor
+                                : isBorderColorPickerTabActive
+                                ? colorPicker.borderColor
+                                : colorPicker.background
+                        }
                         width={'170px'}
-                        onChange={(item) => handleEditColor(item)}
+                        onChange={(item) =>
+                            handleEditColor(
+                                item,
+                                isLineColorPickerTabActive,
+                                isBorderColorPickerTabActive,
+                                isBackgroundColorPickerTabActive,
+                            )
+                        }
                     />
-                </OptionsTab>
+                </ColorPickerTab>
             )}
 
-            {isSizeOptionTabActive && (
+            {isSizeOptionTabActive && selectedDrawnShape && (
                 <OptionsTab
                     style={{
                         marginLeft: '70px',
@@ -364,7 +550,17 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                     {sizeOptions.map((item, index) => (
                         <OptionsTabSize
                             key={index}
-                            onClick={() => handleEditSize(item.value)}
+                            onClick={() =>
+                                handleEditSize(
+                                    item.value,
+                                    !['Rect'].includes(
+                                        selectedDrawnShape?.data.type,
+                                    ),
+                                    ['Rect'].includes(
+                                        selectedDrawnShape?.data.type,
+                                    ),
+                                )
+                            }
                         >
                             {item.icon} {item.name}
                         </OptionsTabSize>
@@ -372,7 +568,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 </OptionsTab>
             )}
 
-            {isStyleOptionTabActive && (
+            {isStyleOptionTabActive && selectedDrawnShape && (
                 <OptionsTab
                     style={{
                         marginLeft: '70px',
@@ -381,12 +577,38 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                     {styleOptions.map((item, index) => (
                         <OptionsTabStyle
                             key={index}
-                            onClick={() => handleEditStyle(item.value)}
+                            onClick={() =>
+                                handleEditStyle(
+                                    item.value,
+                                    !['Rect'].includes(
+                                        selectedDrawnShape?.data.type,
+                                    ),
+                                    ['Rect'].includes(
+                                        selectedDrawnShape?.data.type,
+                                    ),
+                                )
+                            }
                         >
                             {item.icon} {item.name}
                         </OptionsTabStyle>
                     ))}
                 </OptionsTab>
+            )}
+
+            {isSettingsTabActive && (
+                <FloatingToolbarSettings
+                    selectedDrawnShape={selectedDrawnShape}
+                    handleEditColor={handleEditColor}
+                    handleEditSize={handleEditSize}
+                    handleEditStyle={handleEditStyle}
+                    sizeOptions={sizeOptions}
+                    styleOptions={styleOptions}
+                    handleEditLines={handleEditLines}
+                    setIsShapeEdited={setIsShapeEdited}
+                    setDrawnShapeHistory={setDrawnShapeHistory}
+                    addDrawActionStack={addDrawActionStack}
+                    colorPicker={colorPicker}
+                />
             )}
         </FloatingDivContainer>
     );

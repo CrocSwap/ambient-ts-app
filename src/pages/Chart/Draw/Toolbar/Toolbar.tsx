@@ -3,8 +3,10 @@ import styles from './Toolbar.module.css';
 import drawLine from '../../../../assets/images/icons/draw/draw_line.svg';
 import drawCross from '../../../../assets/images/icons/draw/draw_cross.svg';
 import drawRect from '../../../../assets/images/icons/draw/rect.svg';
+import dprange from '../../../../assets/images/icons/draw/dprange.svg';
 // import drawAngle from '../../../../assets/images/icons/draw/angle_line.svg';
 import horizontalRay from '../../../../assets/images/icons/draw/horizontal_ray.svg';
+import fibRetracement from '../../../../assets/images/icons/draw/fibonacci_retracement.svg';
 
 interface ToolbarProps {
     activeDrawingType: string;
@@ -61,12 +63,20 @@ function Toolbar(props: ToolbarProps) {
         //     label: 'Angle',
         // },
         {
-            icon: drawRect,
-            label: 'Square',
-        },
-        {
             icon: horizontalRay,
             label: 'Ray',
+        },
+        {
+            icon: drawRect,
+            label: 'Rect',
+        },
+        {
+            icon: fibRetracement,
+            label: 'FibRetracement',
+        },
+        {
+            icon: dprange,
+            label: 'DPRange',
         },
 
         // Add more icons here
@@ -111,15 +121,13 @@ function Toolbar(props: ToolbarProps) {
                 </div>
             </div>
 
-            <div
-                className={styles.divider_container}
-                onClick={() => setIsToolbarOpen((prev: boolean) => !prev)}
-            >
+            <div className={styles.divider_container}>
                 <div className={styles.divider}></div>
                 <div
                     className={` ${
                         isToolbarOpen ? styles.divider_button : ''
                     } ${styles.close_divider_button} `}
+                    onClick={() => setIsToolbarOpen((prev: boolean) => !prev)}
                 >
                     <span
                         className={` ${

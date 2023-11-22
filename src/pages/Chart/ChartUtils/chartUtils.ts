@@ -1,10 +1,13 @@
 // eslint-disable-next-line quotes
-import { DetailedHTMLProps, HTMLAttributes, MutableRefObject } from 'react';
+import {
+    DetailedHTMLProps,
+    HTMLAttributes,
+    MouseEvent,
+    MutableRefObject,
+} from 'react';
 import * as d3 from 'd3';
 import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
-import { TradeDataContextIF } from '../../../contexts/TradeDataContext';
-
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace JSX {
@@ -34,15 +37,33 @@ export type chartAnnotationData = {
 };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type lineData = { x: number; y: number; denomInBase: boolean };
+export type poolDataChart = {
+    poolIndex: number;
+    tokenA: string;
+    tokenB: string;
+    isTokenABase: boolean;
+    denomInBase: boolean;
+};
+
+export type drawnShapeEditAttributes = {
+    active: boolean;
+    color: string;
+    lineWidth: number;
+    dash: number[];
+};
+
 export type drawDataHistory = {
     data: lineData[];
     type: string;
     time: number;
-    pool: TradeDataContextIF;
-    color: string;
-    lineWidth: number;
-    style: number[];
+    pool: poolDataChart;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    extraData: Array<any>;
+    border: drawnShapeEditAttributes;
+    line: drawnShapeEditAttributes;
+    background: drawnShapeEditAttributes;
 };
+
 export type bandLineData = {
     fromValue: number;
     toValue: number;
@@ -100,6 +121,33 @@ export type zoomUtils = {
     zoom: d3.ZoomBehavior<Element, unknown>;
     xAxisZoom: d3.ZoomBehavior<Element, unknown>;
 };
+
+export const fibLevels = [
+    { level: 0, active: true, color: '#787b86' },
+    { level: 0.236, active: true, color: '#f23645' },
+    { level: 0.382, active: true, color: '#ff9800' },
+    { level: 0.5, active: true, color: '#4caf50' },
+    { level: 0.618, active: true, color: '#089981' },
+    { level: 0.786, active: true, color: '#00bcd4' },
+    { level: 1, active: true, color: '#787b86' },
+    { level: 1.272, active: false, color: '#ff9800' },
+    { level: 1.414, active: false, color: '#f23645' },
+    { level: 1.618, active: true, color: '#2962ff' },
+    { level: 2, active: false, color: '#089981' },
+    { level: 2.272, active: false, color: '#ff9800' },
+    { level: 2.414, active: false, color: '#4caf50' },
+    { level: 2.618, active: true, color: '#f23645' },
+    { level: 3, active: false, color: '#00bcd4' },
+    { level: 3.272, active: false, color: '#787b86' },
+    { level: 3.414, active: false, color: '#2962ff' },
+    { level: 3.618, active: true, color: '#9c27b0' },
+    { level: 4, active: false, color: '#f23645' },
+    { level: 4.236, active: true, color: '#e91e63' },
+    { level: 4.272, active: false, color: '#9c27b0' },
+    { level: 4.414, active: false, color: '#e91e63' },
+    { level: 4.618, active: false, color: '#ff9800' },
+    { level: 4.764, active: false, color: '#089981' },
+];
 
 export function setCanvasResolution(canvas: HTMLCanvasElement) {
     const ratio = window.devicePixelRatio < 1 ? 1 : window.devicePixelRatio;
@@ -215,4 +263,131 @@ export function fillLiqAdvanced(
             }
         }
     }
+}
+
+export function formatTimeDifference(startDate: Date, endDate: Date): string {
+    const timeDifference = endDate.getTime() - startDate.getTime();
+    const secondsDifference = Math.floor(timeDifference / 1000);
+
+    const days = Math.floor(secondsDifference / 86400);
+    const hours = Math.floor((secondsDifference % 86400) / 3600);
+    const minutes = Math.floor((secondsDifference % 3600) / 60);
+
+    if (days > 0) {
+        return `${days}d ${hours}h ${minutes}m`;
+    } else {
+        return `${hours}h ${minutes}m`;
+    }
+}
+
+export function calculateFibRetracement(
+    lineData: lineData[],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fibLevels: Array<any>,
+) {
+    const retracementIsUp = lineData[0].y > lineData[1].y;
+
+    const pointLevel = lineData[1].y;
+    const secondLevel = lineData[0].y;
+
+    const diff = Math.abs(pointLevel - secondLevel);
+
+    const fibLineData: Array<
+        {
+            x: number;
+            y: number;
+            denomInBase: boolean;
+            color: string;
+            level: number;
+        }[]
+    > = [];
+
+    fibLevels.forEach((level) => {
+        if (level.active) {
+            fibLineData.push([
+                {
+                    x: lineData[0].x,
+                    y:
+                        pointLevel +
+                        diff * level.level * (retracementIsUp ? 1 : -1),
+                    denomInBase: lineData[0].denomInBase,
+                    color: level.color,
+                    level: level.level,
+                },
+                {
+                    x: lineData[1].x,
+                    y:
+                        pointLevel +
+                        diff * level.level * (retracementIsUp ? 1 : -1),
+                    denomInBase: lineData[0].denomInBase,
+                    color: level.color,
+                    level: level.level,
+                },
+            ]);
+        }
+    });
+
+    fibLineData.sort((a, b) =>
+        retracementIsUp ? a[0].y - b[0].y : b[0].y - a[0].y,
+    );
+
+    return fibLineData;
+}
+
+export function calculateFibRetracementBandAreas(
+    lineData: lineData[],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fibLevels: Array<any>,
+) {
+    const retracementIsUp = lineData[0].y > lineData[1].y;
+
+    const pointLevel = lineData[1].y;
+    const secondLevel = lineData[0].y;
+
+    const diff = Math.abs(pointLevel - secondLevel);
+
+    const fibLineData: Array<{
+        fromValue: number;
+        toValue: number;
+        denomInBase: boolean;
+        color: string;
+    }> = [];
+
+    const activeFibLevels = fibLevels.filter((level) => level.active);
+
+    activeFibLevels.reduce((prev, curr) => {
+        if (curr.active) {
+            fibLineData.push({
+                fromValue:
+                    pointLevel + diff * prev.level * (retracementIsUp ? 1 : -1),
+                toValue:
+                    pointLevel + diff * curr.level * (retracementIsUp ? 1 : -1),
+                denomInBase: lineData[0].denomInBase,
+                color: curr.color,
+            });
+        }
+
+        return curr;
+    });
+
+    fibLineData.sort((a, b) =>
+        retracementIsUp ? a.fromValue - b.fromValue : b.fromValue - a.fromValue,
+    );
+
+    return fibLineData;
+}
+
+export function getXandYLocationForChart(
+    event: MouseEvent<HTMLDivElement>,
+    rect: DOMRect,
+) {
+    let offsetY = event.clientY - rect?.top;
+    let offsetX = event.clientX - rect?.left;
+
+    if (event instanceof TouchEvent) {
+        offsetY = event.targetTouches[0].clientY - rect?.top;
+        offsetX = event.targetTouches[0].clientX - rect?.left;
+    }
+
+    return { offsetX: offsetX, offsetY: offsetY };
 }

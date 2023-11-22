@@ -584,7 +584,7 @@ function YAxisCanvas(props: yAxisIF) {
                     const rectHeight =
                         yScale(secondPointInDenom) - yScale(firstPointInDenom);
 
-                    context.fillStyle = '#7674ff1e';
+                    context.fillStyle = 'rgba(41, 98, 255, 0.15)';
                     context.fillRect(
                         0,
                         yScale(firstPointInDenom),
@@ -596,7 +596,7 @@ function YAxisCanvas(props: yAxisIF) {
                         context,
                         yScale(shapePoint),
                         X,
-                        '#5553be',
+                        '#2962ff',
                         'white',
                         shapePointTick,
                         undefined,

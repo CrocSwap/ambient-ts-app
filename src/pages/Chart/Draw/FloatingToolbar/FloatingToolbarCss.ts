@@ -1,11 +1,12 @@
 import styled from 'styled-components';
 
 const FloatingDivContainer = styled.div`
-    align-items: center;
     height: 30px;
-    border-radius: 3px;
-    box-shadow: 0 2px 6px #0d1117;
-    display: flex,
+
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+
     opacity: 1;
     position: fixed;
     z-index: 10000;
@@ -15,6 +16,7 @@ const FloatingDiv = styled.div`
     align-items: center;
 
     height: 30px;
+    max-width: 300px;
 
     border-radius: 3px;
     box-shadow: 0 2px 6px #0d1117;
@@ -75,7 +77,20 @@ const OptionsTab = styled.div`
     margin: 4px;
     padding: 4px;
 
+    width: 50%;
+
     justify-content: end;
+`;
+
+const ColorPickerTab = styled.div`
+    display: flex;
+
+    align-items: center;
+
+    margin: 4px;
+    padding: 4px;
+
+    justify-content: center;
 `;
 
 const OptionsTabSize = styled.div`
@@ -115,4 +130,5 @@ export {
     OptionsTab,
     OptionsTabSize,
     OptionsTabStyle,
+    ColorPickerTab,
 };
