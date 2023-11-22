@@ -176,10 +176,10 @@ export function useUndoRedo(denomInBase: boolean) {
                     type: lastActionData.type,
                     time: lastActionData.time,
                     pool: lastActionData.pool,
-                    border: lastActionData.border,
-                    line: lastActionData.line,
-                    background: lastActionData.background,
-                    extraData: lastActionData.extraData,
+                    border: structuredClone(lastActionData.border),
+                    line: structuredClone(lastActionData.line),
+                    background: structuredClone(lastActionData.background),
+                    extraData: structuredClone(lastActionData.extraData),
                 } as drawDataHistory;
             }
 
@@ -269,10 +269,10 @@ export function useUndoRedo(denomInBase: boolean) {
                 type: action.type,
                 time: action.time,
                 pool: action.pool,
-                border: action.border,
-                line: action.line,
-                background: action.background,
-                extraData: action.extraData,
+                border: structuredClone(action.border),
+                line: structuredClone(action.line),
+                background: structuredClone(action.background),
+                extraData: structuredClone(action.extraData),
             } as drawDataHistory;
 
             if (
@@ -323,10 +323,10 @@ export function useUndoRedo(denomInBase: boolean) {
                             pool: lastValue.pool,
                             time: lastValue.time,
                             type: lastValue.type,
-                            border: lastValue.border,
-                            line: lastValue.line,
-                            background: lastValue.background,
-                            extraData: lastValue.extraData,
+                            border: structuredClone(lastValue.border),
+                            line: structuredClone(lastValue.line),
+                            background: structuredClone(lastValue.background),
+                            extraData: structuredClone(lastValue.extraData),
                         });
                     }
                     if (undoActionList) {
@@ -343,25 +343,14 @@ export function useUndoRedo(denomInBase: boolean) {
     const addDrawActionStack = useCallback(
         (tempLastData: drawDataHistory, isNewShape: boolean) => {
             const tempDta = {
-                data: [
-                    {
-                        x: tempLastData.data[0].x,
-                        y: tempLastData.data[0].y,
-                        denomInBase: tempLastData.data[0].denomInBase,
-                    },
-                    {
-                        x: tempLastData.data[1].x,
-                        y: tempLastData.data[1].y,
-                        denomInBase: tempLastData.data[0].denomInBase,
-                    },
-                ],
+                data: structuredClone(tempLastData.data),
                 type: tempLastData.type,
                 time: tempLastData.time,
                 pool: tempLastData.pool,
-                border: tempLastData.border,
-                line: tempLastData.line,
-                background: tempLastData.background,
-                extraData: tempLastData.extraData,
+                border: structuredClone(tempLastData.border),
+                line: structuredClone(tempLastData.line),
+                background: structuredClone(tempLastData.background),
+                extraData: structuredClone(tempLastData.extraData),
             };
 
             const tempMap = new Map<actionKeyIF, drawDataHistory[]>(
