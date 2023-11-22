@@ -54,8 +54,8 @@ async function expandLiquidityData(
     const pool = crocEnv.pool(base, quote);
     const curveTick = pool.spotTick();
 
-    const basePricePromise = cachedFetchTokenPrice(base, chainId);
-    const quotePricePromise = cachedFetchTokenPrice(quote, chainId);
+    const basePricePromise = cachedFetchTokenPrice(base, chainId, crocEnv);
+    const quotePricePromise = cachedFetchTokenPrice(quote, chainId, crocEnv);
 
     const basePrice = (await basePricePromise)?.usdPrice || 0.0;
     const quotePrice = (await quotePricePromise)?.usdPrice || 0.0;

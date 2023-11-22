@@ -106,7 +106,11 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     const [usdcUsdValueForDom, setUsdcUsdValueForDom] = useState<
         string | undefined
     >();
+
+    const { ethMainnetUsdPrice, crocEnv } = useContext(CrocEnvContext);
+
     useEffect(() => {
+        if (!crocEnv) return;
         if (usdcData === undefined) {
             setUsdcUsdValueForDom(undefined);
             setUsdcBalanceForDom(undefined);
@@ -134,9 +138,12 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 : '0.00';
 
         setUsdcBalanceForDom(usdcCombinedBalanceDisplayTruncated);
-
         Promise.resolve(
-            cachedFetchTokenPrice(mainnetUSDC.address, ethereumMainnet.chainId),
+            cachedFetchTokenPrice(
+                mainnetUSDC.address,
+                ethereumMainnet.chainId,
+                crocEnv,
+            ),
         ).then((price) => {
             if (price?.usdPrice !== undefined) {
                 const usdValueNum: number =
@@ -153,9 +160,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 setUsdcUsdValueForDom(undefined);
             }
         });
-    }, [chainId, JSON.stringify(usdcData)]);
-
-    const { ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    }, [crocEnv, chainId, JSON.stringify(usdcData)]);
 
     const nativeCombinedBalance =
         nativeData?.walletBalance !== undefined
