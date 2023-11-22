@@ -58,6 +58,7 @@ export function useCreateRangePosition() {
         isAdd: boolean;
         setNewRangeTransactionHash: (s: string) => void;
         setTxErrorCode: (s: string) => void;
+        setTxErrorMessage: (s: string) => void;
         resetConfirmation: () => void;
         setIsTxCompletedRange?: React.Dispatch<React.SetStateAction<boolean>>;
     }) => {
@@ -73,6 +74,7 @@ export function useCreateRangePosition() {
             isAdd,
             setNewRangeTransactionHash,
             setTxErrorCode,
+            setTxErrorMessage,
             setIsTxCompletedRange,
         } = params;
 
@@ -169,6 +171,7 @@ export function useCreateRangePosition() {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
+            setTxErrorMessage(error?.data?.message);
         }
 
         let receipt;

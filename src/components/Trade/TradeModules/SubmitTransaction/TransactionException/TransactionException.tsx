@@ -3,7 +3,12 @@ import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import DividerDark from '../../../../Global/DividerDark/DividerDark';
 
-export default function TransactionException() {
+interface propsIF {
+    txErrorMessage: string;
+}
+
+export default function TransactionException(props: propsIF) {
+    const { txErrorMessage } = props;
     const rangeModuleActive = location.pathname.includes('/trade/pool');
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -16,6 +21,9 @@ export default function TransactionException() {
     const primaryTokenSymbol = tradeData.isTokenAPrimaryRange
         ? tradeData.tokenA.symbol
         : tradeData.tokenB.symbol;
+
+    const formattedErrorMessage =
+        'Error Message: ' + txErrorMessage.replace('err: ', '');
 
     return (
         <div className={styles.removal_pending}>
@@ -43,6 +51,8 @@ export default function TransactionException() {
                         A preliminary simulation of your transaction has failed.
                         We apologize for this inconvenience.
                     </p>
+                    <DividerDark />
+                    <p>{formattedErrorMessage}</p>
                     <DividerDark />
                     <p>
                         Please check your wallet for notifications or try again.

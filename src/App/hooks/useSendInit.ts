@@ -23,6 +23,7 @@ export function useSendInit(
     setIsInitPending: React.Dispatch<React.SetStateAction<boolean>>,
     setIsTxCompletedInit: React.Dispatch<React.SetStateAction<boolean>>,
     setTxErrorCode: React.Dispatch<React.SetStateAction<string>>,
+    setTxErrorMessage: React.Dispatch<React.SetStateAction<string>>,
     resetConfirmation: () => void, // Include resetConfirmation as an argument
 ) {
     const dispatch = useAppDispatch();
@@ -97,6 +98,7 @@ export function useSendInit(
                 }
                 console.error({ error });
                 setTxErrorCode(error?.code);
+                setTxErrorMessage(error?.data?.message);
             } finally {
                 setIsInitPending(false);
             }
