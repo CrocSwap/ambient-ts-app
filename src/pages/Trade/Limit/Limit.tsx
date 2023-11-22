@@ -104,6 +104,7 @@ export default function Limit() {
     const [newLimitOrderTransactionHash, setNewLimitOrderTransactionHash] =
         useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
+    const [txErrorMessage, setTxErrorMessage] = useState('');
     const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
     const [endDisplayPrice, setEndDisplayPrice] = useState<number>(0);
     const [startDisplayPrice, setStartDisplayPrice] = useState<number>(0);
@@ -429,6 +430,7 @@ export default function Limit() {
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setTxErrorCode('');
+        setTxErrorMessage('');
         setNewLimitOrderTransactionHash('');
     };
 
@@ -505,7 +507,8 @@ export default function Limit() {
                 location.reload();
             }
             console.error({ error });
-            setTxErrorCode(error.code);
+            setTxErrorCode(error?.code);
+            setTxErrorMessage(error?.data?.message);
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
@@ -547,7 +550,7 @@ export default function Limit() {
     const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
         useState<number>(0.01);
 
-    const amountToReduceEthScroll = 0.0005; // .0005 ETH
+    const amountToReduceEthScroll = 0.0007; // .0007 ETH
 
     const amountToReduceEth =
         chainId === '0x82750' || chainId === '0x8274f'
@@ -700,6 +703,7 @@ export default function Limit() {
                             newLimitOrderTransactionHash
                         }
                         txErrorCode={txErrorCode}
+                        txErrorMessage={txErrorMessage}
                         showConfirmation={showConfirmation}
                         resetConfirmation={resetConfirmation}
                         startDisplayPrice={startDisplayPrice}
@@ -744,6 +748,7 @@ export default function Limit() {
                         type='Limit'
                         newTransactionHash={newLimitOrderTransactionHash}
                         txErrorCode={txErrorCode}
+                        txErrorMessage={txErrorMessage}
                         resetConfirmation={resetConfirmation}
                         sendTransaction={sendLimitOrder}
                         transactionPendingDisplayString={`Submitting Limit Order to Swap ${tokenAInputQty} ${tokenA.symbol} for ${tokenBInputQty} ${tokenB.symbol}`}
