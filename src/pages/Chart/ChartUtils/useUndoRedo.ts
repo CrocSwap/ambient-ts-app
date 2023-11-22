@@ -1,4 +1,8 @@
-import { CHART_ANNOTATIONS_LS_KEY, drawDataHistory } from './chartUtils';
+import {
+    CHART_ANNOTATIONS_LS_KEY,
+    drawDataHistory,
+    drawnShapeEditAttributes,
+} from './chartUtils';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
@@ -15,8 +19,9 @@ export function useUndoRedo(denomInBase: boolean) {
         ? JSON.parse(initialData)?.drawnShapes || []
         : [];
 
-    const [drawnShapeHistory, setDrawnShapeHistory] =
-        useState<drawDataHistory[]>(initialArray);
+    const [drawnShapeHistory, setDrawnShapeHistory] = useState<
+        drawDataHistory[]
+    >([]);
 
     const {
         chainData: { poolIndex },
@@ -31,6 +36,55 @@ export function useUndoRedo(denomInBase: boolean) {
     const currentPool = useContext(TradeDataContext);
 
     const { tokenA, tokenB } = currentPool;
+
+    useEffect(() => {
+        if (drawnShapeHistory.length === 0 && initialArray.length > 0) {
+            const refactoredArray: Array<drawDataHistory> = [];
+
+            initialArray.forEach((element: any) => {
+                if (
+                    Object.prototype.hasOwnProperty.call(element, 'lineWidth')
+                ) {
+                    const newElement: drawDataHistory = {
+                        data: element.data,
+                        type: element.type,
+                        time: element.time,
+                        pool: element.pool,
+                        extraData: [],
+                        line: {
+                            active: !['Rect'].includes(element.type),
+                            color: 'rgba(115, 113, 252, 1)',
+                            lineWidth: 1.5,
+                            dash:
+                                element.type === 'FibRetracement'
+                                    ? [6, 6]
+                                    : [0, 0],
+                        } as drawnShapeEditAttributes,
+
+                        border: {
+                            active: ['Rect'].includes(element.type),
+                            color: 'rgba(115, 113, 252, 1)',
+                            lineWidth: 0,
+                            dash: [0, 0],
+                        } as drawnShapeEditAttributes,
+
+                        background: {
+                            active: ['Rect', 'DPRange'].includes(element.type),
+                            color: 'rgba(115, 113, 252, 0.15)',
+                            lineWidth: 1.5,
+                            dash: [0, 0],
+                        } as drawnShapeEditAttributes,
+                    };
+
+                    refactoredArray.push(newElement);
+                }
+            });
+
+            setDrawnShapeHistory(() =>
+                refactoredArray.length > 0 ? refactoredArray : initialArray,
+            );
+        }
+    }, [initialData]);
 
     const actionKey = useMemo(() => {
         const newActionKey = {
