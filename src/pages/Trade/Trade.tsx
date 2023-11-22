@@ -245,6 +245,7 @@ function Trade() {
                 <ContentContainer noPadding noStyle={smallScreen}>
                     <Outlet
                         context={{
+                            urlParamMap: urlParamMap,
                             tradeData: tradeData,
                             limitTick: limitTick,
                             updateURL: updateURL,
