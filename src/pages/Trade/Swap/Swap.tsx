@@ -116,6 +116,7 @@ function Swap(props: propsIF) {
 
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
+    const [txErrorMessage, setTxErrorMessage] = useState('');
     const [swapButtonErrorMessage, setSwapButtonErrorMessage] =
         useState<string>('');
 
@@ -180,7 +181,7 @@ function Swap(props: propsIF) {
     // const amountToReduceEthMainnet = 0.01; // .01 ETH
     const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
         useState<number>(0.01);
-    const amountToReduceEthScroll = 0.0005; // .0005 ETH
+    const amountToReduceEthScroll = 0.0007; // .0007 ETH
 
     const amountToReduceEth =
         chainId === '0x82750' || chainId === '0x8274f'
@@ -305,6 +306,7 @@ function Swap(props: propsIF) {
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setTxErrorCode('');
+        setTxErrorMessage('');
         setNewSwapTransactionHash('');
     };
 
@@ -365,6 +367,7 @@ function Swap(props: propsIF) {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
+            setTxErrorMessage(error?.data?.message);
         }
 
         let receipt;
@@ -539,6 +542,7 @@ function Swap(props: propsIF) {
                         initiateSwapMethod={initiateSwap}
                         newSwapTransactionHash={newSwapTransactionHash}
                         txErrorCode={txErrorCode}
+                        txErrorMessage={txErrorMessage}
                         showConfirmation={showConfirmation}
                         resetConfirmation={resetConfirmation}
                         slippageTolerancePercentage={
@@ -592,6 +596,7 @@ function Swap(props: propsIF) {
                         type='Swap'
                         newTransactionHash={newSwapTransactionHash}
                         txErrorCode={txErrorCode}
+                        txErrorMessage={txErrorMessage}
                         resetConfirmation={resetConfirmation}
                         sendTransaction={initiateSwap}
                         transactionPendingDisplayString={`Swapping ${sellQtyString} ${tokenA.symbol} for ${buyQtyString} ${tokenB.symbol}`}

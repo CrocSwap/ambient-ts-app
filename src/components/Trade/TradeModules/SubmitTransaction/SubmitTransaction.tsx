@@ -29,6 +29,7 @@ interface propsIF {
         | 'Reset';
     newTransactionHash: string;
     txErrorCode: string;
+    txErrorMessage: string;
     resetConfirmation: () => void;
     sendTransaction: () => Promise<void>;
     transactionPendingDisplayString: string;
@@ -41,6 +42,7 @@ export default function SubmitTransaction(props: propsIF) {
         type,
         newTransactionHash,
         txErrorCode,
+        txErrorMessage,
         resetConfirmation,
         sendTransaction,
         transactionPendingDisplayString,
@@ -81,7 +83,9 @@ export default function SubmitTransaction(props: propsIF) {
             initiateTx={sendTransaction}
         />
     );
-    const transactionException = <TransactionException />;
+    const transactionException = (
+        <TransactionException txErrorMessage={txErrorMessage} />
+    );
 
     const lastReceipt =
         receiptData?.sessionReceipts.length > 0
