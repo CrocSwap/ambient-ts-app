@@ -41,6 +41,7 @@ export function useUndoRedo(denomInBase: boolean) {
         if (drawnShapeHistory.length === 0 && initialArray.length > 0) {
             const refactoredArray: Array<drawDataHistory> = [];
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             initialArray.forEach((element: any) => {
                 if (
                     Object.prototype.hasOwnProperty.call(element, 'lineWidth')
