@@ -929,6 +929,7 @@ export default function InitPool() {
         undefined | string
     >('');
     const [txErrorCode, setTxErrorCode] = useState('');
+    const [txErrorMessage, setTxErrorMessage] = useState('');
     const [isInitPending, setIsInitPending] = useState(false);
     const [isTxCompletedInit, setIsTxCompletedInit] = useState(false);
     const [isTxCompletedRange, setIsTxCompletedRange] = useState(false);
@@ -942,6 +943,7 @@ export default function InitPool() {
 
     const resetConfirmation = () => {
         setTxErrorCode('');
+        setTxErrorMessage('');
         setNewRangeTransactionHash('');
         setNewInitTransactionHash('');
         setIsTxCompletedInit(false);
@@ -966,6 +968,7 @@ export default function InitPool() {
         setIsInitPending,
         setIsTxCompletedInit,
         setTxErrorCode,
+        setTxErrorMessage,
         resetConfirmation,
     );
 
@@ -1029,6 +1032,7 @@ export default function InitPool() {
             isAdd: false, // Always false for init
             setNewRangeTransactionHash,
             setTxErrorCode,
+            setTxErrorMessage,
             resetConfirmation,
             poolPrice: selectedPoolNonDisplayPrice,
             setIsTxCompletedRange: setIsTxCompletedRange,
@@ -1722,6 +1726,7 @@ export default function InitPool() {
         isAmbient,
         isTokenABase,
         errorCode: txErrorCode,
+        txErrorMessage: txErrorMessage,
         isTxCompletedInit,
         isTxCompletedRange,
         handleNavigation,
