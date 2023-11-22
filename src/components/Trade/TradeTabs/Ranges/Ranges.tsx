@@ -374,9 +374,7 @@ function Ranges(props: propsIF) {
         if (sortedPositions.length === 0) return;
         (async () => {
             const results = await Promise.allSettled(
-                sortedPositions.map((tx) =>
-                    fetchBatchENSAddresses(tx.user ?? getAddress(tx.user)),
-                ),
+                sortedPositions.map((tx) => fetchBatchENSAddresses(tx.user)),
             );
 
             results.forEach((result, index) => {

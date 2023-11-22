@@ -82,11 +82,3 @@ export const BATCH_ENS_CACHE_EXPIRY = process.env.BATCH_ENS_CACHE_EXPIRY
 export const REQUEST_TIMEOUT_DELAY = process.env.REACT_APP_REQUEST_TIMEOUT_DELAY
     ? parseFloat(process.env.REACT_APP_REQUEST_TIMEOUT_DELAY)
     : 3000;
-
-export const BATCH_MIN_RETRY_DELAY = process.env.REACT_APP_BATCH_MIN_RETRY_DELAY
-    ? parseFloat(process.env.REACT_APP_BATCH_MIN_RETRY_DELAY)
-    : 3000;
-
-export const BATCH_MAX_RETRY_DELAY = process.env.REACT_APP_BATCH_MAX_RETRY_DELAY
-    ? parseFloat(process.env.REACT_APP_BATCH_MAX_RETRY_DELAY)
-    : 10 * 60 * 1000; // 10 minutes

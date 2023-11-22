@@ -207,7 +207,7 @@ function Leaderboard() {
         (async () => {
             const results = await Promise.allSettled(
                 usePaginateDataOrNull.map((tx) =>
-                    fetchBatchENSAddresses(tx.user ?? getAddress(tx.user)),
+                    fetchBatchENSAddresses(tx.user),
                 ),
             );
 

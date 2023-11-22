@@ -392,24 +392,22 @@ function Orders(props: propsIF) {
     const [ensAddressesMap] = useState<Map<string, string>>(new Map());
 
     useEffect(() => {
-        if (sortedLimits.length === 0) return;
+        if (_DATA.currentData.length === 0) return;
         (async () => {
             const results = await Promise.allSettled(
-                sortedLimits.map((tx) =>
-                    fetchBatchENSAddresses(tx.user ?? getAddress(tx.user)),
-                ),
+                _DATA.currentData.map((tx) => fetchBatchENSAddresses(tx.user)),
             );
 
             results.forEach((result, index) => {
                 if (result.status === 'fulfilled' && result.value) {
                     const user =
-                        sortedLimits[index].user ??
-                        getAddress(sortedLimits[index].user);
+                        _DATA.currentData[index].user ??
+                        getAddress(_DATA.currentData[index].user);
                     ensAddressesMap.set(user, result.value);
                 }
             });
         })();
-    }, [sortedLimits]);
+    }, [_DATA.currentData]);
 
     const currentRowItemContent = () =>
         _DATA.currentData.map((order, idx) => (

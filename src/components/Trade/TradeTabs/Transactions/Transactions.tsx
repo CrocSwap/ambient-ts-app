@@ -508,22 +508,22 @@ function Transactions(props: propsIF) {
     const [ensAddressesMap] = useState<Map<string, string>>(new Map());
 
     useEffect(() => {
-        if (sortedTransactions.length === 0) return;
+        if (_DATA.currentData.length === 0) return;
         (async () => {
             const results = await Promise.allSettled(
-                sortedTransactions.map((tx) => fetchBatchENSAddresses(tx.user)),
+                _DATA.currentData.map((tx) => fetchBatchENSAddresses(tx.user)),
             );
 
             results.forEach((result, index) => {
                 if (result.status === 'fulfilled' && result.value) {
                     const user =
-                        sortedTransactions[index].user ??
-                        getAddress(sortedTransactions[index].user);
+                        _DATA.currentData[index].user ??
+                        getAddress(_DATA.currentData[index].user);
                     ensAddressesMap.set(user, result.value);
                 }
             });
         })();
-    }, [sortedTransactions]);
+    }, [_DATA.currentData]);
 
     const currentRowItemContent = () =>
         _DATA.currentData.map((tx, idx) => (

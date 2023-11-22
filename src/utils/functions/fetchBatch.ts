@@ -48,6 +48,8 @@ class BatchRequestManager {
             }
         });
 
+        console.log({ sendableNonce });
+
         if (sendableNonce.length === 0) return;
 
         const addressQueryBody = JSON.stringify({
@@ -131,6 +133,7 @@ class BatchRequestManager {
 
     static clean(): void {
         const requests = BatchRequestManager.pendingRequests;
+
         Object.keys(requests).forEach((nonce) => {
             const request = requests[nonce];
             if (
@@ -140,7 +143,6 @@ class BatchRequestManager {
                 delete requests[nonce];
             }
         });
-        console.log('num cached requests:', Object.keys(requests)?.length);
     }
 
     static async register(
@@ -148,24 +150,27 @@ class BatchRequestManager {
         body: any,
         nonce: string,
     ): Promise<any> {
-        BatchRequestManager.pendingRequests[nonce] = {
-            requestId: requestId,
-            body: body,
-            timestamp: Date.now(), // This should get updated with each send()
-            promise: null, // This will hold the promise itself
-            resolve: null, // Store the resolve function
-            reject: null, // Store the reject function
-            response: null,
-            expiry: BATCH_ENS_CACHE_EXPIRY, // Expire in BATCH_ENS_CACHE_EXPIRY ms
-        };
-        BatchRequestManager.pendingRequests[nonce].promise = new Promise(
-            (resolve, reject) => {
-                BatchRequestManager.pendingRequests[nonce].resolve = resolve;
-                BatchRequestManager.pendingRequests[nonce].reject = reject;
-            },
-        );
-        if (BatchRequestManager.intervalHandle == null) {
-            BatchRequestManager.startManagingRequests();
+        if (!BatchRequestManager.pendingRequests[nonce]) {
+            BatchRequestManager.pendingRequests[nonce] = {
+                requestId: requestId,
+                body: body,
+                timestamp: Date.now(), // This should get updated with each send()
+                promise: null, // This will hold the promise itself
+                resolve: null, // Store the resolve function
+                reject: null, // Store the reject function
+                response: null,
+                expiry: 1 * 60 * 1000 || BATCH_ENS_CACHE_EXPIRY, // Expire in BATCH_ENS_CACHE_EXPIRY ms
+            };
+            BatchRequestManager.pendingRequests[nonce].promise = new Promise(
+                (resolve, reject) => {
+                    BatchRequestManager.pendingRequests[nonce].resolve =
+                        resolve;
+                    BatchRequestManager.pendingRequests[nonce].reject = reject;
+                },
+            );
+            if (BatchRequestManager.intervalHandle == null) {
+                BatchRequestManager.startManagingRequests();
+            }
         }
         return BatchRequestManager.pendingRequests[nonce].promise;
     }
