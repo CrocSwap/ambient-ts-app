@@ -60,8 +60,14 @@ export const fetchTokenPrice = async (
                 chain,
                 _lastTime,
             );
+            const twoThousandDollarEthNonDisplay = 500000000;
             const displayPrice: number =
-                1 / toDisplayPrice(spotPrice ?? 0.0005, 18, 6);
+                1 /
+                toDisplayPrice(
+                    spotPrice ?? twoThousandDollarEthNonDisplay,
+                    18,
+                    6,
+                );
             const usdPriceFormatted = truncateDecimals(displayPrice, 2);
             return {
                 usdPrice: displayPrice,
