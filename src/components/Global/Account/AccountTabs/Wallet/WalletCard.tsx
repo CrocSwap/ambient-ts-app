@@ -23,6 +23,7 @@ export default function WalletCard(props: propsIF) {
     } = useContext(TokenContext);
     const {
         chainData: { chainId },
+        crocEnv,
     } = useContext(CrocEnvContext);
 
     const tokenMapKey = token?.address?.toLowerCase() + '_' + chainId;
@@ -47,11 +48,13 @@ export default function WalletCard(props: propsIF) {
 
     useEffect(() => {
         (async () => {
+            if (!crocEnv) return;
             try {
                 if (tokenFromMap?.symbol) {
                     const price = await cachedFetchTokenPrice(
                         tokenFromMap.address,
                         chainId,
+                        crocEnv,
                     );
                     if (price) setTokenPrice(price);
                 }
@@ -59,7 +62,7 @@ export default function WalletCard(props: propsIF) {
                 console.error(err);
             }
         })();
-    }, [tokenMapKey]);
+    }, [crocEnv, tokenMapKey]);
 
     const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 
