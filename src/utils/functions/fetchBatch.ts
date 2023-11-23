@@ -1,13 +1,20 @@
 /* eslint-disable camelcase */
 /* eslint-disable @typescript-eslint/no-explicit-any  */
 // ^ ...(JG) (╯°□°)╯︵ ┻━┻
-import { ANALYTICS_URL, BATCH_ENS_CACHE_EXPIRY } from '../../constants';
+import { memoizePromiseFn } from '../../App/functions/memoizePromiseFn';
+import {
+    ANALYTICS_URL,
+    BATCH_ENS_CACHE_EXPIRY,
+    BATCH_SIZE,
+    BATCH_SIZE_DELAY,
+} from '../../constants';
 import { fetchTimeout } from './fetchTimeout';
 
 type SupportedBatchRequests = 'fetchTokenPrice' | 'fetchENSAddresses';
 
 interface RequestData {
     requestId: SupportedBatchRequests;
+    url: string;
     body: any;
     timestamp: number;
     promise: Promise<Response> | null;
@@ -33,32 +40,43 @@ class BatchRequestManager {
     static parsedBatches = 0;
     static intervalHandle: ReturnType<typeof setInterval> | null = null;
 
-    static async send(): Promise<void> {
+    static async sendBatch(): Promise<void> {
         const requests = BatchRequestManager.pendingRequests;
-        const sendableNonce: string[] = [];
+        let sendableNonce: string[] = [];
 
-        // Iterating through requests to find eligible nonces
-        Object.keys(requests).forEach((nonce) => {
+        for (const nonce in requests) {
             const request = requests[nonce];
             if (
                 !request.response ||
                 Date.now() - request.timestamp > request.expiry
             ) {
                 sendableNonce.push(nonce);
+                // Send requests in batches of BATCH_SIZE
+                if (sendableNonce.length >= BATCH_SIZE) {
+                    await BatchRequestManager.send(sendableNonce);
+                    sendableNonce = [];
+                    // Wait for a specific amount of time before the next batch
+                    await new Promise((resolve) =>
+                        setTimeout(resolve, BATCH_SIZE_DELAY),
+                    );
+                }
             }
-        });
+        }
 
-        console.log({ sendableNonce });
+        // Send any remaining requests
+        if (sendableNonce.length > 0) {
+            await BatchRequestManager.send(sendableNonce);
+        }
+    }
 
-        if (sendableNonce.length === 0) return;
-
+    static async send(nonces: string[]): Promise<void> {
         const addressQueryBody = JSON.stringify({
             service: 'run',
             config_path: 'batch_requests',
             include_data: '0',
             data: {
-                req: sendableNonce.map((nonce) => {
-                    const request = requests[nonce];
+                req: nonces.map((nonce) => {
+                    const request = BatchRequestManager.pendingRequests[nonce];
                     return {
                         config_path: request.body['config_path'],
                         req_id: nonce,
@@ -68,9 +86,12 @@ class BatchRequestManager {
             },
         });
 
+        const requests = BatchRequestManager.pendingRequests;
+
         try {
             BatchRequestManager.sentBatches =
                 BatchRequestManager.sentBatches + 1;
+
             const response = await fetchTimeout(
                 ANALYTICS_URL,
                 {
@@ -99,17 +120,18 @@ class BatchRequestManager {
                     requests[resp.req_id].response = resp.results;
                 }
             });
+
             BatchRequestManager.parsedBatches =
                 BatchRequestManager.parsedBatches + 1;
-
             console.log('successfully retrieved and parsed batch request');
         } catch (error) {
-            console.log('request failed with: ', sendableNonce);
-            Object.keys(requests).forEach((nonce) => {
-                if (!requests[nonce].response) {
+            console.log('request failed for: ', nonces);
+            nonces.forEach((nonce) => {
+                if (requests[nonce] && !requests[nonce].response) {
                     requests[nonce].timestamp = Date.now(); // Updating the timestamp
                     requests[nonce].reject(error); // Rejecting the promise with the error
                     requests[nonce].response = new Response(); // Default response
+                    // TODO: expiry for requests that received an error should be lower than default expiry
                 }
             });
         }
@@ -118,7 +140,7 @@ class BatchRequestManager {
     static startManagingRequests(): void {
         console.log('starting to manage requests');
         BatchRequestManager.intervalHandle = setInterval(async () => {
-            await BatchRequestManager.send();
+            await BatchRequestManager.sendBatch();
             BatchRequestManager.clean();
         }, BatchRequestManager.sendFrequency);
     }
@@ -147,19 +169,21 @@ class BatchRequestManager {
 
     static async register(
         requestId: SupportedBatchRequests,
+        url: string,
         body: any,
         nonce: string,
     ): Promise<any> {
         if (!BatchRequestManager.pendingRequests[nonce]) {
             BatchRequestManager.pendingRequests[nonce] = {
                 requestId: requestId,
-                body: body,
+                url,
+                body,
                 timestamp: Date.now(), // This should get updated with each send()
                 promise: null, // This will hold the promise itself
                 resolve: null, // Store the resolve function
                 reject: null, // Store the reject function
                 response: null,
-                expiry: 1 * 60 * 1000 || BATCH_ENS_CACHE_EXPIRY, // Expire in BATCH_ENS_CACHE_EXPIRY ms
+                expiry: 10 * 60 * 1000 || BATCH_ENS_CACHE_EXPIRY, // Expire in BATCH_ENS_CACHE_EXPIRY ms
             };
             BatchRequestManager.pendingRequests[nonce].promise = new Promise(
                 (resolve, reject) => {
@@ -192,12 +216,26 @@ export async function cleanupBatchManager() {
     BatchRequestManager.stopManagingRequests();
 }
 
+// TODO: update error handling to throw an error in orig function if this fails
+export function memoizeFetchBatchENSAddresses() {
+    const memoFn = memoizePromiseFn(fetchBatchENSAddresses);
+    return (address: string) => memoFn(address);
+}
+
+// TODO: pass in a generate batch request function given nonces?
 export async function fetchBatchENSAddresses(address: string, nonce?: string) {
     try {
         const body = { config_path: 'ens_address', address: address };
         const { ens_address: ensAddress } = await fetchBatch({
             requestId: 'fetchENSAddresses',
-            body,
+            requestUrl:
+                ANALYTICS_URL +
+                new URLSearchParams({
+                    service: 'run',
+                    config_path: 'batch_requests',
+                    include_data: '0',
+                }),
+            requestBody: body,
             nonce: nonce || address.toLowerCase(),
         });
 
@@ -209,17 +247,19 @@ export async function fetchBatchENSAddresses(address: string, nonce?: string) {
 
 type FetchBatchParams = {
     requestId: SupportedBatchRequests;
-    body: any;
+    requestUrl: string;
+    requestBody: any;
     nonce?: string;
 };
 
 export async function fetchBatch({
     requestId,
-    body = {},
+    requestUrl = ANALYTICS_URL,
+    requestBody = {},
     nonce = undefined,
 }: FetchBatchParams): Promise<any> {
     const requests = BatchRequestManager.pendingRequests;
-    nonce = nonce || simpleHash(body);
+    nonce = nonce || simpleHash(requestBody);
 
     if (
         requests[nonce] &&
@@ -227,7 +267,12 @@ export async function fetchBatch({
     ) {
         return requests[nonce].promise;
     }
-    return BatchRequestManager.register(requestId, body, nonce);
+    return BatchRequestManager.register(
+        requestId,
+        requestUrl,
+        requestBody,
+        nonce,
+    );
 }
 
 export async function testBatchSystem() {

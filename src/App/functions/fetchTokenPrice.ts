@@ -7,6 +7,7 @@ import { translateTestnetToken } from '../../utils/data/testnetTokenMap';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { supportedNetworks } from '../../utils/networks';
 import { fetchTimeout } from '../../utils/functions/fetchTimeout';
+import { fetchBatchTokenPrice } from '../../utils/functions/fetchBatch';
 
 export const fetchTokenPrice = async (
     dispToken: string,
@@ -51,6 +52,7 @@ export const fetchTokenPrice = async (
                 });
 
             const response = await fetchTimeout(url);
+            // const response = await fetchBatchTokenPrice(address, chain);
 
             const result = await response.json();
             return result?.value;
