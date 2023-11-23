@@ -2,11 +2,9 @@
 
 import { memoizePromiseFn } from './memoizePromiseFn';
 const randomNum = Math.random();
-import { ANALYTICS_URL } from '../../constants';
 import { translateTestnetToken } from '../../utils/data/testnetTokenMap';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { supportedNetworks } from '../../utils/networks';
-import { fetchTimeout } from '../../utils/functions/fetchTimeout';
 import { fetchBatchTokenPrice } from '../../utils/functions/fetchBatch';
 
 export const fetchTokenPrice = async (
@@ -38,24 +36,8 @@ export const fetchTokenPrice = async (
                 };
             }
 
-            const url =
-                ANALYTICS_URL +
-                new URLSearchParams({
-                    service: 'run',
-                    config_path: 'price',
-                    include_data: '0',
-                    token_address: address,
-                    asset_platform:
-                        chain === '0x82750' || chain === '0x8274f'
-                            ? 'scroll'
-                            : 'ethereum',
-                });
-
-            const response = await fetchTimeout(url);
-            // const response = await fetchBatchTokenPrice(address, chain);
-
-            const result = await response.json();
-            return result?.value;
+            const result = await fetchBatchTokenPrice(address, chain);
+            return result;
         }
     } catch (error) {
         return undefined;
@@ -87,6 +69,7 @@ const PRICE_WINDOW_GRANULARITY = 15 * 60 * 1000;
 
 const randomOffset = PRICE_WINDOW_GRANULARITY * randomNum;
 
+// TODO: remove this after moving over to fetchBatch
 export function memoizeTokenPrice(): TokenPriceFn {
     const memoFn = memoizePromiseFn(fetchTokenPrice);
     return (address: string, chain: string) =>
