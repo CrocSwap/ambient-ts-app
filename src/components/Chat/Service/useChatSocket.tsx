@@ -14,6 +14,7 @@ import {
     updateVerifiedDateEndpoint,
     addReactionEndpoint,
     getUserDetailsEndpoint,
+    updateUnverifiedMessagesEndpoint,
 } from '../../../constants';
 import { Message } from '../Model/MessageModel';
 import { User } from '../Model/UserModel';
@@ -199,6 +200,36 @@ const useChatSocket = (
                 body: JSON.stringify({
                     walletID: address,
                     verifyDate: verifyDate,
+                }),
+            },
+        );
+        const data = await response.json();
+        setIsVerified(data.isVerified);
+
+        const userListData = await getUserListWithRest();
+        const usmp = new Map<string, User>();
+        userListData.forEach((user: User) => {
+            usmp.set(user._id, user);
+        });
+        setUserMap(usmp);
+        setUsers(userListData);
+
+        return data;
+    }
+
+    async function updateUnverifiedMessages(verifyDate: Date) {
+        const nfList = localStorage.getItem('nfList');
+        const vrfTkn = localStorage.getItem('vrfTkn' + address);
+        const response = await fetch(
+            CHAT_BACKEND_URL + updateUnverifiedMessagesEndpoint,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user: currentUserID,
+                    verifyDate: verifyDate,
+                    msgList: nfList ? nfList.split(', ') : [],
+                    vrfTkn: vrfTkn,
                 }),
             },
         );
@@ -483,6 +514,7 @@ const useChatSocket = (
         addReaction,
         fetchForNotConnectedUser,
         getUserSummaryDetails,
+        updateUnverifiedMessages,
     };
 };
 

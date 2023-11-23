@@ -104,3 +104,6 @@ export const updateVerifiedDateEndpoint = '/chat/api/auth/updateVerifyDate';
 export const addReactionEndpoint = '/chat/api/messages/addReaction';
 
 export const getUserDetailsEndpoint = '/chat/api/auth/getUserByWalletID';
+
+export const updateUnverifiedMessagesEndpoint =
+    '/chat/api/messages/updateUnverifiedMessages';

@@ -119,6 +119,7 @@ function ChatPanel(props: propsIF) {
         deleteMsgFromList,
         fetchForNotConnectedUser,
         getUserSummaryDetails,
+        updateUnverifiedMessages,
     } = useChatSocket(
         room,
         isSubscriptionsEnabled,
@@ -586,12 +587,20 @@ function ChatPanel(props: propsIF) {
         window.ethereum
             .request({
                 method: 'personal_sign',
-                params: [message, address],
+                params: [message, address, ''],
             })
             // eslint-disable-next-line
             .then((signedMessage: any) => {
-                verifyUser(signedMessage, new Date().getMonth(), verifyDate);
-                localStorage.setItem('vrfTkn' + address, signedMessage);
+                if (verificationType == 1) {
+                    updateUnverifiedMessages(verificationDate);
+                } else {
+                    verifyUser(
+                        signedMessage,
+                        new Date().getMonth(),
+                        verifyDate,
+                    );
+                    localStorage.setItem('vrfTkn' + address, signedMessage);
+                }
                 setTimeout(() => {
                     updateUserCache();
                 }, 300);
