@@ -242,7 +242,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                         border: {
                             active: ['Rect'].includes(activeDrawingType),
                             color: 'rgba(115, 113, 252, 1)',
-                            lineWidth: 0,
+                            lineWidth: 1.5,
                             dash: [0, 0],
                         } as drawnShapeEditAttributes,
 
@@ -347,7 +347,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                             border: {
                                 active: ['Rect'].includes(activeDrawingType),
                                 color: 'rgba(115, 113, 252, 1)',
-                                lineWidth: 0,
+                                lineWidth: 1.5,
                                 dash: [0, 0],
                             } as drawnShapeEditAttributes,
 
