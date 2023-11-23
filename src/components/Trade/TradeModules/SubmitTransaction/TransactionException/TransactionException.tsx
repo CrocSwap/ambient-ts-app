@@ -5,7 +5,12 @@ import { useContext } from 'react';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 import { RangeContext } from '../../../../../contexts/RangeContext';
 
-export default function TransactionException() {
+interface propsIF {
+    txErrorMessage: string;
+}
+
+export default function TransactionException(props: propsIF) {
+    const { txErrorMessage } = props;
     const rangeModuleActive = location.pathname.includes('/trade/pool');
     const { isTokenAPrimaryRange } = useContext(RangeContext);
     const { tokenA, tokenB } = useContext(TradeDataContext);
@@ -17,6 +22,9 @@ export default function TransactionException() {
     const primaryTokenSymbol = isTokenAPrimaryRange
         ? tokenA.symbol
         : tokenB.symbol;
+
+    const formattedErrorMessage =
+        'Error Message: ' + txErrorMessage.replace('err: ', '');
 
     return (
         <div className={styles.removal_pending}>
@@ -44,6 +52,8 @@ export default function TransactionException() {
                         A preliminary simulation of your transaction has failed.
                         We apologize for this inconvenience.
                     </p>
+                    <DividerDark />
+                    <p>{formattedErrorMessage}</p>
                     <DividerDark />
                     <p>
                         Please check your wallet for notifications or try again.
