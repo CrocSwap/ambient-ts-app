@@ -4900,6 +4900,13 @@ export default function Chart(props: propsIF) {
                                 setIsUpdatingShape={setIsUpdatingShape}
                                 denomInBase={denomInBase}
                                 addDrawActionStack={addDrawActionStack}
+                                snapForCandle={snapForCandle}
+                                visibleCandleData={visibleCandleData}
+                                zoomBase={zoomBase}
+                                setIsChartZoom={setIsChartZoom}
+                                isChartZoom={isChartZoom}
+                                lastCandleData={lastCandleData}
+                                firstCandleData={firstCandleData}
                             />
                         )}
                         <YAxisCanvas {...yAxisCanvasProps} />
