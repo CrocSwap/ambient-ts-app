@@ -26,19 +26,6 @@ export const fetchTokenPrice = async (
         supportedNetworks[chain].defaultPair;
 
     try {
-        const url =
-            ANALYTICS_URL +
-            new URLSearchParams({
-                service: 'run',
-                config_path: 'price',
-                include_data: '0',
-                token_address: address,
-                asset_platform:
-                    chain === '0x82750' || chain === '0x8274f'
-                        ? 'scroll'
-                        : 'ethereum',
-            });
-
         const nonce = address.concat(chain).toLowerCase();
 
         const body: PriceRequestBodyType = {
