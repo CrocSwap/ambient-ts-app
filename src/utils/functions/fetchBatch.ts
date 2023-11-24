@@ -65,7 +65,7 @@ class AnalyticsBatchRequestManager {
         string,
         RequestData<keyof RequestResponseMap>
     > = {};
-    static sendFrequency = 4000;
+    static sendFrequency = 4250;
     static sentBatches = 0;
     static parsedBatches = 0;
     static intervalHandle: ReturnType<typeof setInterval> | null = null;

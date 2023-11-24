@@ -26,15 +26,13 @@ export const fetchTokenPrice = async (
         supportedNetworks[chain].defaultPair;
 
     try {
-        const nonce = address.concat(chain).toLowerCase();
-
         const body: PriceRequestBodyType = {
             config_path: 'price',
             chain_id: chain,
             token_address: address,
         };
 
-        const { value } = await fetchBatch<'price'>(body, nonce);
+        const { value } = await fetchBatch<'price'>(body);
         return value;
     } catch (error) {
         // if token is USDC, return 0.999
