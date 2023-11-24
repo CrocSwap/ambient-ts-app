@@ -26,7 +26,7 @@ import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { getAddress } from 'ethers/lib/utils.js';
-import { fetchBatchENSAddresses } from '../../../../utils/functions/fetchBatch';
+import { fetchENSAddresses } from '../../../../App/functions/fetchENSAddresses';
 
 // interface for props for react functional component
 interface propsIF {
@@ -395,7 +395,7 @@ function Orders(props: propsIF) {
         if (_DATA.currentData.length === 0) return;
         (async () => {
             const results = await Promise.allSettled(
-                _DATA.currentData.map((tx) => fetchBatchENSAddresses(tx.user)),
+                _DATA.currentData.map((tx) => fetchENSAddresses(tx.user)),
             );
 
             results.forEach((result, index) => {

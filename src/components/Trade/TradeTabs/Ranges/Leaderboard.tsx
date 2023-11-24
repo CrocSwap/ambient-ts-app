@@ -16,7 +16,7 @@ import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { getAddress } from 'ethers/lib/utils.js';
-import { fetchBatchENSAddresses } from '../../../../utils/functions/fetchBatch';
+import { fetchENSAddresses } from '../../../../App/functions/fetchENSAddresses';
 
 // react functional component
 function Leaderboard() {
@@ -206,9 +206,7 @@ function Leaderboard() {
         if (usePaginateDataOrNull.length === 0) return;
         (async () => {
             const results = await Promise.allSettled(
-                usePaginateDataOrNull.map((tx) =>
-                    fetchBatchENSAddresses(tx.user),
-                ),
+                usePaginateDataOrNull.map((tx) => fetchENSAddresses(tx.user)),
             );
 
             results.forEach((result, index) => {

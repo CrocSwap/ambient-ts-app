@@ -29,8 +29,8 @@ import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { fetchBatchENSAddresses } from '../../../../utils/functions/fetchBatch';
 import { getAddress } from 'ethers/lib/utils.js';
+import { fetchENSAddresses } from '../../../../App/functions/fetchENSAddresses';
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
 
@@ -374,7 +374,7 @@ function Ranges(props: propsIF) {
         if (sortedPositions.length === 0) return;
         (async () => {
             const results = await Promise.allSettled(
-                sortedPositions.map((tx) => fetchBatchENSAddresses(tx.user)),
+                sortedPositions.map((tx) => fetchENSAddresses(tx.user)),
             );
 
             results.forEach((result, index) => {

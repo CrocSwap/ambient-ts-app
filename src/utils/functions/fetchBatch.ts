@@ -9,15 +9,52 @@ import {
 } from '../../constants';
 import { fetchTimeout } from './fetchTimeout';
 
-interface RequestData {
-    body: any;
-    timestamp: number;
-    promise: Promise<Response> | null;
-    resolve: any;
-    reject: any;
-    response: Response | null;
+export type ENSRequestBodyType = { config_path: string; address: string };
+export type PriceRequestBodyType = {
+    config_path: string;
+    chain_id: string;
+    token_address: string;
+};
+
+export type ENSResponse = {
+    ens_address: string | null;
+};
+
+export type PriceResponse = {
+    value: {
+        usdPrice: number;
+        usdPriceFormatted: number;
+    };
+};
+
+type RequestTypeMap = {
+    ens_address: ENSRequestBodyType;
+    price: PriceRequestBodyType;
+};
+
+type RequestKeys = keyof RequestTypeMap;
+
+interface RequestResponseMap {
+    ens_address: { request: ENSRequestBodyType; response: ENSResponse };
+    price: { request: PriceRequestBodyType; response: PriceResponse };
+}
+
+interface RequestData<K extends keyof RequestResponseMap> {
+    body: RequestResponseMap[K]['request'];
+    timestamp: number | null;
+    promise: Promise<RequestResponseMap[K]['response']> | null;
+    resolve:
+        | ((
+              value:
+                  | RequestResponseMap[K]['response']
+                  | PromiseLike<RequestResponseMap[K]['response']>,
+          ) => void)
+        | null;
+    reject: ((reason?: any) => void) | null;
+    response: RequestResponseMap[K]['response'] | null;
     expiry: number;
 }
+
 // [x] TODO - Test, to make sure if we spam the batch interface, it can use the nonce value to prevent duplicate requests
 // [x] TODO - Test, make sure old requests are cleaned out via the manage function
 // [ ] TODO - Test sending invalid requests. Analytics server should be able to handle a mix of poortly formatted requests along side well formatted requests
@@ -25,7 +62,10 @@ interface RequestData {
 // [ ] TODO - Add in Timeout support, so individual requests can expire and not block the whole app.
 
 class AnalyticsBatchRequestManager {
-    static pendingRequests: Record<string, RequestData> = {};
+    static pendingRequests: Record<
+        string,
+        RequestData<keyof RequestResponseMap>
+    > = {};
     static sendFrequency = 10000;
     static sentBatches = 0;
     static parsedBatches = 0;
@@ -45,7 +85,7 @@ class AnalyticsBatchRequestManager {
         for (const nonce in requests) {
             const request = requests[nonce];
             if (
-                !request.response ||
+                !request.timestamp ||
                 Date.now() - request.timestamp > request.expiry
             ) {
                 sendableNonce.push(nonce);
@@ -113,11 +153,12 @@ class AnalyticsBatchRequestManager {
             const jsonResponse = await response.json();
             const innerResponse = jsonResponse.value.data;
             innerResponse.forEach((resp: any) => {
-                // TODO: check for an error field with a successful response from the server
-                if (requests[resp.req_id]) {
-                    requests[resp.req_id].timestamp = Date.now(); // Updating the timestamp
-                    requests[resp.req_id].resolve(resp.results); // Resolving the promise with the response
-                    requests[resp.req_id].response = resp.results;
+                const req = requests[resp.req_id];
+                if (req && req.resolve) {
+                    // TODO: check for an error field with a successful response from the server
+                    req.timestamp = Date.now(); // Updating the timestamp
+                    req.resolve(resp.results); // Resolving the promise with the response
+                    req.response = resp.results;
                 }
             });
 
@@ -127,12 +168,12 @@ class AnalyticsBatchRequestManager {
         } catch (error) {
             console.log('request failed for: ', nonces);
             nonces.forEach((nonce) => {
-                if (requests[nonce] && !requests[nonce].response) {
-                    requests[nonce].timestamp = Date.now(); // Updating the timestamp
-                    requests[nonce].reject(error); // Rejecting the promise with the error
-                    requests[nonce].response = new Response(); // Default response
+                const req = requests[nonce];
+                if (req && !req.response && req.reject) {
+                    req.timestamp = Date.now(); // Updating the timestamp
+                    req.reject(error); // Rejecting the promise with the error
                     // TODO: expiry for requests that received an error should be lower than default expiry
-                    requests[nonce].expiry = 1000 * 60 * 5; // 5 minutes
+                    req.expiry = 1000 * 60 * 5; // 5 minutes
                 }
             });
         }
@@ -159,7 +200,7 @@ class AnalyticsBatchRequestManager {
         Object.keys(requests).forEach((nonce) => {
             const request = requests[nonce];
             if (
-                request.response &&
+                request.timestamp &&
                 Date.now() - request.timestamp > request.expiry
             ) {
                 delete requests[nonce];
@@ -167,11 +208,14 @@ class AnalyticsBatchRequestManager {
         });
     }
 
-    static async register(body: any, nonce: string): Promise<any> {
+    static async register<K extends RequestKeys>(
+        body: RequestResponseMap[K]['request'],
+        nonce: string,
+    ): Promise<RequestResponseMap[K]['response']> {
         if (!AnalyticsBatchRequestManager.pendingRequests[nonce]) {
             AnalyticsBatchRequestManager.pendingRequests[nonce] = {
                 body,
-                timestamp: Date.now(), // This should get updated with each send()
+                timestamp: null, // This should get updated with each send()
                 promise: null, // This will hold the promise itself
                 resolve: null, // Store the resolve function
                 reject: null, // Store the reject function
@@ -190,11 +234,12 @@ class AnalyticsBatchRequestManager {
                 AnalyticsBatchRequestManager.startManagingRequests();
             }
         }
-        return AnalyticsBatchRequestManager.pendingRequests[nonce].promise;
+        return AnalyticsBatchRequestManager.pendingRequests[nonce]
+            .promise as Promise<RequestResponseMap[K]['response']>;
     }
 }
 
-function simpleHash(json: any): string {
+function simpleHash(json: { [key: string]: any }): string {
     const str = JSON.stringify(json);
     let hash = 0;
 
@@ -210,180 +255,141 @@ export async function cleanupBatchManager() {
     AnalyticsBatchRequestManager.stopManagingRequests();
 }
 
-export async function fetchBatchTokenPrice(
-    tokenAddress: string,
-    chainId: string,
+export async function fetchBatch<K extends keyof RequestResponseMap>(
+    requestBody: RequestResponseMap[K]['request'],
     nonce?: string,
-) {
-    try {
-        const body = {
-            config_path: 'price',
-            chain_id: chainId,
-            token_address: tokenAddress,
-        };
-        const { value } = await fetchBatch({
-            requestBody: body,
-            nonce: nonce || tokenAddress.concat(chainId).toLowerCase(),
-        });
-
-        return value as { usdPrice: number; usdPriceFormatted: number };
-    } catch (error) {
-        return undefined;
-    }
-}
-
-export async function fetchBatchENSAddresses(address: string, nonce?: string) {
-    try {
-        const body = { config_path: 'ens_address', address: address };
-        const { ens_address: ensAddress } = await fetchBatch({
-            requestBody: body,
-            nonce: nonce || address.toLowerCase(),
-        });
-
-        return ensAddress as string;
-    } catch (error) {
-        return null;
-    }
-}
-
-type FetchBatchParams = {
-    requestBody: any;
-    nonce?: string;
-};
-
-export async function fetchBatch({
-    requestBody = {},
-    nonce = undefined,
-}: FetchBatchParams): Promise<any> {
-    const requests = AnalyticsBatchRequestManager.pendingRequests;
-    nonce = nonce || simpleHash(requestBody);
-
+): Promise<RequestResponseMap[K]['response']> {
+    const requestNonce = nonce || simpleHash(requestBody);
+    const request = AnalyticsBatchRequestManager.pendingRequests[requestNonce];
     if (
-        requests[nonce] &&
-        Date.now() - requests[nonce].timestamp > requests[nonce].expiry
+        request &&
+        request.timestamp &&
+        Date.now() - request.timestamp <= request.expiry
     ) {
-        return requests[nonce].promise;
+        return request.promise as Promise<RequestResponseMap[K]['response']>;
     }
-    return AnalyticsBatchRequestManager.register(requestBody, nonce);
+    return AnalyticsBatchRequestManager.register<K>(requestBody, requestNonce);
 }
 
-export async function testBatchSystem() {
-    // Combined request and expected response data
-    const testData = [
-        {
-            request: {
-                config_path: 'ens_address',
-                address: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
-            },
-            expected: { ens_address: 'benwolski.eth' },
-        },
-        {
-            request: {
-                config_path: 'ens_address',
-                address: '0x262b58f94055B13f986722498597a43CA9f3BA6D',
-            },
-            expected: { ens_address: 'wuyansong.eth' },
-        },
-        {
-            request: {
-                config_path: 'ens_address',
-                address: '0xD94F51053b9817bc2de4DBbaC647D9a784C24406',
-            },
-            expected: { ens_address: null },
-        },
-    ];
+// TODO: find a new home for tests to live
 
-    const promises = testData.map((data) =>
-        fetchBatchENSAddresses(data.request.address),
-    );
+// export async function testBatchSystem() {
+//     // Combined request and expected response data
+//     const testData = [
+//         {
+//             request: {
+//                 config_path: 'ens_address',
+//                 address: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
+//             },
+//             expected: { ens_address: 'benwolski.eth' },
+//         },
+//         {
+//             request: {
+//                 config_path: 'ens_address',
+//                 address: '0x262b58f94055B13f986722498597a43CA9f3BA6D',
+//             },
+//             expected: { ens_address: 'wuyansong.eth' },
+//         },
+//         {
+//             request: {
+//                 config_path: 'ens_address',
+//                 address: '0xD94F51053b9817bc2de4DBbaC647D9a784C24406',
+//             },
+//             expected: { ens_address: null },
+//         },
+//     ];
 
-    Promise.all(promises).then((results) => {
-        let matches = 0;
-        results.forEach((result, index) => {
-            if (
-                JSON.stringify(result) ===
-                JSON.stringify(testData[index].expected.ens_address)
-            )
-                matches = matches + 1;
-            console.assert(
-                JSON.stringify(result) ===
-                    JSON.stringify(testData[index].expected.ens_address),
-                `Test failed for request ${
-                    index + 1
-                }: Expected ${JSON.stringify(
-                    testData[index].expected.ens_address,
-                )}, got ${JSON.stringify(result)}`,
-            );
-        });
-        if (matches == testData.length) console.log('All tests passed!');
-        else console.error('Could not verify batch requests');
-    });
-    //
-}
+//     const promises = testData.map((data) =>
+//         fetchBatchENSAddresses(data.request.address),
+//     );
 
-let testCount = 0;
-export async function useBatchSystemIrresponsibly() {
-    if (testCount != 0) return;
+//     Promise.all(promises).then((results) => {
+//         let matches = 0;
+//         results.forEach((result, index) => {
+//             if (
+//                 JSON.stringify(result) ===
+//                 JSON.stringify(testData[index].expected.ens_address)
+//             )
+//                 matches = matches + 1;
+//             console.assert(
+//                 JSON.stringify(result) ===
+//                     JSON.stringify(testData[index].expected.ens_address),
+//                 `Test failed for request ${
+//                     index + 1
+//                 }: Expected ${JSON.stringify(
+//                     testData[index].expected.ens_address,
+//                 )}, got ${JSON.stringify(result)}`,
+//             );
+//         });
+//         if (matches == testData.length) console.log('All tests passed!');
+//         else console.error('Could not verify batch requests');
+//     });
+//     //
+// }
 
-    AnalyticsBatchRequestManager.sendFrequency = 10000; // We allow batches every 10 seconds. This is a LITTLE slow. It can be changed dynamically anytime.
-    // Meaning, if the network gets congested, this number can be randomly set, and it will govern all batch network behaviour -- period.
-    console.log('useBatchSystemIrresponsibly running... ');
-    testCount = 1;
-    const sleep = (ms: number) =>
-        new Promise((resolve) => setTimeout(resolve, ms));
+// let testCount = 0;
+// export async function useBatchSystemIrresponsibly() {
+//     if (testCount != 0) return;
 
-    // Simulate a situation where we send 40 record queries
-    await testBatchSystem();
-    // A simple one off test in the mix
+//     AnalyticsBatchRequestManager.sendFrequency = 10000; // We allow batches every 10 seconds. This is a LITTLE slow. It can be changed dynamically anytime.
+//     // Meaning, if the network gets congested, this number can be randomly set, and it will govern all batch network behaviour -- period.
+//     console.log('useBatchSystemIrresponsibly running... ');
+//     testCount = 1;
+//     const sleep = (ms: number) =>
+//         new Promise((resolve) => setTimeout(resolve, ms));
 
-    console.assert(
-        Object.keys(AnalyticsBatchRequestManager.pendingRequests).length === 3,
-        'Assertion failed: pendingRequests.length should be 3',
-    );
-    await sleep(3000);
-    console.assert(
-        Object.keys(AnalyticsBatchRequestManager.pendingRequests).length === 3,
-        'Assertion failed post 3k sleep: pendingRequests.length should be 3',
-    );
-    await sleep(11000);
-    console.assert(
-        AnalyticsBatchRequestManager.sentBatches === 1,
-        'Assertion failed: sentBatches should be 1',
-    );
-    console.assert(
-        AnalyticsBatchRequestManager.parsedBatches === 1,
-        'Assertion failed: parsedBatches should be 0',
-    );
-    console.assert(
-        Object.keys(AnalyticsBatchRequestManager.pendingRequests).length === 0,
-        'Assertion failed post processing: pendingRequests.length should be 0',
-    );
+//     // Simulate a situation where we send 40 record queries
+//     await testBatchSystem();
+//     // A simple one off test in the mix
 
-    // Repeating testBatchSystem multiple times, in a terrible, terrible, manner
-    testBatchSystem();
-    testBatchSystem();
-    testBatchSystem();
-    testBatchSystem();
-    testBatchSystem();
-    testBatchSystem();
-    testBatchSystem();
-    testBatchSystem();
-    console.log('All tests of tests passed!!');
+//     console.assert(
+//         Object.keys(AnalyticsBatchRequestManager.pendingRequests).length === 3,
+//         'Assertion failed: pendingRequests.length should be 3',
+//     );
+//     await sleep(3000);
+//     console.assert(
+//         Object.keys(AnalyticsBatchRequestManager.pendingRequests).length === 3,
+//         'Assertion failed post 3k sleep: pendingRequests.length should be 3',
+//     );
+//     await sleep(11000);
+//     console.assert(
+//         AnalyticsBatchRequestManager.sentBatches === 1,
+//         'Assertion failed: sentBatches should be 1',
+//     );
+//     console.assert(
+//         AnalyticsBatchRequestManager.parsedBatches === 1,
+//         'Assertion failed: parsedBatches should be 0',
+//     );
+//     console.assert(
+//         Object.keys(AnalyticsBatchRequestManager.pendingRequests).length === 0,
+//         'Assertion failed post processing: pendingRequests.length should be 0',
+//     );
 
-    await sleep(11000);
-    console.assert(
-        AnalyticsBatchRequestManager.sentBatches === 2,
-        'Assertion failed: sentBatches should be 1',
-    );
-    console.assert(
-        AnalyticsBatchRequestManager.parsedBatches === 2,
-        'Assertion failed: parsedBatches should be 0',
-    );
-    console.assert(
-        Object.keys(AnalyticsBatchRequestManager.pendingRequests).length === 0,
-        'Assertion failed post processing: pendingRequests.length should be 0',
-    );
+//     // Repeating testBatchSystem multiple times, in a terrible, terrible, manner
+//     testBatchSystem();
+//     testBatchSystem();
+//     testBatchSystem();
+//     testBatchSystem();
+//     testBatchSystem();
+//     testBatchSystem();
+//     testBatchSystem();
+//     testBatchSystem();
+//     console.log('All tests of tests passed!!');
 
-    // Example use:
-    // let res = await fetchBatch({ 'config_path': 'ens_address','address': '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc' });
-}
+//     await sleep(11000);
+//     console.assert(
+//         AnalyticsBatchRequestManager.sentBatches === 2,
+//         'Assertion failed: sentBatches should be 1',
+//     );
+//     console.assert(
+//         AnalyticsBatchRequestManager.parsedBatches === 2,
+//         'Assertion failed: parsedBatches should be 0',
+//     );
+//     console.assert(
+//         Object.keys(AnalyticsBatchRequestManager.pendingRequests).length === 0,
+//         'Assertion failed post processing: pendingRequests.length should be 0',
+//     );
+
+//     // Example use:
+//     // let res = await fetchBatch({ 'config_path': 'ens_address','address': '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc' });
+// }

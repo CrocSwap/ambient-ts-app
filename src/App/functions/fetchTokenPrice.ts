@@ -5,7 +5,10 @@ const randomNum = Math.random();
 import { translateTestnetToken } from '../../utils/data/testnetTokenMap';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { supportedNetworks } from '../../utils/networks';
-import { fetchBatchTokenPrice } from '../../utils/functions/fetchBatch';
+import {
+    PriceRequestBodyType,
+    fetchBatch,
+} from '../../utils/functions/fetchBatch';
 
 export const fetchTokenPrice = async (
     dispToken: string,
@@ -36,8 +39,16 @@ export const fetchTokenPrice = async (
                 };
             }
 
-            const result = await fetchBatchTokenPrice(address, chain);
-            return result;
+            const nonce = address.concat(chain).toLowerCase();
+
+            const body: PriceRequestBodyType = {
+                config_path: 'price',
+                chain_id: chain,
+                token_address: address,
+            };
+
+            const { value } = await fetchBatch<'price'>(body, nonce);
+            return value;
         }
     } catch (error) {
         return undefined;

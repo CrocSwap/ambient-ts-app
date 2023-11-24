@@ -34,8 +34,8 @@ import { FlexContainer, Text } from '../../../../styled/Common';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { fetchBatchENSAddresses } from '../../../../utils/functions/fetchBatch';
 import { getAddress } from 'ethers/lib/utils.js';
+import { fetchENSAddresses } from '../../../../App/functions/fetchENSAddresses';
 
 interface propsIF {
     filter?: CandleData | undefined;
@@ -511,7 +511,7 @@ function Transactions(props: propsIF) {
         if (_DATA.currentData.length === 0) return;
         (async () => {
             const results = await Promise.allSettled(
-                _DATA.currentData.map((tx) => fetchBatchENSAddresses(tx.user)),
+                _DATA.currentData.map((tx) => fetchENSAddresses(tx.user)),
             );
 
             results.forEach((result, index) => {
