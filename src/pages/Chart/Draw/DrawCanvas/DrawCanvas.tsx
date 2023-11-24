@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import {
+    CandleDataChart,
     bandLineData,
     calculateFibRetracement,
     calculateFibRetracementBandAreas,
+    crosshair,
     drawDataHistory,
     drawnShapeEditAttributes,
     fibLevels,
@@ -13,7 +16,10 @@ import {
     selectedDrawnData,
     setCanvasResolution,
 } from '../../ChartUtils/chartUtils';
-import { diffHashSig } from '../../../../utils/functions/diffHashSig';
+import {
+    diffHashSig,
+    diffHashSigScaleData,
+} from '../../../../utils/functions/diffHashSig';
 import { createCircle } from '../../ChartUtils/circle';
 import { createLinearLineSeries } from './LinearLineSeries';
 import {
@@ -24,6 +30,8 @@ import {
 } from './BandArea';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { ChartContext } from '../../../../contexts/ChartContext';
+import { CandleData } from '../../../../App/functions/fetchCandleSeries';
 
 interface DrawCanvasProps {
     scaleData: scaleData;
@@ -39,6 +47,16 @@ interface DrawCanvasProps {
     >;
     denomInBase: boolean;
     addDrawActionStack: (item: drawDataHistory, isNewShape: boolean) => void;
+    period: number;
+    crosshairData: crosshair[];
+    snapForCandle: (point: number, filtered: Array<CandleData>) => CandleData;
+    visibleCandleData: CandleDataChart[];
+    zoomBase: any;
+    setIsChartZoom: React.Dispatch<React.SetStateAction<boolean>>;
+    isChartZoom: boolean;
+    firstCandleData: any;
+    lastCandleData: any;
+    render: any;
 }
 
 function DrawCanvas(props: DrawCanvasProps) {
@@ -55,6 +73,14 @@ function DrawCanvas(props: DrawCanvasProps) {
         setSelectedDrawnShape,
         denomInBase,
         addDrawActionStack,
+        snapForCandle,
+        visibleCandleData,
+        zoomBase,
+        setIsChartZoom,
+        isChartZoom,
+        firstCandleData,
+        lastCandleData,
+        render,
     } = props;
 
     const circleSeries = createCircle(
@@ -71,6 +97,8 @@ function DrawCanvas(props: DrawCanvasProps) {
         denomInBase,
     );
 
+    const { isMagnetActive } = useContext(ChartContext);
+
     const currentPool = useContext(TradeDataContext);
 
     function createScaleForBandArea(x: number, x2: number) {
@@ -81,9 +109,79 @@ function DrawCanvas(props: DrawCanvasProps) {
         return newXScale;
     }
 
+    useEffect(() => {
+        if (scaleData !== undefined && !isChartZoom) {
+            let scrollTimeout: NodeJS.Timeout | null = null; // Declare scrollTimeout
+            const lastCandleDate = lastCandleData?.time * 1000;
+            const firstCandleDate = firstCandleData?.time * 1000;
+            d3.select(d3DrawCanvas.current).on(
+                'wheel',
+                function (event) {
+                    if (scrollTimeout === null) {
+                        setIsChartZoom(true);
+                    }
+
+                    zoomBase.zoomWithWheel(
+                        event,
+                        scaleData,
+                        firstCandleDate,
+                        lastCandleDate,
+                    );
+                    render();
+
+                    if (scrollTimeout) {
+                        clearTimeout(scrollTimeout);
+                    }
+                    // check wheel end
+                    scrollTimeout = setTimeout(() => {
+                        setIsChartZoom(false);
+                    }, 200);
+                },
+                { passive: true },
+            );
+        }
+    }, [diffHashSigScaleData(scaleData, 'x'), isChartZoom]);
+
     const {
         chainData: { poolIndex },
     } = useContext(CrocEnvContext);
+
+    function getXandYvalueOfDrawnShape(offsetX: number, offsetY: number) {
+        let valueY = scaleData?.yScale.invert(offsetY);
+        const nearest = snapForCandle(offsetX, visibleCandleData);
+        const close = denomInBase
+            ? nearest?.invMinPriceExclMEVDecimalCorrected
+            : nearest?.minPriceExclMEVDecimalCorrected;
+
+        const open = denomInBase
+            ? nearest?.invMaxPriceExclMEVDecimalCorrected
+            : nearest?.maxPriceExclMEVDecimalCorrected;
+
+        const closeToCoordinat = scaleData.yScale(close);
+
+        const openToCoordinat = scaleData.yScale(open);
+
+        const openDiff = Math.abs(offsetY - openToCoordinat);
+        const closeDiff = Math.abs(offsetY - closeToCoordinat);
+
+        if (isMagnetActive && (openDiff <= 100 || closeDiff <= 100)) {
+            const minDiffForYValue = Math.min(openDiff, closeDiff);
+
+            valueY = minDiffForYValue === openDiff ? open : close;
+        }
+
+        let valueX = nearest.time * 1000;
+        const valueXLocation = scaleData.xScale(nearest.time * 1000);
+        if (
+            Math.abs(valueXLocation - offsetX) > 60 &&
+            nearest === visibleCandleData[0]
+        ) {
+            valueX = scaleData?.xScale.invert(offsetX);
+            valueY = scaleData?.yScale.invert(offsetY);
+        }
+
+        return { valueX: valueX, valueY: valueY };
+    }
 
     useEffect(() => {
         const canvas = d3
@@ -158,8 +256,10 @@ function DrawCanvas(props: DrawCanvasProps) {
             const offsetY = mouseY - canvasRect?.top;
             const offsetX = mouseX - canvasRect?.left;
 
-            const valueX = scaleData?.xScale.invert(offsetX);
-            const valueY = scaleData?.yScale.invert(offsetY);
+            const { valueX, valueY } = getXandYvalueOfDrawnShape(
+                offsetX,
+                offsetY,
+            );
 
             if (valueY > 0) {
                 if (tempLineData.length > 0 || activeDrawingType === 'Ray') {
@@ -184,8 +284,10 @@ function DrawCanvas(props: DrawCanvasProps) {
                 const offsetY = mouseY - canvasRect?.top;
                 const offsetX = mouseX - canvasRect?.left;
 
-                const valueX = scaleData?.xScale.invert(offsetX);
-                const valueY = scaleData?.yScale.invert(offsetY);
+                const { valueX, valueY } = getXandYvalueOfDrawnShape(
+                    offsetX,
+                    offsetY,
+                );
 
                 if (activeDrawingType !== 'Ray') {
                     const firstValueX = scaleData?.xScale(tempLineData[0].x);
@@ -286,8 +388,10 @@ function DrawCanvas(props: DrawCanvasProps) {
                 const offsetY = mouseY - canvasRect?.top;
                 const offsetX = mouseX - canvasRect?.left;
 
-                const valueX = scaleData?.xScale.invert(offsetX);
-                const valueY = scaleData?.yScale.invert(offsetY);
+                const { valueX, valueY } = getXandYvalueOfDrawnShape(
+                    offsetX,
+                    offsetY,
+                );
 
                 setCrossHairDataFunc(offsetX, offsetY);
 
@@ -375,7 +479,7 @@ function DrawCanvas(props: DrawCanvasProps) {
 
             renderCanvasArray([d3DrawCanvas]);
         }
-    }, [activeDrawingType]);
+    }, [activeDrawingType, isMagnetActive]);
 
     // Draw
     useEffect(() => {

@@ -191,6 +191,8 @@ export default function Chart(props: propsIF) {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
     const { chainData } = useContext(CrocEnvContext);
+    // const { isMagnetActive,setIsMagnetActive } = useContext(ChartContext);
+
     const chainId = chainData.chainId;
     const { setCandleDomains, setCandleScale, timeOfEndCandle } =
         useContext(CandleContext);
@@ -3460,6 +3462,10 @@ export default function Chart(props: propsIF) {
             if (event.key === 'Escape') {
                 setSelectedDrawnShape(undefined);
             }
+
+            // if ((event.ctrlKey || event.metaKey) && activeDrawingType !== 'Cross') {
+            //     setIsMagnetActive(!isMagnetActive);
+            // }
         };
 
         document.addEventListener('keydown', handleKeyDown);
@@ -3467,7 +3473,7 @@ export default function Chart(props: propsIF) {
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
         };
-    }, [undo, redo, drawActionStack, undoStack]);
+    }, [undo, redo, drawActionStack, undoStack, activeDrawingType]);
 
     useEffect(() => {
         const canvas = d3
@@ -4868,6 +4874,16 @@ export default function Chart(props: propsIF) {
                                 setSelectedDrawnShape={setSelectedDrawnShape}
                                 denomInBase={denomInBase}
                                 addDrawActionStack={addDrawActionStack}
+                                period={period}
+                                crosshairData={crosshairData}
+                                snapForCandle={snapForCandle}
+                                visibleCandleData={visibleCandleData}
+                                render={render}
+                                zoomBase={zoomBase}
+                                setIsChartZoom={setIsChartZoom}
+                                isChartZoom={isChartZoom}
+                                lastCandleData={lastCandleData}
+                                firstCandleData={firstCandleData}
                             />
                         )}
 

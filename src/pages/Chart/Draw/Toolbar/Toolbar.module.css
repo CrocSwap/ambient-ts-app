@@ -16,8 +16,12 @@
 }
 
 
-.icon_active_container,.icon_inactive_container img:hover {
+.icon_active_container,.icon_inactive_container,.icon_fill_container img:hover {
     cursor: pointer;
+}
+
+.icon_fill_container {
+    background-color: rgba(115,113,252,0.7);
 }
 
 @keyframes identifier {

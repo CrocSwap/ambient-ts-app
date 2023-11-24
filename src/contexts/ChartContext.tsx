@@ -25,6 +25,8 @@ interface ChartContextIF {
     canvasRef: React.MutableRefObject<null>;
     chartCanvasRef: React.MutableRefObject<null>;
     tradeTableState: TradeTableState;
+    isMagnetActive: boolean;
+    setIsMagnetActive: React.Dispatch<boolean>;
 }
 
 export const ChartContext = createContext<ChartContextIF>({} as ChartContextIF);
@@ -44,6 +46,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         CHART_SAVED_HEIGHT = parseInt(CHART_SAVED_HEIGHT_LOCAL_STORAGE);
     }
 
+    const [isMagnetActive, setIsMagnetActive] = useState(false);
     const [chartHeights, setChartHeights] = useState<{
         current: number;
         saved: number;
@@ -119,6 +122,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         canvasRef,
         chartCanvasRef,
         tradeTableState,
+        isMagnetActive,
+        setIsMagnetActive,
     };
 
     useEffect(() => {
