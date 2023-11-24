@@ -5,7 +5,6 @@ import {
     ANALYTICS_URL,
     BATCH_ENS_CACHE_EXPIRY,
     BATCH_SIZE,
-    BATCH_SIZE_DELAY,
 } from '../../constants';
 import { fetchTimeout } from './fetchTimeout';
 
@@ -58,15 +57,15 @@ interface RequestData<K extends keyof RequestResponseMap> {
 // [x] TODO - Test, to make sure if we spam the batch interface, it can use the nonce value to prevent duplicate requests
 // [x] TODO - Test, make sure old requests are cleaned out via the manage function
 // [ ] TODO - Test sending invalid requests. Analytics server should be able to handle a mix of poortly formatted requests along side well formatted requests
-// [ ] TODO - Harden the response parser with typing. Ensure it makes a best effort to process the valid responses, and does not let a bad response ruin the batch
-// [ ] TODO - Add in Timeout support, so individual requests can expire and not block the whole app.
-
+// [x] TODO - Harden the response parser with typing. Ensure it makes a best effort to process the valid responses, and does not let a bad response ruin the batch
+// [x] TODO - Add in Timeout support, so individual requests can expire and not block the whole app.
+// [ ] TODO: Add in exponential backoff for failed requests
 class AnalyticsBatchRequestManager {
     static pendingRequests: Record<
         string,
         RequestData<keyof RequestResponseMap>
     > = {};
-    static sendFrequency = 10000;
+    static sendFrequency = 4000;
     static sentBatches = 0;
     static parsedBatches = 0;
     static intervalHandle: ReturnType<typeof setInterval> | null = null;
@@ -80,7 +79,7 @@ class AnalyticsBatchRequestManager {
 
     static async sendBatch(): Promise<void> {
         const requests = AnalyticsBatchRequestManager.pendingRequests;
-        let sendableNonce: string[] = [];
+        const sendableNonce: string[] = [];
 
         for (const nonce in requests) {
             const request = requests[nonce];
@@ -91,11 +90,8 @@ class AnalyticsBatchRequestManager {
                 sendableNonce.push(nonce);
                 // Send requests in batches of BATCH_SIZE
                 if (sendableNonce.length >= BATCH_SIZE) {
-                    await AnalyticsBatchRequestManager.send(sendableNonce);
-                    sendableNonce = [];
-                    // Wait for a specific amount of time before the next batch
-                    await new Promise((resolve) =>
-                        setTimeout(resolve, BATCH_SIZE_DELAY),
+                    return await AnalyticsBatchRequestManager.send(
+                        sendableNonce,
                     );
                 }
             }
@@ -103,7 +99,7 @@ class AnalyticsBatchRequestManager {
 
         // Send any remaining requests
         if (sendableNonce.length > 0) {
-            await AnalyticsBatchRequestManager.send(sendableNonce);
+            return await AnalyticsBatchRequestManager.send(sendableNonce);
         }
     }
 
@@ -141,7 +137,7 @@ class AnalyticsBatchRequestManager {
                     },
                     body: queryBody,
                 },
-                AnalyticsBatchRequestManager.sendFrequency + 3000,
+                AnalyticsBatchRequestManager.sendFrequency + 3500,
             );
 
             if (!response.ok) {
@@ -171,9 +167,9 @@ class AnalyticsBatchRequestManager {
                 const req = requests[nonce];
                 if (req && !req.response && req.reject) {
                     req.timestamp = Date.now(); // Updating the timestamp
+                    // TODO: some promises should be rejected based on their expiry and some shouldn't
                     req.reject(error); // Rejecting the promise with the error
-                    // TODO: expiry for requests that received an error should be lower than default expiry
-                    req.expiry = 1000 * 60 * 5; // 5 minutes
+                    req.expiry = 1000 * 60; // Cache error for 60 seconds
                 }
             });
         }
