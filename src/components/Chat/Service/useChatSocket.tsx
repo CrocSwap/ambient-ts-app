@@ -218,8 +218,8 @@ const useChatSocket = (
     }
 
     async function updateUnverifiedMessages(verifyDate: Date) {
-        const nfList = localStorage.getItem('nfList');
-        const vrfTkn = localStorage.getItem('vrfTkn' + address);
+        const nfList = localStorage.getItem('zz_ch_nfList');
+        const vrfTkn = localStorage.getItem('zz_ch_vrfTkn' + address);
         const response = await fetch(
             CHAT_BACKEND_URL + updateUnverifiedMessagesEndpoint,
             {
@@ -227,24 +227,18 @@ const useChatSocket = (
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     user: currentUserID,
-                    verifyDate: verifyDate,
-                    msgList: nfList ? nfList.split(', ') : [],
+                    startDate: verifyDate,
+                    msgList: nfList
+                        ? nfList
+                              .split(', ')
+                              .filter((e) => e.length > 0 && e !== '')
+                        : [],
                     vrfTkn: vrfTkn,
                 }),
             },
         );
-        const data = await response.json();
-        setIsVerified(data.isVerified);
-
-        const userListData = await getUserListWithRest();
-        const usmp = new Map<string, User>();
-        userListData.forEach((user: User) => {
-            usmp.set(user._id, user);
-        });
-        setUserMap(usmp);
-        setUsers(userListData);
-
-        return data;
+        const messages = await response.json();
+        updateMessageWithArr(messages);
     }
 
     async function updateUserCache() {
@@ -255,7 +249,7 @@ const useChatSocket = (
         });
         setUserMap(usmp);
         setUsers(userListData);
-        const userToken = localStorage.getItem('vrfTkn' + address);
+        const userToken = localStorage.getItem('zz_ch_vrfTkn' + address);
         setUserVrfToken(userToken ? userToken : '');
     }
 
@@ -274,7 +268,7 @@ const useChatSocket = (
     useEffect(() => {
         async function checkVerified() {
             const data = await isUserVerified();
-            const userToken = localStorage.getItem('vrfTkn' + address);
+            const userToken = localStorage.getItem('zz_ch_vrfTkn' + address);
             setUserVrfToken(userToken ? userToken : '');
             if (!data) return;
             setIsVerified(userToken == data.vrfTkn && data.vrfTkn != null);
@@ -325,13 +319,15 @@ const useChatSocket = (
                     data &&
                     data.sender &&
                     data.sender === currentUserID &&
-                    !data.verified
+                    !data.isVerified
                 ) {
-                    console.log('thats not a verified msg');
-                    let nfList = localStorage.getItem('nfList');
+                    console.log('---- NOT VERIFIED -----');
+                    console.log(data._id);
+                    console.log(data.message);
+                    let nfList = localStorage.getItem('zz_ch_nfList');
                     const newMsgToken = ', ' + data._id;
                     nfList = nfList ? (nfList += newMsgToken) : data._id + '';
-                    localStorage.setItem('nfList', nfList);
+                    localStorage.setItem('zz_ch_nfList', nfList);
                 }
                 setMessages([...messagesRef.current, data]);
                 if (messagesRef.current[messagesRef.current.length - 1]) {
@@ -369,14 +365,6 @@ const useChatSocket = (
         if (socketRef.current) {
             socketRef.current.on('message-deleted-listener', (data: any) => {
                 updateMessages(data);
-                // const newMessageList = messages.map((e) => {
-                //     if (e._id == data._id) {
-                //         return data;
-                //     } else {
-                //         return e;
-                //     }
-                // });
-                // setMessages([...newMessageList]);
             });
 
             socketRef.current.on('message-updated-listener', (data: any) => {
@@ -465,25 +453,34 @@ const useChatSocket = (
         });
         const data = await response.json();
         socketRef.current.emit('message-updated', { ...data.data.message });
-        // if (data && data.data && data.data.message) {
-        //     const msg = data.data.message;
-        //     const newMessageList = messages.map((e) => {
-        //         if (e._id == msg._id) {
-        //             return msg;
-        //         } else {
-        //             return e;
-        //         }
-        //     });
-        //     setMessages([...newMessageList]);
-        // }
 
         return data;
     }
 
+    // update messages list with new message from server
     const updateMessages = (message: any) => {
         const newMessageList = messages.map((e) => {
             if (e._id == message._id) {
                 return message;
+            } else {
+                return e;
+            }
+        });
+        setMessages([...newMessageList]);
+    };
+
+    // updates messages list with new message list from server
+    const updateMessageWithArr = (msgListFromServer: Message[]) => {
+        console.log(msgListFromServer);
+        const newVerifiedMsgIds = new Set(
+            msgListFromServer.map((msg) => msg._id),
+        );
+        const newMessageList = messages.map((e) => {
+            if (newVerifiedMsgIds.has(e._id)) {
+                return {
+                    ...e,
+                    isVerified: true,
+                };
             } else {
                 return e;
             }

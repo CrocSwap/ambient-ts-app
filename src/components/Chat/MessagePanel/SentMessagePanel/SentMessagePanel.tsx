@@ -540,8 +540,8 @@ function SentMessagePanel(props: SentMessageProps) {
                     className={
                         styles.message_block +
                         ' ' +
-                        (!props.message.isVerified == true
-                            ? styles.not_verified
+                        (props.message.isVerified == true
+                            ? styles.vrf_msg_dbg
                             : '')
                     }
                 >

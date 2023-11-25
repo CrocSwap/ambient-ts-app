@@ -563,24 +563,15 @@ function ChatPanel(props: propsIF) {
     ) => {
         if (e) e.stopPropagation();
 
-        let message = '';
+        const message =
+            'Your wallet will be verified for chat. Please sign it for verification.';
         let verifyDate = new Date();
 
         if (verificationType === 0) {
-            message =
-                'Your wallet will be verified for chat. Please sign it for verification.';
             if (isVerified) return;
         } else if (isVerified) {
-            message =
-                'Your verification date will be updated to ' +
-                verificationDate +
-                '. Do you confirm?';
-            verifyDate = verificationDate;
+            return updateUnverifiedMessages(verificationDate);
         } else {
-            message =
-                'Your wallet will be verified since ' +
-                verificationDate +
-                '. Do you confirm?';
             verifyDate = verificationDate;
         }
 
@@ -591,16 +582,8 @@ function ChatPanel(props: propsIF) {
             })
             // eslint-disable-next-line
             .then((signedMessage: any) => {
-                if (verificationType == 1) {
-                    updateUnverifiedMessages(verificationDate);
-                } else {
-                    verifyUser(
-                        signedMessage,
-                        new Date().getMonth(),
-                        verifyDate,
-                    );
-                    localStorage.setItem('vrfTkn' + address, signedMessage);
-                }
+                verifyUser(signedMessage, new Date().getMonth(), verifyDate);
+                localStorage.setItem('zz_ch_vrfTkn' + address, signedMessage);
                 setTimeout(() => {
                     updateUserCache();
                 }, 300);
