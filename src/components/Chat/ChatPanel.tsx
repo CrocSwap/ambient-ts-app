@@ -563,24 +563,15 @@ function ChatPanel(props: propsIF) {
     ) => {
         if (e) e.stopPropagation();
 
-        let message = '';
         let verifyDate = new Date();
+        const message =
+            'Your wallet will be verified for chat. Please sign it for verification.';
 
         if (verificationType === 0) {
-            message =
-                'Your wallet will be verified for chat. Please sign it for verification.';
             if (isVerified) return;
         } else if (isVerified) {
-            message =
-                'Your verification date will be updated to ' +
-                verificationDate +
-                '. Do you confirm?';
-            verifyDate = verificationDate;
+            return updateUnverifiedMessages(verificationDate);
         } else {
-            message =
-                'Your wallet will be verified since ' +
-                verificationDate +
-                '. Do you confirm?';
             verifyDate = verificationDate;
         }
 
@@ -588,24 +579,15 @@ function ChatPanel(props: propsIF) {
             .request({
                 method: 'personal_sign',
                 params: [message, address, ''],
+                // params: [message, '0x7D0CDcC61914001A5b9bF81063A2834119539911', ''],
             })
             // eslint-disable-next-line
             .then((signedMessage: any) => {
-                if (verificationType == 1) {
-                    updateUnverifiedMessages(verificationDate);
-                } else {
-                    verifyUser(
-                        signedMessage,
-                        new Date().getMonth(),
-                        verifyDate,
-                    );
-                    localStorage.setItem('vrfTkn' + address, signedMessage);
-                }
+                verifyUser(signedMessage, new Date().getMonth(), verifyDate);
+                localStorage.setItem('vrfTkn' + address, signedMessage);
                 setTimeout(() => {
                     updateUserCache();
                 }, 300);
-
-                // The signed message is available here, which you can send to your server for verification
             })
             // eslint-disable-next-line
             .catch((error: any) => {

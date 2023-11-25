@@ -228,7 +228,9 @@ const useChatSocket = (
                 body: JSON.stringify({
                     user: currentUserID,
                     verifyDate: verifyDate,
-                    msgList: nfList ? nfList.split(', ') : [],
+                    msgList: nfList
+                        ? nfList.split(', ').filter((e) => e !== '')
+                        : [],
                     vrfTkn: vrfTkn,
                 }),
             },
