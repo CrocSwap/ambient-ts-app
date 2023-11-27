@@ -104,6 +104,7 @@ import { UserDataContext } from '../../contexts/UserDataContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { actionKeyIF } from './ChartUtils/useUndoRedo';
 import { formatDollarAmountAxis } from '../../utils/numbers';
+import { ChartContext } from '../../contexts/ChartContext';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -191,7 +192,11 @@ export default function Chart(props: propsIF) {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
     const { chainData } = useContext(CrocEnvContext);
-    // const { isMagnetActive,setIsMagnetActive } = useContext(ChartContext);
+    const { isMagnetActive } = useContext(ChartContext);
+
+    const [isMagnetActiveLocal, setIsMagnetActiveLocal] = useState(
+        isMagnetActive.value,
+    );
 
     const chainId = chainData.chainId;
     const { setCandleDomains, setCandleScale, timeOfEndCandle } =
@@ -2977,12 +2982,12 @@ export default function Chart(props: propsIF) {
                                                     secondPointYAxisData,
                                                 ),
                                         );
-                                        const width = Math.abs(
-                                            scaleData.xScale(item.data[0].x) -
-                                                scaleData.xScale(
-                                                    item.data[1].x,
-                                                ),
-                                        );
+                                        // const width = Math.abs(
+                                        //     scaleData.xScale(item.data[0].x) -
+                                        //         scaleData.xScale(
+                                        //             item.data[1].x,
+                                        //         ),
+                                        // );
 
                                         const lengthAsBars = Math.abs(
                                             item.data[0].x - item.data[1].x,
@@ -3122,7 +3127,7 @@ export default function Chart(props: propsIF) {
                                             );
                                         }
 
-                                        if (height > 70 && width > 70) {
+                                        if (height > 70) {
                                             const arrowArray =
                                                 createArrowPointsOfDPRangeLine(
                                                     item.data,
@@ -3463,17 +3468,40 @@ export default function Chart(props: propsIF) {
                 setSelectedDrawnShape(undefined);
             }
 
-            // if ((event.ctrlKey || event.metaKey) && activeDrawingType !== 'Cross') {
-            //     setIsMagnetActive(!isMagnetActive);
-            // }
+            if (
+                (event.ctrlKey || event.metaKey) &&
+                (activeDrawingType !== 'Cross' || isDragActive)
+            ) {
+                isMagnetActive.value = !isMagnetActiveLocal;
+            }
         };
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const handleKeyUp = function (event: any) {
+            if (
+                (event.key === 'Control' || event.key === 'Meta') &&
+                (activeDrawingType !== 'Cross' || isDragActive)
+            ) {
+                isMagnetActive.value = isMagnetActiveLocal;
+            }
+        };
         document.addEventListener('keydown', handleKeyDown);
+
+        document.addEventListener('keyup', handleKeyUp);
 
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
+            document.removeEventListener('keyup', handleKeyUp);
         };
-    }, [undo, redo, drawActionStack, undoStack, activeDrawingType]);
+    }, [
+        undo,
+        redo,
+        drawActionStack,
+        undoStack,
+        activeDrawingType,
+        isDragActive,
+        isMagnetActiveLocal,
+    ]);
 
     useEffect(() => {
         const canvas = d3
@@ -4801,6 +4829,8 @@ export default function Chart(props: propsIF) {
                             setActiveDrawingType={setActiveDrawingType}
                             isToolbarOpen={isToolbarOpen}
                             setIsToolbarOpen={setIsToolbarOpen}
+                            setDrawnShapeHistory={setDrawnShapeHistory}
+                            setIsMagnetActiveLocal={setIsMagnetActiveLocal}
                         />
 
                         <CandleChart
@@ -4884,6 +4914,7 @@ export default function Chart(props: propsIF) {
                                 isChartZoom={isChartZoom}
                                 lastCandleData={lastCandleData}
                                 firstCandleData={firstCandleData}
+                                isMagnetActive={isMagnetActive}
                             />
                         )}
 

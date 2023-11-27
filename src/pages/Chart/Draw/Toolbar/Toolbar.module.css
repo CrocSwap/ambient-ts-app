@@ -22,6 +22,15 @@
 
 .icon_fill_container {
     background-color: rgba(115,113,252,0.7);
+    margin-bottom: 10px;
+    display: flex;
+    width: Fixed (24px);
+    height: Fixed (24px);
+    padding: 2px;
+    border-radius: 4px;
+    grid-gap: 10px;
+    gap: 10px;
+
 }
 
 @keyframes identifier {

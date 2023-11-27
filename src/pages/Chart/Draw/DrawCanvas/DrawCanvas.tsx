@@ -30,7 +30,6 @@ import {
 } from './BandArea';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { ChartContext } from '../../../../contexts/ChartContext';
 import { CandleData } from '../../../../App/functions/fetchCandleSeries';
 
 interface DrawCanvasProps {
@@ -57,6 +56,7 @@ interface DrawCanvasProps {
     firstCandleData: any;
     lastCandleData: any;
     render: any;
+    isMagnetActive: { value: boolean };
 }
 
 function DrawCanvas(props: DrawCanvasProps) {
@@ -81,6 +81,7 @@ function DrawCanvas(props: DrawCanvasProps) {
         firstCandleData,
         lastCandleData,
         render,
+        isMagnetActive,
     } = props;
 
     const circleSeries = createCircle(
@@ -97,7 +98,7 @@ function DrawCanvas(props: DrawCanvasProps) {
         denomInBase,
     );
 
-    const { isMagnetActive } = useContext(ChartContext);
+    // const { isMagnetActive } = useContext(ChartContext);
 
     const currentPool = useContext(TradeDataContext);
 
@@ -164,7 +165,7 @@ function DrawCanvas(props: DrawCanvasProps) {
         const openDiff = Math.abs(offsetY - openToCoordinat);
         const closeDiff = Math.abs(offsetY - closeToCoordinat);
 
-        if (isMagnetActive && (openDiff <= 100 || closeDiff <= 100)) {
+        if (isMagnetActive.value && (openDiff <= 100 || closeDiff <= 100)) {
             const minDiffForYValue = Math.min(openDiff, closeDiff);
 
             valueY = minDiffForYValue === openDiff ? open : close;
@@ -479,8 +480,7 @@ function DrawCanvas(props: DrawCanvasProps) {
 
             renderCanvasArray([d3DrawCanvas]);
         }
-    }, [activeDrawingType, isMagnetActive]);
-
+    }, [activeDrawingType]);
     // Draw
     useEffect(() => {
         const canvas = d3
@@ -794,7 +794,6 @@ function DrawCanvas(props: DrawCanvasProps) {
                     ]);
                 })
                 .on('measure', (event: CustomEvent) => {
-                    // lineData[1].ctx.context(ctx);
                     circleSeries.context(ctx);
                     scaleData?.yScale.range([event.detail.height, 0]);
                 });

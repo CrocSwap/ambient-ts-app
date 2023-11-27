@@ -116,7 +116,7 @@ export default function DragCanvas(props: DragCanvasProps) {
         const openDiff = Math.abs(offsetY - openToCoordinat);
         const closeDiff = Math.abs(offsetY - closeToCoordinat);
 
-        if (isMagnetActive && (openDiff <= 100 || closeDiff <= 100)) {
+        if (isMagnetActive.value && (openDiff <= 100 || closeDiff <= 100)) {
             const minDiffForYValue = Math.min(openDiff, closeDiff);
 
             valueY = minDiffForYValue === openDiff ? open : close;
@@ -524,12 +524,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                 d3DragCanvas.current,
             ).call(dragDrawnShape);
         }
-    }, [
-        hoveredDrawnShape,
-        drawnShapeHistory,
-        isMagnetActive,
-        visibleCandleData,
-    ]);
+    }, [hoveredDrawnShape, drawnShapeHistory, visibleCandleData]);
 
     return <d3fc-canvas ref={d3DragCanvas} />;
 }

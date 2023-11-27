@@ -9,12 +9,18 @@ import horizontalRay from '../../../../assets/images/icons/draw/horizontal_ray.s
 import fibRetracement from '../../../../assets/images/icons/draw/fibonacci_retracement.svg';
 import magnet from '../../../../assets/images/icons/draw/snap.svg';
 import { ChartContext } from '../../../../contexts/ChartContext';
+import trashIcon from '../../../../assets/images/icons/draw/delete.svg';
+import { drawDataHistory } from '../../ChartUtils/chartUtils';
 
 interface ToolbarProps {
     activeDrawingType: string;
     setActiveDrawingType: React.Dispatch<React.SetStateAction<string>>;
     isToolbarOpen: boolean;
     setIsToolbarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    setDrawnShapeHistory: React.Dispatch<
+        React.SetStateAction<drawDataHistory[]>
+    >;
+    setIsMagnetActiveLocal: React.Dispatch<boolean>;
 }
 
 interface IconList {
@@ -29,6 +35,8 @@ function Toolbar(props: ToolbarProps) {
         setActiveDrawingType,
         isToolbarOpen,
         setIsToolbarOpen,
+        setDrawnShapeHistory,
+        setIsMagnetActiveLocal,
     } = props;
 
     const { setIsMagnetActive, isMagnetActive } = useContext(ChartContext);
@@ -95,8 +103,13 @@ function Toolbar(props: ToolbarProps) {
 
     function handleActivateIndicator(item: IconList) {
         if (item.label === 'magnet') {
-            setIsMagnetActive(!isMagnetActive);
+            setIsMagnetActive({ value: !isMagnetActive.value });
+            setIsMagnetActiveLocal(!isMagnetActive.value);
         }
+    }
+
+    function deleteAllShapes() {
+        setDrawnShapeHistory([]);
     }
 
     return (
@@ -148,7 +161,7 @@ function Toolbar(props: ToolbarProps) {
                                     >
                                         <img
                                             className={
-                                                isMagnetActive
+                                                isMagnetActive.value
                                                     ? styles.icon_fill_container
                                                     : styles.icon_inactive_container
                                             }
@@ -158,6 +171,19 @@ function Toolbar(props: ToolbarProps) {
                                     </div>
                                 </div>
                             ))}
+
+                            <div className={styles.icon_card}>
+                                <div
+                                    className={
+                                        activeDrawingType === 'Cross'
+                                            ? styles.icon_active_container
+                                            : styles.icon_inactive_container
+                                    }
+                                    onClick={() => deleteAllShapes()}
+                                >
+                                    <img src={trashIcon} alt='' />
+                                </div>
+                            </div>
                         </>
                     )}
                 </div>
