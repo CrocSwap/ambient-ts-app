@@ -56,7 +56,7 @@ interface RequestData<K extends keyof RequestResponseMap> {
 
 // [x] TODO - Test, to make sure if we spam the batch interface, it can use the nonce value to prevent duplicate requests
 // [x] TODO - Test, make sure old requests are cleaned out via the manage function
-// [ ] TODO - Test sending invalid requests. Analytics server should be able to handle a mix of poortly formatted requests along side well formatted requests
+// [?] TODO - Test sending invalid requests. Analytics server should be able to handle a mix of poortly formatted requests along side well formatted requests
 // [x] TODO - Harden the response parser with typing. Ensure it makes a best effort to process the valid responses, and does not let a bad response ruin the batch
 // [x] TODO - Add in Timeout support, so individual requests can expire and not block the whole app.
 // [ ] TODO: Add in exponential backoff for failed requests
@@ -266,123 +266,117 @@ export async function fetchBatch<K extends keyof RequestResponseMap>(
     return AnalyticsBatchRequestManager.register<K>(requestBody, requestNonce);
 }
 
-// export async function testBatchSystem() {
-//     // Combined request and expected response data
-//     const testData = [
-//         {
-//             request: {
-//                 config_path: 'ens_address',
-//                 address: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
-//             },
-//             expected: { ens_address: 'benwolski.eth' },
-//         },
-//         {
-//             request: {
-//                 config_path: 'ens_address',
-//                 address: '0x262b58f94055B13f986722498597a43CA9f3BA6D',
-//             },
-//             expected: { ens_address: 'wuyansong.eth' },
-//         },
-//         {
-//             request: {
-//                 config_path: 'ens_address',
-//                 address: '0xD94F51053b9817bc2de4DBbaC647D9a784C24406',
-//             },
-//             expected: { ens_address: null },
-//         },
-//     ];
+export async function testBatchSystem() {
+    // Combined request and expected response data
+    const testData = [
+        {
+            request: {
+                config_path: 'ens_address',
+                address: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
+            },
+            expected: { ens_address: 'benwolski.eth' },
+        },
+        {
+            request: {
+                config_path: 'ens_address',
+                address: '0x262b58f94055B13f986722498597a43CA9f3BA6D',
+            },
+            expected: { ens_address: 'wuyansong.eth' },
+        },
+        {
+            request: {
+                config_path: 'ens_address',
+                address: '0xD94F51053b9817bc2de4DBbaC647D9a784C24406',
+            },
+            expected: { ens_address: null },
+        },
+    ];
 
-//     const promises = testData.map((data) =>
-//         fetchBatchENSAddresses(data.request.address),
-//     );
+    const promises = testData.map((data) =>
+        fetchBatch<'ens_address'>({
+            config_path: 'ens_address',
+            address: data.request.address,
+        }),
+    );
 
-//     Promise.all(promises).then((results) => {
-//         let matches = 0;
-//         results.forEach((result, index) => {
-//             if (
-//                 JSON.stringify(result) ===
-//                 JSON.stringify(testData[index].expected.ens_address)
-//             )
-//                 matches = matches + 1;
-//             console.assert(
-//                 JSON.stringify(result) ===
-//                     JSON.stringify(testData[index].expected.ens_address),
-//                 `Test failed for request ${
-//                     index + 1
-//                 }: Expected ${JSON.stringify(
-//                     testData[index].expected.ens_address,
-//                 )}, got ${JSON.stringify(result)}`,
-//             );
-//         });
-//         if (matches == testData.length) console.log('All tests passed!');
-//         else console.error('Could not verify batch requests');
-//     });
-//     //
-// }
+    Promise.all(promises).then((results) => {
+        let matches = 0;
+        results.forEach((result, index) => {
+            if (
+                JSON.stringify(result) ===
+                JSON.stringify(testData[index].expected.ens_address)
+            )
+                matches = matches + 1;
+            console.assert(
+                JSON.stringify(result) ===
+                    JSON.stringify(testData[index].expected.ens_address),
+                `Test failed for request ${
+                    index + 1
+                }: Expected ${JSON.stringify(
+                    testData[index].expected.ens_address,
+                )}, got ${JSON.stringify(result)}`,
+            );
+        });
+        if (matches == testData.length) console.log('All tests passed!');
+        else console.error('Could not verify batch requests');
+    });
+    //
+}
 
-// let testCount = 0;
-// export async function useBatchSystemIrresponsibly() {
-//     if (testCount != 0) return;
+let testCount = 0;
+export async function useBatchSystemIrresponsibly() {
+    if (testCount != 0) return;
 
-//     AnalyticsBatchRequestManager.sendFrequency = 10000; // We allow batches every 10 seconds. This is a LITTLE slow. It can be changed dynamically anytime.
-//     // Meaning, if the network gets congested, this number can be randomly set, and it will govern all batch network behaviour -- period.
-//     console.log('useBatchSystemIrresponsibly running... ');
-//     testCount = 1;
-//     const sleep = (ms: number) =>
-//         new Promise((resolve) => setTimeout(resolve, ms));
+    AnalyticsBatchRequestManager.sendFrequency = 10000; // We allow batches every 10 seconds. This is a LITTLE slow. It can be changed dynamically anytime.
+    // Meaning, if the network gets congested, this number can be randomly set, and it will govern all batch network behaviour -- period.
+    console.log('useBatchSystemIrresponsibly running... ');
+    testCount = 1;
+    const sleep = (ms: number) =>
+        new Promise((resolve) => setTimeout(resolve, ms));
 
-//     // Simulate a situation where we send 40 record queries
-//     await testBatchSystem();
-//     // A simple one off test in the mix
+    // Simulate a situation where we send 40 record queries
+    await testBatchSystem();
+    // A simple one off test in the mix
 
-//     console.assert(
-//         Object.keys(AnalyticsBatchRequestManager.pendingRequests).length === 3,
-//         'Assertion failed: pendingRequests.length should be 3',
-//     );
-//     await sleep(3000);
-//     console.assert(
-//         Object.keys(AnalyticsBatchRequestManager.pendingRequests).length === 3,
-//         'Assertion failed post 3k sleep: pendingRequests.length should be 3',
-//     );
-//     await sleep(11000);
-//     console.assert(
-//         AnalyticsBatchRequestManager.sentBatches === 1,
-//         'Assertion failed: sentBatches should be 1',
-//     );
-//     console.assert(
-//         AnalyticsBatchRequestManager.parsedBatches === 1,
-//         'Assertion failed: parsedBatches should be 0',
-//     );
-//     console.assert(
-//         Object.keys(AnalyticsBatchRequestManager.pendingRequests).length === 0,
-//         'Assertion failed post processing: pendingRequests.length should be 0',
-//     );
+    console.assert(
+        Object.keys(AnalyticsBatchRequestManager.pendingRequests).length === 3,
+        'Assertion failed: pendingRequests.length should be 3',
+    );
+    await sleep(3000);
+    console.assert(
+        Object.keys(AnalyticsBatchRequestManager.pendingRequests).length === 3,
+        'Assertion failed post 3k sleep: pendingRequests.length should be 3',
+    );
+    await sleep(11000);
+    console.assert(
+        AnalyticsBatchRequestManager.sentBatches === 1,
+        'Assertion failed: sentBatches should be 1',
+    );
+    console.assert(
+        AnalyticsBatchRequestManager.parsedBatches === 1,
+        'Assertion failed: parsedBatches should be 0',
+    );
+    console.assert(
+        Object.keys(AnalyticsBatchRequestManager.pendingRequests).length === 0,
+        'Assertion failed post processing: pendingRequests.length should be 0',
+    );
 
-//     // Repeating testBatchSystem multiple times, in a terrible, terrible, manner
-//     testBatchSystem();
-//     testBatchSystem();
-//     testBatchSystem();
-//     testBatchSystem();
-//     testBatchSystem();
-//     testBatchSystem();
-//     testBatchSystem();
-//     testBatchSystem();
-//     console.log('All tests of tests passed!!');
+    for (let i = 0; i < 8; i++) {
+        testBatchSystem();
+    }
+    console.log('All tests of tests passed!!');
 
-//     await sleep(11000);
-//     console.assert(
-//         AnalyticsBatchRequestManager.sentBatches === 2,
-//         'Assertion failed: sentBatches should be 1',
-//     );
-//     console.assert(
-//         AnalyticsBatchRequestManager.parsedBatches === 2,
-//         'Assertion failed: parsedBatches should be 0',
-//     );
-//     console.assert(
-//         Object.keys(AnalyticsBatchRequestManager.pendingRequests).length === 0,
-//         'Assertion failed post processing: pendingRequests.length should be 0',
-//     );
-
-//     // Example use:
-//     // let res = await fetchBatch({ 'config_path': 'ens_address','address': '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc' });
-// }
+    await sleep(11000);
+    console.assert(
+        AnalyticsBatchRequestManager.sentBatches === 2,
+        'Assertion failed: sentBatches should be 1',
+    );
+    console.assert(
+        AnalyticsBatchRequestManager.parsedBatches === 2,
+        'Assertion failed: parsedBatches should be 0',
+    );
+    console.assert(
+        Object.keys(AnalyticsBatchRequestManager.pendingRequests).length === 0,
+        'Assertion failed post processing: pendingRequests.length should be 0',
+    );
+}
