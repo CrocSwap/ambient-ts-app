@@ -355,20 +355,24 @@ export function calculateFibRetracementBandAreas(
 
     const activeFibLevels = fibLevels.filter((level) => level.active);
 
-    activeFibLevels.reduce((prev, curr) => {
-        if (curr.active) {
-            fibLineData.push({
-                fromValue:
-                    pointLevel + diff * prev.level * (retracementIsUp ? 1 : -1),
-                toValue:
-                    pointLevel + diff * curr.level * (retracementIsUp ? 1 : -1),
-                denomInBase: lineData[0].denomInBase,
-                color: curr.color,
-            });
-        }
+    if (activeFibLevels.length > 0) {
+        activeFibLevels.reduce((prev, curr) => {
+            if (curr.active) {
+                fibLineData.push({
+                    fromValue:
+                        pointLevel +
+                        diff * prev.level * (retracementIsUp ? 1 : -1),
+                    toValue:
+                        pointLevel +
+                        diff * curr.level * (retracementIsUp ? 1 : -1),
+                    denomInBase: lineData[0].denomInBase,
+                    color: curr.color,
+                });
+            }
 
-        return curr;
-    });
+            return curr;
+        });
+    }
 
     fibLineData.sort((a, b) =>
         retracementIsUp ? a.fromValue - b.fromValue : b.fromValue - a.fromValue,

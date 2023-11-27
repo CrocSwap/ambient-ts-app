@@ -2,6 +2,7 @@ import {
     CHART_ANNOTATIONS_LS_KEY,
     drawDataHistory,
     drawnShapeEditAttributes,
+    fibLevels,
 } from './chartUtils';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -51,7 +52,9 @@ export function useUndoRedo(denomInBase: boolean) {
                         type: element.type,
                         time: element.time,
                         pool: element.pool,
-                        extraData: [],
+                        extraData: ['FibRetracement'].includes(element.type)
+                            ? structuredClone(fibLevels)
+                            : [],
                         line: {
                             active: !['Rect'].includes(element.type),
                             color: 'rgba(115, 113, 252, 1)',
