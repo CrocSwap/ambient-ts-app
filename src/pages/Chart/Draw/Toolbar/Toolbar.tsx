@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import styles from './Toolbar.module.css';
 import drawLine from '../../../../assets/images/icons/draw/draw_line.svg';
 import drawCross from '../../../../assets/images/icons/draw/draw_cross.svg';
@@ -7,12 +7,20 @@ import dprange from '../../../../assets/images/icons/draw/dprange.svg';
 // import drawAngle from '../../../../assets/images/icons/draw/angle_line.svg';
 import horizontalRay from '../../../../assets/images/icons/draw/horizontal_ray.svg';
 import fibRetracement from '../../../../assets/images/icons/draw/fibonacci_retracement.svg';
+import magnet from '../../../../assets/images/icons/draw/snap.svg';
+import { ChartContext } from '../../../../contexts/ChartContext';
+import trashIcon from '../../../../assets/images/icons/draw/delete.svg';
+import { drawDataHistory } from '../../ChartUtils/chartUtils';
 
 interface ToolbarProps {
     activeDrawingType: string;
     setActiveDrawingType: React.Dispatch<React.SetStateAction<string>>;
     isToolbarOpen: boolean;
     setIsToolbarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    setDrawnShapeHistory: React.Dispatch<
+        React.SetStateAction<drawDataHistory[]>
+    >;
+    setIsMagnetActiveLocal: React.Dispatch<boolean>;
 }
 
 interface IconList {
@@ -27,8 +35,11 @@ function Toolbar(props: ToolbarProps) {
         setActiveDrawingType,
         isToolbarOpen,
         setIsToolbarOpen,
+        setDrawnShapeHistory,
+        setIsMagnetActiveLocal,
     } = props;
 
+    const { setIsMagnetActive, isMagnetActive } = useContext(ChartContext);
     const feeRate = document.getElementById('fee_rate_chart');
     const tvl = document.getElementById('tvl_chart');
 
@@ -46,10 +57,12 @@ function Toolbar(props: ToolbarProps) {
     }, [isToolbarOpen, feeRate, tvl]);
 
     function handleDrawModeChange(item: IconList) {
-        setActiveDrawingType(item.label);
+        if (item.label !== 'magnet') {
+            setActiveDrawingType(item.label);
+        }
     }
 
-    const iconList: IconList[] = [
+    const drawIconList: IconList[] = [
         {
             icon: drawCross,
             label: 'Cross',
@@ -78,9 +91,26 @@ function Toolbar(props: ToolbarProps) {
             icon: dprange,
             label: 'DPRange',
         },
-
         // Add more icons here
     ];
+
+    const indicatorIconList: IconList[] = [
+        {
+            icon: magnet,
+            label: 'magnet',
+        },
+    ];
+
+    function handleActivateIndicator(item: IconList) {
+        if (item.label === 'magnet') {
+            setIsMagnetActive({ value: !isMagnetActive.value });
+            setIsMagnetActiveLocal(!isMagnetActive.value);
+        }
+    }
+
+    function deleteAllShapes() {
+        setDrawnShapeHistory([]);
+    }
 
     return (
         <div
@@ -95,29 +125,64 @@ function Toolbar(props: ToolbarProps) {
                 } ${styles.drawlist_container} `}
             >
                 <div>
-                    {isToolbarOpen &&
-                        iconList.map((item, index) => (
-                            <div key={index} className={styles.icon_card}>
+                    {isToolbarOpen && (
+                        <>
+                            {drawIconList.map((item, index) => (
+                                <div key={index} className={styles.icon_card}>
+                                    <div
+                                        className={
+                                            activeDrawingType === 'Cross'
+                                                ? styles.icon_active_container
+                                                : styles.icon_inactive_container
+                                        }
+                                        onClick={() =>
+                                            handleDrawModeChange(item)
+                                        }
+                                    >
+                                        <img
+                                            className={
+                                                activeDrawingType === item.label
+                                                    ? styles.icon_active
+                                                    : styles.icon_inactive
+                                            }
+                                            src={item.icon}
+                                            alt=''
+                                        />
+                                    </div>
+                                </div>
+                            ))}
+
+                            {indicatorIconList.map((item, index) => (
+                                <div key={index} className={styles.icon_card}>
+                                    <div
+                                        className={
+                                            isMagnetActive.value
+                                                ? styles.icon_fill_container
+                                                : styles.icon_inactive_container
+                                        }
+                                        onClick={() =>
+                                            handleActivateIndicator(item)
+                                        }
+                                    >
+                                        <img src={item.icon} alt='' />
+                                    </div>
+                                </div>
+                            ))}
+
+                            <div className={styles.icon_card}>
                                 <div
                                     className={
                                         activeDrawingType === 'Cross'
                                             ? styles.icon_active_container
                                             : styles.icon_inactive_container
                                     }
-                                    onClick={() => handleDrawModeChange(item)}
+                                    onClick={() => deleteAllShapes()}
                                 >
-                                    <img
-                                        className={
-                                            activeDrawingType === item.label
-                                                ? styles.icon_active
-                                                : styles.icon_inactive
-                                        }
-                                        src={item.icon}
-                                        alt=''
-                                    />
+                                    <img src={trashIcon} alt='' />
                                 </div>
                             </div>
-                        ))}
+                        </>
+                    )}
                 </div>
             </div>
 

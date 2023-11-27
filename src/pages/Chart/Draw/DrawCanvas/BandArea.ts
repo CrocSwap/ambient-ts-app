@@ -128,7 +128,7 @@ export function createArrowPointsOfDPRangeLine(
             denomInBase === data[0].denomInBase
                 ? horizontalArrowYAxisData
                 : 1 / horizontalArrowYAxisData,
-        ) + (horizontalArrowDirection === 'down' ? -20 : 20),
+        ) + (horizontalArrowDirection === 'down' ? -10 : 10),
     );
 
     const veritcalFirstArrowLinePointWithDenom = scaleData.yScale.invert(
@@ -136,21 +136,21 @@ export function createArrowPointsOfDPRangeLine(
             denomInBase === data[0].denomInBase
                 ? verticalArrowYAxisData
                 : 1 / verticalArrowYAxisData,
-        ) + 20,
+        ) + 10,
     );
     const veritcalSecondArrowLinePointWithDenom = scaleData.yScale.invert(
         scaleData.yScale(
             denomInBase === data[0].denomInBase
                 ? verticalArrowYAxisData
                 : 1 / verticalArrowYAxisData,
-        ) - 20,
+        ) - 10,
     );
 
     const horizontalArrow = [
         [
             {
                 x: scaleData.xScale.invert(
-                    scaleData.xScale(horizontalArrowXAxisData) - 20,
+                    scaleData.xScale(horizontalArrowXAxisData) - 10,
                 ),
                 y:
                     denomInBase === data[0].denomInBase
@@ -172,7 +172,7 @@ export function createArrowPointsOfDPRangeLine(
             },
             {
                 x: scaleData.xScale.invert(
-                    scaleData.xScale(horizontalArrowXAxisData) + 20,
+                    scaleData.xScale(horizontalArrowXAxisData) + 10,
                 ),
                 y:
                     denomInBase === data[0].denomInBase
@@ -188,7 +188,7 @@ export function createArrowPointsOfDPRangeLine(
             {
                 x: scaleData.xScale.invert(
                     scaleData.xScale(verticalArrowXAxisData) +
-                        (verticalArrowDirection === 'right' ? -20 : 20),
+                        (verticalArrowDirection === 'right' ? -10 : 10),
                 ),
                 y:
                     denomInBase === data[0].denomInBase
@@ -211,7 +211,7 @@ export function createArrowPointsOfDPRangeLine(
             {
                 x: scaleData.xScale.invert(
                     scaleData.xScale(verticalArrowXAxisData) +
-                        (verticalArrowDirection === 'right' ? -20 : 20),
+                        (verticalArrowDirection === 'right' ? -10 : 10),
                 ),
                 y:
                     denomInBase === data[0].denomInBase
