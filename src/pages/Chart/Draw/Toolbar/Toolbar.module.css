@@ -15,13 +15,13 @@
     display: flex;
 }
 
-
-.icon_active_container,.icon_inactive_container,.icon_fill_container img:hover {
+.icon_active_container,
+.icon_inactive_container img:hover {
     cursor: pointer;
 }
 
 .icon_fill_container {
-    background-color: rgba(115,113,252,0.7);
+    background-color: rgba(115, 113, 252, 0.7);
     margin-bottom: 10px;
     display: flex;
     width: Fixed (24px);
@@ -30,7 +30,12 @@
     border-radius: 4px;
     grid-gap: 10px;
     gap: 10px;
+    cursor: pointer;
+}
 
+.icon_fill_container img {
+    filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg)
+        brightness(200%) contrast(100%);
 }
 
 @keyframes identifier {
@@ -110,7 +115,6 @@
 .divider_button {
     background: var(--dark1);
 }
-
 
 .close_divider_button,
 .divider_button {

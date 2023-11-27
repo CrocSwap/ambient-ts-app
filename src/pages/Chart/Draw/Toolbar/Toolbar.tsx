@@ -155,19 +155,16 @@ function Toolbar(props: ToolbarProps) {
                             {indicatorIconList.map((item, index) => (
                                 <div key={index} className={styles.icon_card}>
                                     <div
+                                        className={
+                                            isMagnetActive.value
+                                                ? styles.icon_fill_container
+                                                : styles.icon_inactive_container
+                                        }
                                         onClick={() =>
                                             handleActivateIndicator(item)
                                         }
                                     >
-                                        <img
-                                            className={
-                                                isMagnetActive.value
-                                                    ? styles.icon_fill_container
-                                                    : styles.icon_inactive_container
-                                            }
-                                            src={item.icon}
-                                            alt=''
-                                        />
+                                        <img src={item.icon} alt='' />
                                     </div>
                                 </div>
                             ))}
