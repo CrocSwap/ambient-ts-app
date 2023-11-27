@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import trimString from '../../utils/functions/trimString';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
@@ -15,7 +16,7 @@ import {
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useContext } from 'react';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
-import { useFetchENSAddress } from '../../App/hooks/useFetchENSAddress';
+import { useFetchBatch } from '../../App/hooks/useFetchBatch';
 
 export const useProcessTransaction = (
     tx: TransactionIF,
@@ -30,8 +31,9 @@ export const useProcessTransaction = (
     // TODO: clarify if this should also preferentially show ENS address
     const ownerId = tx.user ? getAddress(tx.user) : '';
 
-    const { ensAddress } = useFetchENSAddress(tx.user);
-    const ensName = ensAddress || tx.ensResolution || null;
+    const body = { config_path: 'ens_address', address: tx.user };
+    const { data } = useFetchBatch<'ens_address'>(body);
+    const ensName = data?.ens_address || tx.ensResolution || null;
 
     const isOwnerActiveAccount =
         ownerId.toLowerCase() === account?.toLowerCase();

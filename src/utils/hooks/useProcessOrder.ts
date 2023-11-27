@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { useState, useEffect, useMemo, useContext } from 'react';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import trimString from '../../utils/functions/trimString';
@@ -20,7 +21,7 @@ import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import uriToHttp from '../functions/uriToHttp';
 import { getAddress } from 'ethers/lib/utils.js';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
-import { useFetchENSAddress } from '../../App/hooks/useFetchENSAddress';
+import { useFetchBatch } from '../../App/hooks/useFetchBatch';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
@@ -45,9 +46,11 @@ export const useProcessOrder = (
     const isOwnerActiveAccount =
         limitOrder.user.toLowerCase() === account?.toLowerCase();
 
-    const { ensAddress } = useFetchENSAddress(limitOrder.user);
-    const ownerId = ensAddress || getAddress(limitOrder.user);
-    const ensName = ensAddress || limitOrder.ensResolution || null;
+    const body = { config_path: 'ens_address', address: limitOrder.user };
+    const { data } = useFetchBatch<'ens_address'>(body);
+
+    const ownerId = data?.ens_address || getAddress(limitOrder.user);
+    const ensName = data?.ens_address || limitOrder.ensResolution || null;
 
     const isOrderFilled = limitOrder.claimableLiq > 0;
 

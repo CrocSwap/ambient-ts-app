@@ -26,14 +26,14 @@ export type PriceResponse = {
     };
 };
 
-type RequestTypeMap = {
+export type RequestTypeMap = {
     ens_address: ENSRequestBodyType;
     price: PriceRequestBodyType;
 };
 
-type RequestKeys = keyof RequestTypeMap;
+export type RequestKeys = keyof RequestTypeMap;
 
-interface RequestResponseMap {
+export interface RequestResponseMap {
     ens_address: { request: ENSRequestBodyType; response: ENSResponse };
     price: { request: PriceRequestBodyType; response: PriceResponse };
 }
@@ -54,13 +54,18 @@ interface RequestData<K extends keyof RequestResponseMap> {
     expiry: number;
 }
 
+export type FetchBatchOptions = {
+    nonce?: string;
+    expiry?: number;
+};
+
 // [x] TODO - Test, to make sure if we spam the batch interface, it can use the nonce value to prevent duplicate requests
 // [x] TODO - Test, make sure old requests are cleaned out via the manage function
 // [?] TODO - Test sending invalid requests. Analytics server should be able to handle a mix of poortly formatted requests along side well formatted requests
 // [x] TODO - Harden the response parser with typing. Ensure it makes a best effort to process the valid responses, and does not let a bad response ruin the batch
 // [x] TODO - Add in Timeout support, so individual requests can expire and not block the whole app.
-// [ ] TODO: Add in exponential backoff for failed requests
 // [ ] TODO: Add ability to timeout individual requests
+// [ ] TODO: Add in exponential backoff for failed requests
 class AnalyticsBatchRequestManager {
     static pendingRequests: Record<
         string,
@@ -167,9 +172,8 @@ class AnalyticsBatchRequestManager {
                 const req = requests[nonce];
                 if (req && !req.response && req.reject) {
                     req.timestamp = Date.now(); // Updating the timestamp
-                    // TODO: some promises should be rejected based on their expiry and some shouldn't (individual timeout)
                     req.reject(error); // Rejecting the promise with the error
-                    req.expiry = 1000 * 60; // Cache error for 60 seconds
+                    req.expiry = 0; // Don't cache error
                 }
             });
         }
@@ -205,7 +209,7 @@ class AnalyticsBatchRequestManager {
 
     static async register<K extends RequestKeys>(
         body: RequestResponseMap[K]['request'],
-        nonce: string,
+        { nonce, expiry }: { nonce: string; expiry: number },
     ): Promise<RequestResponseMap[K]['response']> {
         if (!AnalyticsBatchRequestManager.pendingRequests[nonce]) {
             AnalyticsBatchRequestManager.pendingRequests[nonce] = {
@@ -214,8 +218,8 @@ class AnalyticsBatchRequestManager {
                 promise: null, // This will hold the promise itself
                 resolve: null, // Store the resolve function
                 reject: null, // Store the reject function
-                response: null,
-                expiry: BATCH_ENS_CACHE_EXPIRY, // Expire in BATCH_ENS_CACHE_EXPIRY ms
+                response: null, // Store the response
+                expiry: expiry, // Default expiry in BATCH_ENS_CACHE_EXPIRY ms
             };
             AnalyticsBatchRequestManager.pendingRequests[nonce].promise =
                 new Promise((resolve, reject) => {
@@ -252,10 +256,11 @@ export async function cleanupBatchManager() {
 
 export async function fetchBatch<K extends keyof RequestResponseMap>(
     requestBody: RequestResponseMap[K]['request'],
-    nonce?: string,
+    options?: FetchBatchOptions,
 ): Promise<RequestResponseMap[K]['response']> {
-    const requestNonce = nonce || simpleHash(requestBody);
-    const request = AnalyticsBatchRequestManager.pendingRequests[requestNonce];
+    const nonce = options?.nonce || simpleHash(requestBody);
+    const expiry = options?.expiry || BATCH_ENS_CACHE_EXPIRY;
+    const request = AnalyticsBatchRequestManager.pendingRequests[nonce];
     if (
         request &&
         request.timestamp &&
@@ -263,7 +268,10 @@ export async function fetchBatch<K extends keyof RequestResponseMap>(
     ) {
         return request.promise as Promise<RequestResponseMap[K]['response']>;
     }
-    return AnalyticsBatchRequestManager.register<K>(requestBody, requestNonce);
+    return AnalyticsBatchRequestManager.register<K>(requestBody, {
+        nonce,
+        expiry,
+    });
 }
 
 export async function testBatchSystem() {

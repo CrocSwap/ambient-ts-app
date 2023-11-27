@@ -1,6 +1,6 @@
+/* eslint-disable camelcase */
 import { fetchBatch } from '../../utils/functions/fetchBatch';
 
-/* eslint-disable camelcase */
 export async function fetchENSAddress(address: string) {
     try {
         const body = { config_path: 'ens_address', address: address };
