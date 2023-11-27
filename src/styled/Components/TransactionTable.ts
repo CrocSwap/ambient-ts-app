@@ -246,7 +246,7 @@ export const RowItem = styled(FlexContainer)<{
     hover?: boolean;
 }>`
     ${({ hover, type, width }) => `
-        ${width && `width: ${width};`}
+        ${width && `width: ${width}px;`}
         ${
             hover &&
             `
