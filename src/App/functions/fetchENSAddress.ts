@@ -1,7 +1,7 @@
 import { fetchBatch } from '../../utils/functions/fetchBatch';
 
 /* eslint-disable camelcase */
-export async function fetchENSAddresses(address: string) {
+export async function fetchENSAddress(address: string) {
     try {
         const body = { config_path: 'ens_address', address: address };
         const { ens_address } = await fetchBatch<'ens_address'>(body);

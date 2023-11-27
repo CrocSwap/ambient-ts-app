@@ -15,12 +15,12 @@ import {
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useContext } from 'react';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { useFetchENSAddress } from '../../App/hooks/useFetchENSAddress';
 
 export const useProcessTransaction = (
     tx: TransactionIF,
     account = '',
     isAccountView = false,
-    fetchedEnsAddress?: string,
 ) => {
     const { tokenA, tokenB, isDenomBase } = useContext(TradeDataContext);
     const blockExplorer = getChainExplorer(tx.chainId);
@@ -30,7 +30,8 @@ export const useProcessTransaction = (
     // TODO: clarify if this should also preferentially show ENS address
     const ownerId = tx.user ? getAddress(tx.user) : '';
 
-    const ensName = fetchedEnsAddress || tx.ensResolution || null;
+    const { ensAddress } = useFetchENSAddress(tx.user);
+    const ensName = ensAddress || tx.ensResolution || null;
 
     const isOwnerActiveAccount =
         ownerId.toLowerCase() === account?.toLowerCase();

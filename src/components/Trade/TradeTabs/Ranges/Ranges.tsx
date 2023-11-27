@@ -29,8 +29,7 @@ import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { getAddress } from 'ethers/lib/utils.js';
-import { fetchENSAddresses } from '../../../../App/functions/fetchENSAddresses';
+
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
 
@@ -369,26 +368,6 @@ function Ranges(props: propsIF) {
         </RangeRowStyled>
     );
 
-    const [ensAddressesMap] = useState<Map<string, string>>(new Map());
-
-    useEffect(() => {
-        if (sortedPositions.length === 0) return;
-        (async () => {
-            const results = await Promise.allSettled(
-                sortedPositions.map((tx) => fetchENSAddresses(tx.user)),
-            );
-
-            results.forEach((result, index) => {
-                if (result.status === 'fulfilled' && result.value) {
-                    const user =
-                        sortedPositions[index].user ??
-                        getAddress(sortedPositions[index].user);
-                    ensAddressesMap.set(user, result.value);
-                }
-            });
-        })();
-    }, [sortedPositions]);
-
     const currentRowItemContent = () =>
         _DATA.currentData.map((position, idx) => (
             <RangesRow
@@ -396,7 +375,6 @@ function Ranges(props: propsIF) {
                 position={position}
                 isAccountView={isAccountView}
                 tableView={tableView}
-                fetchedEnsAddress={ensAddressesMap.get(position.user)}
             />
         ));
 

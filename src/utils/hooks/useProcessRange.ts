@@ -11,12 +11,12 @@ import moment from 'moment';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { getAddress } from 'ethers/lib/utils.js';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { useFetchENSAddress } from '../../App/hooks/useFetchENSAddress';
 
 export const useProcessRange = (
     position: PositionIF,
     account = '',
     isAccountView?: boolean,
-    fetchedEnsAddress?: string,
 ) => {
     const blockExplorer = getChainExplorer(position.chainId);
 
@@ -66,8 +66,9 @@ export const useProcessRange = (
     const apyClassname = apy > 0 ? 'apy_positive' : 'apy_negative';
     const isAmbient = position.positionType === 'ambient';
 
-    const ensName = fetchedEnsAddress
-        ? fetchedEnsAddress
+    const { ensAddress } = useFetchENSAddress(position.user);
+    const ensName = ensAddress
+        ? ensAddress
         : position.ensResolution
         ? position.ensResolution
         : null;

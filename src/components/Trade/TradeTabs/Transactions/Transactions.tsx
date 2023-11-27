@@ -34,8 +34,6 @@ import { FlexContainer, Text } from '../../../../styled/Common';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { getAddress } from 'ethers/lib/utils.js';
-import { fetchENSAddresses } from '../../../../App/functions/fetchENSAddresses';
 
 interface propsIF {
     filter?: CandleData | undefined;
@@ -506,26 +504,6 @@ function Transactions(props: propsIF) {
             </FlexContainer>
         );
 
-    const [ensAddressesMap] = useState<Map<string, string>>(new Map());
-
-    useEffect(() => {
-        if (_DATA.currentData.length === 0) return;
-        (async () => {
-            const results = await Promise.allSettled(
-                _DATA.currentData.map((tx) => fetchENSAddresses(tx.user)),
-            );
-
-            results.forEach((result, index) => {
-                if (result.status === 'fulfilled' && result.value) {
-                    const user =
-                        _DATA.currentData[index].user ??
-                        getAddress(_DATA.currentData[index].user);
-                    ensAddressesMap.set(user, result.value);
-                }
-            });
-        })();
-    }, [_DATA.currentData]);
-
     const currentRowItemContent = () =>
         _DATA.currentData.map((tx, idx) => (
             <TransactionRow
@@ -534,7 +512,6 @@ function Transactions(props: propsIF) {
                 tx={tx}
                 tableView={tableView}
                 isAccountView={isAccountView}
-                fetchedEnsAddress={ensAddressesMap.get(tx.user)}
             />
         ));
 

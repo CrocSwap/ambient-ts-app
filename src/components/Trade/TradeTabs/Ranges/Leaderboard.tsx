@@ -15,8 +15,6 @@ import { FlexContainer } from '../../../../styled/Common';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { getAddress } from 'ethers/lib/utils.js';
-import { fetchENSAddresses } from '../../../../App/functions/fetchENSAddresses';
 
 // react functional component
 function Leaderboard() {
@@ -200,26 +198,6 @@ function Leaderboard() {
         },
     ];
 
-    const [ensAddressesMap] = useState<Map<string, string>>(new Map());
-
-    useEffect(() => {
-        if (usePaginateDataOrNull.length === 0) return;
-        (async () => {
-            const results = await Promise.allSettled(
-                usePaginateDataOrNull.map((tx) => fetchENSAddresses(tx.user)),
-            );
-
-            results.forEach((result, index) => {
-                if (result.status === 'fulfilled' && result.value) {
-                    const user =
-                        usePaginateDataOrNull[index].user ??
-                        getAddress(usePaginateDataOrNull[index].user);
-                    ensAddressesMap.set(user, result.value);
-                }
-            });
-        })();
-    }, [usePaginateDataOrNull]);
-
     const rowItemContent = usePaginateDataOrNull?.map((position, idx) => (
         <RangesRow
             key={idx}
@@ -232,7 +210,6 @@ function Leaderboard() {
             isAccountView={false}
             isLeaderboard={true}
             tableView={tableView}
-            fetchedEnsAddress={ensAddressesMap.get(position.user) ?? ''}
         />
     ));
 

@@ -20,12 +20,12 @@ import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import uriToHttp from '../functions/uriToHttp';
 import { getAddress } from 'ethers/lib/utils.js';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { useFetchENSAddress } from '../../App/hooks/useFetchENSAddress';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
     account = '',
     isAccountView = false,
-    fetchedEnsAddress?: string,
 ) => {
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
     const blockExplorer = getChainExplorer(limitOrder.chainId);
@@ -45,9 +45,9 @@ export const useProcessOrder = (
     const isOwnerActiveAccount =
         limitOrder.user.toLowerCase() === account?.toLowerCase();
 
-    const ownerId = fetchedEnsAddress || getAddress(limitOrder.user) || '';
-
-    const ensName = fetchedEnsAddress || limitOrder.ensResolution || null;
+    const { ensAddress } = useFetchENSAddress(limitOrder.user);
+    const ownerId = ensAddress || getAddress(limitOrder.user);
+    const ensName = ensAddress || limitOrder.ensResolution || null;
 
     const isOrderFilled = limitOrder.claimableLiq > 0;
 
