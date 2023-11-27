@@ -199,6 +199,18 @@ aside.emoji-picker-react {
     color: var(--accent1) !important;
     cursor: pointer;
 }
+#current_row_scroll {
+    height: 100%; 
+    overflow-y: auto; 
+    box-sizing: border-box; 
+}
+
+@media (max-width: 500px) {
+    #current_row_scroll {
+      height: 45dvh;
+      overflow-y: scroll;
+    }
+  }
 @media only screen and (min-width: 1280px) {
     .top-pools-analytics-table td,
     .top-pools-analytics-table th {

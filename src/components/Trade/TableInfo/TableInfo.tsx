@@ -1,7 +1,6 @@
 import { useContext } from 'react';
 import { GridContainer, ScrollContainer } from '../../../styled/Common';
 
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { MainSection } from './TableInfo.styles';
 
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
@@ -9,10 +8,11 @@ import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { DetailedBox } from './DetailedBox';
 import { FeaturedBox } from './FeaturedBox';
 import { PoolContext } from '../../../contexts/PoolContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 export default function TableInfo() {
-    const { tradeData } = useAppSelector((state) => state);
-
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
     const { poolData } = useContext(PoolContext);
 
     const {
@@ -27,21 +27,26 @@ export default function TableInfo() {
 
     const featuredData = [
         {
-            token: tradeData.baseToken,
+            token: baseToken,
             balance: getFormattedNumber({ value: baseTvlDecimal }),
             value: getFormattedNumber({ value: baseTvlUsd }),
         },
         {
-            token: tradeData.quoteToken,
+            token: quoteToken,
             balance: getFormattedNumber({ value: quoteTvlDecimal }),
             value: getFormattedNumber({ value: quoteTvlUsd }),
         },
     ];
+    const smallScreen = useMediaQuery('(max-width: 500px)');
 
     return (
         <MainSection>
             <ScrollContainer>
-                <GridContainer numCols={2} gap={8} height={'200px'}>
+                <GridContainer
+                    numCols={smallScreen ? 1 : 2}
+                    gap={8}
+                    height={'200px'}
+                >
                     <GridContainer numCols={2} gap={8}>
                         {featuredData.map((data, idx) => (
                             <FeaturedBox

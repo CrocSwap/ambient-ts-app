@@ -8,10 +8,6 @@ import {
     memo,
 } from 'react';
 
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../utils/hooks/reduxToolkit';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import Transactions from './Transactions/Transactions';
 import Orders from './Orders/Orders';
@@ -24,7 +20,6 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import Ranges from './Ranges/Ranges';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
-import { setChangesByUser } from '../../../utils/state/graphDataSlice';
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
 import Leaderboard from './Ranges/Leaderboard';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
@@ -47,6 +42,10 @@ import { FlexContainer } from '../../../styled/Common';
 import { ClearButton } from '../../../styled/Components/TransactionTable';
 import TableInfo from '../TableInfo/TableInfo';
 import Transactions2 from './Transactions2/Transactions2';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+
 interface propsIF {
     filter: CandleData | undefined;
     setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
@@ -77,7 +76,7 @@ function TradeTabs2(props: propsIF) {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
     const { chartSettings, tradeTableState } = useContext(ChartContext);
-
+    const { setChangesByUser } = useContext(GraphDataContext);
     const candleTime = chartSettings.candleTime.global;
 
     const {
@@ -108,30 +107,33 @@ function TradeTabs2(props: propsIF) {
         selectedOutsideTab,
     } = useContext(TradeTableContext);
 
-    const graphData = useAppSelector((state) => state?.graphData);
-    const tradeData = useAppSelector((state) => state?.tradeData);
-    const { isLoggedIn: isUserConnected, addressCurrent: userAddress } =
-        useAppSelector((state) => state.userData);
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
 
-    const userChanges = graphData?.changesByUser?.changes;
-    const userLimitOrders = graphData?.limitOrdersByUser?.limitOrders;
-    const userPositions = graphData?.positionsByUser?.positions;
+    const { isUserConnected, userAddress } = useContext(UserDataContext);
+    const { positionsByUser, limitOrdersByUser, changesByUser } =
+        useContext(GraphDataContext);
 
-    const userPositionsDataReceived = graphData?.positionsByUser.dataReceived;
+    const userChanges = changesByUser?.changes;
+    const userLimitOrders = limitOrdersByUser?.limitOrders;
+    const userPositions = positionsByUser?.positions;
+
+    const userPositionsDataReceived = positionsByUser.dataReceived;
 
     const [selectedInsideTab, setSelectedInsideTab] = useState<number>(0);
 
     const [hasUserSelectedViewAll, setHasUserSelectedViewAll] =
         useState<boolean>(false);
 
-    const selectedBase = tradeData.baseToken.address;
-    const selectedQuote = tradeData.quoteToken.address;
+    const selectedBaseAddress = baseToken.address;
+    const selectedQuoteAddress = quoteToken.address;
 
     const userChangesMatchingTokenSelection = userChanges.filter(
         (userChange) => {
             return (
-                userChange.base.toLowerCase() === selectedBase.toLowerCase() &&
-                userChange.quote.toLowerCase() === selectedQuote.toLowerCase()
+                userChange.base.toLowerCase() ===
+                    selectedBaseAddress.toLowerCase() &&
+                userChange.quote.toLowerCase() ===
+                    selectedQuoteAddress.toLowerCase()
             );
         },
     );
@@ -140,9 +142,9 @@ function TradeTabs2(props: propsIF) {
         (userLimitOrder) => {
             return (
                 userLimitOrder.base.toLowerCase() ===
-                    selectedBase.toLowerCase() &&
+                    selectedBaseAddress.toLowerCase() &&
                 userLimitOrder.quote.toLowerCase() ===
-                    selectedQuote.toLowerCase()
+                    selectedQuoteAddress.toLowerCase()
             );
         },
     );
@@ -151,9 +153,9 @@ function TradeTabs2(props: propsIF) {
         (userPosition) => {
             return (
                 userPosition.base.toLowerCase() ===
-                    selectedBase.toLowerCase() &&
+                    selectedBaseAddress.toLowerCase() &&
                 userPosition.quote.toLowerCase() ===
-                    selectedQuote.toLowerCase() &&
+                    selectedQuoteAddress.toLowerCase() &&
                 userPosition.positionLiq !== 0
             );
         },
@@ -162,7 +164,12 @@ function TradeTabs2(props: propsIF) {
     useEffect(() => {
         setHasInitialized(false);
         setHasUserSelectedViewAll(false);
-    }, [userAddress, isUserConnected, selectedBase, selectedQuote]);
+    }, [
+        userAddress,
+        isUserConnected,
+        selectedBaseAddress,
+        selectedQuoteAddress,
+    ]);
 
     // Wait 2 seconds before refreshing to give cache server time to sync from
     // last block
@@ -251,8 +258,6 @@ function TradeTabs2(props: propsIF) {
         diffHashSigPostions(userPositionsMatchingTokenSelection),
     ]);
 
-    const dispatch = useAppDispatch();
-
     useEffect(() => {
         if (
             userAddress &&
@@ -283,12 +288,10 @@ function TradeTabs2(props: propsIF) {
                 })
                     .then((updatedTransactions) => {
                         if (updatedTransactions) {
-                            dispatch(
-                                setChangesByUser({
-                                    dataReceived: true,
-                                    changes: updatedTransactions,
-                                }),
-                            );
+                            setChangesByUser({
+                                dataReceived: true,
+                                changes: updatedTransactions,
+                            });
                         }
                     })
                     .catch(console.error);

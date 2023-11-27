@@ -2,7 +2,7 @@ import { BigNumber } from 'ethers';
 import { useState, useEffect, useContext } from 'react';
 import { IS_LOCAL_ENV } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
+import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
 import { LimitOrderIF } from '../../utils/interfaces/LimitOrderIF';
 import {
@@ -29,6 +29,7 @@ import Modal from '../Global/Modal/Modal';
 import SubmitTransaction from '../Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import Button from '../Form/Button';
 import styles from './LimitActionModal.module.css';
+import { UserDataContext } from '../../contexts/UserDataContext';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -40,9 +41,8 @@ interface propsIF {
 
 export default function LimitActionModal(props: propsIF) {
     const { limitOrder, type, isOpen, onClose, isAccountView } = props;
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
+
     const {
         baseTokenSymbol,
         quoteTokenSymbol,
@@ -74,6 +74,7 @@ export default function LimitActionModal(props: propsIF) {
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newTxHash, setNewTxHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
+    const [txErrorMessage, setTxErrorMessage] = useState('');
     const [showSettings, setShowSettings] = useState(false);
     const [networkFee, setNetworkFee] = useState<string | undefined>(undefined);
 
@@ -85,6 +86,7 @@ export default function LimitActionModal(props: propsIF) {
         setShowConfirmation(false);
         setNewTxHash('');
         setTxErrorCode('');
+        setTxErrorMessage('');
     };
 
     useEffect(() => {
@@ -212,6 +214,7 @@ export default function LimitActionModal(props: propsIF) {
             } catch (error) {
                 console.error({ error });
                 setTxErrorCode(error?.code);
+                setTxErrorMessage(error?.data?.message);
                 if (
                     error.reason === 'sending a transaction requires a signer'
                 ) {
@@ -331,6 +334,7 @@ export default function LimitActionModal(props: propsIF) {
             } catch (error) {
                 console.error({ error });
                 setTxErrorCode(error?.code);
+                setTxErrorMessage(error?.data?.message);
                 if (
                     error.reason === 'sending a transaction requires a signer'
                 ) {
@@ -455,6 +459,7 @@ export default function LimitActionModal(props: propsIF) {
                             type='Limit'
                             newTransactionHash={newTxHash}
                             txErrorCode={txErrorCode}
+                            txErrorMessage={txErrorMessage}
                             resetConfirmation={resetConfirmation}
                             sendTransaction={
                                 type === 'Remove' ? removeFn : claimFn

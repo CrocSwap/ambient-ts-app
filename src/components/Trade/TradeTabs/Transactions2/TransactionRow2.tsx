@@ -5,7 +5,8 @@ import { getAddress } from 'ethers/lib/utils.js';
 import TimeStamp from './TimeStamp';
 import TxId from './TxId';
 import TxWallet from './TxWallet';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { useContext } from 'react';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 interface propsIF {
     tx: TransactionServerIF;
@@ -16,7 +17,7 @@ interface propsIF {
 export default function TransactionRow2(props: propsIF) {
     const { tx, columnsToShow, isAccountPage } = props;
 
-    const { addressCurrent: userAddress } = useAppSelector((state) => state.userData);
+    const { userAddress } = useContext(UserDataContext);
     const ownerId: string = getAddress(tx.user);
 
     const isOwnerActiveAccount: boolean = userAddress

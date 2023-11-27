@@ -18,7 +18,6 @@ import TokenIcon from '../Global/TokenIcon/TokenIcon';
 import { SoloTokenSelectModal } from '../Global/TokenSelectContainer/SoloTokenSelectModal';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { Link, useLocation } from 'react-router-dom';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
 import { useModal } from '../Global/Modal/useModal';
@@ -30,6 +29,7 @@ import {
     TokenSelectButton,
 } from '../../styled/Components/TradeModules';
 import { SoloTokenSelect } from '../Global/TokenSelectContainer/SoloTokenSelect';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 interface propsIF {
     tokenAorB: 'A' | 'B' | null;
@@ -69,7 +69,7 @@ function TokenInputQuantity(props: propsIF) {
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     const location = useLocation();
 
-    const { tradeData } = useAppSelector((state) => state);
+    const { tokenA, tokenB } = useContext(TradeDataContext);
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
@@ -148,8 +148,8 @@ function TokenInputQuantity(props: propsIF) {
                 <Link
                     to={linkGenInitPool.getFullURL({
                         chain: chainId,
-                        tokenA: tradeData.tokenA.address,
-                        tokenB: tradeData.tokenB.address,
+                        tokenA: tokenA.address,
+                        tokenB: tokenB.address,
                     })}
                 >
                     Initialize it to continue.

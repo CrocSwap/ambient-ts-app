@@ -1,7 +1,7 @@
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { GCGO_OVERRIDE_URL, HISTORICAL_CANDLES_URL } from '../../constants';
-import { CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { TokenPriceFn } from './fetchTokenPrice';
+import { CandlesByPoolAndDuration } from '../../contexts/CandleContext';
 
 interface CandleDataServerIF {
     priceOpen: number;
@@ -228,8 +228,8 @@ async function expandPoolStats(
     const baseDecimals = crocEnv.token(base).decimals;
     const quoteDecimals = crocEnv.token(quote).decimals;
 
-    const basePricePromise = cachedFetchTokenPrice(base, chainId);
-    const quotePricePromise = cachedFetchTokenPrice(quote, chainId);
+    const basePricePromise = cachedFetchTokenPrice(base, chainId, crocEnv);
+    const quotePricePromise = cachedFetchTokenPrice(quote, chainId, crocEnv);
 
     const basePrice = (await basePricePromise)?.usdPrice || 0.0;
     const quotePrice = (await quotePricePromise)?.usdPrice || 0.0;

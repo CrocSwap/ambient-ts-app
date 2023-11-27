@@ -31,7 +31,6 @@ import {
 } from '../../hooks/useSidebarSearch';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
@@ -49,6 +48,7 @@ import {
     TopPoolsIcon,
     TransactionsIcon,
 } from '../../../styled/Components/Sidebar';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 function Sidebar() {
@@ -59,22 +59,22 @@ function Sidebar() {
     const { sidebar, toggleMobileModeVisibility, hideOnMobile } =
         useContext(SidebarContext);
 
-    const graphData = useAppSelector((state) => state.graphData);
+    const { positionsByUser, limitOrdersByUser, changesByUser } =
+        useContext(GraphDataContext);
 
+    // TODO: can pull into GraphDataContext
     const filterFn = <T extends { chainId: string }>(x: T) =>
         x.chainId === chainData.chainId;
 
-    const positionsByUser =
-        graphData.positionsByUser.positions.filter(filterFn);
-    const txsByUser = graphData.changesByUser.changes.filter(filterFn);
-    const limitsByUser =
-        graphData.limitOrdersByUser.limitOrders.filter(filterFn);
+    const _positionsByUser = positionsByUser.positions.filter(filterFn);
+    const _txsByUser = changesByUser.changes.filter(filterFn);
+    const _limitsByUser = limitOrdersByUser.limitOrders.filter(filterFn);
 
-    const mostRecentTxs = txsByUser.slice(0, 4);
-    const mostRecentPositions = positionsByUser
+    const mostRecentTxs = _txsByUser.slice(0, 4);
+    const mostRecentPositions = _positionsByUser
         .filter((p) => p.positionLiq > 0)
         .slice(0, 4);
-    const mostRecentLimitOrders = limitsByUser.slice(0, 4);
+    const mostRecentLimitOrders = _limitsByUser.slice(0, 4);
 
     const recentPoolsData = [
         {
@@ -147,9 +147,9 @@ function Sidebar() {
     ];
 
     const searchData: sidebarSearchIF = useSidebarSearch(
-        positionsByUser,
-        txsByUser,
-        limitsByUser,
+        _positionsByUser,
+        _txsByUser,
+        _limitsByUser,
         tokens,
     );
 
