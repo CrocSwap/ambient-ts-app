@@ -242,9 +242,11 @@ export const RangeRow = styled(Row)<{
 
 export const RowItem = styled(FlexContainer)<{
     type?: 'add' | 'claim' | 'harvest' | 'remove' | 'buy' | 'sell';
+    width?: number;
     hover?: boolean;
 }>`
-    ${({ hover, type }) => `
+    ${({ hover, type, width }) => `
+        ${width && `width: ${width};`}
         ${
             hover &&
             `

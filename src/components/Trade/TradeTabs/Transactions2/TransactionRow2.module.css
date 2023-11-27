@@ -1,0 +1,5 @@
+.tx_li {
+    display: inline-flex;
+    flex-flow: row nowrap;
+    width: auto;
+}

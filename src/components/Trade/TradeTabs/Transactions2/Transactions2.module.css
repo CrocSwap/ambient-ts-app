@@ -1,0 +1,4 @@
+.tx_ol {
+    display: flex;
+    flex-direction: column;
+}

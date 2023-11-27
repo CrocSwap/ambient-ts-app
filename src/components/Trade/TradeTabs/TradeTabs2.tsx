@@ -347,7 +347,7 @@ function TradeTabs2(props: propsIF) {
         : [
               {
                   label: 'Transactions',
-                  content: <Transactions2 />,
+                  content: <Transactions2 isAccountPage={false} />,
                   icon: recentTransactionsImage,
                   showRightSideOption: true,
               },
