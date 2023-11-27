@@ -60,6 +60,7 @@ interface RequestData<K extends keyof RequestResponseMap> {
 // [x] TODO - Harden the response parser with typing. Ensure it makes a best effort to process the valid responses, and does not let a bad response ruin the batch
 // [x] TODO - Add in Timeout support, so individual requests can expire and not block the whole app.
 // [ ] TODO: Add in exponential backoff for failed requests
+// [ ] TODO: Add ability to timeout individual requests
 class AnalyticsBatchRequestManager {
     static pendingRequests: Record<
         string,
@@ -160,14 +161,13 @@ class AnalyticsBatchRequestManager {
 
             AnalyticsBatchRequestManager.parsedBatches =
                 AnalyticsBatchRequestManager.parsedBatches + 1;
-            console.log('successfully retrieved and parsed batch request');
         } catch (error) {
-            console.log('request failed for: ', nonces);
+            console.error('request failed for: ', nonces);
             nonces.forEach((nonce) => {
                 const req = requests[nonce];
                 if (req && !req.response && req.reject) {
                     req.timestamp = Date.now(); // Updating the timestamp
-                    // TODO: some promises should be rejected based on their expiry and some shouldn't
+                    // TODO: some promises should be rejected based on their expiry and some shouldn't (individual timeout)
                     req.reject(error); // Rejecting the promise with the error
                     req.expiry = 1000 * 60; // Cache error for 60 seconds
                 }
@@ -176,7 +176,6 @@ class AnalyticsBatchRequestManager {
     }
 
     static startManagingRequests(): void {
-        console.log('starting to manage requests');
         AnalyticsBatchRequestManager.intervalHandle = setInterval(async () => {
             await AnalyticsBatchRequestManager.sendBatch();
             AnalyticsBatchRequestManager.clean();
@@ -266,8 +265,6 @@ export async function fetchBatch<K extends keyof RequestResponseMap>(
     }
     return AnalyticsBatchRequestManager.register<K>(requestBody, requestNonce);
 }
-
-// TODO: find a new home for tests to live
 
 // export async function testBatchSystem() {
 //     // Combined request and expected response data
