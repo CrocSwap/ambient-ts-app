@@ -34,6 +34,12 @@ interface propsIF {
     tokenAQty: string;
     tokenBQty: string;
     onClose: () => void;
+    activeStep: number;
+    setActiveStep: React.Dispatch<React.SetStateAction<number>>;
+    steps: {
+        label: string;
+    }[];
+    handleSetActiveContent: (newActiveContent: string) => void;
 }
 
 function ConfirmRangeModal(props: propsIF) {
@@ -54,6 +60,10 @@ function ConfirmRangeModal(props: propsIF) {
         tokenAQty,
         tokenBQty,
         onClose = () => null,
+        activeStep,
+        setActiveStep,
+        steps,
+        handleSetActiveContent,
     } = props;
 
     const { tokenA, tokenB, isDenomBase } = useContext(TradeDataContext);
@@ -174,6 +184,10 @@ function ConfirmRangeModal(props: propsIF) {
             initiate={sendTransaction}
             resetConfirmation={resetConfirmation}
             onClose={onClose}
+            activeStep={activeStep}
+            setActiveStep={setActiveStep}
+            steps={steps}
+            handleSetActiveContent={handleSetActiveContent}
         />
     );
 }

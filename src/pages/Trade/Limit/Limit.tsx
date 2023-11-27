@@ -446,7 +446,7 @@ export default function Limit() {
     ]);
 
     const resetConfirmation = () => {
-        setShowConfirmation(false);
+        // setShowConfirmation(false);
         setTxErrorCode('');
         setNewLimitOrderTransactionHash('');
     };

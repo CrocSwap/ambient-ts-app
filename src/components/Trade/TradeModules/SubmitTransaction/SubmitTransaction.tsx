@@ -242,15 +242,20 @@ export default function SubmitTransaction(props: propsIF) {
                 gap={8}
                 alignItems='center'
                 justifyContent='space-between'
-                minHeight='300px'
             >
-                <StepperComponent
-                    orientation='vertical'
-                    steps={steps}
-                    activeStep={activeStep}
-                    setActiveStep={setActiveStep}
-                    isError={isError}
-                />
+                <FlexContainer
+                    minHeight='226px'
+                    justifyContent='center'
+                    alignItems='center'
+                >
+                    <StepperComponent
+                        orientation='vertical'
+                        steps={steps}
+                        activeStep={activeStep}
+                        setActiveStep={setActiveStep}
+                        isError={isError}
+                    />
+                </FlexContainer>
                 {stepperTokensDisplay}
                 {stepperMessage}
 

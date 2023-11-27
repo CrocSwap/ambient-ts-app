@@ -93,6 +93,7 @@ function Range() {
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     // eslint-disable-next-line
     const [isOpen, openModal, closeModal] = useModal();
+    const receiptData = useAppSelector((state) => state.receiptData);
 
     const {
         tradeData: { poolPriceNonDisplay },
@@ -809,7 +810,7 @@ function Range() {
     const { crocEnv } = useContext(CrocEnvContext);
 
     const resetConfirmation = () => {
-        setShowConfirmation(false);
+        // setShowConfirmation(false);
         setTxErrorCode('');
         setNewRangeTransactionHash('');
     };
@@ -944,6 +945,18 @@ function Range() {
     const handleSetActiveContent = (newActiveContent: string) => {
         setActiveContent(newActiveContent);
     };
+    const isTransactionApproved = newRangeTransactionHash !== '';
+    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
+    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
+
+    const isTransactionPending = !(
+        isTransactionApproved ||
+        isTransactionDenied ||
+        isTransactionException
+    );
+    const isTransactionConfirmed =
+        isTransactionApproved &&
+        !receiptData.pendingTransactions.includes(newRangeTransactionHash);
 
     const rangeSteps = [
         { label: 'Sign transaction.' },
@@ -953,6 +966,22 @@ function Range() {
     ];
 
     const [activeStep, setActiveStep] = useState(0);
+
+    useEffect(() => {
+        console.log({
+            isTransactionApproved,
+            isTransactionConfirmed,
+            isTransactionPending,
+        });
+
+        setActiveStep(0);
+        if (isTransactionApproved) {
+            setActiveStep(1);
+        }
+        if (isTransactionConfirmed) {
+            setActiveStep(2);
+        }
+    }, [isTransactionApproved, isTransactionPending, isTransactionConfirmed]);
     return (
         <TradeModuleSkeleton
             chainId={chainId}
@@ -1033,6 +1062,10 @@ function Range() {
                         pinnedMaxPriceDisplayTruncatedInQuote
                     }
                     onClose={handleModalClose}
+                    activeStep={activeStep}
+                    setActiveStep={setActiveStep}
+                    steps={rangeSteps}
+                    handleSetActiveContent={handleSetActiveContent}
                 />
             }
             button={
