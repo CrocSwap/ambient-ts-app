@@ -1,12 +1,18 @@
-export function fetchTimeout(url: string, timeout = 3000): Promise<Response> {
-    return new Promise((resolve, reject) => {
-        const timeoutHandle = setTimeout(() => {
-            reject(new Error('utils.functions.fetchTimeout request timed out'));
-        }, timeout);
+import { REQUEST_TIMEOUT_DELAY } from '../../constants';
 
-        fetch(url)
-            .then(resolve)
-            .catch(reject)
-            .finally(() => clearTimeout(timeoutHandle));
+export async function fetchTimeout(
+    url: string,
+    options = {},
+    timeout = REQUEST_TIMEOUT_DELAY,
+) {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+
+    const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
     });
+    clearTimeout(id);
+
+    return response;
 }
