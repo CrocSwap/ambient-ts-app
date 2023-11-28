@@ -22,6 +22,7 @@ import { CROCODILE_LABS_LINKS } from '../../constants';
 import Picker from 'emoji-picker-react';
 import UserSummary from './MessagePanel/UserSummary/UserSummary';
 import { UserSummaryModel } from './Model/UserSummaryModel';
+import ChatConfirmationPanel from './ChatConfirmationPanel/ChatConfirmationPanel';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -97,6 +98,11 @@ function ChatPanel(props: propsIF) {
     const [userSummaryActive, setUserSummaryActive] = useState(false);
     const [selectedUserSummary, setSelectedUserSummary] =
         useState<UserSummaryModel>();
+
+    const [showVerifyOldMessagesPanel, setShowVerifyOldMessagesPanel] =
+        useState(false);
+    const [verifyOldMessagesStartDate, setVerifyOldMessagesStartDate] =
+        useState(new Date());
 
     const {
         messages,
@@ -563,14 +569,16 @@ function ChatPanel(props: propsIF) {
     ) => {
         if (e) e.stopPropagation();
 
-        let verifyDate = new Date();
         const message =
             'Your wallet will be verified for chat. Please sign it for verification.';
+        let verifyDate = new Date();
 
         if (verificationType === 0) {
             if (isVerified) return;
         } else if (isVerified) {
-            return updateUnverifiedMessages(verificationDate);
+            setVerifyOldMessagesStartDate(verificationDate);
+            return setShowVerifyOldMessagesPanel(true);
+            // return updateUnverifiedMessages(verificationDate);
         } else {
             verifyDate = verificationDate;
         }
@@ -584,7 +592,7 @@ function ChatPanel(props: propsIF) {
             // eslint-disable-next-line
             .then((signedMessage: any) => {
                 verifyUser(signedMessage, new Date().getMonth(), verifyDate);
-                localStorage.setItem('vrfTkn' + address, signedMessage);
+                localStorage.setItem('zz_ch_vrfTkn' + address, signedMessage);
                 setTimeout(() => {
                     updateUserCache();
                 }, 300);
@@ -1052,6 +1060,19 @@ function ChatPanel(props: propsIF) {
                     )}
                 </>
             )}
+
+            <ChatConfirmationPanel
+                isActive={showVerifyOldMessagesPanel}
+                title='Verify Old Messages'
+                content='Your old messages that sent from this browser will be verified, do you confirm?'
+                cancelListener={() => {
+                    setShowVerifyOldMessagesPanel(false);
+                }}
+                confirmListener={() => {
+                    updateUnverifiedMessages(verifyOldMessagesStartDate);
+                    setShowVerifyOldMessagesPanel(false);
+                }}
+            />
         </div>
     );
 }

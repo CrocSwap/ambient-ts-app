@@ -618,7 +618,7 @@
     display: inline-block;
     position: absolute;
     top: 4px;
-    left: 90px;
+    left: 96px;
     cursor: pointer;
     border-radius: .2rem;
     height: 16px;
@@ -832,3 +832,6 @@
     cursor: pointer;
 }
 
+.vrf_msg_dbg{
+    color: green;
+}
