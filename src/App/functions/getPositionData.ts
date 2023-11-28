@@ -48,8 +48,16 @@ export const getPositionData = async (
     const baseMetadata = cachedTokenDetails(provider, position.base, chainId);
     const quoteMetadata = cachedTokenDetails(provider, position.quote, chainId);
 
-    const basePricePromise = cachedFetchTokenPrice(baseTokenAddress, chainId);
-    const quotePricePromise = cachedFetchTokenPrice(quoteTokenAddress, chainId);
+    const basePricePromise = cachedFetchTokenPrice(
+        baseTokenAddress,
+        chainId,
+        crocEnv,
+    );
+    const quotePricePromise = cachedFetchTokenPrice(
+        quoteTokenAddress,
+        chainId,
+        crocEnv,
+    );
 
     newPosition.ensResolution = skipENSFetch
         ? ''

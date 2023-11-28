@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useContext, useState } from 'react';
+import { Dispatch, SetStateAction, useContext, useState } from 'react';
 
 // START: Import JSX Components
 import Button from '../../Form/Button';
@@ -25,7 +25,9 @@ interface propsIF {
     tokenB: { token: TokenIF; quantity?: string };
     transactionHash: string;
     txErrorCode: string;
+    txErrorMessage: string;
     showConfirmation: boolean;
+    setShowConfirmation?: Dispatch<SetStateAction<boolean>>;
     statusText: string;
     onClose?: () => void;
     initiate: () => Promise<void>;
@@ -51,8 +53,10 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         transactionDetails,
         transactionHash,
         txErrorCode,
+        txErrorMessage,
         statusText,
         showConfirmation,
+        setShowConfirmation,
         resetConfirmation,
         poolTokenDisplay,
         acknowledgeUpdate,
@@ -149,6 +153,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                     {transactionDetails}
                 </ConfirmationDetailsContainer>
             )}
+
             {extraNotes && extraNotes}
         </>
     );
@@ -178,7 +183,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
             </Text>
         </FlexContainer>
     );
-    console.log({ showConfirmation });
+    console.log({ showConfirmation }, 'From tradeConfirmationSkeleton');
 
     return (
         <FlexContainer
@@ -226,6 +231,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                             type={type}
                             newTransactionHash={transactionHash}
                             txErrorCode={txErrorCode}
+                            txErrorMessage={txErrorMessage}
                             resetConfirmation={resetConfirmation}
                             sendTransaction={initiate}
                             transactionPendingDisplayString={statusText}

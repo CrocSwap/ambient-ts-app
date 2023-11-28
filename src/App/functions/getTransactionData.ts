@@ -40,8 +40,16 @@ export const getTransactionData = async (
 
     // const ensRequest = cachedEnsResolve(tx.user);
 
-    const basePricePromise = cachedFetchTokenPrice(baseTokenAddress, chainId);
-    const quotePricePromise = cachedFetchTokenPrice(quoteTokenAddress, chainId);
+    const basePricePromise = cachedFetchTokenPrice(
+        baseTokenAddress,
+        chainId,
+        crocEnv,
+    );
+    const quotePricePromise = cachedFetchTokenPrice(
+        quoteTokenAddress,
+        chainId,
+        crocEnv,
+    );
 
     newTx.ensResolution = skipENSFetch
         ? ''

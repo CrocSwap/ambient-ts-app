@@ -160,6 +160,7 @@ function Range() {
 
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
+    const [txErrorMessage, setTxErrorMessage] = useState('');
 
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
         string | undefined
@@ -810,8 +811,9 @@ function Range() {
     const { crocEnv } = useContext(CrocEnvContext);
 
     const resetConfirmation = () => {
-        // setShowConfirmation(false);
+        setShowConfirmation(false);
         setTxErrorCode('');
+        setTxErrorMessage('');
         setNewRangeTransactionHash('');
     };
     const { createRangePosition } = useCreateRangePosition();
@@ -835,6 +837,7 @@ function Range() {
             isAdd,
             setNewRangeTransactionHash,
             setTxErrorCode,
+            setTxErrorMessage,
             resetConfirmation,
         });
     };
@@ -968,12 +971,6 @@ function Range() {
     const [activeStep, setActiveStep] = useState(0);
 
     useEffect(() => {
-        console.log({
-            isTransactionApproved,
-            isTransactionConfirmed,
-            isTransactionPending,
-        });
-
         setActiveStep(0);
         if (isTransactionApproved) {
             setActiveStep(1);
@@ -982,6 +979,9 @@ function Range() {
             setActiveStep(2);
         }
     }, [isTransactionApproved, isTransactionPending, isTransactionConfirmed]);
+
+    console.log({ showConfirmation }, 'From Range.tsx');
+
     return (
         <TradeModuleSkeleton
             chainId={chainId}
@@ -1047,7 +1047,9 @@ function Range() {
                     newRangeTransactionHash={newRangeTransactionHash}
                     resetConfirmation={resetConfirmation}
                     showConfirmation={showConfirmation}
+                    setShowConfirmation={setShowConfirmation}
                     txErrorCode={txErrorCode}
+                    txErrorMessage={txErrorMessage}
                     isInRange={!isOutOfRange}
                     pinnedMinPriceDisplayTruncatedInBase={
                         pinnedMinPriceDisplayTruncatedInBase
@@ -1091,7 +1093,9 @@ function Range() {
                         areBothAckd
                             ? bypassConfirmRange.isEnabled
                                 ? sendTransaction
-                                : () => setActiveContent('confirmation')
+                                : () => {
+                                      setActiveContent('confirmation');
+                                  }
                             : ackAsNeeded
                     }
                     disabled={
@@ -1109,6 +1113,7 @@ function Range() {
                         type='Range'
                         newTransactionHash={newRangeTransactionHash}
                         txErrorCode={txErrorCode}
+                        txErrorMessage={txErrorMessage}
                         resetConfirmation={resetConfirmation}
                         sendTransaction={sendTransaction}
                         transactionPendingDisplayString={`Minting a Position with ${

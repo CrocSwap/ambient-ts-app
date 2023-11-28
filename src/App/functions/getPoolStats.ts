@@ -90,8 +90,8 @@ async function expandPoolStats(
 ): Promise<PoolStatsIF> {
     const pool = crocEnv.pool(base, quote);
 
-    const basePricePromise = cachedFetchTokenPrice(base, chainId);
-    const quotePricePromise = cachedFetchTokenPrice(quote, chainId);
+    const basePricePromise = cachedFetchTokenPrice(base, chainId, crocEnv);
+    const quotePricePromise = cachedFetchTokenPrice(quote, chainId, crocEnv);
 
     const basePrice = (await basePricePromise)?.usdPrice || 0.0;
     const quotePrice = (await quotePricePromise)?.usdPrice || 0.0;
@@ -319,10 +319,11 @@ async function expandTokenStats(
     cachedFetchTokenPrice: TokenPriceFn,
 ): Promise<DexAggStatsIF> {
     const decimals = crocEnv.token(stats.tokenAddr).decimals;
-
-    const usdPrice = cachedFetchTokenPrice(stats.tokenAddr, chainId).then(
-        (p) => p?.usdPrice || 0.0,
-    );
+    const usdPrice = cachedFetchTokenPrice(
+        stats.tokenAddr,
+        chainId,
+        crocEnv,
+    ).then((p) => p?.usdPrice || 0.0);
 
     const mult = (await usdPrice) / Math.pow(10, await decimals);
     return {
