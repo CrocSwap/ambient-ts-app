@@ -55,7 +55,7 @@ import LimitLineChart from './LimitLine/LimitLineChart';
 import FeeRateChart from './FeeRate/FeeRateChart';
 import RangeLinesChart from './RangeLine/RangeLinesChart';
 import {
-    CHART_ANNOTATIONS_LS_KEY,
+    LS_KEY_CHART_ANNOTATIONS,
     CandleDataChart,
     SubChartValue,
     bandLineData,
@@ -153,6 +153,7 @@ interface propsIF {
     addDrawActionStack: (item: drawDataHistory, isNewShape: boolean) => void;
     drawActionStack: Map<actionKeyIF, drawDataHistory[]>;
     undoStack: Map<actionKeyIF, drawDataHistory[]>;
+    deleteAllShapes: () => void;
 }
 
 export default function Chart(props: propsIF) {
@@ -186,6 +187,7 @@ export default function Chart(props: propsIF) {
         addDrawActionStack,
         drawActionStack,
         undoStack,
+        deleteAllShapes,
     } = props;
 
     const {
@@ -340,7 +342,7 @@ export default function Chart(props: propsIF) {
 
     const mobileView = useMediaQuery('(max-width: 600px)');
 
-    const initialData = localStorage.getItem(CHART_ANNOTATIONS_LS_KEY);
+    const initialData = localStorage.getItem(LS_KEY_CHART_ANNOTATIONS);
 
     const initialIsToolbarOpen = initialData
         ? JSON.parse(initialData).isOpenAnnotationPanel
@@ -668,14 +670,20 @@ export default function Chart(props: propsIF) {
         return false;
     }, [hoveredDrawnShape, chartMousemoveEvent, mainCanvasBoundingClientRect]);
 
+    function updateDrawnShapeHistoryonLocalStorage() {
+        const storedData = localStorage.getItem(LS_KEY_CHART_ANNOTATIONS);
+        if (storedData) {
+            const parseStoredData = JSON.parse(storedData);
+            parseStoredData.drawnShapes = drawnShapeHistory;
+            parseStoredData.isOpenAnnotationPanel = isToolbarOpen;
+            localStorage.setItem(
+                LS_KEY_CHART_ANNOTATIONS,
+                JSON.stringify(parseStoredData),
+            );
+        }
+    }
     useEffect(() => {
-        localStorage.setItem(
-            CHART_ANNOTATIONS_LS_KEY,
-            JSON.stringify({
-                isOpenAnnotationPanel: isToolbarOpen,
-                drawnShapes: drawnShapeHistory,
-            }),
-        );
+        updateDrawnShapeHistoryonLocalStorage();
     }, [JSON.stringify(drawnShapeHistory), isToolbarOpen]);
 
     useEffect(() => {
@@ -3457,10 +3465,11 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const handleKeyDown = function (event: any) {
-            if ((event.ctrlKey || event.metaKey) && event.key === 'z') {
+            const isCtrlPressed = event.ctrlKey || event.metaKey;
+            if (isCtrlPressed && event.key === 'z') {
                 undo();
                 setSelectedDrawnShape(undefined);
-            } else if ((event.ctrlKey || event.metaKey) && event.key === 'y') {
+            } else if (isCtrlPressed && event.key === 'y') {
                 redo();
                 setSelectedDrawnShape(undefined);
             }
@@ -3469,7 +3478,7 @@ export default function Chart(props: propsIF) {
             }
 
             if (
-                (event.ctrlKey || event.metaKey) &&
+                isCtrlPressed &&
                 (activeDrawingType !== 'Cross' || isDragActive)
             ) {
                 isMagnetActive.value = !isMagnetActiveLocal;
@@ -4831,6 +4840,7 @@ export default function Chart(props: propsIF) {
                             setIsToolbarOpen={setIsToolbarOpen}
                             setDrawnShapeHistory={setDrawnShapeHistory}
                             setIsMagnetActiveLocal={setIsMagnetActiveLocal}
+                            deleteAllShapes={deleteAllShapes}
                         />
 
                         <CandleChart

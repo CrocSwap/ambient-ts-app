@@ -4,6 +4,8 @@ import {
     chartSettingsMethodsIF,
     useChartSettings,
 } from '../App/hooks/useChartSettings';
+import { LS_KEY_CHART_ANNOTATIONS } from '../pages/Chart/ChartUtils/chartUtils';
+import { getLocalStorageItem } from '../utils/functions/getLocalStorageItem';
 
 type TradeTableState = 'Expanded' | 'Collapsed' | undefined;
 
@@ -46,7 +48,15 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         CHART_SAVED_HEIGHT = parseInt(CHART_SAVED_HEIGHT_LOCAL_STORAGE);
     }
 
-    const [isMagnetActive, setIsMagnetActive] = useState({ value: false });
+    const chartAnnotations: {
+        isMagnetActive: boolean;
+    } | null = JSON.parse(
+        getLocalStorageItem(LS_KEY_CHART_ANNOTATIONS) ?? '{}',
+    );
+
+    const [isMagnetActive, setIsMagnetActive] = useState({
+        value: chartAnnotations?.isMagnetActive ?? false,
+    });
     const [chartHeights, setChartHeights] = useState<{
         current: number;
         saved: number;
@@ -131,6 +141,33 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
             setFullScreenChart(false);
         }
     }, [currentLocation]);
+
+    useEffect(() => {
+        const storedData = localStorage.getItem(LS_KEY_CHART_ANNOTATIONS);
+        if (!storedData) {
+            localStorage.setItem(
+                LS_KEY_CHART_ANNOTATIONS,
+                JSON.stringify({
+                    isOpenAnnotationPanel: true,
+                    drawnShapes: [],
+                    isAutoSaveActive: true,
+                    isMagnetActive: false,
+                }),
+            );
+        }
+    }, []);
+
+    useEffect(() => {
+        const storedData = localStorage.getItem(LS_KEY_CHART_ANNOTATIONS);
+        if (storedData) {
+            const parseStoredData = JSON.parse(storedData);
+            parseStoredData.isMagnetActive = isMagnetActive.value;
+            localStorage.setItem(
+                LS_KEY_CHART_ANNOTATIONS,
+                JSON.stringify(parseStoredData),
+            );
+        }
+    }, [isMagnetActive]);
 
     return (
         <ChartContext.Provider value={chartContext}>

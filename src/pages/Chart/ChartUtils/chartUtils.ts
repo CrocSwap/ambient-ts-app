@@ -28,7 +28,7 @@ declare global {
     }
 }
 
-export const CHART_ANNOTATIONS_LS_KEY = 'chart_annotations';
+export const LS_KEY_CHART_ANNOTATIONS = 'chart_annotations';
 export const defaultCandleBandwith = 5;
 
 export type chartAnnotationData = {

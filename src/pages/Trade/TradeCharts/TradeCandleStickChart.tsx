@@ -115,17 +115,6 @@ function TradeCandleStickChart(props: propsIF) {
         useContext(GraphDataContext);
     const denominationsInBase = isDenomBase;
 
-    const {
-        undo,
-        redo,
-        drawnShapeHistory,
-        setDrawnShapeHistory,
-        deleteItem,
-        addDrawActionStack,
-        drawActionStack,
-        undoStack,
-    } = useUndoRedo(denominationsInBase);
-
     const tokenPair = useMemo(
         () => ({
             dataTokenA: tokenA,
@@ -137,6 +126,18 @@ function TradeCandleStickChart(props: propsIF) {
 
     // TODO: could probably be determined from the isTokenABase in context?
     const isTokenABase = tokenPair?.dataTokenA.address === baseTokenAddress;
+
+    const {
+        undo,
+        redo,
+        drawnShapeHistory,
+        setDrawnShapeHistory,
+        deleteItem,
+        addDrawActionStack,
+        drawActionStack,
+        undoStack,
+        deleteAllShapes,
+    } = useUndoRedo(denominationsInBase, isTokenABase);
 
     const poolPriceDisplay = poolPriceWithoutDenom
         ? isDenomBase && poolPriceWithoutDenom
@@ -850,6 +851,7 @@ function TradeCandleStickChart(props: propsIF) {
                         addDrawActionStack={addDrawActionStack}
                         drawActionStack={drawActionStack}
                         undoStack={undoStack}
+                        deleteAllShapes={deleteAllShapes}
                     />
                 ) : (
                     <Spinner size={100} bg='var(--dark2)' centered />
