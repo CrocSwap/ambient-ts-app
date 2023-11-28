@@ -556,11 +556,7 @@ function Transactions(props: propsIF) {
             isAccountView={isAccountView}
         />
     ) : (
-        <FlexContainer
-            flexDirection='column'
-            onKeyDown={handleKeyDownViewTransaction}
-            height='100%'
-        >
+        <div onKeyDown={handleKeyDownViewTransaction}>
             <ul ref={listRef} id='current_row_scroll'>
                 {!isAccountView &&
                     pendingTransactions.length > 0 &&
@@ -676,7 +672,7 @@ function Transactions(props: propsIF) {
                 </FlexContainer>
             )}
             {/* Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render */}
-        </FlexContainer>
+        </div>
     );
 
     useEffect(() => {
