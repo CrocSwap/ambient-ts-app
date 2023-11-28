@@ -206,7 +206,8 @@ aside.emoji-picker-react {
 
 @media (max-width: 500px) {
     #current_row_scroll {
-      height: 45dvh;
+        overflow-y: scroll;
+        height: 45dvh;
     }
   }
 @media only screen and (min-width: 1280px) {
