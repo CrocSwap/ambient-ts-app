@@ -19,6 +19,7 @@ export function useFetchBatch<K extends keyof RequestResponseMap>(
     useEffect(() => {
         (async () => {
             setIsLoading(true);
+            if (data) setData(null);
             try {
                 const response = await fetchBatch<K>(requestBody, options);
                 setData(response);
@@ -28,7 +29,7 @@ export function useFetchBatch<K extends keyof RequestResponseMap>(
                 setIsLoading(false);
             }
         })();
-    }, [requestBody, options]);
+    }, [JSON.stringify({ ...requestBody, ...options })]);
 
     return { data, isLoading, error };
 }
