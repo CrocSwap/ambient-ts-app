@@ -299,6 +299,11 @@ function SwapTokenInput(props: propsIF) {
         }
     };
 
+    // refresh token data when swap module initializes
+    useEffect(() => {
+        refreshTokenData();
+    }, []);
+
     return (
         <FlexContainer flexDirection='column' gap={8}>
             <TokenInputWithWalletBalance
@@ -363,7 +368,10 @@ function SwapTokenInput(props: propsIF) {
                 tokenAorB='B'
                 token={tokenB}
                 tokenInput={
-                    sellQtyString !== '' || isLiquidityInsufficient
+                    sellQtyString !== '' ||
+                    isLiquidityInsufficient ||
+                    (buyQtyString !== '' &&
+                        (isSellLoading || parseFloat(buyQtyString) === 0))
                         ? buyQtyString
                         : ''
                 }
