@@ -13,6 +13,8 @@ export const APP_ENVIRONMENT: AppEnvironment =
 
 export const IS_LOCAL_ENV = APP_ENVIRONMENT === 'local';
 
+export const GRAPHCACHE_URL =
+    process.env.REACT_APP_GRAPHCACHE_URL || 'https://ambindexer.net';
 export const ANALYTICS_URL =
     process.env.REACT_APP_ANALYTICS_URL ||
     'https://ambindexer.net/analytics/run?';
@@ -24,7 +26,8 @@ export const GCGO_SCROLL_URL =
 export const GCGO_OVERRIDE_URL = process.env.REACT_APP_GCGO_OVERRIDE_URL;
 
 export const HISTORICAL_CANDLES_URL =
-    process.env.REACT_APP_HISTORICAL_CANDLES_URL || 'https://ambindexer.net';
+    process.env.REACT_APP_HISTORICAL_CANDLES_URL ||
+    'http://34.173.105.247:8080/gcgo';
 
 export const CHAT_BACKEND_URL =
     process.env.REACT_APP_CHAT_URL || `${HISTORICAL_CANDLES_URL}`;

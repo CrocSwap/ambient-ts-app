@@ -49,7 +49,6 @@ export const getTransactionData = async (
         crocEnv,
     );
 
-
     newTx.ensResolution = skipENSFetch
         ? ''
         : (await cachedEnsResolve(tx.user)) ?? '';
