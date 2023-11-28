@@ -6,6 +6,7 @@ interface PropsIF {
     selected?: boolean;
     onClick: () => void;
     variant?: 'outlined' | 'secondary' | 'filled'; // default is outlined
+    disabled?: boolean;
 }
 
 const purpleOutlineHover = `                
@@ -15,6 +16,14 @@ const purpleOutlineHover = `
 }
 &:hover svg {
     color: var(--accent1) !important;
+}`;
+const greyOutlineHover = `                
+&:hover {
+    border: 1px solid var(--text2);
+    color: var(--text2);
+}
+&:hover svg {
+    color: var(--text2) !important;
 }`;
 
 export const Chip = styled.button<PropsIF>`
@@ -32,14 +41,15 @@ export const Chip = styled.button<PropsIF>`
 
     border: 1px solid var(--dark3);
     border-radius: 50px;
+    cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
 
-    ${({ variant }) => {
+    ${({ variant, disabled }) => {
         switch (variant) {
             case 'secondary':
                 return `
                 color: var(--text2);
                 background-color: var(--dark2);
-                ${purpleOutlineHover}
+                ${disabled ? greyOutlineHover : purpleOutlineHover}
                 `;
             case 'filled':
                 return `background-color: var(--accent1);
@@ -50,7 +60,8 @@ export const Chip = styled.button<PropsIF>`
                 return `
                 color: var(--text1);
                 background: var(--dark1);
-                ${purpleOutlineHover}
+                ${disabled ? greyOutlineHover : purpleOutlineHover}
+
                 `;
         }
     }}
