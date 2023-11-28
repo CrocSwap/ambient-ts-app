@@ -1,4 +1,4 @@
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+/* eslint-disable camelcase */
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import trimString from '../../utils/functions/trimString';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
@@ -14,30 +14,32 @@ import {
     priceHalfBelowTick,
 } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { useContext } from 'react';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { useFetchBatch } from '../../App/hooks/useFetchBatch';
 
 export const useProcessTransaction = (
     tx: TransactionIF,
     account = '',
     isAccountView = false,
-    fetchedEnsAddress?: string,
 ) => {
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB, isDenomBase } = useContext(TradeDataContext);
     const blockExplorer = getChainExplorer(tx.chainId);
-
-    const isDenomBase = tradeData.isDenomBase;
 
     const txHash = tx.txHash;
 
     // TODO: clarify if this should also preferentially show ENS address
     const ownerId = tx.user ? getAddress(tx.user) : '';
 
-    const ensName = fetchedEnsAddress || tx.ensResolution || null;
+    const body = { config_path: 'ens_address', address: tx.user };
+    const { data } = useFetchBatch<'ens_address'>(body);
+    const ensName = data?.ens_address || tx.ensResolution || null;
 
     const isOwnerActiveAccount =
         ownerId.toLowerCase() === account?.toLowerCase();
 
-    const tokenAAddress = tradeData.tokenA.address;
-    const tokenBAddress = tradeData.tokenB.address;
+    const tokenAAddress = tokenA.address;
+    const tokenBAddress = tokenB.address;
 
     const transactionBaseAddressLowerCase = tx.base.toLowerCase();
     const transactionQuoteAddressLowerCase = tx.quote.toLowerCase();

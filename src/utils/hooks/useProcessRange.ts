@@ -1,21 +1,23 @@
+/* eslint-disable camelcase */
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { PositionIF } from '../../utils/interfaces/exports';
 import trimString from '../../utils/functions/trimString';
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
 import { getChainExplorer } from '../data/chains';
 import moment from 'moment';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { getAddress } from 'ethers/lib/utils.js';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { useFetchBatch } from '../../App/hooks/useFetchBatch';
 
 export const useProcessRange = (
     position: PositionIF,
     account = '',
     isAccountView?: boolean,
-    fetchedEnsAddress?: string,
 ) => {
     const blockExplorer = getChainExplorer(position.chainId);
 
@@ -23,7 +25,7 @@ export const useProcessRange = (
 
     const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
 
-    const isDenomBase = tradeData.isDenomBase;
+    const { isDenomBase } = useContext(TradeDataContext);
 
     const tokenAAddress = position.base;
     const tokenBAddress = position.quote;
@@ -65,8 +67,11 @@ export const useProcessRange = (
     const apyClassname = apy > 0 ? 'apy_positive' : 'apy_negative';
     const isAmbient = position.positionType === 'ambient';
 
-    const ensName = fetchedEnsAddress
-        ? fetchedEnsAddress
+    const body = { config_path: 'ens_address', address: position.user };
+    const { data } = useFetchBatch<'ens_address'>(body);
+
+    const ensName = data?.ens_address
+        ? data?.ens_address
         : position.ensResolution
         ? position.ensResolution
         : null;

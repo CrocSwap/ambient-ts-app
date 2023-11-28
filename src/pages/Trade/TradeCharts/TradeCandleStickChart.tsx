@@ -38,6 +38,8 @@ import {
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { useUndoRedo } from '../../Chart/ChartUtils/useUndoRedo';
 import { updatesIF } from '../../../utils/hooks/useUrlParams';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface propsIF {
@@ -107,17 +109,17 @@ function TradeCandleStickChart(props: propsIF) {
         undefined,
     );
     const tradeData = useAppSelector((state) => state.tradeData);
-    const { liquidityData: unparsedLiquidityData } = useAppSelector(
-        (state) => state.graphData,
-    );
-    const denominationsInBase = tradeData.isDenomBase;
+    const { tokenA, tokenB, isDenomBase } = useContext(TradeDataContext);
+
+    const { liquidityData: unparsedLiquidityData } =
+        useContext(GraphDataContext);
+    const denominationsInBase = isDenomBase;
 
     const {
         undo,
         redo,
         drawnShapeHistory,
         setDrawnShapeHistory,
-        currentPool,
         deleteItem,
         addDrawActionStack,
         drawActionStack,
@@ -126,30 +128,26 @@ function TradeCandleStickChart(props: propsIF) {
 
     const tokenPair = useMemo(
         () => ({
-            dataTokenA: tradeData.tokenA,
-            dataTokenB: tradeData.tokenB,
+            dataTokenA: tokenA,
+            dataTokenB: tokenB,
         }),
-        [
-            tradeData.tokenB.address,
-            tradeData.tokenB.chainId,
-            tradeData.tokenA.address,
-            tradeData.tokenA.chainId,
-        ],
+        [tokenB.address, tokenB.chainId, tokenA.address, tokenA.chainId],
     );
     const { poolPriceNonDisplay } = tradeData;
 
+    // TODO: could probably be determined from the isTokenABase in context?
     const isTokenABase = tokenPair?.dataTokenA.address === baseTokenAddress;
 
     const poolPriceDisplay = poolPriceWithoutDenom
-        ? denominationsInBase && poolPriceWithoutDenom
+        ? isDenomBase && poolPriceWithoutDenom
             ? 1 / poolPriceWithoutDenom
             : poolPriceWithoutDenom ?? 0
         : 0;
 
-    const tokenA = tokenPair.dataTokenA;
-    const tokenB = tokenPair.dataTokenB;
-    const tokenADecimals = tokenA.decimals;
-    const tokenBDecimals = tokenB.decimals;
+    const _tokenA = tokenPair.dataTokenA;
+    const _tokenB = tokenPair.dataTokenB;
+    const tokenADecimals = _tokenA.decimals;
+    const tokenBDecimals = _tokenB.decimals;
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
 
@@ -162,7 +160,7 @@ function TradeCandleStickChart(props: propsIF) {
 
     useEffect(() => {
         setIsLoading(true);
-    }, [period, denominationsInBase]);
+    }, [period, isDenomBase]);
 
     useEffect(() => {
         if (unparsedLiquidityData !== undefined) {
@@ -171,7 +169,7 @@ function TradeCandleStickChart(props: propsIF) {
 
             const liqBoundaryData = unparsedLiquidityData.ranges.find(
                 (liq: any) => {
-                    return denominationsInBase
+                    return isDenomBase
                         ? liq.upperBoundInvPriceDecimalCorrected <
                               barThreshold &&
                               liq.lowerBoundInvPriceDecimalCorrected !== '-inf'
@@ -182,7 +180,7 @@ function TradeCandleStickChart(props: propsIF) {
 
             const liqBoundaryArg =
                 liqBoundaryData !== undefined
-                    ? denominationsInBase
+                    ? isDenomBase
                         ? liqBoundaryData.lowerBoundInvPriceDecimalCorrected
                         : liqBoundaryData.lowerBoundPriceDecimalCorrected
                     : barThreshold;
@@ -195,7 +193,7 @@ function TradeCandleStickChart(props: propsIF) {
         }
     }, [
         diffHashSigLiquidity(unparsedLiquidityData),
-        denominationsInBase,
+        isDenomBase,
         poolPriceDisplay !== undefined && poolPriceDisplay > 0,
     ]);
 
@@ -246,7 +244,7 @@ function TradeCandleStickChart(props: propsIF) {
             const highTick = currentPoolPriceTick + 100 * 101;
 
             const rangeBoundary = getPinnedPriceValuesFromTicks(
-                denominationsInBase,
+                isDenomBase,
                 baseTokenDecimals,
                 quoteTokenDecimals,
                 lowTick,
@@ -302,7 +300,7 @@ function TradeCandleStickChart(props: propsIF) {
 
             const depthAskRight = Math.max(
                 ...unparsedLiquidityData.ranges.map((o: any) => {
-                    const price = denominationsInBase
+                    const price = isDenomBase
                         ? o.upperBoundInvPriceDecimalCorrected
                         : o.upperBoundPriceDecimalCorrected;
                     if (price > barThreshold / 10 && price < limitBoundary) {
@@ -332,11 +330,11 @@ function TradeCandleStickChart(props: propsIF) {
             let liqBoundaryDepth = liqBoundary;
 
             unparsedLiquidityData.ranges.map((data: any) => {
-                const liqUpperPrices = denominationsInBase
+                const liqUpperPrices = isDenomBase
                     ? data.upperBoundInvPriceDecimalCorrected
                     : data.lowerBoundPriceDecimalCorrected;
 
-                const liqLowerPrices = denominationsInBase
+                const liqLowerPrices = isDenomBase
                     ? data.lowerBoundInvPriceDecimalCorrected
                     : data.upperBoundPriceDecimalCorrected;
 
@@ -382,7 +380,7 @@ function TradeCandleStickChart(props: propsIF) {
                     }
                 }
 
-                if (!denominationsInBase) {
+                if (!isDenomBase) {
                     if (
                         data.cumAskLiq !== undefined &&
                         data.cumAskLiq !== '0' &&
@@ -509,9 +507,7 @@ function TradeCandleStickChart(props: propsIF) {
                 depthLiqAskData.push({
                     activeLiq:
                         depthLiqAskData[
-                            !denominationsInBase
-                                ? 0
-                                : depthLiqAskData.length - 1
+                            !isDenomBase ? 0 : depthLiqAskData.length - 1
                         ]?.activeLiq,
                     liqPrices: 0,
                     deltaAverageUSD: 0,
@@ -611,10 +607,10 @@ function TradeCandleStickChart(props: propsIF) {
                 .accessors([
                     (d: any) => {
                         return (
-                            denominationsInBase
+                            isDenomBase
                                 ? d.invMinPriceExclMEVDecimalCorrected
                                 : d.maxPriceExclMEVDecimalCorrected,
-                            denominationsInBase
+                            isDenomBase
                                 ? d.invMaxPriceExclMEVDecimalCorrected
                                 : d.minPriceExclMEVDecimalCorrected
                         );
@@ -820,7 +816,7 @@ function TradeCandleStickChart(props: propsIF) {
                         isTokenABase={isTokenABase}
                         liquidityData={liquidityData}
                         changeState={props.changeState}
-                        denomInBase={denominationsInBase}
+                        denomInBase={isDenomBase}
                         chartItemStates={props.chartItemStates}
                         setCurrentData={props.setCurrentData}
                         setCurrentVolumeData={props.setCurrentVolumeData}
@@ -849,7 +845,6 @@ function TradeCandleStickChart(props: propsIF) {
                         redo={redo}
                         drawnShapeHistory={drawnShapeHistory}
                         setDrawnShapeHistory={setDrawnShapeHistory}
-                        currentPool={currentPool}
                         deleteItem={deleteItem}
                         updateURL={updateURL}
                         addDrawActionStack={addDrawActionStack}

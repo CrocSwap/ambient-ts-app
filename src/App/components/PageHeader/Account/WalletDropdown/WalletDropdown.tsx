@@ -4,7 +4,6 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { getChainExplorer } from '../../../../../utils/data/chains';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
 
@@ -27,9 +26,8 @@ import { FlexContainer } from '../../../../../styled/Common';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { BigNumber } from 'ethers';
 import { toDisplayQty } from '@crocswap-libs/sdk';
-import { ethereumMainnet } from '../../../../../utils/networks/ethereumMainnet';
-import { mainnetUSDC } from '../../../../../utils/data/defaultTokens';
 import IconWithTooltip from '../../../../../components/Global/IconWithTooltip/IconWithTooltip';
+import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
 import { supportedNetworks } from '../../../../../utils/networks';
 
 interface WalletDropdownPropsIF {
@@ -37,7 +35,6 @@ interface WalletDropdownPropsIF {
     accountAddress: string;
     handleCopyAddress: () => void;
     clickOutsideHandler: () => void;
-    connectorName: string | undefined;
     clickLogout: () => void;
     accountAddressFull: string;
 }
@@ -55,7 +52,6 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         accountAddress,
         handleCopyAddress,
         clickOutsideHandler,
-        // connectorName,
         clickLogout,
         accountAddressFull,
     } = props;
@@ -63,12 +59,10 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
+    const { tokenBalances } = useContext(TokenBalanceContext);
     const defaultPair: [TokenIF, TokenIF] =
         supportedNetworks[chainId].defaultPair;
 
-    const tokenBalances: TokenIF[] | undefined = useAppSelector(
-        (state) => state.userData.tokenBalances,
-    );
     const nativeData: TokenIF | undefined =
         tokenBalances &&
         tokenBalances.find((tkn: TokenIF) => tkn.address === ZERO_ADDRESS);
@@ -106,7 +100,24 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     const [usdcUsdValueForDom, setUsdcUsdValueForDom] = useState<
         string | undefined
     >();
+
+    const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
+        number | undefined
+    >();
+
+    const { crocEnv } = useContext(CrocEnvContext);
+
     useEffect(() => {
+        if (!crocEnv) return;
+        Promise.resolve(
+            cachedFetchTokenPrice(ZERO_ADDRESS, chainId, crocEnv),
+        ).then((price) => {
+            if (price?.usdPrice !== undefined) {
+                setEthMainnetUsdPrice(price.usdPrice);
+            } else {
+                setEthMainnetUsdPrice(undefined);
+            }
+        });
         if (usdcData === undefined) {
             setUsdcUsdValueForDom(undefined);
             setUsdcBalanceForDom(undefined);
@@ -134,9 +145,8 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 : '0.00';
 
         setUsdcBalanceForDom(usdcCombinedBalanceDisplayTruncated);
-
         Promise.resolve(
-            cachedFetchTokenPrice(mainnetUSDC.address, ethereumMainnet.chainId),
+            cachedFetchTokenPrice(usdcData.address, chainId, crocEnv),
         ).then((price) => {
             if (price?.usdPrice !== undefined) {
                 const usdValueNum: number =
@@ -153,9 +163,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 setUsdcUsdValueForDom(undefined);
             }
         });
-    }, [chainId, JSON.stringify(usdcData)]);
-
-    const { ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    }, [crocEnv, chainId, JSON.stringify(usdcData)]);
 
     const nativeCombinedBalance =
         nativeData?.walletBalance !== undefined

@@ -2,7 +2,6 @@ import { useEffect, useRef, useContext, memo } from 'react';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
 import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import rangeRowConstants from '../rangeRowConstants';
@@ -12,6 +11,7 @@ import { RangeContext } from '../../../../../contexts/RangeContext';
 import { useModal } from '../../../../Global/Modal/useModal';
 import RangeDetailsModal from '../../../../RangeDetails/RangeDetailsModal/RangeDetailsModal';
 import { RangeRow as RangeRowStyled } from '../../../../../styled/Components/TransactionTable';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
 
 interface propsIF {
     position: PositionIF;
@@ -19,18 +19,10 @@ interface propsIF {
     isAccountView: boolean;
     isLeaderboard?: boolean;
     tableView: 'small' | 'medium' | 'large';
-    fetchedEnsAddress?: string;
 }
 
 function RangesRow(props: propsIF) {
-    const {
-        tableView,
-        position,
-        isAccountView,
-        isLeaderboard,
-        rank,
-        fetchedEnsAddress,
-    } = props;
+    const { tableView, position, isAccountView, isLeaderboard, rank } = props;
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
@@ -49,9 +41,7 @@ function RangesRow(props: propsIF) {
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
 
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
 
     const {
         posHash,
@@ -82,12 +72,7 @@ function RangesRow(props: propsIF) {
         elapsedTimeString,
         baseTokenAddress,
         quoteTokenAddress,
-    } = useProcessRange(
-        position,
-        userAddress,
-        isAccountView,
-        fetchedEnsAddress,
-    );
+    } = useProcessRange(position, userAddress, isAccountView);
 
     const rangeDetailsProps = {
         poolIdx: position.poolIdx,

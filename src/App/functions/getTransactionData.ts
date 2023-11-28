@@ -38,10 +38,16 @@ export const getTransactionData = async (
     const baseMetadata = cachedTokenDetails(provider, tx.base, chainId);
     const quoteMetadata = cachedTokenDetails(provider, tx.quote, chainId);
 
-    // const ensRequest = cachedEnsResolve(tx.user);
-
-    const basePricePromise = cachedFetchTokenPrice(baseTokenAddress, chainId);
-    const quotePricePromise = cachedFetchTokenPrice(quoteTokenAddress, chainId);
+    const basePricePromise = cachedFetchTokenPrice(
+        baseTokenAddress,
+        chainId,
+        crocEnv,
+    );
+    const quotePricePromise = cachedFetchTokenPrice(
+        quoteTokenAddress,
+        chainId,
+        crocEnv,
+    );
 
     newTx.ensResolution = skipENSFetch
         ? ''

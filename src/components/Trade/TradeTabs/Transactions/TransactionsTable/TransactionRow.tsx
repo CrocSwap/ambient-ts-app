@@ -2,7 +2,6 @@ import { memo, useContext, useEffect, useRef } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 import TransactionDetailsModal from '../../../../Global/TransactionDetails/TransactionDetailsModal';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
@@ -12,20 +11,18 @@ import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useModal } from '../../../../Global/Modal/useModal';
 import { TransactionRow as TransactionRowStyled } from '../../../../../styled/Components/TransactionTable';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
 
 interface propsIF {
     idForDOM: string;
     tx: TransactionIF;
     tableView: 'small' | 'medium' | 'large';
     isAccountView: boolean;
-    fetchedEnsAddress?: string;
 }
 function TransactionRow(props: propsIF) {
-    const { idForDOM, tableView, tx, isAccountView, fetchedEnsAddress } = props;
+    const { idForDOM, tableView, tx, isAccountView } = props;
 
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
 
     const {
         txHash,
@@ -57,12 +54,7 @@ function TransactionRow(props: propsIF) {
         priceCharacter,
         isBuy,
         elapsedTimeString,
-    } = useProcessTransaction(
-        tx,
-        userAddress,
-        isAccountView,
-        fetchedEnsAddress,
-    );
+    } = useProcessTransaction(tx, userAddress, isAccountView);
 
     const {
         snackbar: { open: openSnackbar },

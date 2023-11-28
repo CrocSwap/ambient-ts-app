@@ -1,5 +1,5 @@
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { useState, useEffect, useMemo } from 'react';
+/* eslint-disable camelcase */
+import { useState, useEffect, useMemo, useContext } from 'react';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import trimString from '../../utils/functions/trimString';
 import { LimitOrderIF } from '../interfaces/exports';
@@ -20,18 +20,19 @@ import { diffHashSig } from '../functions/diffHashSig';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import uriToHttp from '../functions/uriToHttp';
 import { getAddress } from 'ethers/lib/utils.js';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { useFetchBatch } from '../../App/hooks/useFetchBatch';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
     account = '',
     isAccountView = false,
-    fetchedEnsAddress?: string,
 ) => {
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
     const blockExplorer = getChainExplorer(limitOrder.chainId);
 
-    const selectedBaseToken = tradeData.baseToken.address.toLowerCase();
-    const selectedQuoteToken = tradeData.quoteToken.address.toLowerCase();
+    const selectedBaseToken = baseToken.address.toLowerCase();
+    const selectedQuoteToken = quoteToken.address.toLowerCase();
 
     const baseTokenSymbol = limitOrder.baseSymbol;
     const quoteTokenSymbol = limitOrder.quoteSymbol;
@@ -44,11 +45,12 @@ export const useProcessOrder = (
 
     const isOwnerActiveAccount =
         limitOrder.user.toLowerCase() === account?.toLowerCase();
-    const isDenomBase = tradeData.isDenomBase;
 
-    const ownerId = fetchedEnsAddress || getAddress(limitOrder.user) || '';
+    const body = { config_path: 'ens_address', address: limitOrder.user };
+    const { data } = useFetchBatch<'ens_address'>(body);
 
-    const ensName = fetchedEnsAddress || limitOrder.ensResolution || null;
+    const ownerId = data?.ens_address || getAddress(limitOrder.user);
+    const ensName = data?.ens_address || limitOrder.ensResolution || null;
 
     const isOrderFilled = limitOrder.claimableLiq > 0;
 
