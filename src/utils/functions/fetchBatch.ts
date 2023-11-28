@@ -6,65 +6,20 @@ import {
     BATCH_ENS_CACHE_EXPIRY,
     BATCH_SIZE,
 } from '../../constants';
+import {
+    FetchBatchOptions,
+    RequestData,
+    RequestKeys,
+    RequestResponseMap,
+} from '../types';
 import { fetchTimeout } from './fetchTimeout';
-
-export type ENSRequestBodyType = { config_path: string; address: string };
-export type PriceRequestBodyType = {
-    config_path: string;
-    chain_id: string;
-    token_address: string;
-};
-
-export type ENSResponse = {
-    ens_address: string | null;
-};
-
-export type PriceResponse = {
-    value: {
-        usdPrice: number;
-        usdPriceFormatted: number;
-    };
-};
-
-export type RequestTypeMap = {
-    ens_address: ENSRequestBodyType;
-    price: PriceRequestBodyType;
-};
-
-export type RequestKeys = keyof RequestTypeMap;
-
-export interface RequestResponseMap {
-    ens_address: { request: ENSRequestBodyType; response: ENSResponse };
-    price: { request: PriceRequestBodyType; response: PriceResponse };
-}
-
-interface RequestData<K extends keyof RequestResponseMap> {
-    body: RequestResponseMap[K]['request'];
-    timestamp: number | null;
-    promise: Promise<RequestResponseMap[K]['response']> | null;
-    resolve:
-        | ((
-              value:
-                  | RequestResponseMap[K]['response']
-                  | PromiseLike<RequestResponseMap[K]['response']>,
-          ) => void)
-        | null;
-    reject: ((reason?: any) => void) | null;
-    response: RequestResponseMap[K]['response'] | null;
-    expiry: number;
-}
-
-export type FetchBatchOptions = {
-    nonce?: string;
-    expiry?: number;
-};
 
 // [x] TODO - Test, to make sure if we spam the batch interface, it can use the nonce value to prevent duplicate requests
 // [x] TODO - Test, make sure old requests are cleaned out via the manage function
 // [?] TODO - Test sending invalid requests. Analytics server should be able to handle a mix of poortly formatted requests along side well formatted requests
 // [x] TODO - Harden the response parser with typing. Ensure it makes a best effort to process the valid responses, and does not let a bad response ruin the batch
 // [x] TODO - Add in Timeout support, so individual requests can expire and not block the whole app.
-// [ ] TODO: Add ability to timeout individual requests
+// [x] TODO: Add ability to timeout individual requests
 // [ ] TODO: Add in exponential backoff for failed requests
 class AnalyticsBatchRequestManager {
     static pendingRequests: Record<

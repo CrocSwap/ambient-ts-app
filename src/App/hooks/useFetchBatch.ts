@@ -1,10 +1,7 @@
 /* eslint-disable camelcase */
 import { useEffect, useState } from 'react';
-import {
-    FetchBatchOptions,
-    RequestResponseMap,
-    fetchBatch,
-} from '../../utils/functions/fetchBatch';
+import { fetchBatch } from '../../utils/functions/fetchBatch';
+import { FetchBatchOptions, RequestResponseMap } from '../../utils/types';
 
 export function useFetchBatch<K extends keyof RequestResponseMap>(
     requestBody: RequestResponseMap[K]['request'],

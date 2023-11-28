@@ -1,17 +1,15 @@
 /* eslint-disable camelcase */
 
 import { memoizePromiseFn } from './memoizePromiseFn';
-const randomNum = Math.random();
 import { translateTestnetToken } from '../../utils/data/testnetTokenMap';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { supportedNetworks } from '../../utils/networks';
-import {
-    PriceRequestBodyType,
-    fetchBatch,
-} from '../../utils/functions/fetchBatch';
+import { fetchBatch } from '../../utils/functions/fetchBatch';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { querySpotPrice } from './querySpotPrice';
 import truncateDecimals from '../../utils/data/truncateDecimals';
+
+const randomNum = Math.random();
 
 export const fetchTokenPrice = async (
     dispToken: string,
@@ -26,7 +24,7 @@ export const fetchTokenPrice = async (
         supportedNetworks[chain].defaultPair;
 
     try {
-        const body: PriceRequestBodyType = {
+        const body = {
             config_path: 'price',
             chain_id: chain,
             token_address: address,
