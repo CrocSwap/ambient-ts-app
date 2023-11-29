@@ -16,7 +16,6 @@ type FormatParams = {
     abbrevThreshold?: number;
 };
 
-// TODO: candidate for data-and-controls state-independent
 export function getFormattedNumber({
     value,
     nullDisplay = '…',

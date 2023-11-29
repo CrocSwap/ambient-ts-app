@@ -1,6 +1,5 @@
 import { toDisplayPrice } from '@crocswap-libs/sdk';
 
-// TODO: candidate for data-and-controls state-independent
 // NOTE: depositSkew calculated in sdk
 export const calculateSecondaryDepositQty = (
     poolPriceNonDisplay: number, // the 'scaled' or 'wei' price of the pool
