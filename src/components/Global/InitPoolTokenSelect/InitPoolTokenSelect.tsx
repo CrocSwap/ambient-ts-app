@@ -1,8 +1,8 @@
 import { useState, useEffect, memo, Dispatch, SetStateAction } from 'react';
 import styled from 'styled-components';
 import TokenIcon from '../TokenIcon/TokenIcon';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
-import uriToHttp from '../../../utils/functions/uriToHttp';
+import { TokenIF } from '../../../ambient-utils/types';
+import { uriToHttp } from '../../../ambient-utils/dataLayer';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
 import { useModal } from '../Modal/useModal';
@@ -32,6 +32,7 @@ const MainContainer = styled.button`
     &:hover {
         background: var(--dark3);
         cursor: pointer;
+        color: var(--accent1);
     }
 `;
 
@@ -42,6 +43,12 @@ const LeftContainer = styled.p`
 
     & > p {
         color: var(--text1);
+    }
+    &:hover > p {
+        color: var(--accent1);
+    }
+    &:hover > svg {
+        color: var(--accent1);
     }
 `;
 

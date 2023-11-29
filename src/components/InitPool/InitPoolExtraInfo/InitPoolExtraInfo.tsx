@@ -6,8 +6,8 @@ import { Dispatch, SetStateAction, useContext, useState } from 'react';
 // START: Import Local Files
 import styles from './InitPoolExtraInfo.module.css';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import { TokenIF } from '../../../ambient-utils/types';
+import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 interface InitPriceExtraInfoProps {
@@ -75,12 +75,6 @@ export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
             } liquidity providers.`,
             data: 'Dynamic',
         },
-        {
-            title: 'Network Fee',
-            tooltipTitle:
-                'Estimated network fee (i.e. gas cost) to initialize pool',
-            data: `${chainId === '0x1' ? initGasPriceinDollars : '...'}`,
-        },
 
         // {
         //     title: 'Effective Conversion Rate',
@@ -101,7 +95,17 @@ export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
 
     const extraInfoDetails = (
         <div className={styles.extra_details}>
-            {extraInfoData.map((item, idx) => (
+            {(chainId === '0x1'
+                ? extraInfoData.concat({
+                      title: 'Network Fee',
+                      tooltipTitle:
+                          'Estimated network fee (i.e. gas cost) to initialize pool',
+                      data: `${
+                          initGasPriceinDollars ? initGasPriceinDollars : '...'
+                      }`,
+                  })
+                : extraInfoData
+            ).map((item, idx) => (
                 <div className={styles.extra_row} key={idx}>
                     <div className={styles.align_center}>
                         <div>{item.title}</div>

@@ -5,7 +5,7 @@ import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { SortedPoolMethodsIF, useSortedPools } from './useSortedPools';
 import TableHead from './TableHead';
 import checkPoolForWETH from '../../../App/functions/checkPoolForWETH';
-import { PoolIF } from '../../../utils/interfaces/PoolIF';
+import { PoolIF } from '../../../ambient-utils/types';
 import Spinner from '../Spinner/Spinner';
 import {
     ScrollableContainer,
@@ -108,7 +108,7 @@ function TopPools(props: propsIF) {
                                 sortedPools.pools
                                     .filter(
                                         (pool: PoolIF) =>
-                                            !checkPoolForWETH(pool, chainId),
+                                            !checkPoolForWETH(pool),
                                     )
                                     .map((pool: PoolDataIF, idx: number) => (
                                         <PoolRow

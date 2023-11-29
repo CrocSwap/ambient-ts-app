@@ -1,8 +1,7 @@
 import { toDisplayQty } from '@crocswap-libs/sdk';
-import { TokenIF } from '../../../../utils/interfaces/exports';
+import { TokenIF } from '../../../../ambient-utils/types';
 import Button from '../../../Form/Button';
 import TransferAddressInput from './TransferAddressInput';
-// import { defaultTokens } from '../../../../utils/data/defaultTokens';
 import {
     Dispatch,
     SetStateAction,
@@ -12,12 +11,15 @@ import {
     useState,
 } from 'react';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-// import { setToken } from '../../../../utils/state/temp';
 import { BigNumber } from 'ethers';
 import { FaGasPump } from 'react-icons/fa';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import useDebounce from '../../../../App/hooks/useDebounce';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
+import {
+    IS_LOCAL_ENV,
+    ZERO_ADDRESS,
+    checkBlacklist,
+} from '../../../../ambient-utils/constants';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { FlexContainer, Text } from '../../../../styled/Common';
@@ -31,7 +33,6 @@ import {
     isTransactionFailedError,
     isTransactionReplacedError,
 } from '../../../../utils/TransactionError';
-import { checkBlacklist } from '../../../../utils/data/blacklist';
 import {
     addPendingTx,
     addReceipt,
@@ -349,18 +350,21 @@ export default function Transfer(props: propsIF) {
                         <MaxButton onClick={handleBalanceClick}>Max</MaxButton>
                     )}
                 </FlexContainer>
-                <GasPump>
-                    <SVGContainer>
-                        <FaGasPump size={12} />{' '}
-                    </SVGContainer>
-                    {chainId === '0x1' && transferGasPriceinDollars
-                        ? transferGasPriceinDollars
-                        : '…'}
-                </GasPump>
+                {chainId === '0x1' && (
+                    <GasPump>
+                        <SVGContainer>
+                            <FaGasPump size={12} />{' '}
+                        </SVGContainer>
+                        {transferGasPriceinDollars
+                            ? transferGasPriceinDollars
+                            : '…'}
+                    </GasPump>
+                )}
             </FlexContainer>
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}
             <Button
+                idForDOM='transfer_tokens_button'
                 title={buttonMessage}
                 action={transferFn}
                 disabled={isButtonDisabled}

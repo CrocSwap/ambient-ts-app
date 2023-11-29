@@ -4,6 +4,7 @@ export const ButtonBase = styled.button<{
     flat: boolean;
     width?: string;
     height?: string;
+    style?: React.CSSProperties;
 }>`
     width: ${({ width }) => width || '100%'};
     max-width: 500px;

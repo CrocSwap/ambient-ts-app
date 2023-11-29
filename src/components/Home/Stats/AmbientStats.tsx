@@ -1,11 +1,12 @@
 import { useContext, useEffect, useState } from 'react';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
-import { getChainStats } from '../../../App/functions/getPoolStats';
+import {
+    getChainStats,
+    getFormattedNumber,
+} from '../../../ambient-utils/dataLayer';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { Fade } from 'react-reveal';
 import {
@@ -51,12 +52,10 @@ export default function Stats() {
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
-    const { chainData, crocEnv } = useContext(CrocEnvContext);
+    const { chainData, crocEnv, activeNetwork } = useContext(CrocEnvContext);
 
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
-
-    const { isUserIdle } = useAppSelector((state) => state.userData);
 
     const [totalTvlString, setTotalTvlString] = useState<string | undefined>();
     const [totalVolumeString, setTotalVolumeString] = useState<
@@ -67,10 +66,11 @@ export default function Stats() {
     >();
 
     useEffect(() => {
-        if (isServerEnabled && !isUserIdle && crocEnv) {
+        if (isServerEnabled && crocEnv) {
             getChainStats(
                 chainData.chainId,
                 crocEnv,
+                activeNetwork.graphCacheUrl,
                 cachedFetchTokenPrice,
             ).then((dexStats) => {
                 if (!dexStats) {
@@ -98,7 +98,7 @@ export default function Stats() {
                 );
             });
         }
-    }, [crocEnv, isServerEnabled, isUserIdle, lastBlockNumber]);
+    }, [crocEnv, isServerEnabled, lastBlockNumber]);
 
     const statCardData = [
         {

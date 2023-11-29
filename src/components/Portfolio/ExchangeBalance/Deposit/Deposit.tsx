@@ -1,8 +1,5 @@
-import { TokenIF } from '../../../../utils/interfaces/exports';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
+import { TokenIF } from '../../../../ambient-utils/types';
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import {
     Dispatch,
@@ -25,12 +22,15 @@ import {
     TransactionError,
 } from '../../../../utils/TransactionError';
 import { BigNumber } from 'ethers';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
+import {
+    IS_LOCAL_ENV,
+    ZERO_ADDRESS,
+} from '../../../../ambient-utils/constants';
 import { FaGasPump } from 'react-icons/fa';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import Button from '../../../Form/Button';
 import CurrencySelector from '../../../Form/CurrencySelector';
@@ -39,6 +39,7 @@ import {
     MaxButton,
 } from '../../../../styled/Components/Portfolio';
 import { useApprove } from '../../../../App/functions/approve';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -67,16 +68,21 @@ export default function Deposit(props: propsIF) {
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
 
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
+
     const { approve, isApprovalPending } = useApprove();
 
     const dispatch = useAppDispatch();
 
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
-    const amountToReduceEth = BigNumber.from(25).mul('1000000000000000'); // .025 ETH
+    const amountToReduceEthMainnet = BigNumber.from(50).mul('100000000000000'); // .005 ETH
+    const amountToReduceEthScroll = BigNumber.from(5).mul('100000000000000'); // .0005 ETH
+
+    const amountToReduceEth =
+        chainId === '0x82750' || chainId === '0x8274f'
+            ? amountToReduceEthScroll
+            : amountToReduceEthMainnet;
 
     const tokenWalletBalanceAdjustedNonDisplayString =
         isTokenEth && !!tokenWalletBalance
@@ -135,31 +141,27 @@ export default function Deposit(props: propsIF) {
     );
 
     const isWalletBalanceSufficientToCoverGas = useMemo(() => {
-        if (selectedToken.address !== ZERO_ADDRESS) {
+        if (selectedToken.address !== ZERO_ADDRESS || !depositQtyNonDisplay) {
             return true;
         }
         return tokenWalletBalance
-            ? BigNumber.from(tokenWalletBalance).gt(amountToReduceEth)
+            ? BigNumber.from(tokenWalletBalance).gte(
+                  amountToReduceEth.add(BigNumber.from(depositQtyNonDisplay)),
+              )
             : false;
-    }, [tokenWalletBalance, amountToReduceEth]);
+    }, [tokenWalletBalance, amountToReduceEth, depositQtyNonDisplay]);
 
     const isWalletBalanceSufficientToCoverDeposit = useMemo(
         () =>
-            tokenWalletBalanceAdjustedNonDisplayString && isDepositQtyValid
-                ? BigNumber.from(
-                      tokenWalletBalanceAdjustedNonDisplayString,
-                  ).gte(BigNumber.from(depositQtyNonDisplay))
-                : tokenWalletBalanceAdjustedNonDisplayString &&
-                  BigNumber.from(
-                      tokenWalletBalanceAdjustedNonDisplayString,
-                  ).gte(BigNumber.from(0))
+            tokenWalletBalance && isDepositQtyValid
+                ? BigNumber.from(tokenWalletBalance).gte(
+                      BigNumber.from(depositQtyNonDisplay),
+                  )
+                : tokenWalletBalance &&
+                  BigNumber.from(tokenWalletBalance).gte(BigNumber.from(0))
                 ? true
                 : false,
-        [
-            tokenWalletBalanceAdjustedNonDisplayString,
-            isDepositQtyValid,
-            depositQtyNonDisplay,
-        ],
+        [tokenWalletBalance, isDepositQtyValid, depositQtyNonDisplay],
     );
 
     const [isDepositPending, setIsDepositPending] = useState(false);
@@ -182,17 +184,17 @@ export default function Deposit(props: propsIF) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Approval Pending`);
-        } else if (!isWalletBalanceSufficientToCoverGas) {
-            setIsButtonDisabled(true);
-            setIsCurrencyFieldDisabled(false);
-            setButtonMessage(
-                `${selectedToken.symbol} Wallet Balance Insufficient To Cover Gas`,
-            );
         } else if (!isWalletBalanceSufficientToCoverDeposit) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(false);
             setButtonMessage(
                 `${selectedToken.symbol} Wallet Balance Insufficient to Cover Deposit`,
+            );
+        } else if (!isWalletBalanceSufficientToCoverGas) {
+            setIsButtonDisabled(true);
+            setIsCurrencyFieldDisabled(false);
+            setButtonMessage(
+                `${selectedToken.symbol} Wallet Balance Insufficient To Cover Gas`,
             );
         } else if (!isTokenAllowanceSufficient) {
             setIsButtonDisabled(false);
@@ -376,27 +378,30 @@ export default function Deposit(props: propsIF) {
                     {tokenWalletBalance !== '0' && (
                         <MaxButton
                             onClick={handleBalanceClick}
-                            disabled={!isWalletBalanceSufficientToCoverDeposit}
+                            disabled={false}
                         >
                             Max
                         </MaxButton>
                     )}
                 </FlexContainer>
-                <FlexContainer
-                    alignItems='center'
-                    justifyContent='flex-end'
-                    color='text2'
-                    fontSize='body'
-                >
-                    <SVGContainer>
-                        <FaGasPump size={12} />
-                    </SVGContainer>
-                    {chainId === '0x1' && depositGasPriceinDollars
-                        ? depositGasPriceinDollars
-                        : '…'}
-                </FlexContainer>
+                {chainId === '0x1' && (
+                    <FlexContainer
+                        alignItems='center'
+                        justifyContent='flex-end'
+                        color='text2'
+                        fontSize='body'
+                    >
+                        <SVGContainer>
+                            <FaGasPump size={12} />
+                        </SVGContainer>
+                        {depositGasPriceinDollars
+                            ? depositGasPriceinDollars
+                            : '…'}
+                    </FlexContainer>
+                )}
             </FlexContainer>
             <Button
+                idForDOM='deposit_tokens_button'
                 title={buttonMessage}
                 action={() => {
                     !isTokenAllowanceSufficient ? approvalFn() : depositFn();

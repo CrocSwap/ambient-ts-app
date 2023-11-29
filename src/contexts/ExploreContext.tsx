@@ -2,11 +2,14 @@ import { ReactNode, createContext, useContext, useRef, useState } from 'react';
 import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
-import { PoolIF } from '../utils/interfaces/exports';
-import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
-import { getFormattedNumber } from '../App/functions/getFormattedNumber';
+import { PoolIF } from '../ambient-utils/types';
+import {
+    getMoneynessRank,
+    getFormattedNumber,
+    get24hChange,
+} from '../ambient-utils/dataLayer';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { get24hChange } from '../App/functions/getPoolStats';
+import { CrocEnvContext } from './CrocEnvContext';
 
 export interface ExploreContextIF {
     pools: {
@@ -48,6 +51,8 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
     } = useContext(CachedDataContext);
+
+    const { activeNetwork } = useContext(CrocEnvContext);
 
     const [allPools, setAllPools] = useState<PoolDataIF[]>([]);
     const [retrievedAt, setRetrievedAt] = useState<number | null>(null);
@@ -91,6 +96,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             poolIdx,
             Math.floor(Date.now() / 60000),
             crocEnv,
+            activeNetwork.graphCacheUrl,
             cachedFetchTokenPrice,
         );
         // format TVL, use empty string as backup value
@@ -116,6 +122,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             pool.quote.address,
             poolIdx,
             shouldInvert,
+            activeNetwork.graphCacheUrl,
         );
         if (!priceChangeRaw) {
             priceChangePercent = '';

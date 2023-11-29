@@ -1,10 +1,10 @@
-import { TokenIF } from '../../../utils/interfaces/exports';
+import { TokenIF } from '../../../ambient-utils/types';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import Button from '../../Form/Button';
 import DividerDark from '../DividerDark/DividerDark';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import TokenIcon from '../TokenIcon/TokenIcon';
-import uriToHttp from '../../../utils/functions/uriToHttp';
+import { uriToHttp } from '../../../ambient-utils/dataLayer';
 interface propsIF {
     customToken: TokenIF | null | 'querying';
     chooseToken: (tkn: TokenIF, isCustom: boolean) => void;
@@ -116,6 +116,7 @@ export default function SoloTokenImport(props: propsIF) {
             </p>
             <FlexContainer justifyContent='center'>
                 <Button
+                    idForDOM='import_unknown_token_button'
                     flat
                     title='Acknowledge'
                     action={() => chooseToken(customToken, true)}

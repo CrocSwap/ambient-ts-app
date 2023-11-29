@@ -1,7 +1,7 @@
 import styles from './RangeDetailsSimplify.module.css';
-import { PositionIF } from '../../../utils/interfaces/exports';
+import { PositionIF } from '../../../ambient-utils/types';
 import { useProcessRange } from '../../../utils/hooks/useProcessRange';
-import { ZERO_ADDRESS } from '../../../constants';
+import { ZERO_ADDRESS } from '../../../ambient-utils/constants';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import moment from 'moment';
 // import Apy from '../../Global/Tabs/Apy/Apy';
@@ -10,9 +10,9 @@ import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { useContext } from 'react';
 import { FiCopy } from 'react-icons/fi';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useMediaQuery } from '@material-ui/core';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 interface ItemRowPropsIF {
     title: string;
@@ -38,9 +38,7 @@ export default function RangeDetailsSimplify(
         isAccountView,
         updatedPositionApy,
     } = props;
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
 
     const {
         ensName,

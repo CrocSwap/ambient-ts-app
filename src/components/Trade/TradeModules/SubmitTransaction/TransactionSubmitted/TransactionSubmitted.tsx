@@ -5,7 +5,7 @@ import addTokenToWallet from './addTokenToWallet';
 import Button from '../../../../Form/Button';
 import { FiExternalLink } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
-import { getChainExplorer } from '../../../../../utils/data/chains';
+import { getChainExplorer } from '../../../../../ambient-utils/dataLayer';
 
 interface PropsIF {
     type:
@@ -56,12 +56,12 @@ export default function TransactionSubmitted(props: PropsIF) {
 
     const addToMetaMaskButton = (
         <Button
+            idForDOM='import_token_B_into_wallet_button'
             flat
             title={`Import ${tokenBSymbol} into Connected Wallet`}
-            // action={props.onClickFn}
             action={handleAddToMetaMask}
             disabled={false}
-        ></Button>
+        />
     );
 
     const etherscanButton = (

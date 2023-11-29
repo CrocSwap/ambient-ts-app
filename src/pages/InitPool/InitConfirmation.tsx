@@ -6,7 +6,7 @@ import SelectedRange from '../../components/Trade/Range/ConfirmRangeModal/Select
 import { FlexContainer, GridContainer, Text } from '../../styled/Common';
 
 import { FeaturedBox } from '../../components/Trade/TableInfo/FeaturedBox';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../ambient-utils/types';
 
 const Wrapper = styled.div<{ isLpContractCreationEnabled: boolean }>`
     width: 100%;
@@ -14,9 +14,7 @@ const Wrapper = styled.div<{ isLpContractCreationEnabled: boolean }>`
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-
     border-radius: 8px;
-
     text-align: center;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     padding-top: ${(props) =>
@@ -38,6 +36,7 @@ interface InitConfirmationProps {
     isTxCompletedInit: boolean;
     isTxCompletedRange: boolean;
     errorCode?: string;
+    txErrorMessage?: string;
     handleNavigation: () => void;
     pinnedMinPriceDisplayTruncatedInBase: string;
     pinnedMinPriceDisplayTruncatedInQuote: string;
@@ -74,7 +73,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         pinnedMinPriceDisplayTruncatedInQuote,
         pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote,
-
+        // txErrorMessage,
         isDenomBase,
         setIsDenomBase,
 
@@ -153,14 +152,14 @@ export default function InitConfirmation(props: InitConfirmationProps) {
             <FlexContainer
                 flexDirection='column'
                 gap={8}
-                justifyContent={!isMintLiqEnabled ? 'center' : ''}
+                justifyContent={!isMintLiqEnabled ? 'center' : undefined}
                 style={{ height: '100%' }}
             >
                 {tokensInfo}
                 {selectedRangeDisplay}
             </FlexContainer>
-
             <Button
+                idForDOM='initialize_new_pool_button'
                 flat
                 title='Initialize Pool'
                 action={handleConfirmed}
@@ -179,7 +178,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         : `${tokenB.symbol} / ${tokenA.symbol}`;
 
     const noMintLiqSteps = [
-        { label: 'Sign transaction to initialize pool.' },
+        { label: 'Sign transaction to initialize pool' },
         {
             label: `Submitting pool initialization for ${tokenSymbols}`,
         },
@@ -198,7 +197,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
     ];
 
     const mintLiqSteps = [
-        { label: 'Sign transaction to initialize pool ' },
+        { label: 'Sign transaction to initialize pool' },
         {
             label: `Submitting pool initialization for ${tokenSymbols}`,
         },
@@ -326,10 +325,20 @@ export default function InitConfirmation(props: InitConfirmationProps) {
                 }
             />
             {isError && (
-                <Button title='Try Again' action={handleConfirmed} flat />
+                <Button
+                    idForDOM='retry_pool_initialization_button'
+                    title='Try Again'
+                    action={handleConfirmed}
+                    flat
+                />
             )}
             {activeStep === steps.length && (
-                <Button title='View Pool' action={handleNavigation} flat />
+                <Button
+                    idForDOM='view_new_pool_button'
+                    title='View Pool'
+                    action={handleNavigation}
+                    flat
+                />
             )}
         </Wrapper>
     );

@@ -1,7 +1,7 @@
 import TokenIcon from '../TokenIcon/TokenIcon';
-import uriToHttp from '../../../utils/functions/uriToHttp';
+import { uriToHttp } from '../../../ambient-utils/dataLayer';
 import { PoolDataIF } from '../../../contexts/ExploreContext';
-import { TokenIF } from '../../../utils/interfaces/exports';
+import { TokenIF } from '../../../ambient-utils/types';
 import {
     PoolNameWrapper,
     TradeButton,
@@ -9,6 +9,7 @@ import {
     TableCell,
 } from '../../../styled/Components/Analytics';
 import { FlexContainer } from '../../../styled/Common';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     pool: PoolDataIF;
@@ -22,6 +23,8 @@ export default function PoolRow(props: propsIF) {
         pool.moneyness.base < pool.moneyness.quote
             ? [pool.base, pool.quote]
             : [pool.quote, pool.base];
+
+    const mobileScrenView = useMediaQuery('(max-width: 500px)');
 
     return (
         <TableRow
@@ -38,13 +41,13 @@ export default function PoolRow(props: propsIF) {
                             token={firstToken}
                             src={uriToHttp(firstToken.logoURI)}
                             alt={firstToken.symbol}
-                            size='2xl'
+                            size={mobileScrenView ? 's' : '2xl'}
                         />
                         <TokenIcon
                             token={secondToken}
                             src={uriToHttp(secondToken.logoURI)}
                             alt={secondToken.symbol}
-                            size='2xl'
+                            size={mobileScrenView ? 's' : '2xl'}
                         />
                     </FlexContainer>
                     <PoolNameWrapper>{pool.name}</PoolNameWrapper>

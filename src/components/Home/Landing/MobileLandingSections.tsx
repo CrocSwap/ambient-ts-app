@@ -54,7 +54,7 @@ export default function MobileLandingSections() {
                     <TopPools noTitle gap='8px' />
                 </div>
             </>
-            <TradeNowButton />
+            <TradeNowButton fieldId='trade_now_btn_in_mobile_hero' />
         </FlexContainer>
     );
 

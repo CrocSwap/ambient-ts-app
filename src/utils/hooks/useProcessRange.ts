@@ -1,21 +1,24 @@
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
-import { PositionIF } from '../../utils/interfaces/exports';
-import trimString from '../../utils/functions/trimString';
-import { useMemo } from 'react';
-import { getMoneynessRank } from '../functions/getMoneynessRank';
-import { getChainExplorer } from '../data/chains';
+import {
+    getChainExplorer,
+    getUnicodeCharacter,
+    trimString,
+    getMoneynessRank,
+    getFormattedNumber,
+} from '../../ambient-utils/dataLayer';
+import { PositionIF } from '../../ambient-utils/types';
+import { useContext, useMemo } from 'react';
 import moment from 'moment';
-import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { getAddress } from 'ethers/lib/utils.js';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { useFetchBatch } from '../../App/hooks/useFetchBatch';
 
 export const useProcessRange = (
     position: PositionIF,
     account = '',
     isAccountView?: boolean,
-    fetchedEnsAddress?: string,
 ) => {
     const blockExplorer = getChainExplorer(position.chainId);
 
@@ -23,7 +26,7 @@ export const useProcessRange = (
 
     const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
 
-    const isDenomBase = tradeData.isDenomBase;
+    const { isDenomBase } = useContext(TradeDataContext);
 
     const tokenAAddress = position.base;
     const tokenBAddress = position.quote;
@@ -65,8 +68,12 @@ export const useProcessRange = (
     const apyClassname = apy > 0 ? 'apy_positive' : 'apy_negative';
     const isAmbient = position.positionType === 'ambient';
 
-    const ensName = fetchedEnsAddress
-        ? fetchedEnsAddress
+    /* eslint-disable-next-line camelcase */
+    const body = { config_path: 'ens_address', address: position.user };
+    const { data } = useFetchBatch<'ens_address'>(body);
+
+    const ensName = data?.ens_address
+        ? data?.ens_address
         : position.ensResolution
         ? position.ensResolution
         : null;
@@ -87,21 +94,14 @@ export const useProcessRange = (
             position.poolIdx,
         );
     } else {
-        posHash =
-            position.user &&
-            position.base &&
-            position.quote &&
-            position.bidTick &&
-            position.askTick
-                ? concPosSlot(
-                      position.user,
-                      position.base,
-                      position.quote,
-                      position.bidTick,
-                      position.askTick,
-                      position.poolIdx,
-                  ).toString()
-                : '…';
+        posHash = concPosSlot(
+            position.user ?? '',
+            position.base ?? '',
+            position.quote ?? '',
+            position.bidTick ?? 0,
+            position.askTick ?? 0,
+            position.poolIdx ?? 0,
+        ).toString();
     }
 
     // -----------------------------POSITIONS RANGE--------------------
@@ -202,7 +202,7 @@ export const useProcessRange = (
         ? ensName.length > 16
             ? trimString(ensName, 11, 3, '…')
             : ensName
-        : trimString(ownerId, 5, 4, '…');
+        : trimString(ownerId, 6, 4, '…');
 
     const posHashTruncated = trimString(posHash.toString(), 9, 0, '…');
 

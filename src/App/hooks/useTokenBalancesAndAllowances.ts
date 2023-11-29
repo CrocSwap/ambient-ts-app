@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../ambient-utils/types';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
@@ -8,10 +8,10 @@ import { ChartContext } from '../../contexts/ChartContext';
 import { RangeContext } from '../../contexts/RangeContext';
 import { TokenContext } from '../../contexts/TokenContext';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { useAccount } from 'wagmi';
 import { useTokenPairAllowance } from './useTokenPairAllowance';
 import { usePoolMetadata } from './usePoolMetadata';
-import { IS_LOCAL_ENV } from '../../constants';
+import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
+import { UserDataContext } from '../../contexts/UserDataContext';
 
 interface BalancesIF {
     baseTokenBalance: string;
@@ -42,14 +42,14 @@ export const useTokenBalancesAndAllowances = (
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const { crocEnv, chainData } = useContext(CrocEnvContext);
+    const { crocEnv, chainData, activeNetwork } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { isEnabled: isChartEnabled } = useContext(ChartContext);
     const { setSimpleRangeWidth } = useContext(RangeContext);
     const { tokens } = useContext(TokenContext);
 
     const { receiptData } = useAppSelector((state) => state);
-    const { address: userAddress, isConnected } = useAccount();
+    const { userAddress, isUserConnected } = useContext(UserDataContext);
 
     const {
         tokenAAllowance,
@@ -64,6 +64,7 @@ export const useTokenBalancesAndAllowances = (
 
     const { isTokenABase, baseTokenAddress } = usePoolMetadata({
         crocEnv,
+        graphCacheUrl: activeNetwork.graphCacheUrl,
         pathname: location.pathname,
         chainData,
         userAddress,
@@ -92,7 +93,7 @@ export const useTokenBalancesAndAllowances = (
             if (
                 crocEnv &&
                 userAddress &&
-                isConnected &&
+                isUserConnected &&
                 baseToken.address &&
                 quoteToken.address
             ) {
@@ -148,7 +149,7 @@ export const useTokenBalancesAndAllowances = (
         })();
     }, [
         crocEnv,
-        isConnected,
+        isUserConnected,
         userAddress,
         baseToken.address,
         quoteToken.address,

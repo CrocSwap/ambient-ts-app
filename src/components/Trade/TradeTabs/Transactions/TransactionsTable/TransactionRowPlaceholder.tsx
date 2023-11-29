@@ -1,19 +1,21 @@
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
-import trimString from '../../../../../utils/functions/trimString';
 import { Chip } from '../../../../Form/Chip';
 import { FiExternalLink } from 'react-icons/fi';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
-import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import { getPinnedPriceValuesFromTicks } from '../../../../../pages/Trade/Range/rangeFunctions';
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
-import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
+import {
+    getFormattedNumber,
+    trimString,
+    getUnicodeCharacter,
+} from '../../../../../ambient-utils/dataLayer';
 import {
     RowItem,
     TransactionRow,
 } from '../../../../../styled/Components/TransactionTable';
 import { FlexContainer } from '../../../../../styled/Common';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 
 interface PropsIF {
     transaction: {
@@ -42,7 +44,7 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
 
     const { showAllData } = useContext(TradeTableContext);
 
-    const { isDenomBase } = useAppSelector((state) => state.tradeData);
+    const { isDenomBase } = useContext(TradeDataContext);
 
     const {
         chainData: { blockExplorer },
@@ -70,22 +72,14 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
     );
     const wallet = <p>you</p>;
 
-    const pinnedDisplayPrices =
-        transaction.details?.baseTokenDecimals &&
-        transaction.details?.quoteTokenDecimals &&
-        transaction.details?.lowTick &&
-        transaction.details?.highTick &&
-        transaction.details?.gridSize
-            ? getPinnedPriceValuesFromTicks(
-                  isDenomBase,
-                  transaction.details.baseTokenDecimals,
-                  transaction.details.quoteTokenDecimals,
-                  transaction.details.lowTick,
-                  transaction.details.highTick,
-                  transaction.details.gridSize,
-              )
-            : undefined;
-
+    const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+        isDenomBase,
+        transaction?.details?.baseTokenDecimals ?? 0,
+        transaction?.details?.quoteTokenDecimals ?? 0,
+        transaction?.details?.lowTick ?? 0,
+        transaction?.details?.highTick ?? 0,
+        transaction?.details?.gridSize ?? 0,
+    );
     const limitPrice =
         transaction.details &&
         transaction.details.lowTick &&
@@ -120,7 +114,7 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                 placeholder
                 tabIndex={0}
             >
-                {tableView === 'large' && (
+                {tableView !== 'small' && (
                     <div>
                         <p>Now</p>
                     </div>

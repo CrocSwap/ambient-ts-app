@@ -1,15 +1,17 @@
 import styles from './Exchange.module.css';
 import ExchangeCard from './ExchangeCard';
 import ExchangeHeader from './ExchangeHeader';
-import { TokenIF } from '../../../../../utils/interfaces/exports';
+import { TokenIF } from '../../../../../ambient-utils/types';
 import Spinner from '../../../Spinner/Spinner';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
-import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
+import { TokenPriceFn } from '../../../../../ambient-utils/api';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { useContext } from 'react';
-import { tokenListURIs } from '../../../../../utils/data/tokenListURIs';
-import { ZERO_ADDRESS } from '../../../../../constants';
-import { supportedNetworks } from '../../../../../utils/networks';
+import {
+    tokenListURIs,
+    ZERO_ADDRESS,
+} from '../../../../../ambient-utils/constants';
+import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
+import { isUsdcToken } from '../../../../../ambient-utils/dataLayer';
 
 interface propsIF {
     chainId: string;
@@ -21,17 +23,13 @@ interface propsIF {
 
 export default function Exchange(props: propsIF) {
     const {
-        chainId,
         connectedAccountActive,
         resolvedAddressTokens,
         cachedFetchTokenPrice,
     } = props;
 
     const { tokens } = useContext(TokenContext);
-
-    const tokenBalances = useAppSelector(
-        (state) => state.userData.tokenBalances,
-    );
+    const { tokenBalances } = useContext(TokenBalanceContext);
 
     const tokensToRender = connectedAccountActive
         ? tokenBalances
@@ -79,30 +77,13 @@ export default function Exchange(props: propsIF) {
             .sort((a: TokenIF, b: TokenIF) => {
                 // fn to numerically prioritize a token (high = important)
                 const getPriority = (tkn: TokenIF): number => {
-                    // declare an output variable
-                    let priority: number;
-                    // canonical token addresses to assign probability
-                    const addresses = {
-                        nativeToken: ZERO_ADDRESS,
-                        USDC: supportedNetworks[chainId].tokens.USDC,
-                    };
-                    // logic router to assign numerical priority to output
-                    // unlisted tokens get priority 0
-                    switch (tkn.address.toLowerCase()) {
-                        // native token
-                        case addresses.nativeToken:
-                            priority = 1000;
-                            break;
-                        // USDCoin (uses address for current chain)
-                        case addresses.USDC:
-                            priority = 900;
-                            break;
-                        // all non-privileged tokens
-                        default:
-                            priority = 0;
+                    if (tkn.address === ZERO_ADDRESS) {
+                        return 1000;
+                    } else if (isUsdcToken(tkn.address)) {
+                        return 900;
+                    } else {
+                        return 0;
                     }
-                    // return numerical priority of the token
-                    return priority;
                 };
                 // sort tokens by relative priority level
                 return getPriority(b) - getPriority(a);

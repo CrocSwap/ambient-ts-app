@@ -28,7 +28,7 @@ import SidebarFooter from '../components/Global/Sidebar/SidebarFooter/SidebarFoo
 
 /** * **** Import Local Files *******/
 import './App.css';
-import { IS_LOCAL_ENV } from '../constants';
+import { IS_LOCAL_ENV } from '../ambient-utils/constants';
 import ChatPanel from '../components/Chat/ChatPanel';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
@@ -45,6 +45,7 @@ import SwitchNetwork from '../components/Global/SwitchNetworkAlert/SwitchNetwork
 import Explore from '../pages/Explore/Explore';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
+import ExampleForm from '../pages/InitPool/FormExample';
 
 /** ***** React Function *******/
 export default function App() {
@@ -235,7 +236,6 @@ export default function App() {
                                 <ChatPanel isFullScreen={true} appPage={true} />
                             }
                         />
-
                         <Route
                             path='chat/:params'
                             element={
@@ -248,7 +248,6 @@ export default function App() {
                             path='account/:address'
                             element={<Portfolio />}
                         />
-
                         <Route
                             path='swap'
                             element={
@@ -261,6 +260,12 @@ export default function App() {
                         <Route path='privacy' element={<PrivacyPolicy />} />
                         {IS_LOCAL_ENV && (
                             <Route path='testpage' element={<TestPage />} />
+                        )}
+                        {IS_LOCAL_ENV && (
+                            <Route
+                                path='template/form'
+                                element={<ExampleForm />}
+                            />
                         )}
                         <Route path='/:address' element={<Portfolio />} />
                         <Route path='/404' element={<NotFound />} />

@@ -1,14 +1,11 @@
 .container {
-    min-height: 250px;
-    max-height: 70vh;
+    height: 70vh;
     overflow-y: scroll;
     display: flex;
     flex-direction: column;
     padding: 1rem;
-    background: var(--dark1);
     border-radius: var(--border-radius);
-
-  
+    
 }
 
 .no_modal_container{

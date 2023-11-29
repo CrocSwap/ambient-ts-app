@@ -5,7 +5,7 @@ import styles from '../../components/Home/Landing/BackgroundImages.module.css';
 
 import { MdArrowBackIosNew } from 'react-icons/md';
 import { FiSettings } from 'react-icons/fi';
-import { DISABLE_INIT_SETTINGS } from '../../constants';
+import { DISABLE_INIT_SETTINGS } from '../../ambient-utils/constants';
 
 interface InitSkeletonProps {
     children: React.ReactNode;
@@ -69,13 +69,13 @@ export default function InitSkeleton(props: InitSkeletonProps) {
                 textAlign='center'
                 flexDirection='column'
                 outline='accent1'
-                tablet={{ margin: '64px 0 0 0' }}
-                style={{ height: '462px' }}
+                boxShadow='gradient'
+                height='462px'
+                md={{ margin: '64px 0 0 0' }}
                 className='mobile_auto_height'
             >
                 <FlexContainer
                     rounded
-                    background='dark1'
                     position='relative'
                     style={{ height: '100%' }}
                     transition

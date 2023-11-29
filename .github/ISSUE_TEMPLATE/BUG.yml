@@ -57,3 +57,4 @@ body:
           options:
               - MetaMask
               - Brave
+              - No wallet connected

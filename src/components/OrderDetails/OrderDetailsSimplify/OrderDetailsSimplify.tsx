@@ -1,6 +1,6 @@
 import styles from './OrderDetailsSimplify.module.css';
-import { LimitOrderIF } from '../../../utils/interfaces/exports';
-import { ZERO_ADDRESS } from '../../../constants';
+import { LimitOrderIF } from '../../../ambient-utils/types';
+import { ZERO_ADDRESS } from '../../../ambient-utils/constants';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { useProcessOrder } from '../../../utils/hooks/useProcessOrder';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
@@ -9,10 +9,10 @@ import { FiCopy } from 'react-icons/fi';
 import { useContext } from 'react';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import { useMediaQuery } from '@material-ui/core';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 interface ItemRowPropsIF {
     title: string;
@@ -61,9 +61,7 @@ export default function OrderDetailsSimplify(
 
     const { chainData } = useContext(CrocEnvContext);
 
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
 
     const {
         ensName,

@@ -10,15 +10,14 @@ import {
 } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
-import uriToHttp from '../../utils/functions/uriToHttp';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { uriToHttp } from '../../ambient-utils/dataLayer';
+import { TokenIF } from '../../ambient-utils/types';
 import Spinner from '../Global/Spinner/Spinner';
 import { DefaultTooltip } from '../Global/StyledTooltip/StyledTooltip';
 import TokenIcon from '../Global/TokenIcon/TokenIcon';
 import { SoloTokenSelectModal } from '../Global/TokenSelectContainer/SoloTokenSelectModal';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { Link, useLocation } from 'react-router-dom';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
 import { useModal } from '../Global/Modal/useModal';
@@ -30,6 +29,7 @@ import {
     TokenSelectButton,
 } from '../../styled/Components/TradeModules';
 import { SoloTokenSelect } from '../Global/TokenSelectContainer/SoloTokenSelect';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 interface propsIF {
     tokenAorB: 'A' | 'B' | null;
@@ -69,7 +69,7 @@ function TokenInputQuantity(props: propsIF) {
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     const location = useLocation();
 
-    const { tradeData } = useAppSelector((state) => state);
+    const { tokenA, tokenB } = useContext(TradeDataContext);
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
@@ -127,14 +127,10 @@ function TokenInputQuantity(props: propsIF) {
                 enterDelay={700}
                 leaveDelay={200}
             >
-                <Text fontSize='header2' color='text1'>
-                    {token.symbol}
-                </Text>
+                <>{token.symbol}</>
             </DefaultTooltip>
         ) : (
-            <Text fontSize='header2' color='text1'>
-                {token.symbol}
-            </Text>
+            <>{token.symbol}</>
         );
 
     const tokenSelectRef = useRef(null);
@@ -152,8 +148,8 @@ function TokenInputQuantity(props: propsIF) {
                 <Link
                     to={linkGenInitPool.getFullURL({
                         chain: chainId,
-                        tokenA: tradeData.tokenA.address,
-                        tokenB: tradeData.tokenB.address,
+                        tokenA: tokenA.address,
+                        tokenB: tokenB.address,
                     })}
                 >
                     Initialize it to continue.
@@ -219,7 +215,17 @@ function TokenInputQuantity(props: propsIF) {
     );
 
     return (
-        <FlexContainer flexDirection='column' color='text1' id={fieldId}>
+        <FlexContainer
+            flexDirection='column'
+            id={fieldId}
+            style={{
+                background: 'var(--dark2)',
+                borderRadius: '1rem',
+                gap: '8px',
+                padding: '8px 8px 8px 16px ',
+                minHeight: '81px',
+            }}
+        >
             {label && (
                 <Text margin='4px 0' fontSize='body' color='text1'>
                     {label}
@@ -229,20 +235,14 @@ function TokenInputQuantity(props: propsIF) {
                 animation={showPulseAnimation ? 'pulse' : ''}
                 style={{ marginBottom: !includeWallet ? '8px' : '0' }}
             >
-                <div style={{ position: 'relative' }}>
-                    {isLoading ? (
-                        <FlexContainer
-                            fullWidth
-                            fullHeight
-                            alignItems='center'
-                            margin='0 32px'
-                        >
-                            <Spinner size={24} bg='var(--dark2)' weight={2} />
-                        </FlexContainer>
-                    ) : (
-                        inputContent
-                    )}
-                </div>
+                {isLoading ? (
+                    <FlexContainer fullWidth fullHeight alignItems='center'>
+                        <Spinner size={24} bg='var(--dark2)' weight={2} />
+                    </FlexContainer>
+                ) : (
+                    inputContent
+                )}
+
                 <TokenSelectButton
                     id={fieldId ? `${fieldId}_token_selector` : undefined}
                     onClick={openTokenSelect}

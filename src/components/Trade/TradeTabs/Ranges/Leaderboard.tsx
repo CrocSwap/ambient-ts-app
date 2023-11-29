@@ -4,7 +4,6 @@ import { useContext, useEffect, useState, memo } from 'react';
 // START: Import Local Files
 import Pagination from '../../../Global/Pagination/Pagination';
 
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
@@ -13,30 +12,31 @@ import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { RangeRow as RangeRowStyled } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer } from '../../../../styled/Common';
-import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 // react functional component
 function Leaderboard() {
     const { showAllData } = useContext(TradeTableContext);
 
     const { tradeTableState } = useContext(ChartContext);
+    const { leaderboardByPool } = useContext(GraphDataContext);
 
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state?.userData,
-    );
-    const graphData = useAppSelector((state) => state?.graphData);
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const { userAddress } = useContext(UserDataContext);
 
-    const baseTokenAddress = tradeData.baseToken.address;
-    const quoteTokenAddress = tradeData.quoteToken.address;
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
+
+    const baseTokenAddress = baseToken.address;
+    const quoteTokenAddress = quoteToken.address;
 
     const positionsByApy: string[] =
-        [...graphData?.leaderboardByPool?.positions]
+        [...leaderboardByPool?.positions]
             .sort((a, b) => b.apy - a.apy)
             .map((pos) => pos.positionId) ?? [];
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =
-        useSortedPositions('apr', graphData?.leaderboardByPool?.positions);
+        useSortedPositions('apr', leaderboardByPool?.positions);
 
     // ---------------------
     const [currentPage, setCurrentPage] = useState(1);
@@ -70,27 +70,8 @@ function Leaderboard() {
         ? 'medium'
         : 'large';
 
-    const footerDisplay = (
-        <FlexContainer
-            alignItems='center'
-            justifyContent='center'
-            gap={isSmallScreen ? 4 : 8}
-            margin='16px auto'
-            background='dark1'
-        >
-            {tradeTableState === 'Expanded' && sortedPositions.length > 30 && (
-                <Pagination
-                    itemsPerPage={rangesPerPage}
-                    totalItems={sortedPositions.length}
-                    paginate={paginate}
-                    currentPage={currentPage}
-                />
-            )}
-        </FlexContainer>
-    );
-
-    const quoteTokenSymbol = tradeData.quoteToken?.symbol;
-    const baseTokenSymbol = tradeData.baseToken?.symbol;
+    const quoteTokenSymbol = quoteToken?.symbol;
+    const baseTokenSymbol = baseToken?.symbol;
 
     const walID = (
         <>
@@ -216,28 +197,6 @@ function Leaderboard() {
             sortable: false,
         },
     ];
-    const headerColumnsDisplay = (
-        <RangeRowStyled size={tableView} leaderboard header>
-            {headerColumns.map((header, idx) => (
-                <RangeHeader
-                    key={idx}
-                    sortBy={sortBy}
-                    setSortBy={setSortBy}
-                    reverseSort={reverseSort}
-                    setReverseSort={setReverseSort}
-                    header={header}
-                />
-            ))}
-        </RangeRowStyled>
-    );
-
-    const { ensAddressMapping, addData } = useENSAddresses();
-
-    useEffect(() => {
-        if (usePaginateDataOrNull.length > 0) {
-            addData(usePaginateDataOrNull);
-        }
-    }, [usePaginateDataOrNull]);
 
     const rowItemContent = usePaginateDataOrNull?.map((position, idx) => (
         <RangesRow
@@ -251,15 +210,44 @@ function Leaderboard() {
             isAccountView={false}
             isLeaderboard={true}
             tableView={tableView}
-            fetchedEnsAddress={ensAddressMapping.get(position.user)}
         />
     ));
 
+    // TODO: we can probably severely reduce the number of wrappers in this JSX
+
     return (
         <FlexContainer flexDirection='column' fullHeight>
-            <div>{headerColumnsDisplay}</div>
+            <RangeRowStyled size={tableView} leaderboard header>
+                {headerColumns.map((header, idx) => (
+                    <RangeHeader
+                        key={idx}
+                        sortBy={sortBy}
+                        setSortBy={setSortBy}
+                        reverseSort={reverseSort}
+                        setReverseSort={setReverseSort}
+                        header={header}
+                    />
+                ))}
+            </RangeRowStyled>
             <div style={{ flex: 1, overflow: 'auto' }}>{rowItemContent}</div>
-            <div>{footerDisplay}</div>
+            <FlexContainer
+                as='footer'
+                alignItems='center'
+                justifyContent='center'
+                gap={isSmallScreen ? 4 : 8}
+                margin='0 auto'
+                background='dark1'
+            >
+                {tradeTableState === 'Expanded' &&
+                    sortedPositions.length > 30 && (
+                        <Pagination
+                            itemsPerPage={rangesPerPage}
+                            totalItems={sortedPositions.length}
+                            paginate={paginate}
+                            currentPage={currentPage}
+                        />
+                    )}
+            </FlexContainer>
         </FlexContainer>
     );
 }

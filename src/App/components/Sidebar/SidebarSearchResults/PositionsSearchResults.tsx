@@ -1,20 +1,22 @@
-import { PositionIF } from '../../../../utils/interfaces/exports';
+import { PositionIF } from '../../../../ambient-utils/types';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useContext } from 'react';
 import {
     useLinkGen,
     linkGenMethodsIF,
     poolParamsIF,
 } from '../../../../utils/hooks/useLinkGen';
-import { getFormattedNumber } from '../../../functions/getFormattedNumber';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import {
+    getFormattedNumber,
+    getUnicodeCharacter,
+} from '../../../../ambient-utils/dataLayer';
 import { FlexContainer, GridContainer, Text } from '../../../../styled/Common';
 import {
     Results,
     ResultsContainer,
 } from '../../../../styled/Components/Sidebar';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     searchedPositions: PositionIF[];
@@ -26,7 +28,7 @@ interface PositionLiPropsIF {
 
 function PositionLI(props: PositionLiPropsIF) {
     const { position, handleClick } = props;
-    const { isDenomBase } = useAppSelector((state) => state.tradeData);
+    const { isDenomBase } = useContext(TradeDataContext);
 
     const getRangeDisplay = (position: PositionIF, isDenomBase: boolean) => {
         const baseTokenCharacter = position?.baseSymbol
@@ -115,7 +117,7 @@ export default function PositionsSearchResults(props: propsIF) {
             gap={8}
         >
             <Text fontWeight='500' fontSize='body' color='accent5'>
-                My Range Positions
+                My Liquidity Positions
             </Text>
             {searchedPositions.length ? (
                 <FlexContainer flexDirection='column' fullWidth>

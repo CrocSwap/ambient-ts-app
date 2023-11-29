@@ -3,7 +3,8 @@ import RangeStatus from '../../Global/RangeStatus/RangeStatus';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import styles from './RangeActionTokenHeader.module.css';
 import { TokenContext } from '../../../contexts/TokenContext';
-import { TokenIF } from '../../../utils/interfaces/exports';
+import { TokenIF } from '../../../ambient-utils/types';
+import { uriToHttp } from '../../../ambient-utils/dataLayer';
 
 interface propsIF {
     isPositionInRange: boolean;
@@ -71,13 +72,13 @@ export default function RangeActionTokenHeader(props: propsIF) {
             <div className={styles.token_info}>
                 <TokenIcon
                     token={baseToken}
-                    src={baseTokenLogoURI}
+                    src={uriToHttp(baseTokenLogoURI)}
                     alt={baseTokenSymbol}
                     size='2xl'
                 />
                 <TokenIcon
                     token={quoteToken}
-                    src={quoteTokenLogoURI}
+                    src={uriToHttp(quoteTokenLogoURI)}
                     alt={quoteTokenSymbol}
                     size='2xl'
                 />

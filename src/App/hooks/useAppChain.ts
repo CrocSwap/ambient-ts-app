@@ -1,21 +1,16 @@
-import {
-    // Dispatch,
-    // SetStateAction,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { getDefaultChainId, validateChainId } from '../../utils/data/chains';
 import { useNetwork, useSwitchNetwork } from 'wagmi';
-import { setChainId } from '../../utils/state/tradeDataSlice';
-import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
-import chainNumToString from '../functions/chainNumToString';
+import {
+    getDefaultChainId,
+    validateChainId,
+    chainNumToString,
+} from '../../ambient-utils/dataLayer';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
-import { NetworkIF } from '../../utils/interfaces/exports';
-import { supportedNetworks } from '../../utils/networks/index';
+import { NetworkIF } from '../../ambient-utils/types';
+import { supportedNetworks } from '../../ambient-utils/constants';
+import { useSearchParams } from 'react-router-dom';
 
 export const useAppChain = (): {
     chainData: ChainSpec;
@@ -30,8 +25,9 @@ export const useAppChain = (): {
     // hook to generate navigation actions with pre-loaded path
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
     const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
-
-    const dispatch = useAppDispatch();
+    const [searchParams] = useSearchParams();
+    const chainParam = searchParams.get('chain');
+    const networkParam = searchParams.get('network');
 
     const CHAIN_LS_KEY = 'CHAIN_ID';
 
@@ -122,7 +118,11 @@ export const useAppChain = (): {
                             }
                             linkGenCurrent.navigate(templateURL);
                         } else {
-                            if (pathname.includes('token')) {
+                            if (
+                                pathname.includes('token') ||
+                                chainParam ||
+                                networkParam
+                            ) {
                                 // navigate to index page only if token pair in URL
                                 linkGenIndex.navigate();
                             }
@@ -145,7 +145,9 @@ export const useAppChain = (): {
     // metadata about the active network in the app
     const [activeNetwork, setActiveNetwork] = useState<NetworkIF>(
         findNetworkData(
-            chainInURLValidated ?? localStorage.getItem(CHAIN_LS_KEY) ?? '0x1',
+            chainInURLValidated ??
+                localStorage.getItem(CHAIN_LS_KEY) ??
+                defaultChain,
         ),
     );
 
@@ -185,8 +187,6 @@ export const useAppChain = (): {
     const chainData = useMemo<ChainSpec>(() => {
         const output: ChainSpec =
             lookupChain(activeNetwork.chainId) ?? lookupChain(defaultChain);
-        // sync data in RTK for the new chain
-        dispatch(setChainId(output.chainId));
         // return output varibale (chain data)
         return output;
     }, [activeNetwork.chainId]);

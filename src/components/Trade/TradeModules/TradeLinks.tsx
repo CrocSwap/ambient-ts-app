@@ -8,7 +8,7 @@ import {
     poolParamsIF,
     baseURLs,
 } from '../../../utils/hooks/useLinkGen';
-import { TokenIF } from '../../../utils/interfaces/exports';
+import { TokenIF } from '../../../ambient-utils/types';
 
 interface propsIF {
     chainId: string;
@@ -31,10 +31,16 @@ export default function TradeLinks(props: propsIF) {
         tokenA: tokenA.address,
         tokenB: tokenB.address,
     };
-    const limitParams: limitParamsIF = {
-        ...marketParams,
-        limitTick: limitTick ?? 0,
-    };
+    // this is constructed as such to handle a valid `0` value
+    const limitParams: limitParamsIF =
+        limitTick === undefined
+            ? {
+                  ...marketParams,
+              }
+            : {
+                  ...marketParams,
+                  limitTick: limitTick,
+              };
     const poolParams: poolParamsIF = {
         ...marketParams,
     };
@@ -78,6 +84,7 @@ export default function TradeLinks(props: propsIF) {
             {routes.map((route: routeIF) => (
                 <TradeModuleLink
                     key={JSON.stringify(route)}
+                    id={`link_to_${route.name.toLowerCase()}_module`}
                     to={route.path}
                     isActive={location.pathname.includes(route.baseURL)}
                 >

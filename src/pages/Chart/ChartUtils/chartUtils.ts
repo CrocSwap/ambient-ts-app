@@ -2,7 +2,8 @@
 import { DetailedHTMLProps, HTMLAttributes, MutableRefObject } from 'react';
 import * as d3 from 'd3';
 import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
-import { CandleData } from '../../../App/functions/fetchCandleSeries';
+import { CandleDataIF } from '../../../ambient-utils/types';
+import { TradeDataContextIF } from '../../../contexts/TradeDataContext';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -24,9 +25,35 @@ declare global {
     }
 }
 
+export const CHART_ANNOTATIONS_LS_KEY = 'chart_annotations';
 export const defaultCandleBandwith = 5;
 
-export interface CandleDataChart extends CandleData {
+export type chartAnnotationData = {
+    isOpenAnnotationPanel: boolean;
+    drawnShapes: drawDataHistory[];
+};
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type lineData = { x: number; y: number; denomInBase: boolean };
+export type drawDataHistory = {
+    data: lineData[];
+    type: string;
+    time: number;
+    pool: TradeDataContextIF;
+    color: string;
+    lineWidth: number;
+    style: number[];
+};
+export type bandLineData = {
+    fromValue: number;
+    toValue: number;
+    denomInBase: boolean;
+};
+export type selectedDrawnData = {
+    data: drawDataHistory;
+    selectedCircle: lineData | undefined;
+};
+
+export interface CandleDataChart extends CandleDataIF {
     isFakeData: boolean;
 }
 export type liquidityChartData = {

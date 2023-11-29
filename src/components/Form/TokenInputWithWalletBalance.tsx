@@ -1,9 +1,16 @@
-import { memo } from 'react';
-import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
+import {
+    getFormattedNumber,
+    translateTestnetToken,
+} from '../../ambient-utils/dataLayer';
+import { TokenIF } from '../../ambient-utils/types';
+import { memo, useContext, useEffect, useState } from 'react';
 import { formatTokenInput } from '../../utils/numbers';
 import TokenInputQuantity from './TokenInputQuantity';
-import { WalletBallanceSubinfo } from './WalletBalanceSubinfo';
+import { RefreshButton } from '../../styled/Components/TradeModules';
+import { FiRefreshCw } from 'react-icons/fi';
+import WalletBalanceSubinfo from './WalletBalanceSubinfo';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 interface propsIF {
     tokenAorB: 'A' | 'B';
@@ -25,6 +32,7 @@ interface propsIF {
     tokenDexBalance?: string;
     isWithdraw?: boolean;
     disabledContent?: React.ReactNode;
+    amountToReduceEth?: number;
 }
 
 function TokenInputWithWalletBalance(props: propsIF) {
@@ -48,9 +56,54 @@ function TokenInputWithWalletBalance(props: propsIF) {
         handleToggleDexSelection,
         parseTokenInput,
         handleRefresh,
+        amountToReduceEth,
     } = props;
 
-    const ETH_BUFFER = 0.025;
+    const {
+        chainData: { chainId },
+        crocEnv,
+    } = useContext(CrocEnvContext);
+
+    const amountToReduceEthMainnet = 0.01; // .01 ETH
+    const amountToReduceEthScroll = 0.0007; // .0007 ETH
+
+    const ethOffset = amountToReduceEth
+        ? amountToReduceEth
+        : chainId === '0x82750' || chainId === '0x8274f'
+        ? amountToReduceEthScroll
+        : amountToReduceEthMainnet;
+
+    const [usdValueForDom, setUsdValueForDom] = useState<string | undefined>();
+
+    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+
+    const pricedToken = translateTestnetToken(token.address);
+
+    useEffect(() => {
+        if (!crocEnv) return;
+        Promise.resolve(
+            cachedFetchTokenPrice(pricedToken, chainId, crocEnv),
+        ).then((price) => {
+            if (price?.usdPrice !== undefined) {
+                const usdValueNum: number | undefined =
+                    price !== undefined && tokenInput !== ''
+                        ? price.usdPrice * parseFloat(tokenInput)
+                        : undefined;
+                const usdValueTruncated =
+                    usdValueNum !== undefined
+                        ? getFormattedNumber({
+                              value: usdValueNum,
+                              isUSD: true,
+                          })
+                        : undefined;
+                usdValueTruncated !== undefined
+                    ? setUsdValueForDom(usdValueTruncated)
+                    : setUsdValueForDom('');
+            } else {
+                setUsdValueForDom(undefined);
+            }
+        });
+    }, [crocEnv, chainId, pricedToken, tokenInput]);
 
     const toDecimal = (val: string) =>
         isTokenEth ? parseFloat(val).toFixed(18) : parseFloat(val).toString();
@@ -70,7 +123,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
     });
 
     const subtractBuffer = (balance: string) =>
-        isTokenEth ? (parseFloat(balance) - ETH_BUFFER).toFixed(18) : balance;
+        isTokenEth ? (parseFloat(balance) - ethOffset).toFixed(18) : balance;
 
     const balanceWithBuffer = balance ? subtractBuffer(balance) : '...';
 
@@ -103,39 +156,55 @@ function TokenInputWithWalletBalance(props: propsIF) {
         handleToggleDexSelection();
     };
 
-    const walletContent = showWallet && (
-        <WalletBallanceSubinfo
-            isWithdraw={isWithdraw ?? tokenAorB === 'A'}
-            balance={balanceToDisplay}
-            availableBalance={parseFloat(balanceWithBuffer)}
-            useExchangeBalance={
-                isDexSelected &&
-                !!tokenDexBalance &&
-                parseFloat(tokenDexBalance) > 0
-            }
-            isDexSelected={isDexSelected}
-            onToggleDex={handleToggleDex}
-            onMaxButtonClick={
-                !hideWalletMaxButton ? handleMaxButtonClick : undefined
-            }
-            onRefresh={handleRefresh}
-        />
+    const walletContent = (
+        <>
+            <WalletBalanceSubinfo
+                usdValueForDom={
+                    isLoading || !usdValueForDom ? '' : usdValueForDom
+                }
+                showWallet={showWallet}
+                isWithdraw={isWithdraw ?? tokenAorB === 'A'}
+                balance={balanceToDisplay}
+                availableBalance={parseFloat(balanceWithBuffer)}
+                useExchangeBalance={
+                    isDexSelected &&
+                    !!tokenDexBalance &&
+                    parseFloat(tokenDexBalance) > 0
+                }
+                isDexSelected={isDexSelected}
+                onToggleDex={handleToggleDex}
+                onMaxButtonClick={
+                    !hideWalletMaxButton ? handleMaxButtonClick : undefined
+                }
+                onRefresh={handleRefresh}
+            />
+        </>
     );
 
     return (
-        <TokenInputQuantity
-            fieldId={fieldId}
-            token={token}
-            tokenAorB={tokenAorB}
-            value={tokenInput}
-            handleTokenInputEvent={handleTokenInputEvent}
-            reverseTokens={reverseTokens}
-            isLoading={isLoading}
-            includeWallet={walletContent}
-            showPulseAnimation={showPulseAnimation}
-            parseInput={parseTokenInput}
-            disabledContent={disabledContent}
-        />
+        <>
+            <TokenInputQuantity
+                fieldId={fieldId}
+                token={token}
+                tokenAorB={tokenAorB}
+                value={tokenInput}
+                handleTokenInputEvent={handleTokenInputEvent}
+                reverseTokens={reverseTokens}
+                isLoading={isLoading}
+                includeWallet={walletContent}
+                showPulseAnimation={showPulseAnimation}
+                parseInput={parseTokenInput}
+                disabledContent={disabledContent}
+            />
+            {handleRefresh && (
+                <RefreshButton
+                    onClick={handleRefresh}
+                    aria-label='Refresh data'
+                >
+                    <FiRefreshCw size={18} />
+                </RefreshButton>
+            )}
+        </>
     );
 }
 

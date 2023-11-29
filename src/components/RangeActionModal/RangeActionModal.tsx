@@ -4,7 +4,7 @@ import RangeActionTokenHeader from './RangeActionTokenHeader/RangeActionTokenHea
 import RemoveRangeInfo from './RangeActionInfo/RemoveRangeInfo';
 import { useContext, useEffect, useMemo, useState } from 'react';
 
-import { PositionIF } from '../../utils/interfaces/exports';
+import { PositionIF, PositionServerIF } from '../../ambient-utils/types';
 import { BigNumber } from 'ethers';
 import {
     ambientPosSlot,
@@ -29,16 +29,17 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
-import { isStablePair } from '../../utils/data/stablePairs';
-import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
+import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
-import { getPositionData } from '../../App/functions/getPositionData';
+import {
+    getPositionData,
+    getFormattedNumber,
+    isStablePair,
+} from '../../ambient-utils/dataLayer';
 import { TokenContext } from '../../contexts/TokenContext';
-import { PositionServerIF } from '../../utils/interfaces/PositionIF';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
-import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import HarvestPositionInfo from './RangeActionInfo/HarvestPositionInfo';
 import ModalHeader from '../Global/ModalHeader/ModalHeader';
 import { RangeModalActionType } from '../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
@@ -83,6 +84,7 @@ export default function RangeActionModal(props: propsIF) {
     } = useContext(CachedDataContext);
     const {
         crocEnv,
+        activeNetwork,
         provider,
         chainData: { chainId, poolIndex },
         ethMainnetUsdPrice,
@@ -106,8 +108,9 @@ export default function RangeActionModal(props: propsIF) {
         (feeLiqBaseDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0) >
         0;
 
-    const positionStatsCacheEndpoint =
-        GRAPHCACHE_SMALL_URL + '/position_stats?';
+    const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/position_stats?'
+        : activeNetwork.graphCacheUrl + '/position_stats?';
 
     const dispatch = useAppDispatch();
 
@@ -199,6 +202,8 @@ export default function RangeActionModal(props: propsIF) {
                     .then((json) => json?.data)
                     .then(async (data: PositionServerIF) => {
                         if (data && crocEnv && provider) {
+                            // temporarily skip ENS fetch
+                            const skipENSFetch = true;
                             const position = await getPositionData(
                                 data,
                                 tokens.tokenUniv,
@@ -210,6 +215,7 @@ export default function RangeActionModal(props: propsIF) {
                                 cachedQuerySpotPrice,
                                 cachedTokenDetails,
                                 cachedEnsResolve,
+                                skipENSFetch,
                             );
                             setPosLiqBaseDecimalCorrected(
                                 position.positionLiqBaseDecimalCorrected,
@@ -310,11 +316,13 @@ export default function RangeActionModal(props: propsIF) {
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newTransactionHash, setNewTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
+    const [txErrorMessage, setTxErrorMessage] = useState('');
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setNewTransactionHash('');
         setTxErrorCode('');
+        setTxErrorMessage('');
     };
 
     useEffect(() => {
@@ -343,7 +351,6 @@ export default function RangeActionModal(props: propsIF) {
     const isPairStable: boolean = isStablePair(
         baseTokenAddress,
         quoteTokenAddress,
-        chainId,
     );
 
     const persistedSlippage: number = isPairStable
@@ -385,6 +392,7 @@ export default function RangeActionModal(props: propsIF) {
                     console.error({ error });
                     dispatch(removePositionPendingUpdate(posHash as string));
                     setTxErrorCode(error?.code);
+                    setTxErrorMessage(error?.data?.message);
                 }
             } else {
                 try {
@@ -405,6 +413,7 @@ export default function RangeActionModal(props: propsIF) {
                     IS_LOCAL_ENV && console.debug({ error });
                     dispatch(removePositionPendingUpdate(posHash as string));
                     setTxErrorCode(error?.code);
+                    setTxErrorMessage(error?.data?.message);
                 }
             }
         } else if (position.positionType === 'concentrated') {
@@ -426,6 +435,7 @@ export default function RangeActionModal(props: propsIF) {
                 }
                 console.error({ error });
                 setTxErrorCode(error?.code);
+                setTxErrorMessage(error?.data?.message);
                 dispatch(removePositionPendingUpdate(posHash as string));
             }
         } else {
@@ -541,6 +551,7 @@ export default function RangeActionModal(props: propsIF) {
                 console.error({ error });
                 dispatch(removePositionPendingUpdate(posHash as string));
                 setTxErrorCode(error?.code);
+                setTxErrorMessage(error?.data?.message);
                 dispatch(removePositionPendingUpdate(posHash as string));
                 if (
                     error.reason === 'sending a transaction requires a signer'
@@ -622,6 +633,7 @@ export default function RangeActionModal(props: propsIF) {
         <div className={styles.button_container}>
             {showSettings ? (
                 <Button
+                    idForDOM='update_settings_button_in_range_modal'
                     title={
                         currentSlippage > 0
                             ? 'Confirm'
@@ -644,6 +656,7 @@ export default function RangeActionModal(props: propsIF) {
                     }
                     newTransactionHash={newTransactionHash}
                     txErrorCode={txErrorCode}
+                    txErrorMessage={txErrorMessage}
                     resetConfirmation={resetConfirmation}
                     sendTransaction={type === 'Remove' ? removeFn : harvestFn}
                     transactionPendingDisplayString={
@@ -653,6 +666,7 @@ export default function RangeActionModal(props: propsIF) {
                 />
             ) : (
                 <Button
+                    idForDOM='harvest_remove_fees_modal_button'
                     title={
                         !(
                             (type === 'Remove'
@@ -716,6 +730,8 @@ export default function RangeActionModal(props: propsIF) {
                 <div className={styles.info_container}>
                     {type === 'Remove' && (
                         <RemoveRangeInfo
+                            baseTokenAddress={props.baseTokenAddress}
+                            quoteTokenAddress={props.quoteTokenAddress}
                             baseTokenSymbol={props.baseTokenSymbol}
                             quoteTokenSymbol={props.quoteTokenSymbol}
                             baseTokenLogoURI={props.baseTokenLogoURI}
@@ -740,6 +756,8 @@ export default function RangeActionModal(props: propsIF) {
                     )}
                     {type === 'Harvest' && (
                         <HarvestPositionInfo
+                            baseTokenAddress={props.baseTokenAddress}
+                            quoteTokenAddress={props.quoteTokenAddress}
                             baseTokenSymbol={props.baseTokenSymbol}
                             quoteTokenSymbol={props.quoteTokenSymbol}
                             baseTokenLogoURI={props.baseTokenLogoURI}
@@ -754,14 +772,16 @@ export default function RangeActionModal(props: propsIF) {
                             <span>Slippage Tolerange</span>
                             <span>{currentSlippage}%</span>
                         </div>
-                        <div>
-                            <span>Network Fee</span>
-                            <span>
-                                {chainId === '0x1'
-                                    ? '~' + removalGasPriceinDollars
-                                    : '...'}
-                            </span>
-                        </div>
+                        {chainId === '0x1' && (
+                            <div>
+                                <span>Network Fee</span>
+                                <span>
+                                    {removalGasPriceinDollars
+                                        ? '~' + removalGasPriceinDollars
+                                        : '...'}
+                                </span>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

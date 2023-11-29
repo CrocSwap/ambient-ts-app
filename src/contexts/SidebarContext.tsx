@@ -5,6 +5,7 @@ import {
     useEffect,
     useMemo,
     useContext,
+    useState,
 } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
@@ -12,9 +13,8 @@ import {
     useRecentPools,
 } from '../App/hooks/useRecentPools';
 import { sidebarMethodsIF, useSidebar } from '../App/hooks/useSidebar';
-import { IS_LOCAL_ENV } from '../constants';
-import { diffHashSig } from '../utils/functions/diffHashSig';
-import isJsonString from '../utils/functions/isJsonString';
+import { IS_LOCAL_ENV } from '../ambient-utils/constants';
+import { diffHashSig, isJsonString } from '../ambient-utils/dataLayer';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { AppStateContext } from './AppStateContext';
 import { CrocEnvContext } from './CrocEnvContext';
@@ -22,6 +22,8 @@ import { CrocEnvContext } from './CrocEnvContext';
 interface SidebarStateIF {
     recentPools: recentPoolsMethodsIF;
     sidebar: sidebarMethodsIF;
+    hideOnMobile: boolean;
+    toggleMobileModeVisibility: () => void;
 }
 
 export const SidebarContext = createContext<SidebarStateIF>(
@@ -49,15 +51,27 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
     const { pathname: currentLocation } = useLocation();
 
     const sidebar = useSidebar(location.pathname);
+
     // hook to manage recent pool data in-session
     const recentPools: recentPoolsMethodsIF = useRecentPools(chainData.chainId);
+    const smallScreen = useMediaQuery('(max-width: 500px)');
+
+    const [hideOnMobile, setHideOnMobile] = useState<boolean>(true);
+
+    useEffect(() => {
+        setHideOnMobile(smallScreen);
+    }, [smallScreen]);
+    const toggleMobileModeVisibility = () => setHideOnMobile((prev) => !prev);
 
     const sidebarState = {
         sidebar,
         recentPools,
+        hideOnMobile,
+        toggleMobileModeVisibility,
     };
 
     const showSidebarByDefault = useMediaQuery('(min-width: 1850px)');
+
     function toggleSidebarBasedOnRoute() {
         if (sidebar.getStoredStatus() === 'open') {
             sidebar.open(true);
@@ -67,7 +81,7 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
             currentLocation.includes('/account')
         ) {
             sidebar.close();
-        } else if (showSidebarByDefault) {
+        } else if (showSidebarByDefault || smallScreen) {
             sidebar.open();
         } else {
             sidebar.close();

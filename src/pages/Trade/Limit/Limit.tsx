@@ -6,7 +6,7 @@ import {
     priceHalfBelowTick,
 } from '@crocswap-libs/sdk';
 import { useContext, useState, useEffect } from 'react';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import { useTradeData } from '../../../App/hooks/useTradeData';
 import Button from '../../../components/Form/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
@@ -17,7 +17,7 @@ import LimitTokenInput from '../../../components/Trade/Limit/LimitTokenInput/Lim
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../ambient-utils/constants';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -44,6 +44,8 @@ import {
 } from '../../../utils/TransactionError';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
 import { useApprove } from '../../../App/functions/approve';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 export default function Limit() {
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
@@ -72,18 +74,18 @@ export default function Limit() {
 
     const dispatch = useAppDispatch();
     const [isOpen, openModal, closeModal] = useModal();
+    const { limitTick, poolPriceNonDisplay, primaryQuantity } = useAppSelector(
+        (state) => state.tradeData,
+    );
     const {
         baseToken,
         quoteToken,
         tokenA,
         tokenB,
         isTokenAPrimary,
-        limitTick,
-        poolPriceNonDisplay,
-        liquidityFee,
         isDenomBase,
-        primaryQuantity,
-    } = useAppSelector((state) => state.tradeData);
+    } = useContext(TradeDataContext);
+    const { liquidityFee } = useContext(GraphDataContext);
     const { urlParamMap, updateURL } = useTradeData();
 
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
@@ -104,6 +106,7 @@ export default function Limit() {
     const [newLimitOrderTransactionHash, setNewLimitOrderTransactionHash] =
         useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
+    const [txErrorMessage, setTxErrorMessage] = useState('');
     const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
     const [endDisplayPrice, setEndDisplayPrice] = useState<number>(0);
     const [startDisplayPrice, setStartDisplayPrice] = useState<number>(0);
@@ -167,6 +170,8 @@ export default function Limit() {
                     chainId,
                     lastBlockNumber,
                 );
+                // if the spot price is 0, the pool is uninitialized and we can't calculate a limit price
+                if (spotPrice === 0) return;
 
                 const initialLimitRateNonDisplay =
                     spotPrice * (isSellTokenBase ? 0.985 : 1.015);
@@ -241,7 +246,7 @@ export default function Limit() {
                         });
                     }
                 }
-            } else if (limitTick) {
+            } else if (limitTick !== undefined) {
                 if (!pool) return;
 
                 const tickPrice = tickToPrice(limitTick);
@@ -323,10 +328,22 @@ export default function Limit() {
         !!poolPriceNonDisplay,
     ]);
 
+    // patch limit tick into URL if it is missing, this value isn't available
+    // ... on firstload so we need to update the URL once the SDK returns it
+    useEffect(() => {
+        // key for limit tick in the URL param map
+        const LIMIT_TICK_KEY = 'limitTick';
+        const urlHasLimitTick: boolean = urlParamMap.has(LIMIT_TICK_KEY);
+        // if we have a limit tick and it's not present in the URL, trigger an update
+        if (!urlHasLimitTick && limitTick !== undefined) {
+            updateURL({ update: [[LIMIT_TICK_KEY, limitTick]] });
+        }
+    }, [limitTick]);
+
     const updateOrderValidityStatus = async () => {
         try {
             if (!crocEnv) return;
-            if (!limitTick) return;
+            if (limitTick === undefined) return;
             if (tokenAInputQty === '' && tokenBInputQty === '') return;
 
             const tknA: string = urlParamMap.get('tokenA') as string;
@@ -370,6 +387,8 @@ export default function Limit() {
         setNewLimitOrderTransactionHash('');
     }, [baseToken.address + quoteToken.address]);
 
+    const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
+
     useEffect(() => {
         handleLimitButtonMessage(parseFloat(tokenAInputQty));
     }, [
@@ -379,13 +398,14 @@ export default function Limit() {
         poolPriceNonDisplay,
         limitTick,
         isSellTokenBase,
+        isSellTokenNativeToken,
+        tokenAQtyCoveredByWalletBalance,
+        tokenABalance,
     ]);
 
     useEffect(() => {
         setIsWithdrawFromDexChecked(parseFloat(tokenADexBalance) > 0);
     }, [tokenADexBalance]);
-
-    const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
@@ -396,6 +416,12 @@ export default function Limit() {
                     ? 120000
                     : 150000
                 : 150000;
+
+            const costOfMainnetLimitInETH =
+                gasPriceInGwei * averageLimitCostInGasDrops * 1e-9;
+
+            setAmountToReduceEthMainnet(1.75 * costOfMainnetLimitInETH);
+
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 averageLimitCostInGasDrops *
@@ -420,6 +446,7 @@ export default function Limit() {
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setTxErrorCode('');
+        setTxErrorMessage('');
         setNewLimitOrderTransactionHash('');
     };
 
@@ -496,7 +523,8 @@ export default function Limit() {
                 location.reload();
             }
             console.error({ error });
-            setTxErrorCode(error.code);
+            setTxErrorCode(error?.code);
+            setTxErrorMessage(error?.data?.message);
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
@@ -534,6 +562,16 @@ export default function Limit() {
             dispatch(removePendingTx(receipt.transactionHash));
         }
     };
+
+    const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
+        useState<number>(0.01);
+
+    const amountToReduceEthScroll = 0.0007; // .0007 ETH
+
+    const amountToReduceEth =
+        chainId === '0x82750' || chainId === '0x8274f'
+            ? amountToReduceEthScroll
+            : amountToReduceEthMainnet;
 
     const handleLimitButtonMessage = (tokenAAmount: number) => {
         if (!isPoolInitialized) {
@@ -573,6 +611,15 @@ export default function Limit() {
                     setLimitAllowed(false);
                     setLimitButtonErrorMessage(
                         `${tokenA.symbol} Amount Exceeds Wallet Balance`,
+                    );
+                } else if (
+                    isSellTokenNativeToken &&
+                    tokenAQtyCoveredByWalletBalance + amountToReduceEth >
+                        parseFloat(tokenABalance)
+                ) {
+                    setLimitAllowed(false);
+                    setLimitButtonErrorMessage(
+                        'Wallet Balance Insufficient to Cover Gas',
                     );
                 } else {
                     setLimitAllowed(true);
@@ -633,6 +680,7 @@ export default function Limit() {
                     limitTickDisplayPrice={middleDisplayPrice}
                     handleLimitButtonMessage={handleLimitButtonMessage}
                     toggleDexSelection={toggleDexSelection}
+                    amountToReduceEth={amountToReduceEth}
                 />
             }
             inputOptions={
@@ -643,7 +691,6 @@ export default function Limit() {
                     setPreviousDisplayPrice={setPreviousDisplayPrice}
                     isSellTokenBase={isSellTokenBase}
                     setPriceInputFieldBlurred={setPriceInputFieldBlurred}
-                    fieldId='limit-rate'
                     updateURL={updateURL}
                 />
             }
@@ -672,6 +719,7 @@ export default function Limit() {
                             newLimitOrderTransactionHash
                         }
                         txErrorCode={txErrorCode}
+                        txErrorMessage={txErrorMessage}
                         showConfirmation={showConfirmation}
                         resetConfirmation={resetConfirmation}
                         startDisplayPrice={startDisplayPrice}
@@ -684,6 +732,7 @@ export default function Limit() {
             }
             button={
                 <Button
+                    idForDOM='confirm_limit_order_button'
                     title={
                         areBothAckd
                             ? limitAllowed
@@ -715,6 +764,7 @@ export default function Limit() {
                         type='Limit'
                         newTransactionHash={newLimitOrderTransactionHash}
                         txErrorCode={txErrorCode}
+                        txErrorMessage={txErrorMessage}
                         resetConfirmation={resetConfirmation}
                         sendTransaction={sendLimitOrder}
                         transactionPendingDisplayString={`Submitting Limit Order to Swap ${tokenAInputQty} ${tokenA.symbol} for ${tokenBInputQty} ${tokenB.symbol}`}
@@ -727,6 +777,7 @@ export default function Limit() {
                 isTokenAWalletBalanceSufficient &&
                 parseFloat(tokenAInputQty) > 0 ? (
                     <Button
+                        idForDOM='approve_limit_order_button'
                         title={
                             !isApprovalPending
                                 ? `Approve ${tokenA.symbol}`

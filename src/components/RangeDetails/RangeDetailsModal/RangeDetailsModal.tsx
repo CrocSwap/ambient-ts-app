@@ -1,25 +1,26 @@
 import PriceInfo from '.././PriceInfo/PriceInfo';
 import styles from './RangeDetailsModal.module.css';
 import { useContext, useEffect, useRef, useState } from 'react';
-import printDomToImage from '../../../utils/functions/printDomToImage';
-import { PositionIF } from '../../../utils/interfaces/exports';
+import { PositionIF, PositionServerIF } from '../../../ambient-utils/types';
 import RangeDetailsHeader from '.././RangeDetailsHeader/RangeDetailsHeader';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import RangeDetailsSimplify from '.././RangeDetailsSimplify/RangeDetailsSimplify';
 import TransactionDetailsGraph from '../../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
 import { useProcessRange } from '../../../utils/hooks/useProcessRange';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { GRAPHCACHE_SMALL_URL } from '../../../constants';
+import { GCGO_OVERRIDE_URL } from '../../../ambient-utils/constants';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
-import { getPositionData } from '../../../App/functions/getPositionData';
+import {
+    getPositionData,
+    getFormattedNumber,
+    printDomToImage,
+} from '../../../ambient-utils/dataLayer';
 import { TokenContext } from '../../../contexts/TokenContext';
 import modalBackground from '../../../assets/images/backgrounds/background.png';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import Modal from '../../Global/Modal/Modal';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 interface propsIF {
     position: PositionIF;
@@ -66,9 +67,8 @@ export default function RangeDetailsModal(props: propsIF) {
         maxRangeDenomByMoneyness,
         onClose,
     } = props;
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
+
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
@@ -121,7 +121,7 @@ export default function RangeDetailsModal(props: propsIF) {
         number | undefined
     >(positionApy);
 
-    const { crocEnv } = useContext(CrocEnvContext);
+    const { crocEnv, activeNetwork } = useContext(CrocEnvContext);
 
     const { posHash } = useProcessRange(position, userAddress);
 
@@ -133,8 +133,9 @@ export default function RangeDetailsModal(props: propsIF) {
     }
 
     useEffect(() => {
-        const positionStatsCacheEndpoint =
-            GRAPHCACHE_SMALL_URL + '/position_stats?';
+        const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
+            ? GCGO_OVERRIDE_URL + '/position_stats?'
+            : activeNetwork.graphCacheUrl + '/position_stats?';
 
         if (position.positionType) {
             fetch(
@@ -160,7 +161,8 @@ export default function RangeDetailsModal(props: propsIF) {
                         setQuoteFeesDisplay(undefined);
                         return;
                     }
-
+                    // temporarily skip ENS fetch
+                    const skipENSFetch = true;
                     const positionPayload = json?.data as PositionServerIF;
                     const positionStats = await getPositionData(
                         positionPayload,
@@ -173,6 +175,7 @@ export default function RangeDetailsModal(props: propsIF) {
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
                         cachedEnsResolve,
+                        skipENSFetch,
                     );
                     const liqBaseNum =
                         positionStats.positionLiqBaseDecimalCorrected;

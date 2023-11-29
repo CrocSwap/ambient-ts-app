@@ -19,9 +19,9 @@ import TutorialOverlay from '../../../components/Global/TutorialOverlay/Tutorial
 import { tradeChartTutorialSteps } from '../../../utils/tutorial/TradeChart';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChartContext } from '../../../contexts/ChartContext';
-import { LS_KEY_SUBCHART_SETTINGS } from '../../../constants';
-import { getLocalStorageItem } from '../../../utils/functions/getLocalStorageItem';
-import { CandleData } from '../../../App/functions/fetchCandleSeries';
+import { LS_KEY_SUBCHART_SETTINGS } from '../../../ambient-utils/constants';
+import { getLocalStorageItem } from '../../../ambient-utils/dataLayer';
+import { CandleDataIF } from '../../../ambient-utils/types';
 import { TradeChartsHeader } from './TradeChartsHeader/TradeChartsHeader';
 import { updatesIF } from '../../../utils/hooks/useUrlParams';
 import { FlexContainer } from '../../../styled/Common';
@@ -32,7 +32,7 @@ import { TutorialButton } from '../../../styled/Components/Tutorial';
 interface propsIF {
     changeState: (
         isOpen: boolean | undefined,
-        candleData: CandleData | undefined,
+        candleData: CandleDataIF | undefined,
     ) => void;
     selectedDate: number | undefined;
     setSelectedDate: Dispatch<number | undefined>;
@@ -172,7 +172,7 @@ function TradeCharts(props: propsIF) {
     // END OF TIME FRAME CONTENT--------------------------------------------------------------
 
     // CURRENT DATA INFO----------------------------------------------------------------
-    const [currentData, setCurrentData] = useState<CandleData | undefined>();
+    const [currentData, setCurrentData] = useState<CandleDataIF | undefined>();
     const [currentVolumeData, setCurrentVolumeData] = useState<
         number | undefined
     >();
@@ -221,7 +221,7 @@ function TradeCharts(props: propsIF) {
                     reset={reset}
                 />
             </div>
-            <div style={{ width: '100%', height: '100%', zIndex: '2' }}>
+            <div style={{ width: '100%', height: '100%' }}>
                 <TradeCandleStickChart
                     changeState={props.changeState}
                     chartItemStates={chartItemStates}

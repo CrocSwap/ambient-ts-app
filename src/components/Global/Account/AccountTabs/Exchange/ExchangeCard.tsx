@@ -1,15 +1,16 @@
 import styles from './ExchangeCard.module.css';
-import { TokenIF } from '../../../../../utils/interfaces/exports';
+import { TokenIF } from '../../../../../ambient-utils/types';
 import { useContext, useEffect, useState } from 'react';
-import { ZERO_ADDRESS } from '../../../../../constants';
+import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
-import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
-import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
-import uriToHttp from '../../../../../utils/functions/uriToHttp';
+import { TokenPriceFn } from '../../../../../ambient-utils/api';
+import {
+    getFormattedNumber,
+    uriToHttp,
+} from '../../../../../ambient-utils/dataLayer';
 import TokenIcon from '../../../TokenIcon/TokenIcon';
-import { ethereumMainnet } from '../../../../../utils/networks/ethereumMainnet';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 
 interface propsIF {
@@ -25,6 +26,7 @@ export default function ExchangeCard(props: propsIF) {
 
     const {
         chainData: { chainId },
+        crocEnv,
     } = useContext(CrocEnvContext);
 
     const tokenFromMap = token?.address
@@ -47,27 +49,21 @@ export default function ExchangeCard(props: propsIF) {
 
     useEffect(() => {
         (async () => {
+            if (!crocEnv) return;
             try {
                 if (tokenFromMap?.symbol) {
-                    const mainnetAddress =
-                        ethereumMainnet.tokens[
-                            tokenFromMap?.symbol as keyof typeof ethereumMainnet.tokens
-                        ];
-                    if (mainnetAddress) {
-                        const price = await cachedFetchTokenPrice(
-                            mainnetAddress === ZERO_ADDRESS
-                                ? ethereumMainnet.tokens['WETH']
-                                : mainnetAddress,
-                            ethereumMainnet.chainId,
-                        );
-                        if (price) setTokenPrice(price);
-                    }
+                    const price = await cachedFetchTokenPrice(
+                        tokenFromMap.address,
+                        chainId,
+                        crocEnv,
+                    );
+                    if (price) setTokenPrice(price);
                 }
             } catch (err) {
                 console.error(err);
             }
         })();
-    }, [token?.address, chainId]);
+    }, [crocEnv, token?.address, chainId]);
 
     const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 
