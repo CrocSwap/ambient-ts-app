@@ -33,7 +33,7 @@ export default function Toggle(props: TogglePropsIF) {
 
     return (
         <ToggleComponent
-            data-isOn={isOn}
+            data-ison={isOn}
             aria-checked={isOn}
             onClick={handleToggle}
             id={`${id}switch`}

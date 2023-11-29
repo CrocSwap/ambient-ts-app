@@ -28,3 +28,8 @@ yarn-error.log*
 # Local Netlify folder
 .netlify
 .vscode/settings.json
+
+#test
+/e2e/helpers/UserData
+/e2e/helpers/metamask
+/e2e/helpers/metamask.zip

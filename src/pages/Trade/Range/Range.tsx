@@ -1,6 +1,5 @@
 import { capitalConcFactor, concDepositSkew } from '@crocswap-libs/sdk';
 import { memo, useContext, useEffect, useMemo, useState } from 'react';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import Button from '../../../components/Form/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
 
@@ -13,7 +12,7 @@ import RangeTokenInput from '../../../components/Trade/Range/RangeTokenInput/Ran
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
-import { IS_LOCAL_ENV } from '../../../constants';
+import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
@@ -21,21 +20,15 @@ import { RangeContext } from '../../../contexts/RangeContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
-import { isStablePair } from '../../../utils/data/stablePairs';
-import truncateDecimals from '../../../utils/data/truncateDecimals';
-import { diffHashSig } from '../../../utils/functions/diffHashSig';
-import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../utils/hooks/reduxToolkit';
-import { PositionIF } from '../../../utils/interfaces/PositionIF';
-import {
-    setAdvancedHighTick,
-    setAdvancedLowTick,
-    setIsLinesSwitched,
-    setIsTokenAPrimaryRange,
-} from '../../../utils/state/tradeDataSlice';
+    getFormattedNumber,
+    getUnicodeCharacter,
+    diffHashSig,
+    isStablePair,
+    truncateDecimals,
+} from '../../../ambient-utils/dataLayer';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { PositionIF } from '../../../ambient-utils/types';
 import { rangeTutorialSteps } from '../../../utils/tutorial/Range';
 import {
     getPinnedPriceValuesFromDisplayPrices,
@@ -47,6 +40,8 @@ import {
 import { useApprove } from '../../../App/functions/approve';
 import { useHandleRangeButtonMessage } from '../../../App/hooks/useHandleRangeButtonMessage';
 import { useRangeInputDisable } from './useRangeInputDisable';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 export const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 export const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
@@ -59,6 +54,16 @@ function Range() {
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { poolPriceDisplay, ambientApy, dailyVol } = useContext(PoolContext);
     const {
+        advancedHighTick,
+        advancedLowTick,
+        advancedMode,
+        setAdvancedHighTick,
+        setAdvancedLowTick,
+        isTokenAPrimaryRange,
+        primaryQuantityRange,
+        setIsTokenAPrimaryRange,
+        isLinesSwitched,
+
         simpleRangeWidth,
         setSimpleRangeWidth,
         minRangePrice: minPrice,
@@ -69,6 +74,7 @@ function Range() {
         chartTriggeredBy,
         setRescaleRangeBoundariesWithSlider,
         setCurrentRangeInAdd,
+        setIsLinesSwitched,
     } = useContext(RangeContext);
     const { tokens } = useContext(TokenContext);
     const {
@@ -85,29 +91,17 @@ function Range() {
     const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
         UserPreferenceContext,
     );
+    const { positionsByUser, liquidityFee } = useContext(GraphDataContext);
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 
-    const dispatch = useAppDispatch();
     const [isOpen, openModal, closeModal] = useModal();
 
     const {
-        tradeData: {
-            isDenomBase,
-            isTokenAPrimaryRange,
-            primaryQuantityRange,
-            isLinesSwitched,
-            tokenA,
-            tokenB,
-            poolPriceNonDisplay,
-            baseToken,
-            quoteToken,
-            advancedHighTick,
-            advancedLowTick,
-            advancedMode,
-            liquidityFee,
-        },
-        graphData,
+        tradeData: { poolPriceNonDisplay },
     } = useAppSelector((state) => state);
+
+    const { isDenomBase, tokenA, tokenB, baseToken, quoteToken } =
+        useContext(TradeDataContext);
 
     // RangeTokenInput state values
     const [tokenAInputQty, setTokenAInputQty] = useState<string>(
@@ -167,6 +161,7 @@ function Range() {
 
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
+    const [txErrorMessage, setTxErrorMessage] = useState('');
 
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
         string | undefined
@@ -230,7 +225,7 @@ function Range() {
         return value;
     }, [advancedHighTick, currentPoolPriceTick, shouldResetAdvancedHighTick]);
 
-    const userPositions = graphData.positionsByUser.positions.filter(
+    const userPositions = positionsByUser.positions.filter(
         (x) => x.chainId === chainId,
     );
     // Represents whether user is adding to an existing range position
@@ -497,8 +492,8 @@ function Range() {
                 pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
             );
 
-            dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
-            dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
+            setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick);
+            setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
 
             setMaxPrice(
                 parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
@@ -518,8 +513,8 @@ function Range() {
     ]);
 
     useEffect(() => {
-        if (isTokenAInputDisabled) dispatch(setIsTokenAPrimaryRange(false));
-        if (isTokenBInputDisabled) dispatch(setIsTokenAPrimaryRange(true));
+        if (isTokenAInputDisabled) setIsTokenAPrimaryRange(false);
+        if (isTokenBInputDisabled) setIsTokenAPrimaryRange(true);
     }, [isTokenAInputDisabled, isTokenBInputDisabled]);
 
     useEffect(() => {
@@ -554,8 +549,8 @@ function Range() {
                 pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
             );
 
-            dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
-            dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
+            setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick);
+            setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
 
             const highTickDiff =
                 pinnedDisplayPrices.pinnedHighTick - currentPoolPriceTick;
@@ -647,12 +642,8 @@ function Range() {
                   );
 
             !isDenomBase
-                ? dispatch(
-                      setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick),
-                  )
-                : dispatch(
-                      setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick),
-                  );
+                ? setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick)
+                : setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
 
             !isDenomBase
                 ? setMinPrice(
@@ -668,14 +659,8 @@ function Range() {
 
             if (isLinesSwitched) {
                 isDenomBase
-                    ? dispatch(
-                          setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick),
-                      )
-                    : dispatch(
-                          setAdvancedHighTick(
-                              pinnedDisplayPrices.pinnedHighTick,
-                          ),
-                      );
+                    ? setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick)
+                    : setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
             }
 
             const highGeometricDifferencePercentage = parseFloat(
@@ -714,7 +699,7 @@ function Range() {
 
             setRangeLowBoundFieldBlurred(false);
             setChartTriggeredBy('none');
-            dispatch(setIsLinesSwitched(false));
+            setIsLinesSwitched(false);
         }
     }, [rangeLowBoundFieldBlurred, chartTriggeredBy]);
 
@@ -757,22 +742,13 @@ function Range() {
                   );
 
             isDenomBase
-                ? dispatch(
-                      setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick),
-                  )
-                : dispatch(
-                      setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick),
-                  );
+                ? setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick)
+                : setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
+
             if (isLinesSwitched) {
                 !isDenomBase
-                    ? dispatch(
-                          setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick),
-                      )
-                    : dispatch(
-                          setAdvancedHighTick(
-                              pinnedDisplayPrices.pinnedHighTick,
-                          ),
-                      );
+                    ? setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick)
+                    : setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
             }
 
             const highGeometricDifferencePercentage = parseFloat(
@@ -811,7 +787,7 @@ function Range() {
 
             setRangeHighBoundFieldBlurred(false);
             setChartTriggeredBy('none');
-            dispatch(setIsLinesSwitched(false));
+            setIsLinesSwitched(false);
         }
     }, [rangeHighBoundFieldBlurred, chartTriggeredBy]);
 
@@ -838,6 +814,7 @@ function Range() {
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setTxErrorCode('');
+        setTxErrorMessage('');
         setNewRangeTransactionHash('');
     };
     const { createRangePosition } = useCreateRangePosition();
@@ -861,6 +838,7 @@ function Range() {
             isAdd,
             setNewRangeTransactionHash,
             setTxErrorCode,
+            setTxErrorMessage,
             resetConfirmation,
         });
     };
@@ -1035,6 +1013,7 @@ function Range() {
                         resetConfirmation={resetConfirmation}
                         showConfirmation={showConfirmation}
                         txErrorCode={txErrorCode}
+                        txErrorMessage={txErrorMessage}
                         isInRange={!isOutOfRange}
                         pinnedMinPriceDisplayTruncatedInBase={
                             pinnedMinPriceDisplayTruncatedInBase
@@ -1095,6 +1074,7 @@ function Range() {
                         type='Range'
                         newTransactionHash={newRangeTransactionHash}
                         txErrorCode={txErrorCode}
+                        txErrorMessage={txErrorMessage}
                         resetConfirmation={resetConfirmation}
                         sendTransaction={sendTransaction}
                         transactionPendingDisplayString={`Minting a Position with ${

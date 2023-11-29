@@ -1,15 +1,15 @@
 import TooltipComponent from '../../TooltipComponent/TooltipComponent';
-import { TransactionIF } from '../../../../utils/interfaces/exports';
+import { TransactionIF } from '../../../../ambient-utils/types';
 import { RiExternalLinkLine } from 'react-icons/ri';
 
 import styles from './TransactionDetailsSimplify.module.css';
 import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
-import { ZERO_ADDRESS } from '../../../../constants';
+import { ZERO_ADDRESS } from '../../../../ambient-utils/constants';
 import moment from 'moment';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { useMediaQuery } from '@material-ui/core';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 interface ItemRowPropsIF {
     title: string;
@@ -26,9 +26,8 @@ export default function TransactionDetailsSimplify(
     props: TransactionDetailsSimplifyPropsIF,
 ) {
     const { tx, isAccountView } = props;
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+
+    const { userAddress } = useContext(UserDataContext);
 
     const {
         ensName,

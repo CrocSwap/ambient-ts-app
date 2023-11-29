@@ -5,10 +5,12 @@ import { useContext, useState } from 'react';
 import Button from '../../Form/Button';
 
 // START: Import Other Local Files
-import { TokenIF } from '../../../utils/interfaces/exports';
+import { TokenIF } from '../../../ambient-utils/types';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
-import uriToHttp from '../../../utils/functions/uriToHttp';
+import {
+    getFormattedNumber,
+    uriToHttp,
+} from '../../../ambient-utils/dataLayer';
 import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
@@ -27,6 +29,7 @@ interface propsIF {
     tokenB: { token: TokenIF; quantity?: string };
     transactionHash: string;
     txErrorCode: string;
+    txErrorMessage: string;
     showConfirmation: boolean;
     statusText: string;
     onClose?: () => void;
@@ -48,6 +51,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         transactionDetails,
         transactionHash,
         txErrorCode,
+        txErrorMessage,
         statusText,
         showConfirmation,
         resetConfirmation,
@@ -189,6 +193,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                             type={type}
                             newTransactionHash={transactionHash}
                             txErrorCode={txErrorCode}
+                            txErrorMessage={txErrorMessage}
                             resetConfirmation={resetConfirmation}
                             sendTransaction={initiate}
                             transactionPendingDisplayString={statusText}

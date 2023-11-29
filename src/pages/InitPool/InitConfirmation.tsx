@@ -6,8 +6,8 @@ import SelectedRange from '../../components/Trade/Range/ConfirmRangeModal/Select
 import { FlexContainer, GridContainer, Text } from '../../styled/Common';
 
 import { FeaturedBox } from '../../components/Trade/TableInfo/FeaturedBox';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
-import { DISABLE_INIT_SETTINGS } from '../../constants';
+import { TokenIF } from '../../ambient-utils/types';
+import { DISABLE_INIT_SETTINGS } from '../../ambient-utils/constants';
 
 const Wrapper = styled.div<{ isLpContractCreationEnabled: boolean }>`
     width: 100%;
@@ -37,6 +37,7 @@ interface InitConfirmationProps {
     isTxCompletedInit: boolean;
     isTxCompletedRange: boolean;
     errorCode?: string;
+    txErrorMessage?: string;
     handleNavigation: () => void;
     pinnedMinPriceDisplayTruncatedInBase: string;
     pinnedMinPriceDisplayTruncatedInQuote: string;
@@ -73,7 +74,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         pinnedMinPriceDisplayTruncatedInQuote,
         pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote,
-
+        // txErrorMessage,
         isDenomBase,
         setIsDenomBase,
 
