@@ -6,6 +6,7 @@ export function createBandArea(
     xScale: d3.ScaleLinear<number, number>,
     yScale: d3.ScaleLinear<number, number>,
     denomInBase: boolean,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     options?: any,
 ) {
     return d3fc

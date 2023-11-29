@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { lineData } from '../../ChartUtils/chartUtils';
