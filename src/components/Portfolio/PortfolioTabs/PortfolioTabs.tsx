@@ -113,6 +113,8 @@ export default function PortfolioTabs(props: propsIF) {
             .then((response) => response?.json())
             .then((json) => {
                 const userPositions = json?.data;
+                // temporarily skip ENS fetch
+                const skipENSFetch = true;
                 if (userPositions && crocEnv && provider) {
                     Promise.all(
                         userPositions.map((position: PositionServerIF) => {
@@ -127,6 +129,7 @@ export default function PortfolioTabs(props: propsIF) {
                                 cachedQuerySpotPrice,
                                 cachedTokenDetails,
                                 cachedEnsResolve,
+                                skipENSFetch,
                             );
                         }),
                     ).then((updatedPositions) => {
@@ -156,6 +159,8 @@ export default function PortfolioTabs(props: propsIF) {
         )
             .then((response) => response?.json())
             .then((json) => {
+                // temporarily skip ENS fetch
+                const skipENSFetch = true;
                 const userLimitOrderStates = json?.data;
                 if (userLimitOrderStates && crocEnv && provider) {
                     Promise.all(
@@ -172,6 +177,7 @@ export default function PortfolioTabs(props: propsIF) {
                                     cachedQuerySpotPrice,
                                     cachedTokenDetails,
                                     cachedEnsResolve,
+                                    skipENSFetch,
                                 );
                             },
                         ),

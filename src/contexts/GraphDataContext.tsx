@@ -1,14 +1,14 @@
 import React, { createContext, useContext, useEffect } from 'react';
 import { fetchUserRecentChanges } from '../App/functions/fetchUserRecentChanges';
 import { getLimitOrderData } from '../App/functions/getLimitOrderData';
-import { getPositionData } from '../App/functions/getPositionData';
+// import { getPositionData } from '../App/functions/getPositionData';
 import useDebounce from '../App/hooks/useDebounce';
 import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../constants';
 import {
     LimitOrderIF,
     LimitOrderServerIF,
 } from '../utils/interfaces/LimitOrderIF';
-import { PositionIF, PositionServerIF } from '../utils/interfaces/PositionIF';
+import { PositionIF } from '../utils/interfaces/PositionIF';
 import { TokenIF } from '../utils/interfaces/TokenIF';
 import { TransactionIF } from '../utils/interfaces/TransactionIF';
 
@@ -248,7 +248,6 @@ export const GraphDataContextProvider = (props: {
                     chainId: chainData.chainId,
                     gcUrl: activeNetwork.graphCacheUrl,
                     provider,
-                    chainId: chainData.chainId,
                     lastBlockNumber,
                     tokenUniv: tokens.tokenUniv,
                     crocEnv,
@@ -260,7 +259,7 @@ export const GraphDataContextProvider = (props: {
                 if (userPositions) {
                     setPositionsByUser({
                         dataReceived: true,
-                        positions: updatedPositions,
+                        positions: userPositions,
                     });
 
                     setDataLoadingStatus({
@@ -288,6 +287,8 @@ export const GraphDataContextProvider = (props: {
             )
                 .then((response) => response?.json())
                 .then((json) => {
+                    // temporarily skip ENS fetch
+                    const skipENSFetch = true;
                     const userLimitOrderStates = json?.data;
                     if (userLimitOrderStates) {
                         Promise.all(
@@ -304,6 +305,7 @@ export const GraphDataContextProvider = (props: {
                                         cachedQuerySpotPrice,
                                         cachedTokenDetails,
                                         cachedEnsResolve,
+                                        skipENSFetch,
                                     );
                                 },
                             ),
