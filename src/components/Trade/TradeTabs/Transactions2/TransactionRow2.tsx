@@ -9,7 +9,7 @@ import { useContext } from 'react';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import TxButton from './TxButton';
 
-export type btnIconNameType = 'dots'|'pencil'|'wheat'|'plus'|'multiply'|'leaf'|'share'|'export'|'wallet'|'copy';
+export type btnIconNameType = 'dots'|'pencil'|'wheat'|'plus'|'multiply'|'leaf'|'share'|'export'|'wallet'|'copy'|'download';
 
 interface propsIF {
     tx: TransactionServerIF;
@@ -19,7 +19,7 @@ interface propsIF {
 
 export default function TransactionRow2(props: propsIF) {
     const { tx, columnsToShow, isAccountPage } = props;
-console.log('rerendering...');
+
     const { userAddress } = useContext(UserDataContext);
     const ownerId: string = getAddress(tx.user);
 

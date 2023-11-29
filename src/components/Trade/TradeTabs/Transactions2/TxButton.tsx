@@ -5,6 +5,7 @@ import { RxDotsHorizontal } from 'react-icons/rx';
 import { BsBoxArrowUpRight } from 'react-icons/bs';
 import { MdShare } from 'react-icons/md';
 import { FaPlus, FaTimes } from 'react-icons/fa';
+import { PiArrowFatLineDownBold } from 'react-icons/pi';
 import { btnIconNameType } from './TransactionRow2';
 
 interface propsIF {
@@ -47,6 +48,9 @@ export default function TxButton(props: propsIF) {
             break;
         case 'copy':
             icon = <FiCopy size={12} />;
+            break;
+        case 'download':
+            icon = <PiArrowFatLineDownBold size={12} />;
             break;
     }
 
