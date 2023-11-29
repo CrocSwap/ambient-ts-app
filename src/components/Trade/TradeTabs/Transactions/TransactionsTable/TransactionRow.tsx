@@ -18,10 +18,9 @@ interface propsIF {
     tx: TransactionIF;
     tableView: 'small' | 'medium' | 'large';
     isAccountView: boolean;
-    fetchedEnsAddress?: string;
 }
 function TransactionRow(props: propsIF) {
-    const { idForDOM, tableView, tx, isAccountView, fetchedEnsAddress } = props;
+    const { idForDOM, tableView, tx, isAccountView } = props;
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -55,12 +54,7 @@ function TransactionRow(props: propsIF) {
         priceCharacter,
         isBuy,
         elapsedTimeString,
-    } = useProcessTransaction(
-        tx,
-        userAddress,
-        isAccountView,
-        fetchedEnsAddress,
-    );
+    } = useProcessTransaction(tx, userAddress, isAccountView);
 
     const {
         snackbar: { open: openSnackbar },

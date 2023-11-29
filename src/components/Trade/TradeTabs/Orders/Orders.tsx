@@ -21,7 +21,6 @@ import {
     ViewMoreButton,
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
-import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
@@ -389,13 +388,6 @@ function Orders(props: propsIF) {
         </OrderRowStyled>
     );
 
-    // TODO: should not block rendering of table while fetching ENS addresses
-    const { ensAddressMapping, addData } = useENSAddresses();
-
-    useEffect(() => {
-        addData(sortedLimits);
-    }, [sortedLimits]);
-
     const currentRowItemContent = () =>
         _DATA.currentData.map((order, idx) => (
             <OrderRow
@@ -403,7 +395,6 @@ function Orders(props: propsIF) {
                 key={idx}
                 limitOrder={order}
                 isAccountView={isAccountView}
-                fetchedEnsAddress={ensAddressMapping.get(order.user)}
             />
         ));
 

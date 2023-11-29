@@ -31,7 +31,6 @@ import {
     ViewMoreButton,
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
-import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
@@ -505,12 +504,6 @@ function Transactions(props: propsIF) {
             </FlexContainer>
         );
 
-    const { ensAddressMapping, addData } = useENSAddresses();
-
-    useEffect(() => {
-        addData(sortedTransactions);
-    }, [sortedTransactions]);
-
     const currentRowItemContent = () =>
         _DATA.currentData.map((tx, idx) => (
             <TransactionRow
@@ -519,7 +512,6 @@ function Transactions(props: propsIF) {
                 tx={tx}
                 tableView={tableView}
                 isAccountView={isAccountView}
-                fetchedEnsAddress={ensAddressMapping.get(tx.user)}
             />
         ));
 
@@ -564,11 +556,7 @@ function Transactions(props: propsIF) {
             isAccountView={isAccountView}
         />
     ) : (
-        <FlexContainer
-            flexDirection='column'
-            onKeyDown={handleKeyDownViewTransaction}
-            height='100%'
-        >
+        <div onKeyDown={handleKeyDownViewTransaction}>
             <ul ref={listRef} id='current_row_scroll'>
                 {!isAccountView &&
                     pendingTransactions.length > 0 &&
@@ -684,7 +672,7 @@ function Transactions(props: propsIF) {
                 </FlexContainer>
             )}
             {/* Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render */}
-        </FlexContainer>
+        </div>
     );
 
     useEffect(() => {
