@@ -56,7 +56,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         txErrorMessage,
         statusText,
         showConfirmation,
-        setShowConfirmation,
+
         resetConfirmation,
         poolTokenDisplay,
         acknowledgeUpdate,
