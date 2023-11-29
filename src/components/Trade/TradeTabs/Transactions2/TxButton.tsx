@@ -49,6 +49,9 @@ export default function TxButton(props: propsIF) {
             icon = <FiCopy size={12} />;
             break;
     }
+
+    // top-level wrapper allows the button to be removed from the DOM but space maintained
+    // middle wrapper is how we get the icon
     return (
         <div className={styles.tx_button_wrapper}>
             {hide || <div className={styles.tx_button}>

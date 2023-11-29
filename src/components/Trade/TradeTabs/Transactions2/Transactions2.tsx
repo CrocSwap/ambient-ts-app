@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import styles from './Transactions2.module.css';
 import { sampleData } from './sampleData';
 import TransactionRow2 from './TransactionRow2';
@@ -36,7 +36,9 @@ export default function Transactions2(props: propsIF) {
     const containerRef = useRef<HTMLOListElement>(null);
 
     // list of columns to display in the DOM as determined by priority and space available
-    const [columns, setColumns] = useState<[columnSlugsType, number][]>([]);
+    // this is recalculated every time the elem changes width, but later memoization prevents
+    // ... unnecessary re-renders from happening
+    const columnsToRender = useRef<[columnSlugsType, number][]>([]);
 
     // array to define column priority in the DOM, columns listed last will be removed from the
     // ... DOM first when space is limited
@@ -85,7 +87,7 @@ export default function Transactions2(props: propsIF) {
                     };
                 }
                 // send the output column list to local state, table will render responsively
-                setColumns(columnList);
+                columnsToRender.current = columnList;
             }
         }
 
@@ -99,18 +101,22 @@ export default function Transactions2(props: propsIF) {
         };
     }, []);
 
+    // array of row elements to render in the DOM, the base underlying data used for generation
+    // ... is updated frequently but this memoization on recalculates if other items change
+    const transactionRows = useMemo<JSX.Element[]>(() => (
+        sampleData.data.map((d: TransactionServerIF) => (
+            <TransactionRow2
+                key={JSON.stringify(d)}
+                tx={d}
+                columnsToShow={columnsToRender.current}
+                isAccountPage={isAccountPage}
+            />
+        ))
+    ), [columnsToRender.current.length]);
+
     return (
         <ol className={styles.tx_ol} ref={containerRef}>
-            {
-                sampleData.data.map((d: TransactionServerIF) => (
-                    <TransactionRow2
-                        key={JSON.stringify(d)}
-                        tx={d}
-                        columnsToShow={columns}
-                        isAccountPage={isAccountPage}
-                    />
-                ))
-            }
+            {transactionRows}
         </ol>
     );
 }
