@@ -1,5 +1,6 @@
 .tx_li {
     display: inline-flex;
     flex-flow: row nowrap;
+    justify-content: space-between;
     width: auto;
 }

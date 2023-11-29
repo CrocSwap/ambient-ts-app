@@ -7,6 +7,9 @@ import TxId from './TxId';
 import TxWallet from './TxWallet';
 import { useContext } from 'react';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import TxButton from './TxButton';
+
+export type btnIconNameType = 'dots'|'pencil'|'wheat'|'plus'|'multiply'|'leaf'|'share'|'export'|'wallet'|'copy';
 
 interface propsIF {
     tx: TransactionServerIF;
@@ -16,7 +19,7 @@ interface propsIF {
 
 export default function TransactionRow2(props: propsIF) {
     const { tx, columnsToShow, isAccountPage } = props;
-
+console.log('rerendering...');
     const { userAddress } = useContext(UserDataContext);
     const ownerId: string = getAddress(tx.user);
 
@@ -42,6 +45,46 @@ export default function TransactionRow2(props: propsIF) {
                         width={elemMeta[1]}
                     />
                 );
+            } else if (elemMeta[0] === 'btn1') {
+                elemForDOM = (
+                    <TxButton width={elemMeta[1]} iconName='dots' hide={false} />
+                );
+            } else if (elemMeta[0] === 'btn2') {
+                elemForDOM = (
+                    <TxButton width={elemMeta[1]} iconName='pencil' hide={false} />
+                );
+            } else if (elemMeta[0] === 'btn3') {
+                elemForDOM = (
+                    <TxButton width={elemMeta[1]} iconName='wheat' hide={false} />
+                );
+            } else if (elemMeta[0] === 'btn4') {
+                elemForDOM = (
+                    <TxButton width={elemMeta[1]} iconName='plus' hide={false} />
+                );
+            } else if (elemMeta[0] === 'btn5') {
+                elemForDOM = (
+                    <TxButton width={elemMeta[1]} iconName='leaf' hide={false} />
+                );
+            } else if (elemMeta[0] === 'btn6') {
+                elemForDOM = (
+                    <TxButton width={elemMeta[1]} iconName='multiply' hide={false} />
+                );
+            } else if (elemMeta[0] === 'btn7') {
+                elemForDOM = (
+                    <TxButton width={elemMeta[1]} iconName='share' hide={false} />
+                );
+            } else if (elemMeta[0] === 'btn8') {
+                elemForDOM = (
+                    <TxButton width={elemMeta[1]} iconName='export' hide={false} />
+                );
+            } else if (elemMeta[0] === 'btn9') {
+                elemForDOM = (
+                    <TxButton width={elemMeta[1]} iconName='wallet' hide={false} />
+                );
+            } else if (elemMeta[0] === 'btn10') {
+                elemForDOM = (
+                    <TxButton width={elemMeta[1]} iconName='copy' hide={false} />
+                );
             }
         }
         return elemForDOM;
@@ -50,7 +93,17 @@ export default function TransactionRow2(props: propsIF) {
     const rowOrder: columnSlugsType[] = [
         'timeStamp',
         'txId',
-        'txWallet'
+        'txWallet',
+        'btn1',
+        'btn2',
+        'btn3',
+        'btn4',
+        'btn5',
+        'btn6',
+        'btn7',
+        'btn8',
+        'btn9',
+        'btn10',
     ];
 
     return (

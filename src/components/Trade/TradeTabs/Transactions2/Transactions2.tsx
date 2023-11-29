@@ -6,9 +6,19 @@ import { TransactionServerIF } from '../../../../utils/interfaces/TransactionIF'
 
 // columns to display in table and px width to alot for each
 const columnsAndSizes = {
-    timeStamp: 60,
-    txId: 110,
-    txWallet: 120
+    timeStamp: 80,
+    txId: 140,
+    txWallet: 140,
+    btn1: 60,
+    btn2: 60,
+    btn3: 60,
+    btn4: 60,
+    btn5: 60,
+    btn6: 60,
+    btn7: 60,
+    btn8: 60,
+    btn9: 60,
+    btn10: 60,
 };
 
 // string-union type of all keys in the `columnsAndSizes` object
@@ -33,7 +43,17 @@ export default function Transactions2(props: propsIF) {
     const priority: columnSlugsType[] = [
         'timeStamp',
         'txId',
-        'txWallet'
+        'txWallet',
+        'btn1',
+        'btn2',
+        'btn3',
+        'btn4',
+        'btn5',
+        'btn6',
+        'btn7',
+        'btn8',
+        'btn9',
+        'btn10',
     ];
 
     // add an observer to watch for element to be re-sized
