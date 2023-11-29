@@ -3,6 +3,7 @@ import { scrollSepoliaETH, scrollSepoliaUSDC } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 import { Provider } from '@ethersproject/providers';
+import { GCGO_SCROLL_URL } from '..';
 
 const wagmiChain = {
     id: 534351,
@@ -32,7 +33,7 @@ const wagmiChain = {
 
 export const scrollSepolia: NetworkIF = {
     chainId: '0x8274f',
-    graphCacheUrl: 'https://ambindexer.net/scroll-gcgo',
+    graphCacheUrl: GCGO_SCROLL_URL,
     wagmiChain,
     shouldPollBlock: true,
     marketData: '0x1',

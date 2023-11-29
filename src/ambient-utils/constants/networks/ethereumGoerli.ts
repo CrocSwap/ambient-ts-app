@@ -9,10 +9,11 @@ import {
 } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
+import { GCGO_ETHEREUM_URL } from '..';
 
 export const ethereumGoerli: NetworkIF = {
     chainId: '0x5',
-    graphCacheUrl: 'https://ambindexer.net/gcgo',
+    graphCacheUrl: GCGO_ETHEREUM_URL,
     wagmiChain,
     shouldPollBlock: false,
     marketData: '0x1',

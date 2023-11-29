@@ -9,10 +9,11 @@ import {
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 import { Provider } from '@ethersproject/providers';
+import { GCGO_ETHEREUM_URL } from '..';
 
 export const arbitrumGoerli: NetworkIF = {
     chainId: '0x66eed',
-    graphCacheUrl: 'https://ambindexer.net/gcgo',
+    graphCacheUrl: GCGO_ETHEREUM_URL,
     wagmiChain,
     shouldPollBlock: true,
     marketData: '0x1',
