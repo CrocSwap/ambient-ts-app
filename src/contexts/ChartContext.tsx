@@ -150,7 +150,6 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
                 JSON.stringify({
                     isOpenAnnotationPanel: true,
                     drawnShapes: [],
-                    isAutoSaveActive: true,
                     isMagnetActive: false,
                 }),
             );

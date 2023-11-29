@@ -105,6 +105,7 @@ import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { actionKeyIF } from './ChartUtils/useUndoRedo';
 import { formatDollarAmountAxis } from '../../utils/numbers';
 import { ChartContext } from '../../contexts/ChartContext';
+import { useDrawSettings } from '../../App/hooks/useDrawSettings';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -341,6 +342,8 @@ export default function Chart(props: propsIF) {
     >(undefined);
 
     const mobileView = useMediaQuery('(max-width: 600px)');
+
+    const drawSettings = useDrawSettings();
 
     const initialData = localStorage.getItem(LS_KEY_CHART_ANNOTATIONS);
 
@@ -4925,6 +4928,7 @@ export default function Chart(props: propsIF) {
                                 lastCandleData={lastCandleData}
                                 firstCandleData={firstCandleData}
                                 isMagnetActive={isMagnetActive}
+                                drawSettings={drawSettings}
                             />
                         )}
 

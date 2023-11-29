@@ -31,6 +31,7 @@ import {
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { CandleData } from '../../../../App/functions/fetchCandleSeries';
+import { defaultShapeAttributes } from '../../ChartUtils/drawConstants';
 
 interface DrawCanvasProps {
     scaleData: scaleData;
@@ -57,6 +58,7 @@ interface DrawCanvasProps {
     lastCandleData: any;
     render: any;
     isMagnetActive: { value: boolean };
+    drawSettings: any;
 }
 
 function DrawCanvas(props: DrawCanvasProps) {
@@ -82,7 +84,12 @@ function DrawCanvas(props: DrawCanvasProps) {
         lastCandleData,
         render,
         isMagnetActive,
+        drawSettings,
     } = props;
+
+    const {
+        chainData: { poolIndex },
+    } = useContext(CrocEnvContext);
 
     const circleSeries = createCircle(
         scaleData?.xScale,
@@ -91,14 +98,8 @@ function DrawCanvas(props: DrawCanvasProps) {
         1,
         denomInBase,
     );
-
-    const lineSeries = createLinearLineSeries(
-        scaleData?.xScale,
-        scaleData?.yScale,
-        denomInBase,
-    );
-
-    // const { isMagnetActive } = useContext(ChartContext);
+    const [lineSeries, setLineSeries] = useState<any>();
+    const [borderLineSeries, setBorderLineSeries] = useState<any>();
 
     const currentPool = useContext(TradeDataContext);
 
@@ -111,14 +112,35 @@ function DrawCanvas(props: DrawCanvasProps) {
     }
 
     useEffect(() => {
+        if (scaleData) {
+            const lineSeries = createLinearLineSeries(
+                scaleData?.xScale,
+                scaleData?.yScale,
+                denomInBase,
+                drawSettings[activeDrawingType].line,
+            );
+            setLineSeries(() => lineSeries);
+
+            const barderLineSeries = createLinearLineSeries(
+                scaleData?.xScale,
+                scaleData?.yScale,
+                denomInBase,
+                drawSettings[activeDrawingType].border,
+            );
+
+            setBorderLineSeries(() => barderLineSeries);
+        }
+    }, [scaleData, denomInBase, diffHashSig(drawSettings), activeDrawingType]);
+
+    useEffect(() => {
         if (scaleData !== undefined && !isChartZoom) {
-            let scrollTimeout: NodeJS.Timeout | null = null; // Declare scrollTimeout
+            let wheellTimeout: NodeJS.Timeout | null = null; // Declare wheellTimeout
             const lastCandleDate = lastCandleData?.time * 1000;
             const firstCandleDate = firstCandleData?.time * 1000;
             d3.select(d3DrawCanvas.current).on(
                 'wheel',
                 function (event) {
-                    if (scrollTimeout === null) {
+                    if (wheellTimeout === null) {
                         setIsChartZoom(true);
                     }
 
@@ -130,11 +152,11 @@ function DrawCanvas(props: DrawCanvasProps) {
                     );
                     render();
 
-                    if (scrollTimeout) {
-                        clearTimeout(scrollTimeout);
+                    if (wheellTimeout) {
+                        clearTimeout(wheellTimeout);
                     }
                     // check wheel end
-                    scrollTimeout = setTimeout(() => {
+                    wheellTimeout = setTimeout(() => {
                         setIsChartZoom(false);
                     }, 200);
                 },
@@ -142,10 +164,6 @@ function DrawCanvas(props: DrawCanvasProps) {
             );
         }
     }, [diffHashSigScaleData(scaleData, 'x'), isChartZoom]);
-
-    const {
-        chainData: { poolIndex },
-    } = useContext(CrocEnvContext);
 
     function getXandYvalueOfDrawnShape(offsetX: number, offsetY: number) {
         let valueY = scaleData?.yScale.invert(offsetY);
@@ -195,6 +213,9 @@ function DrawCanvas(props: DrawCanvasProps) {
         let cancelDraw = false;
         let isDrawing = false;
         const tempLineData: lineData[] = [];
+        const localDrawSettings = drawSettings
+            ? drawSettings[activeDrawingType]
+            : defaultShapeAttributes;
 
         let touchTimeout: NodeJS.Timeout | null = null; // Declare touchTimeout
 
@@ -333,29 +354,24 @@ function DrawCanvas(props: DrawCanvasProps) {
                             denomInBase: currentPool.isDenomBase,
                         },
                         line: {
-                            active: !['Rect'].includes(activeDrawingType),
-                            color: 'rgba(115, 113, 252, 1)',
-                            lineWidth: 1.5,
-                            dash:
-                                activeDrawingType === 'FibRetracement'
-                                    ? [6, 6]
-                                    : [0, 0],
+                            active: localDrawSettings.line.active,
+                            color: localDrawSettings.line.color,
+                            lineWidth: localDrawSettings.line.lineWidth,
+                            dash: localDrawSettings.line.dash,
                         } as drawnShapeEditAttributes,
 
                         border: {
-                            active: ['Rect'].includes(activeDrawingType),
-                            color: 'rgba(115, 113, 252, 1)',
-                            lineWidth: 1.5,
-                            dash: [0, 0],
+                            active: localDrawSettings.border.active,
+                            color: localDrawSettings.border.color,
+                            lineWidth: localDrawSettings.border.lineWidth,
+                            dash: localDrawSettings.border.dash,
                         } as drawnShapeEditAttributes,
 
                         background: {
-                            active: ['Rect', 'DPRange'].includes(
-                                activeDrawingType,
-                            ),
-                            color: 'rgba(115, 113, 252, 0.15)',
-                            lineWidth: 1.5,
-                            dash: [0, 0],
+                            active: localDrawSettings.background.active,
+                            color: localDrawSettings.background.color,
+                            lineWidth: localDrawSettings.background.lineWidth,
+                            dash: localDrawSettings.background.dash,
                         } as drawnShapeEditAttributes,
 
                         extraData: ['FibRetracement'].includes(
@@ -408,6 +424,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                         newBandScale,
                         scaleData?.yScale,
                         denomInBase,
+                        drawSettings[activeDrawingType],
                     );
 
                     setBandArea(() => bandArea);
@@ -480,7 +497,8 @@ function DrawCanvas(props: DrawCanvasProps) {
 
             renderCanvasArray([d3DrawCanvas]);
         }
-    }, [activeDrawingType]);
+    }, [activeDrawingType, JSON.stringify(drawSettings)]);
+
     // Draw
     useEffect(() => {
         const canvas = d3
@@ -497,7 +515,6 @@ function DrawCanvas(props: DrawCanvasProps) {
             d3.select(d3DrawCanvas.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
-                    if (ctx) ctx.setLineDash([0, 0]);
                     lineSeries(lineData);
                     circleSeries(lineData);
 
@@ -633,14 +650,24 @@ function DrawCanvas(props: DrawCanvasProps) {
                         const lineOfBand = createPointsOfBandLine(lineData);
 
                         lineOfBand?.forEach((item) => {
-                            lineSeries(item);
+                            borderLineSeries(item);
                             circleSeries(item);
                         });
+                        if (drawSettings[activeDrawingType].line.active) {
+                            lineSeries(lineData);
+                        }
                     }
 
                     if (activeDrawingType === 'DPRange') {
                         const lineOfBand = createPointsOfDPRangeLine(lineData);
 
+                        if (drawSettings[activeDrawingType].border.active) {
+                            const lineOfBand = createPointsOfBandLine(lineData);
+
+                            lineOfBand?.forEach((line) => {
+                                borderLineSeries(line);
+                            });
+                        }
                         lineOfBand?.forEach((item) => {
                             lineSeries(item);
                         });
@@ -671,11 +698,18 @@ function DrawCanvas(props: DrawCanvasProps) {
                 .on('measure', (event: CustomEvent) => {
                     bandArea && bandArea.context(ctx);
                     lineSeries.context(ctx);
+                    borderLineSeries.context(ctx);
                     circleSeries.context(ctx);
                     scaleData?.yScale.range([event.detail.height, 0]);
                 });
         }
-    }, [diffHashSig(lineData), denomInBase, bandArea]);
+    }, [
+        diffHashSig(lineData),
+        denomInBase,
+        bandArea,
+        borderLineSeries,
+        lineSeries,
+    ]);
 
     useEffect(() => {
         const canvas = d3
@@ -683,7 +717,9 @@ function DrawCanvas(props: DrawCanvasProps) {
             .select('canvas')
             .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
-
+        const localDrawSettings = drawSettings
+            ? drawSettings[activeDrawingType]
+            : defaultShapeAttributes;
         if (
             scaleData &&
             lineData.length > 1 &&
@@ -692,11 +728,12 @@ function DrawCanvas(props: DrawCanvasProps) {
             d3.select(d3DrawCanvas.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
-
-                    if (ctx) ctx.setLineDash([6, 6]);
                     lineSeries.decorate((context: CanvasRenderingContext2D) => {
-                        context.strokeStyle = '#7371FC';
-                        context.lineWidth = 1.5;
+                        context.strokeStyle = localDrawSettings.line.color;
+                        context.lineWidth = localDrawSettings.line.lineWidth;
+                        context.beginPath();
+                        context.setLineDash(localDrawSettings.line.dash);
+                        context.closePath();
                     });
                     lineSeries(lineData);
 
@@ -704,8 +741,6 @@ function DrawCanvas(props: DrawCanvasProps) {
                         lineData,
                         fibLevels,
                     );
-
-                    if (ctx) ctx.setLineDash([0, 0]);
 
                     const bandAreaData = calculateFibRetracementBandAreas(
                         lineData,
@@ -728,7 +763,6 @@ function DrawCanvas(props: DrawCanvasProps) {
                         bandArea([bandData]);
                     });
 
-                    if (ctx) ctx.setLineDash([0, 0]);
                     fibLineData.forEach((lineData) => {
                         lineSeries.decorate(
                             (context: CanvasRenderingContext2D) => {

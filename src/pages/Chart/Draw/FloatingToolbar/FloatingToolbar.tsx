@@ -12,6 +12,7 @@ import {
 } from './FloatingToolbarCss';
 import dragButton from '../../../../assets/images/icons/draw/floating_button.svg';
 import {
+    LS_KEY_CHART_ANNOTATIONS,
     drawDataHistory,
     selectedDrawnData,
 } from '../../ChartUtils/chartUtils';
@@ -92,6 +93,27 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         }
     }, [isDeletePressed]);
 
+    function saveShapeAttiributesToLocalStorage(item: drawDataHistory) {
+        const storedData = localStorage.getItem(LS_KEY_CHART_ANNOTATIONS);
+        if (storedData) {
+            const parseStoredData = JSON.parse(storedData);
+
+            if (parseStoredData.defaultSettings === undefined) {
+                parseStoredData.defaultSettings = {};
+            }
+            parseStoredData.defaultSettings[item.type] = {
+                line: item.line,
+                background: item.background,
+                border: item.border,
+            };
+
+            localStorage.setItem(
+                LS_KEY_CHART_ANNOTATIONS,
+                JSON.stringify(parseStoredData),
+            );
+        }
+    }
+
     useEffect(() => {
         setIsStyleOptionTabActive(false);
         setIsLineColorPickerTabActive(false);
@@ -160,6 +182,8 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 background &&
                     (item[changedItemIndex].background.color = colorRgbaCode);
 
+                saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
+
                 addDrawActionStack(item[changedItemIndex], false);
 
                 return item;
@@ -177,6 +201,8 @@ function FloatingToolbar(props: FloatingToolbarProps) {
 
                 line && (item[changedItemIndex].line.lineWidth = value);
                 border && (item[changedItemIndex].border.lineWidth = value);
+
+                saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
 
                 addDrawActionStack(item[changedItemIndex], false);
                 return item;
@@ -198,6 +224,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 type === 'background' &&
                     (item[changedItemIndex].background.active = value);
 
+                saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
                 addDrawActionStack(item[changedItemIndex], false);
                 return item;
             });
@@ -218,6 +245,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
 
                 line && (item[changedItemIndex].line.dash = array);
                 border && (item[changedItemIndex].border.dash = array);
+                saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
                 addDrawActionStack(item[changedItemIndex], false);
                 return item;
             });
