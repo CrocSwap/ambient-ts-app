@@ -73,6 +73,24 @@ export const ETH_ICON_URL =
 export const GLOBAL_MODAL_PORTAL_ID = 'ambient_global_modal_portal';
 export const GLOBAL_MODAL_COMPONENT_ID = 'Modal_Global';
 
+// BatchRequestManager config
+export const BATCH_ENS_CACHE_EXPIRY = process.env.BATCH_ENS_CACHE_EXPIRY
+    ? parseFloat(process.env.BATCH_ENS_CACHE_EXPIRY)
+    : 1 * 60 * 60 * 1000;
+
+export const BATCH_SIZE = process.env.REACT_APP_BATCH_BATCH_SIZE
+    ? parseFloat(process.env.REACT_APP_BATCH_BATCH_SIZE)
+    : 50;
+
+export const BATCH_SIZE_DELAY = process.env.REACT_APP_BATCH_SIZE_DELAY
+    ? parseFloat(process.env.REACT_APP_BATCH_SIZE_DELAY)
+    : 1000;
+
+// Fetch with timeout config
+export const REQUEST_TIMEOUT_DELAY = process.env.REACT_APP_REQUEST_TIMEOUT_DELAY
+    ? parseFloat(process.env.REACT_APP_REQUEST_TIMEOUT_DELAY)
+    : 3000;
+
 // Allowed links
 export const CROCODILE_LABS_LINKS = [
     'https://twitter.com/',
