@@ -1,6 +1,6 @@
 /* eslint-disable no-irregular-whitespace */
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import { TransactionIF } from '../../../../utils/interfaces/exports';
+import { TransactionIF, CandleDataIF } from '../../../../ambient-utils/types';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { Dispatch, useState, useEffect, useRef, useContext, memo } from 'react';
 
@@ -15,13 +15,12 @@ import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropd
 import Spinner from '../../../Global/Spinner/Spinner';
 import { CandleContext } from '../../../../contexts/CandleContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
-import { CandleData } from '../../../../App/functions/fetchCandleSeries';
+import { fetchPoolRecentChanges } from '../../../../ambient-utils/api';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { fetchPoolRecentChanges } from '../../../../App/functions/fetchPoolRecentChanges';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import { IS_LOCAL_ENV } from '../../../../constants';
+import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { TransactionRowPlaceholder } from './TransactionsTable/TransactionRowPlaceholder';
@@ -36,7 +35,7 @@ import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
-    filter?: CandleData | undefined;
+    filter?: CandleDataIF | undefined;
     activeAccountTransactionData?: TransactionIF[];
     connectedAccountActive?: boolean;
     isAccountView: boolean; // when viewing from /account: fullscreen and not paginated

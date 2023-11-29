@@ -1,13 +1,13 @@
 import styles from './CurrentDataInfo.module.css';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import { Dispatch, memo, SetStateAction, useContext } from 'react';
-import { CandleData } from '../../../../App/functions/fetchCandleSeries';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { CandleDataIF } from '../../../../ambient-utils/types';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface CurrentDataInfoPropsIF {
     showTooltip: boolean;
-    currentData: CandleData | undefined;
+    currentData: CandleDataIF | undefined;
     currentVolumeData: number | undefined;
     showLatest: boolean;
     setLatest: Dispatch<SetStateAction<boolean>>;

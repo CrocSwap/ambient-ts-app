@@ -3,17 +3,17 @@ import Toggle from '../../../Form/Toggle';
 import { MdExpand, MdCloseFullscreen } from 'react-icons/md';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { CandleContext } from '../../../../contexts/CandleContext';
-import { CandleData } from '../../../../App/functions/fetchCandleSeries';
+import { CandleDataIF } from '../../../../ambient-utils/types';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 interface PositionsOnlyToggleProps {
-    setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
+    setTransactionFilter: Dispatch<SetStateAction<CandleDataIF | undefined>>;
     currentTab?: string;
     changeState: (
         isOpen: boolean | undefined,
-        candleData: CandleData | undefined,
+        candleData: CandleDataIF | undefined,
     ) => void;
     setSelectedDate: React.Dispatch<number | undefined>;
     setHasUserSelectedViewAll: Dispatch<SetStateAction<boolean>>;

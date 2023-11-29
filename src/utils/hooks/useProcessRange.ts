@@ -1,15 +1,16 @@
-/* eslint-disable camelcase */
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
-import { PositionIF } from '../../utils/interfaces/exports';
-import trimString from '../../utils/functions/trimString';
+import {
+    getChainExplorer,
+    getUnicodeCharacter,
+    trimString,
+    getMoneynessRank,
+    getFormattedNumber,
+} from '../../ambient-utils/dataLayer';
+import { PositionIF } from '../../ambient-utils/types';
 import { useContext, useMemo } from 'react';
-import { getMoneynessRank } from '../functions/getMoneynessRank';
-import { getChainExplorer } from '../data/chains';
 import moment from 'moment';
-import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { getAddress } from 'ethers/lib/utils.js';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { useFetchBatch } from '../../App/hooks/useFetchBatch';
@@ -67,6 +68,7 @@ export const useProcessRange = (
     const apyClassname = apy > 0 ? 'apy_positive' : 'apy_negative';
     const isAmbient = position.positionType === 'ambient';
 
+    /* eslint-disable-next-line camelcase */
     const body = { config_path: 'ens_address', address: position.user };
     const { data } = useFetchBatch<'ens_address'>(body);
 

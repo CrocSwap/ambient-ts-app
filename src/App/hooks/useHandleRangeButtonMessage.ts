@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../ambient-utils/types';
 
 export function useHandleRangeButtonMessage(
     token: TokenIF,

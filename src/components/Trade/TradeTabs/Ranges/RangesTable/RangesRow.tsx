@@ -1,5 +1,5 @@
 import { useEffect, useRef, useContext, memo } from 'react';
-import { PositionIF } from '../../../../../utils/interfaces/exports';
+import { PositionIF } from '../../../../../ambient-utils/types';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
 import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';

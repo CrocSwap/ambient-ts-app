@@ -7,24 +7,27 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { GCGO_OVERRIDE_URL } from '../../constants';
-import { LimitOrderServerIF } from '../../utils/interfaces/LimitOrderIF';
+import { GCGO_OVERRIDE_URL } from '../../ambient-utils/constants';
 import {
+    LimitOrderServerIF,
     PositionIF,
     PositionServerIF,
-} from '../../utils/interfaces/PositionIF';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
-
-import { FetchAddrFn } from '../functions/fetchAddress';
-import { FetchContractDetailsFn } from '../functions/fetchContractDetails';
-import { fetchPoolRecentChanges } from '../functions/fetchPoolRecentChanges';
-import { TokenPriceFn } from '../functions/fetchTokenPrice';
-import { getLimitOrderData } from '../functions/getLimitOrderData';
-import { fetchPoolLiquidity } from '../functions/fetchPoolLiquidity';
-import { getPositionData } from '../functions/getPositionData';
-import { SpotPriceFn } from '../functions/querySpotPrice';
+    TokenIF,
+} from '../../ambient-utils/types';
+import {
+    TokenPriceFn,
+    FetchAddrFn,
+    FetchContractDetailsFn,
+    fetchPoolRecentChanges,
+    fetchPoolLiquidity,
+} from '../../ambient-utils/api';
+import {
+    SpotPriceFn,
+    getLimitOrderData,
+    getPositionData,
+    getLiquidityFee,
+} from '../../ambient-utils/dataLayer';
 import useDebounce from './useDebounce';
-import { getLiquidityFee } from '../functions/getPoolStats';
 import { Provider } from '@ethersproject/providers';
 import { DataLoadingContext } from '../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../contexts/GraphDataContext';
