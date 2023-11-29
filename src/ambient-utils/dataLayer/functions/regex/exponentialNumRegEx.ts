@@ -2,10 +2,7 @@
 // RegExp object for an exponential notation number
 let exponentialNumRegEx: RegExp;
 
-if (
-    typeof navigator !== 'undefined' &&
-    navigator.userAgent.includes('Safari')
-) {
+if (navigator.userAgent.includes('Safari')) {
     exponentialNumRegEx = /^[\d,]+[.]?[\d]*[eE]?[+\-]?[\d]*[.]?[\d]*$/;
 } else {
     exponentialNumRegEx = /^[\d,]+[.]?[\d]*[eE]?[+-]?[\d]*[.]?[\d]*$/;
