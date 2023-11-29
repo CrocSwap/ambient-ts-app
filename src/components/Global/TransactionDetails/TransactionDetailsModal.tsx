@@ -8,7 +8,7 @@ import TransactionDetailsSimplify from './TransactionDetailsSimplify/Transaction
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import modalBackground from '../../../assets/images/backgrounds/background.png';
-import { GCGO_OVERRIDE_URL } from '../../../constants';
+import { GCGO_OVERRIDE_URL } from '../../../ambient-utils/constants';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import {

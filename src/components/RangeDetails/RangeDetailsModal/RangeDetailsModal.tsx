@@ -8,7 +8,7 @@ import TransactionDetailsGraph from '../../Global/TransactionDetails/Transaction
 import { useProcessRange } from '../../../utils/hooks/useProcessRange';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { GCGO_OVERRIDE_URL } from '../../../constants';
+import { GCGO_OVERRIDE_URL } from '../../../ambient-utils/constants';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import {

@@ -8,7 +8,7 @@ import mainLogo from '../../../assets/images/logos/large.svg';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { BiGitBranch } from 'react-icons/bi';
-import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../constants';
+import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../ambient-utils/constants';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { AppStateContext } from '../../../contexts/AppStateContext';

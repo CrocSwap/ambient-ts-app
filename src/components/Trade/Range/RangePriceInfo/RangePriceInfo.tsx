@@ -55,6 +55,7 @@ function RangePriceInfo(props: propsIF) {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const {
         chainData: { chainId },
+        crocEnv,
     } = useContext(CrocEnvContext);
 
     const { isDenomBase, tokenA, tokenB, baseToken, quoteToken } =
@@ -116,9 +117,18 @@ function RangePriceInfo(props: propsIF) {
     const isEitherTokenStable = isStableTokenA || isStableTokenB;
 
     const updateMainnetPricesAsync = async () => {
-        const tokenAPrice = await cachedFetchTokenPrice(tokenAAddress, chainId);
+        if (!crocEnv) return;
+        const tokenAPrice = await cachedFetchTokenPrice(
+            tokenAAddress,
+            chainId,
+            crocEnv,
+        );
 
-        const tokenBPrice = await cachedFetchTokenPrice(tokenBAddress, chainId);
+        const tokenBPrice = await cachedFetchTokenPrice(
+            tokenBAddress,
+            chainId,
+            crocEnv,
+        );
 
         setTokenAPrice(tokenAPrice?.usdPrice);
         setTokenBPrice(tokenBPrice?.usdPrice);
@@ -128,7 +138,7 @@ function RangePriceInfo(props: propsIF) {
         setUserFlippedMaxMinDisplay(false);
 
         updateMainnetPricesAsync();
-    }, [tokenAAddress + tokenBAddress, isDenomTokenA]);
+    }, [crocEnv, tokenAAddress + tokenBAddress, isDenomTokenA]);
 
     useEffect(() => {
         if (!pinnedMinPrice || !pinnedMaxPrice) return;

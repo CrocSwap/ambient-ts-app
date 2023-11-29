@@ -10,10 +10,10 @@ import useWebSocket from 'react-use-websocket';
 import {
     IS_LOCAL_ENV,
     SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
-} from '../constants';
+    supportedNetworks,
+} from '../ambient-utils/constants';
 import { isJsonString } from '../ambient-utils/dataLayer';
 import { TokenIF } from '../ambient-utils/types';
-import { supportedNetworks } from '../ambient-utils/constants';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';

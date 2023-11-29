@@ -34,7 +34,10 @@ import {
     TransactionError,
 } from '../../../utils/TransactionError';
 import useDebounce from '../../../App/hooks/useDebounce';
-import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../../constants';
+import {
+    GCGO_OVERRIDE_URL,
+    IS_LOCAL_ENV,
+} from '../../../ambient-utils/constants';
 import { FiExternalLink } from 'react-icons/fi';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
@@ -88,10 +91,12 @@ function Reposition() {
         useState('');
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [txErrorCode, setTxErrorCode] = useState('');
+    const [txErrorMessage, setTxErrorMessage] = useState('');
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setTxErrorCode('');
+        setTxErrorMessage('');
         setNewRepositionTransactionHash('');
     };
 
@@ -278,6 +283,7 @@ function Reposition() {
         if (!crocEnv) return;
         let tx;
         setTxErrorCode('');
+        setTxErrorMessage('');
 
         resetConfirmation();
         setShowConfirmation(true);
@@ -322,6 +328,7 @@ function Reposition() {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
+            setTxErrorMessage(error?.data?.message);
         }
 
         let receipt;
@@ -666,6 +673,7 @@ function Reposition() {
                                     newRepositionTransactionHash
                                 }
                                 txErrorCode={txErrorCode}
+                                txErrorMessage={txErrorMessage}
                                 sendTransaction={sendRepositionTransaction}
                                 resetConfirmation={resetConfirmation}
                                 transactionPendingDisplayString={`Repositioning transaction with ${tokenA.symbol} and ${tokenB.symbol}`}
@@ -704,6 +712,7 @@ function Reposition() {
                     newRepositionTransactionHash={newRepositionTransactionHash}
                     resetConfirmation={resetConfirmation}
                     txErrorCode={txErrorCode}
+                    txErrorMessage={txErrorMessage}
                     minPriceDisplay={minPriceDisplay}
                     maxPriceDisplay={maxPriceDisplay}
                     currentBaseQtyDisplayTruncated={

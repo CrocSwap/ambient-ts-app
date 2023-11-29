@@ -15,7 +15,7 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
-import { IS_LOCAL_ENV } from '../../constants';
+import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { RangeContext } from '../../contexts/RangeContext';
@@ -54,6 +54,7 @@ export function useCreateRangePosition() {
         isAdd: boolean;
         setNewRangeTransactionHash: (s: string) => void;
         setTxErrorCode: (s: string) => void;
+        setTxErrorMessage: (s: string) => void;
         resetConfirmation: () => void;
         setIsTxCompletedRange?: React.Dispatch<React.SetStateAction<boolean>>;
     }) => {
@@ -69,6 +70,7 @@ export function useCreateRangePosition() {
             isAdd,
             setNewRangeTransactionHash,
             setTxErrorCode,
+            setTxErrorMessage,
             setIsTxCompletedRange,
         } = params;
 
@@ -165,6 +167,7 @@ export function useCreateRangePosition() {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
+            setTxErrorMessage(error?.data?.message);
         }
 
         let receipt;

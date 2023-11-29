@@ -1,5 +1,5 @@
 import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
-import { GRAPHCACHE_SMALL_URL } from '../constants';
+import { GCGO_OVERRIDE_URL } from '../constants';
 import { TokenPriceFn } from './fetchTokenPrice';
 
 export const fetchPoolLiquidity = async (
@@ -11,8 +11,8 @@ export const fetchPoolLiquidity = async (
     graphCacheUrl: string,
     cachedFetchTokenPrice: TokenPriceFn,
 ): Promise<LiquidityDataIF | undefined> => {
-    const poolLiquidityCacheEndpoint = GRAPHCACHE_SMALL_URL
-        ? GRAPHCACHE_SMALL_URL + '/pool_liq_curve?'
+    const poolLiquidityCacheEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/pool_liq_curve?'
         : graphCacheUrl + '/pool_liq_curve?';
 
     return fetch(
@@ -54,8 +54,8 @@ async function expandLiquidityData(
     const pool = crocEnv.pool(base, quote);
     const curveTick = pool.spotTick();
 
-    const basePricePromise = cachedFetchTokenPrice(base, chainId);
-    const quotePricePromise = cachedFetchTokenPrice(quote, chainId);
+    const basePricePromise = cachedFetchTokenPrice(base, chainId, crocEnv);
+    const quotePricePromise = cachedFetchTokenPrice(quote, chainId, crocEnv);
 
     const basePrice = (await basePricePromise)?.usdPrice || 0.0;
     const quotePrice = (await quotePricePromise)?.usdPrice || 0.0;
@@ -92,7 +92,7 @@ function bumpsToRanges(
     let bumps = curve.liquidityBumps ? curve.liquidityBumps : [];
 
     // Insert a synthetic bump right at the current price tick, so curve is smooth
-    if (bumps.filter((b) => b.bumpTick === tick).length === 0) {
+    if (bumps.filter((b) => b.bumpTick == tick).length == 0) {
         bumps = bumps.concat({
             bumpTick: tick,
             liquidityDelta: 0,

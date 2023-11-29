@@ -21,7 +21,7 @@ import {
     getChainExplorer,
 } from '../../../ambient-utils/dataLayer';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
-import { ZERO_ADDRESS } from '../../../constants';
+import { ZERO_ADDRESS } from '../../../ambient-utils/constants';
 
 interface FeaturedBoxPropsIF {
     token: TokenIF;

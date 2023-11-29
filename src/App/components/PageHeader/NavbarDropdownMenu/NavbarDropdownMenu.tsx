@@ -15,7 +15,7 @@ import {
     DOCS_LINK,
     MEDIUM_LINK,
     TWITTER_LINK,
-} from '../../../../constants';
+} from '../../../../ambient-utils/constants';
 import { useTermsAgreed } from '../../../hooks/useTermsAgreed';
 import { LogoutButton } from '../../../../components/Global/LogoutButton/LogoutButton';
 import { AppStateContext } from '../../../../contexts/AppStateContext';

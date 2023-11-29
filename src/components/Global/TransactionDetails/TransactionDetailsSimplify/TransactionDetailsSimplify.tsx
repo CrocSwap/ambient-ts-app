@@ -4,7 +4,7 @@ import { RiExternalLinkLine } from 'react-icons/ri';
 
 import styles from './TransactionDetailsSimplify.module.css';
 import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
-import { ZERO_ADDRESS } from '../../../../constants';
+import { ZERO_ADDRESS } from '../../../../ambient-utils/constants';
 import moment from 'moment';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';

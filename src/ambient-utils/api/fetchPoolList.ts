@@ -1,14 +1,14 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../constants';
-import { GCServerPoolIF } from '../types/GCServerPoolIF';
-import { memoizeCacheQueryFn } from '../dataLayer/functions/memoizePromiseFn';
+import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../constants';
+import { GCServerPoolIF } from '../types';
+import { memoizeCacheQueryFn } from '../dataLayer';
 
 export async function fetchPoolList(
     crocEnv: CrocEnv,
     graphCacheUrl: string,
 ): Promise<GCServerPoolIF[]> {
-    const ENDPOINT: string = GRAPHCACHE_SMALL_URL
-        ? GRAPHCACHE_SMALL_URL +
+    const ENDPOINT: string = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL +
           '/pool_list?' +
           new URLSearchParams({
               chainId: (await crocEnv.context).chain.chainId,

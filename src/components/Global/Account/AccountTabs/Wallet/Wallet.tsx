@@ -6,8 +6,10 @@ import { TokenPriceFn } from '../../../../../ambient-utils/api';
 import Spinner from '../../../Spinner/Spinner';
 import { useContext } from 'react';
 import { TokenContext } from '../../../../../contexts/TokenContext';
-import { tokenListURIs } from '../../../../../ambient-utils/constants';
-import { ZERO_ADDRESS } from '../../../../../constants';
+import {
+    ZERO_ADDRESS,
+    tokenListURIs,
+} from '../../../../../ambient-utils/constants';
 import { isUsdcToken } from '../../../../../ambient-utils/dataLayer';
 import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
 

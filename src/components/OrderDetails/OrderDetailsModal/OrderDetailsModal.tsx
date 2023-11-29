@@ -9,7 +9,10 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import OrderDetailsSimplify from '../OrderDetailsSimplify/OrderDetailsSimplify';
 import TransactionDetailsGraph from '../../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
-import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../../constants';
+import {
+    GCGO_OVERRIDE_URL,
+    IS_LOCAL_ENV,
+} from '../../../ambient-utils/constants';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import {
     getLimitOrderData,

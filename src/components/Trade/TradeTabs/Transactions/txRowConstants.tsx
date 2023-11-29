@@ -8,7 +8,7 @@ import {
 import { TokenIF, TransactionIF } from '../../../../ambient-utils/types';
 import { NavLink } from 'react-router-dom';
 import moment from 'moment';
-import { IS_LOCAL_ENV } from '../../../../constants';
+import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import React, { useContext } from 'react';

@@ -1,7 +1,7 @@
 import { Suspense, memo, useEffect, useState } from 'react';
 import styles from './TokenIcon.module.css';
 import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
-import { IS_LOCAL_ENV } from '../../../constants';
+import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 import { TokenIF } from '../../../ambient-utils/types';
 import processLogoSrc from './processLogoSrc';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';

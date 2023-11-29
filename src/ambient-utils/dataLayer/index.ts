@@ -1,4 +1,4 @@
 // Exports from the Data Layer
 
-export * from './addressManagement';
+// TODO: split up /functions into more meaningful separations
 export * from './functions';

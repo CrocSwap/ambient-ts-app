@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect } from 'react';
 import { fetchUserRecentChanges } from '../ambient-utils/api';
 import { getLimitOrderData, getPositionData } from '../ambient-utils/dataLayer';
 import useDebounce from '../App/hooks/useDebounce';
-import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../constants';
+import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../ambient-utils/constants';
 import {
     TokenIF,
     TransactionIF,

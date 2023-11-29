@@ -12,6 +12,7 @@ interface propsIF {
     insideTickDisplayPrice: number;
     newLimitOrderTransactionHash: string;
     txErrorCode: string;
+    txErrorMessage: string;
     showConfirmation: boolean;
     resetConfirmation: () => void;
     startDisplayPrice: number;
@@ -25,6 +26,7 @@ export default function ConfirmLimitModal(props: propsIF) {
         initiateLimitOrderMethod,
         newLimitOrderTransactionHash,
         txErrorCode,
+        txErrorMessage,
         resetConfirmation,
         showConfirmation,
         startDisplayPrice,
@@ -134,6 +136,7 @@ export default function ConfirmLimitModal(props: propsIF) {
             extraNotes={extraNotes}
             transactionHash={newLimitOrderTransactionHash}
             txErrorCode={txErrorCode}
+            txErrorMessage={txErrorMessage}
             statusText={
                 !showConfirmation
                     ? 'Submit Limit Order'

@@ -22,12 +22,12 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import moment from 'moment';
 import { getAddress } from 'ethers/lib/utils.js';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { useFetchBatch } from '../../App/hooks/useFetchBatch';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
     account = '',
     isAccountView = false,
-    fetchedEnsAddress?: string,
 ) => {
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
     const blockExplorer = getChainExplorer(limitOrder.chainId);
@@ -47,9 +47,12 @@ export const useProcessOrder = (
     const isOwnerActiveAccount =
         limitOrder.user.toLowerCase() === account?.toLowerCase();
 
-    const ownerId = fetchedEnsAddress || getAddress(limitOrder.user) || '';
+    /* eslint-disable-next-line camelcase */
+    const body = { config_path: 'ens_address', address: limitOrder.user };
+    const { data } = useFetchBatch<'ens_address'>(body);
 
-    const ensName = fetchedEnsAddress || limitOrder.ensResolution || null;
+    const ownerId = data?.ens_address || getAddress(limitOrder.user);
+    const ensName = data?.ens_address || limitOrder.ensResolution || null;
 
     const isOrderFilled = limitOrder.claimableLiq > 0;
 

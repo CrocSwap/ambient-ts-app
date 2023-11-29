@@ -1,5 +1,5 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { GRAPHCACHE_SMALL_URL } from '../../constants';
+import { GCGO_OVERRIDE_URL } from '../../constants';
 import { TokenPriceFn } from '../../api';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 
@@ -10,8 +10,8 @@ export const getLiquidityFee = async (
     chainId: string,
     graphCacheUrl: string,
 ): Promise<number | undefined> => {
-    const poolStatsFreshEndpoint = GRAPHCACHE_SMALL_URL
-        ? GRAPHCACHE_SMALL_URL + '/pool_stats?'
+    const poolStatsFreshEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/pool_stats?'
         : graphCacheUrl + '/pool_stats?';
 
     return fetch(
@@ -47,8 +47,8 @@ const fetchPoolStats = async (
     graphCacheUrl: string,
     cachedFetchTokenPrice: TokenPriceFn,
 ): Promise<PoolStatsIF | undefined> => {
-    const poolStatsFreshEndpoint = GRAPHCACHE_SMALL_URL
-        ? GRAPHCACHE_SMALL_URL + '/pool_stats?'
+    const poolStatsFreshEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/pool_stats?'
         : graphCacheUrl + '/pool_stats?';
 
     return fetch(
@@ -90,8 +90,8 @@ async function expandPoolStats(
 ): Promise<PoolStatsIF> {
     const pool = crocEnv.pool(base, quote);
 
-    const basePricePromise = cachedFetchTokenPrice(base, chainId);
-    const quotePricePromise = cachedFetchTokenPrice(quote, chainId);
+    const basePricePromise = cachedFetchTokenPrice(base, chainId, crocEnv);
+    const quotePricePromise = cachedFetchTokenPrice(quote, chainId, crocEnv);
 
     const basePrice = (await basePricePromise)?.usdPrice || 0.0;
     const quotePrice = (await quotePricePromise)?.usdPrice || 0.0;
@@ -177,8 +177,8 @@ const get24hChange = async (
     denomInBase: boolean,
     graphCacheUrl: string,
 ): Promise<number | undefined> => {
-    const poolStatsFreshEndpoint = GRAPHCACHE_SMALL_URL
-        ? GRAPHCACHE_SMALL_URL + '/pool_stats?'
+    const poolStatsFreshEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/pool_stats?'
         : graphCacheUrl + '/pool_stats?';
 
     const nowQuery = fetch(
@@ -252,8 +252,8 @@ export async function getChainStats(
 ): Promise<DexAggStatsIF | undefined> {
     const N_TOKEN_CHAIN_SUMM = 10;
 
-    const chainStatsFreshEndpoint = GRAPHCACHE_SMALL_URL
-        ? GRAPHCACHE_SMALL_URL + '/chain_stats?'
+    const chainStatsFreshEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/chain_stats?'
         : graphCacheUrl + '/chain_stats?';
 
     return fetch(
@@ -319,10 +319,11 @@ async function expandTokenStats(
     cachedFetchTokenPrice: TokenPriceFn,
 ): Promise<DexAggStatsIF> {
     const decimals = crocEnv.token(stats.tokenAddr).decimals;
-
-    const usdPrice = cachedFetchTokenPrice(stats.tokenAddr, chainId).then(
-        (p) => p?.usdPrice || 0.0,
-    );
+    const usdPrice = cachedFetchTokenPrice(
+        stats.tokenAddr,
+        chainId,
+        crocEnv,
+    ).then((p) => p?.usdPrice || 0.0);
 
     const mult = (await usdPrice) / Math.pow(10, await decimals);
     return {

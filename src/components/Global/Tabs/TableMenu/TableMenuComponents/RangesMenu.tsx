@@ -8,7 +8,7 @@ import { PositionIF } from '../../../../../ambient-utils/types';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
-import { IS_LOCAL_ENV } from '../../../../../constants';
+import { IS_LOCAL_ENV } from '../../../../../ambient-utils/constants';
 import { RangeContext } from '../../../../../contexts/RangeContext';
 import {
     useLinkGen,

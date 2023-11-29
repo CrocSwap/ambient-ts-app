@@ -15,8 +15,7 @@ import {
 } from '../../ambient-utils/types';
 import matchSearchInput from '../functions/matchSearchInput';
 import { tokenMethodsIF } from './useTokens';
-import { ZERO_ADDRESS } from '../../constants';
-import { tokenListURIs } from '../../ambient-utils/constants';
+import { ZERO_ADDRESS, tokenListURIs } from '../../ambient-utils/constants';
 import { PoolContext } from '../../contexts/PoolContext';
 
 export interface sidebarSearchIF {

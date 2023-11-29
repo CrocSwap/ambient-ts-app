@@ -18,6 +18,8 @@ export * from './token';
 // TransactionIF, TransactionServerIF
 export * from './transaction';
 
+export * from './fetchBatch';
+
 export * from './GCServerPoolIF';
 
 export * from './NetworkIF';

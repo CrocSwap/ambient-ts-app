@@ -10,7 +10,10 @@ import {
     NetworkItem,
     DropdownMenuContainer,
 } from '../../../../styled/Components/Header';
-import { supportedNetworks } from '../../../../ambient-utils/constants';
+import {
+    supportedNetworks,
+    INCLUDE_CANTO_LINK,
+} from '../../../../ambient-utils/constants';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { useSearchParams } from 'react-router-dom';
 import {
@@ -20,7 +23,6 @@ import {
 import { Text } from '../../../../styled/Common';
 import canto from '../../../../assets/images/networks/canto.png';
 import { RiExternalLinkLine } from 'react-icons/ri';
-import { INCLUDE_CANTO_LINK } from '../../../../constants';
 
 interface propsIF {
     switchNetwork: ((chainId_?: number | undefined) => void) | undefined;

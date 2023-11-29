@@ -17,7 +17,7 @@ import { ethers } from 'ethers';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../ambient-utils/constants';
 import {
     removeWrappedNative,
     isWethToken,

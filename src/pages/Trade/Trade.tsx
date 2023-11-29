@@ -210,11 +210,7 @@ function Trade() {
         : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`;
 
     const mobileTrade = (
-        <MainSection
-            style={{ marginTop: '32px' }}
-            isDropdown
-            isSmallScreen={smallScreen}
-        >
+        <MainSection isDropdown isSmallScreen={smallScreen}>
             {mobileTradeDropdown}
 
             <Text
@@ -249,6 +245,7 @@ function Trade() {
                 <ContentContainer noPadding noStyle={smallScreen}>
                     <Outlet
                         context={{
+                            urlParamMap: urlParamMap,
                             tradeData: tradeData,
                             limitTick: limitTick,
                             updateURL: updateURL,

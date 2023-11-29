@@ -2,7 +2,7 @@ import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { PositionIF, TokenIF } from '../../../../ambient-utils/types';
 import { NavLink } from 'react-router-dom';
-import { ZERO_ADDRESS } from '../../../../constants';
+import { ZERO_ADDRESS } from '../../../../ambient-utils/constants';
 import Medal from '../../../Global/Medal/Medal';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';

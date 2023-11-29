@@ -32,7 +32,10 @@ import { fetchUserRecentChanges } from '../../../ambient-utils/api';
 import Orders from '../../Trade/TradeTabs/Orders/Orders';
 import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
 import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
-import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../../constants';
+import {
+    GCGO_OVERRIDE_URL,
+    IS_LOCAL_ENV,
+} from '../../../ambient-utils/constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TokenContext } from '../../../contexts/TokenContext';

@@ -21,18 +21,13 @@ export const IS_LOCAL_ENV = APP_ENVIRONMENT === 'local';
 
 export const ANALYTICS_URL =
     process.env.REACT_APP_ANALYTICS_URL ||
-    'https://crocswap-analytics-tools-service-dfxb5x3tja-uc.a.run.app/run?';
+    'https://ambindexer.net/analytics/run?';
 
 export const GCGO_ETHEREUM_URL =
     process.env.REACT_APP_GCGO_ETHEREUM_URL || 'https://ambindexer.net/gcgo';
 export const GCGO_SCROLL_URL =
     process.env.GCGO_SCROLL_URL || 'https://ambindexer.net/scroll-gcgo';
 export const GCGO_OVERRIDE_URL = process.env.REACT_APP_GCGO_OVERRIDE_URL;
-
-export const GRAPHCACHE_URL =
-    process.env.REACT_APP_GRAPHCACHE_URL || 'https://ambindexer.net';
-
-export const GRAPHCACHE_SMALL_URL = process.env.REACT_APP_GRAPHCACHE_SMALL_URL;
 
 export const HISTORICAL_CANDLES_URL =
     process.env.REACT_APP_HISTORICAL_CANDLES_URL || 'https://ambindexer.net';
@@ -48,6 +43,11 @@ export const CHAT_ENABLED =
     process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
         ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
         : true;
+
+export const INCLUDE_CANTO_LINK =
+    process.env.REACT_APP_INCLUDE_CANTO_LINK !== undefined
+        ? process.env.REACT_APP_INCLUDE_CANTO_LINK.toLowerCase() === 'true'
+        : false;
 
 export const DISABLE_INIT_SETTINGS =
     process.env.REACT_APP_DISABLE_INIT_SETTINGS !== undefined
@@ -78,3 +78,21 @@ export const ETH_ICON_URL =
 // Modal IDS
 export const GLOBAL_MODAL_PORTAL_ID = 'ambient_global_modal_portal';
 export const GLOBAL_MODAL_COMPONENT_ID = 'Modal_Global';
+
+// BatchRequestManager config
+export const BATCH_ENS_CACHE_EXPIRY = process.env.BATCH_ENS_CACHE_EXPIRY
+    ? parseFloat(process.env.BATCH_ENS_CACHE_EXPIRY)
+    : 1 * 60 * 60 * 1000;
+
+export const BATCH_SIZE = process.env.REACT_APP_BATCH_BATCH_SIZE
+    ? parseFloat(process.env.REACT_APP_BATCH_BATCH_SIZE)
+    : 50;
+
+export const BATCH_SIZE_DELAY = process.env.REACT_APP_BATCH_SIZE_DELAY
+    ? parseFloat(process.env.REACT_APP_BATCH_SIZE_DELAY)
+    : 1000;
+
+// Fetch with timeout config
+export const REQUEST_TIMEOUT_DELAY = process.env.REACT_APP_REQUEST_TIMEOUT_DELAY
+    ? parseFloat(process.env.REACT_APP_REQUEST_TIMEOUT_DELAY)
+    : 3000;

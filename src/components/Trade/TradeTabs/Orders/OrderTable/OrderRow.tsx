@@ -15,11 +15,10 @@ interface propsIF {
     limitOrder: LimitOrderIF;
     isAccountView: boolean;
     tableView: 'small' | 'medium' | 'large';
-    fetchedEnsAddress?: string;
 }
 
 function OrderRow(props: propsIF) {
-    const { tableView, limitOrder, isAccountView, fetchedEnsAddress } = props;
+    const { tableView, limitOrder, isAccountView } = props;
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
@@ -65,12 +64,7 @@ function OrderRow(props: propsIF) {
         originalPositionLiqQuote,
         expectedPositionLiqBase,
         expectedPositionLiqQuote,
-    } = useProcessOrder(
-        limitOrder,
-        userAddress,
-        isAccountView,
-        fetchedEnsAddress,
-    );
+    } = useProcessOrder(limitOrder, userAddress, isAccountView);
 
     const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
         useModal();

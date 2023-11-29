@@ -10,7 +10,7 @@ import { TokenContext } from '../../contexts/TokenContext';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { useTokenPairAllowance } from './useTokenPairAllowance';
 import { usePoolMetadata } from './usePoolMetadata';
-import { IS_LOCAL_ENV } from '../../constants';
+import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { UserDataContext } from '../../contexts/UserDataContext';
 
 interface BalancesIF {

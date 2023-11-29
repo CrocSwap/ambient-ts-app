@@ -29,7 +29,7 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
-import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../constants';
+import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
@@ -316,11 +316,13 @@ export default function RangeActionModal(props: propsIF) {
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newTransactionHash, setNewTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
+    const [txErrorMessage, setTxErrorMessage] = useState('');
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setNewTransactionHash('');
         setTxErrorCode('');
+        setTxErrorMessage('');
     };
 
     useEffect(() => {
@@ -390,6 +392,7 @@ export default function RangeActionModal(props: propsIF) {
                     console.error({ error });
                     dispatch(removePositionPendingUpdate(posHash as string));
                     setTxErrorCode(error?.code);
+                    setTxErrorMessage(error?.data?.message);
                 }
             } else {
                 try {
@@ -410,6 +413,7 @@ export default function RangeActionModal(props: propsIF) {
                     IS_LOCAL_ENV && console.debug({ error });
                     dispatch(removePositionPendingUpdate(posHash as string));
                     setTxErrorCode(error?.code);
+                    setTxErrorMessage(error?.data?.message);
                 }
             }
         } else if (position.positionType === 'concentrated') {
@@ -431,6 +435,7 @@ export default function RangeActionModal(props: propsIF) {
                 }
                 console.error({ error });
                 setTxErrorCode(error?.code);
+                setTxErrorMessage(error?.data?.message);
                 dispatch(removePositionPendingUpdate(posHash as string));
             }
         } else {
@@ -546,6 +551,7 @@ export default function RangeActionModal(props: propsIF) {
                 console.error({ error });
                 dispatch(removePositionPendingUpdate(posHash as string));
                 setTxErrorCode(error?.code);
+                setTxErrorMessage(error?.data?.message);
                 dispatch(removePositionPendingUpdate(posHash as string));
                 if (
                     error.reason === 'sending a transaction requires a signer'
@@ -650,6 +656,7 @@ export default function RangeActionModal(props: propsIF) {
                     }
                     newTransactionHash={newTransactionHash}
                     txErrorCode={txErrorCode}
+                    txErrorMessage={txErrorMessage}
                     resetConfirmation={resetConfirmation}
                     sendTransaction={type === 'Remove' ? removeFn : harvestFn}
                     transactionPendingDisplayString={

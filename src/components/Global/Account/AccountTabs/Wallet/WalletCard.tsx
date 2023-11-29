@@ -1,7 +1,7 @@
 import { TokenIF } from '../../../../../ambient-utils/types';
 import styles from './WalletCard.module.css';
 import { useContext, useEffect, useState } from 'react';
-import { ZERO_ADDRESS } from '../../../../../constants';
+import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../../../contexts/TokenContext';
@@ -25,6 +25,7 @@ export default function WalletCard(props: propsIF) {
     } = useContext(TokenContext);
     const {
         chainData: { chainId },
+        crocEnv,
     } = useContext(CrocEnvContext);
 
     const tokenMapKey = token?.address?.toLowerCase() + '_' + chainId;
@@ -49,11 +50,13 @@ export default function WalletCard(props: propsIF) {
 
     useEffect(() => {
         (async () => {
+            if (!crocEnv) return;
             try {
                 if (tokenFromMap?.symbol) {
                     const price = await cachedFetchTokenPrice(
                         tokenFromMap.address,
                         chainId,
+                        crocEnv,
                     );
                     if (price) setTokenPrice(price);
                 }
@@ -61,7 +64,7 @@ export default function WalletCard(props: propsIF) {
                 console.error(err);
             }
         })();
-    }, [tokenMapKey]);
+    }, [crocEnv, tokenMapKey]);
 
     const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 

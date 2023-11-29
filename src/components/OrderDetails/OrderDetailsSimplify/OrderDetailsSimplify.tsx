@@ -1,6 +1,6 @@
 import styles from './OrderDetailsSimplify.module.css';
 import { LimitOrderIF } from '../../../ambient-utils/types';
-import { ZERO_ADDRESS } from '../../../constants';
+import { ZERO_ADDRESS } from '../../../ambient-utils/constants';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { useProcessOrder } from '../../../utils/hooks/useProcessOrder';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';

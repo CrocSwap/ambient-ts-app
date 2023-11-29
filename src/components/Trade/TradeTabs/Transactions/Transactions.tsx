@@ -20,7 +20,7 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import { IS_LOCAL_ENV } from '../../../../constants';
+import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { TransactionRowPlaceholder } from './TransactionsTable/TransactionRowPlaceholder';
@@ -30,7 +30,6 @@ import {
     ViewMoreButton,
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
-import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
@@ -473,8 +472,9 @@ function Transactions(props: propsIF) {
                 alignItems='center'
                 justifyContent='center'
                 gap={isSmallScreen ? 4 : 8}
-                margin='16px auto'
+                margin={isSmallScreen ? 'auto' : '16px auto'}
                 background='dark1'
+                flexDirection={isSmallScreen ? 'column' : 'row'}
             >
                 <RowsPerPageDropdown
                     rowsPerPage={rowsPerPage}
@@ -503,12 +503,6 @@ function Transactions(props: propsIF) {
             </FlexContainer>
         );
 
-    const { ensAddressMapping, addData } = useENSAddresses();
-
-    useEffect(() => {
-        addData(sortedTransactions);
-    }, [sortedTransactions]);
-
     const currentRowItemContent = () =>
         _DATA.currentData.map((tx, idx) => (
             <TransactionRow
@@ -517,7 +511,6 @@ function Transactions(props: propsIF) {
                 tx={tx}
                 tableView={tableView}
                 isAccountView={isAccountView}
-                fetchedEnsAddress={ensAddressMapping.get(tx.user)}
             />
         ));
 
@@ -562,10 +555,7 @@ function Transactions(props: propsIF) {
             isAccountView={isAccountView}
         />
     ) : (
-        <FlexContainer
-            flexDirection='column'
-            onKeyDown={handleKeyDownViewTransaction}
-        >
+        <div onKeyDown={handleKeyDownViewTransaction}>
             <ul ref={listRef} id='current_row_scroll'>
                 {!isAccountView &&
                     pendingTransactions.length > 0 &&
@@ -681,7 +671,7 @@ function Transactions(props: propsIF) {
                 </FlexContainer>
             )}
             {/* Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render */}
-        </FlexContainer>
+        </div>
     );
 
     useEffect(() => {
@@ -693,7 +683,7 @@ function Transactions(props: propsIF) {
     }, [isTradeTableExpanded]);
 
     return (
-        <FlexContainer flexDirection='column' fullHeight>
+        <FlexContainer flexDirection='column' fullHeight={!isSmallScreen}>
             <div>{headerColumnsDisplay}</div>
 
             <div style={{ flex: 1, overflow: 'auto' }}>

@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
 import { TokenIF } from '../../ambient-utils/types';
 import { tokenMethodsIF } from './useTokens';
-import { tokenListURIs } from '../../ambient-utils/constants';
-import { ZERO_ADDRESS } from '../../constants';
+import { ZERO_ADDRESS, tokenListURIs } from '../../ambient-utils/constants';
 import {
     removeWrappedNative,
     isUsdcToken,

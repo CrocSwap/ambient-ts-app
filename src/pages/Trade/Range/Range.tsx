@@ -12,7 +12,7 @@ import RangeTokenInput from '../../../components/Trade/Range/RangeTokenInput/Ran
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
-import { IS_LOCAL_ENV } from '../../../constants';
+import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
@@ -161,6 +161,7 @@ function Range() {
 
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
+    const [txErrorMessage, setTxErrorMessage] = useState('');
 
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
         string | undefined
@@ -813,6 +814,7 @@ function Range() {
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setTxErrorCode('');
+        setTxErrorMessage('');
         setNewRangeTransactionHash('');
     };
     const { createRangePosition } = useCreateRangePosition();
@@ -836,6 +838,7 @@ function Range() {
             isAdd,
             setNewRangeTransactionHash,
             setTxErrorCode,
+            setTxErrorMessage,
             resetConfirmation,
         });
     };
@@ -1010,6 +1013,7 @@ function Range() {
                         resetConfirmation={resetConfirmation}
                         showConfirmation={showConfirmation}
                         txErrorCode={txErrorCode}
+                        txErrorMessage={txErrorMessage}
                         isInRange={!isOutOfRange}
                         pinnedMinPriceDisplayTruncatedInBase={
                             pinnedMinPriceDisplayTruncatedInBase
@@ -1070,6 +1074,7 @@ function Range() {
                         type='Range'
                         newTransactionHash={newRangeTransactionHash}
                         txErrorCode={txErrorCode}
+                        txErrorMessage={txErrorMessage}
                         resetConfirmation={resetConfirmation}
                         sendTransaction={sendTransaction}
                         transactionPendingDisplayString={`Minting a Position with ${

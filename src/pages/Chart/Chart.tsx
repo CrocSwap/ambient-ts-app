@@ -28,7 +28,7 @@ import {
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import useHandleSwipeBack from '../../utils/hooks/useHandleSwipeBack';
 import { candleTimeIF } from '../../App/hooks/useChartSettings';
-import { IS_LOCAL_ENV } from '../../constants';
+import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import {
     diffHashSig,
     diffHashSigChart,

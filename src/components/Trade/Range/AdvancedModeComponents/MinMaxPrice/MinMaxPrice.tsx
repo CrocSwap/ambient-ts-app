@@ -9,7 +9,7 @@ import {
 } from 'react';
 import PriceInput from '../PriceInput/PriceInput';
 
-import { IS_LOCAL_ENV } from '../../../../../constants';
+import { IS_LOCAL_ENV } from '../../../../../ambient-utils/constants';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { exponentialNumRegEx } from '../../../../../ambient-utils/dataLayer';
 import { FlexContainer, Text } from '../../../../../styled/Common';

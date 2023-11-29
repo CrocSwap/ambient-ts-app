@@ -7,7 +7,7 @@ import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitP
 // START: Import Local Files
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../ambient-utils/constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
@@ -472,14 +472,16 @@ export default function InitPool() {
         useState(false);
 
     const refreshReferencePrice = async () => {
-        if (tradeDataMatchesURLParams) {
+        if (tradeDataMatchesURLParams && crocEnv) {
             const basePricePromise = cachedFetchTokenPrice(
                 baseToken.address,
                 chainId,
+                crocEnv,
             );
             const quotePricePromise = cachedFetchTokenPrice(
                 quoteToken.address,
                 chainId,
+                crocEnv,
             );
 
             const basePrice = await basePricePromise;
@@ -545,6 +547,7 @@ export default function InitPool() {
     useEffect(() => {
         refreshReferencePrice();
     }, [
+        crocEnv,
         baseToken,
         quoteToken,
         isDenomBase,
@@ -931,6 +934,7 @@ export default function InitPool() {
         undefined | string
     >('');
     const [txErrorCode, setTxErrorCode] = useState('');
+    const [txErrorMessage, setTxErrorMessage] = useState('');
     const [isInitPending, setIsInitPending] = useState(false);
     const [isTxCompletedInit, setIsTxCompletedInit] = useState(false);
     const [isTxCompletedRange, setIsTxCompletedRange] = useState(false);
@@ -944,6 +948,7 @@ export default function InitPool() {
 
     const resetConfirmation = () => {
         setTxErrorCode('');
+        setTxErrorMessage('');
         setNewRangeTransactionHash('');
         setNewInitTransactionHash('');
         setIsTxCompletedInit(false);
@@ -968,6 +973,7 @@ export default function InitPool() {
         setIsInitPending,
         setIsTxCompletedInit,
         setTxErrorCode,
+        setTxErrorMessage,
         resetConfirmation,
     );
 
@@ -1031,6 +1037,7 @@ export default function InitPool() {
             isAdd: false, // Always false for init
             setNewRangeTransactionHash,
             setTxErrorCode,
+            setTxErrorMessage,
             resetConfirmation,
             poolPrice: selectedPoolNonDisplayPrice,
             setIsTxCompletedRange: setIsTxCompletedRange,
@@ -1724,6 +1731,7 @@ export default function InitPool() {
         isAmbient,
         isTokenABase,
         errorCode: txErrorCode,
+        txErrorMessage: txErrorMessage,
         isTxCompletedInit,
         isTxCompletedRange,
         handleNavigation,
