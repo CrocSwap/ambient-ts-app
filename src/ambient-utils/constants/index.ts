@@ -1,6 +1,7 @@
 export * from './networks';
 export * from './blacklist';
 export * from './defaultTokens';
+export * from './gcgo';
 export * from './slippage';
 export * from './tokenListURIs';
 export * from './tokenUnicodeCharMap';
@@ -22,12 +23,6 @@ export const IS_LOCAL_ENV = APP_ENVIRONMENT === 'local';
 export const ANALYTICS_URL =
     process.env.REACT_APP_ANALYTICS_URL ||
     'https://ambindexer.net/analytics/run?';
-
-export const GCGO_ETHEREUM_URL =
-    process.env.REACT_APP_GCGO_ETHEREUM_URL || 'https://ambindexer.net/gcgo';
-export const GCGO_SCROLL_URL =
-    process.env.GCGO_SCROLL_URL || 'https://ambindexer.net/scroll-gcgo';
-export const GCGO_OVERRIDE_URL = process.env.REACT_APP_GCGO_OVERRIDE_URL;
 
 export const HISTORICAL_CANDLES_URL =
     process.env.REACT_APP_HISTORICAL_CANDLES_URL || 'https://ambindexer.net';

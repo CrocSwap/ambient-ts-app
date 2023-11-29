@@ -3,7 +3,7 @@ import { scrollSepoliaETH, scrollSepoliaUSDC } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 import { Provider } from '@ethersproject/providers';
-import { GCGO_SCROLL_URL } from '..';
+import { GCGO_SCROLL_URL } from '../gcgo';
 
 const wagmiChain = {
     id: 534351,

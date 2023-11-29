@@ -9,7 +9,7 @@ import {
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 import { Provider } from '@ethersproject/providers';
-import { GCGO_ETHEREUM_URL } from '..';
+import { GCGO_ETHEREUM_URL } from '../gcgo';
 
 export const arbitrumGoerli: NetworkIF = {
     chainId: '0x66eed',
