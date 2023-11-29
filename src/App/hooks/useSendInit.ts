@@ -15,7 +15,7 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
-import { IS_LOCAL_ENV } from '../../constants';
+import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 export function useSendInit(
     setNewInitTransactionHash: React.Dispatch<

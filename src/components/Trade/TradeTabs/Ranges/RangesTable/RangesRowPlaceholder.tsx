@@ -5,9 +5,11 @@ import { Chip } from '../../../../Form/Chip';
 import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
 import { FiExternalLink } from 'react-icons/fi';
 import { getPinnedPriceValuesFromTicks } from '../../../../../pages/Trade/Range/rangeFunctions';
-import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
-import trimString from '../../../../../utils/functions/trimString';
+import {
+    trimString,
+    getUnicodeCharacter,
+} from '../../../../../ambient-utils/dataLayer';
 import {
     RangeRow,
     RowItem,

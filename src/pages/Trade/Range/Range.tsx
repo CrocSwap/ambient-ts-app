@@ -1,6 +1,5 @@
 import { capitalConcFactor, concDepositSkew } from '@crocswap-libs/sdk';
 import { memo, useContext, useEffect, useMemo, useState } from 'react';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import Button from '../../../components/Form/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
 
@@ -13,7 +12,7 @@ import RangeTokenInput from '../../../components/Trade/Range/RangeTokenInput/Ran
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
-import { IS_LOCAL_ENV } from '../../../constants';
+import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
@@ -21,12 +20,15 @@ import { RangeContext } from '../../../contexts/RangeContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
-import { isStablePair } from '../../../utils/data/stablePairs';
-import truncateDecimals from '../../../utils/data/truncateDecimals';
-import { diffHashSig } from '../../../utils/functions/diffHashSig';
-import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
+import {
+    getFormattedNumber,
+    getUnicodeCharacter,
+    diffHashSig,
+    isStablePair,
+    truncateDecimals,
+} from '../../../ambient-utils/dataLayer';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { PositionIF } from '../../../utils/interfaces/PositionIF';
+import { PositionIF } from '../../../ambient-utils/types';
 import { rangeTutorialSteps } from '../../../utils/tutorial/Range';
 import {
     getPinnedPriceValuesFromDisplayPrices,

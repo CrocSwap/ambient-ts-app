@@ -3,8 +3,8 @@ import Animation from '../../../../Global/Animation/Animation';
 import completed from '../../../../../assets/animations/completed.json';
 import addTokenToWallet from './addTokenToWallet';
 import { useLocation } from 'react-router-dom';
-import { getChainExplorer } from '../../../../../utils/data/chains';
 import { Text } from '../../../../../styled/Common';
+import { getChainExplorer } from '../../../../../ambient-utils/dataLayer';
 
 interface PropsIF {
     type:

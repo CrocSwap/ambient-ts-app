@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect } from 'react';
-import { TokenIF } from '../utils/interfaces/TokenIF';
+import { TokenIF } from '../ambient-utils/types';
 import { UserDataContext } from './UserDataContext';
 
 interface TokenBalanceContextIF {

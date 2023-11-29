@@ -1,15 +1,17 @@
 import styles from './Exchange.module.css';
 import ExchangeCard from './ExchangeCard';
 import ExchangeHeader from './ExchangeHeader';
-import { TokenIF } from '../../../../../utils/interfaces/exports';
+import { TokenIF } from '../../../../../ambient-utils/types';
 import Spinner from '../../../Spinner/Spinner';
-import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
+import { TokenPriceFn } from '../../../../../ambient-utils/api';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { useContext } from 'react';
-import { tokenListURIs } from '../../../../../utils/data/tokenListURIs';
-import { ZERO_ADDRESS } from '../../../../../constants';
+import {
+    tokenListURIs,
+    ZERO_ADDRESS,
+} from '../../../../../ambient-utils/constants';
 import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
-import { isUsdcToken } from '../../../../../utils/data/stablePairs';
+import { isUsdcToken } from '../../../../../ambient-utils/dataLayer';
 
 interface propsIF {
     chainId: string;

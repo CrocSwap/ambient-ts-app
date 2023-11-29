@@ -1,8 +1,10 @@
 import { memo, useContext } from 'react';
 import { CrocImpact } from '@crocswap-libs/sdk';
 import { PoolContext } from '../../../contexts/PoolContext';
-import { getPriceImpactString } from '../../../App/functions/swap/getPriceImpactString';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import {
+    getFormattedNumber,
+    getPriceImpactString,
+} from '../../../ambient-utils/dataLayer';
 import { ExtraInfo } from '../../Trade/TradeModules/ExtraInfo/ExtraInfo';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 

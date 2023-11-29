@@ -9,9 +9,13 @@ import {
     useState,
 } from 'react';
 import { FaGasPump } from 'react-icons/fa';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import useDebounce from '../../../../App/hooks/useDebounce';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
+import {
+    IS_LOCAL_ENV,
+    ZERO_ADDRESS,
+    checkBlacklist,
+} from '../../../../ambient-utils/constants';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { FlexContainer, Text } from '../../../../styled/Common';
@@ -25,9 +29,8 @@ import {
     isTransactionFailedError,
     isTransactionReplacedError,
 } from '../../../../utils/TransactionError';
-import { checkBlacklist } from '../../../../utils/data/blacklist';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { TokenIF } from '../../../../utils/interfaces/exports';
+import { TokenIF } from '../../../../ambient-utils/types';
 import {
     addPendingTx,
     addReceipt,

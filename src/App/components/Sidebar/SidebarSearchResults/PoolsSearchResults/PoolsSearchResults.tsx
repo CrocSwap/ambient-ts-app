@@ -1,5 +1,5 @@
-import { PoolIF } from '../../../../../utils/interfaces/exports';
-import { PoolStatsFn } from '../../../../functions/getPoolStats';
+import { PoolIF } from '../../../../../ambient-utils/types';
+import { PoolStatsFn } from '../../../../../ambient-utils/dataLayer';
 import PoolSearchResult from './PoolSearchResult';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
@@ -7,7 +7,7 @@ import {
     useLinkGen,
     linkGenMethodsIF,
 } from '../../../../../utils/hooks/useLinkGen';
-import { TokenPriceFn } from '../../../../functions/fetchTokenPrice';
+import { TokenPriceFn } from '../../../../../ambient-utils/api';
 import checkPoolForWETH from '../../../../functions/checkPoolForWETH';
 import {
     FlexContainer,

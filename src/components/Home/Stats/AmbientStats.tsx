@@ -1,6 +1,8 @@
 import { useContext, useEffect, useState } from 'react';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
-import { getChainStats } from '../../../App/functions/getPoolStats';
+import {
+    getChainStats,
+    getFormattedNumber,
+} from '../../../ambient-utils/dataLayer';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';

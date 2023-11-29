@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
-import { PositionIF } from '../../../utils/interfaces/exports';
-import { diffHashSig } from '../../../utils/functions/diffHashSig';
+import { PositionIF } from '../../../ambient-utils/types';
+import { diffHashSig } from '../../../ambient-utils/dataLayer';
 import { BigNumber } from 'ethers';
 
 export type RangeSortType =

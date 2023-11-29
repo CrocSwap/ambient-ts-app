@@ -4,8 +4,7 @@ import { FaDiscord, FaTelegram, FaFacebook } from 'react-icons/fa';
 import { AiFillTwitterCircle } from 'react-icons/ai';
 import { useLocation } from 'react-router-dom';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
-import { AppStateContext } from '../../../contexts/AppStateContext';
-import { DISCORD_LINK } from '../../../constants';
+import { DISCORD_LINK } from '../../../ambient-utils/constants';
 import { FlexContainer, Text } from '../../../styled/Common';
 import {
     IconButton,

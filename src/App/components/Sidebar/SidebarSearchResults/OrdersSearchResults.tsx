@@ -1,6 +1,5 @@
 import { useContext } from 'react';
-import { LimitOrderIF } from '../../../../utils/interfaces/exports';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import { LimitOrderIF } from '../../../../ambient-utils/types';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import {
@@ -8,7 +7,10 @@ import {
     linkGenMethodsIF,
     limitParamsIF,
 } from '../../../../utils/hooks/useLinkGen';
-import { getFormattedNumber } from '../../../functions/getFormattedNumber';
+import {
+    getFormattedNumber,
+    getUnicodeCharacter,
+} from '../../../../ambient-utils/dataLayer';
 import { FlexContainer, GridContainer, Text } from '../../../../styled/Common';
 import {
     Results,
