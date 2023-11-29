@@ -29,6 +29,7 @@ interface propsIF {
     tokenDexBalance?: string;
     isWithdraw?: boolean;
     disabledContent?: React.ReactNode;
+    amountToReduceEth?: number;
 }
 
 function TokenInputWithWalletBalance(props: propsIF) {
@@ -52,19 +53,22 @@ function TokenInputWithWalletBalance(props: propsIF) {
         handleToggleDexSelection,
         parseTokenInput,
         handleRefresh,
+        amountToReduceEth,
     } = props;
 
     const {
         chainData: { chainId },
+        crocEnv,
     } = useContext(CrocEnvContext);
 
-    const amountToReduceEthMainnet = 0.005; // .005 ETH
-    const amountToReduceEthScroll = 0.0003; // .0003 ETH
+    const amountToReduceEthMainnet = 0.01; // .01 ETH
+    const amountToReduceEthScroll = 0.0007; // .0007 ETH
 
-    const amountToReduceEth =
-        chainId === '0x82750' || chainId === '0x8274f'
-            ? amountToReduceEthScroll
-            : amountToReduceEthMainnet;
+    const ethOffset = amountToReduceEth
+        ? amountToReduceEth
+        : chainId === '0x82750' || chainId === '0x8274f'
+        ? amountToReduceEthScroll
+        : amountToReduceEthMainnet;
 
     const [usdValueForDom, setUsdValueForDom] = useState<string | undefined>();
 
@@ -73,29 +77,30 @@ function TokenInputWithWalletBalance(props: propsIF) {
     const pricedToken = translateTestnetToken(token.address);
 
     useEffect(() => {
-        Promise.resolve(cachedFetchTokenPrice(pricedToken, chainId)).then(
-            (price) => {
-                if (price?.usdPrice !== undefined) {
-                    const usdValueNum: number | undefined =
-                        price !== undefined && tokenInput !== ''
-                            ? price.usdPrice * parseFloat(tokenInput)
-                            : undefined;
-                    const usdValueTruncated =
-                        usdValueNum !== undefined
-                            ? getFormattedNumber({
-                                  value: usdValueNum,
-                                  isUSD: true,
-                              })
-                            : undefined;
-                    usdValueTruncated !== undefined
-                        ? setUsdValueForDom(usdValueTruncated)
-                        : setUsdValueForDom('');
-                } else {
-                    setUsdValueForDom(undefined);
-                }
-            },
-        );
-    }, [chainId, pricedToken, tokenInput]);
+        if (!crocEnv) return;
+        Promise.resolve(
+            cachedFetchTokenPrice(pricedToken, chainId, crocEnv),
+        ).then((price) => {
+            if (price?.usdPrice !== undefined) {
+                const usdValueNum: number | undefined =
+                    price !== undefined && tokenInput !== ''
+                        ? price.usdPrice * parseFloat(tokenInput)
+                        : undefined;
+                const usdValueTruncated =
+                    usdValueNum !== undefined
+                        ? getFormattedNumber({
+                              value: usdValueNum,
+                              isUSD: true,
+                          })
+                        : undefined;
+                usdValueTruncated !== undefined
+                    ? setUsdValueForDom(usdValueTruncated)
+                    : setUsdValueForDom('');
+            } else {
+                setUsdValueForDom(undefined);
+            }
+        });
+    }, [crocEnv, chainId, pricedToken, tokenInput]);
 
     const toDecimal = (val: string) =>
         isTokenEth ? parseFloat(val).toFixed(18) : parseFloat(val).toString();
@@ -115,9 +120,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
     });
 
     const subtractBuffer = (balance: string) =>
-        isTokenEth
-            ? (parseFloat(balance) - amountToReduceEth).toFixed(18)
-            : balance;
+        isTokenEth ? (parseFloat(balance) - ethOffset).toFixed(18) : balance;
 
     const balanceWithBuffer = balance ? subtractBuffer(balance) : '...';
 

@@ -15,41 +15,55 @@ import { UserDataContextProvider } from './UserDataContext';
 import { UserPreferenceContextProvider } from './UserPreferenceContext';
 import { ExploreContextProvider } from './ExploreContext';
 import { ENSAddressContextProvider } from './ENSAddressContext';
+import { GraphDataContextProvider } from './GraphDataContext';
+import { DataLoadingContextProvider } from './DataLoadingContext';
+import { TokenBalanceContextProvider } from './TokenBalanceContext';
+import { TradeDataContextProvider } from './TradeDataContext';
 
 export const GlobalContexts = (props: { children: React.ReactNode }) => {
     return (
         <AppStateContextProvider>
             <ENSAddressContextProvider>
                 <CachedDataContextProvider>
-                    <CrocEnvContextProvider>
-                        <TokenContextProvider>
-                            <ChainDataContextProvider>
-                                <UserDataContextProvider>
-                                    <ChartContextProvider>
-                                        <RangeContextProvider>
-                                            <TradeTokenContextProvider>
-                                                <PoolContextProvider>
-                                                    <CandleContextProvider>
-                                                        <TradeTableContextProvider>
-                                                            <UserPreferenceContextProvider>
-                                                                <SidebarContextProvider>
-                                                                    <ExploreContextProvider>
-                                                                        {
-                                                                            props.children
-                                                                        }
-                                                                    </ExploreContextProvider>
-                                                                </SidebarContextProvider>
-                                                            </UserPreferenceContextProvider>
-                                                        </TradeTableContextProvider>
-                                                    </CandleContextProvider>
-                                                </PoolContextProvider>
-                                            </TradeTokenContextProvider>
-                                        </RangeContextProvider>
-                                    </ChartContextProvider>
-                                </UserDataContextProvider>
-                            </ChainDataContextProvider>
-                        </TokenContextProvider>
-                    </CrocEnvContextProvider>
+                    <DataLoadingContextProvider>
+                        <UserDataContextProvider>
+                            <ChartContextProvider>
+                                <RangeContextProvider>
+                                    <TradeDataContextProvider>
+                                        {/* Everything above here has no context dependencies */}
+                                        <TokenBalanceContextProvider>
+                                            <CrocEnvContextProvider>
+                                                <TokenContextProvider>
+                                                    <ChainDataContextProvider>
+                                                        <GraphDataContextProvider>
+                                                            <TradeTokenContextProvider>
+                                                                <PoolContextProvider>
+                                                                    <CandleContextProvider>
+                                                                        <TradeTableContextProvider>
+                                                                            <UserPreferenceContextProvider>
+                                                                                <SidebarContextProvider>
+                                                                                    <ExploreContextProvider>
+                                                                                        {
+                                                                                            props.children
+                                                                                        }
+                                                                                    </ExploreContextProvider>
+                                                                                </SidebarContextProvider>
+                                                                            </UserPreferenceContextProvider>
+                                                                        </TradeTableContextProvider>
+                                                                    </CandleContextProvider>
+                                                                </PoolContextProvider>
+                                                            </TradeTokenContextProvider>
+                                                        </GraphDataContextProvider>
+                                                    </ChainDataContextProvider>
+                                                </TokenContextProvider>
+                                            </CrocEnvContextProvider>
+                                        </TokenBalanceContextProvider>
+                                        {/* Everything below here has no context dependencies */}
+                                    </TradeDataContextProvider>
+                                </RangeContextProvider>
+                            </ChartContextProvider>
+                        </UserDataContextProvider>
+                    </DataLoadingContextProvider>
                 </CachedDataContextProvider>
             </ENSAddressContextProvider>
         </AppStateContextProvider>

@@ -221,7 +221,7 @@ function TradeCharts(props: propsIF) {
                     reset={reset}
                 />
             </div>
-            <div style={{ width: '100%', height: '100%', zIndex: '2' }}>
+            <div style={{ width: '100%', height: '100%' }}>
                 <TradeCandleStickChart
                     changeState={props.changeState}
                     chartItemStates={chartItemStates}

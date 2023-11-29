@@ -31,10 +31,16 @@ export default function TradeLinks(props: propsIF) {
         tokenA: tokenA.address,
         tokenB: tokenB.address,
     };
-    const limitParams: limitParamsIF = {
-        ...marketParams,
-        limitTick: limitTick ?? 0,
-    };
+    // this is constructed as such to handle a valid `0` value
+    const limitParams: limitParamsIF =
+        limitTick === undefined
+            ? {
+                  ...marketParams,
+              }
+            : {
+                  ...marketParams,
+                  limitTick: limitTick,
+              };
     const poolParams: poolParamsIF = {
         ...marketParams,
     };

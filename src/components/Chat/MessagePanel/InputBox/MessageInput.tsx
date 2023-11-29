@@ -1,4 +1,5 @@
 import { useAccount } from 'wagmi';
+import useChatSocket from '../../Service/useChatSocket';
 import { BsEmojiSmile } from 'react-icons/bs';
 import { Message } from '../../Model/MessageModel';
 
@@ -14,9 +15,9 @@ import {
 } from 'react';
 import PositionBox from '../PositionBox/PositionBox';
 
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { RiCloseFill, RiInformationLine } from 'react-icons/ri';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 import MentionAutoComplete from './MentionAutoComplete/MentionAutoComplete';
 import { User, getUserLabel, userLabelForFilter } from '../../Model/UserModel';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
@@ -65,15 +66,12 @@ export default function MessageInput(props: MessageInputProps) {
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [isInfoPressed, setIsInfoPressed] = useState(false);
-    const { address, isConnected } = useAccount();
+    const { userAddress, isUserConnected } = useContext(UserDataContext);
     const [isPosition, setIsPosition] = useState(false);
     const {
         chat: { isOpen: isChatOpen },
         subscriptions: { isEnabled: isSubscriptionsEnabled },
     } = useContext(AppStateContext);
-
-    const userData = useAppSelector((state) => state.userData);
-    const isUserLoggedIn = userData.isLoggedIn;
 
     const [mentPanelActive, setMentPanelActive] = useState(false);
     const [mentPanelQueryStr, setMentPanelQueryStr] = useState('');
@@ -125,7 +123,7 @@ export default function MessageInput(props: MessageInputProps) {
     };
 
     const handleEmojiPickerHideShow = () => {
-        if (!isUserLoggedIn || props.room === 'Admins') {
+        if (!isUserConnected || props.room === 'Admins') {
             setShowEmojiPicker(false);
         } else {
             setShowEmojiPicker(!showEmojiPicker);
@@ -145,7 +143,7 @@ export default function MessageInput(props: MessageInputProps) {
     };
 
     function messageInputText() {
-        if (isConnected && address) {
+        if (isUserConnected && userAddress) {
             return 'Type to chat. Enter to submit.';
         } else {
             return 'Please connect wallet to chat.';
@@ -154,7 +152,7 @@ export default function MessageInput(props: MessageInputProps) {
 
     useEffect(() => {
         messageInputText();
-    }, [isConnected, address]);
+    }, [isUserConnected, userAddress]);
 
     useEffect(() => {
         if (inputRef.current !== null && cursorPosition !== null) {
@@ -374,7 +372,7 @@ export default function MessageInput(props: MessageInputProps) {
     });
 
     const handleSendMsg = async (msg: string, roomId: string) => {
-        if (msg !== '' && address) {
+        if (msg !== '' && userAddress) {
             if (
                 (isRoomAdmins && props.replyMessageContent !== undefined) ||
                 (props.replyMessageContent?.roomInfo !== 'Admins' &&
@@ -385,7 +383,7 @@ export default function MessageInput(props: MessageInputProps) {
                     message,
                     props.replyMessageContent?.roomInfo as string,
                     props.ensName,
-                    address,
+                    userAddress,
                     mentUser ? userLabelForFilter(mentUser) : null,
                     mentUser ? mentUser.walletID : null,
                     props.replyMessageContent !== undefined
@@ -398,7 +396,7 @@ export default function MessageInput(props: MessageInputProps) {
                     message,
                     roomId,
                     props.ensName,
-                    address,
+                    userAddress,
                     mentUser ? userLabelForFilter(mentUser) : null,
                     mentUser ? mentUser.walletID : null,
                     props.replyMessageContent !== undefined
@@ -459,7 +457,7 @@ export default function MessageInput(props: MessageInputProps) {
             {!props.isInputDisabled && (
                 <div
                     className={
-                        !isConnected
+                        !isUserConnected
                             ? styles.input_box_not_allowed
                             : styles.input_box
                     }
@@ -471,7 +469,7 @@ export default function MessageInput(props: MessageInputProps) {
                         setIsPosition={setIsPosition}
                         walletExplorer={
                             props.ensName === undefined
-                                ? address
+                                ? userAddress
                                 : props.ensName
                         }
                     />
@@ -498,7 +496,7 @@ export default function MessageInput(props: MessageInputProps) {
 
                     <div
                         className={
-                            !isConnected
+                            !isUserConnected
                                 ? styles.input_not_allowed
                                 : styles.input
                         }
@@ -507,9 +505,9 @@ export default function MessageInput(props: MessageInputProps) {
                             type='text'
                             id='box'
                             placeholder={messageInputText()}
-                            disabled={!isConnected || props.isInputDisabled}
+                            disabled={!isUserConnected || props.isInputDisabled}
                             className={
-                                !isConnected
+                                !isUserConnected
                                     ? styles.input_text_not_allowed
                                     : styles.input_text
                             }
@@ -535,7 +533,7 @@ export default function MessageInput(props: MessageInputProps) {
 
                         <BsEmojiSmile
                             className={
-                                isUserLoggedIn
+                                isUserConnected
                                     ? styles.svgButton
                                     : styles.not_LoggedIn_svgButton
                             }
@@ -544,7 +542,7 @@ export default function MessageInput(props: MessageInputProps) {
                         {}
                         <div
                             className={
-                                isUserLoggedIn
+                                isUserConnected
                                     ? styles.send_message_button
                                     : styles.not_LoggedIn_send_message_button
                             }
@@ -564,7 +562,7 @@ export default function MessageInput(props: MessageInputProps) {
                                     strokeLinecap='round'
                                     strokeLinejoin='round'
                                     className={
-                                        isUserLoggedIn
+                                        isUserConnected
                                             ? styles.svgButton
                                             : styles.not_LoggedIn_svgButton
                                     }

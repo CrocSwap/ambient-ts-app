@@ -19,6 +19,7 @@ import {
     LimitRateButtonContainer,
     TokenQuantityInput,
 } from '../../../../styled/Components/TradeModules';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     previousDisplayPrice: string;
@@ -49,11 +50,9 @@ export default function LimitRate(props: propsIF) {
     const { pool } = useContext(PoolContext);
     const { showOrderPulseAnimation } = useContext(TradeTableContext);
 
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const { limitTick } = useAppSelector((state) => state.tradeData);
     const isPoolInitialized = useSimulatedIsPoolInitialized();
-
-    const isDenomBase: boolean = tradeData.isDenomBase;
-    const limitTick: number | undefined = tradeData.limitTick;
+    const { isDenomBase } = useContext(TradeDataContext);
 
     const increaseTick = (): void => {
         if (limitTick !== undefined) {
@@ -76,6 +75,7 @@ export default function LimitRate(props: propsIF) {
     const handleLimitChange = async (value: string) => {
         IS_LOCAL_ENV && console.debug({ value });
         if (pool) {
+            if (parseFloat(value) === 0 || isNaN(parseFloat(value))) return;
             const limit = await pool.fromDisplayPrice(
                 isDenomBase ? parseFloat(value) : 1 / parseFloat(value),
             );
@@ -129,9 +129,8 @@ export default function LimitRate(props: propsIF) {
                     <TokenQuantityInput
                         id='limit_rate_input'
                         onFocus={() => {
-                            const limitRateInputField = document.getElementById(
-                                'limit-rate-quantity',
-                            );
+                            const limitRateInputField =
+                                document.getElementById('limit_rate_input');
                             (limitRateInputField as HTMLInputElement).select();
                         }}
                         onChange={(e: ChangeEvent<HTMLInputElement>) =>

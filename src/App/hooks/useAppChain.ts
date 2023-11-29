@@ -1,17 +1,8 @@
-import {
-    // Dispatch,
-    // SetStateAction,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { getDefaultChainId, validateChainId } from '../../utils/data/chains';
 import { useNetwork, useSwitchNetwork } from 'wagmi';
-import { setChainId } from '../../utils/state/tradeDataSlice';
-import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import chainNumToString from '../functions/chainNumToString';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 import { NetworkIF } from '../../utils/interfaces/exports';
@@ -34,8 +25,6 @@ export const useAppChain = (): {
     const [searchParams] = useSearchParams();
     const chainParam = searchParams.get('chain');
     const networkParam = searchParams.get('network');
-
-    const dispatch = useAppDispatch();
 
     const CHAIN_LS_KEY = 'CHAIN_ID';
 
@@ -195,8 +184,6 @@ export const useAppChain = (): {
     const chainData = useMemo<ChainSpec>(() => {
         const output: ChainSpec =
             lookupChain(activeNetwork.chainId) ?? lookupChain(defaultChain);
-        // sync data in RTK for the new chain
-        dispatch(setChainId(output.chainId));
         // return output varibale (chain data)
         return output;
     }, [activeNetwork.chainId]);

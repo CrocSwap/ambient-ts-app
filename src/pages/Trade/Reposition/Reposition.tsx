@@ -34,7 +34,6 @@ import {
     TransactionError,
 } from '../../../utils/TransactionError';
 import useDebounce from '../../../App/hooks/useDebounce';
-import { setAdvancedMode } from '../../../utils/state/tradeDataSlice';
 import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { FiExternalLink } from 'react-icons/fi';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -50,6 +49,7 @@ import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import RangeWidth from '../../../components/Form/RangeWidth/RangeWidth';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 function Reposition() {
     // current URL parameter string
@@ -78,6 +78,7 @@ function Reposition() {
         setMinRangePrice: setMinPrice,
         setCurrentRangeInReposition,
         setRescaleRangeBoundariesWithSlider,
+        setAdvancedMode,
     } = useContext(RangeContext);
 
     const [isOpen, openModal, closeModal] = useModal();
@@ -86,10 +87,12 @@ function Reposition() {
         useState('');
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [txErrorCode, setTxErrorCode] = useState('');
+    const [txErrorMessage, setTxErrorMessage] = useState('');
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setTxErrorCode('');
+        setTxErrorMessage('');
         setNewRepositionTransactionHash('');
     };
 
@@ -143,14 +146,11 @@ function Reposition() {
     }, [crocEnv, lastBlockNumber, position?.positionId]);
 
     const {
-        tradeData: {
-            tokenA,
-            tokenB,
-            isTokenABase,
-            poolPriceNonDisplay: currentPoolPriceNonDisplay,
-            isDenomBase,
-        },
+        tradeData: { poolPriceNonDisplay: currentPoolPriceNonDisplay },
     } = useAppSelector((state) => state);
+
+    const { isDenomBase, tokenA, tokenB, isTokenABase } =
+        useContext(TradeDataContext);
 
     const currentPoolPriceTick =
         Math.log(currentPoolPriceNonDisplay) / Math.log(1.0001);
@@ -208,7 +208,7 @@ function Reposition() {
 
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('set Advanced Mode to false');
-        dispatch(setAdvancedMode(false));
+        setAdvancedMode(false);
     }, []);
 
     useEffect(() => {
@@ -279,6 +279,7 @@ function Reposition() {
         if (!crocEnv) return;
         let tx;
         setTxErrorCode('');
+        setTxErrorMessage('');
 
         resetConfirmation();
         setShowConfirmation(true);
@@ -323,6 +324,7 @@ function Reposition() {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
+            setTxErrorMessage(error?.data?.message);
         }
 
         let receipt;
@@ -430,7 +432,8 @@ function Reposition() {
                     setCurrentQuoteQtyDisplayTruncated('...');
                     return;
                 }
-
+                // temporarily skip ENS fetch
+                const skipENSFetch = true;
                 const positionStats = await getPositionData(
                     json.data as PositionServerIF,
                     tokens.tokenUniv,
@@ -442,6 +445,7 @@ function Reposition() {
                     cachedQuerySpotPrice,
                     cachedTokenDetails,
                     cachedEnsResolve,
+                    skipENSFetch,
                 );
                 const liqBaseNum =
                     positionStats.positionLiqBaseDecimalCorrected;
@@ -665,6 +669,7 @@ function Reposition() {
                                     newRepositionTransactionHash
                                 }
                                 txErrorCode={txErrorCode}
+                                txErrorMessage={txErrorMessage}
                                 sendTransaction={sendRepositionTransaction}
                                 resetConfirmation={resetConfirmation}
                                 transactionPendingDisplayString={`Repositioning transaction with ${tokenA.symbol} and ${tokenB.symbol}`}
@@ -703,6 +708,7 @@ function Reposition() {
                     newRepositionTransactionHash={newRepositionTransactionHash}
                     resetConfirmation={resetConfirmation}
                     txErrorCode={txErrorCode}
+                    txErrorMessage={txErrorMessage}
                     minPriceDisplay={minPriceDisplay}
                     maxPriceDisplay={maxPriceDisplay}
                     currentBaseQtyDisplayTruncated={

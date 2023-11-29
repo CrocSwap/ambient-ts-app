@@ -8,9 +8,7 @@ import { memo, useContext, useEffect, useRef, useState } from 'react';
 import useChatSocket from './Service/useChatSocket';
 import { PoolIF } from '../../utils/interfaces/exports';
 import useChatApi from './Service/ChatApi';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { BsChatLeftFill } from 'react-icons/bs';
-import { useAccount, useEnsName } from 'wagmi';
 import { IoIosArrowUp, IoIosArrowDown, IoIosClose } from 'react-icons/io';
 import FullChat from './FullChat/FullChat';
 import trimString from '../../utils/functions/trimString';
@@ -23,6 +21,8 @@ import Picker from 'emoji-picker-react';
 import UserSummary from './MessagePanel/UserSummary/UserSummary';
 import { UserSummaryModel } from './Model/UserSummaryModel';
 import ChatConfirmationPanel from './ChatConfirmationPanel/ChatConfirmationPanel';
+import { UserDataContext } from '../../contexts/UserDataContext';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -41,7 +41,7 @@ function ChatPanel(props: propsIF) {
         subscriptions: { isEnabled: isSubscriptionsEnabled },
     } = useContext(AppStateContext);
 
-    const currentPool = useAppSelector((state) => state.tradeData);
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     if (!isChatEnabled) return <NotFound />;
 
@@ -52,15 +52,12 @@ function ChatPanel(props: propsIF) {
     const [isModerator, setIsModerator] = useState(false);
     const [isCurrentPool, setIsCurrentPool] = useState(false);
     const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
-    const [userCurrentPool, setUserCurrentPool] = useState(
-        currentPool.baseToken.symbol + ' / ' + currentPool.quoteToken.symbol,
-    );
+    const [userCurrentPool, setUserCurrentPool] = useState('ETH / USDC');
     const [isDeleteMessageButtonPressed, setIsDeleteMessageButtonPressed] =
         useState(false);
     const [showPopUp, setShowPopUp] = useState(false);
     const [popUpText, setPopUpText] = useState('');
-    const { address } = useAccount();
-    const { data: ens } = useEnsName({ address });
+    const { userAddress, ensName: ens } = useContext(UserDataContext);
     const [ensName, setEnsName] = useState('');
     const [currentUser, setCurrentUser] = useState<string | undefined>(
         undefined,
@@ -130,18 +127,17 @@ function ChatPanel(props: propsIF) {
         room,
         isSubscriptionsEnabled,
         isChatOpen,
-        address,
+        userAddress,
         ens,
         currentUser,
     );
 
     const { getID, updateUser, updateMessageUser } = useChatApi();
 
-    const userData = useAppSelector((state) => state.userData);
-    const isUserLoggedIn = userData.isLoggedIn;
-    const resolvedAddress = userData.resolvedAddress;
     const [focusedMessage, setFocusedMessage] = useState<Message | undefined>();
     const [showPicker, setShowPicker] = useState(false);
+    const { isUserConnected, resolvedAddressFromContext } =
+        useContext(UserDataContext);
 
     const defaultEnsName = 'defaultValue';
 
@@ -245,7 +241,7 @@ function ChatPanel(props: propsIF) {
         }
     };
     useEffect(() => {
-        if (address == undefined && notConnectedUserInterval == undefined) {
+        if (userAddress == undefined && notConnectedUserInterval == undefined) {
             const interval = setInterval(() => {
                 fetchForNotConnectedUser(room);
             }, 10000);
@@ -267,21 +263,21 @@ function ChatPanel(props: propsIF) {
             clearInterval(notConnectedUserInterval);
         }
 
-        if (address == undefined) {
+        if (userAddress == undefined) {
             const interval = setInterval(() => {
                 fetchForNotConnectedUser(room);
             }, 10000);
             setNotConnectedUserInterval(interval);
         }
-    }, [address]);
+    }, [userAddress]);
 
     useEffect(() => {
         if (scrollDirection === 'Scroll Up') {
             if (messageUser !== currentUser) {
                 if (
                     lastMessage?.mentionedName === ensName ||
-                    (lastMessage?.mentionedName === address &&
-                        address !== undefined)
+                    (lastMessage?.mentionedName === userAddress &&
+                        userAddress !== undefined)
                 ) {
                     setNotificationCount(
                         (notificationCount) => notificationCount + 1,
@@ -300,7 +296,7 @@ function ChatPanel(props: propsIF) {
 
     useEffect(() => {
         setScrollDirection('Scroll Down');
-        if (address) {
+        if (userAddress) {
             if (ens === null || ens === undefined) {
                 setEnsName(defaultEnsName);
             } else {
@@ -349,7 +345,7 @@ function ChatPanel(props: propsIF) {
         } else {
             setCurrentUser(undefined);
         }
-    }, [ens, address, isChatOpen, isFullScreen, setUserCurrentPool]);
+    }, [ens, userAddress, isChatOpen, isFullScreen, setUserCurrentPool]);
 
     useEffect(() => {
         setIsScrollToBottomButtonPressed(false);
@@ -376,7 +372,7 @@ function ChatPanel(props: propsIF) {
 
     useEffect(() => {
         const mentionsInScope = messages.filter((item) => {
-            return item.mentionedWalletID == address;
+            return item.mentionedWalletID == userAddress;
         });
 
         if (mentionIndex == -1) {
@@ -520,7 +516,9 @@ function ChatPanel(props: propsIF) {
     };
 
     const mentions = messages.filter((item) => {
-        return item.mentionedWalletID == address && address !== undefined;
+        return (
+            item.mentionedWalletID == userAddress && userAddress !== undefined
+        );
     });
 
     const handleMentionSkipper = (way: number) => {
@@ -586,13 +584,16 @@ function ChatPanel(props: propsIF) {
         window.ethereum
             .request({
                 method: 'personal_sign',
-                params: [message, address, ''],
+                params: [message, userAddress, ''],
                 // params: [message, '0x7D0CDcC61914001A5b9bF81063A2834119539911', ''],
             })
             // eslint-disable-next-line
             .then((signedMessage: any) => {
-                verifyUser(signedMessage, new Date().getMonth(), verifyDate);
-                localStorage.setItem('zz_ch_vrfTkn' + address, signedMessage);
+                verifyUser(signedMessage, verifyDate);
+                localStorage.setItem(
+                    'zz_ch_vrfTkn' + userAddress,
+                    signedMessage,
+                );
                 setTimeout(() => {
                     updateUserCache();
                 }, 300);
@@ -688,19 +689,19 @@ function ChatPanel(props: propsIF) {
         >
             {messages &&
                 messages.map((item, i) => {
-                    if (item.mentionedWalletID === address) {
+                    if (item.mentionedWalletID === userAddress) {
                         mentionIxdexPointer += 1;
                     }
                     return (
                         <SentMessagePanel
                             key={i}
-                            isUserLoggedIn={isUserLoggedIn as boolean}
+                            isUserLoggedIn={isUserConnected as boolean}
                             message={item}
                             ensName={ensName}
                             isCurrentUser={item.sender === currentUser}
                             currentUser={currentUser}
-                            resolvedAddress={resolvedAddress}
-                            connectedAccountActive={address}
+                            resolvedAddress={resolvedAddressFromContext}
+                            connectedAccountActive={userAddress}
                             room={room}
                             isModerator={isModerator}
                             isMessageDeleted={isMessageDeleted}
@@ -715,7 +716,7 @@ function ChatPanel(props: propsIF) {
                                 isLinkInCrocodileLabsLinks
                             }
                             mentionIndex={
-                                item.mentionedWalletID === address
+                                item.mentionedWalletID === userAddress
                                     ? mentionIxdexPointer - 1
                                     : undefined
                             }
@@ -738,7 +739,7 @@ function ChatPanel(props: propsIF) {
                             setReplyMessageContent={setReplyMessageContent}
                             isSubscriptionsEnabled={isSubscriptionsEnabled}
                             isChatOpen={isChatOpen}
-                            address={address}
+                            address={userAddress}
                             isDeleted={item.isDeleted}
                             deletedMessageText={item.deletedMessageText}
                             addReactionListener={reactionBtnListener}
@@ -886,9 +887,7 @@ function ChatPanel(props: propsIF) {
             message={messages[0]}
             room={
                 room === 'Current Pool'
-                    ? currentPool.baseToken.symbol +
-                      ' / ' +
-                      currentPool.quoteToken.symbol
+                    ? baseToken.symbol + ' / ' + quoteToken.symbol
                     : room
             }
             ensName={ensName}
@@ -926,7 +925,7 @@ function ChatPanel(props: propsIF) {
                 messageInput={messageInput}
                 userName={
                     ens === null || ens === ''
-                        ? trimString(address as string, 6, 0, '…')
+                        ? trimString(userAddress as string, 6, 0, '…')
                         : (ens as string)
                 }
                 setRoom={setRoom}

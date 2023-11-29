@@ -6,7 +6,8 @@ import { useState, useEffect, useContext } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import useChatApi from '../../Service/ChatApi';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     selectedRoom: any;
@@ -43,7 +44,7 @@ export default function Room(props: propsIF) {
     } = props;
     const rooms: PoolIF[] = [];
     const { favePools } = useContext(UserPreferenceContext);
-    const currentPool = useAppSelector((state) => state.tradeData);
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     // eslint-disable-next-line @typescript-eslint/ban-types
     const [roomArray] = useState<PoolIF[]>([]);
@@ -104,11 +105,7 @@ export default function Room(props: propsIF) {
     }
 
     useEffect(() => {
-        props.setUserCurrentPool(
-            currentPool.baseToken.symbol +
-                ' / ' +
-                currentPool.quoteToken.symbol,
-        );
+        props.setUserCurrentPool(baseToken.symbol + ' / ' + quoteToken.symbol);
         updateUser(
             props.currentUser as string,
             props.ensName,
@@ -126,25 +123,22 @@ export default function Room(props: propsIF) {
         }
 
         const currentPoolRoom: PoolIF = {
-            name:
-                currentPool.baseToken.symbol +
-                ' / ' +
-                currentPool.quoteToken.symbol,
+            name: baseToken.symbol + ' / ' + quoteToken.symbol,
             base: {
-                name: currentPool.baseToken.name,
-                address: currentPool.baseToken.address,
-                symbol: currentPool.baseToken.symbol,
-                decimals: currentPool.baseToken.decimals,
-                chainId: currentPool.baseToken.chainId,
-                logoURI: currentPool.baseToken.logoURI,
+                name: baseToken.name,
+                address: baseToken.address,
+                symbol: baseToken.symbol,
+                decimals: baseToken.decimals,
+                chainId: baseToken.chainId,
+                logoURI: baseToken.logoURI,
             },
             quote: {
-                name: currentPool.quoteToken.name,
-                address: currentPool.quoteToken.address,
-                symbol: currentPool.quoteToken.symbol,
-                decimals: currentPool.quoteToken.decimals,
-                chainId: currentPool.quoteToken.chainId,
-                logoURI: currentPool.quoteToken.logoURI,
+                name: quoteToken.name,
+                address: quoteToken.address,
+                symbol: quoteToken.symbol,
+                decimals: quoteToken.decimals,
+                chainId: quoteToken.chainId,
+                logoURI: quoteToken.logoURI,
             },
             chainId: '33',
             poolIdx: 10,
@@ -159,10 +153,7 @@ export default function Room(props: propsIF) {
                 (obj2) =>
                     obj2.base.symbol + ' / ' + obj2.quote.symbol !==
                         obj1.name &&
-                    obj1.name !==
-                        currentPool.baseToken.symbol +
-                            ' / ' +
-                            currentPool.quoteToken.symbol,
+                    obj1.name !== baseToken.symbol + ' / ' + quoteToken.symbol,
             ),
         );
 
@@ -171,8 +162,8 @@ export default function Room(props: propsIF) {
         }
     }, [
         isCurrentPool,
-        currentPool.baseToken.symbol,
-        currentPool.quoteToken.symbol,
+        baseToken.symbol,
+        quoteToken.symbol,
         props.selectedRoom,
         props.userCurrentPool,
     ]);
@@ -260,16 +251,13 @@ export default function Room(props: propsIF) {
             if (
                 !roomArray.some(
                     ({ name }) =>
-                        name ===
-                        currentPool.baseToken.symbol +
-                            ' / ' +
-                            currentPool.quoteToken.symbol,
+                        name === baseToken.symbol + ' / ' + quoteToken.symbol,
                 )
             ) {
                 roomArray.push(
-                    (currentPool.baseToken.symbol +
+                    (baseToken.symbol +
                         ' / ' +
-                        currentPool.quoteToken.symbol) as unknown as PoolIF,
+                        quoteToken.symbol) as unknown as PoolIF,
                 );
             }
 
@@ -329,11 +317,7 @@ export default function Room(props: propsIF) {
     }
 
     function handleRoomClickCurrentPool() {
-        props.setRoom(
-            currentPool.baseToken.symbol +
-                ' / ' +
-                currentPool.quoteToken.symbol,
-        );
+        props.setRoom(baseToken.symbol + ' / ' + quoteToken.symbol);
         setShowCurrentPoolButton(false);
         setIsActive(false);
         setIsCurrentPool(true);

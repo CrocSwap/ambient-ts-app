@@ -1,9 +1,9 @@
 import { Dispatch, SetStateAction, memo, useContext } from 'react';
 import { PoolContext } from '../../../../../contexts/PoolContext';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
 import { FlexContainer, Text } from '../../../../../styled/Common';
 import { SelectedRangeContainer } from '../../../../../styled/Components/TradeModules';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -34,7 +34,7 @@ function SelectedRange(props: propsIF) {
     } = props;
 
     const { poolPriceDisplay } = useContext(PoolContext);
-    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB } = useContext(TradeDataContext);
 
     const reverseDisplay =
         (isTokenABase && isDenomBase) || (!isTokenABase && !isDenomBase);
