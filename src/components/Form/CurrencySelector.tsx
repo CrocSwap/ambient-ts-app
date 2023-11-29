@@ -1,7 +1,7 @@
-import { TokenIF } from '../../utils/interfaces/exports';
+import { TokenIF } from '../../ambient-utils/types';
 import { Dispatch, memo, SetStateAction } from 'react';
 import { fromDisplayQty } from '@crocswap-libs/sdk';
-import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
+import { getFormattedNumber } from '../../ambient-utils/dataLayer';
 import TokenInputQuantity from './TokenInputQuantity';
 
 interface propsIF {

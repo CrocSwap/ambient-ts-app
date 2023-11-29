@@ -7,17 +7,21 @@ import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitP
 // START: Import Local Files
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../ambient-utils/constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
-import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
-import { exponentialNumRegEx } from '../../utils/regex/exports';
+import {
+    getFormattedNumber,
+    exponentialNumRegEx,
+    getUnicodeCharacter,
+    getMoneynessRank,
+    truncateDecimals,
+} from '../../ambient-utils/dataLayer';
 
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import InitPoolTokenSelect from '../../components/Global/InitPoolTokenSelect/InitPoolTokenSelect';
 
-import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { PoolContext } from '../../contexts/PoolContext';
 import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
 import { LuEdit2 } from 'react-icons/lu';
@@ -33,7 +37,6 @@ import { useTokenBalancesAndAllowances } from '../../App/hooks/useTokenBalancesA
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import Spinner from '../../components/Global/Spinner/Spinner';
 import AdvancedModeToggle from '../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
-import { getMoneynessRank } from '../../utils/functions/getMoneynessRank';
 import { WarningBox } from '../../components/RangeActionModal/WarningBox/WarningBox';
 import InitSkeleton from './InitSkeleton';
 import InitConfirmation from './InitConfirmation';
@@ -56,7 +59,6 @@ import {
 } from '../Trade/Range/Range';
 
 import { concDepositSkew, fromDisplayPrice } from '@crocswap-libs/sdk';
-import truncateDecimals from '../../utils/data/truncateDecimals';
 
 import { useHandleRangeButtonMessage } from '../../App/hooks/useHandleRangeButtonMessage';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
@@ -470,14 +472,16 @@ export default function InitPool() {
         useState(false);
 
     const refreshReferencePrice = async () => {
-        if (tradeDataMatchesURLParams) {
+        if (tradeDataMatchesURLParams && crocEnv) {
             const basePricePromise = cachedFetchTokenPrice(
                 baseToken.address,
                 chainId,
+                crocEnv,
             );
             const quotePricePromise = cachedFetchTokenPrice(
                 quoteToken.address,
                 chainId,
+                crocEnv,
             );
 
             const basePrice = await basePricePromise;
@@ -543,6 +547,7 @@ export default function InitPool() {
     useEffect(() => {
         refreshReferencePrice();
     }, [
+        crocEnv,
         baseToken,
         quoteToken,
         isDenomBase,
@@ -929,6 +934,7 @@ export default function InitPool() {
         undefined | string
     >('');
     const [txErrorCode, setTxErrorCode] = useState('');
+    const [txErrorMessage, setTxErrorMessage] = useState('');
     const [isInitPending, setIsInitPending] = useState(false);
     const [isTxCompletedInit, setIsTxCompletedInit] = useState(false);
     const [isTxCompletedRange, setIsTxCompletedRange] = useState(false);
@@ -942,6 +948,7 @@ export default function InitPool() {
 
     const resetConfirmation = () => {
         setTxErrorCode('');
+        setTxErrorMessage('');
         setNewRangeTransactionHash('');
         setNewInitTransactionHash('');
         setIsTxCompletedInit(false);
@@ -966,6 +973,7 @@ export default function InitPool() {
         setIsInitPending,
         setIsTxCompletedInit,
         setTxErrorCode,
+        setTxErrorMessage,
         resetConfirmation,
     );
 
@@ -1029,6 +1037,7 @@ export default function InitPool() {
             isAdd: false, // Always false for init
             setNewRangeTransactionHash,
             setTxErrorCode,
+            setTxErrorMessage,
             resetConfirmation,
             poolPrice: selectedPoolNonDisplayPrice,
             setIsTxCompletedRange: setIsTxCompletedRange,
@@ -1722,6 +1731,7 @@ export default function InitPool() {
         isAmbient,
         isTokenABase,
         errorCode: txErrorCode,
+        txErrorMessage: txErrorMessage,
         isTxCompletedInit,
         isTxCompletedRange,
         handleNavigation,

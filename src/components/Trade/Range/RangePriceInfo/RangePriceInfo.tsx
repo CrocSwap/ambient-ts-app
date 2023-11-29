@@ -1,17 +1,19 @@
 // START: Import Local Files
 import styles from './RangePriceInfo.module.css';
-// import truncateDecimals from '../../../../utils/data/truncateDecimals';
+// import truncateDecimals from '../../../../ambient-utils/dataLayer';
 // import makeCurrentPrice from './makeCurrentPrice';
 
 // import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import { memo, useContext, useEffect, useMemo, useState } from 'react';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
-import { isStableToken } from '../../../../utils/data/stablePairs';
+import {
+    isStableToken,
+    getFormattedNumber,
+} from '../../../../ambient-utils/dataLayer';
 
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 // interface for component props
@@ -53,6 +55,7 @@ function RangePriceInfo(props: propsIF) {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const {
         chainData: { chainId },
+        crocEnv,
     } = useContext(CrocEnvContext);
 
     const { isDenomBase, tokenA, tokenB, baseToken, quoteToken } =
@@ -114,9 +117,18 @@ function RangePriceInfo(props: propsIF) {
     const isEitherTokenStable = isStableTokenA || isStableTokenB;
 
     const updateMainnetPricesAsync = async () => {
-        const tokenAPrice = await cachedFetchTokenPrice(tokenAAddress, chainId);
+        if (!crocEnv) return;
+        const tokenAPrice = await cachedFetchTokenPrice(
+            tokenAAddress,
+            chainId,
+            crocEnv,
+        );
 
-        const tokenBPrice = await cachedFetchTokenPrice(tokenBAddress, chainId);
+        const tokenBPrice = await cachedFetchTokenPrice(
+            tokenBAddress,
+            chainId,
+            crocEnv,
+        );
 
         setTokenAPrice(tokenAPrice?.usdPrice);
         setTokenBPrice(tokenBPrice?.usdPrice);
@@ -126,7 +138,7 @@ function RangePriceInfo(props: propsIF) {
         setUserFlippedMaxMinDisplay(false);
 
         updateMainnetPricesAsync();
-    }, [tokenAAddress + tokenBAddress, isDenomTokenA]);
+    }, [crocEnv, tokenAAddress + tokenBAddress, isDenomTokenA]);
 
     useEffect(() => {
         if (!pinnedMinPrice || !pinnedMaxPrice) return;

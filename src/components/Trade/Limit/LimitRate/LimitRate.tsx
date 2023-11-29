@@ -6,11 +6,11 @@ import { setLimitTick } from '../../../../utils/state/tradeDataSlice';
 import { pinTickLower, pinTickUpper } from '@crocswap-libs/sdk';
 import { ChangeEvent, Dispatch, SetStateAction, useContext } from 'react';
 import { HiPlus, HiMinus } from 'react-icons/hi';
-import { IS_LOCAL_ENV } from '../../../../constants';
+import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import removeLeadingZeros from '../../../../utils/functions/removeLeadingZeros';
+import { removeLeadingZeros } from '../../../../ambient-utils/dataLayer';
 import { useSimulatedIsPoolInitialized } from '../../../../App/hooks/useSimulatedIsPoolInitialized';
 import { updatesIF } from '../../../../utils/hooks/useUrlParams';
 import { FlexContainer } from '../../../../styled/Common';
@@ -75,6 +75,7 @@ export default function LimitRate(props: propsIF) {
     const handleLimitChange = async (value: string) => {
         IS_LOCAL_ENV && console.debug({ value });
         if (pool) {
+            if (parseFloat(value) === 0 || isNaN(parseFloat(value))) return;
             const limit = await pool.fromDisplayPrice(
                 isDenomBase ? parseFloat(value) : 1 / parseFloat(value),
             );
@@ -128,9 +129,8 @@ export default function LimitRate(props: propsIF) {
                     <TokenQuantityInput
                         id='limit_rate_input'
                         onFocus={() => {
-                            const limitRateInputField = document.getElementById(
-                                'limit-rate-quantity',
-                            );
+                            const limitRateInputField =
+                                document.getElementById('limit_rate_input');
                             (limitRateInputField as HTMLInputElement).select();
                         }}
                         onChange={(e: ChangeEvent<HTMLInputElement>) =>

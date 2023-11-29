@@ -1,11 +1,11 @@
 import { Dispatch, SetStateAction, useContext, useEffect, memo } from 'react';
-import { ZERO_ADDRESS } from '../../../../constants';
+import { ZERO_ADDRESS } from '../../../../ambient-utils/constants';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
 import { FlexContainer } from '../../../../styled/Common';
-import truncateDecimals from '../../../../utils/data/truncateDecimals';
+import { truncateDecimals } from '../../../../ambient-utils/dataLayer';
 import {
     useAppDispatch,
     useAppSelector,

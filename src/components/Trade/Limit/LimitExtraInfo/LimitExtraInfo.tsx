@@ -1,6 +1,6 @@
 import { memo, useContext } from 'react';
 import { PoolContext } from '../../../../contexts/PoolContext';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import { ExtraInfo } from '../../TradeModules/ExtraInfo/ExtraInfo';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 

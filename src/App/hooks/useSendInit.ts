@@ -15,7 +15,7 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
-import { IS_LOCAL_ENV } from '../../constants';
+import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 export function useSendInit(
     setNewInitTransactionHash: React.Dispatch<
@@ -24,6 +24,7 @@ export function useSendInit(
     setIsInitPending: React.Dispatch<React.SetStateAction<boolean>>,
     setIsTxCompletedInit: React.Dispatch<React.SetStateAction<boolean>>,
     setTxErrorCode: React.Dispatch<React.SetStateAction<string>>,
+    setTxErrorMessage: React.Dispatch<React.SetStateAction<string>>,
     resetConfirmation: () => void, // Include resetConfirmation as an argument
 ) {
     const dispatch = useAppDispatch();
@@ -95,6 +96,7 @@ export function useSendInit(
                 }
                 console.error({ error });
                 setTxErrorCode(error?.code);
+                setTxErrorMessage(error?.data?.message);
             } finally {
                 setIsInitPending(false);
             }

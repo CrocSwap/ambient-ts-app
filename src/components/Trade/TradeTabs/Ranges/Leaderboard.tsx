@@ -12,7 +12,6 @@ import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { RangeRow as RangeRowStyled } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer } from '../../../../styled/Common';
-import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
@@ -199,14 +198,6 @@ function Leaderboard() {
         },
     ];
 
-    const { ensAddressMapping, addData } = useENSAddresses();
-
-    useEffect(() => {
-        if (usePaginateDataOrNull.length > 0) {
-            addData(usePaginateDataOrNull);
-        }
-    }, [usePaginateDataOrNull]);
-
     const rowItemContent = usePaginateDataOrNull?.map((position, idx) => (
         <RangesRow
             key={idx}
@@ -219,7 +210,6 @@ function Leaderboard() {
             isAccountView={false}
             isLeaderboard={true}
             tableView={tableView}
-            fetchedEnsAddress={ensAddressMapping.get(position.user)}
         />
     ));
 

@@ -7,24 +7,27 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { GCGO_OVERRIDE_URL } from '../../constants';
-import { LimitOrderServerIF } from '../../utils/interfaces/LimitOrderIF';
+import { GCGO_OVERRIDE_URL } from '../../ambient-utils/constants';
 import {
+    LimitOrderServerIF,
     PositionIF,
     PositionServerIF,
-} from '../../utils/interfaces/PositionIF';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
-
-import { FetchAddrFn } from '../functions/fetchAddress';
-import { FetchContractDetailsFn } from '../functions/fetchContractDetails';
-import { fetchPoolRecentChanges } from '../functions/fetchPoolRecentChanges';
-import { TokenPriceFn } from '../functions/fetchTokenPrice';
-import { getLimitOrderData } from '../functions/getLimitOrderData';
-import { fetchPoolLiquidity } from '../functions/fetchPoolLiquidity';
-import { getPositionData } from '../functions/getPositionData';
-import { SpotPriceFn } from '../functions/querySpotPrice';
+    TokenIF,
+} from '../../ambient-utils/types';
+import {
+    TokenPriceFn,
+    FetchAddrFn,
+    FetchContractDetailsFn,
+    fetchPoolRecentChanges,
+    fetchPoolLiquidity,
+} from '../../ambient-utils/api';
+import {
+    SpotPriceFn,
+    getLimitOrderData,
+    getPositionData,
+    getLiquidityFee,
+} from '../../ambient-utils/dataLayer';
 import useDebounce from './useDebounce';
-import { getLiquidityFee } from '../functions/getPoolStats';
 import { Provider } from '@ethersproject/providers';
 import { DataLoadingContext } from '../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../contexts/GraphDataContext';
@@ -82,7 +85,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         props.pathname.includes('highTick');
 
     // hook to sync token addresses in RTK to token addresses in RTK
-    const rtkMatchesParams = useMemo(() => {
+    const contextMatchesParams = useMemo(() => {
         let matching = false;
         const tokenAAddress = tokenA.address;
         const tokenBAddress = tokenB.address;
@@ -117,7 +120,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
     // Token and range housekeeping when switching pairs
     useEffect(() => {
-        if (rtkMatchesParams && props.crocEnv) {
+        if (contextMatchesParams && props.crocEnv) {
             if (!ticksInParams) {
                 setAdvancedLowTick(0);
                 setAdvancedHighTick(0);
@@ -148,7 +151,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             }
         }
     }, [
-        rtkMatchesParams,
+        contextMatchesParams,
         tokenA.address,
         tokenB.address,
         quoteTokenAddress,
@@ -185,7 +188,11 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
     // Sets up the asynchronous queries to TVL, volume and liquidity curve
     useEffect(() => {
-        if (rtkMatchesParams && props.crocEnv && props.provider !== undefined) {
+        if (
+            contextMatchesParams &&
+            props.crocEnv &&
+            props.provider !== undefined
+        ) {
             const tokenAAddress = tokenA.address;
             const tokenBAddress = tokenB.address;
 
@@ -600,7 +607,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
     }, [
         props.userAddress,
         props.receiptCount,
-        rtkMatchesParams,
+        contextMatchesParams,
         tokenA.address,
         tokenB.address,
         quoteTokenAddress,
@@ -658,7 +665,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
     ]);
 
     return {
-        rtkMatchesParams,
+        contextMatchesParams,
         baseTokenAddress,
         quoteTokenAddress,
         baseTokenDecimals, // Token contract decimals

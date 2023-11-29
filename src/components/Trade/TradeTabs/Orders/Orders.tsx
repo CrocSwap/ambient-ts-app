@@ -5,7 +5,7 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
 import OrderRow from './OrderTable/OrderRow';
 import { useSortedLimits } from '../useSortedLimits';
-import { LimitOrderIF } from '../../../../utils/interfaces/exports';
+import { LimitOrderIF } from '../../../../ambient-utils/types';
 import NoTableData from '../NoTableData/NoTableData';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
@@ -21,7 +21,6 @@ import {
     ViewMoreButton,
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
-import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
@@ -341,8 +340,9 @@ function Orders(props: propsIF) {
                 alignItems='center'
                 justifyContent='center'
                 gap={isSmallScreen ? 4 : 8}
-                margin='16px auto'
+                margin={isSmallScreen ? 'auto' : '16px auto'}
                 background='dark1'
+                flexDirection={isSmallScreen ? 'column' : 'row'}
             >
                 <RowsPerPageDropdown
                     rowsPerPage={rowsPerPage}
@@ -388,13 +388,6 @@ function Orders(props: propsIF) {
         </OrderRowStyled>
     );
 
-    // TODO: should not block rendering of table while fetching ENS addresses
-    const { ensAddressMapping, addData } = useENSAddresses();
-
-    useEffect(() => {
-        addData(sortedLimits);
-    }, [sortedLimits]);
-
     const currentRowItemContent = () =>
         _DATA.currentData.map((order, idx) => (
             <OrderRow
@@ -402,7 +395,6 @@ function Orders(props: propsIF) {
                 key={idx}
                 limitOrder={order}
                 isAccountView={isAccountView}
-                fetchedEnsAddress={ensAddressMapping.get(order.user)}
             />
         ));
 
@@ -438,7 +430,7 @@ function Orders(props: propsIF) {
         <NoTableData type='limits' isAccountView={isAccountView} />
     ) : (
         <div onKeyDown={handleKeyDownViewOrder}>
-            <ul ref={listRef}>
+            <ul ref={listRef} id='current_row_scroll'>
                 {!isAccountView &&
                     pendingTransactions.length > 0 &&
                     relevantTransactionsByType.reverse().map((tx, idx) => (
@@ -486,7 +478,7 @@ function Orders(props: propsIF) {
     }, [isTradeTableExpanded]);
 
     return (
-        <FlexContainer flexDirection='column' fullHeight>
+        <FlexContainer flexDirection='column' fullHeight={!isSmallScreen}>
             <div>{headerColumnsDisplay}</div>
 
             <div style={{ flex: 1, overflow: 'auto' }}>

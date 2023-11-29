@@ -1,4 +1,4 @@
-import { CORPORATE_LINK } from '../../constants';
+import { CORPORATE_LINK } from '../../ambient-utils/constants';
 import { footerItemIF } from './Footer';
 import styles from './Footer.module.css';
 

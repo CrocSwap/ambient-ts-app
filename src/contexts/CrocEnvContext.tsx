@@ -10,9 +10,6 @@ import { useProvider, useSigner } from 'wagmi';
 import { useAppChain } from '../App/hooks/useAppChain';
 import { useBlacklist } from '../App/hooks/useBlacklist';
 import { useTopPools } from '../App/hooks/useTopPools';
-import { APP_ENVIRONMENT, IS_LOCAL_ENV } from '../constants';
-import { mainnetETH } from '../utils/data/defaultTokens';
-import { getDefaultPairForChain } from '../utils/data/chains';
 import { CachedDataContext } from './CachedDataContext';
 import { Provider } from '@ethersproject/providers';
 import {
@@ -22,8 +19,14 @@ import {
     swapParamsIF,
     useLinkGen,
 } from '../utils/hooks/useLinkGen';
-import { NetworkIF, PoolIF, TokenIF } from '../utils/interfaces/exports';
-import { ethereumMainnet } from '../utils/networks/ethereumMainnet';
+import { NetworkIF, PoolIF, TokenIF } from '../ambient-utils/types';
+import {
+    APP_ENVIRONMENT,
+    IS_LOCAL_ENV,
+    ethereumMainnet,
+    mainnetETH,
+    getDefaultPairForChain,
+} from '../ambient-utils/constants';
 import { UserDataContext } from './UserDataContext';
 
 interface UrlRoutesTemplate {
@@ -164,19 +167,20 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     ]);
 
     useEffect(() => {
-        if (provider) {
+        if (provider && crocEnv) {
             (async () => {
                 IS_LOCAL_ENV &&
                     console.debug('fetching WETH price from mainnet');
                 const mainnetEthPrice = await cachedFetchTokenPrice(
                     mainnetETH.address,
                     ethereumMainnet.chainId,
+                    crocEnv,
                 );
                 const usdPrice = mainnetEthPrice?.usdPrice;
                 setEthMainnetUsdPrice(usdPrice);
             })();
         }
-    }, [provider]);
+    }, [crocEnv, provider]);
     useEffect(() => {
         setDefaultUrlParams(createDefaultUrlParams(chainData.chainId));
     }, [chainData.chainId]);

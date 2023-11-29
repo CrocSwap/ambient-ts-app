@@ -2,7 +2,7 @@ import styles from './VolumeTVLFee.module.css';
 import { Dispatch, SetStateAction, useState, useRef, memo } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
-import { LS_KEY_SUBCHART_SETTINGS } from '../../../../constants';
+import { LS_KEY_SUBCHART_SETTINGS } from '../../../../ambient-utils/constants';
 
 interface VolumeTVLFeePropsIF {
     setShowVolume: Dispatch<SetStateAction<boolean>>;

@@ -5,9 +5,10 @@ import {
     MIN_TICK,
     MAX_TICK,
 } from '@crocswap-libs/sdk';
-
-import truncateDecimals from '../../../utils/data/truncateDecimals';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import {
+    getFormattedNumber,
+    truncateDecimals,
+} from '../../../ambient-utils/dataLayer';
 
 export function roundDownTick(lowTick: number, nTicksGrid: number): number {
     const tickGrid = Math.floor(lowTick / nTicksGrid) * nTicksGrid;

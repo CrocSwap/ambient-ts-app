@@ -1,10 +1,10 @@
-import { TokenIF } from '../../../utils/interfaces/exports';
+import { TokenIF } from '../../../ambient-utils/types';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import Button from '../../Form/Button';
 import DividerDark from '../DividerDark/DividerDark';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import TokenIcon from '../TokenIcon/TokenIcon';
-import uriToHttp from '../../../utils/functions/uriToHttp';
+import { uriToHttp } from '../../../ambient-utils/dataLayer';
 interface propsIF {
     customToken: TokenIF | null | 'querying';
     chooseToken: (tkn: TokenIF, isCustom: boolean) => void;
