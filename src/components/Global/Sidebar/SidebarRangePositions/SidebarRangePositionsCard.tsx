@@ -1,11 +1,14 @@
-import { PositionIF } from '../../../../utils/interfaces/exports';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
-import { getSymbols } from '../../../../App/functions/getSymbols';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import { PositionIF } from '../../../../ambient-utils/types';
+import {
+    getFormattedNumber,
+    getSymbols,
+    getUnicodeCharacter,
+} from '../../../../ambient-utils/dataLayer';
 import { RangeItemContainer } from '../../../../styled/Components/Sidebar';
 import { FlexContainer } from '../../../../styled/Common';
 import { Status } from '../../../../styled/Components/Range';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { useContext } from 'react';
 
 interface propsIF {
     position: PositionIF;
@@ -14,7 +17,7 @@ interface propsIF {
 
 export default function SidebarRangePositionsCard(props: propsIF) {
     const { position, handleClick } = props;
-    const { isDenomBase } = useAppSelector((state) => state.tradeData);
+    const { isDenomBase } = useContext(TradeDataContext);
 
     // human-readable string showing the tokens in the pool
     const pair = getSymbols(

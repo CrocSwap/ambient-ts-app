@@ -1,7 +1,7 @@
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownMenu2';
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
-import { getSupportedChainIds } from '../../../../utils/data/chains';
+import { getSupportedChainIds } from '../../../../ambient-utils/dataLayer';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import {
@@ -10,7 +10,10 @@ import {
     NetworkItem,
     DropdownMenuContainer,
 } from '../../../../styled/Components/Header';
-import { supportedNetworks } from '../../../../utils/networks';
+import {
+    supportedNetworks,
+    INCLUDE_CANTO_LINK,
+} from '../../../../ambient-utils/constants';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { useSearchParams } from 'react-router-dom';
 import {
@@ -19,7 +22,6 @@ import {
 } from '../../../../utils/hooks/useLinkGen';
 import { Text } from '../../../../styled/Common';
 import { RiExternalLinkLine } from 'react-icons/ri';
-import { INCLUDE_CANTO_LINK } from '../../../../constants';
 import cantoLogo from '../../../../assets/images/networks/canto.png';
 import scrollLogo from '../../../../assets/images/networks/scroll.png';
 import ETH from '../../../../assets/images/tokens/ETH.png';

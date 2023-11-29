@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { RiArrowUpSLine, RiArrowDownSLine } from 'react-icons/ri';
-import uriToHttp from '../../../../utils/functions/uriToHttp';
+import { uriToHttp } from '../../../../ambient-utils/dataLayer';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import {
     CircleLoaderFailed,
@@ -17,6 +17,7 @@ import {
     SubmitTransactionExtraButton,
 } from '../../../../styled/Components/TradeModules';
 import { FlexContainer } from '../../../../styled/Common';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     type:
@@ -29,6 +30,7 @@ interface propsIF {
         | 'Reset';
     newTransactionHash: string;
     txErrorCode: string;
+    txErrorMessage: string;
     resetConfirmation: () => void;
     sendTransaction: () => Promise<void>;
     transactionPendingDisplayString: string;
@@ -41,6 +43,7 @@ export default function SubmitTransaction(props: propsIF) {
         type,
         newTransactionHash,
         txErrorCode,
+        txErrorMessage,
         resetConfirmation,
         sendTransaction,
         transactionPendingDisplayString,
@@ -59,7 +62,7 @@ export default function SubmitTransaction(props: propsIF) {
         isTransactionApproved &&
         !receiptData.pendingTransactions.includes(newTransactionHash);
 
-    const { tokenB } = useAppSelector((state) => state.tradeData);
+    const { tokenB } = useContext(TradeDataContext);
 
     const confirmSendMessage = (
         <WaitingConfirmation
@@ -81,7 +84,9 @@ export default function SubmitTransaction(props: propsIF) {
             initiateTx={sendTransaction}
         />
     );
-    const transactionException = <TransactionException />;
+    const transactionException = (
+        <TransactionException txErrorMessage={txErrorMessage} />
+    );
 
     const lastReceipt =
         receiptData?.sessionReceipts.length > 0

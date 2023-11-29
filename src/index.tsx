@@ -14,9 +14,11 @@ import { infuraProvider } from 'wagmi/providers/infura';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 
 import { InjectedConnector } from 'wagmi/connectors/injected';
-import { GLOBAL_MODAL_PORTAL_ID } from './constants';
 import { GlobalContexts } from './contexts/GlobalContexts';
-import { supportedNetworks } from './utils/networks';
+import {
+    GLOBAL_MODAL_PORTAL_ID,
+    supportedNetworks,
+} from './ambient-utils/constants';
 
 /* Perform a single forcible reload when the page first loads. Without this, there
  * are issues with Metamask and Chrome preloading. This shortcircuits preloading, at the

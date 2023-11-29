@@ -1,6 +1,9 @@
+import {
+    getFormattedNumber,
+    translateTestnetToken,
+} from '../../ambient-utils/dataLayer';
+import { TokenIF } from '../../ambient-utils/types';
 import { memo, useContext, useEffect, useState } from 'react';
-import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { formatTokenInput } from '../../utils/numbers';
 import TokenInputQuantity from './TokenInputQuantity';
 import { RefreshButton } from '../../styled/Components/TradeModules';
@@ -8,7 +11,7 @@ import { FiRefreshCw } from 'react-icons/fi';
 import WalletBalanceSubinfo from './WalletBalanceSubinfo';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { translateTestnetToken } from '../../utils/data/testnetTokenMap';
+
 interface propsIF {
     tokenAorB: 'A' | 'B';
     token: TokenIF;
@@ -58,10 +61,11 @@ function TokenInputWithWalletBalance(props: propsIF) {
 
     const {
         chainData: { chainId },
+        crocEnv,
     } = useContext(CrocEnvContext);
 
     const amountToReduceEthMainnet = 0.01; // .01 ETH
-    const amountToReduceEthScroll = 0.0003; // .0003 ETH
+    const amountToReduceEthScroll = 0.0007; // .0007 ETH
 
     const ethOffset = amountToReduceEth
         ? amountToReduceEth
@@ -76,29 +80,30 @@ function TokenInputWithWalletBalance(props: propsIF) {
     const pricedToken = translateTestnetToken(token.address);
 
     useEffect(() => {
-        Promise.resolve(cachedFetchTokenPrice(pricedToken, chainId)).then(
-            (price) => {
-                if (price?.usdPrice !== undefined) {
-                    const usdValueNum: number | undefined =
-                        price !== undefined && tokenInput !== ''
-                            ? price.usdPrice * parseFloat(tokenInput)
-                            : undefined;
-                    const usdValueTruncated =
-                        usdValueNum !== undefined
-                            ? getFormattedNumber({
-                                  value: usdValueNum,
-                                  isUSD: true,
-                              })
-                            : undefined;
-                    usdValueTruncated !== undefined
-                        ? setUsdValueForDom(usdValueTruncated)
-                        : setUsdValueForDom('');
-                } else {
-                    setUsdValueForDom(undefined);
-                }
-            },
-        );
-    }, [chainId, pricedToken, tokenInput]);
+        if (!crocEnv) return;
+        Promise.resolve(
+            cachedFetchTokenPrice(pricedToken, chainId, crocEnv),
+        ).then((price) => {
+            if (price?.usdPrice !== undefined) {
+                const usdValueNum: number | undefined =
+                    price !== undefined && tokenInput !== ''
+                        ? price.usdPrice * parseFloat(tokenInput)
+                        : undefined;
+                const usdValueTruncated =
+                    usdValueNum !== undefined
+                        ? getFormattedNumber({
+                              value: usdValueNum,
+                              isUSD: true,
+                          })
+                        : undefined;
+                usdValueTruncated !== undefined
+                    ? setUsdValueForDom(usdValueTruncated)
+                    : setUsdValueForDom('');
+            } else {
+                setUsdValueForDom(undefined);
+            }
+        });
+    }, [crocEnv, chainId, pricedToken, tokenInput]);
 
     const toDecimal = (val: string) =>
         isTokenEth ? parseFloat(val).toFixed(18) : parseFloat(val).toString();
