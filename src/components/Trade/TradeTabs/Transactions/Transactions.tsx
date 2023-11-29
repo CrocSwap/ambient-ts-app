@@ -31,7 +31,6 @@ import {
     ViewMoreButton,
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
-import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
@@ -505,12 +504,6 @@ function Transactions(props: propsIF) {
             </FlexContainer>
         );
 
-    const { ensAddressMapping, addData } = useENSAddresses();
-
-    useEffect(() => {
-        addData(sortedTransactions);
-    }, [sortedTransactions]);
-
     const currentRowItemContent = () =>
         _DATA.currentData.map((tx, idx) => (
             <TransactionRow
@@ -519,7 +512,6 @@ function Transactions(props: propsIF) {
                 tx={tx}
                 tableView={tableView}
                 isAccountView={isAccountView}
-                fetchedEnsAddress={ensAddressMapping.get(tx.user)}
             />
         ));
 

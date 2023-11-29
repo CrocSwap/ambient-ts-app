@@ -1,15 +1,15 @@
 /* eslint-disable camelcase */
 
 import { memoizePromiseFn } from './memoizePromiseFn';
-const randomNum = Math.random();
-import { ANALYTICS_URL } from '../../constants';
 import { translateTestnetToken } from '../../utils/data/testnetTokenMap';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { supportedNetworks } from '../../utils/networks';
-import { fetchTimeout } from '../../utils/functions/fetchTimeout';
+import { fetchBatch } from '../../utils/functions/fetchBatch';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { querySpotPrice } from './querySpotPrice';
 import truncateDecimals from '../../utils/data/truncateDecimals';
+
+const randomNum = Math.random();
 
 export const fetchTokenPrice = async (
     dispToken: string,
@@ -24,23 +24,14 @@ export const fetchTokenPrice = async (
         supportedNetworks[chain].defaultPair;
 
     try {
-        const url =
-            ANALYTICS_URL +
-            new URLSearchParams({
-                service: 'run',
-                config_path: 'price',
-                include_data: '0',
-                token_address: address,
-                asset_platform:
-                    chain === '0x82750' || chain === '0x8274f'
-                        ? 'scroll'
-                        : 'ethereum',
-            });
+        const body = {
+            config_path: 'price',
+            chain_id: chain,
+            token_address: address,
+        };
 
-        const response = await fetchTimeout(url);
-
-        const result = await response.json();
-        return result?.value;
+        const { value } = await fetchBatch<'price'>(body);
+        return value;
     } catch (error) {
         // if token is USDC, return 0.999
         if (address.toLowerCase() === defaultPair[1].address.toLowerCase()) {
@@ -104,6 +95,7 @@ const PRICE_WINDOW_GRANULARITY = 15 * 60 * 1000;
 
 const randomOffset = PRICE_WINDOW_GRANULARITY * randomNum;
 
+// TODO: remove this after moving over to fetchBatch
 export function memoizeTokenPrice(): TokenPriceFn {
     const memoFn = memoizePromiseFn(fetchTokenPrice);
     return (address: string, chain: string, crocEnv: CrocEnv) =>
