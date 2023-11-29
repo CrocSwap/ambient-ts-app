@@ -11,7 +11,7 @@ import { FiRefreshCw } from 'react-icons/fi';
 import WalletBalanceSubinfo from './WalletBalanceSubinfo';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { translateTestnetToken } from '../../utils/data/testnetTokenMap';
+import { Text } from '../../styled/Common';
 
 interface propsIF {
     tokenAorB: 'A' | 'B';

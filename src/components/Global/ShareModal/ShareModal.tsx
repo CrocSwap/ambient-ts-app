@@ -11,6 +11,7 @@ import {
     ShareUrl,
     ShareItem,
 } from '../../../styled/Components/TradeModules';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 interface SocialLinkPropsIF {
     // eslint-disable-next-line
