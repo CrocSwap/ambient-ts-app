@@ -2,7 +2,7 @@
 import { DetailedHTMLProps, HTMLAttributes, MutableRefObject } from 'react';
 import * as d3 from 'd3';
 import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
-import { CandleData } from '../../../App/functions/fetchCandleSeries';
+import { CandleDataIF } from '../../../ambient-utils/types';
 import { TradeDataContextIF } from '../../../contexts/TradeDataContext';
 
 declare global {
@@ -53,7 +53,7 @@ export type selectedDrawnData = {
     selectedCircle: lineData | undefined;
 };
 
-export interface CandleDataChart extends CandleData {
+export interface CandleDataChart extends CandleDataIF {
     isFakeData: boolean;
 }
 export type liquidityChartData = {

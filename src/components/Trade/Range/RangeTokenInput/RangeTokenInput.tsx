@@ -1,9 +1,11 @@
 import { Dispatch, SetStateAction, useContext, useEffect, memo } from 'react';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import {
+    getFormattedNumber,
+    calculateSecondaryDepositQty,
+} from '../../../../ambient-utils/dataLayer';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
-import { calculateSecondaryDepositQty } from '../../../../utils/functions/calculateSecondaryDepositQty';
 import {
     linkGenMethodsIF,
     poolParamsIF,

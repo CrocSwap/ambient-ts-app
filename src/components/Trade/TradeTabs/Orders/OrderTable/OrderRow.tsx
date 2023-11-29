@@ -2,7 +2,7 @@ import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
 import OrdersMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import OrderDetailsModal from '../../../../OrderDetails/OrderDetailsModal/OrderDetailsModal';
 import { memo, useContext, useEffect, useRef } from 'react';
-import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
+import { LimitOrderIF } from '../../../../../ambient-utils/types';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { orderRowConstants } from '../orderRowConstants';
@@ -15,11 +15,10 @@ interface propsIF {
     limitOrder: LimitOrderIF;
     isAccountView: boolean;
     tableView: 'small' | 'medium' | 'large';
-    fetchedEnsAddress?: string;
 }
 
 function OrderRow(props: propsIF) {
-    const { tableView, limitOrder, isAccountView, fetchedEnsAddress } = props;
+    const { tableView, limitOrder, isAccountView } = props;
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
@@ -65,12 +64,7 @@ function OrderRow(props: propsIF) {
         originalPositionLiqQuote,
         expectedPositionLiqBase,
         expectedPositionLiqQuote,
-    } = useProcessOrder(
-        limitOrder,
-        userAddress,
-        isAccountView,
-        fetchedEnsAddress,
-    );
+    } = useProcessOrder(limitOrder, userAddress, isAccountView);
 
     const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
         useModal();

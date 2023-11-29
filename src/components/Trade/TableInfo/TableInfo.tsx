@@ -3,7 +3,7 @@ import { GridContainer, ScrollContainer } from '../../../styled/Common';
 
 import { MainSection } from './TableInfo.styles';
 
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 
 import { DetailedBox } from './DetailedBox';
 import { FeaturedBox } from './FeaturedBox';

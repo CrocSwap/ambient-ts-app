@@ -1,5 +1,5 @@
 import SidebarRangePositionsCard from './SidebarRangePositionsCard';
-import { PositionIF } from '../../../../utils/interfaces/exports';
+import { PositionIF } from '../../../../ambient-utils/types';
 import { useLocation } from 'react-router-dom';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';

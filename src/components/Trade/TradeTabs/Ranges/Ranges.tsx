@@ -5,7 +5,7 @@ import { useEffect, useState, useContext, memo, useRef } from 'react';
 import { Pagination } from '@mui/material';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
-import { PositionIF } from '../../../../utils/interfaces/exports';
+import { PositionIF } from '../../../../ambient-utils/types';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
@@ -25,11 +25,11 @@ import {
     ViewMoreButton,
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
-import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
 
@@ -368,12 +368,6 @@ function Ranges(props: propsIF) {
         </RangeRowStyled>
     );
 
-    const { ensAddressMapping, addData } = useENSAddresses();
-
-    useEffect(() => {
-        addData(sortedPositions);
-    }, [sortedPositions]);
-
     const currentRowItemContent = () =>
         _DATA.currentData.map((position, idx) => (
             <RangesRow
@@ -381,7 +375,6 @@ function Ranges(props: propsIF) {
                 position={position}
                 isAccountView={isAccountView}
                 tableView={tableView}
-                fetchedEnsAddress={ensAddressMapping.get(position.user)}
             />
         ));
 
