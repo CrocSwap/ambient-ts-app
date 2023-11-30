@@ -355,7 +355,7 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
         baseTokenAddressTruncated,
     ]);
 
-    function InfoRow(props: ItemRowPropsIF) {
+    const InfoRow = memo(function InfoRow(props: ItemRowPropsIF) {
         const { title, content, explanation } = props;
 
         useEffect(() => {
@@ -372,7 +372,7 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
                 <div>{content}</div>
             </div>
         );
-    }
+    });
 
     return (
         <div className={styles.tx_details_container}>
