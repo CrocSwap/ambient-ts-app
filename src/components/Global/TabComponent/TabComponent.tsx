@@ -281,21 +281,21 @@ export default function TabComponent(props: TabPropsIF) {
                 {/* </AnimateSharedLayout> */}
             </nav>
             <div className={styles.main_tab_content}>
-                {/* <AnimateSharedLayout> */}
-                <motion.div
-                    // key={selectedTab ? selectedTab.label : 'empty'}
-                    // initial={{ y: 10, opacity: 0 }}
-                    // animate={{ y: 0, opacity: 1 }}
-                    // exit={{ y: -10, opacity: 0 }}
-                    // transition={{ duration: 0.2 }}
-                    role='tabpanel'
-                    tabIndex={0}
-                    style={{ height: '100%' }}
-                    hidden={!selectedTab}
-                >
-                    {selectedTab ? selectedTab.content : null}
-                </motion.div>
-                {/* </AnimateSharedLayout> */}
+                <AnimateSharedLayout>
+                    <motion.div
+                        key={selectedTab ? selectedTab.label : 'empty'}
+                        initial={{ y: 10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -10, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        role='tabpanel'
+                        tabIndex={0}
+                        style={{ height: '100%' }}
+                        hidden={!selectedTab}
+                    >
+                        {selectedTab ? selectedTab.content : null}
+                    </motion.div>
+                </AnimateSharedLayout>
             </div>
         </div>
     );
