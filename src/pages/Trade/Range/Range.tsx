@@ -964,9 +964,9 @@ function Range() {
         !receiptData.pendingTransactions.includes(newRangeTransactionHash);
 
     const rangeSteps = [
-        { label: 'Sign transaction.' },
+        { label: 'Sign transaction' },
         {
-            label: 'Submitting liquidity.',
+            label: 'Submitting liquidity',
         },
     ];
 

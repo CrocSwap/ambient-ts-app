@@ -495,7 +495,7 @@ function Swap(props: propsIF) {
         !receiptData.pendingTransactions.includes(newSwapTransactionHash);
 
     const swapSteps = [
-        { label: 'Sign transaction to initialize swap.' },
+        { label: 'Sign transaction' },
         {
             label: 'Submitting Swap',
         },

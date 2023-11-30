@@ -670,9 +670,9 @@ export default function Limit() {
         !receiptData.pendingTransactions.includes(newLimitOrderTransactionHash);
 
     const limitSteps = [
-        { label: 'Sign transaction.' },
+        { label: 'Sign transaction' },
         {
-            label: 'Submitting limit order.',
+            label: 'Submitting limit order',
         },
     ];
 
