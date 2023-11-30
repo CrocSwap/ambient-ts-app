@@ -31,6 +31,7 @@ export function createAnnotationLineSeries(
         .value((d: lineData) => d.y)
         .xScale(xScale)
         .yScale(yScale)
+        .label('')
         .decorate((context: CanvasRenderingContext2D) => {
             context.strokeStyle = '#7371fc';
             context.lineWidth = 1.5;

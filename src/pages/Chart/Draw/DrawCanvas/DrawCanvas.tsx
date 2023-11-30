@@ -332,6 +332,11 @@ function DrawCanvas(props: DrawCanvasProps) {
                             isTokenABase: currentPool.isTokenABase,
                             denomInBase: currentPool.isDenomBase,
                         },
+                        extendLeft: false,
+                        extendRight: false,
+                        labelPlacement: 'Left',
+                        labelAlignment: 'Middle',
+                        reverse: false,
                         line: {
                             active: !['Rect'].includes(activeDrawingType),
                             color: 'rgba(115, 113, 252, 1)',
@@ -431,6 +436,11 @@ function DrawCanvas(props: DrawCanvasProps) {
                             data: tempLineData,
                             type: activeDrawingType,
                             time: Date.now(),
+                            extendLeft: false,
+                            extendRight: false,
+                            labelPlacement: 'Left',
+                            labelAlignment: 'Middle',
+                            reverse: false,
                             pool: {
                                 poolIndex: poolIndex,
                                 tokenA: currentPool.tokenA.address,

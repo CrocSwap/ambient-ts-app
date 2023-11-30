@@ -197,6 +197,11 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                     (item[changedItemIndex].border.active = value);
                 type === 'background' &&
                     (item[changedItemIndex].background.active = value);
+                type === 'extendLeft' &&
+                    (item[changedItemIndex].extendLeft = value);
+                type === 'extendRight' &&
+                    (item[changedItemIndex].extendRight = value);
+                type === 'reverse' && (item[changedItemIndex].reverse = value);
 
                 addDrawActionStack(item[changedItemIndex], false);
                 return item;
@@ -218,6 +223,26 @@ function FloatingToolbar(props: FloatingToolbarProps) {
 
                 line && (item[changedItemIndex].line.dash = array);
                 border && (item[changedItemIndex].border.dash = array);
+                addDrawActionStack(item[changedItemIndex], false);
+                return item;
+            });
+            setIsShapeEdited(true);
+        }
+    };
+
+    const handleEditLabel = (
+        value: string,
+        placement: boolean,
+        alignment: boolean,
+    ) => {
+        if (selectedDrawnShape?.data) {
+            setDrawnShapeHistory((item: drawDataHistory[]) => {
+                const changedItemIndex = item.findIndex(
+                    (i) => i.time === selectedDrawnShape?.data.time,
+                );
+
+                placement && (item[changedItemIndex].labelPlacement = value);
+                alignment && (item[changedItemIndex].labelAlignment = value);
                 addDrawActionStack(item[changedItemIndex], false);
                 return item;
             });
@@ -601,6 +626,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                     handleEditColor={handleEditColor}
                     handleEditSize={handleEditSize}
                     handleEditStyle={handleEditStyle}
+                    handleEditLabel={handleEditLabel}
                     sizeOptions={sizeOptions}
                     styleOptions={styleOptions}
                     handleEditLines={handleEditLines}

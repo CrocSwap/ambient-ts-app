@@ -64,6 +64,22 @@ const OptionStyleContainer = styled.div`
     }
 `;
 
+const LabelStyleContainer = styled.div`
+    background: #242f3f;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    width: 60px;
+
+    display: flex;
+
+    &:hover {
+        font-size: 15px;
+        font-weight: bold;
+    }
+`;
+
 const ColorPickerTab = styled.div`
     display: flex;
 
@@ -122,11 +138,19 @@ const LineSettingsRight = styled.div`
     gap: 10px;
 `;
 
+const ExtendSettings = styled.div`
+    align-items: center;
+    display: grid;
+    grid-template-columns: 25% 70%;
+
+    gap: 10px;
+`;
+
 const FibLineSettings = styled.div`
     background: #242f3f;
     align-items: center;
 
-    padding: 5px;
+    padding: 8px;
     gap: 12px;
 
     display: grid;
@@ -156,4 +180,6 @@ export {
     OptionColor,
     FibLineSettings,
     FibLineOptions,
+    ExtendSettings,
+    LabelStyleContainer,
 };

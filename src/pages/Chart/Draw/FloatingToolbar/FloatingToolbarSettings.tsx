@@ -5,10 +5,12 @@ import {
 } from '../../ChartUtils/chartUtils';
 import {
     ColorPickerTab,
+    ExtendSettings,
     FibLineOptions,
     FibLineSettings,
     FloatingToolbarSettingsContainer,
     InfoLabel,
+    LabelStyleContainer,
     LevelTitle,
     LineContainer,
     LineSettings,
@@ -40,6 +42,11 @@ interface FloatingToolbarSettingsProps {
     ) => void;
     handleEditSize: (value: number, line: boolean, border: boolean) => void;
     handleEditStyle: (array: number[], line: boolean, border: boolean) => void;
+    handleEditLabel: (
+        value: string,
+        placement: boolean,
+        alignment: boolean,
+    ) => void;
     handleEditLines: (value: boolean, type: string) => void;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     sizeOptions: Array<any>;
@@ -65,6 +72,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
         setIsShapeEdited,
         setDrawnShapeHistory,
         addDrawActionStack,
+        handleEditLabel,
         colorPicker,
     } = props;
 
@@ -98,6 +106,15 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
     const [isFibBackgroundTabActive, setIsFibBackgroundTabActive] =
         useState(false);
 
+    const [
+        isLabelPlacementOptionTabActive,
+        setisLabelPlacementOptionTabActive,
+    ] = useState(false);
+    const [
+        isLabelAlignmentOptionTabActive,
+        setisLabelAlignmentOptionTabActive,
+    ] = useState(false);
+
     const [selectedFibLevel, setSelectedFibLevel] = useState(Number);
 
     const closeAllOptions = (
@@ -126,6 +143,12 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
 
         setIsFibBackgroundTabActive((prev) => !prev && exclude === 'fib');
 
+        setisLabelPlacementOptionTabActive(
+            (prev) => !prev && exclude === 'labelPlacement',
+        );
+        setisLabelAlignmentOptionTabActive(
+            (prev) => !prev && exclude === 'labelAlignment',
+        );
         if (value && exclude === 'fib') {
             setSelectedFibLevel(() => value);
         }
@@ -168,6 +191,36 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
             setIsShapeEdited(true);
         }
     };
+
+    const placementOptions = [
+        {
+            name: 'Left',
+            value: 'Left',
+        },
+        {
+            name: 'Right',
+            value: 'Right',
+        },
+        {
+            name: 'Center',
+            value: 'Center',
+        },
+    ];
+
+    const alignmentOptions = [
+        {
+            name: 'Top',
+            value: 'Top',
+        },
+        {
+            name: 'Middle',
+            value: 'Middle',
+        },
+        {
+            name: 'Bottom',
+            value: 'Bottom',
+        },
+    ];
 
     return (
         <>
@@ -395,6 +448,102 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                             )}
                         </FibLineSettings>
                     )}
+
+                <Divider></Divider>
+
+                {selectedDrawnShape &&
+                    selectedDrawnShape.data.type === 'FibRetracement' && (
+                        <FibLineSettings style={{ paddingBottom: '20px' }}>
+                            <ExtendSettings>
+                                <Toggle
+                                    key={'toggle'}
+                                    isOn={selectedDrawnShape.data.extendLeft}
+                                    disabled={false}
+                                    handleToggle={() => {
+                                        handleEditLines(
+                                            !selectedDrawnShape.data.extendLeft,
+                                            'extendLeft',
+                                        );
+                                    }}
+                                    id='is_extendLeft_visible'
+                                    aria-label={'aria-label'}
+                                />
+                                <label>Extend Left</label>
+                            </ExtendSettings>
+                            <ExtendSettings>
+                                <Toggle
+                                    key={'toggle'}
+                                    isOn={selectedDrawnShape.data.extendRight}
+                                    disabled={false}
+                                    handleToggle={() => {
+                                        handleEditLines(
+                                            !selectedDrawnShape.data
+                                                .extendRight,
+                                            'extendRight',
+                                        );
+                                    }}
+                                    id='is_extendRight_visible'
+                                    aria-label={'aria-label'}
+                                />
+                                <label>Extend Right</label>
+                            </ExtendSettings>
+                        </FibLineSettings>
+                    )}
+
+                {selectedDrawnShape &&
+                    selectedDrawnShape.data.type === 'FibRetracement' && (
+                        <FibLineSettings style={{ paddingBottom: '20px' }}>
+                            <ExtendSettings>
+                                <Toggle
+                                    key={'toggle'}
+                                    isOn={selectedDrawnShape.data.reverse}
+                                    disabled={false}
+                                    handleToggle={() => {
+                                        handleEditLines(
+                                            !selectedDrawnShape.data.reverse,
+                                            'reverse',
+                                        );
+                                    }}
+                                    id='is_reverse_visible'
+                                    aria-label={'aria-label'}
+                                />
+                                <label>Reverse</label>
+                            </ExtendSettings>
+                        </FibLineSettings>
+                    )}
+
+                {selectedDrawnShape &&
+                    selectedDrawnShape.data.type === 'FibRetracement' && (
+                        <ExtendSettings
+                            style={{ gridTemplateColumns: '30% 70%' }}
+                        >
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                }}
+                            >
+                                <label>Labels</label>
+                            </div>
+                            <LineSettingsLeft>
+                                <LabelStyleContainer
+                                    onClick={() =>
+                                        closeAllOptions('labelPlacement')
+                                    }
+                                >
+                                    {selectedDrawnShape.data.labelPlacement}
+                                </LabelStyleContainer>
+                                <LabelStyleContainer
+                                    onClick={() =>
+                                        closeAllOptions('labelAlignment')
+                                    }
+                                >
+                                    {selectedDrawnShape.data.labelAlignment}
+                                </LabelStyleContainer>
+                            </LineSettingsLeft>
+                        </ExtendSettings>
+                    )}
             </FloatingToolbarSettingsContainer>
 
             {(isLineColorPickerTabActive ||
@@ -463,6 +612,52 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                             }
                         >
                             {item.icon} {item.name}
+                        </OptionsTabStyle>
+                    ))}
+                </OptionsTab>
+            )}
+
+            {isLabelPlacementOptionTabActive && (
+                <OptionsTab
+                    style={{
+                        marginLeft: '70px',
+                    }}
+                >
+                    {placementOptions.map((item, index) => (
+                        <OptionsTabStyle
+                            key={index}
+                            onClick={() =>
+                                handleEditLabel(
+                                    item.value,
+                                    isLabelPlacementOptionTabActive,
+                                    isLabelAlignmentOptionTabActive,
+                                )
+                            }
+                        >
+                            {item.name}
+                        </OptionsTabStyle>
+                    ))}
+                </OptionsTab>
+            )}
+
+            {isLabelAlignmentOptionTabActive && (
+                <OptionsTab
+                    style={{
+                        marginLeft: '70px',
+                    }}
+                >
+                    {alignmentOptions.map((item, index) => (
+                        <OptionsTabStyle
+                            key={index}
+                            onClick={() =>
+                                handleEditLabel(
+                                    item.value,
+                                    isLabelPlacementOptionTabActive,
+                                    isLabelAlignmentOptionTabActive,
+                                )
+                            }
+                        >
+                            {item.name}
                         </OptionsTabStyle>
                     ))}
                 </OptionsTab>
