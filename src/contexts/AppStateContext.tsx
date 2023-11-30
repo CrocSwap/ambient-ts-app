@@ -10,7 +10,7 @@ import {
     snackbarMethodsIF,
     useSnackbar,
 } from '../components/Global/SnackbarComponent/useSnackbar';
-import { CHAT_ENABLED } from '../constants';
+import { CHAT_ENABLED } from '../ambient-utils/constants';
 
 interface AppStateContextIF {
     appOverlay: { isActive: boolean; setIsActive: (val: boolean) => void };

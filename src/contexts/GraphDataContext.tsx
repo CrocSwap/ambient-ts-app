@@ -1,16 +1,17 @@
 import React, { createContext, useContext, useEffect } from 'react';
-import { fetchUserRecentChanges } from '../App/functions/fetchUserRecentChanges';
-import { getLimitOrderData } from '../App/functions/getLimitOrderData';
-import { getPositionData } from '../App/functions/getPositionData';
+import { fetchUserRecentChanges } from '../ambient-utils/api';
+import { getLimitOrderData, getPositionData } from '../ambient-utils/dataLayer';
 import useDebounce from '../App/hooks/useDebounce';
-import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../constants';
+import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../ambient-utils/constants';
 import {
+    TokenIF,
+    TransactionIF,
+    PositionIF,
+    PositionServerIF,
     LimitOrderIF,
     LimitOrderServerIF,
-} from '../utils/interfaces/LimitOrderIF';
-import { PositionIF, PositionServerIF } from '../utils/interfaces/PositionIF';
-import { TokenIF } from '../utils/interfaces/TokenIF';
-import { TransactionIF } from '../utils/interfaces/TransactionIF';
+    LiquidityDataIF,
+} from '../ambient-utils/types';
 
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
@@ -20,7 +21,6 @@ import { TokenContext } from './TokenContext';
 
 import { UserDataContext } from './UserDataContext';
 import { DataLoadingContext } from './DataLoadingContext';
-import { LiquidityDataIF } from '../App/functions/fetchPoolLiquidity';
 
 interface Changes {
     dataReceived: boolean;

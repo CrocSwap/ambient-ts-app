@@ -4,7 +4,7 @@ import RangeActionTokenHeader from './RangeActionTokenHeader/RangeActionTokenHea
 import RemoveRangeInfo from './RangeActionInfo/RemoveRangeInfo';
 import { useContext, useEffect, useMemo, useState } from 'react';
 
-import { PositionIF } from '../../utils/interfaces/exports';
+import { PositionIF, PositionServerIF } from '../../ambient-utils/types';
 import { BigNumber } from 'ethers';
 import {
     ambientPosSlot,
@@ -29,16 +29,17 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
-import { isStablePair } from '../../utils/data/stablePairs';
-import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../constants';
+import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
-import { getPositionData } from '../../App/functions/getPositionData';
+import {
+    getPositionData,
+    getFormattedNumber,
+    isStablePair,
+} from '../../ambient-utils/dataLayer';
 import { TokenContext } from '../../contexts/TokenContext';
-import { PositionServerIF } from '../../utils/interfaces/PositionIF';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
-import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import HarvestPositionInfo from './RangeActionInfo/HarvestPositionInfo';
 import ModalHeader from '../Global/ModalHeader/ModalHeader';
 import { RangeModalActionType } from '../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';

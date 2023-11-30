@@ -9,6 +9,7 @@ import {
     ReactElement,
     useContext,
 } from 'react';
+// eslint-disable-next-line
 import { motion, AnimateSharedLayout } from 'framer-motion';
 
 // START: Import Local Files
@@ -276,9 +277,9 @@ export default function TabComponent(props: TabPropsIF) {
         >
             {/* this part toggles between tables */}
             <nav className={`${styles.tab_nav} ${tabAlignStyle}`}>
-                <AnimateSharedLayout>
-                    {rightTabOptions ? tabsWithRightOption : fullTabs}
-                </AnimateSharedLayout>
+                {/* <AnimateSharedLayout> */}
+                {rightTabOptions ? tabsWithRightOption : fullTabs}
+                {/* </AnimateSharedLayout> */}
             </nav>
             {/* this is the table, column headers and data */}
             <div className={styles.main_tab_content}>

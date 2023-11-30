@@ -1,6 +1,6 @@
 /* eslint-disable no-irregular-whitespace */
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import { TransactionIF } from '../../../../utils/interfaces/exports';
+import { TransactionIF, CandleDataIF } from '../../../../ambient-utils/types';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { Dispatch, useState, useEffect, useRef, useContext, memo } from 'react';
 
@@ -15,13 +15,12 @@ import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropd
 import Spinner from '../../../Global/Spinner/Spinner';
 import { CandleContext } from '../../../../contexts/CandleContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
-import { CandleData } from '../../../../App/functions/fetchCandleSeries';
+import { fetchPoolRecentChanges } from '../../../../ambient-utils/api';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { fetchPoolRecentChanges } from '../../../../App/functions/fetchPoolRecentChanges';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import { IS_LOCAL_ENV } from '../../../../constants';
+import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { TransactionRowPlaceholder } from './TransactionsTable/TransactionRowPlaceholder';
@@ -31,13 +30,12 @@ import {
     ViewMoreButton,
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
-import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
-    filter?: CandleData | undefined;
+    filter?: CandleDataIF | undefined;
     activeAccountTransactionData?: TransactionIF[];
     connectedAccountActive?: boolean;
     isAccountView: boolean; // when viewing from /account: fullscreen and not paginated
@@ -505,12 +503,6 @@ function Transactions(props: propsIF) {
             </FlexContainer>
         );
 
-    const { ensAddressMapping, addData } = useENSAddresses();
-
-    useEffect(() => {
-        addData(sortedTransactions);
-    }, [sortedTransactions]);
-
     const currentRowItemContent = () =>
         _DATA.currentData.map((tx, idx) => (
             <TransactionRow
@@ -519,7 +511,6 @@ function Transactions(props: propsIF) {
                 tx={tx}
                 tableView={tableView}
                 isAccountView={isAccountView}
-                fetchedEnsAddress={ensAddressMapping.get(tx.user)}
             />
         ));
 
@@ -564,11 +555,7 @@ function Transactions(props: propsIF) {
             isAccountView={isAccountView}
         />
     ) : (
-        <FlexContainer
-            flexDirection='column'
-            onKeyDown={handleKeyDownViewTransaction}
-            height='100%'
-        >
+        <div onKeyDown={handleKeyDownViewTransaction}>
             <ul ref={listRef} id='current_row_scroll'>
                 {!isAccountView &&
                     pendingTransactions.length > 0 &&
@@ -684,7 +671,7 @@ function Transactions(props: propsIF) {
                 </FlexContainer>
             )}
             {/* Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render */}
-        </FlexContainer>
+        </div>
     );
 
     useEffect(() => {

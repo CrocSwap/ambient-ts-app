@@ -1,8 +1,11 @@
 import { CrocImpact } from '@crocswap-libs/sdk';
 import { useContext, useState, useEffect, memo } from 'react';
 import { useLocation } from 'react-router-dom';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
-import { getPriceImpactString } from '../../../App/functions/swap/getPriceImpactString';
+import {
+    getFormattedNumber,
+    getPriceImpactString,
+    isStablePair,
+} from '../../../ambient-utils/dataLayer';
 import Button from '../../../components/Form/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import TooltipComponent from '../../../components/Global/TooltipComponent/TooltipComponent';
@@ -12,7 +15,7 @@ import SwapTokenInput from '../../../components/Swap/SwapTokenInput/SwapTokenInp
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../ambient-utils/constants';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
@@ -21,7 +24,6 @@ import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { FlexContainer } from '../../../styled/Common';
 import { WarningContainer } from '../../../styled/Components/TradeModules';
-import { isStablePair } from '../../../utils/data/stablePairs';
 import {
     useAppDispatch,
     useAppSelector,

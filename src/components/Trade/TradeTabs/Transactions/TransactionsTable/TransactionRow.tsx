@@ -3,7 +3,7 @@ import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTran
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 import TransactionDetailsModal from '../../../../Global/TransactionDetails/TransactionDetailsModal';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
-import { TransactionIF } from '../../../../../utils/interfaces/exports';
+import { TransactionIF } from '../../../../../ambient-utils/types';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { txRowConstants } from '../txRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
@@ -18,10 +18,9 @@ interface propsIF {
     tx: TransactionIF;
     tableView: 'small' | 'medium' | 'large';
     isAccountView: boolean;
-    fetchedEnsAddress?: string;
 }
 function TransactionRow(props: propsIF) {
-    const { idForDOM, tableView, tx, isAccountView, fetchedEnsAddress } = props;
+    const { idForDOM, tableView, tx, isAccountView } = props;
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -55,12 +54,7 @@ function TransactionRow(props: propsIF) {
         priceCharacter,
         isBuy,
         elapsedTimeString,
-    } = useProcessTransaction(
-        tx,
-        userAddress,
-        isAccountView,
-        fetchedEnsAddress,
-    );
+    } = useProcessTransaction(tx, userAddress, isAccountView);
 
     const {
         snackbar: { open: openSnackbar },

@@ -1,7 +1,7 @@
 import styles from './NoTableData.module.css';
 // import { AiFillFolderOpen } from 'react-icons/ai';
 import { Dispatch, memo, useContext } from 'react';
-import { IS_LOCAL_ENV } from '../../../../constants';
+import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
 interface NoTableDataPropsIF {
