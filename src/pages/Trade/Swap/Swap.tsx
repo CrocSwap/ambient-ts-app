@@ -505,6 +505,7 @@ function Swap(props: propsIF) {
     // active step 0 is sign transaction loading
     // active step 1 is 'swapping something for something loading'
     // active step 2 is all completed
+    const [showStepperComponent, setShowStepperComponent] = useState(false);
 
     useEffect(() => {
         console.log({
@@ -537,6 +538,8 @@ function Swap(props: propsIF) {
                     isSwapPage={!isOnTradeRoute}
                     activeContent={activeContent}
                     handleSetActiveContent={handleSetActiveContent}
+                    handleReset={resetConfirmation}
+                    setShowStepperComponent={setShowStepperComponent}
                 />
             }
             input={
@@ -604,6 +607,8 @@ function Swap(props: propsIF) {
                     setActiveStep={setActiveStep}
                     steps={swapSteps}
                     handleSetActiveContent={handleSetActiveContent}
+                    showStepperComponent={showStepperComponent}
+                    setShowStepperComponent={setShowStepperComponent}
                 />
             }
             button={

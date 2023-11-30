@@ -693,6 +693,7 @@ export default function Limit() {
             setActiveStep(2);
         }
     }, [isTransactionApproved, isTransactionPending, isTransactionConfirmed]);
+    const [showStepperComponent, setShowStepperComponent] = useState(false);
 
     return (
         <TradeModuleSkeleton
@@ -707,6 +708,8 @@ export default function Limit() {
                     settingsTitle='Limit Order'
                     activeContent={activeContent}
                     handleSetActiveContent={handleSetActiveContent}
+                    handleReset={resetConfirmation}
+                    setShowStepperComponent={setShowStepperComponent}
                 />
             }
             input={
@@ -770,6 +773,8 @@ export default function Limit() {
                     setActiveStep={setActiveStep}
                     steps={limitSteps}
                     handleSetActiveContent={handleSetActiveContent}
+                    showStepperComponent={showStepperComponent}
+                    setShowStepperComponent={setShowStepperComponent}
                 />
             }
             button={

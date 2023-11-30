@@ -44,6 +44,8 @@ interface propsIF {
         label: string;
     }[];
     handleSetActiveContent: (newActiveContent: string) => void;
+    showStepperComponent: boolean;
+    setShowStepperComponent: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function ConfirmRangeModal(props: propsIF) {
@@ -70,6 +72,8 @@ function ConfirmRangeModal(props: propsIF) {
         setActiveStep,
         steps,
         handleSetActiveContent,
+        showStepperComponent,
+        setShowStepperComponent,
     } = props;
 
     const { tokenA, tokenB, isDenomBase } = useContext(TradeDataContext);
@@ -197,6 +201,8 @@ function ConfirmRangeModal(props: propsIF) {
             setActiveStep={setActiveStep}
             steps={steps}
             handleSetActiveContent={handleSetActiveContent}
+            showStepperComponent={showStepperComponent}
+            setShowStepperComponent={setShowStepperComponent}
         />
     );
 }

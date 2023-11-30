@@ -44,6 +44,8 @@ interface propsIF {
         label: string;
     }[];
     handleSetActiveContent?: (newActiveContent: string) => void;
+    showStepperComponent: boolean;
+    setShowStepperComponent: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function TradeConfirmationSkeleton(props: propsIF) {
@@ -67,6 +69,8 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         setActiveStep,
         steps,
         handleSetActiveContent,
+        showStepperComponent,
+        setShowStepperComponent,
     } = props;
 
     const {
@@ -159,8 +163,6 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
             {extraNotes && extraNotes}
         </>
     );
-
-    const [showStepperComponent, setShowStepperComponent] = useState(false);
 
     const tokensDisplay = (
         <FlexContainer gap={8} alignItems='center'>

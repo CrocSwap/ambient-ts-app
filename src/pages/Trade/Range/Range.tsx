@@ -981,6 +981,7 @@ function Range() {
             setActiveStep(2);
         }
     }, [isTransactionApproved, isTransactionPending, isTransactionConfirmed]);
+    const [showStepperComponent, setShowStepperComponent] = useState(false);
 
     console.log({ showConfirmation }, 'From Range.tsx');
 
@@ -997,6 +998,8 @@ function Range() {
                     settingsTitle='Pool'
                     activeContent={activeContent}
                     handleSetActiveContent={handleSetActiveContent}
+                    handleReset={resetConfirmation}
+                    setShowStepperComponent={setShowStepperComponent}
                 />
             }
             input={
@@ -1070,6 +1073,8 @@ function Range() {
                     setActiveStep={setActiveStep}
                     steps={rangeSteps}
                     handleSetActiveContent={handleSetActiveContent}
+                    showStepperComponent={showStepperComponent}
+                    setShowStepperComponent={setShowStepperComponent}
                 />
             }
             button={

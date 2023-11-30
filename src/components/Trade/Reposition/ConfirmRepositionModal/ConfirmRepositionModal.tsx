@@ -172,6 +172,8 @@ export default function ConfirmRepositionModal(props: propsIF) {
         </>
     );
 
+    // to shut tradeconfirmation up, needs to be moved to the reposition file(see swap, limit, range)
+    const [showStepperComponent, setShowStepperComponent] = useState(false);
     return (
         <TradeConfirmationSkeleton
             type='Reposition'
@@ -192,6 +194,8 @@ export default function ConfirmRepositionModal(props: propsIF) {
             resetConfirmation={resetConfirmation}
             poolTokenDisplay={poolTokenDisplay}
             onClose={onClose}
+            showStepperComponent={showStepperComponent}
+            setShowStepperComponent={setShowStepperComponent}
         />
     );
 }

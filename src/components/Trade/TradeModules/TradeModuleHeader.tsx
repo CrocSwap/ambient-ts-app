@@ -21,6 +21,8 @@ interface propsIF {
     isSwapPage?: boolean;
     activeContent?: string;
     handleSetActiveContent: (newActiveContent: string) => void;
+    handleReset: () => void;
+    setShowStepperComponent: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function TradeModuleHeader(props: propsIF) {
@@ -31,6 +33,8 @@ function TradeModuleHeader(props: propsIF) {
         isSwapPage,
         activeContent,
         handleSetActiveContent,
+        handleReset,
+        setShowStepperComponent,
     } = props;
 
     const [isSettingsModalOpen, openSettingsModal, closeSettingsModal] =
@@ -70,6 +74,11 @@ function TradeModuleHeader(props: propsIF) {
         }
     };
 
+    const handleGoBack = () => {
+        handleSetActiveContent('main');
+        handleReset();
+        setShowStepperComponent(false);
+    };
     return (
         <>
             <div style={{ paddingBottom: isSwapPage ? '16px' : '' }}>
@@ -91,7 +100,7 @@ function TradeModuleHeader(props: propsIF) {
                         />
                     ) : (
                         <BiArrowBack
-                            onClick={() => handleSetActiveContent('main')}
+                            onClick={handleGoBack}
                             id='back button'
                             role='button'
                             tabIndex={0}

@@ -34,6 +34,8 @@ interface propsIF {
         label: string;
     }[];
     handleSetActiveContent: (newActiveContent: string) => void;
+    showStepperComponent: boolean;
+    setShowStepperComponent: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
@@ -59,6 +61,8 @@ export default function ConfirmSwapModal(props: propsIF) {
         setActiveStep,
         steps,
         handleSetActiveContent,
+        showStepperComponent,
+        setShowStepperComponent,
     } = props;
 
     const { pool } = useContext(PoolContext);
@@ -255,6 +259,8 @@ export default function ConfirmSwapModal(props: propsIF) {
             setActiveStep={setActiveStep}
             steps={steps}
             handleSetActiveContent={handleSetActiveContent}
+            showStepperComponent={showStepperComponent}
+            setShowStepperComponent={setShowStepperComponent}
         />
     );
 }
