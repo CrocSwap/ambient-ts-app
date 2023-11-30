@@ -2,11 +2,11 @@ import {
     LS_KEY_CHART_ANNOTATIONS,
     drawDataHistory,
     drawnShapeEditAttributes,
-    fibLevels,
 } from './chartUtils';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { fibDefaultLevels } from './drawConstants';
 
 export interface actionKeyIF {
     poolIndex: number;
@@ -58,7 +58,7 @@ export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
                         labelAlignment: 'center',
                         reverse: false,
                         extraData: ['FibRetracement'].includes(element.type)
-                            ? structuredClone(fibLevels)
+                            ? structuredClone(fibDefaultLevels)
                             : [],
                         line: {
                             active: !['Rect'].includes(element.type),

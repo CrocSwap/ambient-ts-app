@@ -12,8 +12,8 @@ import {
 } from './FloatingToolbarCss';
 import dragButton from '../../../../assets/images/icons/draw/floating_button.svg';
 import {
-    LS_KEY_CHART_ANNOTATIONS,
     drawDataHistory,
+    saveShapeAttiributesToLocalStorage,
     selectedDrawnData,
 } from '../../ChartUtils/chartUtils';
 import * as d3 from 'd3';
@@ -100,27 +100,6 @@ function FloatingToolbar(props: FloatingToolbarProps) {
             deleteDrawnShape();
         }
     }, [isDeletePressed]);
-
-    function saveShapeAttiributesToLocalStorage(item: drawDataHistory) {
-        const storedData = localStorage.getItem(LS_KEY_CHART_ANNOTATIONS);
-        if (storedData) {
-            const parseStoredData = JSON.parse(storedData);
-
-            if (parseStoredData.defaultSettings === undefined) {
-                parseStoredData.defaultSettings = {};
-            }
-            parseStoredData.defaultSettings[item.type] = {
-                line: item.line,
-                background: item.background,
-                border: item.border,
-            };
-
-            localStorage.setItem(
-                LS_KEY_CHART_ANNOTATIONS,
-                JSON.stringify(parseStoredData),
-            );
-        }
-    }
 
     useEffect(() => {
         setIsStyleOptionTabActive(false);
@@ -503,6 +482,17 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                     border: defaultFibonacciDrawnShapeEditAttributes.border,
                     background:
                         defaultFibonacciDrawnShapeEditAttributes.background,
+                    extraData:
+                        defaultFibonacciDrawnShapeEditAttributes.extraData,
+                    extendLeft:
+                        defaultFibonacciDrawnShapeEditAttributes.extendLeft,
+                    extendRight:
+                        defaultFibonacciDrawnShapeEditAttributes.extendRight,
+                    labelPlacement:
+                        defaultFibonacciDrawnShapeEditAttributes.labelPlacement,
+                    labelAlignment:
+                        defaultFibonacciDrawnShapeEditAttributes.labelAlignment,
+                    reverse: defaultFibonacciDrawnShapeEditAttributes.reverse,
                 };
             }
 

@@ -9,7 +9,6 @@ import {
     crosshair,
     drawDataHistory,
     drawnShapeEditAttributes,
-    fibLevels,
     lineData,
     renderCanvasArray,
     scaleData,
@@ -31,7 +30,11 @@ import {
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { CandleData } from '../../../../App/functions/fetchCandleSeries';
-import { defaultShapeAttributes } from '../../ChartUtils/drawConstants';
+import {
+    defaultShapeAttributes,
+    drawnShapeDefaultDash,
+    fibDefaultLevels,
+} from '../../ChartUtils/drawConstants';
 
 interface DrawCanvasProps {
     scaleData: scaleData;
@@ -121,14 +124,14 @@ function DrawCanvas(props: DrawCanvasProps) {
             );
             setLineSeries(() => lineSeries);
 
-            const barderLineSeries = createLinearLineSeries(
+            const borderLineSeries = createLinearLineSeries(
                 scaleData?.xScale,
                 scaleData?.yScale,
                 denomInBase,
                 drawSettings[activeDrawingType].border,
             );
 
-            setBorderLineSeries(() => barderLineSeries);
+            setBorderLineSeries(() => borderLineSeries);
         }
     }, [scaleData, denomInBase, diffHashSig(drawSettings), activeDrawingType]);
 
@@ -353,11 +356,11 @@ function DrawCanvas(props: DrawCanvasProps) {
                             isTokenABase: currentPool.isTokenABase,
                             denomInBase: currentPool.isDenomBase,
                         },
-                        extendLeft: false,
-                        extendRight: false,
-                        labelPlacement: 'Left',
-                        labelAlignment: 'Middle',
-                        reverse: false,
+                        extendLeft: localDrawSettings.extendLeft,
+                        extendRight: localDrawSettings.extendRight,
+                        labelPlacement: localDrawSettings.labelPlacement,
+                        labelAlignment: localDrawSettings.labelAlignment,
+                        reverse: localDrawSettings.false,
                         line: {
                             active: localDrawSettings.line.active,
                             color: localDrawSettings.line.color,
@@ -379,11 +382,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                             dash: localDrawSettings.background.dash,
                         } as drawnShapeEditAttributes,
 
-                        extraData: ['FibRetracement'].includes(
-                            activeDrawingType,
-                        )
-                            ? structuredClone(fibLevels)
-                            : [],
+                        extraData: structuredClone(localDrawSettings.extraData),
                     };
 
                     setDrawnShapeHistory((prevData: drawDataHistory[]) => {
@@ -494,7 +493,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                             extraData: ['FibRetracement'].includes(
                                 activeDrawingType,
                             )
-                                ? structuredClone(fibLevels)
+                                ? structuredClone(fibDefaultLevels)
                                 : [],
                         },
                         selectedCircle: undefined,
@@ -749,12 +748,12 @@ function DrawCanvas(props: DrawCanvasProps) {
 
                     const fibLineData = calculateFibRetracement(
                         lineData,
-                        fibLevels,
+                        localDrawSettings.extraData,
                     );
 
                     const bandAreaData = calculateFibRetracementBandAreas(
                         lineData,
-                        fibLevels,
+                        localDrawSettings.extraData,
                     );
 
                     bandAreaData.forEach((bandData) => {
@@ -778,6 +777,9 @@ function DrawCanvas(props: DrawCanvasProps) {
                             (context: CanvasRenderingContext2D) => {
                                 context.strokeStyle = lineData[0].color;
                                 context.lineWidth = 1.5;
+                                context.beginPath();
+                                context.setLineDash(drawnShapeDefaultDash);
+                                context.closePath();
                             },
                         );
                         lineSeries(lineData);

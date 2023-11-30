@@ -330,6 +330,7 @@ export default function Chart(props: propsIF) {
     // Draw
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [lineSeries, setLineSeries] = useState<any>();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [annotationLineSeries, setAnnotationLineSeries] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [dashedLineSeries, setDashedLineSeries] = useState<any>();
@@ -3385,6 +3386,7 @@ export default function Chart(props: propsIF) {
                                                 ? 'right'
                                                 : 'left';
                                         ctx.textBaseline =
+                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                             item.labelAlignment.toLowerCase() as any;
 
                                         const lineLabel =
