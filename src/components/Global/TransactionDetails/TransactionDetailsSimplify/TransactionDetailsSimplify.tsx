@@ -316,7 +316,7 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
                               </div>
                           ),
                           explanation:
-                              'The appoximate US dollar value of the transaction',
+                              'The approximate US dollar value of the transaction',
                       },
                   ]
                 : [
@@ -341,7 +341,7 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
                               </div>
                           ),
                           explanation:
-                              'The appoximate US dollar value of the transaction',
+                              'The approximate US dollar value of the transaction',
                       },
                   ]),
         ];
