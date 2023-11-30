@@ -180,10 +180,10 @@ function Swap(props: propsIF) {
 
     const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
 
-    // const amountToReduceEthMainnet = 0.01; // .01 ETH
     const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
         useState<number>(0.01);
-    const amountToReduceEthScroll = 0.0007; // .0007 ETH
+    const [amountToReduceEthScroll, setAmountToReduceEthScroll] =
+        useState<number>(0.0007);
 
     const amountToReduceEth =
         chainId === '0x82750' || chainId === '0x8274f'
@@ -278,6 +278,18 @@ function Swap(props: propsIF) {
                 gasPriceInGwei * averageSwapCostInGasDrops * 1e-9;
 
             setAmountToReduceEthMainnet(1.75 * costOfMainnetSwapInETH);
+
+            const costOfScrollSwapInETH =
+                gasPriceInGwei * averageSwapCostInGasDrops * 1e-9;
+
+            // IS_LOCAL_ENV &&
+            //     console.log({
+            //         gasPriceInGwei,
+            //         costOfScrollSwapInETH,
+            //         amountToReduceEthScroll,
+            //     });
+
+            setAmountToReduceEthScroll(1.75 * costOfScrollSwapInETH);
 
             const gasPriceInDollarsNum =
                 gasPriceInGwei *

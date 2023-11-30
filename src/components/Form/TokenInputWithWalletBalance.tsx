@@ -65,7 +65,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
     } = useContext(CrocEnvContext);
 
     const amountToReduceEthMainnet = 0.01; // .01 ETH
-    const amountToReduceEthScroll = 0.0007; // .0007 ETH
+    const amountToReduceEthScroll = 0.0015; // .0015 ETH
 
     const ethOffset = amountToReduceEth
         ? amountToReduceEth

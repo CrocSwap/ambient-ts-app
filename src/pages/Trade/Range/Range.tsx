@@ -791,12 +791,39 @@ function Range() {
         }
     }, [rangeHighBoundFieldBlurred, chartTriggeredBy]);
 
+    const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
+        useState<number>(0.01);
+    const [amountToReduceEthScroll, setAmountToReduceEthScroll] =
+        useState<number>(0.0007);
+
+    const amountToReduceEth =
+        chainId === '0x82750' || chainId === '0x8274f'
+            ? amountToReduceEthScroll
+            : amountToReduceEthMainnet;
+
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
-            const averageRangeCostInGasDrops = 140000;
+            const averagePoolCostInGasDrops = 140000;
+
+            const costOfMainnetPoolInETH =
+                gasPriceInGwei * averagePoolCostInGasDrops * 1e-9;
+
+            setAmountToReduceEthMainnet(2 * costOfMainnetPoolInETH);
+
+            const costOfScrollPoolInETH =
+                gasPriceInGwei * averagePoolCostInGasDrops * 1e-9;
+
+            //   IS_LOCAL_ENV &&  console.log({
+            //         gasPriceInGwei,
+            //         costOfScrollPoolInETH,
+            //         amountToReduceEthScroll,
+            //     });
+
+            setAmountToReduceEthScroll(2 * costOfScrollPoolInETH);
+
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                averageRangeCostInGasDrops *
+                averagePoolCostInGasDrops *
                 1e-9 *
                 ethMainnetUsdPrice;
 
@@ -984,6 +1011,7 @@ function Range() {
                         tokenA: isTokenAInputDisabled,
                         tokenB: isTokenBInputDisabled,
                     }}
+                    amountToReduceEth={amountToReduceEth}
                 />
             }
             inputOptions={

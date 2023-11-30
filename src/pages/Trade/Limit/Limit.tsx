@@ -422,6 +422,18 @@ export default function Limit() {
 
             setAmountToReduceEthMainnet(1.75 * costOfMainnetLimitInETH);
 
+            const costOfScrollLimitInETH =
+                gasPriceInGwei * averageLimitCostInGasDrops * 1e-9;
+
+            // IS_LOCAL_ENV &&
+            //     console.log({
+            //         gasPriceInGwei,
+            //         costOfScrollLimitInETH,
+            //         amountToReduceEthScroll,
+            //     });
+
+            setAmountToReduceEthScroll(1.75 * costOfScrollLimitInETH);
+
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 averageLimitCostInGasDrops *
@@ -566,7 +578,8 @@ export default function Limit() {
     const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
         useState<number>(0.01);
 
-    const amountToReduceEthScroll = 0.0007; // .0007 ETH
+    const [amountToReduceEthScroll, setAmountToReduceEthScroll] =
+        useState<number>(0.0007);
 
     const amountToReduceEth =
         chainId === '0x82750' || chainId === '0x8274f'
