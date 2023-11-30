@@ -2,15 +2,14 @@ import { useContext, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch } from './reduxToolkit';
 import { setLimitTick } from '../state/tradeDataSlice';
-import { TokenIF } from '../interfaces/exports';
 import { ethers } from 'ethers';
-import { fetchContractDetails } from '../../App/functions/fetchContractDetails';
+import { fetchContractDetails } from '../../ambient-utils/api';
 import { useProvider, useSwitchNetwork } from 'wagmi';
-import { getDefaultPairForChain } from '../data/chains';
 import { tokenMethodsIF } from '../../App/hooks/useTokens';
 import { pageNames, linkGenMethodsIF, useLinkGen } from './useLinkGen';
-import validateAddress from '../functions/validateAddress';
-import validateChain from '../functions/validateChain';
+import { TokenIF } from '../../ambient-utils/types';
+import { getDefaultPairForChain } from '../../ambient-utils/constants';
+import { validateAddress, validateChain } from '../../ambient-utils/dataLayer';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 /* Hook to process GET-request style parameters passed to the URL. This includes

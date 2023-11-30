@@ -1,10 +1,10 @@
 import { BigNumber } from 'ethers';
 import { useState, useEffect, useContext } from 'react';
-import { IS_LOCAL_ENV } from '../../constants';
+import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
-import { LimitOrderIF } from '../../utils/interfaces/LimitOrderIF';
+import { LimitOrderIF } from '../../ambient-utils/types';
 import {
     addPendingTx,
     addTransactionByType,
@@ -21,7 +21,7 @@ import LimitActionInfo from './LimitActionInfo/LimitActionInfo';
 import LimitActionSettings from './LimitActionSettings/LimitActionSettings';
 import LimitActionTokenHeader from './LimitActionTokenHeader/LimitActionTokenHeader';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
-import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
+import { getFormattedNumber } from '../../ambient-utils/dataLayer';
 import { CrocPositionView } from '@crocswap-libs/sdk';
 import ModalHeader from '../Global/ModalHeader/ModalHeader';
 import { LimitActionType } from '../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';

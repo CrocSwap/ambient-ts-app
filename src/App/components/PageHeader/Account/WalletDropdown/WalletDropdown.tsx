@@ -1,13 +1,14 @@
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { CgProfile } from 'react-icons/cg';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-import { getChainExplorer } from '../../../../../utils/data/chains';
+import {
+    getChainExplorer,
+    getFormattedNumber,
+} from '../../../../../ambient-utils/dataLayer';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
-import { TokenIF } from '../../../../../utils/interfaces/exports';
+import { TokenIF } from '../../../../../ambient-utils/types';
 import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
-
-import { getFormattedNumber } from '../../../../functions/getFormattedNumber';
 import { LogoutButton } from '../../../../../components/Global/LogoutButton/LogoutButton';
 import {
     NameDisplay,
@@ -23,12 +24,14 @@ import {
     AccountLink,
 } from '../../../../../styled/Components/Header';
 import { FlexContainer } from '../../../../../styled/Common';
-import { ZERO_ADDRESS } from '../../../../../constants';
 import { BigNumber } from 'ethers';
 import { toDisplayQty } from '@crocswap-libs/sdk';
+import {
+    ZERO_ADDRESS,
+    supportedNetworks,
+} from '../../../../../ambient-utils/constants';
 import IconWithTooltip from '../../../../../components/Global/IconWithTooltip/IconWithTooltip';
 import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
-import { supportedNetworks } from '../../../../../utils/networks';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -60,8 +63,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     } = useContext(CrocEnvContext);
 
     const { tokenBalances } = useContext(TokenBalanceContext);
-    const defaultPair: [TokenIF, TokenIF] =
-        supportedNetworks[chainId].defaultPair;
+    const defaultPair = supportedNetworks[chainId].defaultPair;
 
     const nativeData: TokenIF | undefined =
         tokenBalances &&

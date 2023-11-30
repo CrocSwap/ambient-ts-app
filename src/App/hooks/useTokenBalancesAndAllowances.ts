@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../ambient-utils/types';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
@@ -10,7 +10,7 @@ import { TokenContext } from '../../contexts/TokenContext';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { useTokenPairAllowance } from './useTokenPairAllowance';
 import { usePoolMetadata } from './usePoolMetadata';
-import { IS_LOCAL_ENV } from '../../constants';
+import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { UserDataContext } from '../../contexts/UserDataContext';
 
 interface BalancesIF {

@@ -1,8 +1,10 @@
-import { LimitOrderIF } from '../../../../utils/interfaces/exports';
+import { LimitOrderIF } from '../../../../ambient-utils/types';
 import { useContext } from 'react';
 import { TokenContext } from '../../../../contexts/TokenContext';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
-import { getLimitPrice } from '../../../../App/functions/getLimitPrice';
+import {
+    getFormattedNumber,
+    getLimitPrice,
+} from '../../../../ambient-utils/dataLayer';
 import { FlexContainer } from '../../../../styled/Common';
 import { ItemContainer } from '../../../../styled/Components/Sidebar';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';

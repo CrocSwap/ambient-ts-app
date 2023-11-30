@@ -4,11 +4,11 @@ import { Link } from 'react-router-dom';
 import { FiExternalLink } from 'react-icons/fi';
 import { CiCircleMore } from 'react-icons/ci';
 import styles from './TableMenus.module.css';
-import { PositionIF } from '../../../../../utils/interfaces/exports';
+import { PositionIF } from '../../../../../ambient-utils/types';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
-import { IS_LOCAL_ENV } from '../../../../../constants';
+import { IS_LOCAL_ENV } from '../../../../../ambient-utils/constants';
 import { RangeContext } from '../../../../../contexts/RangeContext';
 import {
     useLinkGen,

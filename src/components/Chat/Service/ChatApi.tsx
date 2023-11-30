@@ -1,4 +1,4 @@
-import { CHAT_BACKEND_URL } from '../../../constants';
+import { CHAT_BACKEND_URL } from '../../../ambient-utils/constants';
 import { useContext } from 'react';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 

@@ -1,7 +1,7 @@
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownMenu2';
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
-import { getSupportedChainIds } from '../../../../utils/data/chains';
+import { getSupportedChainIds } from '../../../../ambient-utils/dataLayer';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import {
@@ -10,7 +10,10 @@ import {
     NetworkItem,
     DropdownMenuContainer,
 } from '../../../../styled/Components/Header';
-import { supportedNetworks } from '../../../../utils/networks';
+import {
+    supportedNetworks,
+    INCLUDE_CANTO_LINK,
+} from '../../../../ambient-utils/constants';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { useSearchParams } from 'react-router-dom';
 import {
@@ -20,7 +23,6 @@ import {
 import { Text } from '../../../../styled/Common';
 import canto from '../../../../assets/images/networks/canto.png';
 import { RiExternalLinkLine } from 'react-icons/ri';
-import { INCLUDE_CANTO_LINK } from '../../../../constants';
 
 interface propsIF {
     switchNetwork: ((chainId_?: number | undefined) => void) | undefined;

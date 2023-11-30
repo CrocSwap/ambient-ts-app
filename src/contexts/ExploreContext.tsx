@@ -2,11 +2,13 @@ import { ReactNode, createContext, useContext, useRef, useState } from 'react';
 import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
-import { PoolIF } from '../utils/interfaces/exports';
-import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
-import { getFormattedNumber } from '../App/functions/getFormattedNumber';
+import { PoolIF } from '../ambient-utils/types';
+import {
+    getMoneynessRank,
+    getFormattedNumber,
+    get24hChange,
+} from '../ambient-utils/dataLayer';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { get24hChange } from '../App/functions/getPoolStats';
 import { CrocEnvContext } from './CrocEnvContext';
 
 export interface ExploreContextIF {
