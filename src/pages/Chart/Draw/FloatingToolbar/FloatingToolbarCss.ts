@@ -99,6 +99,13 @@ const OptionsTabSize = styled.div`
     justify-content: center;
     cursor: pointer;
 
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text2);
+    outline: none;
+    border: none;
+    padding: 1px 8px;
+    position: relative;
     padding: 4px;
     gap: 12px;
 

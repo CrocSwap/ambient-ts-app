@@ -17,14 +17,13 @@ export const defaultShapeBackgroundAttributes = {
 };
 
 export const defaultFibonacciShapeAttributes = {
-    color: drawnShapeDefaultBackgroundColor,
+    color: drawnShapeDefaultColor,
     lineWidth: drawnShapeDefaultLineWidth,
     dash: fibonacciDefaultDash,
 };
 
 export const defaultLineDrawnShapeEditAttributes = {
     line: { active: true, ...defaultShapeAttributes },
-
     border: { active: false, ...defaultShapeAttributes },
     background: { active: false, ...defaultShapeBackgroundAttributes },
 };

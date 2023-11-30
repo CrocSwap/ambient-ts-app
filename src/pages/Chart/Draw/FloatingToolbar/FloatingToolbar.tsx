@@ -24,6 +24,7 @@ import {
     AiOutlineMinus,
     AiOutlineSmallDash,
 } from 'react-icons/ai';
+import { TbLayoutGridAdd } from 'react-icons/tb';
 import { SketchPicker } from 'react-color';
 import { IoCloseOutline } from 'react-icons/io5';
 import useKeyPress from '../../../../App/hooks/useKeyPress';
@@ -31,6 +32,12 @@ import { IoMdColorFilter } from 'react-icons/io';
 import { CgColorBucket } from 'react-icons/cg';
 import { BsGear } from 'react-icons/bs';
 import FloatingToolbarSettings from './FloatingToolbarSettings';
+import {
+    defaultDpRangeDrawnShapeEditAttributes,
+    defaultFibonacciDrawnShapeEditAttributes,
+    defaultLineDrawnShapeEditAttributes,
+    defaultRectDrawnShapeEditAttributes,
+} from '../../ChartUtils/drawConstants';
 
 interface FloatingToolbarProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -82,6 +89,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         isBackgroundColorPickerTabActive,
         setIsBackgroundColorPickerTabActive,
     ] = useState(false);
+    const [isLayoutTabActive, setIsLayoutTabActive] = useState(false);
 
     const [isSettingsTabActive, setIsSettingsTabActive] = useState(false);
 
@@ -121,6 +129,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         setIsBorderColorPickerTabActive(false);
         setIsBackgroundColorPickerTabActive(false);
         setIsSettingsTabActive(false);
+        setIsLayoutTabActive(false);
         if (selectedDrawnShape === undefined) {
             const colorCodes = {
                 lineColor: '#7371fc',
@@ -298,9 +307,23 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         exclude !== 'border' && setIsBorderColorPickerTabActive(false);
         exclude !== 'background' && setIsBackgroundColorPickerTabActive(false);
         exclude !== 'settings' && setIsSettingsTabActive(false);
+        exclude !== 'layouts' && setIsLayoutTabActive(false);
     };
 
     const editShapeOptions = [
+        {
+            name: 'layouts',
+            type: 'default',
+            operation: () => {
+                closeAllOptions('layouts');
+                setIsLayoutTabActive(!isLayoutTabActive);
+            },
+            icon: <TbLayoutGridAdd />,
+            hover: '#434c58',
+            exclude: [''],
+            include: [''],
+        },
+
         {
             name: 'Color',
             type: 'line',
@@ -436,6 +459,76 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         },
     ];
 
+    function setDefaultOptions() {
+        setDrawnShapeHistory((item: drawDataHistory[]) => {
+            const changedItemIndex = item.findIndex(
+                (i) => i.time === selectedDrawnShape?.data.time,
+            );
+
+            if (
+                item[changedItemIndex].type === 'Brush' ||
+                item[changedItemIndex].type === 'Ray'
+            ) {
+                item[changedItemIndex] = {
+                    ...item[changedItemIndex],
+                    line: defaultLineDrawnShapeEditAttributes.line,
+                    border: defaultLineDrawnShapeEditAttributes.border,
+                    background: defaultLineDrawnShapeEditAttributes.background,
+                };
+            }
+
+            if (item[changedItemIndex].type === 'Rect') {
+                item[changedItemIndex] = {
+                    ...item[changedItemIndex],
+                    line: defaultRectDrawnShapeEditAttributes.line,
+                    border: defaultRectDrawnShapeEditAttributes.border,
+                    background: defaultRectDrawnShapeEditAttributes.background,
+                };
+            }
+
+            if (item[changedItemIndex].type === 'DPRange') {
+                item[changedItemIndex] = {
+                    ...item[changedItemIndex],
+                    line: defaultDpRangeDrawnShapeEditAttributes.line,
+                    border: defaultDpRangeDrawnShapeEditAttributes.border,
+                    background:
+                        defaultDpRangeDrawnShapeEditAttributes.background,
+                };
+            }
+
+            if (item[changedItemIndex].type === 'FibRetracement') {
+                item[changedItemIndex] = {
+                    ...item[changedItemIndex],
+                    line: defaultFibonacciDrawnShapeEditAttributes.line,
+                    border: defaultFibonacciDrawnShapeEditAttributes.border,
+                    background:
+                        defaultFibonacciDrawnShapeEditAttributes.background,
+                };
+            }
+
+            saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
+
+            addDrawActionStack(item[changedItemIndex], false);
+
+            return item;
+        });
+    }
+    const layoutTab = (
+        <OptionsTab
+            style={{
+                marginLeft: '40px',
+                width: '85%',
+            }}
+        >
+            <OptionsTabSize
+                style={{ justifyContent: 'start' }}
+                onClick={() => setDefaultOptions()}
+            >
+                Apply Default Drawing Template
+            </OptionsTabSize>
+        </OptionsTab>
+    );
+
     useEffect(() => {
         const floatingDiv = d3
             .select(floatingDivRef.current)
@@ -568,6 +661,8 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                         ),
                 )}
             </FloatingDiv>
+
+            {isLayoutTabActive && layoutTab}
 
             {(isLineColorPickerTabActive ||
                 isBorderColorPickerTabActive ||
