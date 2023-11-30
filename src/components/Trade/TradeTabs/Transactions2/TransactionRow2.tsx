@@ -1,4 +1,3 @@
-import { TransactionServerIF } from '../../../../utils/interfaces/TransactionIF';
 import styles from './TransactionRow2.module.css';
 import { columnSlugsType } from './Transactions2';
 import { getAddress } from 'ethers/lib/utils.js';
@@ -8,6 +7,7 @@ import TxWallet from './TxWallet';
 import { useContext } from 'react';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import TxButton from './TxButton';
+import { TransactionServerIF } from '../../../../ambient-utils/types/transaction/TransactionServerIF';
 
 export type btnIconNameType = 'overflowBtn'|'editBtn'|'harvestBtn'|'addBtn'|'multiplyBtn'|'leafBtn'|'shareBtn'|'exportBtn'|'walletBtn'|'copyBtn'|'downloadBtn';
 
@@ -38,7 +38,6 @@ export default function TransactionRow2(props: propsIF) {
             } else if (elemMeta[0] === 'txWallet') {
                 elemForDOM = (
                     <TxWallet
-                        tx={tx}
                         isOwnerActiveAccount={isOwnerActiveAccount}
                         ownerId={ownerId}
                         isAccountPage={isAccountPage}

@@ -4,14 +4,11 @@ import { FlexContainer, Text } from '../../../../styled/Common';
 import { RowItem } from '../../../../styled/Components/TransactionTable';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
-import { TransactionServerIF } from '../../../../utils/interfaces/TransactionIF';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
-import trimString from '../../../../utils/functions/trimString';
+import { trimString } from '../../../../ambient-utils/dataLayer';
 
 interface propsIF {
-    tx: TransactionServerIF;
     isOwnerActiveAccount: boolean;
     ownerId: string;
     isAccountPage: boolean;
@@ -19,7 +16,7 @@ interface propsIF {
 }
 
 export default function TxWallet(props: propsIF) {
-    const { tx, isOwnerActiveAccount, ownerId, isAccountPage, width } = props;
+    const { isOwnerActiveAccount, ownerId, isAccountPage, width } = props;
 
     // context data
     const { snackbar: { open: openSnackbar } } = useContext(AppStateContext);
@@ -27,21 +24,19 @@ export default function TxWallet(props: propsIF) {
 
     // custom hooks
     const [_, copy] = useCopyToClipboard();
-    const { ensAddressMapping } = useENSAddresses();
 
-    // ENS name for the line item (`null` if there is none or lookup fails)
-    // TODO:    find out why `tx.ensResolution` is missing from sample data and put it back in
-    const ensName: string|null = ensAddressMapping.get(tx.user) ||
-        // tx.ensResolution ||
-        null;
+    // TODO:    get Ben to help me turn this back on
+    const ensName: string|null = null;
 
     // username display output for the DOM
     let usernameForDOM: string;
     if (isOwnerActiveAccount) {
         usernameForDOM = 'You';
-    } else if (ensName) {
-        usernameForDOM = ensName.length > 16 ? trimString(ensName, 11, 3, '…') : ensName;
-    } else {
+    }
+    // else if (ensName) {
+        // usernameForDOM = ensName.length > 16 ? trimString(ensName, 11, 3, '…') : ensName;
+    // }
+    else {
         usernameForDOM = trimString(ownerId, 6, 4, '…');
     };
 

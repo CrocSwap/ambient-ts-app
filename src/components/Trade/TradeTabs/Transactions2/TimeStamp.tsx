@@ -1,10 +1,10 @@
 import moment from 'moment';
-import { getElapsedTime } from '../../../../App/functions/getElapsedTime';
 import { FlexContainer } from '../../../../styled/Common/Container';
 import { RowItem } from '../../../../styled/Components/TransactionTable';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { Text } from '../../../../styled/Common';
-import { TransactionServerIF } from '../../../../utils/interfaces/TransactionIF';
+import { getElapsedTime } from '../../../../ambient-utils/dataLayer';
+import { TransactionServerIF } from '../../../../ambient-utils/types';
 
 interface propsIF {
     tx: TransactionServerIF;

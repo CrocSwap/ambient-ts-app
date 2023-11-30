@@ -1,4 +1,4 @@
-import { TransactionServerIF } from '../../../../utils/interfaces/TransactionIF';
+import { TransactionServerIF } from '../../../../ambient-utils/types/transaction/TransactionServerIF';
 
 interface samepleDataIF {
     data: TransactionServerIF[];

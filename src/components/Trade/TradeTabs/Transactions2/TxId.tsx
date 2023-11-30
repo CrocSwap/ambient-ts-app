@@ -1,13 +1,13 @@
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { RowItem } from '../../../../styled/Components/TransactionTable';
-import trimString from '../../../../utils/functions/trimString';
-import { TransactionServerIF } from '../../../../utils/interfaces/TransactionIF';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { useContext } from 'react';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
+import { TransactionServerIF } from '../../../../ambient-utils/types/transaction/TransactionServerIF';
+import { trimString } from '../../../../ambient-utils/dataLayer/functions/trimString';
 
 interface propsIF {
     tx: TransactionServerIF;

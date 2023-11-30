@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import styles from './Transactions2.module.css';
 import { sampleData } from './sampleData';
 import TransactionRow2 from './TransactionRow2';
-import { TransactionServerIF } from '../../../../utils/interfaces/TransactionIF';
+import { TransactionServerIF } from '../../../../ambient-utils/types/transaction/TransactionServerIF';
 
 // columns to display in table and px width to alot for each
 const columnsAndSizes = {
