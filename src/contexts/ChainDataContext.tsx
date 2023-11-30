@@ -144,6 +144,7 @@ export const ChainDataContextProvider = (props: {
     };
 
     useEffect(() => {
+        console.log(`last block number changed: ${lastBlockNumber}`);
         fetchGasPrice();
     }, [lastBlockNumber]);
 
