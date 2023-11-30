@@ -46,6 +46,7 @@ interface propsIF {
     stepperComponent?: boolean;
     stepperTokensDisplay?: React.ReactNode;
     handleSetActiveContent?: (newActiveContent: string) => void;
+    setShowStepperComponent?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export default function SubmitTransaction(props: propsIF) {
     const receiptData = useAppSelector((state) => state.receiptData);
@@ -65,6 +66,7 @@ export default function SubmitTransaction(props: propsIF) {
         stepperComponent,
         stepperTokensDisplay,
         handleSetActiveContent,
+        setShowStepperComponent,
     } = props;
 
     const isTransactionApproved = newTransactionHash !== '';
@@ -90,6 +92,7 @@ export default function SubmitTransaction(props: propsIF) {
 
     function handleReset() {
         resetConfirmation();
+        setShowStepperComponent && setShowStepperComponent(false);
         handleSetActiveContent && handleSetActiveContent('main');
         setActiveStep && setActiveStep(0);
         setShowExtraInfo(false);

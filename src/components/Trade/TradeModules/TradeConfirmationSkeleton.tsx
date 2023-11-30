@@ -185,7 +185,6 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
             </Text>
         </FlexContainer>
     );
-    console.log({ showConfirmation }, 'From tradeConfirmationSkeleton');
 
     return (
         <FlexContainer
@@ -244,6 +243,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                             stepperComponent
                             stepperTokensDisplay={tokensDisplay}
                             handleSetActiveContent={handleSetActiveContent}
+                            setShowStepperComponent={setShowStepperComponent}
                         />
                     </FlexContainer>
                 )}
