@@ -9,7 +9,7 @@ import { useContext } from 'react';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import TxButton from './TxButton';
 
-export type btnIconNameType = 'dots'|'pencil'|'wheat'|'plus'|'multiply'|'leaf'|'share'|'export'|'wallet'|'copy'|'download';
+export type btnIconNameType = 'overflowBtn'|'editBtn'|'harvestBtn'|'addBtn'|'multiplyBtn'|'leafBtn'|'shareBtn'|'exportBtn'|'walletBtn'|'copyBtn'|'downloadBtn';
 
 interface propsIF {
     tx: TransactionServerIF;
@@ -45,45 +45,49 @@ export default function TransactionRow2(props: propsIF) {
                         width={elemMeta[1]}
                     />
                 );
-            } else if (elemMeta[0] === 'btn1') {
+            } else if (elemMeta[0] === 'overflowBtn') {
                 elemForDOM = (
-                    <TxButton width={elemMeta[1]} iconName='dots' hide={false} />
+                    <TxButton width={elemMeta[1]} iconName='overflowBtn' hide={false} />
                 );
-            } else if (elemMeta[0] === 'btn2') {
+            } else if (elemMeta[0] === 'editBtn') {
                 elemForDOM = (
-                    <TxButton width={elemMeta[1]} iconName='pencil' hide={false} />
+                    <TxButton width={elemMeta[1]} iconName='editBtn' hide={false} />
                 );
-            } else if (elemMeta[0] === 'btn3') {
+            } else if (elemMeta[0] === 'harvestBtn') {
                 elemForDOM = (
-                    <TxButton width={elemMeta[1]} iconName='wheat' hide={false} />
+                    <TxButton width={elemMeta[1]} iconName='harvestBtn' hide={false} />
                 );
-            } else if (elemMeta[0] === 'btn4') {
+            } else if (elemMeta[0] === 'addBtn') {
                 elemForDOM = (
-                    <TxButton width={elemMeta[1]} iconName='plus' hide={false} />
+                    <TxButton width={elemMeta[1]} iconName='addBtn' hide={false} />
                 );
-            } else if (elemMeta[0] === 'btn5') {
+            } else if (elemMeta[0] === 'leafBtn') {
                 elemForDOM = (
-                    <TxButton width={elemMeta[1]} iconName='leaf' hide={false} />
+                    <TxButton width={elemMeta[1]} iconName='leafBtn' hide={false} />
                 );
-            } else if (elemMeta[0] === 'btn6') {
+            } else if (elemMeta[0] === 'multiplyBtn') {
                 elemForDOM = (
-                    <TxButton width={elemMeta[1]} iconName='multiply' hide={false} />
+                    <TxButton width={elemMeta[1]} iconName='multiplyBtn' hide={false} />
                 );
-            } else if (elemMeta[0] === 'btn7') {
+            } else if (elemMeta[0] === 'shareBtn') {
                 elemForDOM = (
-                    <TxButton width={elemMeta[1]} iconName='share' hide={false} />
+                    <TxButton width={elemMeta[1]} iconName='shareBtn' hide={false} />
                 );
-            } else if (elemMeta[0] === 'btn8') {
+            } else if (elemMeta[0] === 'exportBtn') {
                 elemForDOM = (
-                    <TxButton width={elemMeta[1]} iconName='export' hide={false} />
+                    <TxButton width={elemMeta[1]} iconName='exportBtn' hide={false} />
                 );
-            } else if (elemMeta[0] === 'btn9') {
+            } else if (elemMeta[0] === 'walletBtn') {
                 elemForDOM = (
-                    <TxButton width={elemMeta[1]} iconName='wallet' hide={false} />
+                    <TxButton width={elemMeta[1]} iconName='walletBtn' hide={false} />
                 );
-            } else if (elemMeta[0] === 'btn10') {
+            } else if (elemMeta[0] === 'copyBtn') {
                 elemForDOM = (
-                    <TxButton width={elemMeta[1]} iconName='copy' hide={false} />
+                    <TxButton width={elemMeta[1]} iconName='copyBtn' hide={false} />
+                );
+            } else if (elemMeta[0] === 'downloadBtn') {
+                elemForDOM = (
+                    <TxButton width={elemMeta[1]} iconName='downloadBtn' hide={false} />
                 );
             }
         }
@@ -94,16 +98,16 @@ export default function TransactionRow2(props: propsIF) {
         'timeStamp',
         'txId',
         'txWallet',
-        'btn1',
-        'btn2',
-        'btn3',
-        'btn4',
-        'btn5',
-        'btn6',
-        'btn7',
-        'btn8',
-        'btn9',
-        'btn10',
+        'overflowBtn',
+        'harvestBtn',
+        'addBtn',
+        'leafBtn',
+        'multiplyBtn',
+        'shareBtn',
+        'exportBtn',
+        'walletBtn',
+        'copyBtn',
+        'downloadBtn',
     ];
 
     return (

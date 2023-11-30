@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import styles from './Transactions2.module.css';
 import { sampleData } from './sampleData';
 import TransactionRow2 from './TransactionRow2';
@@ -9,16 +9,17 @@ const columnsAndSizes = {
     timeStamp: 80,
     txId: 140,
     txWallet: 140,
-    btn1: 60,
-    btn2: 60,
-    btn3: 60,
-    btn4: 60,
-    btn5: 60,
-    btn6: 60,
-    btn7: 60,
-    btn8: 60,
-    btn9: 60,
-    btn10: 60,
+    overflowBtn: 60,
+    editBtn: 60,
+    harvestBtn: 60,
+    addBtn: 60,
+    leafBtn: 60,
+    multiplyBtn: 60,
+    shareBtn: 60,
+    exportBtn: 60,
+    walletBtn: 60,
+    copyBtn: 60,
+    downloadBtn: 60,
 };
 
 // string-union type of all keys in the `columnsAndSizes` object
@@ -46,16 +47,17 @@ export default function Transactions2(props: propsIF) {
         'timeStamp',
         'txId',
         'txWallet',
-        'btn1',
-        'btn2',
-        'btn3',
-        'btn4',
-        'btn5',
-        'btn6',
-        'btn7',
-        'btn8',
-        'btn9',
-        'btn10',
+        'overflowBtn',
+        'editBtn',
+        'harvestBtn',
+        'addBtn',
+        'leafBtn',
+        'multiplyBtn',
+        'shareBtn',
+        'exportBtn',
+        'walletBtn',
+        'copyBtn',
+        'downloadBtn',
     ];
 
     // add an observer to watch for element to be re-sized

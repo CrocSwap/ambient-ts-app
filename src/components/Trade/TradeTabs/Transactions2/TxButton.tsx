@@ -19,37 +19,37 @@ export default function TxButton(props: propsIF) {
     false && width;
     let icon: JSX.Element;
     switch (iconName) {
-        case 'dots':
+        case 'overflowBtn':
             icon = <RxDotsHorizontal size={12} />;
             break;
-        case 'pencil':
+        case 'editBtn':
             icon = <LuPencil size={12} />;
             break;
-        case 'wheat':
+        case 'harvestBtn':
             icon = <LuWheat size={12} />;
             break;
-        case 'plus':
+        case 'addBtn':
             icon = <FaPlus size={12} />;
             break;
-        case 'multiply':
+        case 'multiplyBtn':
             icon = <FaTimes size={12} />;
             break;
-        case 'leaf':
+        case 'leafBtn':
             icon = <LuLeaf size={12} />;
             break;
-        case 'share':
+        case 'shareBtn':
             icon = <MdShare size={12} />;
             break;
-        case 'export':
+        case 'exportBtn':
             icon = <BsBoxArrowUpRight size={12} />;
             break;
-        case 'wallet':
+        case 'walletBtn':
             icon = <LuWallet size={12} />;
             break;
-        case 'copy':
+        case 'copyBtn':
             icon = <FiCopy size={12} />;
             break;
-        case 'download':
+        case 'downloadBtn':
             icon = <PiArrowFatLineDownBold size={12} />;
             break;
     }
