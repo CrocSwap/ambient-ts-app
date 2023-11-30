@@ -47,6 +47,7 @@ export function createAnnotationLineSeries(
         .value((d: lineData) => d.y)
         .xScale(xScale)
         .yScale(yScale)
+        .label('')
         .decorate((context: CanvasRenderingContext2D) => {
             context.strokeStyle = drawnShapeDefaultColor;
             context.lineWidth = drawnShapeDefaultLineWidth;

@@ -330,6 +330,7 @@ export default function Chart(props: propsIF) {
     // Draw
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [lineSeries, setLineSeries] = useState<any>();
+    const [annotationLineSeries, setAnnotationLineSeries] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [dashedLineSeries, setDashedLineSeries] = useState<any>();
 
@@ -3214,6 +3215,7 @@ export default function Chart(props: propsIF) {
                                 ];
 
                                 rayLine.xScale().range(range);
+
                                 if (ctx) ctx.setLineDash(item.line.dash);
                                 rayLine.decorate(
                                     (context: CanvasRenderingContext2D) => {
@@ -3279,11 +3281,26 @@ export default function Chart(props: propsIF) {
                                 }
                             }
 
-                            if (item.type === 'FibRetracement') {
+                            if (
+                                item.type === 'FibRetracement' &&
+                                annotationLineSeries
+                            ) {
+                                const data = structuredClone(item.data);
+
+                                if (item.reverse) {
+                                    [data[0], data[1]] = [data[1], data[0]];
+                                }
+
                                 const range = [
-                                    scaleData?.xScale(item.data[0].x),
-                                    scaleData?.xScale(item.data[1].x),
+                                    item.extendLeft
+                                        ? scaleData.xScale.range()[0]
+                                        : scaleData?.xScale(item.data[0].x),
+                                    item.extendRight
+                                        ? scaleData.xScale.range()[1]
+                                        : scaleData?.xScale(item.data[1].x),
                                 ];
+
+                                annotationLineSeries.xScale().range(range);
 
                                 bandArea.xScale().range(range);
 
@@ -3297,17 +3314,17 @@ export default function Chart(props: propsIF) {
                                                 item.line.lineWidth;
                                         },
                                     );
-                                    lineSeries(item.data);
+                                    lineSeries(data);
                                 }
 
                                 const fibLineData = calculateFibRetracement(
-                                    item.data,
+                                    data,
                                     item.extraData,
                                 );
 
                                 const bandAreaData =
                                     calculateFibRetracementBandAreas(
-                                        item.data,
+                                        data,
                                         item.extraData,
                                     );
 
@@ -3333,7 +3350,7 @@ export default function Chart(props: propsIF) {
                                 if (ctx) ctx.setLineDash([0, 0]);
 
                                 fibLineData.forEach((lineData) => {
-                                    lineSeries.decorate(
+                                    annotationLineSeries.decorate(
                                         (context: CanvasRenderingContext2D) => {
                                             const color = d3.color(
                                                 lineData[0].color,
@@ -3347,7 +3364,8 @@ export default function Chart(props: propsIF) {
                                             context.lineWidth = 1.5;
                                         },
                                     );
-                                    lineSeries(lineData);
+
+                                    annotationLineSeries(lineData);
 
                                     const textColor = d3.color(
                                         lineData[0].color,
@@ -3362,8 +3380,12 @@ export default function Chart(props: propsIF) {
                                             ? textColor.toString()
                                             : lineData[0].color;
                                         ctx.font = '12px Lexend Deca';
-                                        ctx.textAlign = 'right';
-                                        ctx.textBaseline = 'middle';
+                                        ctx.textAlign =
+                                            item.labelPlacement === 'Left'
+                                                ? 'right'
+                                                : 'left';
+                                        ctx.textBaseline =
+                                            item.labelAlignment.toLowerCase() as any;
 
                                         const lineLabel =
                                             lineData[0].level +
@@ -3373,14 +3395,26 @@ export default function Chart(props: propsIF) {
                                                 .toString() +
                                             ')';
 
+                                        const lineXScale =
+                                            item.labelPlacement === 'Left'
+                                                ? Math.min(
+                                                      lineData[0].x,
+                                                      lineData[1].x,
+                                                  )
+                                                : Math.max(
+                                                      lineData[0].x,
+                                                      lineData[1].x,
+                                                  );
+
+                                        const linePlacement =
+                                            scaleData.xScale(lineXScale) +
+                                            (item.labelPlacement === 'Left'
+                                                ? -10
+                                                : +10);
+
                                         ctx.fillText(
                                             lineLabel,
-                                            scaleData.xScale(
-                                                Math.min(
-                                                    lineData[0].x,
-                                                    lineData[1].x,
-                                                ),
-                                            ) - 10,
+                                            linePlacement,
                                             scaleData.yScale(
                                                 denomInBase ===
                                                     lineData[0].denomInBase
@@ -3446,6 +3480,7 @@ export default function Chart(props: propsIF) {
                     bandArea.context(ctx);
                     rayLine.context(ctx);
                     lineSeries.context(ctx);
+                    annotationLineSeries.context(ctx);
                     circleSeries.context(ctx);
                     selectedCircleSeries.context(ctx);
                     dashedLineSeries.context(ctx);
@@ -3456,6 +3491,7 @@ export default function Chart(props: propsIF) {
     }, [
         diffHashSig(drawnShapeHistory),
         lineSeries,
+        annotationLineSeries,
         hoveredDrawnShape,
         selectedDrawnShape,
         isUpdatingShape,
@@ -4124,10 +4160,17 @@ export default function Chart(props: propsIF) {
                     lineData.push(element.data);
 
                     if (element.type === 'FibRetracement') {
+                        const data = structuredClone(element.data);
+
+                        if (element.reverse) {
+                            [data[0], data[1]] = [data[1], data[0]];
+                        }
+
                         const fibLineData = calculateFibRetracement(
-                            element.data,
+                            data,
                             element.extraData,
                         );
+
                         fibLineData.forEach((fibData) =>
                             lineData.push(fibData),
                         );
@@ -4730,6 +4773,19 @@ export default function Chart(props: propsIF) {
             );
 
             setLineSeries(() => lineSeries);
+
+            const annotationLineSeries = createAnnotationLineSeries(
+                scaleData?.xScale.copy(),
+                scaleData?.yScale,
+            );
+
+            annotationLineSeries.decorate(
+                (context: CanvasRenderingContext2D) => {
+                    context.fillStyle = 'transparent';
+                },
+            );
+
+            setAnnotationLineSeries(() => annotationLineSeries);
 
             const dashedLineSeries = createLinearLineSeries(
                 scaleData?.xScale,

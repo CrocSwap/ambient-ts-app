@@ -62,6 +62,11 @@ export type drawDataHistory = {
     border: drawnShapeEditAttributes;
     line: drawnShapeEditAttributes;
     background: drawnShapeEditAttributes;
+    extendLeft: boolean;
+    extendRight: boolean;
+    labelPlacement: string;
+    labelAlignment: string;
+    reverse: boolean;
 };
 
 export type bandLineData = {

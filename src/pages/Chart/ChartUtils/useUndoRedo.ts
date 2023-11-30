@@ -52,6 +52,11 @@ export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
                         type: element.type,
                         time: element.time,
                         pool: element.pool,
+                        extendLeft: false,
+                        extendRight: false,
+                        labelPlacement: 'left',
+                        labelAlignment: 'center',
+                        reverse: false,
                         extraData: ['FibRetracement'].includes(element.type)
                             ? structuredClone(fibLevels)
                             : [],
@@ -155,6 +160,11 @@ export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
                 line: element.line,
                 background: element.background,
                 extraData: element.extraData,
+                extendLeft: element.extendLeft,
+                extendRight: element.extendRight,
+                labelPlacement: element.labelPlacement,
+                labelAlignment: element.labelAlignment,
+                reverse: element.reverse,
             };
 
             if (!drawActionStack.has(actionKey)) {
@@ -216,6 +226,11 @@ export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
                         line: findItem.line,
                         background: findItem.background,
                         extraData: findItem.extraData,
+                        extendLeft: findItem.extendLeft,
+                        extendRight: findItem.extendRight,
+                        labelPlacement: findItem.labelPlacement,
+                        labelAlignment: findItem.labelAlignment,
+                        reverse: findItem.reverse,
                     };
 
                     drawActionStack.get(actionKey)?.push(tempHistoryData);
@@ -406,6 +421,11 @@ export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
                             line: structuredClone(lastValue.line),
                             background: structuredClone(lastValue.background),
                             extraData: structuredClone(lastValue.extraData),
+                            extendLeft: lastValue.extendLeft,
+                            extendRight: lastValue.extendRight,
+                            labelPlacement: lastValue.labelPlacement,
+                            labelAlignment: lastValue.labelAlignment,
+                            reverse: lastValue.reverse,
                         });
                     }
                     if (undoActionList) {
@@ -430,6 +450,11 @@ export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
                 line: structuredClone(tempLastData.line),
                 background: structuredClone(tempLastData.background),
                 extraData: structuredClone(tempLastData.extraData),
+                extendLeft: tempLastData.extendLeft,
+                extendRight: tempLastData.extendRight,
+                labelPlacement: tempLastData.labelPlacement,
+                labelAlignment: tempLastData.labelAlignment,
+                reverse: tempLastData.reverse,
             };
 
             const tempMap = new Map<actionKeyIF, drawDataHistory[]>(
