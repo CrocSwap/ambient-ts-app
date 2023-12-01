@@ -119,10 +119,10 @@ export default function Limit() {
     const [isOrderValid, setIsOrderValid] = useState<boolean>(true);
 
     const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
-        useState<number>(0.01);
+        useState<number>(0.005);
 
     const [amountToReduceEthScroll, setAmountToReduceEthScroll] =
-        useState<number>(0.00001);
+        useState<number>(0.00005);
 
     const amountToReduceEth =
         chainId === '0x82750' || chainId === '0x8274f'
@@ -444,7 +444,7 @@ export default function Limit() {
             //         amountToReduceEthScroll,
             //     });
 
-            setAmountToReduceEthScroll(1.5 * costOfScrollLimitInETH);
+            setAmountToReduceEthScroll(1.75 * costOfScrollLimitInETH);
 
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
