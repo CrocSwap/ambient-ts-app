@@ -118,6 +118,17 @@ export default function Limit() {
     const [previousDisplayPrice, setPreviousDisplayPrice] = useState('');
     const [isOrderValid, setIsOrderValid] = useState<boolean>(true);
 
+    const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
+        useState<number>(0.01);
+
+    const [amountToReduceEthScroll, setAmountToReduceEthScroll] =
+        useState<number>(0.00001);
+
+    const amountToReduceEth =
+        chainId === '0x82750' || chainId === '0x8274f'
+            ? amountToReduceEthScroll
+            : amountToReduceEthMainnet;
+
     // TODO: is possible we can convert this to use the TradeTokenContext
     // However, unsure if the fact that baseToken comes from pool affects this
     const isSellTokenBase = pool?.baseToken.tokenAddr === tokenA.address;
@@ -401,6 +412,7 @@ export default function Limit() {
         isSellTokenNativeToken,
         tokenAQtyCoveredByWalletBalance,
         tokenABalance,
+        amountToReduceEth,
     ]);
 
     useEffect(() => {
@@ -432,7 +444,7 @@ export default function Limit() {
             //         amountToReduceEthScroll,
             //     });
 
-            setAmountToReduceEthScroll(1.75 * costOfScrollLimitInETH);
+            setAmountToReduceEthScroll(1.5 * costOfScrollLimitInETH);
 
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
@@ -574,17 +586,6 @@ export default function Limit() {
             dispatch(removePendingTx(receipt.transactionHash));
         }
     };
-
-    const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
-        useState<number>(0.01);
-
-    const [amountToReduceEthScroll, setAmountToReduceEthScroll] =
-        useState<number>(0.0007);
-
-    const amountToReduceEth =
-        chainId === '0x82750' || chainId === '0x8274f'
-            ? amountToReduceEthScroll
-            : amountToReduceEthMainnet;
 
     const handleLimitButtonMessage = (tokenAAmount: number) => {
         if (!isPoolInitialized) {
