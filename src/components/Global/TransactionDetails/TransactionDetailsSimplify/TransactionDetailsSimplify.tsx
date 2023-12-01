@@ -6,7 +6,7 @@ import styles from './TransactionDetailsSimplify.module.css';
 import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
 import { ZERO_ADDRESS } from '../../../../ambient-utils/constants';
 import moment from 'moment';
-import { memo, useContext, useEffect, useMemo } from 'react';
+import { memo, useContext, useMemo } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { useMediaQuery } from '@material-ui/core';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
