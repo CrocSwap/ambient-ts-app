@@ -3417,20 +3417,30 @@ export default function Chart(props: propsIF) {
                                     }
 
                                     let alignment;
+                                    const textBaseline =
+                                        item.labelAlignment === 'Top'
+                                            ? 'bottom'
+                                            : item.labelAlignment === 'Bottom'
+                                            ? 'top'
+                                            : (item.labelAlignment.toLowerCase() as any);
 
-                                    if (item.extendLeft) {
-                                        alignment =
-                                            item.extendRight &&
-                                            item.labelPlacement === 'Right'
-                                                ? 'right'
-                                                : 'left';
-                                    } else if (
-                                        item.extendRight ||
-                                        item.labelPlacement === 'Left'
-                                    ) {
-                                        alignment = 'right';
+                                    if (item.labelPlacement === 'Center') {
+                                        alignment = 'center';
                                     } else {
-                                        alignment = 'left';
+                                        if (item.extendLeft) {
+                                            alignment =
+                                                item.extendRight &&
+                                                item.labelPlacement === 'Right'
+                                                    ? 'right'
+                                                    : 'left';
+                                        } else if (
+                                            item.extendRight ||
+                                            item.labelPlacement === 'Left'
+                                        ) {
+                                            alignment = 'right';
+                                        } else {
+                                            alignment = 'left';
+                                        }
                                     }
 
                                     if (ctx) {
@@ -3439,40 +3449,65 @@ export default function Chart(props: propsIF) {
                                             : lineData[0].color;
                                         ctx.font = '12px Lexend Deca';
                                         ctx.textAlign = alignment as any;
-                                        ctx.textBaseline =
-                                            item.labelAlignment.toLowerCase() as any;
+                                        ctx.textBaseline = textBaseline;
 
-                                        let location;
+                                        let location: any;
 
-                                        if (item.extendLeft) {
+                                        if (item.labelPlacement === 'Center') {
                                             location =
-                                                item.labelPlacement === 'Left'
-                                                    ? scaleData.xScale.domain()[0]
-                                                    : item.extendRight
-                                                    ? scaleData.xScale.domain()[1]
-                                                    : Math.max(
-                                                          lineData[0].x,
-                                                          lineData[1].x,
-                                                      );
-                                        } else if (item.extendRight) {
-                                            location =
-                                                item.labelPlacement === 'Left'
-                                                    ? Math.min(
-                                                          lineData[0].x,
-                                                          lineData[1].x,
-                                                      )
-                                                    : scaleData.xScale.domain()[1];
+                                                Math.min(
+                                                    lineData[0].x,
+                                                    lineData[1].x,
+                                                ) +
+                                                Math.abs(
+                                                    lineData[0].x -
+                                                        lineData[1].x,
+                                                ) /
+                                                    2;
                                         } else {
-                                            location =
-                                                item.labelPlacement === 'Left'
-                                                    ? Math.min(
-                                                          lineData[0].x,
-                                                          lineData[1].x,
-                                                      )
-                                                    : Math.max(
-                                                          lineData[0].x,
-                                                          lineData[1].x,
-                                                      );
+                                            if (item.extendLeft) {
+                                                if (
+                                                    item.labelPlacement ===
+                                                    'Left'
+                                                ) {
+                                                    location =
+                                                        scaleData.xScale.domain()[0];
+                                                } else if (
+                                                    item.labelPlacement ===
+                                                    'Right'
+                                                ) {
+                                                    if (item.extendRight) {
+                                                        location =
+                                                            scaleData.xScale.domain()[1];
+                                                    } else {
+                                                        location = Math.max(
+                                                            lineData[0].x,
+                                                            lineData[1].x,
+                                                        );
+                                                    }
+                                                }
+                                            } else if (item.extendRight) {
+                                                location =
+                                                    item.labelPlacement ===
+                                                    'Left'
+                                                        ? Math.min(
+                                                              lineData[0].x,
+                                                              lineData[1].x,
+                                                          )
+                                                        : scaleData.xScale.domain()[1];
+                                            } else {
+                                                location =
+                                                    item.labelPlacement ===
+                                                    'Left'
+                                                        ? Math.min(
+                                                              lineData[0].x,
+                                                              lineData[1].x,
+                                                          )
+                                                        : Math.max(
+                                                              lineData[0].x,
+                                                              lineData[1].x,
+                                                          );
+                                            }
                                         }
 
                                         const linePlacement =
@@ -3489,10 +3524,10 @@ export default function Chart(props: propsIF) {
                                                     : 1 / lineData[0].y,
                                             ) +
                                                 (item.labelAlignment.toLowerCase() ===
-                                                'top'
+                                                'bottom'
                                                     ? 5
                                                     : item.labelAlignment.toLowerCase() ===
-                                                      'bottom'
+                                                      'top'
                                                     ? -5
                                                     : 0),
                                         );

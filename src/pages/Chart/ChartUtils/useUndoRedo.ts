@@ -33,13 +33,18 @@ export function useUndoRedo(denomInBase: boolean) {
     );
 
     const [undoStack] = useState(new Map<actionKeyIF, drawDataHistory[]>());
+    const [isLocalStorageFetched, setIsLocalStorageFetched] = useState(false);
 
     const currentPool = useContext(TradeDataContext);
 
     const { tokenA, tokenB } = currentPool;
 
     useEffect(() => {
-        if (drawnShapeHistory.length === 0 && initialArray.length > 0) {
+        if (
+            drawnShapeHistory.length === 0 &&
+            initialArray.length > 0 &&
+            !isLocalStorageFetched
+        ) {
             const refactoredArray: Array<drawDataHistory> = [];
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -93,7 +98,11 @@ export function useUndoRedo(denomInBase: boolean) {
                 refactoredArray.length > 0 ? refactoredArray : initialArray,
             );
         }
-    }, [initialData]);
+
+        setIsLocalStorageFetched(() => {
+            return true;
+        });
+    }, [initialData, isLocalStorageFetched]);
 
     const actionKey = useMemo(() => {
         const newActionKey = {
@@ -476,5 +485,6 @@ export function useUndoRedo(denomInBase: boolean) {
         actionKey,
         addDrawActionStack,
         undoStack,
+        isLocalStorageFetched,
     };
 }
