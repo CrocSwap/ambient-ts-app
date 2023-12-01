@@ -33,6 +33,24 @@
     cursor: pointer;
 }
 
+
+.arrowContainer_container {
+    position:absolute;
+    background-color: var(--dark2);;
+    margin-bottom: 10px;
+    display: flex;
+    width: 30px;
+    height: 25px;
+    padding: 2px;
+    border-radius: 4px;
+    grid-gap: 10px;
+    gap: 10px;
+    cursor: pointer;
+    z-index: 1;
+    opacity: 0.9;
+    box-shadow: 0 0 4px rgba(115, 113, 252, 0.7);
+}
+
 .icon_fill_container img {
     filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg)
         brightness(200%) contrast(100%);

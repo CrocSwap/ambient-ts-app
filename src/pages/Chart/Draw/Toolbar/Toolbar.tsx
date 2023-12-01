@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import styles from './Toolbar.module.css';
 import drawLine from '../../../../assets/images/icons/draw/draw_line.svg';
 import drawCross from '../../../../assets/images/icons/draw/draw_cross.svg';
@@ -11,6 +11,7 @@ import magnet from '../../../../assets/images/icons/draw/snap.svg';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import trashIcon from '../../../../assets/images/icons/draw/delete.svg';
 import { drawDataHistory } from '../../ChartUtils/chartUtils';
+import { ArrowContainer } from '../../../../styled/Components/Chart';
 
 interface ToolbarProps {
     activeDrawingType: string;
@@ -44,6 +45,8 @@ function Toolbar(props: ToolbarProps) {
     const feeRate = document.getElementById('fee_rate_chart');
     const tvl = document.getElementById('tvl_chart');
 
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+
     useEffect(() => {
         const column = isToolbarOpen ? 38 : 9;
 
@@ -56,6 +59,28 @@ function Toolbar(props: ToolbarProps) {
                 column + 'px auto 1fr auto minmax(1em, max-content)';
         }
     }, [isToolbarOpen, feeRate, tvl]);
+
+    const [isHoveredUp, setIsHoveredUp] = useState(false);
+    const [isHoveredDown, setIsHoveredDown] = useState(false);
+    const toolbarRef = useRef(null);
+
+    const handleMouseMove = () => {
+        const scrollPosition = window.scrollY;
+        // if (scrollPosition ===0) {
+        setIsHoveredUp(true);
+        setIsHoveredDown(true);
+
+        // }
+        // else {
+        //     setIsHoveredDown(true);
+        //     setIsHoveredUp(false);
+        // }
+    };
+
+    const handleMouseLeave = () => {
+        setIsHoveredUp(false);
+        setIsHoveredDown(false);
+    };
 
     function handleDrawModeChange(item: IconList) {
         if (item.label !== 'magnet') {
@@ -109,19 +134,84 @@ function Toolbar(props: ToolbarProps) {
         }
     }
 
+    const handleScroll = (direction: string) => {
+        const scrollContainer = scrollContainerRef.current;
+
+        if (scrollContainer) {
+            const scrollAmount = 100; // İstediğiniz scroll miktarını belirleyin
+
+            if (direction === 'up') {
+                scrollContainer.scrollTop -= scrollAmount;
+            } else if (direction === 'down') {
+                scrollContainer.scrollTop += scrollAmount;
+            }
+        }
+    };
+
+    const upScroll = (
+        <div
+            className={styles.arrowContainer_container}
+            onClick={() => handleScroll('up')}
+        >
+            <ArrowContainer degree={315} style={{ marginBottom: '1px' }} />
+        </div>
+    );
+
+    const downScroll = (
+        <div
+            className={styles.arrowContainer_container}
+            style={{ bottom: '20px' }}
+            onClick={() => handleScroll('down')}
+        >
+            <ArrowContainer degree={135} style={{ marginTop: '3px' }} />
+        </div>
+    );
+    const [toolbarHeight, setToolbarHeight] = useState(0);
+
+    // useEffect(() => {
+    //     const toolbarElement = toolbarRef.current;
+
+    //     if (toolbarElement) {
+    //       const height = toolbarElement.getBoundingClientRect().height;
+    //       setToolbarHeight(height);
+    //     }
+    //   }, [isToolbarOpen]);
+
+    const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+        const delta = e.deltaY;
+
+        if (scrollContainerRef.current) {
+            const currentScrollPosition = scrollContainerRef.current.scrollTop;
+
+            scrollContainerRef.current.scrollTop =
+                currentScrollPosition + delta;
+        }
+    };
     return (
         <div
             className={` ${
                 isToolbarOpen ? styles.toolbar_container_active : ''
             } ${styles.toolbar_container} `}
             id='toolbar_container'
+            ref={toolbarRef}
         >
             <div
                 className={` ${
                     isToolbarOpen ? styles.drawlist_container_active : ''
                 } ${styles.drawlist_container} `}
             >
-                <div>
+                <div
+                    ref={scrollContainerRef}
+                    onWheel={handleWheel}
+                    style={{
+                        height: '250px',
+                        overflowX: 'hidden',
+                        overflowY: 'clip',
+                    }}
+                    onMouseMove={handleMouseMove}
+                    onMouseLeave={handleMouseLeave}
+                >
+                    {isHoveredUp && upScroll}
                     {isToolbarOpen && (
                         <>
                             {drawIconList.map((item, index) => (
@@ -180,6 +270,8 @@ function Toolbar(props: ToolbarProps) {
                             </div>
                         </>
                     )}
+
+                    {isHoveredDown && downScroll}
                 </div>
             </div>
 
