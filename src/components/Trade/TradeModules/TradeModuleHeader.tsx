@@ -147,7 +147,10 @@ function TradeModuleHeader(props: propsIF) {
                     module={settingsTitle}
                     slippage={slippage}
                     bypassConfirm={bypassConfirm}
-                    onClose={closeSettingsModal}
+                    onClose={() => {
+                        closeSettingsModal();
+                        handleGoBack();
+                    }}
                 />
             )}
             {/* {isShareModalOpen && <ShareModal onClose={closeShareModal} />} */}

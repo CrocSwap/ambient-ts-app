@@ -167,6 +167,9 @@ function TokenInputWithWalletBalance(props: propsIF) {
         }
         handleToggleDexSelection();
     };
+    const isLocalPopulateButtonEnabled =
+        process.env.REACT_APP_POPULATE_VALUE_BUTTON_IS_ENABLED !== undefined &&
+        process.env.REACT_APP_POPULATE_VALUE_BUTTON_IS_ENABLED === 'true';
 
     const walletContent = (
         <>
@@ -195,7 +198,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
 
     return (
         <>
-            {tokenAorB === 'A' && (
+            {isLocalPopulateButtonEnabled && tokenAorB === 'A' && (
                 <Text
                     fontWeight='300'
                     fontSize='body'
