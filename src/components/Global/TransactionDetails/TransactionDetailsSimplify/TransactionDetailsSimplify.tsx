@@ -358,10 +358,6 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
     const InfoRow = memo(function InfoRow(props: ItemRowPropsIF) {
         const { title, content, explanation } = props;
 
-        useEffect(() => {
-            console.log('i re-renders');
-        }, []);
-
         return (
             <div className={styles.info_row_container}>
                 <div className={styles.title_container}>
