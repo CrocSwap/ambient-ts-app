@@ -2596,6 +2596,20 @@ export default function Chart(props: propsIF) {
         true,
     );
 
+    const clipCanvas = (
+        x: number,
+        y: number,
+        width: number,
+        height: number,
+        canvas: HTMLCanvasElement,
+    ) => {
+        const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(x, y, width, height);
+        ctx.clip();
+    };
+
     useEffect(() => {
         const canvas = d3
             .select(d3CanvasMain.current)
@@ -3351,6 +3365,42 @@ export default function Chart(props: propsIF) {
                                 if (ctx) ctx.setLineDash([0, 0]);
 
                                 fibLineData.forEach((lineData) => {
+                                    const lineLabel =
+                                        lineData[0].level +
+                                        ' (' +
+                                        lineData[0].y.toFixed(2).toString() +
+                                        ')';
+
+                                    const lineMeasures =
+                                        ctx?.measureText(lineLabel);
+
+                                    if (
+                                        lineMeasures &&
+                                        (item.extendLeft || item.extendRight) &&
+                                        item.labelAlignment === 'Middle'
+                                    ) {
+                                        const bufferLeft =
+                                            item.extendLeft &&
+                                            item.labelPlacement === 'Left'
+                                                ? lineMeasures.width + 15
+                                                : 0;
+
+                                        const bufferRight =
+                                            canvas.width -
+                                            (item.extendRight &&
+                                            item.labelPlacement === 'Right'
+                                                ? lineMeasures.width + 15
+                                                : 0);
+
+                                        clipCanvas(
+                                            bufferLeft,
+                                            0,
+                                            bufferRight,
+                                            canvas.height,
+                                            canvas,
+                                        );
+                                    }
+
                                     annotationLineSeries.decorate(
                                         (context: CanvasRenderingContext2D) => {
                                             const color = d3.color(
@@ -3368,6 +3418,8 @@ export default function Chart(props: propsIF) {
 
                                     annotationLineSeries(lineData);
 
+                                    ctx?.restore();
+
                                     const textColor = d3.color(
                                         lineData[0].color,
                                     );
@@ -3376,43 +3428,69 @@ export default function Chart(props: propsIF) {
                                         textColor.opacity = 1;
                                     }
 
+                                    let alignment;
+
+                                    if (item.extendLeft) {
+                                        alignment =
+                                            item.extendRight &&
+                                            item.labelPlacement === 'Right'
+                                                ? 'right'
+                                                : 'left';
+                                    } else if (
+                                        item.extendRight ||
+                                        item.labelPlacement === 'Left'
+                                    ) {
+                                        alignment = 'right';
+                                    } else {
+                                        alignment = 'left';
+                                    }
+
                                     if (ctx) {
                                         ctx.fillStyle = textColor
                                             ? textColor.toString()
                                             : lineData[0].color;
                                         ctx.font = '12px Lexend Deca';
-                                        ctx.textAlign =
-                                            item.labelPlacement === 'Left'
-                                                ? 'right'
-                                                : 'left';
+                                        ctx.textAlign = alignment as any;
                                         ctx.textBaseline =
                                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                             item.labelAlignment.toLowerCase() as any;
 
-                                        const lineLabel =
-                                            lineData[0].level +
-                                            ' (' +
-                                            lineData[0].y
-                                                .toFixed(2)
-                                                .toString() +
-                                            ')';
+                                        let location;
 
-                                        const lineXScale =
-                                            item.labelPlacement === 'Left'
-                                                ? Math.min(
-                                                      lineData[0].x,
-                                                      lineData[1].x,
-                                                  )
-                                                : Math.max(
-                                                      lineData[0].x,
-                                                      lineData[1].x,
-                                                  );
+                                        if (item.extendLeft) {
+                                            location =
+                                                item.labelPlacement === 'Left'
+                                                    ? scaleData.xScale.domain()[0]
+                                                    : item.extendRight
+                                                    ? scaleData.xScale.domain()[1]
+                                                    : Math.max(
+                                                          lineData[0].x,
+                                                          lineData[1].x,
+                                                      );
+                                        } else if (item.extendRight) {
+                                            location =
+                                                item.labelPlacement === 'Left'
+                                                    ? Math.min(
+                                                          lineData[0].x,
+                                                          lineData[1].x,
+                                                      )
+                                                    : scaleData.xScale.domain()[1];
+                                        } else {
+                                            location =
+                                                item.labelPlacement === 'Left'
+                                                    ? Math.min(
+                                                          lineData[0].x,
+                                                          lineData[1].x,
+                                                      )
+                                                    : Math.max(
+                                                          lineData[0].x,
+                                                          lineData[1].x,
+                                                      );
+                                        }
 
                                         const linePlacement =
-                                            scaleData.xScale(lineXScale) +
-                                            (item.labelPlacement === 'Left'
-                                                ? -10
-                                                : +10);
+                                            scaleData.xScale(location) +
+                                            (alignment === 'right' ? -10 : +10);
 
                                         ctx.fillText(
                                             lineLabel,
@@ -3422,7 +3500,14 @@ export default function Chart(props: propsIF) {
                                                     lineData[0].denomInBase
                                                     ? lineData[0].y
                                                     : 1 / lineData[0].y,
-                                            ),
+                                            ) +
+                                                (item.labelAlignment.toLowerCase() ===
+                                                'top'
+                                                    ? 5
+                                                    : item.labelAlignment.toLowerCase() ===
+                                                      'bottom'
+                                                    ? -5
+                                                    : 0),
                                         );
                                     }
                                 });

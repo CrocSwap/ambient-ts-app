@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { MouseEvent, useState } from 'react';
 import {
     drawDataHistory,
     saveShapeAttiributesToLocalStorage,
@@ -227,7 +227,9 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
 
     return (
         <>
-            <FloatingToolbarSettingsContainer>
+            <FloatingToolbarSettingsContainer
+                onClick={() => closeAllOptions('none')}
+            >
                 {selectedDrawnShape && (
                     <LineContainer>
                         <LineSettings>
@@ -255,18 +257,33 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                 <OptionColorContainer>
                                     <OptionColor
                                         backgroundColor={selectedDrawnShape?.data.line.color.toString()}
-                                        onClick={() => closeAllOptions('line')}
+                                        onClick={(
+                                            event: MouseEvent<HTMLElement>,
+                                        ) => {
+                                            event.stopPropagation();
+                                            closeAllOptions('line');
+                                        }}
                                     ></OptionColor>
                                 </OptionColorContainer>
 
                                 <OptionStyleContainer
-                                    onClick={() => closeAllOptions('lineSize')}
+                                    onClick={(
+                                        event: MouseEvent<HTMLDivElement>,
+                                    ) => {
+                                        event.stopPropagation();
+                                        closeAllOptions('lineSize');
+                                    }}
                                 >
                                     <AiOutlineMinus color='white' />
                                 </OptionStyleContainer>
 
                                 <OptionStyleContainer
-                                    onClick={() => closeAllOptions('lineStyle')}
+                                    onClick={(
+                                        event: MouseEvent<HTMLDivElement>,
+                                    ) => {
+                                        event.stopPropagation();
+                                        closeAllOptions('lineStyle');
+                                    }}
                                 >
                                     <AiOutlineDash color='white' />
                                 </OptionStyleContainer>
@@ -304,24 +321,33 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                     <OptionColorContainer>
                                         <OptionColor
                                             backgroundColor={selectedDrawnShape?.data.border.color.toString()}
-                                            onClick={() =>
-                                                closeAllOptions('border')
-                                            }
+                                            onClick={(
+                                                event: MouseEvent<HTMLDivElement>,
+                                            ) => {
+                                                event.stopPropagation();
+                                                closeAllOptions('border');
+                                            }}
                                         ></OptionColor>
                                     </OptionColorContainer>
 
                                     <OptionStyleContainer
-                                        onClick={() =>
-                                            closeAllOptions('borderSize')
-                                        }
+                                        onClick={(
+                                            event: MouseEvent<HTMLDivElement>,
+                                        ) => {
+                                            event.stopPropagation();
+                                            closeAllOptions('borderSize');
+                                        }}
                                     >
                                         <AiOutlineMinus color='white' />
                                     </OptionStyleContainer>
 
                                     <OptionStyleContainer
-                                        onClick={() =>
-                                            closeAllOptions('borderStyle')
-                                        }
+                                        onClick={(
+                                            event: MouseEvent<HTMLDivElement>,
+                                        ) => {
+                                            event.stopPropagation();
+                                            closeAllOptions('borderStyle');
+                                        }}
                                     >
                                         <AiOutlineDash color='white' />
                                     </OptionStyleContainer>
@@ -357,9 +383,12 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                     <OptionColorContainer>
                                         <OptionColor
                                             backgroundColor={selectedDrawnShape?.data.background.color.toString()}
-                                            onClick={() =>
-                                                closeAllOptions('background')
-                                            }
+                                            onClick={(
+                                                event: MouseEvent<HTMLDivElement>,
+                                            ) => {
+                                                event.stopPropagation();
+                                                closeAllOptions('background');
+                                            }}
                                         ></OptionColor>
                                     </OptionColorContainer>
                                 </LineSettingsRight>
@@ -399,12 +428,15 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                         <OptionColorContainer>
                                             <OptionColor
                                                 backgroundColor={item.color}
-                                                onClick={() =>
+                                                onClick={(
+                                                    event: MouseEvent<HTMLDivElement>,
+                                                ) => {
+                                                    event.stopPropagation();
                                                     closeAllOptions(
                                                         'fib',
                                                         index,
-                                                    )
-                                                }
+                                                    );
+                                                }}
                                             ></OptionColor>
 
                                             {isFibBackgroundTabActive &&
@@ -534,16 +566,22 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                             </div>
                             <LineSettingsLeft>
                                 <LabelStyleContainer
-                                    onClick={() =>
-                                        closeAllOptions('labelPlacement')
-                                    }
+                                    onClick={(
+                                        event: MouseEvent<HTMLDivElement>,
+                                    ) => {
+                                        event.stopPropagation();
+                                        closeAllOptions('labelPlacement');
+                                    }}
                                 >
                                     {selectedDrawnShape.data.labelPlacement}
                                 </LabelStyleContainer>
                                 <LabelStyleContainer
-                                    onClick={() =>
-                                        closeAllOptions('labelAlignment')
-                                    }
+                                    onClick={(
+                                        event: MouseEvent<HTMLDivElement>,
+                                    ) => {
+                                        event.stopPropagation();
+                                        closeAllOptions('labelAlignment');
+                                    }}
                                 >
                                     {selectedDrawnShape.data.labelAlignment}
                                 </LabelStyleContainer>
