@@ -1,12 +1,12 @@
 import {
-    CHART_ANNOTATIONS_LS_KEY,
+    LS_KEY_CHART_ANNOTATIONS,
     drawDataHistory,
     drawnShapeEditAttributes,
-    fibLevels,
 } from './chartUtils';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { fibDefaultLevels } from './drawConstants';
 
 export interface actionKeyIF {
     poolIndex: number;
@@ -14,8 +14,8 @@ export interface actionKeyIF {
     tokenB: string;
 }
 
-export function useUndoRedo(denomInBase: boolean) {
-    const initialData = localStorage.getItem(CHART_ANNOTATIONS_LS_KEY);
+export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
+    const initialData = localStorage.getItem(LS_KEY_CHART_ANNOTATIONS);
     const initialArray = initialData
         ? JSON.parse(initialData)?.drawnShapes || []
         : [];
@@ -63,7 +63,7 @@ export function useUndoRedo(denomInBase: boolean) {
                         labelAlignment: 'center',
                         reverse: false,
                         extraData: ['FibRetracement'].includes(element.type)
-                            ? structuredClone(fibLevels)
+                            ? structuredClone(fibDefaultLevels)
                             : [],
                         line: {
                             active: !['Rect'].includes(element.type),
@@ -125,6 +125,27 @@ export function useUndoRedo(denomInBase: boolean) {
 
         return newActionKey;
     }, [poolIndex, tokenA, tokenB]);
+
+    const deleteAllShapes = useCallback(() => {
+        // const actionList = drawActionStack.get(actionKey);
+        // undoStack.get(actionKey)?.push(structuredClone(drawnShapeHistory));
+        const filteredDrawnShapeHistory = drawnShapeHistory.filter(
+            (element) => {
+                const isShapeInCurrentPool =
+                    currentPool.tokenA.address ===
+                        (isTokenABase === element.pool.isTokenABase
+                            ? element.pool.tokenA
+                            : element.pool.tokenB) &&
+                    currentPool.tokenB.address ===
+                        (isTokenABase === element.pool.isTokenABase
+                            ? element.pool.tokenB
+                            : element.pool.tokenA);
+                return !isShapeInCurrentPool;
+            },
+        );
+
+        setDrawnShapeHistory(filteredDrawnShapeHistory);
+    }, [actionKey, drawnShapeHistory]);
 
     useEffect(() => {
         initialArray.forEach((element: drawDataHistory) => {
@@ -485,6 +506,6 @@ export function useUndoRedo(denomInBase: boolean) {
         actionKey,
         addDrawActionStack,
         undoStack,
-        isLocalStorageFetched,
+        deleteAllShapes,
     };
 }

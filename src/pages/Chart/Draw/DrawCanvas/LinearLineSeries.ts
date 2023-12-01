@@ -1,11 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { lineData } from '../../ChartUtils/chartUtils';
+import {
+    drawnShapeDefaultColor,
+    drawnShapeDefaultLineWidth,
+} from '../../ChartUtils/drawConstants';
 
 export function createLinearLineSeries(
     xScale: d3.ScaleLinear<number, number>,
     yScale: d3.ScaleLinear<number, number>,
     denomInBase: boolean,
+    options?: any,
 ) {
     return d3fc
         .seriesCanvasLine()
@@ -17,9 +23,19 @@ export function createLinearLineSeries(
         .xScale(xScale)
         .yScale(yScale)
         .decorate((context: CanvasRenderingContext2D) => {
-            context.strokeStyle = '#7371fc';
-            context.lineWidth = 1.5;
+            context.strokeStyle = options.color;
+            context.lineWidth = options.lineWidth;
+            context.beginPath();
+            context.setLineDash(options.dash);
+            context.closePath();
         });
+}
+
+export function updateSeriesDecorate(series: any, options: any) {
+    series.decorate((context: CanvasRenderingContext2D) => {
+        context.strokeStyle = options.color;
+        context.lineWidth = options.lineWidth;
+    });
 }
 
 export function createAnnotationLineSeries(
@@ -33,8 +49,8 @@ export function createAnnotationLineSeries(
         .yScale(yScale)
         .label('')
         .decorate((context: CanvasRenderingContext2D) => {
-            context.strokeStyle = '#7371fc';
-            context.lineWidth = 1.5;
+            context.strokeStyle = drawnShapeDefaultColor;
+            context.lineWidth = drawnShapeDefaultLineWidth;
         });
 }
 

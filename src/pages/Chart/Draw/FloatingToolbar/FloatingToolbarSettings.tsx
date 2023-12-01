@@ -1,6 +1,7 @@
 import React, { MouseEvent, useState } from 'react';
 import {
     drawDataHistory,
+    saveShapeAttiributesToLocalStorage,
     selectedDrawnData,
 } from '../../ChartUtils/chartUtils';
 import {
@@ -182,6 +183,8 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
 
                 item[changedItemIndex].extraData[selectedFibLevel].color =
                     colorRgbaCode;
+
+                saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
 
                 addDrawActionStack(item[changedItemIndex], false);
 
@@ -409,6 +412,9 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                             handleToggle={() => {
                                                 item.active = !item.active;
                                                 setIsShapeEdited(true);
+                                                saveShapeAttiributesToLocalStorage(
+                                                    selectedDrawnShape.data,
+                                                );
                                             }}
                                             id='fib_lines'
                                             aria-label={'aria-label'}

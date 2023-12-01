@@ -28,7 +28,7 @@ declare global {
     }
 }
 
-export const CHART_ANNOTATIONS_LS_KEY = 'chart_annotations';
+export const LS_KEY_CHART_ANNOTATIONS = 'chart_annotations';
 export const defaultCandleBandwith = 5;
 
 export type chartAnnotationData = {
@@ -126,33 +126,6 @@ export type zoomUtils = {
     zoom: d3.ZoomBehavior<Element, unknown>;
     xAxisZoom: d3.ZoomBehavior<Element, unknown>;
 };
-
-export const fibLevels = [
-    { level: 0, active: true, color: '#787b86' },
-    { level: 0.236, active: true, color: '#f23645' },
-    { level: 0.382, active: true, color: '#ff9800' },
-    { level: 0.5, active: true, color: '#4caf50' },
-    { level: 0.618, active: true, color: '#089981' },
-    { level: 0.786, active: true, color: '#00bcd4' },
-    { level: 1, active: true, color: '#787b86' },
-    { level: 1.272, active: false, color: '#ff9800' },
-    { level: 1.414, active: false, color: '#f23645' },
-    { level: 1.618, active: true, color: '#2962ff' },
-    { level: 2, active: false, color: '#089981' },
-    { level: 2.272, active: false, color: '#ff9800' },
-    { level: 2.414, active: false, color: '#4caf50' },
-    { level: 2.618, active: true, color: '#f23645' },
-    { level: 3, active: false, color: '#00bcd4' },
-    { level: 3.272, active: false, color: '#787b86' },
-    { level: 3.414, active: false, color: '#2962ff' },
-    { level: 3.618, active: true, color: '#9c27b0' },
-    { level: 4, active: false, color: '#f23645' },
-    { level: 4.236, active: true, color: '#e91e63' },
-    { level: 4.272, active: false, color: '#9c27b0' },
-    { level: 4.414, active: false, color: '#e91e63' },
-    { level: 4.618, active: false, color: '#ff9800' },
-    { level: 4.764, active: false, color: '#089981' },
-];
 
 export function setCanvasResolution(canvas: HTMLCanvasElement) {
     const ratio = window.devicePixelRatio < 1 ? 1 : window.devicePixelRatio;
@@ -400,3 +373,44 @@ export function getXandYLocationForChart(
 
     return { offsetX: offsetX, offsetY: offsetY };
 }
+
+export function saveShapeAttiributesToLocalStorage(item: drawDataHistory) {
+    const storedData = localStorage.getItem(LS_KEY_CHART_ANNOTATIONS);
+    if (storedData) {
+        const parseStoredData = JSON.parse(storedData);
+
+        if (parseStoredData.defaultSettings === undefined) {
+            parseStoredData.defaultSettings = {};
+        }
+        parseStoredData.defaultSettings[item.type] = {
+            line: item.line,
+            background: item.background,
+            border: item.border,
+            extraData: item.extraData,
+            extendLeft: item.extendLeft,
+            extendRight: item.extendRight,
+            labelPlacement: item.labelPlacement,
+            labelAlignment: item.labelAlignment,
+            reverse: item.reverse,
+        };
+
+        localStorage.setItem(
+            LS_KEY_CHART_ANNOTATIONS,
+            JSON.stringify(parseStoredData),
+        );
+    }
+}
+
+export const clipCanvas = (
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    canvas: HTMLCanvasElement,
+) => {
+    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, width, height);
+    ctx.clip();
+};
