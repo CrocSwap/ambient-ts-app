@@ -2584,20 +2584,6 @@ export default function Chart(props: propsIF) {
         true,
     );
 
-    const clipCanvas = (
-        x: number,
-        y: number,
-        width: number,
-        height: number,
-        canvas: HTMLCanvasElement,
-    ) => {
-        const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-        ctx.save();
-        ctx.beginPath();
-        ctx.rect(x, y, width, height);
-        ctx.clip();
-    };
-
     useEffect(() => {
         const canvas = d3
             .select(d3CanvasMain.current)
@@ -3297,10 +3283,20 @@ export default function Chart(props: propsIF) {
                                 const range = [
                                     item.extendLeft
                                         ? scaleData.xScale.range()[0]
-                                        : scaleData?.xScale(item.data[0].x),
+                                        : scaleData?.xScale(
+                                              Math.min(
+                                                  item.data[0].x,
+                                                  item.data[1].x,
+                                              ),
+                                          ),
                                     item.extendRight
                                         ? scaleData.xScale.range()[1]
-                                        : scaleData?.xScale(item.data[1].x),
+                                        : scaleData?.xScale(
+                                              Math.max(
+                                                  item.data[0].x,
+                                                  item.data[1].x,
+                                              ),
+                                          ),
                                 ];
 
                                 annotationLineSeries.xScale().range(range);
@@ -3365,7 +3361,8 @@ export default function Chart(props: propsIF) {
                                     if (
                                         lineMeasures &&
                                         (item.extendLeft || item.extendRight) &&
-                                        item.labelAlignment === 'Middle'
+                                        item.labelAlignment === 'Middle' &&
+                                        ctx
                                     ) {
                                         const bufferLeft =
                                             item.extendLeft &&
@@ -3380,13 +3377,54 @@ export default function Chart(props: propsIF) {
                                                 ? lineMeasures.width + 15
                                                 : 0);
 
-                                        clipCanvas(
+                                        ctx.save();
+                                        ctx.beginPath();
+
+                                        ctx.rect(
                                             bufferLeft,
                                             0,
                                             bufferRight,
                                             canvas.height,
-                                            canvas,
                                         );
+
+                                        ctx.clip();
+                                    }
+
+                                    if (
+                                        item.labelPlacement === 'Center' &&
+                                        item.labelAlignment === 'Middle' &&
+                                        lineMeasures &&
+                                        ctx
+                                    ) {
+                                        const buffer = scaleData.xScale(
+                                            Math.min(
+                                                lineData[0].x,
+                                                lineData[1].x,
+                                            ) +
+                                                Math.abs(
+                                                    lineData[0].x -
+                                                        lineData[1].x,
+                                                ) /
+                                                    2,
+                                        );
+
+                                        ctx.save();
+                                        ctx.beginPath();
+
+                                        ctx.rect(
+                                            0,
+                                            0,
+                                            buffer - lineMeasures.width / 2 - 5,
+                                            canvas.height,
+                                        );
+                                        ctx.rect(
+                                            buffer + lineMeasures.width / 2 + 5,
+                                            0,
+                                            canvas.width,
+                                            canvas.height,
+                                        );
+
+                                        ctx.clip();
                                     }
 
                                     annotationLineSeries.decorate(
@@ -3512,7 +3550,11 @@ export default function Chart(props: propsIF) {
 
                                         const linePlacement =
                                             scaleData.xScale(location) +
-                                            (alignment === 'right' ? -10 : +10);
+                                            (alignment === 'right'
+                                                ? -10
+                                                : alignment === 'left'
+                                                ? +10
+                                                : 0);
 
                                         ctx.fillText(
                                             lineLabel,
