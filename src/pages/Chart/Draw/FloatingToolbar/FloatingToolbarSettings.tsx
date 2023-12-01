@@ -6,6 +6,10 @@ import {
 } from '../../ChartUtils/chartUtils';
 import {
     ColorPickerTab,
+    DropDownContainer,
+    DropDownHeader,
+    DropDownList,
+    DropDownListContainer,
     ExtendSettings,
     FibLineOptions,
     FibLineSettings,
@@ -20,6 +24,8 @@ import {
     OptionColor,
     OptionColorContainer,
     OptionStyleContainer,
+    StyledLabel,
+    ListItem,
 } from './FloatingToolbarSettingsCss';
 import Toggle from '../../../../components/Form/Toggle';
 import { AiOutlineMinus, AiOutlineDash } from 'react-icons/ai';
@@ -201,12 +207,12 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
             value: 'Left',
         },
         {
-            name: 'Right',
-            value: 'Right',
-        },
-        {
             name: 'Center',
             value: 'Center',
+        },
+        {
+            name: 'Right',
+            value: 'Right',
         },
     ];
 
@@ -228,7 +234,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
     return (
         <>
             <FloatingToolbarSettingsContainer
-                onClick={() => closeAllOptions('none')}
+            // onClick={() => closeAllOptions('none')}
             >
                 {selectedDrawnShape && (
                     <LineContainer>
@@ -250,7 +256,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                     id='is_guide_line_visible'
                                     aria-label={'aria-label'}
                                 />
-                                <label>Line</label>
+                                <StyledLabel>Line</StyledLabel>
                             </LineSettingsLeft>
 
                             <LineSettingsRight>
@@ -314,7 +320,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                         id='is_background_visible'
                                         aria-label={'aria-label'}
                                     />
-                                    <label>Border</label>
+                                    <StyledLabel>Border</StyledLabel>
                                 </LineSettingsLeft>
 
                                 <LineSettingsRight>
@@ -377,7 +383,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                         id='is_background_visible'
                                         aria-label={'aria-label'}
                                     />
-                                    <label>Background</label>
+                                    <StyledLabel>Background</StyledLabel>
                                 </LineSettingsLeft>
                                 <LineSettingsRight>
                                     <OptionColorContainer>
@@ -491,7 +497,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
 
                 {selectedDrawnShape &&
                     selectedDrawnShape.data.type === 'FibRetracement' && (
-                        <FibLineSettings style={{ paddingBottom: '20px' }}>
+                        <FibLineSettings style={{ paddingBottom: '10px' }}>
                             <ExtendSettings>
                                 <Toggle
                                     key={'toggle'}
@@ -506,7 +512,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                     id='is_extendLeft_visible'
                                     aria-label={'aria-label'}
                                 />
-                                <label>Extend Left</label>
+                                <StyledLabel>Extend Left</StyledLabel>
                             </ExtendSettings>
                             <ExtendSettings>
                                 <Toggle
@@ -523,14 +529,14 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                     id='is_extendRight_visible'
                                     aria-label={'aria-label'}
                                 />
-                                <label>Extend Right</label>
+                                <StyledLabel>Extend Right</StyledLabel>
                             </ExtendSettings>
                         </FibLineSettings>
                     )}
 
                 {selectedDrawnShape &&
                     selectedDrawnShape.data.type === 'FibRetracement' && (
-                        <FibLineSettings style={{ paddingBottom: '20px' }}>
+                        <FibLineSettings style={{ paddingBottom: '10px' }}>
                             <ExtendSettings>
                                 <Toggle
                                     key={'toggle'}
@@ -545,16 +551,14 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                     id='is_reverse_visible'
                                     aria-label={'aria-label'}
                                 />
-                                <label>Reverse</label>
+                                <StyledLabel>Reverse</StyledLabel>
                             </ExtendSettings>
                         </FibLineSettings>
                     )}
 
                 {selectedDrawnShape &&
                     selectedDrawnShape.data.type === 'FibRetracement' && (
-                        <ExtendSettings
-                            style={{ gridTemplateColumns: '30% 70%' }}
-                        >
+                        <FibLineSettings style={{ paddingBottom: '5px' }}>
                             <div
                                 style={{
                                     display: 'flex',
@@ -562,31 +566,79 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                     justifyContent: 'center',
                                 }}
                             >
-                                <label>Labels</label>
+                                <StyledLabel>Labels</StyledLabel>
                             </div>
+
                             <LineSettingsLeft>
-                                <LabelStyleContainer
-                                    onClick={(
-                                        event: MouseEvent<HTMLDivElement>,
-                                    ) => {
-                                        event.stopPropagation();
-                                        closeAllOptions('labelPlacement');
-                                    }}
-                                >
-                                    {selectedDrawnShape.data.labelPlacement}
-                                </LabelStyleContainer>
-                                <LabelStyleContainer
-                                    onClick={(
-                                        event: MouseEvent<HTMLDivElement>,
-                                    ) => {
-                                        event.stopPropagation();
-                                        closeAllOptions('labelAlignment');
-                                    }}
-                                >
-                                    {selectedDrawnShape.data.labelAlignment}
-                                </LabelStyleContainer>
+                                <DropDownContainer>
+                                    <DropDownHeader
+                                        onClick={() =>
+                                            setisLabelPlacementOptionTabActive(
+                                                (prev) => !prev,
+                                            )
+                                        }
+                                    >
+                                        {selectedDrawnShape.data.labelPlacement}
+                                    </DropDownHeader>
+                                    {isLabelPlacementOptionTabActive && (
+                                        <DropDownListContainer>
+                                            <DropDownList>
+                                                {placementOptions.map(
+                                                    (item, index) => (
+                                                        <ListItem
+                                                            key={index}
+                                                            onClick={() =>
+                                                                handleEditLabel(
+                                                                    item.value,
+                                                                    isLabelPlacementOptionTabActive,
+                                                                    isLabelAlignmentOptionTabActive,
+                                                                )
+                                                            }
+                                                        >
+                                                            {item.name}
+                                                        </ListItem>
+                                                    ),
+                                                )}
+                                            </DropDownList>
+                                        </DropDownListContainer>
+                                    )}
+                                </DropDownContainer>
+
+                                <DropDownContainer>
+                                    <DropDownHeader
+                                        onClick={() =>
+                                            setisLabelAlignmentOptionTabActive(
+                                                (prev) => !prev,
+                                            )
+                                        }
+                                    >
+                                        {selectedDrawnShape.data.labelAlignment}
+                                    </DropDownHeader>
+                                    {isLabelAlignmentOptionTabActive && (
+                                        <DropDownListContainer>
+                                            <DropDownList>
+                                                {alignmentOptions.map(
+                                                    (item, index) => (
+                                                        <ListItem
+                                                            key={index}
+                                                            onClick={() =>
+                                                                handleEditLabel(
+                                                                    item.value,
+                                                                    isLabelPlacementOptionTabActive,
+                                                                    isLabelAlignmentOptionTabActive,
+                                                                )
+                                                            }
+                                                        >
+                                                            {item.name}
+                                                        </ListItem>
+                                                    ),
+                                                )}
+                                            </DropDownList>
+                                        </DropDownListContainer>
+                                    )}
+                                </DropDownContainer>
                             </LineSettingsLeft>
-                        </ExtendSettings>
+                        </FibLineSettings>
                     )}
             </FloatingToolbarSettingsContainer>
 
@@ -656,52 +708,6 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                             }
                         >
                             {item.icon} {item.name}
-                        </OptionsTabStyle>
-                    ))}
-                </OptionsTab>
-            )}
-
-            {isLabelPlacementOptionTabActive && (
-                <OptionsTab
-                    style={{
-                        marginLeft: '70px',
-                    }}
-                >
-                    {placementOptions.map((item, index) => (
-                        <OptionsTabStyle
-                            key={index}
-                            onClick={() =>
-                                handleEditLabel(
-                                    item.value,
-                                    isLabelPlacementOptionTabActive,
-                                    isLabelAlignmentOptionTabActive,
-                                )
-                            }
-                        >
-                            {item.name}
-                        </OptionsTabStyle>
-                    ))}
-                </OptionsTab>
-            )}
-
-            {isLabelAlignmentOptionTabActive && (
-                <OptionsTab
-                    style={{
-                        marginLeft: '70px',
-                    }}
-                >
-                    {alignmentOptions.map((item, index) => (
-                        <OptionsTabStyle
-                            key={index}
-                            onClick={() =>
-                                handleEditLabel(
-                                    item.value,
-                                    isLabelPlacementOptionTabActive,
-                                    isLabelAlignmentOptionTabActive,
-                                )
-                            }
-                        >
-                            {item.name}
                         </OptionsTabStyle>
                     ))}
                 </OptionsTab>
