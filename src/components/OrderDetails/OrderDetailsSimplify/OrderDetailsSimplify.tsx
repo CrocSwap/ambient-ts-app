@@ -3,23 +3,16 @@ import { LimitOrderIF } from '../../../ambient-utils/types';
 import { ZERO_ADDRESS } from '../../../ambient-utils/constants';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { useProcessOrder } from '../../../utils/hooks/useProcessOrder';
-import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 import moment from 'moment';
 import { FiCopy } from 'react-icons/fi';
-import { useContext } from 'react';
+import { memo, useContext } from 'react';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import { useMediaQuery } from '@material-ui/core';
 import { UserDataContext } from '../../../contexts/UserDataContext';
-
-interface ItemRowPropsIF {
-    title: string;
-    // eslint-disable-next-line
-    content: any;
-    explanation: string;
-}
+import InfoRow from '../../Global/InfoRow';
 
 interface OrderDetailsSimplifyPropsIF {
     limitOrder: LimitOrderIF;
@@ -43,9 +36,9 @@ interface OrderDetailsSimplifyPropsIF {
     truncatedDisplayPrice: string | undefined;
     isAccountView: boolean;
 }
-export default function OrderDetailsSimplify(
-    props: OrderDetailsSimplifyPropsIF,
-) {
+
+// TODO: refactor to using styled-components
+function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
     const {
         isBid,
         isOrderFilled,
@@ -323,25 +316,10 @@ export default function OrderDetailsSimplify(
         },
         {
             title: 'Value ',
-            content: usdValue,
+            content: usdValue || '',
             explanation: 'The appoximate US dollar value of the limit order',
         },
     ];
-
-    function InfoRow(props: ItemRowPropsIF) {
-        const { title, content, explanation } = props;
-
-        return (
-            <div className={styles.info_row_container}>
-                <div className={styles.title_container}>
-                    <p>{title}</p>
-                    <TooltipComponent title={explanation} placement={'right'} />
-                </div>
-
-                <div>{content}</div>
-            </div>
-        );
-    }
 
     return (
         <div className={styles.tx_details_container}>
@@ -356,7 +334,6 @@ export default function OrderDetailsSimplify(
                         />
                     ))}
                 </section>
-
                 <section>
                     {infoContent
                         .slice(10, infoContent.length)
@@ -373,3 +350,5 @@ export default function OrderDetailsSimplify(
         </div>
     );
 }
+
+export default memo(OrderDetailsSimplify);
