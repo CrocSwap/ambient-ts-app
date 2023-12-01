@@ -183,7 +183,8 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
         {
             title: 'Position Slot ID ',
             content: posHashContent,
-            explanation: 'A unique identifier for this user\'s position',
+            // eslint-disable-next-line quotes
+            explanation: "A unique identifier for this user's position",
         },
 
         {
@@ -276,7 +277,7 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
             title: 'APR',
             content: aprAmountString || '',
             explanation:
-                'The estimated APR of the position based on rewards eaned',
+                'The estimated APR of the position based on rewards earned',
         },
         {
             title: 'Value ',
