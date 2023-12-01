@@ -66,9 +66,9 @@ export default function TransactionSubmitted(props: PropsIF) {
             target='_blank'
             rel='noreferrer'
             className={styles.view_etherscan}
-            aria-label='view on etherscan'
+            aria-label='view on explorer'
         >
-            View on Etherscan
+            View on Explorer
         </a>
     );
     return (
@@ -95,13 +95,13 @@ export default function TransactionSubmitted(props: PropsIF) {
                 style={{ marginBottom: '15px' }}
             >
                 {type === 'Limit'
-                    ? `Limit Transaction ${
-                          isConfirmed ? 'Confirmed' : 'Successfully Submitted'
-                      }`
+                    ? isConfirmed
+                        ? 'Limit Order Success!'
+                        : 'Successfully Submitted'
                     : type === 'Range'
-                    ? `Pool Transaction ${
-                          isConfirmed ? 'Confirmed' : 'Successfully Submitted'
-                      }`
+                    ? isConfirmed
+                        ? 'Pool Success!'
+                        : 'Successfully Submitted'
                     : type === 'Reposition'
                     ? `Reposition ${
                           isConfirmed ? 'Confirmed' : 'Successfully Submitted'
@@ -114,9 +114,9 @@ export default function TransactionSubmitted(props: PropsIF) {
                     ? `Removal ${
                           isConfirmed ? 'Confirmed' : 'Successfully Submitted'
                       }`
-                    : `Swap Transaction ${
-                          isConfirmed ? 'Confirmed' : 'Successfully Submitted'
-                      }`}
+                    : isConfirmed
+                    ? 'Swap Success!'
+                    : 'Successfully Submitted'}
             </Text>
             <div
                 className={`${styles.action_buttons} ${

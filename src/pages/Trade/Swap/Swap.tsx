@@ -497,7 +497,7 @@ function Swap(props: propsIF) {
     const swapSteps = [
         { label: 'Sign transaction' },
         {
-            label: 'Submitting Swap',
+            label: 'Submitting swap',
         },
     ];
 
