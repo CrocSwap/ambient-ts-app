@@ -278,7 +278,10 @@ function Swap(props: propsIF) {
             const costOfMainnetSwapInETH =
                 gasPriceInGwei * averageSwapCostInGasDrops * 1e-9;
 
-            setAmountToReduceEthMainnet(1.5 * costOfMainnetSwapInETH);
+            const SWAP_BUFFER_MULTIPLIER = 1.75;
+            setAmountToReduceEthMainnet(
+                SWAP_BUFFER_MULTIPLIER * costOfMainnetSwapInETH,
+            );
 
             const costOfScrollSwapInETH =
                 gasPriceInGwei * averageSwapCostInGasDrops * 1e-9;
@@ -290,7 +293,9 @@ function Swap(props: propsIF) {
             //         amountToReduceEthScroll,
             //     });
 
-            setAmountToReduceEthScroll(1.5 * costOfScrollSwapInETH);
+            setAmountToReduceEthScroll(
+                SWAP_BUFFER_MULTIPLIER * costOfScrollSwapInETH,
+            );
 
             const gasPriceInDollarsNum =
                 gasPriceInGwei *

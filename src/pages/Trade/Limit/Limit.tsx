@@ -432,7 +432,11 @@ export default function Limit() {
             const costOfMainnetLimitInETH =
                 gasPriceInGwei * averageLimitCostInGasDrops * 1e-9;
 
-            setAmountToReduceEthMainnet(1.75 * costOfMainnetLimitInETH);
+            const LIMIT_BUFFER_MULTIPLIER = 1.75;
+
+            setAmountToReduceEthMainnet(
+                LIMIT_BUFFER_MULTIPLIER * costOfMainnetLimitInETH,
+            );
 
             const costOfScrollLimitInETH =
                 gasPriceInGwei * averageLimitCostInGasDrops * 1e-9;
@@ -444,7 +448,9 @@ export default function Limit() {
             //         amountToReduceEthScroll,
             //     });
 
-            setAmountToReduceEthScroll(1.75 * costOfScrollLimitInETH);
+            setAmountToReduceEthScroll(
+                LIMIT_BUFFER_MULTIPLIER * costOfScrollLimitInETH,
+            );
 
             const gasPriceInDollarsNum =
                 gasPriceInGwei *

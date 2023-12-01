@@ -808,7 +808,11 @@ function Range() {
             const costOfMainnetPoolInETH =
                 gasPriceInGwei * averagePoolCostInGasDrops * 1e-9;
 
-            setAmountToReduceEthMainnet(2 * costOfMainnetPoolInETH);
+            const RANGE_BUFFER_MULTIPLIER = 2;
+
+            setAmountToReduceEthMainnet(
+                RANGE_BUFFER_MULTIPLIER * costOfMainnetPoolInETH,
+            );
 
             const costOfScrollPoolInETH =
                 gasPriceInGwei * averagePoolCostInGasDrops * 1e-9;
@@ -819,7 +823,9 @@ function Range() {
             //         amountToReduceEthScroll,
             //     });
 
-            setAmountToReduceEthScroll(2 * costOfScrollPoolInETH);
+            setAmountToReduceEthScroll(
+                RANGE_BUFFER_MULTIPLIER * costOfScrollPoolInETH,
+            );
 
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
