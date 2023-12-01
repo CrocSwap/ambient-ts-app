@@ -14,7 +14,7 @@ import { UserDataContext } from '../../../../contexts/UserDataContext';
 interface ItemRowPropsIF {
     title: string;
     // eslint-disable-next-line
-    content: any;
+    content: string | JSX.Element;
     explanation: string;
 }
 
@@ -374,18 +374,20 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
         );
     });
 
+    const infoRowContent = useMemo(() => {
+        return infoContent.map((info, idx) => (
+            <InfoRow
+                key={info.title + idx}
+                title={info.title}
+                content={info.content}
+                explanation={info.explanation}
+            />
+        ));
+    }, [infoContent]);
+
     return (
         <div className={styles.tx_details_container}>
-            <div className={styles.info_content}>
-                {infoContent.map((info, idx) => (
-                    <InfoRow
-                        key={info.title + idx}
-                        title={info.title}
-                        content={info.content}
-                        explanation={info.explanation}
-                    />
-                ))}
-            </div>
+            <div className={styles.info_content}>{infoRowContent}</div>
         </div>
     );
 }
