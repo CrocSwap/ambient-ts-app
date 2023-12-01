@@ -1,13 +1,9 @@
 import React, { createContext, useContext, useEffect } from 'react';
 import { fetchUserRecentChanges } from '../App/functions/fetchUserRecentChanges';
-import { getLimitOrderData } from '../App/functions/getLimitOrderData';
-// import { getPositionData } from '../App/functions/getPositionData';
+
 import useDebounce from '../App/hooks/useDebounce';
-import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../constants';
-import {
-    LimitOrderIF,
-    LimitOrderServerIF,
-} from '../utils/interfaces/LimitOrderIF';
+import { IS_LOCAL_ENV } from '../constants';
+import { LimitOrderIF } from '../utils/interfaces/LimitOrderIF';
 import { PositionIF } from '../utils/interfaces/PositionIF';
 import { TokenIF } from '../utils/interfaces/TokenIF';
 import { TransactionIF } from '../utils/interfaces/TransactionIF';
@@ -165,11 +161,11 @@ export const GraphDataContextProvider = (props: {
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
-    const { userAddress, isUserConnected } = useContext(UserDataContext);
+    const { userAddress: userDefaultAddress, isUserConnected } =
+        useContext(UserDataContext);
+    const userAddress = userDefaultAddress;
 
-    const userLimitOrderStatesCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/user_limit_orders?'
-        : activeNetwork.graphCacheUrl + '/user_limit_orders?';
+    // userAddress = '0xfd3fa9d94eeb4e9889e60e37d0f1fe24ec59f7e1'; TODO, remove user with verifiable orders, after JG is done testing
 
     const resetUserGraphData = () => {
         setPositionsByUser({
@@ -239,90 +235,61 @@ export const GraphDataContextProvider = (props: {
             ) {
                 return;
             }
-
-            IS_LOCAL_ENV && console.debug('fetching user positions');
-
-            try {
-                const userPositions = await UserPositions.fetchDecorated({
-                    user: userAddress,
-                    chainId: chainData.chainId,
-                    gcUrl: activeNetwork.graphCacheUrl,
-                    provider,
-                    lastBlockNumber,
-                    tokenUniv: tokens.tokenUniv,
-                    crocEnv,
-                    cachedFetchTokenPrice,
-                    cachedQuerySpotPrice,
-                    cachedTokenDetails,
-                    cachedEnsResolve,
-                });
-                if (userPositions) {
-                    setPositionsByUser({
-                        dataReceived: true,
-                        positions: userPositions,
-                    });
-
-                    setDataLoadingStatus({
-                        datasetName: 'isConnectedUserRangeDataLoading',
-                        loadingStatus: false,
-                    });
-                }
-            } catch (error) {
-                console.log('JG. ENCOUNTERED USER POSITION ERR');
-                console.log({ error });
-                console.error;
-            }
-
-            IS_LOCAL_ENV && console.debug('fetching user limit orders ');
-            console.log('completing fetch!');
-
-            fetch(
-                userLimitOrderStatesCacheEndpoint +
-                    new URLSearchParams({
+            const urlTargets = ['limit_order_states', 'user_positions'];
+            for (let i = 0; i < urlTargets.length; i++) {
+                IS_LOCAL_ENV &&
+                    console.debug(
+                        'fetching user positions for ' + urlTargets[i],
+                    );
+                try {
+                    const updatedLedger = await UserPositions.fetchDecorated({
+                        urlTarget: urlTargets[i],
                         user: userAddress,
                         chainId: chainData.chainId,
-                        ensResolution: 'true',
-                        omitEmpty: 'true',
-                    }),
-            )
-                .then((response) => response?.json())
-                .then((json) => {
-                    // temporarily skip ENS fetch
-                    const skipENSFetch = true;
-                    const userLimitOrderStates = json?.data;
-                    if (userLimitOrderStates) {
-                        Promise.all(
-                            userLimitOrderStates.map(
-                                (limitOrder: LimitOrderServerIF) => {
-                                    return getLimitOrderData(
-                                        limitOrder,
-                                        tokens.tokenUniv,
-                                        crocEnv,
-                                        provider,
-                                        chainData.chainId,
-                                        lastBlockNumber,
-                                        cachedFetchTokenPrice,
-                                        cachedQuerySpotPrice,
-                                        cachedTokenDetails,
-                                        cachedEnsResolve,
-                                        skipENSFetch,
-                                    );
-                                },
-                            ),
-                        ).then((updatedLimitOrderStates) => {
-                            setLimitOrdersByUser({
-                                dataReceived: true,
-                                limitOrders: updatedLimitOrderStates,
-                            }),
-                                setDataLoadingStatus({
-                                    datasetName:
-                                        'isConnectedUserOrderDataLoading',
-                                    loadingStatus: false,
-                                });
+                        gcUrl: activeNetwork.graphCacheUrl,
+                        provider,
+                        lastBlockNumber,
+                        tokenUniv: tokens.tokenUniv,
+                        crocEnv,
+                        cachedFetchTokenPrice,
+                        cachedQuerySpotPrice,
+                        cachedTokenDetails,
+                        cachedEnsResolve,
+                    });
+
+                    console.log('FINISHING ---------------- ' + urlTargets[i]);
+                    console.log({ updatedLedger });
+                    if (urlTargets[i] == 'user_positions') {
+                        setPositionsByUser({
+                            dataReceived: true,
+                            positions: updatedLedger as PositionIF[],
                         });
+                        setDataLoadingStatus({
+                            datasetName: 'isConnectedUserRangeDataLoading',
+                            loadingStatus: false,
+                        });
+                    } else {
+                        // default user_positions
+                        setLimitOrdersByUser({
+                            dataReceived: true,
+                            limitOrders: updatedLedger as LimitOrderIF[],
+                        }),
+                            setDataLoadingStatus({
+                                datasetName: 'isConnectedUserOrderDataLoading',
+                                loadingStatus: false,
+                            });
                     }
-                })
-                .catch(console.error);
+                } catch (error) {
+                    console.log(
+                        'JG. ENCOUNTERED USER POSITION ERR' + urlTargets[i],
+                    );
+                    console.error(error);
+                }
+                IS_LOCAL_ENV &&
+                    console.debug(
+                        'fetching user limit orders ' + urlTargets[i],
+                    );
+            }
 
             try {
                 fetchUserRecentChanges({
@@ -414,6 +381,7 @@ export const GraphDataContextProvider = (props: {
                 console.error;
             }
         };
+        console.log('Calling Fetch Data');
         fetchData();
     }, [
         isServerEnabled,

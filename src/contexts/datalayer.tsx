@@ -1,12 +1,17 @@
 // import { useContext  } from 'react'; // useEffect createContext
 import { GCGO_OVERRIDE_URL } from '../constants';
 import { getPositionData } from '../App/functions/getPositionData';
+import { getLimitOrderData } from '../App/functions/getLimitOrderData';
+
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { TokenIF } from '../utils/interfaces/exports';
 import { Provider } from '@ethersproject/providers';
 import { PositionIF, PositionServerIF } from '../utils/interfaces/PositionIF';
 // import { TokenContext } from './TokenContext';
-
+import {
+    LimitOrderIF,
+    LimitOrderServerIF,
+} from '../utils/interfaces/LimitOrderIF';
 import {
     TokenPriceFn,
     // memoizeTokenPrice,
@@ -27,6 +32,7 @@ import {
 // const { tokens } = useContext(TokenContext);
 
 const fetchUserPositions = async ({
+    urlTarget,
     user,
     chainId,
     gcUrl,
@@ -35,6 +41,7 @@ const fetchUserPositions = async ({
     omitKnockout = true,
     addValue = true,
 }: {
+    urlTarget: string;
     user: string;
     chainId: string;
     gcUrl: string;
@@ -47,8 +54,19 @@ const fetchUserPositions = async ({
         ? GCGO_OVERRIDE_URL + '/user_positions?'
         : gcUrl + '/user_positions?';
 
+    const userLimitOrderStatesCacheEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/user_limit_orders?'
+        : gcUrl + '/user_limit_orders?';
+    let selectedEndpoint;
+    if (urlTarget == 'limit_order_states') {
+        selectedEndpoint = userLimitOrderStatesCacheEndpoint;
+    } else {
+        // default to 'user_positions'
+        selectedEndpoint = userPositionsCacheEndpoint;
+    }
+    console.log('Sending ' + selectedEndpoint);
     return await fetch(
-        userPositionsCacheEndpoint +
+        selectedEndpoint +
             new URLSearchParams({
                 user: user,
                 chainId: chainId,
@@ -61,6 +79,7 @@ const fetchUserPositions = async ({
 };
 
 const decorateUserPositions = async ({
+    urlTarget,
     userPositions,
     tokenUniv,
     crocEnv,
@@ -72,7 +91,8 @@ const decorateUserPositions = async ({
     cachedTokenDetails,
     cachedEnsResolve,
 }: {
-    userPositions: PositionIF[];
+    urlTarget: string;
+    userPositions: PositionIF[] | LimitOrderIF[];
     tokenUniv: TokenIF[];
     crocEnv: CrocEnv;
     provider: Provider;
@@ -84,26 +104,52 @@ const decorateUserPositions = async ({
     cachedEnsResolve: FetchAddrFn;
 }) => {
     const skipENSFetch = true;
-    return await Promise.all(
-        userPositions.map(async (position: PositionServerIF) => {
-            return getPositionData(
-                position,
-                tokenUniv,
-                crocEnv,
-                provider,
-                chainId,
-                lastBlockNumber,
-                cachedFetchTokenPrice,
-                cachedQuerySpotPrice,
-                cachedTokenDetails,
-                cachedEnsResolve,
-                skipENSFetch,
-            );
-        }),
-    );
+    if (urlTarget == 'limit_order_states') {
+        return await Promise.all(
+            (userPositions as LimitOrderServerIF[]).map(
+                (position: LimitOrderServerIF) => {
+                    return getLimitOrderData(
+                        position,
+                        tokenUniv,
+                        crocEnv,
+                        provider,
+                        chainId,
+                        lastBlockNumber,
+                        cachedFetchTokenPrice,
+                        cachedQuerySpotPrice,
+                        cachedTokenDetails,
+                        cachedEnsResolve,
+                        skipENSFetch,
+                    );
+                },
+            ),
+        );
+    } else {
+        // default to 'user_positions'
+        return await Promise.all(
+            (userPositions as PositionServerIF[]).map(
+                async (position: PositionServerIF) => {
+                    return getPositionData(
+                        position,
+                        tokenUniv,
+                        crocEnv,
+                        provider,
+                        chainId,
+                        lastBlockNumber,
+                        cachedFetchTokenPrice,
+                        cachedQuerySpotPrice,
+                        cachedTokenDetails,
+                        cachedEnsResolve,
+                        skipENSFetch,
+                    );
+                },
+            ),
+        );
+    }
 };
 
 const fetchDecorated = async ({
+    urlTarget,
     user,
     chainId,
     gcUrl, // TODO, Handle in Data Layer
@@ -120,6 +166,7 @@ const fetchDecorated = async ({
     cachedTokenDetails, // TODO, Handle in Data Layer
     cachedEnsResolve, // TODO, Handle in Data Layer
 }: {
+    urlTarget: string;
     user: string;
     chainId: string;
     gcUrl: string;
@@ -135,8 +182,10 @@ const fetchDecorated = async ({
     cachedQuerySpotPrice: SpotPriceFn;
     cachedTokenDetails: FetchContractDetailsFn;
     cachedEnsResolve: FetchAddrFn;
-}): Promise<PositionIF[]> => {
+}): Promise<PositionIF[] | LimitOrderIF[]> => {
+    console.log('data looking for user positions');
     const response = await fetchUserPositions({
+        urlTarget,
         user,
         chainId,
         gcUrl,
@@ -145,10 +194,13 @@ const fetchDecorated = async ({
         omitKnockout,
         addValue,
     });
+    console.log('data layer got user positions');
     const json = await response?.json();
+    console.log({ json });
     const userPositions = json?.data;
     if (userPositions && crocEnv) {
         const updatedPositions = await decorateUserPositions({
+            urlTarget,
             userPositions,
             tokenUniv,
             crocEnv,
