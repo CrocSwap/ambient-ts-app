@@ -400,3 +400,17 @@ export function saveShapeAttiributesToLocalStorage(item: drawDataHistory) {
         );
     }
 }
+
+export const clipCanvas = (
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    canvas: HTMLCanvasElement,
+) => {
+    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, width, height);
+    ctx.clip();
+};

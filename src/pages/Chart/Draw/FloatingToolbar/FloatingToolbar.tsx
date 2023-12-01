@@ -259,6 +259,8 @@ function FloatingToolbar(props: FloatingToolbarProps) {
 
                 placement && (item[changedItemIndex].labelPlacement = value);
                 alignment && (item[changedItemIndex].labelAlignment = value);
+                saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
+
                 addDrawActionStack(item[changedItemIndex], false);
                 return item;
             });
