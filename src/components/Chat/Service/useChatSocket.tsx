@@ -1,3 +1,6 @@
+/* eslint-disable camelcase */
+/* eslint-disable @typescript-eslint/no-explicit-any  */
+
 import { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
 import {
@@ -18,6 +21,8 @@ import {
 } from '../../../constants';
 import { Message } from '../Model/MessageModel';
 import { User } from '../Model/UserModel';
+import { fetchBatch } from '../../../utils/functions/fetchBatch';
+import { useFetchBatch } from '../../../App/hooks/useFetchBatch';
 
 const useChatSocket = (
     room: string,
@@ -42,6 +47,7 @@ const useChatSocket = (
     const [userVrfToken, setUserVrfToken] = useState<string>('');
 
     const messagesRef = useRef<Message[]>([]);
+    const [ensHashes, setEnsHashes] = useState<Map<string, string>>();
     messagesRef.current = messages;
 
     async function getMsgWithRest(roomInfo: string) {
@@ -290,6 +296,7 @@ const useChatSocket = (
                     ? await getAllMessages()
                     : await getMsgWithRest(room);
             setMessages(data.reverse());
+            updateEnsCaches(data);
             if (data.length > 0) {
                 setLastMessage(data[data.length - 1]);
                 setLastMessageText(data[data.length - 1].text);
@@ -481,6 +488,28 @@ const useChatSocket = (
             }
         });
         setMessages([...newMessageList]);
+    };
+
+    const updateEnsCaches = async (messages: Message[]) => {
+        console.log('update ens caches !!!!!!!!!!!!!!');
+        console.log('update ens caches !!!!!!!!!!!!!!');
+        console.log('update ens caches !!!!!!!!!!!!!!');
+        console.log('update ens caches !!!!!!!!!!!!!!');
+
+        const ensReqBody = { config_path: 'ens_address', address: '' };
+
+        const firstLength = ensHashes?.size;
+        messages.map(async (msg) => {
+            if (!ensHashes?.get(msg.walletID)) {
+                ensReqBody.address = msg.walletID;
+                console.log(ensReqBody);
+                const data = await fetchBatch<'ens_address'>(ensReqBody);
+                console.log(data);
+                console.log('......................');
+            }
+        });
+
+        console.log(firstLength);
     };
 
     return {
