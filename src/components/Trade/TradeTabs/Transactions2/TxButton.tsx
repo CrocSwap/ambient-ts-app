@@ -31,7 +31,7 @@ export default function TxButton(props: propsIF) {
         case 'addBtn':
             icon = <FaPlus size={12} />;
             break;
-        case 'multiplyBtn':
+        case 'removeBtn':
             icon = <FaTimes size={12} />;
             break;
         case 'leafBtn':

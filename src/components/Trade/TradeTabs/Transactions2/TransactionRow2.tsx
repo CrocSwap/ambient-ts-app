@@ -8,8 +8,9 @@ import { useContext } from 'react';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import TxButton from './TxButton';
 import { TransactionServerIF } from '../../../../ambient-utils/types/transaction/TransactionServerIF';
+import TxButtonBank from './TxButtonBank';
 
-export type btnIconNameType = 'overflowBtn'|'editBtn'|'harvestBtn'|'addBtn'|'multiplyBtn'|'leafBtn'|'shareBtn'|'exportBtn'|'walletBtn'|'copyBtn'|'downloadBtn';
+export type btnIconNameType = 'overflowBtn'|'editBtn'|'harvestBtn'|'addBtn'|'removeBtn'|'leafBtn'|'shareBtn'|'exportBtn'|'walletBtn'|'copyBtn'|'downloadBtn';
 
 interface propsIF {
     tx: TransactionServerIF;
@@ -64,9 +65,9 @@ export default function TransactionRow2(props: propsIF) {
                 elemForDOM = (
                     <TxButton width={elemMeta[1]} iconName='leafBtn' hide={false} />
                 );
-            } else if (elemMeta[0] === 'multiplyBtn') {
+            } else if (elemMeta[0] === 'removeBtn') {
                 elemForDOM = (
-                    <TxButton width={elemMeta[1]} iconName='multiplyBtn' hide={false} />
+                    <TxButton width={elemMeta[1]} iconName='removeBtn' hide={false} />
                 );
             } else if (elemMeta[0] === 'shareBtn') {
                 elemForDOM = (
@@ -93,25 +94,26 @@ export default function TransactionRow2(props: propsIF) {
         return elemForDOM;
     }
 
-    const rowOrder: columnSlugsType[] = [
+    const infoCells: columnSlugsType[] = [
         'timeStamp',
         'txId',
         'txWallet',
-        'overflowBtn',
-        'harvestBtn',
-        'addBtn',
-        'leafBtn',
-        'multiplyBtn',
-        'shareBtn',
-        'exportBtn',
-        'walletBtn',
+    ];
+
+    const actionButtons: columnSlugsType[] = [
+        'editBtn',
+        'removeBtn',
         'copyBtn',
-        'downloadBtn',
+        'walletBtn',
+        'overflowBtn',
     ];
 
     return (
         <li className={styles.tx_li}>
-            {rowOrder.map((elem: columnSlugsType) => renderElem(elem))}
+            {infoCells.map((elem: columnSlugsType) => renderElem(elem))}
+            <div className={styles.action_buttons}>
+                {actionButtons.map((elem: columnSlugsType) => renderElem(elem))}
+            </div>
         </li>
     );
 }

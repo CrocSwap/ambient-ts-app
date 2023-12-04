@@ -4,3 +4,9 @@
     justify-content: space-between;
     width: auto;
 }
+
+.action_buttons {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+}
