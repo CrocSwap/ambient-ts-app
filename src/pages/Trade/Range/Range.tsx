@@ -983,8 +983,6 @@ function Range() {
     }, [isTransactionApproved, isTransactionPending, isTransactionConfirmed]);
     const [showStepperComponent, setShowStepperComponent] = useState(false);
 
-    console.log({ showConfirmation }, 'From Range.tsx');
-
     return (
         <TradeModuleSkeleton
             chainId={chainId}

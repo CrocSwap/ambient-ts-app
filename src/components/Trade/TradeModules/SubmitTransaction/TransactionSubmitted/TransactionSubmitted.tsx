@@ -5,8 +5,6 @@ import addTokenToWallet from './addTokenToWallet';
 import { useLocation } from 'react-router-dom';
 import { FlexContainer, Text } from '../../../../../styled/Common';
 import { getChainExplorer } from '../../../../../ambient-utils/dataLayer';
-import { useState } from 'react';
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
 interface PropsIF {
     type:
@@ -39,10 +37,7 @@ export default function TransactionSubmitted(props: PropsIF) {
         noAnimation,
         chainId,
         isConfirmed,
-        stepperComponent,
     } = props;
-
-    const [showActionButtons, setShowActionButtons] = useState(false);
 
     const blockExplorer = getChainExplorer(chainId);
     const txUrlOnBlockExplorer = `${blockExplorer}tx/${hash}`;
@@ -130,36 +125,18 @@ export default function TransactionSubmitted(props: PropsIF) {
                         ? 'Swap Success!'
                         : 'Successfully Submitted'}
                 </Text>
-                {stepperComponent &&
-                    (showActionButtons ? (
-                        <FaChevronUp
-                            onClick={() =>
-                                setShowActionButtons(!showActionButtons)
-                            }
-                        />
-                    ) : (
-                        <FaChevronDown
-                            onClick={() =>
-                                setShowActionButtons(!showActionButtons)
-                            }
-                        />
-                    ))}
             </FlexContainer>
             <div
                 className={`${styles.action_buttons} ${
                     noAnimation && styles.bypass_buttons
                 }`}
             >
-                {(stepperComponent && showActionButtons) ||
-                !stepperComponent ? (
-                    <>
-                        {txUrlOnBlockExplorer && etherscanButton}
-                        {tokenBSymbol === 'ETH' ||
-                        currentLocation === '/trade/pool'
-                            ? null
-                            : addToMetaMaskButton}
-                    </>
-                ) : null}
+                <>
+                    {txUrlOnBlockExplorer && etherscanButton}
+                    {tokenBSymbol === 'ETH' || currentLocation === '/trade/pool'
+                        ? null
+                        : addToMetaMaskButton}
+                </>
             </div>
         </div>
     );

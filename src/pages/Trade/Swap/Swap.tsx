@@ -508,12 +508,6 @@ function Swap(props: propsIF) {
     const [showStepperComponent, setShowStepperComponent] = useState(false);
 
     useEffect(() => {
-        console.log({
-            isTransactionApproved,
-            isTransactionConfirmed,
-            isTransactionPending,
-        });
-
         setActiveStep(0);
         if (isTransactionApproved) {
             setActiveStep(1);

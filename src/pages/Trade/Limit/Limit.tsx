@@ -679,12 +679,6 @@ export default function Limit() {
     const [activeStep, setActiveStep] = useState(0);
 
     useEffect(() => {
-        console.log({
-            isTransactionApproved,
-            isTransactionConfirmed,
-            isTransactionPending,
-        });
-
         setActiveStep(0);
         if (isTransactionApproved) {
             setActiveStep(1);

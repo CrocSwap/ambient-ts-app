@@ -270,7 +270,6 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                                         bypassConfirmRange.enable();
                                         bypassConfirmRepo.enable();
                                     }
-                                    console.log('showing stepper');
                                     setShowStepperComponent(true);
                                     initiate();
                                 }}
