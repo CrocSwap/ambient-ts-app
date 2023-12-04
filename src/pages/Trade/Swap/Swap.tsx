@@ -278,7 +278,7 @@ function Swap(props: propsIF) {
             const costOfMainnetSwapInETH =
                 gasPriceInGwei * averageSwapCostInGasDrops * 1e-9;
 
-            const SWAP_BUFFER_MULTIPLIER = 1.75;
+            const SWAP_BUFFER_MULTIPLIER = 2;
             setAmountToReduceEthMainnet(
                 SWAP_BUFFER_MULTIPLIER * costOfMainnetSwapInETH,
             );
