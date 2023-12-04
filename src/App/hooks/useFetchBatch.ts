@@ -27,7 +27,6 @@ export function useFetchBatch<K extends keyof RequestResponseMap>(
 
                 setData(response as RequestResponseMap[K]['success']);
             } catch (err) {
-                console.error(err);
                 setError(err as AnalyticsServerError);
             } finally {
                 setIsLoading(false);
