@@ -42,6 +42,11 @@ import { useHandleRangeButtonMessage } from '../../../App/hooks/useHandleRangeBu
 import { useRangeInputDisable } from './useRangeInputDisable';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import {
+    GAS_DROPS_ESTIMATE_POOL,
+    NUM_GWEI_IN_WEI,
+    RANGE_BUFFER_MULTIPLIER,
+} from '../../../ambient-utils/constants/gas_estimates';
 
 export const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 export const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
@@ -803,19 +808,15 @@ function Range() {
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
-            const averagePoolCostInGasDrops = 140000;
-
             const costOfMainnetPoolInETH =
-                gasPriceInGwei * averagePoolCostInGasDrops * 1e-9;
-
-            const RANGE_BUFFER_MULTIPLIER = 2;
+                gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
 
             setAmountToReduceEthMainnet(
-                RANGE_BUFFER_MULTIPLIER * costOfMainnetPoolInETH,
+                costOfMainnetPoolInETH * RANGE_BUFFER_MULTIPLIER,
             );
 
             const costOfScrollPoolInETH =
-                gasPriceInGwei * averagePoolCostInGasDrops * 1e-9;
+                gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
 
             //   IS_LOCAL_ENV &&  console.log({
             //         gasPriceInGwei,
@@ -824,13 +825,13 @@ function Range() {
             //     });
 
             setAmountToReduceEthScroll(
-                RANGE_BUFFER_MULTIPLIER * costOfScrollPoolInETH,
+                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER,
             );
 
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                averagePoolCostInGasDrops *
-                1e-9 *
+                GAS_DROPS_ESTIMATE_POOL *
+                NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice;
 
             setRangeGasPriceinDollars(

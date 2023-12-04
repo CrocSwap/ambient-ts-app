@@ -46,6 +46,13 @@ import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
 import { useApprove } from '../../../App/functions/approve';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import {
+    GAS_DROPS_ESTIMATE_LIMIT_FROM_DEX,
+    GAS_DROPS_ESTIMATE_LIMIT_FROM_WALLET,
+    GAS_DROPS_ESTIMATE_LIMIT_NATIVE,
+    LIMIT_BUFFER_MULTIPLIER,
+    NUM_GWEI_IN_WEI,
+} from '../../../ambient-utils/constants/gas_estimates';
 
 export default function Limit() {
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
@@ -422,23 +429,22 @@ export default function Limit() {
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const averageLimitCostInGasDrops = isSellTokenNativeToken
-                ? 120000
+                ? GAS_DROPS_ESTIMATE_LIMIT_NATIVE
                 : isWithdrawFromDexChecked
                 ? isTokenADexSurplusSufficient
-                    ? 120000
-                    : 150000
-                : 150000;
+                    ? GAS_DROPS_ESTIMATE_LIMIT_FROM_DEX
+                    : GAS_DROPS_ESTIMATE_LIMIT_FROM_WALLET
+                : GAS_DROPS_ESTIMATE_LIMIT_FROM_WALLET;
 
             const costOfMainnetLimitInETH =
-                gasPriceInGwei * averageLimitCostInGasDrops * 1e-9;
+                gasPriceInGwei * averageLimitCostInGasDrops * NUM_GWEI_IN_WEI;
 
-            const LIMIT_BUFFER_MULTIPLIER = 2;
             setAmountToReduceEthMainnet(
                 LIMIT_BUFFER_MULTIPLIER * costOfMainnetLimitInETH,
             );
 
             const costOfScrollLimitInETH =
-                gasPriceInGwei * averageLimitCostInGasDrops * 1e-9;
+                gasPriceInGwei * averageLimitCostInGasDrops * NUM_GWEI_IN_WEI;
 
             // IS_LOCAL_ENV &&
             //     console.log({
@@ -454,7 +460,7 @@ export default function Limit() {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 averageLimitCostInGasDrops *
-                1e-9 *
+                NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice;
 
             setOrderGasPriceInDollars(

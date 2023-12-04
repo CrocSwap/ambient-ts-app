@@ -251,6 +251,7 @@ function LimitTokenInput(props: propsIF) {
                 parseTokenInput={(val: string, isMax?: boolean) => {
                     setTokenBInputQty(formatTokenInput(val, tokenB, isMax));
                 }}
+                amountToReduceEth={0}
             />
         </FlexContainer>
     );

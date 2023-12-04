@@ -34,7 +34,7 @@ interface propsIF {
     reverseTokens?: () => void;
     isMintLiqEnabled?: boolean;
     isInitPage?: boolean;
-    amountToReduceEth?: number;
+    amountToReduceEth: number;
 }
 
 function RangeTokenInput(props: propsIF) {

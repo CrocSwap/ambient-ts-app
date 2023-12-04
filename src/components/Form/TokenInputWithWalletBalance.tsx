@@ -32,7 +32,7 @@ interface propsIF {
     tokenDexBalance?: string;
     isWithdraw?: boolean;
     disabledContent?: React.ReactNode;
-    amountToReduceEth?: number;
+    amountToReduceEth: number;
 }
 
 function TokenInputWithWalletBalance(props: propsIF) {
@@ -63,15 +63,6 @@ function TokenInputWithWalletBalance(props: propsIF) {
         chainData: { chainId },
         crocEnv,
     } = useContext(CrocEnvContext);
-
-    const amountToReduceEthMainnet = 0.01; // .01 ETH
-    const amountToReduceEthScroll = 0.0015; // .0015 ETH
-
-    const ethOffset = amountToReduceEth
-        ? amountToReduceEth
-        : chainId === '0x82750' || chainId === '0x8274f'
-        ? amountToReduceEthScroll
-        : amountToReduceEthMainnet;
 
     const [usdValueForDom, setUsdValueForDom] = useState<string | undefined>();
 
@@ -123,7 +114,9 @@ function TokenInputWithWalletBalance(props: propsIF) {
     });
 
     const subtractBuffer = (balance: string) =>
-        isTokenEth ? (parseFloat(balance) - ethOffset).toFixed(18) : balance;
+        isTokenEth
+            ? (parseFloat(balance) - amountToReduceEth).toFixed(18)
+            : balance;
 
     const balanceWithBuffer = balance ? subtractBuffer(balance) : '...';
 

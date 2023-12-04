@@ -81,6 +81,13 @@ import {
 } from '../../utils/TransactionError';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { RangeContext } from '../../contexts/RangeContext';
+import {
+    GAS_DROPS_ESTIMATE_INIT_WITH_POOL,
+    GAS_DROPS_ESTIMATE_INIT_WITHOUT_POOL,
+    RANGE_BUFFER_MULTIPLIER,
+    GAS_DROPS_ESTIMATE_POOL,
+    NUM_GWEI_IN_WEI,
+} from '../../ambient-utils/constants/gas_estimates';
 // react functional component
 export default function InitPool() {
     const {
@@ -793,16 +800,47 @@ export default function InitPool() {
         return () => clearTimeout(timer);
     }, []);
 
+    const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
+        useState<number>(0.01);
+    const [amountToReduceEthScroll, setAmountToReduceEthScroll] =
+        useState<number>(0.0007);
+
+    const amountToReduceEth =
+        chainId === '0x82750' || chainId === '0x8274f'
+            ? amountToReduceEthScroll
+            : amountToReduceEthMainnet;
+
     // calculate price of gas for pool init
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
-            const averageInitCostInGasDrops = isMintLiqEnabled
-                ? 400000
-                : 155000;
+            const gasDropsEstimateInit = isMintLiqEnabled
+                ? GAS_DROPS_ESTIMATE_INIT_WITH_POOL
+                : GAS_DROPS_ESTIMATE_INIT_WITHOUT_POOL;
+
+            const costOfMainnetPoolInETH =
+                gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
+
+            setAmountToReduceEthMainnet(
+                costOfMainnetPoolInETH * RANGE_BUFFER_MULTIPLIER,
+            );
+
+            const costOfScrollPoolInETH =
+                gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
+
+            //   IS_LOCAL_ENV &&  console.log({
+            //         gasPriceInGwei,
+            //         costOfScrollPoolInETH,
+            //         amountToReduceEthScroll,
+            //     });
+
+            setAmountToReduceEthScroll(
+                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER,
+            );
+
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                averageInitCostInGasDrops *
-                1e-9 *
+                gasDropsEstimateInit *
+                NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice;
 
             setInitGasPriceinDollars(
@@ -1460,6 +1498,7 @@ export default function InitPool() {
                 reverseTokens={reverseTokens}
                 isMintLiqEnabled={isMintLiqEnabled}
                 isInitPage
+                amountToReduceEth={amountToReduceEth}
             />
         </FlexContainer>
     );

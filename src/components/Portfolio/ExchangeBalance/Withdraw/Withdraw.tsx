@@ -43,6 +43,11 @@ import CurrencySelector from '../../../Form/CurrencySelector';
 import TransferAddressInput from '../Transfer/TransferAddressInput';
 import Button from '../../../Form/Button';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import {
+    NUM_GWEI_IN_WEI,
+    GAS_DROPS_ESTIMATE_WITHDRAWAL_NATIVE,
+    GAS_DROPS_ESTIMATE_WITHDRAWAL_ERC20,
+} from '../../../../ambient-utils/constants/gas_estimates';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -340,20 +345,16 @@ export default function Withdraw(props: propsIF) {
 
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
-    const averageGasUnitsForEthWithdrawalInGasDrops = 48000;
-    const averageGasUnitsForErc20WithdrawalInGasDrops = 60000;
-    const gweiInWei = 1e-9;
-
     // calculate price of gas for withdrawal
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                gweiInWei *
+                NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice *
                 (isTokenEth
-                    ? averageGasUnitsForEthWithdrawalInGasDrops
-                    : averageGasUnitsForErc20WithdrawalInGasDrops);
+                    ? GAS_DROPS_ESTIMATE_WITHDRAWAL_NATIVE
+                    : GAS_DROPS_ESTIMATE_WITHDRAWAL_ERC20);
 
             setWithdrawGasPriceinDollars(
                 getFormattedNumber({
