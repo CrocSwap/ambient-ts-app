@@ -46,6 +46,7 @@ interface propsIF {
     handleSetActiveContent?: (newActiveContent: string) => void;
     showStepperComponent: boolean;
     setShowStepperComponent: React.Dispatch<React.SetStateAction<boolean>>;
+    poolPrice?: string;
 }
 
 export default function TradeConfirmationSkeleton(props: propsIF) {
@@ -71,6 +72,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         handleSetActiveContent,
         showStepperComponent,
         setShowStepperComponent,
+        poolPrice,
     } = props;
 
     const {
@@ -165,25 +167,30 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
     );
 
     const tokensDisplay = (
-        <FlexContainer gap={8} alignItems='center'>
-            <TokenIcon
-                token={tokenA}
-                src={uriToHttp(tokenA.logoURI)}
-                alt={tokenA.symbol}
-                size='s'
-            />
+        <FlexContainer gap={8} alignItems='center' flexDirection='column'>
+            <FlexContainer gap={8} alignItems='center'>
+                <TokenIcon
+                    token={tokenA}
+                    src={uriToHttp(tokenA.logoURI)}
+                    alt={tokenA.symbol}
+                    size='s'
+                />
+                <Text fontSize='body' color='text2' align='center'>
+                    {formattedTokenAQuantity} {tokenA.symbol}
+                </Text>
+                →
+                <TokenIcon
+                    token={tokenB}
+                    src={uriToHttp(tokenB.logoURI)}
+                    alt={tokenB.symbol}
+                    size='s'
+                />
+                <Text fontSize='body' color='text2' align='center'>
+                    {formattedTokenBQuantity} {tokenB.symbol}
+                </Text>
+            </FlexContainer>
             <Text fontSize='body' color='text2' align='center'>
-                {formattedTokenAQuantity} {tokenA.symbol}
-            </Text>
-            →
-            <TokenIcon
-                token={tokenB}
-                src={uriToHttp(tokenB.logoURI)}
-                alt={tokenB.symbol}
-                size='s'
-            />
-            <Text fontSize='body' color='text2' align='center'>
-                {formattedTokenBQuantity} {tokenB.symbol}
+                @ {poolPrice}
             </Text>
         </FlexContainer>
     );

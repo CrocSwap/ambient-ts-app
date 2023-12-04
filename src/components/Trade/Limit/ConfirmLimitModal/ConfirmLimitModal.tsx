@@ -156,6 +156,7 @@ export default function ConfirmLimitModal(props: propsIF) {
                     ? 'Submit Limit Order'
                     : `Submitting Limit Order to Swap ${localeSellString} ${tokenA.symbol} for ${localeBuyString} ${tokenB.symbol}`
             }
+            poolPrice={displayPoolPriceWithDenom.toFixed(2)}
             showConfirmation={showConfirmation}
             resetConfirmation={resetConfirmation}
             activeStep={activeStep}
