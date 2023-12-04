@@ -18,7 +18,7 @@ import { GraphDataContextProvider } from './GraphDataContext';
 import { DataLoadingContextProvider } from './DataLoadingContext';
 import { TokenBalanceContextProvider } from './TokenBalanceContext';
 import { TradeDataContextProvider } from './TradeDataContext';
-import { cleanupBatchManager } from '../utils/functions/fetchBatch';
+import { cleanupBatchManager } from '../ambient-utils/api';
 
 export const GlobalContexts = (props: { children: React.ReactNode }) => {
     useEffect(() => {

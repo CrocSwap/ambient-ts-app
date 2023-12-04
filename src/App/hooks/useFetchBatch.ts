@@ -1,7 +1,10 @@
 /* eslint-disable camelcase */
 import { useEffect, useState } from 'react';
-import { fetchBatch } from '../../utils/functions/fetchBatch';
-import { FetchBatchOptions, RequestResponseMap } from '../../utils/types';
+import { fetchBatch } from '../../ambient-utils/api';
+import {
+    FetchBatchOptions,
+    RequestResponseMap,
+} from '../../ambient-utils/types';
 
 export function useFetchBatch<K extends keyof RequestResponseMap>(
     requestBody: RequestResponseMap[K]['request'],

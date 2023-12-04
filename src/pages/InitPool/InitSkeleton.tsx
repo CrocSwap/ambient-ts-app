@@ -5,7 +5,7 @@ import styles from '../../components/Home/Landing/BackgroundImages.module.css';
 
 import { MdArrowBackIosNew } from 'react-icons/md';
 import { FiSettings } from 'react-icons/fi';
-import { DISABLE_INIT_SETTINGS } from '../../constants';
+import { DISABLE_INIT_SETTINGS } from '../../ambient-utils/constants';
 
 interface InitSkeletonProps {
     children: React.ReactNode;

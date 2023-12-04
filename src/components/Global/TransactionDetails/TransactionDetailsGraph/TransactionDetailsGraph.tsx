@@ -10,13 +10,13 @@ import {
     formatPoolPriceAxis,
 } from '../../../../utils/numbers';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import { fetchCandleSeriesCroc } from '../../../../App/functions/fetchCandleSeries';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
+import { fetchCandleSeriesCroc } from '../../../../ambient-utils/api';
 import moment from 'moment';
 import {
     renderCanvasArray,
     setCanvasResolution,
 } from '../../../../pages/Chart/ChartUtils/chartUtils';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */

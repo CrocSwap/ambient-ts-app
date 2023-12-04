@@ -1,24 +1,21 @@
 import React, { createContext, useContext, useEffect } from 'react';
-import { fetchUserRecentChanges } from '../App/functions/fetchUserRecentChanges';
-
+import { fetchUserRecentChanges, UserPositions } from '../ambient-utils/api';
 import useDebounce from '../App/hooks/useDebounce';
-import { IS_LOCAL_ENV } from '../constants';
-import { LimitOrderIF } from '../utils/interfaces/LimitOrderIF';
-import { PositionIF } from '../utils/interfaces/PositionIF';
-import { TokenIF } from '../utils/interfaces/TokenIF';
-import { TransactionIF } from '../utils/interfaces/TransactionIF';
-
+import { IS_LOCAL_ENV } from '../ambient-utils/constants';
+import {
+    TokenIF,
+    PositionIF,
+    LimitOrderIF,
+    TransactionIF,
+    LiquidityDataIF,
+} from '../ambient-utils/types';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
-
 import { UserDataContext } from './UserDataContext';
 import { DataLoadingContext } from './DataLoadingContext';
-import { LiquidityDataIF } from '../App/functions/fetchPoolLiquidity';
-
-import { UserPositions } from './datalayer';
 
 interface Changes {
     dataReceived: boolean;

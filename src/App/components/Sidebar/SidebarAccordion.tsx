@@ -3,7 +3,7 @@ import { useState, ReactNode, useEffect, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 // START: Import Local Files
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { IS_LOCAL_ENV } from '../../../constants';
+import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 import { sidebarMethodsIF } from '../../hooks/useSidebar';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { FlexContainer, Text } from '../../../styled/Common';

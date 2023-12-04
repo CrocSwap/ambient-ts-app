@@ -1,6 +1,9 @@
+import {
+    getFormattedNumber,
+    translateTestnetToken,
+} from '../../ambient-utils/dataLayer';
+import { TokenIF } from '../../ambient-utils/types';
 import { memo, useContext, useEffect, useState } from 'react';
-import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { formatTokenInput } from '../../utils/numbers';
 import TokenInputQuantity from './TokenInputQuantity';
 import { RefreshButton } from '../../styled/Components/TradeModules';
@@ -8,7 +11,7 @@ import { FiRefreshCw } from 'react-icons/fi';
 import WalletBalanceSubinfo from './WalletBalanceSubinfo';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { translateTestnetToken } from '../../utils/data/testnetTokenMap';
+
 interface propsIF {
     tokenAorB: 'A' | 'B';
     token: TokenIF;

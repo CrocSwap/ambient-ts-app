@@ -1,30 +1,23 @@
-import TooltipComponent from '../../TooltipComponent/TooltipComponent';
-import { TransactionIF } from '../../../../utils/interfaces/exports';
+import { TransactionIF } from '../../../../ambient-utils/types';
 import { RiExternalLinkLine } from 'react-icons/ri';
 
 import styles from './TransactionDetailsSimplify.module.css';
 import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
-import { ZERO_ADDRESS } from '../../../../constants';
+import { ZERO_ADDRESS } from '../../../../ambient-utils/constants';
 import moment from 'moment';
-import { useContext } from 'react';
+import { memo, useContext } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { useMediaQuery } from '@material-ui/core';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
-
-interface ItemRowPropsIF {
-    title: string;
-    // eslint-disable-next-line
-    content: any;
-    explanation: string;
-}
+import InfoRow from '../../InfoRow';
 
 interface TransactionDetailsSimplifyPropsIF {
     tx: TransactionIF;
     isAccountView: boolean;
 }
-export default function TransactionDetailsSimplify(
-    props: TransactionDetailsSimplifyPropsIF,
-) {
+
+// TODO: refactor to using styled-components
+function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
     const { tx, isAccountView } = props;
 
     const { userAddress } = useContext(UserDataContext);
@@ -307,60 +300,41 @@ export default function TransactionDetailsSimplify(
                 ? 'The transaction price'
                 : 'The low price boundary',
         },
-
-        // {
-        //     title: 'Liquidity Provider Fee ',
-        //     content: 'liquidity fee',
-        //     explanation: 'this is explanation',
-        // },
-
-        // { title: 'Network Fee ', content: 'network fee', explanation: 'this is explanation' },
+        ...(isSwap
+            ? [
+                  {
+                      title: 'Value ',
+                      content: (
+                          <div style={{ cursor: 'default' }}>{usdValue}</div>
+                      ),
+                      explanation:
+                          'The approximate US dollar value of the transaction',
+                  },
+              ]
+            : [
+                  {
+                      title: 'High Price Boundary',
+                      content: isAccountView
+                          ? isBaseTokenMoneynessGreaterOrEqual
+                              ? `1 ${quoteTokenSymbol} = ${truncatedHighDisplayPriceDenomByMoneyness} ${baseTokenSymbol}`
+                              : `1 ${baseTokenSymbol} = ${truncatedHighDisplayPriceDenomByMoneyness} ${quoteTokenSymbol}`
+                          : isAmbient
+                          ? '∞'
+                          : isDenomBase
+                          ? `1 ${baseTokenSymbol} = ${truncatedHighDisplayPrice} ${quoteTokenSymbol}`
+                          : `1 ${quoteTokenSymbol} = ${truncatedHighDisplayPrice} ${baseTokenSymbol}`,
+                      explanation: 'The high price boundary',
+                  },
+                  {
+                      title: 'Value ',
+                      content: (
+                          <div style={{ cursor: 'default' }}>{usdValue}</div>
+                      ),
+                      explanation:
+                          'The approximate US dollar value of the transaction',
+                  },
+              ]),
     ];
-
-    if (isSwap) {
-        infoContent.push({
-            title: 'Value ',
-            content: <div style={{ cursor: 'default' }}>{usdValue}</div>,
-            explanation: 'The appoximate US dollar value of the transaction',
-        });
-    } else {
-        infoContent.push(
-            {
-                title: 'High Price Boundary',
-                content: isAccountView
-                    ? isBaseTokenMoneynessGreaterOrEqual
-                        ? `1 ${quoteTokenSymbol} = ${truncatedHighDisplayPriceDenomByMoneyness} ${baseTokenSymbol}`
-                        : `1 ${baseTokenSymbol} = ${truncatedHighDisplayPriceDenomByMoneyness} ${quoteTokenSymbol}`
-                    : isAmbient
-                    ? '∞'
-                    : isDenomBase
-                    ? `1 ${baseTokenSymbol} = ${truncatedHighDisplayPrice} ${quoteTokenSymbol}`
-                    : `1 ${quoteTokenSymbol} = ${truncatedHighDisplayPrice} ${baseTokenSymbol}`,
-                explanation: 'The high price boundary',
-            },
-            {
-                title: 'Value ',
-                content: <div style={{ cursor: 'default' }}>{usdValue}</div>,
-                explanation:
-                    'The appoximate US dollar value of the transaction',
-            },
-        );
-    }
-
-    function InfoRow(props: ItemRowPropsIF) {
-        const { title, content, explanation } = props;
-
-        return (
-            <div className={styles.info_row_container}>
-                <div className={styles.title_container}>
-                    <p>{title}</p>
-                    <TooltipComponent title={explanation} placement={'right'} />
-                </div>
-
-                <div>{content}</div>
-            </div>
-        );
-    }
 
     return (
         <div className={styles.tx_details_container}>
@@ -377,3 +351,5 @@ export default function TransactionDetailsSimplify(
         </div>
     );
 }
+
+export default memo(TransactionDetailsSimplify);

@@ -4,7 +4,7 @@ import { FiCopy } from 'react-icons/fi';
 import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
-import printDomToImage from '../../../../utils/functions/printDomToImage';
+import { printDomToImage } from '../../../../ambient-utils/dataLayer';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import TradeChartsTokenInfo from '../TradeChartsComponents/TradeChartsTokenInfo';
 import { CandleContext } from '../../../../contexts/CandleContext';
