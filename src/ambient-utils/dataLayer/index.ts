@@ -2,3 +2,5 @@
 
 // TODO: split up /functions into more meaningful separations
 export * from './functions';
+
+export * from './swap';

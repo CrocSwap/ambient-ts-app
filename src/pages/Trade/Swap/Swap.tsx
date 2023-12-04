@@ -5,6 +5,8 @@ import {
     getFormattedNumber,
     getPriceImpactString,
     isStablePair,
+    getSwapTxReceipt,
+    performSwap,
 } from '../../../ambient-utils/dataLayer';
 import Button from '../../../components/Form/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
@@ -191,6 +193,7 @@ function Swap(props: propsIF) {
             : amountToReduceEthMainnet;
 
     useEffect(() => {
+        console.log('determining swap button status + isAllowed');
         if (isSellLoading || isBuyLoading) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('...');
@@ -254,11 +257,13 @@ function Swap(props: propsIF) {
     ]);
 
     useEffect(() => {
+        console.log('resetting swap transaction hash');
         setNewSwapTransactionHash('');
     }, [baseToken.address + quoteToken.address]);
 
     // calculate price of gas for swap
     useEffect(() => {
+        console.log('calculating swap gas price');
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const averageSwapCostInGasDrops = isSellTokenNativeToken
                 ? 100000
@@ -302,10 +307,12 @@ function Swap(props: propsIF) {
     ]);
 
     useEffect(() => {
+        console.log('setting isWithdrawFromDexChecked');
         setIsWithdrawFromDexChecked(parseFloat(tokenADexBalance) > 0);
     }, [tokenADexBalance]);
 
     const resetConfirmation = () => {
+        console.log('resetting confirmation');
         setShowConfirmation(false);
         setTxErrorCode('');
         setTxErrorMessage('');
@@ -313,13 +320,13 @@ function Swap(props: propsIF) {
     };
 
     async function initiateSwap() {
+        console.log('initiating swap');
         resetConfirmation();
 
         setShowConfirmation(true);
         if (!crocEnv) return;
 
-        const sellTokenAddress = tokenA.address;
-        const buyTokenAddress = tokenB.address;
+        console.log('crocenv exists!');
 
         const qty = isTokenAPrimary
             ? sellQtyString.replaceAll(',', '')
@@ -329,20 +336,30 @@ function Swap(props: propsIF) {
 
         let tx;
         try {
-            const plan = isQtySell
-                ? crocEnv.sell(sellTokenAddress, qty).for(buyTokenAddress, {
-                      slippage: slippageTolerancePercentage / 100,
-                  })
-                : crocEnv.buy(buyTokenAddress, qty).with(sellTokenAddress, {
-                      slippage: slippageTolerancePercentage / 100,
-                  });
-            tx = await plan.swap({
-                surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked],
+            console.log('setting swap plan...');
+
+            const sellTokenAddress = isQtySell
+                ? tokenA.address
+                : tokenB.address;
+            const buyTokenAddress = isQtySell ? tokenB.address : tokenA.address;
+
+            tx = await performSwap({
+                crocEnv,
+                qty,
+                buyTokenAddress,
+                sellTokenAddress,
+                slippageTolerancePercentage,
+                isWithdrawFromDexChecked,
+                isSaveAsDexSurplusChecked,
             });
+
+            console.log('swapping based on plan');
 
             setNewSwapTransactionHash(tx?.hash);
             dispatch(addPendingTx(tx?.hash));
-            if (tx.hash)
+
+            if (tx.hash) {
+                console.log('adding transaction to list (by type)');
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
@@ -363,6 +380,7 @@ function Swap(props: propsIF) {
                         },
                     }),
                 );
+            }
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
@@ -372,38 +390,45 @@ function Swap(props: propsIF) {
             setTxErrorMessage(error?.data?.message);
         }
 
-        let receipt;
-        try {
-            if (tx) receipt = await tx.wait();
-        } catch (e) {
-            const error = e as TransactionError;
-            console.error({ error });
-            // The user used "speed up" or something similar
-            // in their client, but we now have the updated info
-            if (isTransactionReplacedError(error)) {
-                IS_LOCAL_ENV && console.debug('repriced');
-                dispatch(removePendingTx(error.hash));
+        if (tx) {
+            let receipt;
+            try {
+                console.log('getting tx receipt');
+                receipt = await getSwapTxReceipt(tx);
+            } catch (e) {
+                console.log('error getting tx receipt or something');
+                const error = e as TransactionError;
+                console.error({ error });
+                // The user used "speed up" or something similar
+                // in their client, but we now have the updated info
+                if (isTransactionReplacedError(error)) {
+                    IS_LOCAL_ENV && console.debug('repriced');
+                    dispatch(removePendingTx(error.hash));
 
-                const newTransactionHash = error.replacement.hash;
-                dispatch(addPendingTx(newTransactionHash));
+                    const newTransactionHash = error.replacement.hash;
+                    dispatch(addPendingTx(newTransactionHash));
 
-                dispatch(
-                    updateTransactionHash({
-                        oldHash: error.hash,
-                        newHash: error.replacement.hash,
-                    }),
-                );
-                setNewSwapTransactionHash(newTransactionHash);
-                IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                receipt = error.receipt;
-            } else if (isTransactionFailedError(error)) {
-                receipt = error.receipt;
+                    dispatch(
+                        updateTransactionHash({
+                            oldHash: error.hash,
+                            newHash: error.replacement.hash,
+                        }),
+                    );
+                    setNewSwapTransactionHash(newTransactionHash);
+                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
+                    receipt = error.receipt;
+                } else if (isTransactionFailedError(error)) {
+                    receipt = error.receipt;
+                }
             }
-        }
 
-        if (receipt) {
-            dispatch(addReceipt(JSON.stringify(receipt)));
-            dispatch(removePendingTx(receipt.transactionHash));
+            if (receipt) {
+                console.log(
+                    'adding receipt to list of receipts + removing pending tx',
+                );
+                dispatch(addReceipt(JSON.stringify(receipt)));
+                dispatch(removePendingTx(receipt.transactionHash));
+            }
         }
     }
 
@@ -620,6 +645,7 @@ function Swap(props: propsIF) {
                         }
                         disabled={isApprovalPending}
                         action={async () => {
+                            console.log('seeking approval for tokenA');
                             await approve(tokenA.address, tokenA.symbol);
                         }}
                         flat
