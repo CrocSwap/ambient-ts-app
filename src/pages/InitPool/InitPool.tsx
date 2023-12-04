@@ -1039,6 +1039,8 @@ export default function InitPool() {
         isTokenAInputDisabled,
         isWithdrawTokenAFromDexChecked,
         true, // hardcode pool initialized since we will be initializing it on confirm
+        tokenAQtyCoveredByWalletBalance,
+        amountToReduceEth,
         isMintLiqEnabled,
         isInitPage,
     );
@@ -1053,6 +1055,8 @@ export default function InitPool() {
         isTokenBInputDisabled,
         isWithdrawTokenBFromDexChecked,
         true, // hardcode pool initialized since we will be initializing it on confirm
+        tokenBQtyCoveredByWalletBalance,
+        amountToReduceEth,
         isMintLiqEnabled,
         isInitPage,
     );

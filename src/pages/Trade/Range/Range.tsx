@@ -906,6 +906,8 @@ function Range() {
         isTokenAInputDisabled,
         isWithdrawTokenAFromDexChecked,
         isPoolInitialized,
+        tokenAQtyCoveredByWalletBalance,
+        amountToReduceEth,
     );
     const {
         tokenAllowed: tokenBAllowed,
@@ -918,6 +920,8 @@ function Range() {
         isTokenBInputDisabled,
         isWithdrawTokenBFromDexChecked,
         isPoolInitialized,
+        tokenBQtyCoveredByWalletBalance,
+        amountToReduceEth,
     );
 
     const { approve, isApprovalPending } = useApprove();
