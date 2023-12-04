@@ -181,9 +181,9 @@ function Swap(props: propsIF) {
     const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
 
     const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
-        useState<number>(0.005);
+        useState<number>(0.001);
     const [amountToReduceEthScroll, setAmountToReduceEthScroll] =
-        useState<number>(0.00005);
+        useState<number>(0.00001);
 
     const amountToReduceEth =
         chainId === '0x82750' || chainId === '0x8274f'

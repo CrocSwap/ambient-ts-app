@@ -119,10 +119,10 @@ export default function Limit() {
     const [isOrderValid, setIsOrderValid] = useState<boolean>(true);
 
     const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
-        useState<number>(0.005);
+        useState<number>(0.001);
 
     const [amountToReduceEthScroll, setAmountToReduceEthScroll] =
-        useState<number>(0.00005);
+        useState<number>(0.00001);
 
     const amountToReduceEth =
         chainId === '0x82750' || chainId === '0x8274f'
@@ -432,8 +432,7 @@ export default function Limit() {
             const costOfMainnetLimitInETH =
                 gasPriceInGwei * averageLimitCostInGasDrops * 1e-9;
 
-            const LIMIT_BUFFER_MULTIPLIER = 1.75;
-
+            const LIMIT_BUFFER_MULTIPLIER = 2;
             setAmountToReduceEthMainnet(
                 LIMIT_BUFFER_MULTIPLIER * costOfMainnetLimitInETH,
             );
@@ -622,6 +621,15 @@ export default function Limit() {
                     setLimitAllowed(false);
                     setLimitButtonErrorMessage(
                         `${tokenA.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
+                    );
+                } else if (
+                    isSellTokenNativeToken &&
+                    tokenAQtyCoveredByWalletBalance + amountToReduceEth >
+                        parseFloat(tokenABalance)
+                ) {
+                    setLimitAllowed(false);
+                    setLimitButtonErrorMessage(
+                        'Wallet Balance Insufficient to Cover Gas',
                     );
                 } else {
                     setLimitAllowed(true);
