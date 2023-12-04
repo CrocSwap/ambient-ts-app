@@ -20,6 +20,8 @@ import {
     ConfirmationDetailsContainer,
     ConfirmationQuantityContainer,
 } from '../../../styled/Components/TradeModules';
+import { FaPlus } from 'react-icons/fa';
+import { FiPlus } from 'react-icons/fi';
 
 interface propsIF {
     type: 'Swap' | 'Limit' | 'Range' | 'Reposition';
@@ -47,6 +49,8 @@ interface propsIF {
     showStepperComponent: boolean;
     setShowStepperComponent: React.Dispatch<React.SetStateAction<boolean>>;
     poolPrice?: string;
+    minPrice?: string;
+    maxPrice?: string;
 }
 
 export default function TradeConfirmationSkeleton(props: propsIF) {
@@ -73,6 +77,8 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         showStepperComponent,
         setShowStepperComponent,
         poolPrice,
+        minPrice,
+        maxPrice,
     } = props;
 
     const {
@@ -165,8 +171,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
             {extraNotes && extraNotes}
         </>
     );
-
-    const tokensDisplay = (
+    const rangeTokensDisplay = (
         <FlexContainer gap={8} alignItems='center' flexDirection='column'>
             <FlexContainer gap={8} alignItems='center'>
                 <TokenIcon
@@ -178,7 +183,8 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                 <Text fontSize='body' color='text2' align='center'>
                     {formattedTokenAQuantity} {tokenA.symbol}
                 </Text>
-                →
+                <FiPlus />
+
                 <TokenIcon
                     token={tokenB}
                     src={uriToHttp(tokenB.logoURI)}
@@ -189,11 +195,53 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                     {formattedTokenBQuantity} {tokenB.symbol}
                 </Text>
             </FlexContainer>
-            <Text fontSize='body' color='text2' align='center'>
-                @ {poolPrice}
-            </Text>
+            <FlexContainer gap={8} alignItems='center'>
+                <Text fontSize='body' color='text2' align='center'>
+                    {' '}
+                    {minPrice}
+                </Text>
+                →
+                <Text fontSize='body' color='text2' align='center'>
+                    {' '}
+                    {maxPrice}
+                </Text>
+            </FlexContainer>
         </FlexContainer>
     );
+
+    const tokensDisplay =
+        type === 'Range' ? (
+            rangeTokensDisplay
+        ) : (
+            <FlexContainer gap={8} alignItems='center' flexDirection='column'>
+                <FlexContainer gap={8} alignItems='center'>
+                    <TokenIcon
+                        token={tokenA}
+                        src={uriToHttp(tokenA.logoURI)}
+                        alt={tokenA.symbol}
+                        size='s'
+                    />
+                    <Text fontSize='body' color='text2' align='center'>
+                        {formattedTokenAQuantity} {tokenA.symbol}
+                    </Text>
+                    →
+                    <TokenIcon
+                        token={tokenB}
+                        src={uriToHttp(tokenB.logoURI)}
+                        alt={tokenB.symbol}
+                        size='s'
+                    />
+                    <Text fontSize='body' color='text2' align='center'>
+                        {formattedTokenBQuantity} {tokenB.symbol}
+                    </Text>
+                </FlexContainer>
+                {poolPrice && (
+                    <Text fontSize='body' color='text2' align='center'>
+                        @ {poolPrice}
+                    </Text>
+                )}
+            </FlexContainer>
+        );
 
     return (
         <FlexContainer

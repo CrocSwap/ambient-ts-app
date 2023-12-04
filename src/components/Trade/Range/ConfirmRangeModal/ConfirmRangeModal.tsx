@@ -84,6 +84,14 @@ function ConfirmRangeModal(props: propsIF) {
     const tokenACharacter: string = getUnicodeCharacter(tokenA.symbol);
     const tokenBCharacter: string = getUnicodeCharacter(tokenB.symbol);
 
+    const minPrice = isDenomBase
+        ? pinnedMinPriceDisplayTruncatedInBase
+        : pinnedMinPriceDisplayTruncatedInQuote;
+
+    const maxPrice = isDenomBase
+        ? pinnedMaxPriceDisplayTruncatedInBase
+        : pinnedMaxPriceDisplayTruncatedInQuote;
+
     const poolTokenDisplay = (
         <>
             <FlexContainer
@@ -172,7 +180,6 @@ function ConfirmRangeModal(props: propsIF) {
             )}
         </>
     );
-    console.log({ showConfirmation }, 'From ConfirmRangeModal.tsx');
 
     return (
         <TradeConfirmationSkeleton
@@ -194,6 +201,8 @@ function ConfirmRangeModal(props: propsIF) {
                           tokenA.symbol
                       } and ${tokenBQty ? tokenBQty : '0'} ${tokenB.symbol}`
             }
+            minPrice={minPrice}
+            maxPrice={maxPrice}
             initiate={sendTransaction}
             resetConfirmation={resetConfirmation}
             onClose={onClose}
