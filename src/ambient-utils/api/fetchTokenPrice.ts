@@ -29,9 +29,13 @@ export const fetchTokenPrice = async (
             token_address: address,
         };
 
-        const { value } = await fetchBatch<'price'>(body);
-        return value;
+        const response = await fetchBatch<'price'>(body);
+
+        if ('error' in response) throw new Error(response.error);
+
+        return response.value;
     } catch (error) {
+        console.log(`entering catch block of fetch token price, ${error}`);
         // if token is USDC, return 0.999
         if (address.toLowerCase() === defaultPair[1].address.toLowerCase()) {
             return {
