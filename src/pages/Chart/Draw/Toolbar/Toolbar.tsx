@@ -21,6 +21,7 @@ interface ToolbarProps {
         React.SetStateAction<drawDataHistory[]>
     >;
     setIsMagnetActiveLocal: React.Dispatch<boolean>;
+    deleteAllShapes: () => void;
 }
 
 interface IconList {
@@ -35,8 +36,8 @@ function Toolbar(props: ToolbarProps) {
         setActiveDrawingType,
         isToolbarOpen,
         setIsToolbarOpen,
-        setDrawnShapeHistory,
         setIsMagnetActiveLocal,
+        deleteAllShapes,
     } = props;
 
     const { setIsMagnetActive, isMagnetActive } = useContext(ChartContext);
@@ -106,10 +107,6 @@ function Toolbar(props: ToolbarProps) {
             setIsMagnetActive({ value: !isMagnetActive.value });
             setIsMagnetActiveLocal(!isMagnetActive.value);
         }
-    }
-
-    function deleteAllShapes() {
-        setDrawnShapeHistory([]);
     }
 
     return (

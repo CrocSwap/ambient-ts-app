@@ -1,12 +1,12 @@
 import {
-    CHART_ANNOTATIONS_LS_KEY,
+    LS_KEY_CHART_ANNOTATIONS,
     drawDataHistory,
     drawnShapeEditAttributes,
-    fibLevels,
 } from './chartUtils';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { fibDefaultLevels } from './drawConstants';
 
 export interface actionKeyIF {
     poolIndex: number;
@@ -14,8 +14,8 @@ export interface actionKeyIF {
     tokenB: string;
 }
 
-export function useUndoRedo(denomInBase: boolean) {
-    const initialData = localStorage.getItem(CHART_ANNOTATIONS_LS_KEY);
+export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
+    const initialData = localStorage.getItem(LS_KEY_CHART_ANNOTATIONS);
     const initialArray = initialData
         ? JSON.parse(initialData)?.drawnShapes || []
         : [];
@@ -33,13 +33,18 @@ export function useUndoRedo(denomInBase: boolean) {
     );
 
     const [undoStack] = useState(new Map<actionKeyIF, drawDataHistory[]>());
+    const [isLocalStorageFetched, setIsLocalStorageFetched] = useState(false);
 
     const currentPool = useContext(TradeDataContext);
 
     const { tokenA, tokenB } = currentPool;
 
     useEffect(() => {
-        if (drawnShapeHistory.length === 0 && initialArray.length > 0) {
+        if (
+            drawnShapeHistory.length === 0 &&
+            initialArray.length > 0 &&
+            !isLocalStorageFetched
+        ) {
             const refactoredArray: Array<drawDataHistory> = [];
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -52,8 +57,13 @@ export function useUndoRedo(denomInBase: boolean) {
                         type: element.type,
                         time: element.time,
                         pool: element.pool,
+                        extendLeft: false,
+                        extendRight: false,
+                        labelPlacement: 'left',
+                        labelAlignment: 'center',
+                        reverse: false,
                         extraData: ['FibRetracement'].includes(element.type)
-                            ? structuredClone(fibLevels)
+                            ? structuredClone(fibDefaultLevels)
                             : [],
                         line: {
                             active: !['Rect'].includes(element.type),
@@ -88,7 +98,11 @@ export function useUndoRedo(denomInBase: boolean) {
                 refactoredArray.length > 0 ? refactoredArray : initialArray,
             );
         }
-    }, [initialData]);
+
+        setIsLocalStorageFetched(() => {
+            return true;
+        });
+    }, [initialData, isLocalStorageFetched]);
 
     const actionKey = useMemo(() => {
         const newActionKey = {
@@ -112,6 +126,27 @@ export function useUndoRedo(denomInBase: boolean) {
         return newActionKey;
     }, [poolIndex, tokenA, tokenB]);
 
+    const deleteAllShapes = useCallback(() => {
+        // const actionList = drawActionStack.get(actionKey);
+        // undoStack.get(actionKey)?.push(structuredClone(drawnShapeHistory));
+        const filteredDrawnShapeHistory = drawnShapeHistory.filter(
+            (element) => {
+                const isShapeInCurrentPool =
+                    currentPool.tokenA.address ===
+                        (isTokenABase === element.pool.isTokenABase
+                            ? element.pool.tokenA
+                            : element.pool.tokenB) &&
+                    currentPool.tokenB.address ===
+                        (isTokenABase === element.pool.isTokenABase
+                            ? element.pool.tokenB
+                            : element.pool.tokenA);
+                return !isShapeInCurrentPool;
+            },
+        );
+
+        setDrawnShapeHistory(filteredDrawnShapeHistory);
+    }, [actionKey, drawnShapeHistory]);
+
     useEffect(() => {
         initialArray.forEach((element: drawDataHistory) => {
             const tempData = {
@@ -134,6 +169,11 @@ export function useUndoRedo(denomInBase: boolean) {
                 line: element.line,
                 background: element.background,
                 extraData: element.extraData,
+                extendLeft: element.extendLeft,
+                extendRight: element.extendRight,
+                labelPlacement: element.labelPlacement,
+                labelAlignment: element.labelAlignment,
+                reverse: element.reverse,
             };
 
             if (!drawActionStack.has(actionKey)) {
@@ -195,6 +235,11 @@ export function useUndoRedo(denomInBase: boolean) {
                         line: findItem.line,
                         background: findItem.background,
                         extraData: findItem.extraData,
+                        extendLeft: findItem.extendLeft,
+                        extendRight: findItem.extendRight,
+                        labelPlacement: findItem.labelPlacement,
+                        labelAlignment: findItem.labelAlignment,
+                        reverse: findItem.reverse,
                     };
 
                     drawActionStack.get(actionKey)?.push(tempHistoryData);
@@ -385,6 +430,11 @@ export function useUndoRedo(denomInBase: boolean) {
                             line: structuredClone(lastValue.line),
                             background: structuredClone(lastValue.background),
                             extraData: structuredClone(lastValue.extraData),
+                            extendLeft: lastValue.extendLeft,
+                            extendRight: lastValue.extendRight,
+                            labelPlacement: lastValue.labelPlacement,
+                            labelAlignment: lastValue.labelAlignment,
+                            reverse: lastValue.reverse,
                         });
                     }
                     if (undoActionList) {
@@ -409,6 +459,11 @@ export function useUndoRedo(denomInBase: boolean) {
                 line: structuredClone(tempLastData.line),
                 background: structuredClone(tempLastData.background),
                 extraData: structuredClone(tempLastData.extraData),
+                extendLeft: tempLastData.extendLeft,
+                extendRight: tempLastData.extendRight,
+                labelPlacement: tempLastData.labelPlacement,
+                labelAlignment: tempLastData.labelAlignment,
+                reverse: tempLastData.reverse,
             };
 
             const tempMap = new Map<actionKeyIF, drawDataHistory[]>(
@@ -451,5 +506,6 @@ export function useUndoRedo(denomInBase: boolean) {
         actionKey,
         addDrawActionStack,
         undoStack,
+        deleteAllShapes,
     };
 }

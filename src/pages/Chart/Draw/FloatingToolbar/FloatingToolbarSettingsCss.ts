@@ -64,6 +64,25 @@ const OptionStyleContainer = styled.div`
     }
 `;
 
+const LabelStyleContainer = styled.div`
+    background: #242f3f;
+    align-items: center;
+    justify-content: start;
+    cursor: pointer;
+
+    font-size: 13px;
+    color: rgba(204, 204, 204);
+
+    width: 60px;
+
+    display: flex;
+
+    &:hover {
+        font-size: 15px;
+        font-weight: bold;
+    }
+`;
+
 const ColorPickerTab = styled.div`
     display: flex;
 
@@ -83,11 +102,13 @@ const LineContainer = styled.div`
 
 const LevelTitle = styled.div`
     font-size: 12px;
+    color: rgba(204, 204, 204);
 `;
 
 const InfoLabel = styled.div`
     display: flex;
     font-size: 12px;
+    color: rgba(204, 204, 204);
 
     align-items: center;
 
@@ -122,12 +143,20 @@ const LineSettingsRight = styled.div`
     gap: 10px;
 `;
 
+const ExtendSettings = styled.div`
+    align-items: center;
+    display: grid;
+    grid-template-columns: 25% 70%;
+
+    gap: 10px;
+`;
+
 const FibLineSettings = styled.div`
     background: #242f3f;
     align-items: center;
 
-    padding: 5px;
-    gap: 12px;
+    padding: 5px 5px 0 5px;
+    gap: 10px;
 
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -140,6 +169,76 @@ const FibLineOptions = styled.div`
     grid-template-columns: repeat(3, 1fr);
 
     gap: 10px;
+`;
+
+const StyledLabel = styled.div`
+    color: rgba(204, 204, 204);
+    padding-left: 7px;
+    padding-top: 2px;
+    font-size: 13px;
+`;
+
+const DropDownContainer = styled.div`
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto;
+`;
+
+const DropDownHeader = styled.div`
+    padding: 4px;
+    box-shadow: 0 3px 4px rgba(0, 0, 0, 0.7);
+
+    border-radius: 3px;
+
+    font-size: 13px;
+    color: rgba(204, 204, 204);
+    background: var(--dark3);
+
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    width: 65px;
+
+    &:hover {
+        background: var(--dark4);
+    }
+`;
+
+const DropDownListContainer = styled.div`
+    position: absolute;
+    &:first-child {
+        padding-top: 5px;
+    }
+`;
+
+const DropDownList = styled.ul`
+    padding: 0;
+    margin: 0;
+
+    width: 65px;
+
+    background: var(--dark3);
+
+    box-sizing: border-box;
+
+    color: rgba(204, 204, 204);
+    font-size: 13px;
+
+    border: 1px solid #434c58;
+    box-sizing: border-box;
+
+    cursor: pointer;
+`;
+
+const ListItem = styled.ul`
+    padding: 5px 10px 5px 10px;
+
+    &:hover {
+        background: #434c58;
+    }
 `;
 
 export {
@@ -156,4 +255,12 @@ export {
     OptionColor,
     FibLineSettings,
     FibLineOptions,
+    ExtendSettings,
+    LabelStyleContainer,
+    StyledLabel,
+    DropDownContainer,
+    DropDownHeader,
+    DropDownListContainer,
+    DropDownList,
+    ListItem,
 };
