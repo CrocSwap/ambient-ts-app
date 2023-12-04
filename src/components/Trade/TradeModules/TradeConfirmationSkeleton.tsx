@@ -20,7 +20,6 @@ import {
     ConfirmationDetailsContainer,
     ConfirmationQuantityContainer,
 } from '../../../styled/Components/TradeModules';
-import { FaPlus } from 'react-icons/fa';
 import { FiPlus } from 'react-icons/fi';
 
 interface propsIF {

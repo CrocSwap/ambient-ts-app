@@ -3,8 +3,10 @@ import Animation from '../../../../Global/Animation/Animation';
 import completed from '../../../../../assets/animations/completed.json';
 import addTokenToWallet from './addTokenToWallet';
 import { useLocation } from 'react-router-dom';
-import { Text } from '../../../../../styled/Common';
+import { FlexContainer, Text } from '../../../../../styled/Common';
 import { getChainExplorer } from '../../../../../ambient-utils/dataLayer';
+import { useState } from 'react';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
 interface PropsIF {
     type:
@@ -37,7 +39,10 @@ export default function TransactionSubmitted(props: PropsIF) {
         noAnimation,
         chainId,
         isConfirmed,
+        stepperComponent,
     } = props;
+
+    const [showActionButtons, setShowActionButtons] = useState(false);
 
     const blockExplorer = getChainExplorer(chainId);
     const txUrlOnBlockExplorer = `${blockExplorer}tx/${hash}`;
@@ -88,45 +93,73 @@ export default function TransactionSubmitted(props: PropsIF) {
                     </div>
                 )}
             </div>
-
-            <Text
-                color='text1'
-                fontSize='header2'
+            <FlexContainer
+                justifyContent='center'
+                gap={8}
+                alignItems='center'
                 style={{ marginBottom: '15px' }}
             >
-                {type === 'Limit'
-                    ? isConfirmed
-                        ? 'Limit Order Success!'
-                        : 'Successfully Submitted'
-                    : type === 'Range'
-                    ? isConfirmed
-                        ? 'Pool Success!'
-                        : 'Successfully Submitted'
-                    : type === 'Reposition'
-                    ? `Reposition ${
-                          isConfirmed ? 'Confirmed' : 'Successfully Submitted'
-                      }`
-                    : type === 'Reset'
-                    ? `Reset ${
-                          isConfirmed ? 'Confirmed' : 'Successfully Submitted'
-                      }`
-                    : type === 'Remove'
-                    ? `Removal ${
-                          isConfirmed ? 'Confirmed' : 'Successfully Submitted'
-                      }`
-                    : isConfirmed
-                    ? 'Swap Success!'
-                    : 'Successfully Submitted'}
-            </Text>
+                <Text color='text1' fontSize='header2'>
+                    {type === 'Limit'
+                        ? isConfirmed
+                            ? 'Limit Order Success!'
+                            : 'Successfully Submitted'
+                        : type === 'Range'
+                        ? isConfirmed
+                            ? 'Pool Success!'
+                            : 'Successfully Submitted'
+                        : type === 'Reposition'
+                        ? `Reposition ${
+                              isConfirmed
+                                  ? 'Confirmed'
+                                  : 'Successfully Submitted'
+                          }`
+                        : type === 'Reset'
+                        ? `Reset ${
+                              isConfirmed
+                                  ? 'Confirmed'
+                                  : 'Successfully Submitted'
+                          }`
+                        : type === 'Remove'
+                        ? `Removal ${
+                              isConfirmed
+                                  ? 'Confirmed'
+                                  : 'Successfully Submitted'
+                          }`
+                        : isConfirmed
+                        ? 'Swap Success!'
+                        : 'Successfully Submitted'}
+                </Text>
+                {stepperComponent &&
+                    (showActionButtons ? (
+                        <FaChevronUp
+                            onClick={() =>
+                                setShowActionButtons(!showActionButtons)
+                            }
+                        />
+                    ) : (
+                        <FaChevronDown
+                            onClick={() =>
+                                setShowActionButtons(!showActionButtons)
+                            }
+                        />
+                    ))}
+            </FlexContainer>
             <div
                 className={`${styles.action_buttons} ${
                     noAnimation && styles.bypass_buttons
                 }`}
             >
-                {txUrlOnBlockExplorer && etherscanButton}
-                {tokenBSymbol === 'ETH' || currentLocation === '/trade/pool'
-                    ? null
-                    : addToMetaMaskButton}
+                {(stepperComponent && showActionButtons) ||
+                !stepperComponent ? (
+                    <>
+                        {txUrlOnBlockExplorer && etherscanButton}
+                        {tokenBSymbol === 'ETH' ||
+                        currentLocation === '/trade/pool'
+                            ? null
+                            : addToMetaMaskButton}
+                    </>
+                ) : null}
             </div>
         </div>
     );
