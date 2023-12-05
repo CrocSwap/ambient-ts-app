@@ -25,7 +25,7 @@ export const fetchTokenPrice = async (
     try {
         const body = {
             config_path: 'price',
-            chain_id: chain,
+            asset_platform: chain === '0x82750' ? 'scroll' : 'ethereum', // TODO: confirm logic for other chains
             token_address: address,
         };
 
