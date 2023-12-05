@@ -12,17 +12,23 @@ export type PriceRequestBodyType = {
     token_address: string;
 };
 
-/** Response Types */
-export type ENSResponse = {
-    ens_address: string | null;
+export type AnalyticsServerError = {
+    error: string;
 };
 
-export type PriceResponse = {
+/** Response Types */
+export type ENSSuccessfulResponse = {
+    ens_address: string | null;
+};
+export type ENSResponse = ENSSuccessfulResponse | AnalyticsServerError;
+
+export type PriceSuccessfulResponse = {
     value: {
         usdPrice: number;
         usdPriceFormatted: number;
     };
 };
+export type PriceResponse = PriceSuccessfulResponse | AnalyticsServerError;
 
 export type RequestTypeMap = {
     ens_address: ENSRequestBodyType;
@@ -33,8 +39,16 @@ export type RequestKeys = keyof RequestTypeMap;
 
 /** Response : Request Type Map */
 export interface RequestResponseMap {
-    ens_address: { request: ENSRequestBodyType; response: ENSResponse };
-    price: { request: PriceRequestBodyType; response: PriceResponse };
+    ens_address: {
+        request: ENSRequestBodyType;
+        response: ENSResponse;
+        success: ENSSuccessfulResponse;
+    };
+    price: {
+        request: PriceRequestBodyType;
+        response: PriceResponse;
+        success: PriceSuccessfulResponse;
+    };
 }
 
 export interface RequestData<K extends keyof RequestResponseMap> {
