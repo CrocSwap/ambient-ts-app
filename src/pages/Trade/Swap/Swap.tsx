@@ -53,7 +53,7 @@ import {
     GAS_DROPS_ESTIMATE_SWAP_TO_FROM_DEX,
     NUM_GWEI_IN_WEI,
     SWAP_BUFFER_MULTIPLIER,
-} from '../../../ambient-utils/constants/gas_estimates';
+} from '../../../ambient-utils/constants/';
 
 interface propsIF {
     isOnTradeRoute?: boolean;

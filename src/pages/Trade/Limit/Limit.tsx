@@ -52,7 +52,7 @@ import {
     GAS_DROPS_ESTIMATE_LIMIT_NATIVE,
     LIMIT_BUFFER_MULTIPLIER,
     NUM_GWEI_IN_WEI,
-} from '../../../ambient-utils/constants/gas_estimates';
+} from '../../../ambient-utils/constants/';
 
 export default function Limit() {
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);

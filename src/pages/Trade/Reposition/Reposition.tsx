@@ -57,7 +57,7 @@ import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import {
     GAS_DROPS_ESTIMATE_REPOSITION,
     NUM_GWEI_IN_WEI,
-} from '../../../ambient-utils/constants/gas_estimates';
+} from '../../../ambient-utils/constants/';
 
 function Reposition() {
     // current URL parameter string

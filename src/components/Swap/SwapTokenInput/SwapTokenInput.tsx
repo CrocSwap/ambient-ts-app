@@ -396,7 +396,7 @@ function SwapTokenInput(props: propsIF) {
                 parseTokenInput={(val: string, isMax?: boolean) => {
                     setBuyQtyString(formatTokenInput(val, tokenB, isMax));
                 }}
-                amountToReduceEth={0}
+                amountToReduceEth={0} // value not used for buy token
             />
         </FlexContainer>
     );

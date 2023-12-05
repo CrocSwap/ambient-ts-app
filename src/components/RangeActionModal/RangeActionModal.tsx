@@ -50,7 +50,7 @@ import {
     GAS_DROPS_ESTIMATE_RANGE_REMOVAL,
     GAS_DROPS_ESTIMATE_RANGE_HARVEST,
     NUM_GWEI_IN_WEI,
-} from '../../ambient-utils/constants/gas_estimates';
+} from '../../ambient-utils/constants/';
 
 interface propsIF {
     type: RangeModalActionType;

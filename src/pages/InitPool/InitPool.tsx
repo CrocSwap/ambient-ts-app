@@ -87,7 +87,7 @@ import {
     RANGE_BUFFER_MULTIPLIER,
     GAS_DROPS_ESTIMATE_POOL,
     NUM_GWEI_IN_WEI,
-} from '../../ambient-utils/constants/gas_estimates';
+} from '../../ambient-utils/constants/';
 // react functional component
 export default function InitPool() {
     const {

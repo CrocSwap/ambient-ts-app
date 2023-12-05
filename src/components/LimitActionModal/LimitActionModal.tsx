@@ -34,7 +34,7 @@ import {
     GAS_DROPS_ESTIMATE_LIMIT_REMOVAL,
     NUM_GWEI_IN_WEI,
     GAS_DROPS_ESTIMATE_LIMIT_CLAIM,
-} from '../../ambient-utils/constants/gas_estimates';
+} from '../../ambient-utils/constants/';
 
 interface propsIF {
     limitOrder: LimitOrderIF;

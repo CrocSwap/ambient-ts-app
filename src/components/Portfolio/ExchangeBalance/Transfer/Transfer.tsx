@@ -45,7 +45,7 @@ import {
     NUM_GWEI_IN_WEI,
     GAS_DROPS_ESTIMATE_TRANSFER_NATIVE,
     GAS_DROPS_ESTIMATE_TRANSFER_ERC20,
-} from '../../../../ambient-utils/constants/gas_estimates';
+} from '../../../../ambient-utils/constants/';
 
 interface propsIF {
     selectedToken: TokenIF;
