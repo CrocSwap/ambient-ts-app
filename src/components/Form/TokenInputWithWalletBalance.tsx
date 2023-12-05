@@ -153,7 +153,9 @@ function TokenInputWithWalletBalance(props: propsIF) {
         <>
             <WalletBalanceSubinfo
                 usdValueForDom={
-                    isLoading || !usdValueForDom ? '' : usdValueForDom
+                    isLoading || !usdValueForDom || disabledContent
+                        ? ''
+                        : usdValueForDom
                 }
                 showWallet={showWallet}
                 isWithdraw={isWithdraw ?? tokenAorB === 'A'}
