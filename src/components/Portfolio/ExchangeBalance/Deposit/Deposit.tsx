@@ -24,6 +24,7 @@ import {
 import { BigNumber } from 'ethers';
 import {
     IS_LOCAL_ENV,
+    SWAP_BUFFER_MULTIPLIER,
     ZERO_ADDRESS,
 } from '../../../../ambient-utils/constants';
 import { FaGasPump } from 'react-icons/fa';
@@ -81,8 +82,16 @@ export default function Deposit(props: propsIF) {
 
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
-    const amountToReduceEthMainnet = BigNumber.from(50).mul('100000000000000'); // .005 ETH
-    const amountToReduceEthScroll = BigNumber.from(5).mul('100000000000000'); // .0005 ETH
+    const amountToReduceEthMainnet = BigNumber.from(
+        Math.ceil(gasPriceInGwei || 25) *
+            100000000000000 *
+            SWAP_BUFFER_MULTIPLIER,
+    );
+    const amountToReduceEthScroll = BigNumber.from(
+        Math.ceil(gasPriceInGwei || 2) *
+            100000000000000 *
+            SWAP_BUFFER_MULTIPLIER,
+    );
 
     const amountToReduceEth =
         chainId === '0x82750' || chainId === '0x8274f'
@@ -385,7 +394,7 @@ export default function Deposit(props: propsIF) {
                         </MaxButton>
                     )}
                 </FlexContainer>
-                {chainId === '0x1' && (
+                {
                     <FlexContainer
                         alignItems='center'
                         justifyContent='flex-end'
@@ -399,7 +408,7 @@ export default function Deposit(props: propsIF) {
                             ? depositGasPriceinDollars
                             : '…'}
                     </FlexContainer>
-                )}
+                }
             </FlexContainer>
             <Button
                 idForDOM='deposit_tokens_button'
