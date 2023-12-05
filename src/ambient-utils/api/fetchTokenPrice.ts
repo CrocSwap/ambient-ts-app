@@ -22,6 +22,8 @@ export const fetchTokenPrice = async (
 
     const defaultPair = supportedNetworks[chain].defaultPair;
 
+    // TODO: use a mapping instead from chain id to asset_platform
+
     try {
         const body = {
             config_path: 'price',
