@@ -249,6 +249,7 @@ export default function Chart(props: propsIF) {
     const [isChartZoom, setIsChartZoom] = useState(false);
 
     const [chartHeights, setChartHeights] = useState(0);
+    const [d3ContainerHeight, setD3ContainerHeight] = useState(0);
     const { isUserConnected } = useContext(UserDataContext);
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -2538,6 +2539,23 @@ export default function Chart(props: propsIF) {
 
                 setChartHeights(height);
                 render();
+            });
+
+            resizeObserver.observe(canvasDiv.node());
+
+            return () => resizeObserver.unobserve(canvasDiv.node());
+        }
+    }, []);
+
+    useEffect(() => {
+        if (d3Container) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const canvasDiv = d3.select(d3Container.current) as any;
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const resizeObserver = new ResizeObserver((result: any) => {
+                const height = result[0].contentRect.height;
+                setD3ContainerHeight(height);
             });
 
             resizeObserver.observe(canvasDiv.node());
@@ -4998,6 +5016,8 @@ export default function Chart(props: propsIF) {
                             setDrawnShapeHistory={setDrawnShapeHistory}
                             setIsMagnetActiveLocal={setIsMagnetActiveLocal}
                             deleteAllShapes={deleteAllShapes}
+                            chartHeights={chartHeights}
+                            d3ContainerHeight={d3ContainerHeight}
                         />
 
                         <CandleChart

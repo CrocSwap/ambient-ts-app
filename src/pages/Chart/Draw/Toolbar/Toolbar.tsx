@@ -23,6 +23,8 @@ interface ToolbarProps {
     >;
     setIsMagnetActiveLocal: React.Dispatch<boolean>;
     deleteAllShapes: () => void;
+    chartHeights: number;
+    d3ContainerHeight: number;
 }
 
 interface IconList {
@@ -39,9 +41,12 @@ function Toolbar(props: ToolbarProps) {
         setIsToolbarOpen,
         setIsMagnetActiveLocal,
         deleteAllShapes,
+        chartHeights,
+        d3ContainerHeight,
     } = props;
 
-    const { setIsMagnetActive, isMagnetActive } = useContext(ChartContext);
+    const { setIsMagnetActive, isMagnetActive, isFullScreen } =
+        useContext(ChartContext);
     const feeRate = document.getElementById('fee_rate_chart');
     const tvl = document.getElementById('tvl_chart');
 
@@ -62,19 +67,21 @@ function Toolbar(props: ToolbarProps) {
 
     const [isHoveredUp, setIsHoveredUp] = useState(false);
     const [isHoveredDown, setIsHoveredDown] = useState(false);
-    const toolbarRef = useRef(null);
-
+    const toolbarRef = useRef<HTMLDivElement>(null);
     const handleMouseMove = () => {
-        const scrollPosition = window.scrollY;
-        // if (scrollPosition ===0) {
-        setIsHoveredUp(true);
-        setIsHoveredDown(true);
+        const scrollContainer = scrollContainerRef.current;
 
-        // }
-        // else {
-        //     setIsHoveredDown(true);
-        //     setIsHoveredUp(false);
-        // }
+        if (scrollContainer && scrollContainer.scrollTop <= 5) {
+            setIsHoveredUp(false);
+        } else {
+            setIsHoveredUp(true);
+        }
+
+        if (isAtBottom()) {
+            setIsHoveredDown(false);
+        } else {
+            setIsHoveredDown(true);
+        }
     };
 
     const handleMouseLeave = () => {
@@ -134,16 +141,37 @@ function Toolbar(props: ToolbarProps) {
         }
     }
 
+    const isAtBottom = () => {
+        if (scrollContainerRef.current) {
+            const { scrollTop, scrollHeight, clientHeight } =
+                scrollContainerRef.current;
+            return scrollTop >= scrollHeight - clientHeight;
+        }
+        return false;
+    };
+
     const handleScroll = (direction: string) => {
         const scrollContainer = scrollContainerRef.current;
 
         if (scrollContainer) {
-            const scrollAmount = 100; // İstediğiniz scroll miktarını belirleyin
+            const scrollAmount = 100;
 
             if (direction === 'up') {
                 scrollContainer.scrollTop -= scrollAmount;
             } else if (direction === 'down') {
                 scrollContainer.scrollTop += scrollAmount;
+            }
+
+            if (scrollContainer.scrollTop <= 5) {
+                setIsHoveredUp(false);
+            } else {
+                setIsHoveredUp(true);
+            }
+
+            if (isAtBottom()) {
+                setIsHoveredDown(false);
+            } else {
+                setIsHoveredDown(true);
             }
         }
     };
@@ -151,6 +179,13 @@ function Toolbar(props: ToolbarProps) {
     const upScroll = (
         <div
             className={styles.arrowContainer_container}
+            style={{
+                width: toolbarRef.current
+                    ? `${toolbarRef.current.clientWidth + 7}px`
+                    : 'auto',
+
+                left: isFullScreen ? 8 : -8,
+            }}
             onClick={() => handleScroll('up')}
         >
             <ArrowContainer degree={315} style={{ marginBottom: '1px' }} />
@@ -160,31 +195,31 @@ function Toolbar(props: ToolbarProps) {
     const downScroll = (
         <div
             className={styles.arrowContainer_container}
-            style={{ bottom: '20px' }}
+            style={{
+                bottom:
+                    d3ContainerHeight -
+                    chartHeights -
+                    1 +
+                    (isFullScreen ? 16 : 0) +
+                    'px',
+                position: 'absolute',
+                width: toolbarRef.current
+                    ? `${toolbarRef.current.clientWidth + 7}px`
+                    : 'auto',
+                left: isFullScreen ? 8 : -8,
+            }}
             onClick={() => handleScroll('down')}
         >
             <ArrowContainer degree={135} style={{ marginTop: '3px' }} />
         </div>
     );
-    const [toolbarHeight, setToolbarHeight] = useState(0);
-
-    // useEffect(() => {
-    //     const toolbarElement = toolbarRef.current;
-
-    //     if (toolbarElement) {
-    //       const height = toolbarElement.getBoundingClientRect().height;
-    //       setToolbarHeight(height);
-    //     }
-    //   }, [isToolbarOpen]);
 
     const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
         const delta = e.deltaY;
-
-        if (scrollContainerRef.current) {
-            const currentScrollPosition = scrollContainerRef.current.scrollTop;
-
-            scrollContainerRef.current.scrollTop =
-                currentScrollPosition + delta;
+        if (delta < 0) {
+            handleScroll('up');
+        } else {
+            handleScroll('down');
         }
     };
     return (
@@ -194,6 +229,7 @@ function Toolbar(props: ToolbarProps) {
             } ${styles.toolbar_container} `}
             id='toolbar_container'
             ref={toolbarRef}
+            onMouseLeave={handleMouseLeave}
         >
             <div
                 className={` ${
@@ -201,15 +237,11 @@ function Toolbar(props: ToolbarProps) {
                 } ${styles.drawlist_container} `}
             >
                 <div
+                    className={styles.scrollableDiv}
                     ref={scrollContainerRef}
                     onWheel={handleWheel}
-                    style={{
-                        height: '250px',
-                        overflowX: 'hidden',
-                        overflowY: 'clip',
-                    }}
                     onMouseMove={handleMouseMove}
-                    onMouseLeave={handleMouseLeave}
+                    style={{ height: chartHeights - 10 + 'px' }}
                 >
                     {isHoveredUp && upScroll}
                     {isToolbarOpen && (
@@ -270,10 +302,9 @@ function Toolbar(props: ToolbarProps) {
                             </div>
                         </>
                     )}
-
-                    {isHoveredDown && downScroll}
                 </div>
             </div>
+            {isHoveredDown && downScroll}
 
             <div className={styles.divider_container}>
                 <div className={styles.divider}></div>
