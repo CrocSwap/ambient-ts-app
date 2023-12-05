@@ -6,11 +6,11 @@ import {
     scaleData,
     setCanvasResolution,
 } from '../ChartUtils/chartUtils';
-import { IS_LOCAL_ENV } from '../../../constants';
-import { diffHashSigScaleData } from '../../../utils/functions/diffHashSig';
+import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
+import { diffHashSigScaleData } from '../../../ambient-utils/dataLayer';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { CandleData } from '../../../App/functions/fetchCandleSeries';
+import { CandleDataIF } from '../../../ambient-utils/types';
 import { ChartContext } from '../../../contexts/ChartContext';
 
 interface candlePropsIF {
@@ -20,9 +20,9 @@ interface candlePropsIF {
     selectedDate: number | undefined;
     showLatest: boolean | undefined;
     denomInBase: boolean;
-    data: CandleData[];
+    data: CandleDataIF[];
     period: number;
-    lastCandleData: CandleData;
+    lastCandleData: CandleDataIF;
 }
 
 export default function CandleChart(props: candlePropsIF) {
@@ -92,23 +92,23 @@ export default function CandleChart(props: candlePropsIF) {
                 .autoBandwidth(d3fc.seriesCanvasCandlestick())
                 .xScale(scaleData?.xScale)
                 .yScale(scaleData?.yScale)
-                .crossValue((d: CandleData) => d.time * 1000)
-                .highValue((d: CandleData) =>
+                .crossValue((d: CandleDataIF) => d.time * 1000)
+                .highValue((d: CandleDataIF) =>
                     denomInBase
                         ? d.invMinPriceExclMEVDecimalCorrected
                         : d.maxPriceExclMEVDecimalCorrected,
                 )
-                .lowValue((d: CandleData) =>
+                .lowValue((d: CandleDataIF) =>
                     denomInBase
                         ? d.invMaxPriceExclMEVDecimalCorrected
                         : d.minPriceExclMEVDecimalCorrected,
                 )
-                .openValue((d: CandleData) =>
+                .openValue((d: CandleDataIF) =>
                     denomInBase
                         ? d.invPriceOpenExclMEVDecimalCorrected
                         : d.priceOpenExclMEVDecimalCorrected,
                 )
-                .closeValue((d: CandleData) =>
+                .closeValue((d: CandleDataIF) =>
                     denomInBase
                         ? d.invPriceCloseExclMEVDecimalCorrected
                         : d.priceCloseExclMEVDecimalCorrected,
@@ -121,7 +121,7 @@ export default function CandleChart(props: candlePropsIF) {
     useEffect(() => {
         if (candlestick) {
             candlestick.decorate(
-                (context: CanvasRenderingContext2D, d: CandleData) => {
+                (context: CanvasRenderingContext2D, d: CandleDataIF) => {
                     const nowDate = new Date();
 
                     const close = denomInBase

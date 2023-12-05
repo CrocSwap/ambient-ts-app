@@ -1,15 +1,17 @@
 import styles from './Exchange.module.css';
 import ExchangeCard from './ExchangeCard';
 import ExchangeHeader from './ExchangeHeader';
-import { TokenIF } from '../../../../../utils/interfaces/exports';
+import { TokenIF } from '../../../../../ambient-utils/types';
 import Spinner from '../../../Spinner/Spinner';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
-import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
+import { TokenPriceFn } from '../../../../../ambient-utils/api';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { useContext } from 'react';
-import { tokenListURIs } from '../../../../../utils/data/tokenListURIs';
-import { ZERO_ADDRESS } from '../../../../../constants';
-import { isUsdcToken } from '../../../../../utils/data/stablePairs';
+import {
+    tokenListURIs,
+    ZERO_ADDRESS,
+} from '../../../../../ambient-utils/constants';
+import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
+import { isUsdcToken } from '../../../../../ambient-utils/dataLayer';
 
 interface propsIF {
     chainId: string;
@@ -27,10 +29,7 @@ export default function Exchange(props: propsIF) {
     } = props;
 
     const { tokens } = useContext(TokenContext);
-
-    const tokenBalances = useAppSelector(
-        (state) => state.userData.tokenBalances,
-    );
+    const { tokenBalances } = useContext(TokenBalanceContext);
 
     const tokensToRender = connectedAccountActive
         ? tokenBalances

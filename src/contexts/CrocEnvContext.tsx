@@ -6,15 +6,10 @@ import {
     useEffect,
     useState,
 } from 'react';
-import { useAccount, useProvider, useSigner } from 'wagmi';
+import { useProvider, useSigner } from 'wagmi';
 import { useAppChain } from '../App/hooks/useAppChain';
 import { useBlacklist } from '../App/hooks/useBlacklist';
 import { useTopPools } from '../App/hooks/useTopPools';
-import { APP_ENVIRONMENT, IS_LOCAL_ENV } from '../constants';
-import {
-    getDefaultPairForChain,
-    mainnetETH,
-} from '../utils/data/defaultTokens';
 import { CachedDataContext } from './CachedDataContext';
 import { Provider } from '@ethersproject/providers';
 import {
@@ -24,8 +19,15 @@ import {
     swapParamsIF,
     useLinkGen,
 } from '../utils/hooks/useLinkGen';
-import { NetworkIF, PoolIF, TokenIF } from '../utils/interfaces/exports';
-import { ethereumMainnet } from '../utils/networks/ethereumMainnet';
+import { NetworkIF, PoolIF, TokenIF } from '../ambient-utils/types';
+import {
+    APP_ENVIRONMENT,
+    IS_LOCAL_ENV,
+    ethereumMainnet,
+    mainnetETH,
+    getDefaultPairForChain,
+} from '../ambient-utils/constants';
+import { UserDataContext } from './UserDataContext';
 
 interface UrlRoutesTemplate {
     swap: string;
@@ -56,7 +58,7 @@ export const CrocEnvContext = createContext<CrocEnvContextIF>(
 export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
-    const { address: userAddress } = useAccount();
+    const { userAddress } = useContext(UserDataContext);
     const { data: signer, isError, error, status: signerStatus } = useSigner();
 
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();

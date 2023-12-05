@@ -1,29 +1,24 @@
 import { Dispatch, SetStateAction, useContext, useEffect, memo } from 'react';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import {
+    getFormattedNumber,
+    calculateSecondaryDepositQty,
+} from '../../../../ambient-utils/dataLayer';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
-import { calculateSecondaryDepositQty } from '../../../../utils/functions/calculateSecondaryDepositQty';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
 import {
     linkGenMethodsIF,
     poolParamsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
-import {
-    setPrimaryQuantityRange,
-    setIsTokenAPrimaryRange,
-    setRangeTicksCopied,
-    setIsTokenAPrimary,
-} from '../../../../utils/state/tradeDataSlice';
 import TokenInputWithWalletBalance from '../../../Form/TokenInputWithWalletBalance';
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
 import { formatTokenInput } from '../../../../utils/numbers';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { InputDisabledText } from '../../../../styled/Components/TradeModules';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { RangeContext } from '../../../../contexts/RangeContext';
 
 interface propsIF {
     hidePlus?: boolean;
@@ -39,6 +34,7 @@ interface propsIF {
     reverseTokens?: () => void;
     isMintLiqEnabled?: boolean;
     isInitPage?: boolean;
+    amountToReduceEth: number;
 }
 
 function RangeTokenInput(props: propsIF) {
@@ -62,6 +58,7 @@ function RangeTokenInput(props: propsIF) {
         reverseTokens,
         isMintLiqEnabled = true,
         isInitPage,
+        amountToReduceEth,
     } = props;
 
     const {
@@ -77,22 +74,20 @@ function RangeTokenInput(props: propsIF) {
         isTokenBEth,
     } = useContext(TradeTokenContext);
     const { showRangePulseAnimation } = useContext(TradeTableContext);
-
-    const dispatch = useAppDispatch();
+    const {
+        isTokenAPrimaryRange,
+        rangeTicksCopied,
+        setIsTokenAPrimaryRange,
+        setPrimaryQuantityRange,
+        setRangeTicksCopied,
+    } = useContext(RangeContext);
     // hook to generate navigation actions with pre-loaded path
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
-    const { isLoggedIn: isUserConnected } = useAppSelector(
-        (state) => state.userData,
-    );
-    const {
-        tokenA,
-        tokenB,
-        isTokenAPrimary,
-        isTokenAPrimaryRange,
-        rangeTicksCopied,
-    } = useAppSelector((state) => state.tradeData);
+    const { isUserConnected } = useContext(UserDataContext);
 
+    const { tokenA, tokenB, isTokenAPrimary, setIsTokenAPrimary } =
+        useContext(TradeDataContext);
     useEffect(() => {
         if (poolPriceNonDisplay) {
             updateTokenQty();
@@ -102,7 +97,7 @@ function RangeTokenInput(props: propsIF) {
     const resetTokenQuantities = () => {
         setTokenAInputQty('');
         setTokenBInputQty('');
-        dispatch(setPrimaryQuantityRange(''));
+        setPrimaryQuantityRange('');
     };
 
     const setTokenQtyValue = (inputValue: string, primaryToken: 'A' | 'B') => {
@@ -141,8 +136,8 @@ function RangeTokenInput(props: propsIF) {
         ? reverseTokens
         : (): void => {
               resetTokenQuantities();
-              dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
-              dispatch(setIsTokenAPrimary(!isTokenAPrimary));
+              setIsTokenAPrimaryRange(!isTokenAPrimaryRange);
+              setIsTokenAPrimary(!isTokenAPrimary);
               if (!rangeTicksCopied && !isInitPage) {
                   // URL params for link to pool page
                   const poolLinkParams: poolParamsIF = {
@@ -153,22 +148,22 @@ function RangeTokenInput(props: propsIF) {
                   // navigate user to pool page with URL params defined above
                   linkGenPool.navigate(poolLinkParams);
               }
-              if (rangeTicksCopied) dispatch(setRangeTicksCopied(false));
+              if (rangeTicksCopied) setRangeTicksCopied(false);
           };
 
     const handleTokenAChangeEvent = (value: string) => {
         const inputStr = formatTokenInput(value, tokenA);
 
-        dispatch(setIsTokenAPrimaryRange(true));
-        dispatch(setPrimaryQuantityRange(inputStr));
+        setIsTokenAPrimaryRange(true);
+        setPrimaryQuantityRange(inputStr);
         setTokenQtyValue(value, 'A');
     };
 
     const handleTokenBChangeEvent = (value: string) => {
         const inputStr = formatTokenInput(value, tokenB);
 
-        dispatch(setIsTokenAPrimaryRange(false));
-        dispatch(setPrimaryQuantityRange(inputStr));
+        setIsTokenAPrimaryRange(false);
+        setPrimaryQuantityRange(inputStr);
         setTokenQtyValue(value, 'B');
     };
 
@@ -217,6 +212,7 @@ function RangeTokenInput(props: propsIF) {
                         ? disabledContent
                         : undefined
                 }
+                amountToReduceEth={amountToReduceEth}
             />
             {!hidePlus && (
                 <FlexContainer
@@ -254,6 +250,7 @@ function RangeTokenInput(props: propsIF) {
                         ? disabledContent
                         : undefined
                 }
+                amountToReduceEth={amountToReduceEth}
                 isWithdraw
             />
         </FlexContainer>

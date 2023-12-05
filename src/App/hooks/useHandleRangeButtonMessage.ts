@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../ambient-utils/types';
+import { ZERO_ADDRESS } from '../../ambient-utils/constants';
 
 export function useHandleRangeButtonMessage(
     token: TokenIF,
@@ -9,12 +10,17 @@ export function useHandleRangeButtonMessage(
     isTokenInputDisabled: boolean,
     isWithdrawTokenFromDexChecked: boolean,
     isPoolInitialized: boolean,
+    tokenQtyCoveredByWalletBalance: number,
+    amountToReduceEth: number,
     isMintLiqEnabled = true,
     isInitPage = false,
 ) {
     const { tokenAllowed, rangeButtonErrorMessage } = useMemo(() => {
         let tokenAllowed = false;
         let rangeButtonErrorMessage = '';
+
+        const isNativeToken = token.address === ZERO_ADDRESS;
+
         if (!isPoolInitialized) {
             rangeButtonErrorMessage = 'Pool Not Initialized';
         } else if (isInitPage && parseFloat(tokenBalance) <= 0) {
@@ -33,6 +39,13 @@ export function useHandleRangeButtonMessage(
                         parseFloat(tokenDexBalance) + parseFloat(tokenBalance)
                 ) {
                     rangeButtonErrorMessage = `${token.symbol} Amount Exceeds Combined Wallet and Exchange Balance`;
+                } else if (
+                    isNativeToken &&
+                    tokenQtyCoveredByWalletBalance + amountToReduceEth >
+                        parseFloat(tokenBalance)
+                ) {
+                    tokenAllowed = false;
+                    rangeButtonErrorMessage = `${token.symbol} Wallet Balance Insufficient to Cover Gas`;
                 } else {
                     tokenAllowed = true;
                 }
@@ -42,6 +55,13 @@ export function useHandleRangeButtonMessage(
                     parseFloat(tokenAmount) > parseFloat(tokenBalance)
                 ) {
                     rangeButtonErrorMessage = `${token.symbol} Amount Exceeds Wallet Balance`;
+                } else if (
+                    isNativeToken &&
+                    tokenQtyCoveredByWalletBalance + amountToReduceEth >
+                        parseFloat(tokenBalance)
+                ) {
+                    tokenAllowed = false;
+                    rangeButtonErrorMessage = `${token.symbol} Wallet Balance Insufficient to Cover Gas`;
                 } else {
                     tokenAllowed = true;
                 }
@@ -54,6 +74,8 @@ export function useHandleRangeButtonMessage(
     }, [
         isMintLiqEnabled,
         tokenAmount,
+        tokenQtyCoveredByWalletBalance,
+        amountToReduceEth,
         tokenBalance,
         tokenDexBalance,
         isTokenInputDisabled,
