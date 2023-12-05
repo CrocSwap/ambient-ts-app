@@ -1,14 +1,16 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useContext, useEffect, useMemo, useRef } from 'react';
 import styles from './Transactions2.module.css';
-import { sampleData } from './sampleData';
 import TransactionRow2 from './TransactionRow2';
-import { TransactionServerIF } from '../../../../ambient-utils/types/transaction/TransactionServerIF';
+import { CandleDataIF, TransactionIF } from '../../../../ambient-utils/types';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 
 // columns to display in table and px width to alot for each
 const columnsAndSizes = {
     timeStamp: 80,
     txId: 140,
     txWallet: 140,
+    txValue: 140,
     overflowBtn: 60,
     editBtn: 60,
     harvestBtn: 60,
@@ -20,7 +22,6 @@ const columnsAndSizes = {
     walletBtn: 60,
     copyBtn: 60,
     downloadBtn: 60,
-    txButtonBank: 300,
 };
 
 // string-union type of all keys in the `columnsAndSizes` object
@@ -28,10 +29,33 @@ export type columnSlugsType = keyof typeof columnsAndSizes;
 
 interface propsIF {
     isAccountPage: boolean;
+    candleData: CandleDataIF|undefined;
 }
 
 export default function Transactions2(props: propsIF) {
-    const { isAccountPage } = props;
+    const { isAccountPage, candleData } = props;
+    false && candleData;
+
+    // active token pair
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
+
+    // tx data which will be used to render line items
+    const { changesByPool } = useContext(GraphDataContext);
+
+    const transactionsData = useMemo<TransactionIF[]>(
+        () => {
+            const output: TransactionIF[] = changesByPool.changes.filter(
+                (tx: TransactionIF) =>
+                    tx.base.toLowerCase() ===
+                        baseToken.address.toLowerCase() &&
+                    tx.quote.toLowerCase() ===
+                        quoteToken.address.toLowerCase() &&
+                    tx.changeType !== 'fill' &&
+                    tx.changeType !== 'cross'
+            );
+            return output;
+        }, [changesByPool]
+    );
 
     // ref holding the container in which we render the table, this gatekeeps code to render the
     // ... table until the container renders and tells us how much width (pixels) is available
@@ -48,7 +72,7 @@ export default function Transactions2(props: propsIF) {
         'timeStamp',
         'txId',
         'txWallet',
-        'txButtonBank',
+        'txValue',
         'overflowBtn',
         'editBtn',
         'harvestBtn',
@@ -108,10 +132,10 @@ export default function Transactions2(props: propsIF) {
     // array of row elements to render in the DOM, the base underlying data used for generation
     // ... is updated frequently but this memoization on recalculates if other items change
     const transactionRows = useMemo<JSX.Element[]>(() => (
-        sampleData.data.map((d: TransactionServerIF) => (
+        transactionsData.map((tx: TransactionIF) => (
             <TransactionRow2
-                key={JSON.stringify(d)}
-                tx={d}
+                key={JSON.stringify(tx)}
+                tx={tx}
                 columnsToShow={columnsToRender.current}
                 isAccountPage={isAccountPage}
             />

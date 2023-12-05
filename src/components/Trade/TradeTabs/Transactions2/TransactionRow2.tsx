@@ -7,13 +7,13 @@ import TxWallet from './TxWallet';
 import { useContext } from 'react';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import TxButton from './TxButton';
-import { TransactionServerIF } from '../../../../ambient-utils/types/transaction/TransactionServerIF';
-import TxButtonBank from './TxButtonBank';
+import TxValue from './TxValue';
+import { TransactionIF } from '../../../../ambient-utils/types';
 
 export type btnIconNameType = 'overflowBtn'|'editBtn'|'harvestBtn'|'addBtn'|'removeBtn'|'leafBtn'|'shareBtn'|'exportBtn'|'walletBtn'|'copyBtn'|'downloadBtn';
 
 interface propsIF {
-    tx: TransactionServerIF;
+    tx: TransactionIF;
     columnsToShow: [columnSlugsType, number][];
     isAccountPage: boolean;
 }
@@ -45,6 +45,8 @@ export default function TransactionRow2(props: propsIF) {
                         width={elemMeta[1]}
                     />
                 );
+            } else if (elemMeta[0] === 'txValue') {
+                elemForDOM = <TxValue width={elemMeta[1]} tx={tx} />;
             } else if (elemMeta[0] === 'overflowBtn') {
                 elemForDOM = (
                     <TxButton width={elemMeta[1]} iconName='overflowBtn' hide={false} />
@@ -98,6 +100,7 @@ export default function TransactionRow2(props: propsIF) {
         'timeStamp',
         'txId',
         'txWallet',
+        'txValue',
     ];
 
     const actionButtons: columnSlugsType[] = [

@@ -350,7 +350,12 @@ function TradeTabs2(props: propsIF) {
         : [
               {
                   label: 'Transactions',
-                  content: <Transactions2 isAccountPage={false} />,
+                  content: (
+                      <Transactions2
+                          isAccountPage={false}
+                          candleData={filter}
+                      />
+                  ),
                   icon: recentTransactionsImage,
                   showRightSideOption: true,
               },
