@@ -12,6 +12,7 @@ import { ChartContext } from '../../../../contexts/ChartContext';
 import trashIcon from '../../../../assets/images/icons/draw/delete.svg';
 import { drawDataHistory } from '../../ChartUtils/chartUtils';
 import { ArrowContainer } from '../../../../styled/Components/Chart';
+import { useMediaQuery } from '@material-ui/core';
 
 interface ToolbarProps {
     activeDrawingType: string;
@@ -44,6 +45,8 @@ function Toolbar(props: ToolbarProps) {
         chartHeights,
         d3ContainerHeight,
     } = props;
+
+    const mobileView = useMediaQuery('(max-width: 600px)');
 
     const { setIsMagnetActive, isMagnetActive, isFullScreen } =
         useContext(ChartContext);
@@ -241,7 +244,9 @@ function Toolbar(props: ToolbarProps) {
                     ref={scrollContainerRef}
                     onWheel={handleWheel}
                     onMouseMove={handleMouseMove}
-                    style={{ height: chartHeights - 10 + 'px' }}
+                    style={{
+                        height: mobileView ? 'auto' : chartHeights - 10 + 'px',
+                    }}
                 >
                     {isHoveredUp && upScroll}
                     {isToolbarOpen && (
