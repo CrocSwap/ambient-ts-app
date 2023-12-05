@@ -584,7 +584,7 @@ function XAxisCanvas(props: xAxisIF) {
             id='x-axis'
             className='x-axis'
             style={{
-                height: '2em',
+                height: '32px',
                 width: '100%',
                 gridColumn: 3,
                 gridRow: 4,

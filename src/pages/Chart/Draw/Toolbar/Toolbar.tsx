@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import styles from './Toolbar.module.css';
 import drawLine from '../../../../assets/images/icons/draw/draw_line.svg';
 import drawCross from '../../../../assets/images/icons/draw/draw_cross.svg';
@@ -11,6 +11,7 @@ import magnet from '../../../../assets/images/icons/draw/snap.svg';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import trashIcon from '../../../../assets/images/icons/draw/delete.svg';
 import { drawDataHistory } from '../../ChartUtils/chartUtils';
+import { ArrowContainer } from '../../../../styled/Components/Chart';
 
 interface ToolbarProps {
     activeDrawingType: string;
@@ -22,6 +23,8 @@ interface ToolbarProps {
     >;
     setIsMagnetActiveLocal: React.Dispatch<boolean>;
     deleteAllShapes: () => void;
+    chartHeights: number;
+    d3ContainerHeight: number;
 }
 
 interface IconList {
@@ -38,11 +41,16 @@ function Toolbar(props: ToolbarProps) {
         setIsToolbarOpen,
         setIsMagnetActiveLocal,
         deleteAllShapes,
+        chartHeights,
+        d3ContainerHeight,
     } = props;
 
-    const { setIsMagnetActive, isMagnetActive } = useContext(ChartContext);
+    const { setIsMagnetActive, isMagnetActive, isFullScreen } =
+        useContext(ChartContext);
     const feeRate = document.getElementById('fee_rate_chart');
     const tvl = document.getElementById('tvl_chart');
+
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const column = isToolbarOpen ? 38 : 9;
@@ -56,6 +64,30 @@ function Toolbar(props: ToolbarProps) {
                 column + 'px auto 1fr auto minmax(1em, max-content)';
         }
     }, [isToolbarOpen, feeRate, tvl]);
+
+    const [isHoveredUp, setIsHoveredUp] = useState(false);
+    const [isHoveredDown, setIsHoveredDown] = useState(false);
+    const toolbarRef = useRef<HTMLDivElement>(null);
+    const handleMouseMove = () => {
+        const scrollContainer = scrollContainerRef.current;
+
+        if (scrollContainer && scrollContainer.scrollTop <= 5) {
+            setIsHoveredUp(false);
+        } else {
+            setIsHoveredUp(true);
+        }
+
+        if (isAtBottom()) {
+            setIsHoveredDown(false);
+        } else {
+            setIsHoveredDown(true);
+        }
+    };
+
+    const handleMouseLeave = () => {
+        setIsHoveredUp(false);
+        setIsHoveredDown(false);
+    };
 
     function handleDrawModeChange(item: IconList) {
         if (item.label !== 'magnet') {
@@ -109,19 +141,109 @@ function Toolbar(props: ToolbarProps) {
         }
     }
 
+    const isAtBottom = () => {
+        if (scrollContainerRef.current) {
+            const { scrollTop, scrollHeight, clientHeight } =
+                scrollContainerRef.current;
+            return scrollTop >= scrollHeight - clientHeight;
+        }
+        return false;
+    };
+
+    const handleScroll = (direction: string) => {
+        const scrollContainer = scrollContainerRef.current;
+
+        if (scrollContainer) {
+            const scrollAmount = 100;
+
+            if (direction === 'up') {
+                scrollContainer.scrollTop -= scrollAmount;
+            } else if (direction === 'down') {
+                scrollContainer.scrollTop += scrollAmount;
+            }
+
+            if (scrollContainer.scrollTop <= 5) {
+                setIsHoveredUp(false);
+            } else {
+                setIsHoveredUp(true);
+            }
+
+            if (isAtBottom()) {
+                setIsHoveredDown(false);
+            } else {
+                setIsHoveredDown(true);
+            }
+        }
+    };
+
+    const upScroll = (
+        <div
+            className={styles.arrowContainer_container}
+            style={{
+                width: toolbarRef.current
+                    ? `${toolbarRef.current.clientWidth + 7}px`
+                    : 'auto',
+
+                left: isFullScreen ? 8 : -8,
+            }}
+            onClick={() => handleScroll('up')}
+        >
+            <ArrowContainer degree={315} style={{ marginBottom: '1px' }} />
+        </div>
+    );
+
+    const downScroll = (
+        <div
+            className={styles.arrowContainer_container}
+            style={{
+                bottom:
+                    d3ContainerHeight -
+                    chartHeights -
+                    1 +
+                    (isFullScreen ? 16 : 0) +
+                    'px',
+                position: 'absolute',
+                width: toolbarRef.current
+                    ? `${toolbarRef.current.clientWidth + 7}px`
+                    : 'auto',
+                left: isFullScreen ? 8 : -8,
+            }}
+            onClick={() => handleScroll('down')}
+        >
+            <ArrowContainer degree={135} style={{ marginTop: '3px' }} />
+        </div>
+    );
+
+    const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+        const delta = e.deltaY;
+        if (delta < 0) {
+            handleScroll('up');
+        } else {
+            handleScroll('down');
+        }
+    };
     return (
         <div
             className={` ${
                 isToolbarOpen ? styles.toolbar_container_active : ''
             } ${styles.toolbar_container} `}
             id='toolbar_container'
+            ref={toolbarRef}
+            onMouseLeave={handleMouseLeave}
         >
             <div
                 className={` ${
                     isToolbarOpen ? styles.drawlist_container_active : ''
                 } ${styles.drawlist_container} `}
             >
-                <div>
+                <div
+                    className={styles.scrollableDiv}
+                    ref={scrollContainerRef}
+                    onWheel={handleWheel}
+                    onMouseMove={handleMouseMove}
+                    style={{ height: chartHeights - 10 + 'px' }}
+                >
+                    {isHoveredUp && upScroll}
                     {isToolbarOpen && (
                         <>
                             {drawIconList.map((item, index) => (
@@ -182,6 +304,7 @@ function Toolbar(props: ToolbarProps) {
                     )}
                 </div>
             </div>
+            {isHoveredDown && downScroll}
 
             <div className={styles.divider_container}>
                 <div className={styles.divider}></div>
