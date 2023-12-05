@@ -15,7 +15,6 @@ import {
     FibLineSettings,
     FloatingToolbarSettingsContainer,
     InfoLabel,
-    LabelStyleContainer,
     LevelTitle,
     LineContainer,
     LineSettings,

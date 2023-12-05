@@ -77,7 +77,6 @@ import {
     selectedDrawnData,
     setCanvasResolution,
     standardDeviation,
-    clipCanvas,
 } from './ChartUtils/chartUtils';
 import { Zoom } from './ChartUtils/zoom';
 import XAxisCanvas from './Axes/xAxis/XaxisCanvas';
@@ -3492,7 +3491,7 @@ export default function Chart(props: propsIF) {
                                                 : item.labelAlignment ===
                                                   'Bottom'
                                                 ? 'top'
-                                                : (item.labelAlignment.toLowerCase() as any);
+                                                : (item.labelAlignment.toLowerCase() as CanvasTextBaseline);
 
                                         if (item.labelPlacement === 'Center') {
                                             alignment = 'center';
@@ -3519,10 +3518,14 @@ export default function Chart(props: propsIF) {
                                                 ? textColor.toString()
                                                 : lineData[0].color;
                                             ctx.font = '12px Lexend Deca';
-                                            ctx.textAlign = alignment as any;
+                                            ctx.textAlign =
+                                                alignment as CanvasTextAlign;
                                             ctx.textBaseline = textBaseline;
 
-                                            let location: any;
+                                            let location: number = Math.min(
+                                                lineData[0].x,
+                                                lineData[1].x,
+                                            );
 
                                             if (
                                                 item.labelPlacement === 'Center'
