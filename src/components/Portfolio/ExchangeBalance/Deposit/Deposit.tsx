@@ -40,6 +40,11 @@ import {
 } from '../../../../styled/Components/Portfolio';
 import { useApprove } from '../../../../App/functions/approve';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import {
+    NUM_GWEI_IN_WEI,
+    GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE,
+    GAS_DROPS_ESTIMATE_DEPOSIT_ERC20,
+} from '../../../../ambient-utils/constants/';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -334,20 +339,16 @@ export default function Deposit(props: propsIF) {
         string | undefined
     >();
 
-    const averageGasUnitsForEthDepositInGasDrops = 41000;
-    const averageGasUnitsForErc20DepositInGasDrops = 93000;
-    const gweiInWei = 1e-9;
-
     // calculate price of gas for exchange balance deposit
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                gweiInWei *
+                NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice *
                 (isTokenEth
-                    ? averageGasUnitsForEthDepositInGasDrops
-                    : averageGasUnitsForErc20DepositInGasDrops);
+                    ? GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE
+                    : GAS_DROPS_ESTIMATE_DEPOSIT_ERC20);
 
             setDepositGasPriceinDollars(
                 getFormattedNumber({

@@ -42,6 +42,11 @@ import { useHandleRangeButtonMessage } from '../../../App/hooks/useHandleRangeBu
 import { useRangeInputDisable } from './useRangeInputDisable';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import {
+    GAS_DROPS_ESTIMATE_POOL,
+    NUM_GWEI_IN_WEI,
+    RANGE_BUFFER_MULTIPLIER,
+} from '../../../ambient-utils/constants/';
 
 export const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 export const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
@@ -791,13 +796,42 @@ function Range() {
         }
     }, [rangeHighBoundFieldBlurred, chartTriggeredBy]);
 
+    const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
+        useState<number>(0.01);
+    const [amountToReduceEthScroll, setAmountToReduceEthScroll] =
+        useState<number>(0.0007);
+
+    const amountToReduceEth =
+        chainId === '0x82750' || chainId === '0x8274f'
+            ? amountToReduceEthScroll
+            : amountToReduceEthMainnet;
+
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
-            const averageRangeCostInGasDrops = 140000;
+            const costOfMainnetPoolInETH =
+                gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
+
+            setAmountToReduceEthMainnet(
+                costOfMainnetPoolInETH * RANGE_BUFFER_MULTIPLIER,
+            );
+
+            const costOfScrollPoolInETH =
+                gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
+
+            //   IS_LOCAL_ENV &&  console.log({
+            //         gasPriceInGwei,
+            //         costOfScrollPoolInETH,
+            //         amountToReduceEthScroll,
+            //     });
+
+            setAmountToReduceEthScroll(
+                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER,
+            );
+
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                averageRangeCostInGasDrops *
-                1e-9 *
+                GAS_DROPS_ESTIMATE_POOL *
+                NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice;
 
             setRangeGasPriceinDollars(
@@ -872,6 +906,8 @@ function Range() {
         isTokenAInputDisabled,
         isWithdrawTokenAFromDexChecked,
         isPoolInitialized,
+        tokenAQtyCoveredByWalletBalance,
+        amountToReduceEth,
     );
     const {
         tokenAllowed: tokenBAllowed,
@@ -884,6 +920,8 @@ function Range() {
         isTokenBInputDisabled,
         isWithdrawTokenBFromDexChecked,
         isPoolInitialized,
+        tokenBQtyCoveredByWalletBalance,
+        amountToReduceEth,
     );
 
     const { approve, isApprovalPending } = useApprove();
@@ -984,6 +1022,7 @@ function Range() {
                         tokenA: isTokenAInputDisabled,
                         tokenB: isTokenBInputDisabled,
                     }}
+                    amountToReduceEth={amountToReduceEth}
                 />
             }
             inputOptions={
