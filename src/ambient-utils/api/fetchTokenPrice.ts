@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import {
     memoizePromiseFn,
-    translateTestnetToken,
+    translateToken,
     querySpotPrice,
     truncateDecimals,
 } from '../dataLayer/functions';
@@ -18,16 +18,14 @@ export const fetchTokenPrice = async (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _lastTime: number,
 ) => {
-    const address = translateTestnetToken(dispToken);
+    const address = translateToken(dispToken, chain);
 
     const defaultPair = supportedNetworks[chain].defaultPair;
-
-    // TODO: use a mapping instead from chain id to asset_platform
 
     try {
         const body = {
             config_path: 'price',
-            asset_platform: chain === '0x82750' ? 'scroll' : 'ethereum', // TODO: confirm logic for other chains
+            asset_platform: chain === '0x82750' ? 'scroll' : 'ethereum',
             token_address: address,
         };
 

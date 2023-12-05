@@ -1,6 +1,6 @@
 import {
     getFormattedNumber,
-    translateTestnetToken,
+    translateToken,
 } from '../../ambient-utils/dataLayer';
 import { TokenIF } from '../../ambient-utils/types';
 import { memo, useContext, useEffect, useState } from 'react';
@@ -77,7 +77,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
 
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
-    const pricedToken = translateTestnetToken(token.address);
+    const pricedToken = translateToken(token.address, chainId);
 
     useEffect(() => {
         if (!crocEnv) return;
