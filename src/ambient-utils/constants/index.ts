@@ -5,6 +5,7 @@ export * from './gcgo';
 export * from './slippage';
 export * from './tokenListURIs';
 export * from './tokenUnicodeCharMap';
+export * from './gasEstimates';
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 // allow a local environment variable to be defined in [app_repo]/.env.local to set a name for dev environment

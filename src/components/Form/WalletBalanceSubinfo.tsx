@@ -104,7 +104,7 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
                     >
                         {isWithdraw
                             ? (
-                                  availableBalance
+                                  availableBalance !== undefined
                                       ? availableBalance > 0
                                       : parseFloat(balance) > 0
                               )
@@ -228,7 +228,8 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
                 >
                     {walletPriceWithTooltip}
                     {onMaxButtonClick &&
-                        parseFloat(balance) > 0 &&
+                        availableBalance !== undefined &&
+                        availableBalance > 0 &&
                         maxButtonWithTooltip}
                     {walletWithTooltip}
                     {exchangeWithTooltip}

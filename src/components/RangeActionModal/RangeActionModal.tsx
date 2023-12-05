@@ -46,6 +46,11 @@ import { RangeModalActionType } from '../Global/Tabs/TableMenu/TableMenuComponen
 import Modal from '../Global/Modal/Modal';
 import SubmitTransaction from '../Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import {
+    GAS_DROPS_ESTIMATE_RANGE_REMOVAL,
+    GAS_DROPS_ESTIMATE_RANGE_HARVEST,
+    NUM_GWEI_IN_WEI,
+} from '../../ambient-utils/constants/';
 
 interface propsIF {
     type: RangeModalActionType;
@@ -119,15 +124,16 @@ export default function RangeActionModal(props: propsIF) {
     >();
 
     const averageGasUnitsForRemovalTxInGasDrops =
-        type === 'Remove' ? 94500 : 92500;
-    const numGweiInWei = 1e-9;
+        type === 'Remove'
+            ? GAS_DROPS_ESTIMATE_RANGE_REMOVAL
+            : GAS_DROPS_ESTIMATE_RANGE_HARVEST;
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 averageGasUnitsForRemovalTxInGasDrops *
-                numGweiInWei *
+                NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice;
 
             setRemovalGasPriceinDollars(
