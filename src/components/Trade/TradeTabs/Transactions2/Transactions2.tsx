@@ -29,7 +29,7 @@ export type columnSlugsType = keyof typeof columnsAndSizes;
 
 interface propsIF {
     isAccountPage: boolean;
-    candleData: CandleDataIF|undefined;
+    candleData: CandleDataIF | undefined;
 }
 
 export default function Transactions2(props: propsIF) {
@@ -42,20 +42,16 @@ export default function Transactions2(props: propsIF) {
     // tx data which will be used to render line items
     const { changesByPool } = useContext(GraphDataContext);
 
-    const transactionsData = useMemo<TransactionIF[]>(
-        () => {
-            const output: TransactionIF[] = changesByPool.changes.filter(
-                (tx: TransactionIF) =>
-                    tx.base.toLowerCase() ===
-                        baseToken.address.toLowerCase() &&
-                    tx.quote.toLowerCase() ===
-                        quoteToken.address.toLowerCase() &&
-                    tx.changeType !== 'fill' &&
-                    tx.changeType !== 'cross'
-            );
-            return output;
-        }, [changesByPool]
-    );
+    const transactionsData = useMemo<TransactionIF[]>(() => {
+        const output: TransactionIF[] = changesByPool.changes.filter(
+            (tx: TransactionIF) =>
+                tx.base.toLowerCase() === baseToken.address.toLowerCase() &&
+                tx.quote.toLowerCase() === quoteToken.address.toLowerCase() &&
+                tx.changeType !== 'fill' &&
+                tx.changeType !== 'cross',
+        );
+        return output;
+    }, [changesByPool]);
 
     // ref holding the container in which we render the table, this gatekeeps code to render the
     // ... table until the container renders and tells us how much width (pixels) is available
@@ -112,7 +108,7 @@ export default function Transactions2(props: propsIF) {
                         columnList.push([columnId, columnSize]);
                         // update the running total of column sizes needed
                         totalWidthNeeded += columnSize;
-                    };
+                    }
                 }
                 // send the output column list to local state, table will render responsively
                 columnsToRender.current = columnList;
@@ -120,9 +116,10 @@ export default function Transactions2(props: propsIF) {
         }
 
         // create an observer holding the width-logging function
-        const resizeObserver: ResizeObserver = new ResizeObserver(adjustColumnization);
+        const resizeObserver: ResizeObserver = new ResizeObserver(
+            adjustColumnization,
+        );
         containerRef.current && resizeObserver.observe(containerRef.current);
-
         // cleanup the observer from the DOM when component dismounts
         return () => {
             resizeObserver.disconnect();
@@ -131,16 +128,20 @@ export default function Transactions2(props: propsIF) {
 
     // array of row elements to render in the DOM, the base underlying data used for generation
     // ... is updated frequently but this memoization on recalculates if other items change
-    const transactionRows = useMemo<JSX.Element[]>(() => (
-        transactionsData.map((tx: TransactionIF) => (
-            <TransactionRow2
-                key={JSON.stringify(tx)}
-                tx={tx}
-                columnsToShow={columnsToRender.current}
-                isAccountPage={isAccountPage}
-            />
-        ))
-    ), [columnsToRender.current.length]);
+    const transactionRows = useMemo<JSX.Element[]>(
+        () =>
+            transactionsData.map((tx: TransactionIF) => (
+                <TransactionRow2
+                    key={JSON.stringify(tx)}
+                    tx={tx}
+                    columnsToShow={columnsToRender.current}
+                    isAccountPage={isAccountPage}
+                />
+            )),
+        [columnsToRender.current.length, transactionsData.length],
+    );
+
+    console.log({ transactionsData, columnsToRender, transactionRows });
 
     return (
         <ol className={styles.tx_ol} ref={containerRef}>
