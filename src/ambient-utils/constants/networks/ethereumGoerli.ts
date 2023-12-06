@@ -25,10 +25,6 @@ export const ethereumGoerli: NetworkIF = {
         new TopPool(goerliUSDT, goerliUSDC, lookupChain('0x5').poolIndex),
     ],
     getGasPriceInGwei: async () => {
-        const response = await fetch(
-            'https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=KNJM7A9ST1Q1EESYXPPQITIP7I8EFSY456',
-        );
-        const gasPrice = (await response.json()).result.ProposeGasPrice;
-        return gasPrice ? parseInt(gasPrice) : undefined;
+        return 15;
     },
 };
