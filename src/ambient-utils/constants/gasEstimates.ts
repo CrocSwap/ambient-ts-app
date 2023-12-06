@@ -26,6 +26,7 @@ export const NUM_GWEI_IN_WEI = 1e-9;
 export const SWAP_BUFFER_MULTIPLIER = 2;
 export const LIMIT_BUFFER_MULTIPLIER = 2;
 export const RANGE_BUFFER_MULTIPLIER = 2;
+export const DEPOSIT_BUFFER_MULTIPLIER = 2;
 
 export const DEFAULT_SCROLL_GAS_PRICE_IN_GWEI = 0.4;
 export const DEFAULT_MAINNET_GAS_PRICE_IN_GWEI = 69;
