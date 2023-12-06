@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { getDefaultTopPools } from '../../utils/data/defaultTopPools';
-import { PoolIF } from '../../utils/interfaces/exports';
+import { getDefaultTopPools } from '../../ambient-utils/dataLayer';
+import { PoolIF } from '../../ambient-utils/types/';
 
 /* Hook to manage the arbitrairly defined top pools for the specific chain.
  * Consumed in sidebar and home page to give the user a convenient way to

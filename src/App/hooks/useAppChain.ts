@@ -1,12 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { getDefaultChainId, validateChainId } from '../../utils/data/chains';
 import { useNetwork, useSwitchNetwork } from 'wagmi';
-import chainNumToString from '../functions/chainNumToString';
+import {
+    getDefaultChainId,
+    validateChainId,
+    chainNumToString,
+} from '../../ambient-utils/dataLayer';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
-import { NetworkIF } from '../../utils/interfaces/exports';
-import { supportedNetworks } from '../../utils/networks/index';
+import { NetworkIF } from '../../ambient-utils/types';
+import { supportedNetworks } from '../../ambient-utils/constants';
 import { useSearchParams } from 'react-router-dom';
 
 export const useAppChain = (): {

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useContext, memo } from 'react';
-import { PositionIF } from '../../../../../utils/interfaces/exports';
+import { PositionIF } from '../../../../../ambient-utils/types';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
 import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
@@ -19,18 +19,10 @@ interface propsIF {
     isAccountView: boolean;
     isLeaderboard?: boolean;
     tableView: 'small' | 'medium' | 'large';
-    fetchedEnsAddress?: string;
 }
 
 function RangesRow(props: propsIF) {
-    const {
-        tableView,
-        position,
-        isAccountView,
-        isLeaderboard,
-        rank,
-        fetchedEnsAddress,
-    } = props;
+    const { tableView, position, isAccountView, isLeaderboard, rank } = props;
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
@@ -80,12 +72,7 @@ function RangesRow(props: propsIF) {
         elapsedTimeString,
         baseTokenAddress,
         quoteTokenAddress,
-    } = useProcessRange(
-        position,
-        userAddress,
-        isAccountView,
-        fetchedEnsAddress,
-    );
+    } = useProcessRange(position, userAddress, isAccountView);
 
     const rangeDetailsProps = {
         poolIdx: position.poolIdx,

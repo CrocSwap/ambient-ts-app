@@ -19,7 +19,7 @@ import {
 import {
     diffHashSig,
     diffHashSigScaleData,
-} from '../../../../utils/functions/diffHashSig';
+} from '../../../../ambient-utils/dataLayer';
 import { createCircle } from '../../ChartUtils/circle';
 import {
     createAnnotationLineSeries,

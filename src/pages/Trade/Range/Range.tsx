@@ -1,6 +1,5 @@
 import { capitalConcFactor, concDepositSkew } from '@crocswap-libs/sdk';
 import { memo, useContext, useEffect, useMemo, useState } from 'react';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import Button from '../../../components/Form/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
 
@@ -13,7 +12,7 @@ import RangeTokenInput from '../../../components/Trade/Range/RangeTokenInput/Ran
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
-import { IS_LOCAL_ENV } from '../../../constants';
+import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
@@ -21,12 +20,15 @@ import { RangeContext } from '../../../contexts/RangeContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
-import { isStablePair } from '../../../utils/data/stablePairs';
-import truncateDecimals from '../../../utils/data/truncateDecimals';
-import { diffHashSig } from '../../../utils/functions/diffHashSig';
-import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
+import {
+    getFormattedNumber,
+    getUnicodeCharacter,
+    diffHashSig,
+    isStablePair,
+    truncateDecimals,
+} from '../../../ambient-utils/dataLayer';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { PositionIF } from '../../../utils/interfaces/PositionIF';
+import { PositionIF } from '../../../ambient-utils/types';
 import { rangeTutorialSteps } from '../../../utils/tutorial/Range';
 import {
     getPinnedPriceValuesFromDisplayPrices,
@@ -40,6 +42,11 @@ import { useHandleRangeButtonMessage } from '../../../App/hooks/useHandleRangeBu
 import { useRangeInputDisable } from './useRangeInputDisable';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import {
+    GAS_DROPS_ESTIMATE_POOL,
+    NUM_GWEI_IN_WEI,
+    RANGE_BUFFER_MULTIPLIER,
+} from '../../../ambient-utils/constants/';
 
 export const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 export const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
@@ -789,13 +796,42 @@ function Range() {
         }
     }, [rangeHighBoundFieldBlurred, chartTriggeredBy]);
 
+    const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
+        useState<number>(0.01);
+    const [amountToReduceEthScroll, setAmountToReduceEthScroll] =
+        useState<number>(0.0007);
+
+    const amountToReduceEth =
+        chainId === '0x82750' || chainId === '0x8274f'
+            ? amountToReduceEthScroll
+            : amountToReduceEthMainnet;
+
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
-            const averageRangeCostInGasDrops = 140000;
+            const costOfMainnetPoolInETH =
+                gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
+
+            setAmountToReduceEthMainnet(
+                costOfMainnetPoolInETH * RANGE_BUFFER_MULTIPLIER,
+            );
+
+            const costOfScrollPoolInETH =
+                gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
+
+            //   IS_LOCAL_ENV &&  console.log({
+            //         gasPriceInGwei,
+            //         costOfScrollPoolInETH,
+            //         amountToReduceEthScroll,
+            //     });
+
+            setAmountToReduceEthScroll(
+                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER,
+            );
+
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                averageRangeCostInGasDrops *
-                1e-9 *
+                GAS_DROPS_ESTIMATE_POOL *
+                NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice;
 
             setRangeGasPriceinDollars(
@@ -870,6 +906,8 @@ function Range() {
         isTokenAInputDisabled,
         isWithdrawTokenAFromDexChecked,
         isPoolInitialized,
+        tokenAQtyCoveredByWalletBalance,
+        amountToReduceEth,
     );
     const {
         tokenAllowed: tokenBAllowed,
@@ -882,6 +920,8 @@ function Range() {
         isTokenBInputDisabled,
         isWithdrawTokenBFromDexChecked,
         isPoolInitialized,
+        tokenBQtyCoveredByWalletBalance,
+        amountToReduceEth,
     );
 
     const { approve, isApprovalPending } = useApprove();
@@ -982,6 +1022,7 @@ function Range() {
                         tokenA: isTokenAInputDisabled,
                         tokenB: isTokenBInputDisabled,
                     }}
+                    amountToReduceEth={amountToReduceEth}
                 />
             }
             inputOptions={

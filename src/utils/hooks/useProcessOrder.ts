@@ -1,8 +1,15 @@
 import { useState, useEffect, useMemo, useContext } from 'react';
-import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
-import trimString from '../../utils/functions/trimString';
-import { LimitOrderIF } from '../interfaces/exports';
-import { getMoneynessRank } from '../functions/getMoneynessRank';
+import {
+    getChainExplorer,
+    getUnicodeCharacter,
+    trimString,
+    getMoneynessRank,
+    getElapsedTime,
+    diffHashSig,
+    getFormattedNumber,
+    uriToHttp,
+} from '../../ambient-utils/dataLayer';
+import { LimitOrderIF } from '../../ambient-utils/types';
 
 import {
     concPosSlot,
@@ -13,19 +20,14 @@ import {
 
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import moment from 'moment';
-import { getChainExplorer } from '../data/chains';
-import { getElapsedTime } from '../../App/functions/getElapsedTime';
-import { diffHashSig } from '../functions/diffHashSig';
-import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
-import uriToHttp from '../functions/uriToHttp';
 import { getAddress } from 'ethers/lib/utils.js';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { useFetchBatch } from '../../App/hooks/useFetchBatch';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
     account = '',
     isAccountView = false,
-    fetchedEnsAddress?: string,
 ) => {
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
     const blockExplorer = getChainExplorer(limitOrder.chainId);
@@ -45,9 +47,17 @@ export const useProcessOrder = (
     const isOwnerActiveAccount =
         limitOrder.user.toLowerCase() === account?.toLowerCase();
 
-    const ownerId = fetchedEnsAddress || getAddress(limitOrder.user) || '';
+    /* eslint-disable-next-line camelcase */
+    const body = { config_path: 'ens_address', address: limitOrder.user };
+    const { data, error } = useFetchBatch<'ens_address'>(body);
 
-    const ensName = fetchedEnsAddress || limitOrder.ensResolution || null;
+    let ensAddress = null;
+    if (data && !error) {
+        ensAddress = data.ens_address;
+    }
+
+    const ownerId = ensAddress || getAddress(limitOrder.user);
+    const ensName = ensAddress || limitOrder.ensResolution || null;
 
     const isOrderFilled = limitOrder.claimableLiq > 0;
 

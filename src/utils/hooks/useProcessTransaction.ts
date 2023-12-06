@@ -1,11 +1,13 @@
-import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
-import trimString from '../../utils/functions/trimString';
-import { getMoneynessRank } from '../functions/getMoneynessRank';
-import { TransactionIF } from '../../utils/interfaces/exports';
-import { getChainExplorer } from '../data/chains';
+import {
+    getChainExplorer,
+    getUnicodeCharacter,
+    trimString,
+    getMoneynessRank,
+    getElapsedTime,
+    getFormattedNumber,
+} from '../../ambient-utils/dataLayer';
+import { TransactionIF } from '../../ambient-utils/types';
 import moment from 'moment';
-import { getElapsedTime } from '../../App/functions/getElapsedTime';
-import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { getAddress } from 'ethers/lib/utils.js';
 import {
     toDisplayPrice,
@@ -15,12 +17,12 @@ import {
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useContext } from 'react';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { useFetchBatch } from '../../App/hooks/useFetchBatch';
 
 export const useProcessTransaction = (
     tx: TransactionIF,
     account = '',
     isAccountView = false,
-    fetchedEnsAddress?: string,
 ) => {
     const { tokenA, tokenB, isDenomBase } = useContext(TradeDataContext);
     const blockExplorer = getChainExplorer(tx.chainId);
@@ -30,7 +32,15 @@ export const useProcessTransaction = (
     // TODO: clarify if this should also preferentially show ENS address
     const ownerId = tx.user ? getAddress(tx.user) : '';
 
-    const ensName = fetchedEnsAddress || tx.ensResolution || null;
+    /* eslint-disable-next-line camelcase */
+    const body = { config_path: 'ens_address', address: tx.user };
+    const { data, error } = useFetchBatch<'ens_address'>(body);
+
+    let ensAddress = null;
+    if (data && !error) {
+        ensAddress = data.ens_address;
+    }
+    const ensName = ensAddress || tx.ensResolution || null;
 
     const isOwnerActiveAccount =
         ownerId.toLowerCase() === account?.toLowerCase();

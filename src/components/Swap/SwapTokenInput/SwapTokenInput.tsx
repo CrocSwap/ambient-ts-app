@@ -16,7 +16,7 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { FlexContainer } from '../../../styled/Common';
-import truncateDecimals from '../../../utils/data/truncateDecimals';
+import { truncateDecimals } from '../../../ambient-utils/dataLayer';
 import {
     useAppSelector,
     useAppDispatch,
@@ -92,13 +92,18 @@ function SwapTokenInput(props: propsIF) {
     const { primaryQuantity, shouldSwapDirectionReverse } = useAppSelector(
         (state) => state.tradeData,
     );
-    const { tokenA, tokenB, isTokenAPrimary, setIsTokenAPrimary } =
-        useContext(TradeDataContext);
+    const {
+        tokenA,
+        tokenB,
+        isTokenAPrimary,
+        setIsTokenAPrimary,
+        disableReverseTokens,
+        setDisableReverseTokens,
+    } = useContext(TradeDataContext);
     // hook to generate navigation actions with pre-loaded path
     const linkGenAny: linkGenMethodsIF = useLinkGen();
 
     const [lastInput, setLastInput] = useState<string | undefined>();
-    const [disableReverseTokens, setDisableReverseTokens] = useState(false);
 
     // Let input rest 3/4 of a second before triggering an update
     const debouncedLastInput = useDebounce(lastInput, 750);
@@ -196,7 +201,6 @@ function SwapTokenInput(props: propsIF) {
         setIsBuyLoading(true);
         setSellQtyString(value);
         dispatch(setPrimaryQuantity(value));
-        setDisableReverseTokens(true);
         setLastInput(value);
 
         setIsTokenAPrimary(true);
@@ -206,7 +210,6 @@ function SwapTokenInput(props: propsIF) {
         setIsSellLoading(true);
         setBuyQtyString(value);
         dispatch(setPrimaryQuantity(value));
-        setDisableReverseTokens(true);
         setLastInput(value);
 
         setIsTokenAPrimary(false);
@@ -215,6 +218,8 @@ function SwapTokenInput(props: propsIF) {
     const handleTokenAChangeEvent = useMemo(
         () => async (value?: string) => {
             if (!crocEnv) return;
+            setDisableReverseTokens(true);
+
             let rawTokenBQty = undefined;
             if (value !== undefined) {
                 if (parseFloat(value) !== 0) {
@@ -251,6 +256,7 @@ function SwapTokenInput(props: propsIF) {
     const handleTokenBChangeEvent = useMemo(
         () => async (value?: string) => {
             if (!crocEnv) return;
+            setDisableReverseTokens(true);
 
             let rawTokenAQty: number | undefined;
             if (value !== undefined) {
@@ -298,6 +304,11 @@ function SwapTokenInput(props: propsIF) {
             setIsSellLoading(false);
         }
     };
+
+    // refresh token data when swap module initializes
+    useEffect(() => {
+        refreshTokenData();
+    }, []);
 
     return (
         <FlexContainer flexDirection='column' gap={8}>
@@ -363,7 +374,10 @@ function SwapTokenInput(props: propsIF) {
                 tokenAorB='B'
                 token={tokenB}
                 tokenInput={
-                    sellQtyString !== '' || isLiquidityInsufficient
+                    sellQtyString !== '' ||
+                    isLiquidityInsufficient ||
+                    (buyQtyString !== '' &&
+                        (isSellLoading || parseFloat(buyQtyString) === 0))
                         ? buyQtyString
                         : ''
                 }
@@ -382,6 +396,7 @@ function SwapTokenInput(props: propsIF) {
                 parseTokenInput={(val: string, isMax?: boolean) => {
                     setBuyQtyString(formatTokenInput(val, tokenB, isMax));
                 }}
+                amountToReduceEth={0} // value not used for buy token
             />
         </FlexContainer>
     );

@@ -18,7 +18,8 @@ import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
 import {
     diffHashSig,
     diffHashSigScaleData,
-} from '../../../../utils/functions/diffHashSig';
+    getFormattedNumber,
+} from '../../../../ambient-utils/dataLayer';
 import {
     crosshair,
     fillLiqAdvanced,
@@ -31,7 +32,6 @@ import {
     setCanvasResolution,
     standardDeviation,
 } from '../../ChartUtils/chartUtils';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 import { RangeContext } from '../../../../contexts/RangeContext';
 
 interface yAxisIF {

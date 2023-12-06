@@ -1,10 +1,8 @@
 import React, { createContext, useEffect, useMemo } from 'react';
-import { TokenIF } from '../utils/interfaces/TokenIF';
+import { TokenIF } from '../ambient-utils/types';
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
-import {
-    getDefaultChainId,
-    getDefaultPairForChain,
-} from '../utils/data/chains';
+import { getDefaultChainId } from '../ambient-utils/dataLayer';
+import { getDefaultPairForChain } from '../ambient-utils/constants';
 import { useAppChain } from '../App/hooks/useAppChain';
 
 export interface TradeDataContextIF {
@@ -16,11 +14,13 @@ export interface TradeDataContextIF {
     isDenomBase: boolean;
     didUserFlipDenom: boolean;
     isTokenAPrimary: boolean;
+    disableReverseTokens: boolean;
 
     setTokenA: React.Dispatch<React.SetStateAction<TokenIF>>;
     setTokenB: React.Dispatch<React.SetStateAction<TokenIF>>;
     setDenomInBase: React.Dispatch<React.SetStateAction<boolean>>;
     setIsTokenAPrimary: React.Dispatch<React.SetStateAction<boolean>>;
+    setDisableReverseTokens: React.Dispatch<React.SetStateAction<boolean>>;
     setDidUserFlipDenom: React.Dispatch<React.SetStateAction<boolean>>;
     toggleDidUserFlipDenom: () => void;
 }
@@ -50,6 +50,8 @@ export const TradeDataContextProvider = (props: {
     //  This probably belongs in a separate context
     // Belongs with the other "primary" values in the tradedata slice
     const [isTokenAPrimary, setIsTokenAPrimary] = React.useState<boolean>(true);
+    const [disableReverseTokens, setDisableReverseTokens] =
+        React.useState<boolean>(false);
 
     const { baseToken, quoteToken, isTokenABase } = useMemo(() => {
         const [baseTokenAddress] = sortBaseQuoteTokens(
@@ -97,11 +99,13 @@ export const TradeDataContextProvider = (props: {
         isTokenABase,
         isDenomBase,
         isTokenAPrimary,
+        disableReverseTokens,
         didUserFlipDenom,
         setTokenA,
         setTokenB,
         setDenomInBase,
         setIsTokenAPrimary,
+        setDisableReverseTokens,
         setDidUserFlipDenom,
         toggleDidUserFlipDenom,
     };
