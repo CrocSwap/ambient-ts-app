@@ -189,15 +189,19 @@ function Swap(props: propsIF) {
 
     const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
 
-    const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
-        useState<number>(0.001);
-    const [amountToReduceEthScroll, setAmountToReduceEthScroll] =
-        useState<number>(0.00001);
+    const [
+        amountToReduceNativeTokenQtyMainnet,
+        setAmountToReduceNativeTokenQtyMainnet,
+    ] = useState<number>(0.001);
+    const [
+        amountToReduceNativeTokenQtyScroll,
+        setAmountToReduceNativeTokenQtyScroll,
+    ] = useState<number>(0.00001);
 
-    const amountToReduceEth =
+    const amountToReduceNativeTokenQty =
         chainId === '0x82750' || chainId === '0x8274f'
-            ? amountToReduceEthScroll
-            : amountToReduceEthMainnet;
+            ? amountToReduceNativeTokenQtyScroll
+            : amountToReduceNativeTokenQtyMainnet;
 
     useEffect(() => {
         if (isSellLoading || isBuyLoading) {
@@ -232,8 +236,8 @@ function Swap(props: propsIF) {
                 );
             } else if (
                 isSellTokenNativeToken &&
-                tokenAQtyCoveredByWalletBalance + amountToReduceEth >
-                    parseFloat(tokenABalance)
+                tokenAQtyCoveredByWalletBalance + amountToReduceNativeTokenQty >
+                    parseFloat(tokenABalance) + 0.0000000001 // offset to account for floating point math inconsistencies
             ) {
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage(
@@ -260,7 +264,7 @@ function Swap(props: propsIF) {
         isSellTokenNativeToken,
         tokenABalance,
         tokenAQtyCoveredByWalletBalance,
-        amountToReduceEth,
+        amountToReduceNativeTokenQty,
     ]);
 
     useEffect(() => {
@@ -287,7 +291,7 @@ function Swap(props: propsIF) {
             const costOfMainnetSwapInETH =
                 gasPriceInGwei * averageSwapCostInGasDrops * NUM_GWEI_IN_WEI;
 
-            setAmountToReduceEthMainnet(
+            setAmountToReduceNativeTokenQtyMainnet(
                 SWAP_BUFFER_MULTIPLIER * costOfMainnetSwapInETH,
             );
 
@@ -298,10 +302,10 @@ function Swap(props: propsIF) {
             //     console.log({
             //         gasPriceInGwei,
             //         costOfScrollSwapInETH,
-            //         amountToReduceEthScroll,
+            //         amountToReduceNativeTokenQtyScroll,
             //     });
 
-            setAmountToReduceEthScroll(
+            setAmountToReduceNativeTokenQtyScroll(
                 SWAP_BUFFER_MULTIPLIER * costOfScrollSwapInETH,
             );
 
@@ -543,7 +547,7 @@ function Swap(props: propsIF) {
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     setSwapAllowed={setSwapAllowed}
                     toggleDexSelection={toggleDexSelection}
-                    amountToReduceEth={amountToReduceEth}
+                    amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
                 />
             }
             transactionDetails={
