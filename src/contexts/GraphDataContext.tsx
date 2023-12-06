@@ -162,8 +162,6 @@ export const GraphDataContextProvider = (props: {
         useContext(UserDataContext);
     const userAddress = userDefaultAddress;
 
-    // userAddress = '0xfd3fa9d94eeb4e9889e60e37d0f1fe24ec59f7e1'; TODO, remove user with verifiable orders, after JG is done testing
-
     const resetUserGraphData = () => {
         setPositionsByUser({
             dataReceived: false,
@@ -254,8 +252,6 @@ export const GraphDataContextProvider = (props: {
                         cachedEnsResolve,
                     });
 
-                    console.log('FINISHING ---------------- ' + urlTargets[i]);
-                    console.log({ updatedLedger });
                     if (urlTargets[i] == 'user_positions') {
                         setPositionsByUser({
                             dataReceived: true,
@@ -277,9 +273,6 @@ export const GraphDataContextProvider = (props: {
                             });
                     }
                 } catch (error) {
-                    console.log(
-                        'JG. ENCOUNTERED USER POSITION ERR' + urlTargets[i],
-                    );
                     console.error(error);
                 }
                 IS_LOCAL_ENV &&

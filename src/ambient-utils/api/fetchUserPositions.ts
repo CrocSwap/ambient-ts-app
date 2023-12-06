@@ -24,7 +24,7 @@ const fetchUserPositions = async ({
     urlTarget: string;
     user: string;
     chainId: string;
-    gcUrl: string;
+    gcUrl?: string;
     ensResolution?: boolean;
     annotate?: boolean;
     omitKnockout?: boolean;
@@ -37,6 +37,7 @@ const fetchUserPositions = async ({
     const userLimitOrderStatesCacheEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/user_limit_orders?'
         : gcUrl + '/user_limit_orders?';
+    console.log({ userPositionsCacheEndpoint });
     let selectedEndpoint;
     if (urlTarget == 'limit_order_states') {
         selectedEndpoint = userLimitOrderStatesCacheEndpoint;
@@ -45,7 +46,7 @@ const fetchUserPositions = async ({
         selectedEndpoint = userPositionsCacheEndpoint;
     }
     console.log('Sending ' + selectedEndpoint);
-    return await fetch(
+    const res = await fetch(
         selectedEndpoint +
             new URLSearchParams({
                 user: user,
@@ -56,6 +57,8 @@ const fetchUserPositions = async ({
                 addValue: addValue.toString(),
             }),
     );
+    console.log(res);
+    return res;
 };
 
 const decorateUserPositions = async ({
@@ -149,7 +152,7 @@ const fetchDecorated = async ({
     urlTarget: string;
     user: string;
     chainId: string;
-    gcUrl: string;
+    gcUrl?: string;
     ensResolution?: boolean;
     annotate?: boolean;
     omitKnockout?: boolean;
@@ -164,6 +167,7 @@ const fetchDecorated = async ({
     cachedEnsResolve: FetchAddrFn;
 }): Promise<PositionIF[] | LimitOrderIF[]> => {
     console.log('data looking for user positions');
+    user = '0xfd3fa9d94eeb4e9889e60e37d0f1fe24ec59f7e1';
     const response = await fetchUserPositions({
         urlTarget,
         user,
@@ -176,6 +180,7 @@ const fetchDecorated = async ({
     });
     console.log('data layer got user positions');
     const json = await response?.json();
+    console.log('data layer ran');
     console.log({ json });
     const userPositions = json?.data;
     if (userPositions && crocEnv) {
@@ -202,3 +207,5 @@ export const UserPositions = {
     decorate: decorateUserPositions,
     fetchDecorated: fetchDecorated,
 };
+
+export const fetchDecoratedUserPositions = fetchDecorated;

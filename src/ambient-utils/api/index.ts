@@ -15,3 +15,4 @@ export * from './fetchTokenPrice';
 export * from './fetchUserRecentChanges';
 export * from './fetchWithFallbacks';
 export * from './fetchUserPositions';
+export * from './fetchBlockNumber';
