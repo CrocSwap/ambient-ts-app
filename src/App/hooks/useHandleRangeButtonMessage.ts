@@ -11,7 +11,7 @@ export function useHandleRangeButtonMessage(
     isWithdrawTokenFromDexChecked: boolean,
     isPoolInitialized: boolean,
     tokenQtyCoveredByWalletBalance: number,
-    amountToReduceEth: number,
+    amountToReduceNativeTokenQty: number,
     isMintLiqEnabled = true,
     isInitPage = false,
 ) {
@@ -41,8 +41,9 @@ export function useHandleRangeButtonMessage(
                     rangeButtonErrorMessage = `${token.symbol} Amount Exceeds Combined Wallet and Exchange Balance`;
                 } else if (
                     isNativeToken &&
-                    tokenQtyCoveredByWalletBalance + amountToReduceEth >
-                        parseFloat(tokenBalance)
+                    tokenQtyCoveredByWalletBalance +
+                        amountToReduceNativeTokenQty >
+                        parseFloat(tokenBalance) + 0.0000000001 // offset to account for floating point math inconsistencies
                 ) {
                     tokenAllowed = false;
                     rangeButtonErrorMessage = `${token.symbol} Wallet Balance Insufficient to Cover Gas`;
@@ -57,8 +58,9 @@ export function useHandleRangeButtonMessage(
                     rangeButtonErrorMessage = `${token.symbol} Amount Exceeds Wallet Balance`;
                 } else if (
                     isNativeToken &&
-                    tokenQtyCoveredByWalletBalance + amountToReduceEth >
-                        parseFloat(tokenBalance)
+                    tokenQtyCoveredByWalletBalance +
+                        amountToReduceNativeTokenQty >
+                        parseFloat(tokenBalance) + 0.0000000001 // offset to account for floating point math inconsistencies
                 ) {
                     tokenAllowed = false;
                     rangeButtonErrorMessage = `${token.symbol} Wallet Balance Insufficient to Cover Gas`;
@@ -75,7 +77,7 @@ export function useHandleRangeButtonMessage(
         isMintLiqEnabled,
         tokenAmount,
         tokenQtyCoveredByWalletBalance,
-        amountToReduceEth,
+        amountToReduceNativeTokenQty,
         tokenBalance,
         tokenDexBalance,
         isTokenInputDisabled,

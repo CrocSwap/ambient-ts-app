@@ -125,16 +125,20 @@ export default function Limit() {
     const [previousDisplayPrice, setPreviousDisplayPrice] = useState('');
     const [isOrderValid, setIsOrderValid] = useState<boolean>(true);
 
-    const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
-        useState<number>(0.001);
+    const [
+        amountToReduceNativeTokenQtyMainnet,
+        setAmountToReduceNativeTokenQtyMainnet,
+    ] = useState<number>(0.001);
 
-    const [amountToReduceEthScroll, setAmountToReduceEthScroll] =
-        useState<number>(0.00001);
+    const [
+        amountToReduceNativeTokenQtyScroll,
+        setAmountToReduceNativeTokenQtyScroll,
+    ] = useState<number>(0.00001);
 
-    const amountToReduceEth =
+    const amountToReduceNativeTokenQty =
         chainId === '0x82750' || chainId === '0x8274f'
-            ? amountToReduceEthScroll
-            : amountToReduceEthMainnet;
+            ? amountToReduceNativeTokenQtyScroll
+            : amountToReduceNativeTokenQtyMainnet;
 
     // TODO: is possible we can convert this to use the TradeTokenContext
     // However, unsure if the fact that baseToken comes from pool affects this
@@ -419,7 +423,7 @@ export default function Limit() {
         isSellTokenNativeToken,
         tokenAQtyCoveredByWalletBalance,
         tokenABalance,
-        amountToReduceEth,
+        amountToReduceNativeTokenQty,
     ]);
 
     useEffect(() => {
@@ -439,7 +443,7 @@ export default function Limit() {
             const costOfMainnetLimitInETH =
                 gasPriceInGwei * averageLimitCostInGasDrops * NUM_GWEI_IN_WEI;
 
-            setAmountToReduceEthMainnet(
+            setAmountToReduceNativeTokenQtyMainnet(
                 LIMIT_BUFFER_MULTIPLIER * costOfMainnetLimitInETH,
             );
 
@@ -450,10 +454,10 @@ export default function Limit() {
             //     console.log({
             //         gasPriceInGwei,
             //         costOfScrollLimitInETH,
-            //         amountToReduceEthScroll,
+            //         amountToReduceNativeTokenQtyScroll,
             //     });
 
-            setAmountToReduceEthScroll(
+            setAmountToReduceNativeTokenQtyScroll(
                 LIMIT_BUFFER_MULTIPLIER * costOfScrollLimitInETH,
             );
 
@@ -630,8 +634,9 @@ export default function Limit() {
                     );
                 } else if (
                     isSellTokenNativeToken &&
-                    tokenAQtyCoveredByWalletBalance + amountToReduceEth >
-                        parseFloat(tokenABalance)
+                    tokenAQtyCoveredByWalletBalance +
+                        amountToReduceNativeTokenQty >
+                        parseFloat(tokenABalance) + 0.0000000001 // offset to account for floating point math inconsistencies
                 ) {
                     setLimitAllowed(false);
                     setLimitButtonErrorMessage(
@@ -648,8 +653,9 @@ export default function Limit() {
                     );
                 } else if (
                     isSellTokenNativeToken &&
-                    tokenAQtyCoveredByWalletBalance + amountToReduceEth >
-                        parseFloat(tokenABalance)
+                    tokenAQtyCoveredByWalletBalance +
+                        amountToReduceNativeTokenQty >
+                        parseFloat(tokenABalance) + 0.0000000001 // offset to account for floating point math inconsistencies
                 ) {
                     setLimitAllowed(false);
                     setLimitButtonErrorMessage(
@@ -714,7 +720,7 @@ export default function Limit() {
                     limitTickDisplayPrice={middleDisplayPrice}
                     handleLimitButtonMessage={handleLimitButtonMessage}
                     toggleDexSelection={toggleDexSelection}
-                    amountToReduceEth={amountToReduceEth}
+                    amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
                 />
             }
             inputOptions={
