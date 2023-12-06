@@ -32,7 +32,7 @@ interface propsIF {
     tokenDexBalance?: string;
     isWithdraw?: boolean;
     disabledContent?: React.ReactNode;
-    amountToReduceEth: number;
+    amountToReduceNativeTokenQty: number;
 }
 
 function TokenInputWithWalletBalance(props: propsIF) {
@@ -56,7 +56,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
         handleToggleDexSelection,
         parseTokenInput,
         handleRefresh,
-        amountToReduceEth,
+        amountToReduceNativeTokenQty,
     } = props;
 
     const {
@@ -115,7 +115,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
 
     const subtractBuffer = (balance: string) =>
         isTokenEth
-            ? (parseFloat(balance) - amountToReduceEth).toFixed(18)
+            ? (parseFloat(balance) - amountToReduceNativeTokenQty).toFixed(18)
             : balance;
 
     const balanceWithBuffer = balance ? subtractBuffer(balance) : '...';

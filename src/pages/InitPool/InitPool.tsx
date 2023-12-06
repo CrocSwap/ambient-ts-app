@@ -800,15 +800,19 @@ export default function InitPool() {
         return () => clearTimeout(timer);
     }, []);
 
-    const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
-        useState<number>(0.01);
-    const [amountToReduceEthScroll, setAmountToReduceEthScroll] =
-        useState<number>(0.0007);
+    const [
+        amountToReduceNativeTokenQtyMainnet,
+        setAmountToReduceNativeTokenQtyMainnet,
+    ] = useState<number>(0.01);
+    const [
+        amountToReduceNativeTokenQtyScroll,
+        setAmountToReduceNativeTokenQtyScroll,
+    ] = useState<number>(0.0007);
 
-    const amountToReduceEth =
+    const amountToReduceNativeTokenQty =
         chainId === '0x82750' || chainId === '0x8274f'
-            ? amountToReduceEthScroll
-            : amountToReduceEthMainnet;
+            ? amountToReduceNativeTokenQtyScroll
+            : amountToReduceNativeTokenQtyMainnet;
 
     // calculate price of gas for pool init
     useEffect(() => {
@@ -820,7 +824,7 @@ export default function InitPool() {
             const costOfMainnetPoolInETH =
                 gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
 
-            setAmountToReduceEthMainnet(
+            setAmountToReduceNativeTokenQtyMainnet(
                 costOfMainnetPoolInETH * RANGE_BUFFER_MULTIPLIER,
             );
 
@@ -830,10 +834,10 @@ export default function InitPool() {
             //   IS_LOCAL_ENV &&  console.log({
             //         gasPriceInGwei,
             //         costOfScrollPoolInETH,
-            //         amountToReduceEthScroll,
+            //         amountToReduceNativeTokenQtyScroll,
             //     });
 
-            setAmountToReduceEthScroll(
+            setAmountToReduceNativeTokenQtyScroll(
                 costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER,
             );
 
@@ -1040,7 +1044,7 @@ export default function InitPool() {
         isWithdrawTokenAFromDexChecked,
         true, // hardcode pool initialized since we will be initializing it on confirm
         tokenAQtyCoveredByWalletBalance,
-        amountToReduceEth,
+        amountToReduceNativeTokenQty,
         isMintLiqEnabled,
         isInitPage,
     );
@@ -1056,7 +1060,7 @@ export default function InitPool() {
         isWithdrawTokenBFromDexChecked,
         true, // hardcode pool initialized since we will be initializing it on confirm
         tokenBQtyCoveredByWalletBalance,
-        amountToReduceEth,
+        amountToReduceNativeTokenQty,
         isMintLiqEnabled,
         isInitPage,
     );
@@ -1502,7 +1506,7 @@ export default function InitPool() {
                 reverseTokens={reverseTokens}
                 isMintLiqEnabled={isMintLiqEnabled}
                 isInitPage
-                amountToReduceEth={amountToReduceEth}
+                amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
             />
         </FlexContainer>
     );
