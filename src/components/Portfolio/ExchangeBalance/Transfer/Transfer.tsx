@@ -41,6 +41,11 @@ import {
     updateTransactionHash,
 } from '../../../../utils/state/receiptDataSlice';
 import CurrencySelector from '../../../Form/CurrencySelector';
+import {
+    NUM_GWEI_IN_WEI,
+    GAS_DROPS_ESTIMATE_TRANSFER_NATIVE,
+    GAS_DROPS_ESTIMATE_TRANSFER_ERC20,
+} from '../../../../ambient-utils/constants/';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -64,11 +69,7 @@ export default function Transfer(props: propsIF) {
         secondaryEnsName,
         setTokenModalOpen,
     } = props;
-    const {
-        crocEnv,
-        ethMainnetUsdPrice,
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
 
     const { gasPriceInGwei } = useContext(ChainDataContext);
 
@@ -299,20 +300,16 @@ export default function Transfer(props: propsIF) {
 
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
-    const averageGasUnitsForEthTransferInGasDrops = 45000;
-    const averageGasUnitsForErc20TransferInGasDrops = 45000;
-    const gweiInWei = 1e-9;
-
     // calculate price of gas for exchange balance transfer
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                gweiInWei *
+                NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice *
                 (isTokenEth
-                    ? averageGasUnitsForEthTransferInGasDrops
-                    : averageGasUnitsForErc20TransferInGasDrops);
+                    ? GAS_DROPS_ESTIMATE_TRANSFER_NATIVE
+                    : GAS_DROPS_ESTIMATE_TRANSFER_ERC20);
 
             setTransferGasPriceinDollars(
                 getFormattedNumber({
@@ -350,7 +347,7 @@ export default function Transfer(props: propsIF) {
                         <MaxButton onClick={handleBalanceClick}>Max</MaxButton>
                     )}
                 </FlexContainer>
-                {chainId === '0x1' && (
+                {
                     <GasPump>
                         <SVGContainer>
                             <FaGasPump size={12} />{' '}
@@ -359,7 +356,7 @@ export default function Transfer(props: propsIF) {
                             ? transferGasPriceinDollars
                             : '…'}
                     </GasPump>
-                )}
+                }
             </FlexContainer>
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}

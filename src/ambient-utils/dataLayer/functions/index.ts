@@ -29,7 +29,7 @@ export * from './removeLeadingZeros';
 export * from './removeWrappedNative';
 export * from './sortTokens';
 export * from './stablePairs';
-export * from './testnetTokenMap';
+export * from './tokenMap';
 export * from './trimString';
 export * from './truncateDecimals';
 export * from './uriToHttp';
