@@ -8,8 +8,8 @@ import {
     selectedDrawnData,
 } from '../../ChartUtils/chartUtils';
 import { ChartContext } from '../../../../contexts/ChartContext';
-import { CandleData } from '../../../../App/functions/fetchCandleSeries';
-import { diffHashSigScaleData } from '../../../../utils/functions/diffHashSig';
+import { diffHashSigScaleData } from '../../../../ambient-utils/dataLayer';
+import { CandleDataIF } from '../../../../ambient-utils/types';
 
 interface DragCanvasProps {
     scaleData: scaleData;
@@ -28,7 +28,10 @@ interface DragCanvasProps {
     >;
     denomInBase: boolean;
     addDrawActionStack: (item: drawDataHistory, isNewShape: boolean) => void;
-    snapForCandle: (point: number, filtered: Array<CandleData>) => CandleData;
+    snapForCandle: (
+        point: number,
+        filtered: Array<CandleDataIF>,
+    ) => CandleDataIF;
     visibleCandleData: CandleDataChart[];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     zoomBase: any;

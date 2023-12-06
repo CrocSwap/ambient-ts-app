@@ -2985,7 +2985,7 @@ export default function Chart(props: propsIF) {
 
                                         const filtered =
                                             unparsedCandleData.filter(
-                                                (data: CandleData) =>
+                                                (data: CandleDataIF) =>
                                                     data.time * 1000 >=
                                                         Math.min(
                                                             item.data[0].x,

@@ -5,7 +5,7 @@ import {
     useChartSettings,
 } from '../App/hooks/useChartSettings';
 import { LS_KEY_CHART_ANNOTATIONS } from '../pages/Chart/ChartUtils/chartUtils';
-import { getLocalStorageItem } from '../utils/functions/getLocalStorageItem';
+import { getLocalStorageItem } from '../ambient-utils/dataLayer';
 
 type TradeTableState = 'Expanded' | 'Collapsed' | undefined;
 

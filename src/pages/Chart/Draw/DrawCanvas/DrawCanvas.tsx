@@ -33,12 +33,12 @@ import {
 } from './BandArea';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { CandleData } from '../../../../App/functions/fetchCandleSeries';
 import {
     defaultShapeAttributes,
     drawnShapeDefaultDash,
     fibDefaultLevels,
 } from '../../ChartUtils/drawConstants';
+import { CandleDataIF } from '../../../../ambient-utils/types';
 
 interface DrawCanvasProps {
     scaleData: scaleData;
@@ -56,7 +56,10 @@ interface DrawCanvasProps {
     addDrawActionStack: (item: drawDataHistory, isNewShape: boolean) => void;
     period: number;
     crosshairData: crosshair[];
-    snapForCandle: (point: number, filtered: Array<CandleData>) => CandleData;
+    snapForCandle: (
+        point: number,
+        filtered: Array<CandleDataIF>,
+    ) => CandleDataIF;
     visibleCandleData: CandleDataChart[];
     zoomBase: any;
     setIsChartZoom: React.Dispatch<React.SetStateAction<boolean>>;

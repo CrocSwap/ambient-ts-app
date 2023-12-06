@@ -8,7 +8,6 @@ import {
 import * as d3 from 'd3';
 import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
 import { CandleDataIF } from '../../../ambient-utils/types';
-import { TradeDataContextIF } from '../../../contexts/TradeDataContext';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace

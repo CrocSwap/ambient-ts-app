@@ -6,7 +6,7 @@ import {
     defaultLineDrawnShapeEditAttributes,
     defaultRectDrawnShapeEditAttributes,
 } from '../../pages/Chart/ChartUtils/drawConstants';
-import { diffHashSig } from '../../utils/functions/diffHashSig';
+import { diffHashSig } from '../../ambient-utils/dataLayer';
 
 export const useDrawSettings = () => {
     function getLineOptions(itemType: string) {
