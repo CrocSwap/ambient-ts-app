@@ -3726,6 +3726,7 @@ export default function Chart(props: propsIF) {
             }
             if (event.key === 'Escape') {
                 setSelectedDrawnShape(undefined);
+                setActiveDrawingType('Cross');
             }
 
             if (

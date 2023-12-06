@@ -528,7 +528,13 @@ function TvlChart(props: TvlData) {
                 className='d3CanvasCrosshair'
             ></d3fc-canvas>
 
-            <label style={{ position: 'absolute', left: '0%' }}>
+            <label
+                style={{
+                    paddingLeft: '0%',
+                    gridColumnStart: '3',
+                    gridColumnEnd: '3',
+                }}
+            >
                 TVL:{' '}
                 {formatDollarAmountAxis(
                     subChartValues.filter(

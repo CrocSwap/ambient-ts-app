@@ -396,7 +396,13 @@ function FeeRateChart(props: FreeRateData) {
                 className='d3CanvasCrosshair'
             ></d3fc-canvas>
 
-            <label style={{ position: 'absolute', left: '0%' }}>
+            <label
+                style={{
+                    paddingLeft: '0%',
+                    gridColumnStart: '3',
+                    gridColumnEnd: '3',
+                }}
+            >
                 Fee Rate:{' '}
                 {subChartValues.filter(
                     (value: any) => value.name === 'feeRate',
