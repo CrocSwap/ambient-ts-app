@@ -191,25 +191,63 @@ function DrawCanvas(props: DrawCanvasProps) {
     function getXandYvalueOfDrawnShape(offsetX: number, offsetY: number) {
         let valueY = scaleData?.yScale.invert(offsetY);
         const nearest = snapForCandle(offsetX, visibleCandleData);
-        const close = denomInBase
+
+        const high = denomInBase
             ? nearest?.invMinPriceExclMEVDecimalCorrected
             : nearest?.minPriceExclMEVDecimalCorrected;
 
-        const open = denomInBase
+        const low = denomInBase
             ? nearest?.invMaxPriceExclMEVDecimalCorrected
             : nearest?.maxPriceExclMEVDecimalCorrected;
 
+        const open = denomInBase
+            ? nearest.invPriceOpenExclMEVDecimalCorrected
+            : nearest.priceOpenExclMEVDecimalCorrected;
+
+        const close = denomInBase
+            ? nearest.invPriceCloseExclMEVDecimalCorrected
+            : nearest.priceCloseExclMEVDecimalCorrected;
+
+        const highToCoordinat = scaleData.yScale(high);
+        const lowToCoordinat = scaleData.yScale(low);
+        const openToCoordinat = scaleData.yScale(open);
         const closeToCoordinat = scaleData.yScale(close);
 
-        const openToCoordinat = scaleData.yScale(open);
-
+        const highDiff = Math.abs(offsetY - highToCoordinat);
+        const lowDiff = Math.abs(offsetY - lowToCoordinat);
         const openDiff = Math.abs(offsetY - openToCoordinat);
         const closeDiff = Math.abs(offsetY - closeToCoordinat);
 
-        if (isMagnetActive.value && (openDiff <= 100 || closeDiff <= 100)) {
-            const minDiffForYValue = Math.min(openDiff, closeDiff);
+        if (
+            isMagnetActive.value &&
+            (highDiff <= 100 ||
+                lowDiff <= 100 ||
+                openDiff <= 100 ||
+                closeDiff <= 100)
+        ) {
+            const minDiffForYValue = Math.min(
+                openDiff,
+                closeDiff,
+                lowDiff,
+                highDiff,
+            );
 
-            valueY = minDiffForYValue === openDiff ? open : close;
+            switch (minDiffForYValue) {
+                case highDiff:
+                    valueY = high;
+                    break;
+
+                case lowDiff:
+                    valueY = low;
+                    break;
+                case openDiff:
+                    valueY = open;
+                    break;
+
+                case closeDiff:
+                    valueY = close;
+                    break;
+            }
         }
 
         let valueX = nearest.time * 1000;
