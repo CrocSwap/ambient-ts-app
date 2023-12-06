@@ -23,7 +23,10 @@ import {
 } from '../../../../utils/TransactionError';
 import { BigNumber } from 'ethers';
 import {
+    DEFAULT_MAINNET_GAS_PRICE_IN_GWEI,
+    DEFAULT_SCROLL_GAS_PRICE_IN_GWEI,
     IS_LOCAL_ENV,
+    NUM_WEI_IN_GWEI,
     SWAP_BUFFER_MULTIPLIER,
     ZERO_ADDRESS,
 } from '../../../../ambient-utils/constants';
@@ -83,15 +86,18 @@ export default function Deposit(props: propsIF) {
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
     const amountToReduceNativeTokenQtyMainnet = BigNumber.from(
-        Math.ceil(gasPriceInGwei || 25) *
-            100000000000000 *
-            SWAP_BUFFER_MULTIPLIER,
-    );
+        Math.ceil(gasPriceInGwei || DEFAULT_MAINNET_GAS_PRICE_IN_GWEI),
+    )
+        .mul(BigNumber.from(NUM_WEI_IN_GWEI))
+        .mul(BigNumber.from(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE))
+        .mul(BigNumber.from(SWAP_BUFFER_MULTIPLIER));
+
     const amountToReduceNativeTokenQtyScroll = BigNumber.from(
-        Math.ceil(gasPriceInGwei || 2) *
-            100000000000000 *
-            SWAP_BUFFER_MULTIPLIER,
-    );
+        Math.ceil(gasPriceInGwei || DEFAULT_SCROLL_GAS_PRICE_IN_GWEI),
+    )
+        .mul(BigNumber.from(NUM_WEI_IN_GWEI))
+        .mul(BigNumber.from(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE))
+        .mul(BigNumber.from(SWAP_BUFFER_MULTIPLIER));
 
     const amountToReduceNativeTokenQty =
         chainId === '0x82750' || chainId === '0x8274f'
