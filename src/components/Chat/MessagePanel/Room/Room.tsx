@@ -521,6 +521,9 @@ export default function Room(props: propsIF) {
                         {handleShowRoomsExceptGlobal(props.selectedRoom)}
                     </div>
 
+                    {/*
+                       
+                    // CHAT_FEATURES_WBO -  Feature : Mentions
                     <div className={styles.only_mentions_wrapper}>
                         <span
                             className={`${styles.only_mentions_text} ${
@@ -532,16 +535,6 @@ export default function Room(props: propsIF) {
                             Focus Mentions{' '}
                         </span>
                         <span className={styles.only_mentions_toggle_wrapper}>
-                            {/* <Toggle
-                                key={'only_mentions_toggle'}
-                                isOn={props.focusMentions}
-                                disabled={false}
-                                handleToggle={() =>
-                                    props.setFocusMentions(!props.focusMentions)
-                                }
-                                id='only_mentions_toggle_id'
-                                aria-label={'only_mentions_toggle_aria_label'}
-                            /> */}
                         </span>
                         {props.mentCount > 0 && (
                             <div
@@ -552,7 +545,7 @@ export default function Room(props: propsIF) {
                                 {props.mentionIndex + 1}/ {props.mentCount}
                             </div>
                         )}
-                    </div>
+                    </div> */}
                 </div>
             )}
         </div>

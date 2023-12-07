@@ -8,13 +8,13 @@
     padding: 1rem;
     width: 80%;
     left: 10%;
-    background: #12171f00;
     box-shadow: 0px 0px 28px #7371fc47;
     border: 1px solid #7371fcb3;
     border-radius: 0.6rem;
     -webkit-backdrop-filter: blur(5px);
     backdrop-filter: blur(8px);
     transform: translateY(130%);
+    background: rgba(22, 28, 38, 0.6);
 }
 
 .confirmation_wrapper.active{
@@ -26,14 +26,17 @@
 .title_text{
     font-size: .86rem;
     text-align: center;
+    opacity: 1;
+    font-weight: 500;
 }
 
 
 .content_text{
-    opacity: .5;
+    opacity: .6;
     font-size: .76rem;
     text-align: center;
     margin-top: .5rem;
+    font-weight: 300;
 }
 
 
@@ -45,6 +48,7 @@
 .btn_wrapper{
     flex: 1 1;
     padding: 0 .4rem;
+    font-weight: 600;
     font-size: .82rem;
     margin-top: .5rem;
     text-align: center;
@@ -52,10 +56,12 @@
     border: 2px solid rgba(255,255,255, .2);
     cursor: pointer;
     transition: all .2s ease-in-out;
+    color: rgba(255,255,255, .5);
 }
 
 .btn_wrapper:hover{
     border-color: rgba(255,255,255, .5);
+    color: white;
 }
 
 .confirmation_button_wrapper{
@@ -64,10 +70,13 @@
 .primary_btn{
     background-color: var(--accent1);
     margin-left: .4rem;
+    color: white;
+    border-color: transparent;
 
 }
 
 .primary_btn:hover{
     box-shadow: 0px 0px 10px var(--accent1);
+    border-color: #9d9cff;
 }
 

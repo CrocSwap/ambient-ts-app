@@ -1,28 +1,27 @@
 /* eslint-disable camelcase */
 /* eslint-disable @typescript-eslint/no-explicit-any  */
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client';
+import { fetchEnsAddress } from '../../../App/functions/fetchAddress';
 import {
-    CHAT_BACKEND_WSS_URL,
     CHAT_BACKEND_URL,
-    getMessageWithRestEndpoint,
-    getAllMessagesEndpoint,
-    getMessageWithRestWithPaginationEndpoint,
-    updateLikesDislikesCountEndpoint,
-    getMentionsWithRestEndpoint,
-    getUserListWithRestEndpoint,
-    getUserIsVerified,
-    verifyUserEndpoint,
-    updateVerifiedDateEndpoint,
+    CHAT_BACKEND_WSS_URL,
     addReactionEndpoint,
+    getAllMessagesEndpoint,
+    getMentionsWithRestEndpoint,
+    getMessageWithRestEndpoint,
+    getMessageWithRestWithPaginationEndpoint,
     getUserDetailsEndpoint,
+    getUserIsVerified,
+    getUserListWithRestEndpoint,
+    updateLikesDislikesCountEndpoint,
     updateUnverifiedMessagesEndpoint,
+    updateVerifiedDateEndpoint,
+    verifyUserEndpoint,
 } from '../../../constants';
 import { Message } from '../Model/MessageModel';
 import { User } from '../Model/UserModel';
-import { fetchBatch } from '../../../utils/functions/fetchBatch';
-import { useFetchBatch } from '../../../App/hooks/useFetchBatch';
 
 const useChatSocket = (
     room: string,
@@ -47,7 +46,7 @@ const useChatSocket = (
     const [userVrfToken, setUserVrfToken] = useState<string>('');
 
     const messagesRef = useRef<Message[]>([]);
-    const [ensHashes, setEnsHashes] = useState<Map<string, string>>();
+    const [ensCache, setEnsCache] = useState<Map<string, string>>(new Map());
     messagesRef.current = messages;
 
     async function getMsgWithRest(roomInfo: string) {
@@ -218,7 +217,7 @@ const useChatSocket = (
         return data;
     }
 
-    async function updateUnverifiedMessages(verifyDate: Date) {
+    async function updateUnverifiedMessages(verifyDate: Date, endDate?: Date) {
         const nfList = localStorage.getItem('zz_ch_nfList');
         const vrfTkn = localStorage.getItem('zz_ch_vrfTkn' + address);
         const response = await fetch(
@@ -235,6 +234,7 @@ const useChatSocket = (
                               .filter((e) => e.length > 0 && e !== '')
                         : [],
                     vrfTkn: vrfTkn,
+                    endDate: endDate,
                 }),
             },
         );
@@ -296,7 +296,7 @@ const useChatSocket = (
                     ? await getAllMessages()
                     : await getMsgWithRest(room);
             setMessages(data.reverse());
-            updateEnsCaches(data);
+            fillEnsCache(data);
             if (data.length > 0) {
                 setLastMessage(data[data.length - 1]);
                 setLastMessageText(data[data.length - 1].text);
@@ -490,26 +490,19 @@ const useChatSocket = (
         setMessages([...newMessageList]);
     };
 
-    const updateEnsCaches = async (messages: Message[]) => {
-        console.log('update ens caches !!!!!!!!!!!!!!');
-        console.log('update ens caches !!!!!!!!!!!!!!');
-        console.log('update ens caches !!!!!!!!!!!!!!');
-        console.log('update ens caches !!!!!!!!!!!!!!');
-
-        const ensReqBody = { config_path: 'ens_address', address: '' };
-
-        const firstLength = ensHashes?.size;
+    const fillEnsCache = async (messages: Message[]) => {
+        let ensHashMapChanged = false;
         messages.map(async (msg) => {
-            if (!ensHashes?.get(msg.walletID)) {
-                ensReqBody.address = msg.walletID;
-                console.log(ensReqBody);
-                const data = await fetchBatch<'ens_address'>(ensReqBody);
-                console.log(data);
-                console.log('......................');
+            if (!ensCache?.get(msg.walletID)) {
+                const ens = await fetchEnsAddress(msg.walletID);
+                console.log('fetched es for ' + msg.walletID + ' ' + ens);
+                ensHashMapChanged = true;
+                ensCache?.set(msg.walletID, ens);
             }
         });
-
-        console.log(firstLength);
+        if (ensHashMapChanged) {
+            setEnsCache({ ...ensCache });
+        }
     };
 
     return {
@@ -536,6 +529,7 @@ const useChatSocket = (
         fetchForNotConnectedUser,
         getUserSummaryDetails,
         updateUnverifiedMessages,
+        ensCache,
     };
 };
 

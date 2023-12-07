@@ -23,6 +23,7 @@ import { UserSummaryModel } from './Model/UserSummaryModel';
 import ChatConfirmationPanel from './ChatConfirmationPanel/ChatConfirmationPanel';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
+import ChatToaster from './ChatToaster/ChatToaster';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -98,8 +99,14 @@ function ChatPanel(props: propsIF) {
 
     const [showVerifyOldMessagesPanel, setShowVerifyOldMessagesPanel] =
         useState(false);
+
+    const [confirmationPanelContent, setConfirmationPanelContent] = useState(0);
+
     const [verifyOldMessagesStartDate, setVerifyOldMessagesStartDate] =
         useState(new Date());
+
+    const [showVerifyOldMessagesToaster, setShowVerifyOldMessagesToaster] =
+        useState(false);
 
     const {
         messages,
@@ -123,6 +130,7 @@ function ChatPanel(props: propsIF) {
         fetchForNotConnectedUser,
         getUserSummaryDetails,
         updateUnverifiedMessages,
+        ensCache,
     } = useChatSocket(
         room,
         isSubscriptionsEnabled,
@@ -559,6 +567,16 @@ function ChatPanel(props: propsIF) {
         }
     };
 
+    const handleConfirmationDialog = (
+        confirmationType: number,
+        startDate: Date,
+        endDate?: Date,
+    ) => {
+        setConfirmationPanelContent(confirmationType);
+        setVerifyOldMessagesStartDate(startDate);
+        setShowVerifyOldMessagesPanel(true);
+    };
+
     const verifyWallet = (
         verificationType: number,
         verificationDate: Date,
@@ -573,10 +591,6 @@ function ChatPanel(props: propsIF) {
 
         if (verificationType === 0) {
             if (isVerified) return;
-        } else if (isVerified) {
-            setVerifyOldMessagesStartDate(verificationDate);
-            return setShowVerifyOldMessagesPanel(true);
-            // return updateUnverifiedMessages(verificationDate);
         } else {
             verifyDate = verificationDate;
         }
@@ -755,6 +769,8 @@ function ChatPanel(props: propsIF) {
                             mentionMouseLeftListener={() => {
                                 setUserSummaryActive(false);
                             }}
+                            ensCache={ensCache}
+                            handleConfirmationDialog={handleConfirmationDialog}
                         />
                     );
                 })}
@@ -938,6 +954,19 @@ function ChatPanel(props: propsIF) {
             />
         );
 
+    const getConfirmationPanelContent = () => {
+        switch (confirmationPanelContent) {
+            case 1:
+                return 'Your old messages that sent from this browser will be verified, do you confirm?';
+
+            case 2:
+                return 'These messages may not sent from this browser. Do you want to verify?';
+
+            default:
+                return '';
+        }
+    };
+
     return (
         <div
             className={`${styles.main_container} ${
@@ -1061,16 +1090,33 @@ function ChatPanel(props: propsIF) {
             )}
 
             <ChatConfirmationPanel
-                isActive={showVerifyOldMessagesPanel}
+                isActive={showVerifyOldMessagesPanel && isChatOpen}
                 title='Verify Old Messages'
-                content='Your old messages that sent from this browser will be verified, do you confirm?'
+                content={getConfirmationPanelContent()}
                 cancelListener={() => {
                     setShowVerifyOldMessagesPanel(false);
                 }}
-                confirmListener={() => {
-                    updateUnverifiedMessages(verifyOldMessagesStartDate);
+                confirmListener={async () => {
+                    if (!isVerified)
+                        return setShowVerifyOldMessagesToaster(true);
+                    await updateUnverifiedMessages(
+                        verifyOldMessagesStartDate,
+                        confirmationPanelContent == 2
+                            ? new Date(
+                                  verifyOldMessagesStartDate.getTime() +
+                                      1000 * 60,
+                              )
+                            : undefined,
+                    );
+                    setShowVerifyOldMessagesToaster(true);
                     setShowVerifyOldMessagesPanel(false);
                 }}
+            />
+            <ChatToaster
+                isActive={showVerifyOldMessagesToaster && isChatOpen}
+                activator={setShowVerifyOldMessagesToaster}
+                text='Your old messages has been verified.'
+                type='success'
             />
         </div>
     );

@@ -28,6 +28,7 @@ import ReplyMessage from '../ReplyMessage/ReplyMessage';
 import Options from '../Options/Options';
 import Menu from '../Options/Menu/Menu';
 import useChatSocket from '../../Service/useChatSocket';
+import { m } from 'framer-motion';
 
 interface SentMessageProps {
     message: Message;
@@ -79,6 +80,12 @@ interface SentMessageProps {
     addReaction: (messageId: string, userId: string, reaction: string) => void;
     mentionHoverListener: (elementTop: number, walletID: string) => void;
     mentionMouseLeftListener: any;
+    ensCache: Map<string, string>;
+    handleConfirmationDialog: (
+        confirmationType: number,
+        startDate: Date,
+        endDate?: Date,
+    ) => void;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
@@ -144,16 +151,31 @@ function SentMessagePanel(props: SentMessageProps) {
             props.message?.createdAt,
         );
 
+        const checkForVerifyDiff = (msg1: Message, msg2: Message) => {
+            return (
+                msg1.sender === msg2.sender &&
+                msg1.isVerified !== msg2.isVerified
+            );
+        };
+
         if (props.previousMessage?.sender === props.message?.sender) {
             if (currentPreviousDiffInMs < 1 * 60 * 1000) {
-                setShowAvatar(false);
-                setShowName(false);
-                setOk(true);
+                setShowAvatar(
+                    checkForVerifyDiff(props.previousMessage, props.message),
+                );
+                setShowName(
+                    checkForVerifyDiff(props.previousMessage, props.message),
+                );
+                setOk(
+                    !checkForVerifyDiff(props.previousMessage, props.message),
+                );
                 if (
                     nextCurrentDiffInMs < 1 * 60 * 1000 &&
                     props.nextMessage?.sender === props.message?.sender
                 ) {
-                    setHasSeparator(false);
+                    setHasSeparator(
+                        checkForVerifyDiff(props.nextMessage, props.message),
+                    );
                 } else {
                     setHasSeparator(true);
                 }
@@ -162,9 +184,14 @@ function SentMessagePanel(props: SentMessageProps) {
                     nextCurrentDiffInMs < 1 * 60 * 1000 &&
                     props.message?.sender === props.nextMessage?.sender
                 ) {
+                    setShowAvatar(
+                        checkForVerifyDiff(props.nextMessage, props.message),
+                    );
                     setShowAvatar(true);
                     setShowName(true);
-                    setHasSeparator(false);
+                    setHasSeparator(
+                        checkForVerifyDiff(props.nextMessage, props.message),
+                    );
                 } else {
                     setShowAvatar(true);
                     setShowName(true);
@@ -294,6 +321,14 @@ function SentMessagePanel(props: SentMessageProps) {
         } else {
             return props.message.ensName;
         }
+
+        // fetched Ens addresses from analytics server
+        // if(props.ensCache.get(props.message.walletID)){
+        //     return props.ensCache.get(props.message.walletID) + ' !!!!!!!!!!!!!!!!!!!';
+        // }
+        // else{
+        //     return props.message.walletID.slice(0, 6) + '...';
+        // }
     }
 
     function handleOpenExplorer(url: string) {
@@ -706,6 +741,23 @@ function SentMessagePanel(props: SentMessageProps) {
         return false;
     }
 
+    function checkLocalStorage(messageId: string) {
+        const storedMessages = localStorage.getItem('zz_ch_nfList');
+        if (storedMessages) {
+            const messageIDs = storedMessages.split(',');
+            const parsedMessages: string[] = [];
+            messageIDs.map((e) => {
+                parsedMessages.push(e.trim());
+            });
+
+            if (parsedMessages.includes(messageId)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
     return (
         <div
             className={`${styles.msg_bubble_container} ${
@@ -952,8 +1004,14 @@ function SentMessagePanel(props: SentMessageProps) {
                                                             styles.update_verify_date_icon
                                                         }
                                                         onClick={() => {
-                                                            props.verifyWallet(
-                                                                1,
+                                                            props.handleConfirmationDialog(
+                                                                checkLocalStorage(
+                                                                    props
+                                                                        .message
+                                                                        ._id,
+                                                                )
+                                                                    ? 1
+                                                                    : 2,
                                                                 new Date(
                                                                     props.message.createdAt,
                                                                 ),
