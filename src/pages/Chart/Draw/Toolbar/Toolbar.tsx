@@ -43,13 +43,11 @@ function Toolbar(props: ToolbarProps) {
         setIsMagnetActiveLocal,
         deleteAllShapes,
         chartHeights,
-        d3ContainerHeight,
     } = props;
 
     const mobileView = useMediaQuery('(max-width: 600px)');
 
-    const { setIsMagnetActive, isMagnetActive, isFullScreen } =
-        useContext(ChartContext);
+    const { setIsMagnetActive, isMagnetActive } = useContext(ChartContext);
     const feeRate = document.getElementById('fee_rate_chart');
     const tvl = document.getElementById('tvl_chart');
 
@@ -187,7 +185,7 @@ function Toolbar(props: ToolbarProps) {
                     ? `${toolbarRef.current.clientWidth + 7}px`
                     : 'auto',
 
-                left: isFullScreen ? 8 : -8,
+                left: -8,
             }}
             onClick={() => handleScroll('up')}
         >
@@ -199,17 +197,12 @@ function Toolbar(props: ToolbarProps) {
         <div
             className={styles.arrowContainer_container}
             style={{
-                bottom:
-                    d3ContainerHeight -
-                    chartHeights -
-                    1 +
-                    (isFullScreen ? 16 : 0) +
-                    'px',
+                top: chartHeights + 'px',
                 position: 'absolute',
                 width: toolbarRef.current
                     ? `${toolbarRef.current.clientWidth + 7}px`
                     : 'auto',
-                left: isFullScreen ? 8 : -8,
+                left: -8,
             }}
             onClick={() => handleScroll('down')}
         >
