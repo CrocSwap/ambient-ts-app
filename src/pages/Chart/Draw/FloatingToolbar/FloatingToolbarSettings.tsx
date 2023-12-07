@@ -29,7 +29,6 @@ import {
     StyledCheckbox,
     Icon,
 } from './FloatingToolbarSettingsCss';
-import Toggle from '../../../../components/Form/Toggle';
 import { AiOutlineMinus, AiOutlineDash } from 'react-icons/ai';
 import { SketchPicker } from 'react-color';
 import {
