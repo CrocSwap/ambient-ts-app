@@ -623,11 +623,14 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                             <LineSettingsLeft>
                                 <DropDownContainer>
                                     <DropDownHeader
-                                        onClick={() =>
+                                        onClick={() => {
+                                            setisLabelAlignmentOptionTabActive(
+                                                false,
+                                            );
                                             setisLabelPlacementOptionTabActive(
                                                 (prev) => !prev,
-                                            )
-                                        }
+                                            );
+                                        }}
                                     >
                                         {selectedDrawnShape.data.labelPlacement}
                                     </DropDownHeader>
@@ -665,11 +668,14 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
 
                                 <DropDownContainer>
                                     <DropDownHeader
-                                        onClick={() =>
+                                        onClick={() => {
+                                            setisLabelPlacementOptionTabActive(
+                                                false,
+                                            );
                                             setisLabelAlignmentOptionTabActive(
                                                 (prev) => !prev,
-                                            )
-                                        }
+                                            );
+                                        }}
                                     >
                                         {selectedDrawnShape.data.labelAlignment}
                                     </DropDownHeader>
