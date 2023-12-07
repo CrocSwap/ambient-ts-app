@@ -466,7 +466,15 @@ export default function Chart(props: propsIF) {
         return prev.time < current.time ? prev : current;
     });
 
-    const [lastCandleDataCenter, setLastCandleDataCenter] = useState(0);
+    const toolbarWidth = isToolbarOpen ? 40 : 10;
+    const [lastCandleDataCenterX, setLastCandleDataCenterX] = useState(0);
+    const [lastCandleDataCenterY, setLastCandleDataCenterY] = useState(0);
+
+    const [lastCandleDataPositionY, setLastCandleDataPositionY] =
+        useState('bottom');
+    const [lastCandleDataPositionX, setLastCandleDataPositionX] =
+        useState('left');
+
     const [subChartValues, setsubChartValues] = useState([
         {
             name: 'feeRate',
@@ -4518,8 +4526,6 @@ export default function Chart(props: propsIF) {
 
         const xmin = scaleData?.xScale.domain()[0] as number;
         const xmax = scaleData?.xScale.domain()[1] as number;
-        const ymin = scaleData?.yScale.domain()[0] as number;
-        const ymax = scaleData?.yScale.domain()[1] as number;
 
         visibleCandleData.map((d: CandleDataIF) => {
             avaregeHeight =
@@ -4664,35 +4670,37 @@ export default function Chart(props: propsIF) {
             checkYLocation &&
             scaleData
         ) {
-            const canvas = d3
-                .select(d3CanvasMain.current)
-                .select('canvas')
-                .node() as HTMLCanvasElement;
+            let location =
+                d3ContainerHeight - (scaleData.yScale((open + close) / 2) + 10);
 
-            const rect = canvas.getBoundingClientRect();
-
-            const rectTop = rect.top / 2.5;
-
-            const maxValue = Math.max(open, close);
-            const minValue = Math.min(open, close);
-
-            const checkDomain = maxValue > ymax && minValue < ymin;
-
-            if (checkDomain || chartHeights < 250) {
-                setLastCandleDataCenter(scaleData.yScale((ymin + ymax) / 2));
-            } else if (
-                scaleData.yScale(ymin) - scaleData?.yScale(maxValue) < 100 ||
-                ymin > minValue
-            ) {
-                setLastCandleDataCenter(scaleData.yScale(maxValue) - rectTop);
-            } else if (
-                scaleData?.yScale(maxValue) - scaleData.yScale(ymax) <
-                5
-            ) {
-                setLastCandleDataCenter(scaleData.yScale(minValue));
-            } else {
-                setLastCandleDataCenter(scaleData.yScale((open + close) / 2));
+            setLastCandleDataPositionY('bottom');
+            if (location < 0) {
+                location = 0;
             }
+            if (location > d3ContainerHeight - 50) {
+                location = 0;
+                setLastCandleDataPositionY('top');
+            }
+
+            setLastCandleDataCenterY(location);
+
+            let positionX =
+                scaleData?.xScale(lastCandleData?.time * 1000) +
+                bandwidth * 2 +
+                toolbarWidth;
+
+            if (
+                mainCanvasBoundingClientRect &&
+                positionX > mainCanvasBoundingClientRect?.width - 100
+            ) {
+                positionX = 0;
+                setLastCandleDataPositionX('right');
+            } else {
+                setLastCandleDataPositionX('left');
+            }
+
+            setLastCandleDataCenterX(positionX);
+
             setIsShowLastCandleTooltip(true);
         } else {
             setIsShowLastCandleTooltip(false);
@@ -5356,10 +5364,8 @@ export default function Chart(props: propsIF) {
                         className='lastCandleDiv'
                         style={{
                             fontSize: chartHeights > 280 ? 'medium' : '12px',
-                            top: lastCandleDataCenter,
-                            left:
-                                scaleData?.xScale(lastCandleData?.time * 1000) +
-                                bandwidth * 2,
+                            [lastCandleDataPositionY]: lastCandleDataCenterY,
+                            [lastCandleDataPositionX]: lastCandleDataCenterX,
                         }}
                     >
                         <div>
