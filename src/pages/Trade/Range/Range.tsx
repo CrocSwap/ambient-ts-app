@@ -796,22 +796,26 @@ function Range() {
         }
     }, [rangeHighBoundFieldBlurred, chartTriggeredBy]);
 
-    const [amountToReduceEthMainnet, setAmountToReduceEthMainnet] =
-        useState<number>(0.01);
-    const [amountToReduceEthScroll, setAmountToReduceEthScroll] =
-        useState<number>(0.0007);
+    const [
+        amountToReduceNativeTokenQtyMainnet,
+        setAmountToReduceNativeTokenQtyMainnet,
+    ] = useState<number>(0.01);
+    const [
+        amountToReduceNativeTokenQtyScroll,
+        setAmountToReduceNativeTokenQtyScroll,
+    ] = useState<number>(0.0007);
 
-    const amountToReduceEth =
+    const amountToReduceNativeTokenQty =
         chainId === '0x82750' || chainId === '0x8274f'
-            ? amountToReduceEthScroll
-            : amountToReduceEthMainnet;
+            ? amountToReduceNativeTokenQtyScroll
+            : amountToReduceNativeTokenQtyMainnet;
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const costOfMainnetPoolInETH =
                 gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
 
-            setAmountToReduceEthMainnet(
+            setAmountToReduceNativeTokenQtyMainnet(
                 costOfMainnetPoolInETH * RANGE_BUFFER_MULTIPLIER,
             );
 
@@ -821,10 +825,10 @@ function Range() {
             //   IS_LOCAL_ENV &&  console.log({
             //         gasPriceInGwei,
             //         costOfScrollPoolInETH,
-            //         amountToReduceEthScroll,
+            //         amountToReduceNativeTokenQtyScroll,
             //     });
 
-            setAmountToReduceEthScroll(
+            setAmountToReduceNativeTokenQtyScroll(
                 costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER,
             );
 
@@ -907,7 +911,7 @@ function Range() {
         isWithdrawTokenAFromDexChecked,
         isPoolInitialized,
         tokenAQtyCoveredByWalletBalance,
-        amountToReduceEth,
+        amountToReduceNativeTokenQty,
     );
     const {
         tokenAllowed: tokenBAllowed,
@@ -921,7 +925,7 @@ function Range() {
         isWithdrawTokenBFromDexChecked,
         isPoolInitialized,
         tokenBQtyCoveredByWalletBalance,
-        amountToReduceEth,
+        amountToReduceNativeTokenQty,
     );
 
     const { approve, isApprovalPending } = useApprove();
@@ -1022,7 +1026,7 @@ function Range() {
                         tokenA: isTokenAInputDisabled,
                         tokenB: isTokenBInputDisabled,
                     }}
-                    amountToReduceEth={amountToReduceEth}
+                    amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
                 />
             }
             inputOptions={

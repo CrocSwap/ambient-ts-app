@@ -69,11 +69,7 @@ export default function Transfer(props: propsIF) {
         secondaryEnsName,
         setTokenModalOpen,
     } = props;
-    const {
-        crocEnv,
-        ethMainnetUsdPrice,
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
 
     const { gasPriceInGwei } = useContext(ChainDataContext);
 
@@ -351,7 +347,7 @@ export default function Transfer(props: propsIF) {
                         <MaxButton onClick={handleBalanceClick}>Max</MaxButton>
                     )}
                 </FlexContainer>
-                {chainId === '0x1' && (
+                {
                     <GasPump>
                         <SVGContainer>
                             <FaGasPump size={12} />{' '}
@@ -360,7 +356,7 @@ export default function Transfer(props: propsIF) {
                             ? transferGasPriceinDollars
                             : '…'}
                     </GasPump>
-                )}
+                }
             </FlexContainer>
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}
