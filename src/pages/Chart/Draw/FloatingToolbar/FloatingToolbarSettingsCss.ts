@@ -130,7 +130,7 @@ const LineSettingsLeft = styled.div`
     align-items: center;
     justify-content: center;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 30% 70%;
 
     gap: 10px;
 `;
@@ -246,6 +246,48 @@ const ListItem = styled.ul<{
     }
 `;
 
+const CheckboxContainer = styled.div`
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    vertical-align: middle;
+`;
+
+const Icon = styled.svg`
+    fill: none;
+    stroke: white;
+    stroke-width: 2px;
+`;
+
+const StyledCheckbox = styled.div<{
+    checked: boolean | undefined;
+    disabled: boolean | undefined;
+}>`
+    width: 17px;
+    height: 17px;
+    background: ${({ checked, disabled }) =>
+        checked ? (disabled ? '#434c58' : '#2196F3') : '#f0f0f8'};
+
+    border-radius: 2px;
+    transition: all 50ms;
+
+    box-shadow: 0 1px 2px 1px
+        ${({ disabled }) => (disabled ? 'transparent' : 'rgba(0, 0, 0, 0.7)')};
+
+    ${Icon} {
+        visibility: ${({ checked }) => (checked ? 'visible' : 'hidden')};
+    }
+
+    cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
+
+    &:hover {
+        filter: ${({ disabled }) =>
+            disabled ? 'brightness(1)' : 'brightness(1.2)'};
+    }
+`;
+
 export {
     FloatingToolbarSettingsContainer,
     LineSettings,
@@ -268,4 +310,7 @@ export {
     DropDownListContainer,
     DropDownList,
     ListItem,
+    StyledCheckbox,
+    CheckboxContainer,
+    Icon,
 };

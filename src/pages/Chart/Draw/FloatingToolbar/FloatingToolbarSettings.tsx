@@ -25,6 +25,9 @@ import {
     OptionStyleContainer,
     StyledLabel,
     ListItem,
+    CheckboxContainer,
+    StyledCheckbox,
+    Icon,
 } from './FloatingToolbarSettingsCss';
 import Toggle from '../../../../components/Form/Toggle';
 import { AiOutlineMinus, AiOutlineDash } from 'react-icons/ai';
@@ -239,22 +242,32 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                     <LineContainer>
                         <LineSettings>
                             <LineSettingsLeft>
-                                <Toggle
-                                    key={'toggle'}
-                                    isOn={selectedDrawnShape.data.line.active}
-                                    disabled={lineOptionDisabled.includes(
-                                        selectedDrawnShape?.data.type,
-                                    )}
-                                    handleToggle={() => {
-                                        handleEditLines(
-                                            !selectedDrawnShape.data.line
-                                                .active,
-                                            'line',
-                                        );
+                                <CheckboxContainer
+                                    onClick={() => {
+                                        !lineOptionDisabled.includes(
+                                            selectedDrawnShape?.data.type,
+                                        ) &&
+                                            handleEditLines(
+                                                !selectedDrawnShape.data.line
+                                                    .active,
+                                                'line',
+                                            );
                                     }}
-                                    id='is_guide_line_visible'
-                                    aria-label={'aria-label'}
-                                />
+                                >
+                                    <StyledCheckbox
+                                        checked={
+                                            selectedDrawnShape.data.line.active
+                                        }
+                                        disabled={lineOptionDisabled.includes(
+                                            selectedDrawnShape?.data.type,
+                                        )}
+                                    >
+                                        <Icon viewBox='0 0 24 24'>
+                                            <polyline points='20 6 9 17 4 12' />
+                                        </Icon>
+                                    </StyledCheckbox>
+                                </CheckboxContainer>
+
                                 <StyledLabel>Line</StyledLabel>
                             </LineSettingsLeft>
 
@@ -300,25 +313,32 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                         ) && (
                             <LineSettings>
                                 <LineSettingsLeft>
-                                    <Toggle
-                                        key={'toggle'}
-                                        isOn={
-                                            selectedDrawnShape.data.border
-                                                .active
-                                        }
-                                        disabled={borderOptionDisabled.includes(
-                                            selectedDrawnShape?.data.type,
-                                        )}
-                                        handleToggle={() => {
-                                            handleEditLines(
-                                                !selectedDrawnShape.data.border
-                                                    .active,
-                                                'border',
-                                            );
+                                    <CheckboxContainer
+                                        onClick={() => {
+                                            !borderOptionDisabled.includes(
+                                                selectedDrawnShape?.data.type,
+                                            ) &&
+                                                handleEditLines(
+                                                    !selectedDrawnShape.data
+                                                        .border.active,
+                                                    'border',
+                                                );
                                         }}
-                                        id='is_background_visible'
-                                        aria-label={'aria-label'}
-                                    />
+                                    >
+                                        <StyledCheckbox
+                                            checked={
+                                                selectedDrawnShape.data.border
+                                                    .active
+                                            }
+                                            disabled={borderOptionDisabled.includes(
+                                                selectedDrawnShape?.data.type,
+                                            )}
+                                        >
+                                            <Icon viewBox='0 0 24 24'>
+                                                <polyline points='20 6 9 17 4 12' />
+                                            </Icon>
+                                        </StyledCheckbox>
+                                    </CheckboxContainer>
                                     <StyledLabel>Border</StyledLabel>
                                 </LineSettingsLeft>
 
@@ -365,23 +385,27 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                         ) && (
                             <LineSettings>
                                 <LineSettingsLeft>
-                                    <Toggle
-                                        key={'toggle'}
-                                        isOn={
-                                            selectedDrawnShape.data.background
-                                                .active
-                                        }
-                                        disabled={false}
-                                        handleToggle={() => {
+                                    <CheckboxContainer
+                                        onClick={() => {
                                             handleEditLines(
                                                 !selectedDrawnShape.data
                                                     .background.active,
                                                 'background',
                                             );
                                         }}
-                                        id='is_background_visible'
-                                        aria-label={'aria-label'}
-                                    />
+                                    >
+                                        <StyledCheckbox
+                                            checked={
+                                                selectedDrawnShape.data
+                                                    .background.active
+                                            }
+                                            disabled={false}
+                                        >
+                                            <Icon viewBox='0 0 24 24'>
+                                                <polyline points='20 6 9 17 4 12' />
+                                            </Icon>
+                                        </StyledCheckbox>
+                                    </CheckboxContainer>
                                     <StyledLabel>Background</StyledLabel>
                                 </LineSettingsLeft>
                                 <LineSettingsRight>
@@ -413,20 +437,24 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                             {selectedDrawnShape.data.extraData.map(
                                 (item, index) => (
                                     <FibLineOptions key={index}>
-                                        <Toggle
-                                            key={'toggle'}
-                                            isOn={item.active}
-                                            disabled={false}
-                                            handleToggle={() => {
+                                        <CheckboxContainer
+                                            onClick={() => {
                                                 item.active = !item.active;
                                                 setIsShapeEdited(true);
                                                 saveShapeAttiributesToLocalStorage(
                                                     selectedDrawnShape.data,
                                                 );
                                             }}
-                                            id='fib_lines'
-                                            aria-label={'aria-label'}
-                                        />
+                                        >
+                                            <StyledCheckbox
+                                                checked={item.active}
+                                                disabled={false}
+                                            >
+                                                <Icon viewBox='0 0 24 24'>
+                                                    <polyline points='20 6 9 17 4 12' />
+                                                </Icon>
+                                            </StyledCheckbox>
+                                        </CheckboxContainer>
                                         <InfoLabel>
                                             <LevelTitle>
                                                 {item.level}
@@ -504,36 +532,48 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                     selectedDrawnShape.data.type === 'FibRetracement' && (
                         <FibLineSettings style={{ paddingBottom: '10px' }}>
                             <ExtendSettings>
-                                <Toggle
-                                    key={'toggle'}
-                                    isOn={selectedDrawnShape.data.extendLeft}
-                                    disabled={false}
-                                    handleToggle={() => {
+                                <CheckboxContainer
+                                    onClick={() => {
                                         handleEditLines(
                                             !selectedDrawnShape.data.extendLeft,
                                             'extendLeft',
                                         );
                                     }}
-                                    id='is_extendLeft_visible'
-                                    aria-label={'aria-label'}
-                                />
+                                >
+                                    <StyledCheckbox
+                                        checked={
+                                            selectedDrawnShape.data.extendLeft
+                                        }
+                                        disabled={false}
+                                    >
+                                        <Icon viewBox='0 0 24 24'>
+                                            <polyline points='20 6 9 17 4 12' />
+                                        </Icon>
+                                    </StyledCheckbox>
+                                </CheckboxContainer>
                                 <StyledLabel>Extend Left</StyledLabel>
                             </ExtendSettings>
                             <ExtendSettings>
-                                <Toggle
-                                    key={'toggle'}
-                                    isOn={selectedDrawnShape.data.extendRight}
-                                    disabled={false}
-                                    handleToggle={() => {
+                                <CheckboxContainer
+                                    onClick={() => {
                                         handleEditLines(
                                             !selectedDrawnShape.data
                                                 .extendRight,
                                             'extendRight',
                                         );
                                     }}
-                                    id='is_extendRight_visible'
-                                    aria-label={'aria-label'}
-                                />
+                                >
+                                    <StyledCheckbox
+                                        checked={
+                                            selectedDrawnShape.data.extendRight
+                                        }
+                                        disabled={false}
+                                    >
+                                        <Icon viewBox='0 0 24 24'>
+                                            <polyline points='20 6 9 17 4 12' />
+                                        </Icon>
+                                    </StyledCheckbox>
+                                </CheckboxContainer>
                                 <StyledLabel>Extend Right</StyledLabel>
                             </ExtendSettings>
                         </FibLineSettings>
@@ -543,19 +583,25 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                     selectedDrawnShape.data.type === 'FibRetracement' && (
                         <FibLineSettings style={{ paddingBottom: '10px' }}>
                             <ExtendSettings>
-                                <Toggle
-                                    key={'toggle'}
-                                    isOn={selectedDrawnShape.data.reverse}
-                                    disabled={false}
-                                    handleToggle={() => {
+                                <CheckboxContainer
+                                    onClick={() => {
                                         handleEditLines(
                                             !selectedDrawnShape.data.reverse,
                                             'reverse',
                                         );
                                     }}
-                                    id='is_reverse_visible'
-                                    aria-label={'aria-label'}
-                                />
+                                >
+                                    <StyledCheckbox
+                                        checked={
+                                            selectedDrawnShape.data.reverse
+                                        }
+                                        disabled={false}
+                                    >
+                                        <Icon viewBox='0 0 24 24'>
+                                            <polyline points='20 6 9 17 4 12' />
+                                        </Icon>
+                                    </StyledCheckbox>
+                                </CheckboxContainer>
                                 <StyledLabel>Reverse</StyledLabel>
                             </ExtendSettings>
                         </FibLineSettings>
