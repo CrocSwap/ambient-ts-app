@@ -86,6 +86,8 @@ const decorateUserPositions = async ({
     cachedTokenDetails: FetchContractDetailsFn;
     cachedEnsResolve: FetchAddrFn;
 }) => {
+    console.log('TOKEN UNIV');
+    console.log(tokenUniv);
     const skipENSFetch = true;
     if (urlTarget == 'limit_order_states') {
         return await Promise.all(
