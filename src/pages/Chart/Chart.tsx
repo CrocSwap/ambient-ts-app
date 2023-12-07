@@ -155,6 +155,7 @@ interface propsIF {
     drawActionStack: Map<actionKeyIF, drawDataHistory[]>;
     undoStack: Map<actionKeyIF, drawDataHistory[]>;
     deleteAllShapes: () => void;
+    actionKey: actionKeyIF;
 }
 
 export default function Chart(props: propsIF) {
@@ -189,6 +190,7 @@ export default function Chart(props: propsIF) {
         drawActionStack,
         undoStack,
         deleteAllShapes,
+        actionKey,
     } = props;
 
     const {
@@ -5115,6 +5117,12 @@ export default function Chart(props: propsIF) {
                             deleteAllShapes={deleteAllShapes}
                             chartHeights={chartHeights}
                             d3ContainerHeight={d3ContainerHeight}
+                            undo={undo}
+                            redo={redo}
+                            undoStack={undoStack}
+                            drawActionStack={drawActionStack}
+                            actionKey={actionKey}
+                            setSelectedDrawnShape={setSelectedDrawnShape}
                         />
 
                         <CandleChart

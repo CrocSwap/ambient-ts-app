@@ -27,6 +27,8 @@
 .icon_card {
     flex-direction: row-reverse;
     display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .icon_active_container,
@@ -121,6 +123,7 @@
     gap: 10px;
 }
 
+.undo_redo_button_active:hover
 .icon_active_container:hover {
     background: #242f3f;
 }
@@ -178,4 +181,29 @@
 .arrow_left {
     margin-left: 0px;
     transform: rotate(225deg);
+}
+
+.undo_redo_button_active {
+    margin-bottom: 10px;
+    display: flex;
+    width: Fixed (24px);
+    height: Fixed (24px);
+    padding: 2px;
+    border-radius: 4px;
+    gap: 10px;
+    cursor: pointer;
+
+    filter: invert(39%) sepia(27%) saturate(240%) hue-rotate(171deg) brightness(100%) contrast(82%);
+}
+
+.undo_redo_button_passive {
+    margin-bottom: 10px;
+    display: flex;
+    width: Fixed (24px);
+    height: Fixed (24px);
+    padding: 2px;
+    border-radius: 4px;
+    gap: 10px;
+
+    filter: invert(39%) sepia(27%) saturate(240%) hue-rotate(171deg) brightness(30%) contrast(82%);
 }
