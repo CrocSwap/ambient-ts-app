@@ -120,21 +120,19 @@ export default function Transactions2(props: propsIF) {
             adjustColumnization,
         );
         containerRef.current && resizeObserver.observe(containerRef.current);
-
         // cleanup the observer from the DOM when component dismounts
         return () => {
             resizeObserver.disconnect();
         };
     }, []);
 
-    // array of row elements to render in the DOM, the base underlying data used for generation
-    // ... is updated frequently but this memoization on recalculates if other items change
-
     const [openMenuRow, setOpenMenuRow] = useState<string | null>(null);
 
     const handleMenuToggle = (rowId: string) => {
         setOpenMenuRow((prevRowId) => (prevRowId === rowId ? null : rowId));
     };
+    // array of row elements to render in the DOM, the base underlying data used for generation
+    // ... is updated frequently but this memoization on recalculates if other items change
 
     const transactionRows = useMemo<JSX.Element[]>(
         () =>
@@ -149,7 +147,7 @@ export default function Transactions2(props: propsIF) {
                     hideMenu={() => handleMenuToggle('')}
                 />
             )),
-        [columnsToRender.current.length, openMenuRow],
+        [columnsToRender.current.length, openMenuRow, transactionsData.length],
     );
 
     return (

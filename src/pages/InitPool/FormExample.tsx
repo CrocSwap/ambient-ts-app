@@ -193,6 +193,7 @@ export default function ExampleForm() {
                         tokenA: false,
                         tokenB: false,
                     }}
+                    amountToReduceNativeTokenQty={0}
                 />
             </FlexContainer>
         );
