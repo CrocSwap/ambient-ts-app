@@ -71,7 +71,7 @@ const OptionsTab = styled.div`
     background: #242f3f;
     margin-top: 4px;
     border-radius: 3px;
-    box-shadow: 4px 4px 6px #0d1117;
+    box-shadow: 0px 2px 3px 2px #0d1117;
     align-items: end;
 
     margin: 4px;
@@ -93,13 +93,17 @@ const ColorPickerTab = styled.div`
     justify-content: center;
 `;
 
-const OptionsTabSize = styled.div`
-    background: #242f3f;
+const OptionsTabSize = styled.div<{
+    backgroundColor: string | undefined;
+}>`
     align-items: center;
     justify-content: center;
     cursor: pointer;
 
-    font-size: var(--body-size);
+    background: ${({ backgroundColor }) =>
+        backgroundColor ? backgroundColor : 'transparent'};
+
+    font-size: var(--body-lh);
     line-height: var(--body-lh);
     color: var(--text2);
     outline: none;
@@ -115,11 +119,18 @@ const OptionsTabSize = styled.div`
         background: #434c58;
     }
 `;
-const OptionsTabStyle = styled.div`
-    background: #242f3f;
+const OptionsTabStyle = styled.div<{
+    backgroundColor: string | undefined;
+}>`
+    background: ${({ backgroundColor }) =>
+        backgroundColor ? backgroundColor : 'transparent'};
+
     align-items: center;
     justify-content: start;
     cursor: pointer;
+
+    font-size: var(--body-lh);
+    line-height: var(--body-lh);
 
     padding: 4px;
     gap: 12px;

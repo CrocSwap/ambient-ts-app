@@ -513,6 +513,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
             }}
         >
             <OptionsTabSize
+                backgroundColor={undefined}
                 style={{ justifyContent: 'start' }}
                 onClick={() => setDefaultOptions()}
             >
@@ -689,6 +690,16 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 >
                     {sizeOptions.map((item, index) => (
                         <OptionsTabSize
+                            backgroundColor={
+                                item.value ===
+                                (!['Rect'].includes(
+                                    selectedDrawnShape?.data.type,
+                                )
+                                    ? selectedDrawnShape.data.line.lineWidth
+                                    : selectedDrawnShape.data.border.lineWidth)
+                                    ? '#434c58'
+                                    : undefined
+                            }
                             key={index}
                             onClick={() =>
                                 handleEditSize(
@@ -716,6 +727,16 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 >
                     {styleOptions.map((item, index) => (
                         <OptionsTabStyle
+                            backgroundColor={
+                                item.value[0] ===
+                                (!['Rect'].includes(
+                                    selectedDrawnShape?.data.type,
+                                )
+                                    ? selectedDrawnShape.data.line.dash[0]
+                                    : selectedDrawnShape.data.border.dash[0])
+                                    ? '#434c58'
+                                    : undefined
+                            }
                             key={index}
                             onClick={() =>
                                 handleEditStyle(
