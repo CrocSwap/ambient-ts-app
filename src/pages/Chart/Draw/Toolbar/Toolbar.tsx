@@ -226,6 +226,7 @@ function Toolbar(props: ToolbarProps) {
             id='toolbar_container'
             ref={toolbarRef}
             onMouseLeave={handleMouseLeave}
+            onMouseMove={handleMouseMove}
         >
             <div
                 className={` ${
@@ -236,7 +237,6 @@ function Toolbar(props: ToolbarProps) {
                     className={styles.scrollableDiv}
                     ref={scrollContainerRef}
                     onWheel={handleWheel}
-                    onMouseMove={handleMouseMove}
                     style={{
                         height: mobileView ? 'auto' : chartHeights - 10 + 'px',
                     }}
