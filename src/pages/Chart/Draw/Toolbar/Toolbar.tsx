@@ -48,6 +48,14 @@ interface IconList {
     label: string;
 }
 
+interface undoRedoButtonList {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    icon: any;
+    label: string;
+    operation: () => void;
+    stack: Map<actionKeyIF, drawDataHistory[]>;
+}
+
 function Toolbar(props: ToolbarProps) {
     const {
         activeDrawingType,
@@ -157,7 +165,7 @@ function Toolbar(props: ToolbarProps) {
         },
     ];
 
-    const undoRedoButtons: any[] = [
+    const undoRedoButtons: undoRedoButtonList[] = [
         {
             icon: undoIcon,
             label: 'undo',
@@ -261,13 +269,6 @@ function Toolbar(props: ToolbarProps) {
         }
     };
 
-    useEffect(() => {
-        if (actionKey) {
-            console.log(undoStack.has(actionKey));
-            console.log(undoStack, drawActionStack);
-        }
-    }, [actionKey, undoStack, drawActionStack]);
-
     return (
         <div
             className={` ${
@@ -345,7 +346,12 @@ function Toolbar(props: ToolbarProps) {
                                         }}
                                         className={
                                             item.stack.has(actionKey) &&
-                                            item.stack.get(actionKey).length > 0
+                                            item.stack.get(actionKey)
+                                                ?.length !== undefined &&
+                                            Number(
+                                                item.stack.get(actionKey)
+                                                    ?.length,
+                                            ) > 0
                                                 ? styles.undo_redo_button_active
                                                 : styles.undo_redo_button_passive
                                         }
@@ -353,7 +359,11 @@ function Toolbar(props: ToolbarProps) {
                                             if (
                                                 item.stack.has(actionKey) &&
                                                 item.stack.get(actionKey)
-                                                    .length > 0
+                                                    ?.length !== undefined &&
+                                                Number(
+                                                    item.stack.get(actionKey)
+                                                        ?.length,
+                                                ) > 0
                                             ) {
                                                 setSelectedDrawnShape(
                                                     undefined,
