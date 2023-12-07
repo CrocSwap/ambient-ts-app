@@ -137,6 +137,7 @@ function TradeCandleStickChart(props: propsIF) {
         drawActionStack,
         undoStack,
         deleteAllShapes,
+        actionKey,
     } = useUndoRedo(denominationsInBase, isTokenABase);
 
     const poolPriceDisplay = poolPriceWithoutDenom
@@ -852,6 +853,7 @@ function TradeCandleStickChart(props: propsIF) {
                         drawActionStack={drawActionStack}
                         undoStack={undoStack}
                         deleteAllShapes={deleteAllShapes}
+                        actionKey={actionKey}
                     />
                 ) : (
                     <Spinner size={100} bg='var(--dark2)' centered />

@@ -10,9 +10,15 @@ import fibRetracement from '../../../../assets/images/icons/draw/fibonacci_retra
 import magnet from '../../../../assets/images/icons/draw/snap.svg';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import trashIcon from '../../../../assets/images/icons/draw/delete.svg';
-import { drawDataHistory } from '../../ChartUtils/chartUtils';
+import undoIcon from '../../../../assets/images/icons/draw/undo.svg';
+import redoIcon from '../../../../assets/images/icons/draw/redo.svg';
+import {
+    drawDataHistory,
+    selectedDrawnData,
+} from '../../ChartUtils/chartUtils';
 import { ArrowContainer } from '../../../../styled/Components/Chart';
 import { useMediaQuery } from '@material-ui/core';
+import { actionKeyIF } from '../../ChartUtils/useUndoRedo';
 
 interface ToolbarProps {
     activeDrawingType: string;
@@ -26,6 +32,14 @@ interface ToolbarProps {
     deleteAllShapes: () => void;
     chartHeights: number;
     d3ContainerHeight: number;
+    undo: () => void;
+    redo: () => void;
+    undoStack: Map<actionKeyIF, drawDataHistory[]>;
+    drawActionStack: Map<actionKeyIF, drawDataHistory[]>;
+    actionKey: actionKeyIF;
+    setSelectedDrawnShape: React.Dispatch<
+        React.SetStateAction<selectedDrawnData | undefined>
+    >;
 }
 
 interface IconList {
@@ -44,6 +58,12 @@ function Toolbar(props: ToolbarProps) {
         deleteAllShapes,
         chartHeights,
         d3ContainerHeight,
+        undo,
+        redo,
+        undoStack,
+        drawActionStack,
+        actionKey,
+        setSelectedDrawnShape,
     } = props;
 
     const mobileView = useMediaQuery('(max-width: 600px)');
@@ -137,6 +157,21 @@ function Toolbar(props: ToolbarProps) {
         },
     ];
 
+    const undoRedoButtons: any[] = [
+        {
+            icon: undoIcon,
+            label: 'undo',
+            operation: undo,
+            stack: drawActionStack,
+        },
+        {
+            icon: redoIcon,
+            label: 'redo',
+            operation: redo,
+            stack: undoStack,
+        },
+    ];
+
     function handleActivateIndicator(item: IconList) {
         if (item.label === 'magnet') {
             setIsMagnetActive({ value: !isMagnetActive.value });
@@ -225,6 +260,14 @@ function Toolbar(props: ToolbarProps) {
             handleScroll('down');
         }
     };
+
+    useEffect(() => {
+        if (actionKey) {
+            console.log(undoStack.has(actionKey));
+            console.log(undoStack, drawActionStack);
+        }
+    }, [actionKey, undoStack, drawActionStack]);
+
     return (
         <div
             className={` ${
@@ -287,6 +330,37 @@ function Toolbar(props: ToolbarProps) {
                                         onClick={() =>
                                             handleActivateIndicator(item)
                                         }
+                                    >
+                                        <img src={item.icon} alt='' />
+                                    </div>
+                                </div>
+                            ))}
+
+                            {undoRedoButtons.map((item, index) => (
+                                <div key={index} className={styles.icon_card}>
+                                    <div
+                                        style={{
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                        }}
+                                        className={
+                                            item.stack.has(actionKey) &&
+                                            item.stack.get(actionKey).length > 0
+                                                ? styles.undo_redo_button_active
+                                                : styles.undo_redo_button_passive
+                                        }
+                                        onClick={() => {
+                                            if (
+                                                item.stack.has(actionKey) &&
+                                                item.stack.get(actionKey)
+                                                    .length > 0
+                                            ) {
+                                                setSelectedDrawnShape(
+                                                    undefined,
+                                                );
+                                                item.operation();
+                                            }
+                                        }}
                                     >
                                         <img src={item.icon} alt='' />
                                     </div>
