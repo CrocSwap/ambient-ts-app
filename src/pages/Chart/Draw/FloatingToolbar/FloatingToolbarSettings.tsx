@@ -591,6 +591,14 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                 {placementOptions.map(
                                                     (item, index) => (
                                                         <ListItem
+                                                            backgroundColor={
+                                                                item.value ===
+                                                                selectedDrawnShape
+                                                                    .data
+                                                                    .labelPlacement
+                                                                    ? '#434c58'
+                                                                    : undefined
+                                                            }
                                                             key={index}
                                                             onClick={() =>
                                                                 handleEditLabel(
@@ -625,6 +633,14 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                 {alignmentOptions.map(
                                                     (item, index) => (
                                                         <ListItem
+                                                            backgroundColor={
+                                                                item.value ===
+                                                                selectedDrawnShape
+                                                                    .data
+                                                                    .labelAlignment
+                                                                    ? '#434c58'
+                                                                    : undefined
+                                                            }
                                                             key={index}
                                                             onClick={() =>
                                                                 handleEditLabel(
@@ -683,57 +699,78 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                 </ColorPickerTab>
             )}
 
-            {(isLineSizeOptionTabActive || isBorderSizeOptionTabActive) && (
-                <OptionsTab
-                    style={{
-                        marginLeft: '70px',
-                        position: 'absolute',
-                        top: (isLineSizeOptionTabActive ? 65 : 95) + 'px',
-                        left: '80px',
-                    }}
-                >
-                    {sizeOptions.map((item, index) => (
-                        <OptionsTabSize
-                            key={index}
-                            onClick={() =>
-                                handleEditSize(
-                                    item.value,
-                                    isLineSizeOptionTabActive,
-                                    isBorderSizeOptionTabActive,
-                                )
-                            }
-                        >
-                            {item.icon} {item.name}
-                        </OptionsTabSize>
-                    ))}
-                </OptionsTab>
-            )}
+            {selectedDrawnShape &&
+                (isLineSizeOptionTabActive || isBorderSizeOptionTabActive) && (
+                    <OptionsTab
+                        style={{
+                            marginLeft: '70px',
+                            position: 'absolute',
+                            top: (isLineSizeOptionTabActive ? 65 : 95) + 'px',
+                            left: '80px',
+                        }}
+                    >
+                        {sizeOptions.map((item, index) => (
+                            <OptionsTabSize
+                                backgroundColor={
+                                    item.value ===
+                                    (isLineSizeOptionTabActive
+                                        ? selectedDrawnShape.data.line.lineWidth
+                                        : selectedDrawnShape.data.border
+                                              .lineWidth)
+                                        ? '#434c58'
+                                        : undefined
+                                }
+                                key={index}
+                                onClick={() =>
+                                    handleEditSize(
+                                        item.value,
+                                        isLineSizeOptionTabActive,
+                                        isBorderSizeOptionTabActive,
+                                    )
+                                }
+                            >
+                                {item.icon} {item.name}
+                            </OptionsTabSize>
+                        ))}
+                    </OptionsTab>
+                )}
 
-            {(isLineStyleOptionTabActive || isBorderStyleOptionTabActive) && (
-                <OptionsTab
-                    style={{
-                        marginLeft: '70px',
-                        position: 'absolute',
-                        top: (isLineStyleOptionTabActive ? 65 : 95) + 'px',
-                        left: '130px',
-                    }}
-                >
-                    {styleOptions.map((item, index) => (
-                        <OptionsTabStyle
-                            key={index}
-                            onClick={() =>
-                                handleEditStyle(
-                                    item.value,
-                                    isLineStyleOptionTabActive,
-                                    isBorderStyleOptionTabActive,
-                                )
-                            }
-                        >
-                            {item.icon} {item.name}
-                        </OptionsTabStyle>
-                    ))}
-                </OptionsTab>
-            )}
+            {selectedDrawnShape &&
+                (isLineStyleOptionTabActive ||
+                    isBorderStyleOptionTabActive) && (
+                    <OptionsTab
+                        style={{
+                            marginLeft: '70px',
+                            position: 'absolute',
+                            top: (isLineStyleOptionTabActive ? 65 : 95) + 'px',
+                            left: '130px',
+                        }}
+                    >
+                        {styleOptions.map((item, index) => (
+                            <OptionsTabStyle
+                                backgroundColor={
+                                    item.value[0] ===
+                                    (isLineStyleOptionTabActive
+                                        ? selectedDrawnShape.data.line.dash[0]
+                                        : selectedDrawnShape.data.border
+                                              .dash[0])
+                                        ? '#434c58'
+                                        : undefined
+                                }
+                                key={index}
+                                onClick={() =>
+                                    handleEditStyle(
+                                        item.value,
+                                        isLineStyleOptionTabActive,
+                                        isBorderStyleOptionTabActive,
+                                    )
+                                }
+                            >
+                                {item.icon} {item.name}
+                            </OptionsTabStyle>
+                        ))}
+                    </OptionsTab>
+                )}
         </>
     );
 }

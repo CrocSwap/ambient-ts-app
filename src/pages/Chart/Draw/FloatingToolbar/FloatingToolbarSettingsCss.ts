@@ -187,13 +187,13 @@ const DropDownContainer = styled.div`
 
 const DropDownHeader = styled.div`
     padding: 4px;
-    box-shadow: 0 3px 4px rgba(0, 0, 0, 0.7);
+    box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.7);
 
     border-radius: 3px;
 
     font-size: 13px;
-    color: var(--dark4);
-    background: var(--text1);
+    color: rgba(204, 204, 204);
+    background: #2f3d52;
 
     align-items: center;
     justify-content: center;
@@ -203,7 +203,6 @@ const DropDownHeader = styled.div`
     width: 65px;
 
     &:hover {
-        color: var(--text1);
         background: var(--dark4);
     }
 `;
@@ -234,8 +233,13 @@ const DropDownList = styled.ul`
     cursor: pointer;
 `;
 
-const ListItem = styled.ul`
+const ListItem = styled.ul<{
+    backgroundColor: string | undefined;
+}>`
     padding: 5px 10px 5px 10px;
+
+    background: ${({ backgroundColor }) =>
+        backgroundColor ? backgroundColor : 'transparent'};
 
     &:hover {
         background: #434c58;
