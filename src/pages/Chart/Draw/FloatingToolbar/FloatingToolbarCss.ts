@@ -71,7 +71,7 @@ const OptionsTab = styled.div`
     background: #242f3f;
     margin-top: 4px;
     border-radius: 3px;
-    box-shadow: 4px 4px 6px #0d1117;
+    box-shadow: 0px 2px 3px 2px #0d1117;
     align-items: end;
 
     margin: 4px;
@@ -99,7 +99,7 @@ const OptionsTabSize = styled.div`
     justify-content: center;
     cursor: pointer;
 
-    font-size: var(--body-size);
+    font-size: var(--body-lh);
     line-height: var(--body-lh);
     color: var(--text2);
     outline: none;
@@ -120,6 +120,9 @@ const OptionsTabStyle = styled.div`
     align-items: center;
     justify-content: start;
     cursor: pointer;
+
+    font-size: var(--body-lh);
+    line-height: var(--body-lh);
 
     padding: 4px;
     gap: 12px;

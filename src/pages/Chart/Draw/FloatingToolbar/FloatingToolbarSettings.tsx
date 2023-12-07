@@ -402,7 +402,10 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                     </LineContainer>
                 )}
 
-                <Divider></Divider>
+                {selectedDrawnShape &&
+                    selectedDrawnShape.data.type === 'FibRetracement' && (
+                        <Divider></Divider>
+                    )}
 
                 {selectedDrawnShape &&
                     selectedDrawnShape.data.type === 'FibRetracement' && (
@@ -492,7 +495,10 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                         </FibLineSettings>
                     )}
 
-                <Divider></Divider>
+                {selectedDrawnShape &&
+                    selectedDrawnShape.data.type === 'FibRetracement' && (
+                        <Divider></Divider>
+                    )}
 
                 {selectedDrawnShape &&
                     selectedDrawnShape.data.type === 'FibRetracement' && (
@@ -644,7 +650,18 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
             {(isLineColorPickerTabActive ||
                 isBorderColorPickerTabActive ||
                 isBackgroundColorPickerTabActive) && (
-                <ColorPickerTab>
+                <ColorPickerTab
+                    style={{
+                        position: 'absolute',
+                        top:
+                            (isLineColorPickerTabActive
+                                ? 60
+                                : isBorderColorPickerTabActive
+                                ? 90
+                                : 120) + 'px',
+                        left: '85px',
+                    }}
+                >
                     <SketchPicker
                         color={
                             isLineColorPickerTabActive
@@ -670,6 +687,9 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                 <OptionsTab
                     style={{
                         marginLeft: '70px',
+                        position: 'absolute',
+                        top: (isLineSizeOptionTabActive ? 65 : 95) + 'px',
+                        left: '80px',
                     }}
                 >
                     {sizeOptions.map((item, index) => (
@@ -693,6 +713,9 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                 <OptionsTab
                     style={{
                         marginLeft: '70px',
+                        position: 'absolute',
+                        top: (isLineStyleOptionTabActive ? 65 : 95) + 'px',
+                        left: '130px',
                     }}
                 >
                     {styleOptions.map((item, index) => (

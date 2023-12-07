@@ -192,8 +192,8 @@ const DropDownHeader = styled.div`
     border-radius: 3px;
 
     font-size: 13px;
-    color: rgba(204, 204, 204);
-    background: var(--dark3);
+    color: var(--dark4);
+    background: var(--text1);
 
     align-items: center;
     justify-content: center;
@@ -203,6 +203,7 @@ const DropDownHeader = styled.div`
     width: 65px;
 
     &:hover {
+        color: var(--text1);
         background: var(--dark4);
     }
 `;
