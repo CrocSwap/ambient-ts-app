@@ -23,7 +23,11 @@ import {
 } from '../../../../utils/TransactionError';
 import { BigNumber } from 'ethers';
 import {
+    DEFAULT_MAINNET_GAS_PRICE_IN_GWEI,
+    DEFAULT_SCROLL_GAS_PRICE_IN_GWEI,
     IS_LOCAL_ENV,
+    NUM_WEI_IN_GWEI,
+    DEPOSIT_BUFFER_MULTIPLIER,
     ZERO_ADDRESS,
 } from '../../../../ambient-utils/constants';
 import { FaGasPump } from 'react-icons/fa';
@@ -81,19 +85,30 @@ export default function Deposit(props: propsIF) {
 
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
-    const amountToReduceEthMainnet = BigNumber.from(50).mul('100000000000000'); // .005 ETH
-    const amountToReduceEthScroll = BigNumber.from(5).mul('100000000000000'); // .0005 ETH
+    const amountToReduceNativeTokenQtyMainnet = BigNumber.from(
+        Math.ceil(gasPriceInGwei || DEFAULT_MAINNET_GAS_PRICE_IN_GWEI),
+    )
+        .mul(BigNumber.from(NUM_WEI_IN_GWEI))
+        .mul(BigNumber.from(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE))
+        .mul(BigNumber.from(DEPOSIT_BUFFER_MULTIPLIER));
 
-    const amountToReduceEth =
+    const amountToReduceNativeTokenQtyScroll = BigNumber.from(
+        Math.ceil(gasPriceInGwei || DEFAULT_SCROLL_GAS_PRICE_IN_GWEI),
+    )
+        .mul(BigNumber.from(NUM_WEI_IN_GWEI))
+        .mul(BigNumber.from(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE))
+        .mul(BigNumber.from(DEPOSIT_BUFFER_MULTIPLIER));
+
+    const amountToReduceNativeTokenQty =
         chainId === '0x82750' || chainId === '0x8274f'
-            ? amountToReduceEthScroll
-            : amountToReduceEthMainnet;
+            ? amountToReduceNativeTokenQtyScroll
+            : amountToReduceNativeTokenQtyMainnet;
 
     const tokenWalletBalanceAdjustedNonDisplayString =
         isTokenEth && !!tokenWalletBalance
             ? BigNumber.from(tokenWalletBalance)
 
-                  .sub(amountToReduceEth)
+                  .sub(amountToReduceNativeTokenQty)
                   .toString()
             : tokenWalletBalance;
 
@@ -151,10 +166,16 @@ export default function Deposit(props: propsIF) {
         }
         return tokenWalletBalance
             ? BigNumber.from(tokenWalletBalance).gte(
-                  amountToReduceEth.add(BigNumber.from(depositQtyNonDisplay)),
+                  amountToReduceNativeTokenQty.add(
+                      BigNumber.from(depositQtyNonDisplay),
+                  ),
               )
             : false;
-    }, [tokenWalletBalance, amountToReduceEth, depositQtyNonDisplay]);
+    }, [
+        tokenWalletBalance,
+        amountToReduceNativeTokenQty,
+        depositQtyNonDisplay,
+    ]);
 
     const isWalletBalanceSufficientToCoverDeposit = useMemo(
         () =>
@@ -385,7 +406,7 @@ export default function Deposit(props: propsIF) {
                         </MaxButton>
                     )}
                 </FlexContainer>
-                {chainId === '0x1' && (
+                {
                     <FlexContainer
                         alignItems='center'
                         justifyContent='flex-end'
@@ -399,7 +420,7 @@ export default function Deposit(props: propsIF) {
                             ? depositGasPriceinDollars
                             : '…'}
                     </FlexContainer>
-                )}
+                }
             </FlexContainer>
             <Button
                 idForDOM='deposit_tokens_button'
