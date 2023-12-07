@@ -37,7 +37,7 @@ const fetchUserPositions = async ({
     const userLimitOrderStatesCacheEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/user_limit_orders?'
         : gcUrl + '/user_limit_orders?';
-    console.log({ userPositionsCacheEndpoint });
+
     let selectedEndpoint;
     if (urlTarget == 'limit_order_states') {
         selectedEndpoint = userLimitOrderStatesCacheEndpoint;
@@ -45,7 +45,6 @@ const fetchUserPositions = async ({
         // default to 'user_positions'
         selectedEndpoint = userPositionsCacheEndpoint;
     }
-    console.log('Sending ' + selectedEndpoint);
     const res = await fetch(
         selectedEndpoint +
             new URLSearchParams({
@@ -57,7 +56,6 @@ const fetchUserPositions = async ({
                 addValue: addValue.toString(),
             }),
     );
-    console.log(res);
     return res;
 };
 
@@ -86,8 +84,6 @@ const decorateUserPositions = async ({
     cachedTokenDetails: FetchContractDetailsFn;
     cachedEnsResolve: FetchAddrFn;
 }) => {
-    console.log('TOKEN UNIV');
-    console.log(tokenUniv);
     const skipENSFetch = true;
     if (urlTarget == 'limit_order_states') {
         return await Promise.all(
@@ -168,8 +164,6 @@ const fetchDecorated = async ({
     cachedTokenDetails: FetchContractDetailsFn;
     cachedEnsResolve: FetchAddrFn;
 }): Promise<PositionIF[] | LimitOrderIF[]> => {
-    console.log('data looking for user positions');
-    user = '0xfd3fa9d94eeb4e9889e60e37d0f1fe24ec59f7e1';
     const response = await fetchUserPositions({
         urlTarget,
         user,
@@ -180,10 +174,8 @@ const fetchDecorated = async ({
         omitKnockout,
         addValue,
     });
-    console.log('data layer got user positions');
     const json = await response?.json();
-    console.log('data layer ran');
-    console.log({ json });
+
     const userPositions = json?.data;
     if (userPositions && crocEnv) {
         const updatedPositions = await decorateUserPositions({

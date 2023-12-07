@@ -1,5 +1,4 @@
 export async function fetchBlockNumber(nodeUrl: string): Promise<number> {
-    console.log(nodeUrl);
     const blockNum = await fetch(nodeUrl, {
         method: 'POST',
         headers: {
