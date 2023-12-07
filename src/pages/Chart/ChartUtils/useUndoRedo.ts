@@ -334,6 +334,11 @@ export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
                     line: structuredClone(lastActionData.line),
                     background: structuredClone(lastActionData.background),
                     extraData: structuredClone(lastActionData.extraData),
+                    extendLeft: lastActionData.extendLeft,
+                    extendRight: lastActionData.extendRight,
+                    labelPlacement: lastActionData.labelPlacement,
+                    labelAlignment: lastActionData.labelAlignment,
+                    reverse: lastActionData.reverse,
                 } as drawDataHistory;
             }
 
@@ -404,6 +409,11 @@ export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
                             line: structuredClone(obj.line),
                             background: structuredClone(obj.background),
                             extraData: structuredClone(obj.extraData),
+                            extendLeft: obj.extendLeft,
+                            extendRight: obj.extendRight,
+                            labelPlacement: obj.labelPlacement,
+                            labelAlignment: obj.labelAlignment,
+                            reverse: obj.reverse,
                         } as drawDataHistory;
 
                         actionArray.push(tempData);
@@ -485,6 +495,11 @@ export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
                 line: structuredClone(action.line),
                 background: structuredClone(action.background),
                 extraData: structuredClone(action.extraData),
+                extendLeft: action.extendLeft,
+                extendRight: action.extendRight,
+                labelPlacement: action.labelPlacement,
+                labelAlignment: action.labelAlignment,
+                reverse: action.reverse,
             } as drawDataHistory;
 
             if (
