@@ -46,8 +46,11 @@
     },
     "scripts": {
         "start": "node -v | grep -q \"v16\" && yarn run start:regular || yarn run start:legacy",
-        "start:legacy": "yarn && react-scripts --openssl-legacy-provider start",
-        "start:regular": "yarn && react-scripts start",
+        "start:legacy": "yarn && yarn run start-only:legacy",
+        "start:regular": "yarn && yarn run start-only:regular",
+        "start-only": "node -v | grep -q \"v16\" && yarn run start-only:regular || yarn run start-only:legacy",
+        "start-only:legacy": "react-scripts --openssl-legacy-provider start",
+        "start-only:regular": "react-scripts start",
         "build": "node -v | grep -q \"v16\" && yarn run build:regular || yarn run build:legacy",
         "build:legacy": "react-scripts --openssl-legacy-provider --max_old_space_size=4096 build",
         "build:regular": "react-scripts --max_old_space_size=4096 build",
@@ -98,7 +101,7 @@
     },
     "jest": {
         "transformIgnorePatterns": [
-            "/node_modules/(?!d3|d3-array|internmap|delaunator|robust-predicates|wagmi|@wagmi)"
+            "/node_modules/(?!d3|d3-array|internmap|delaunator|robust-predicates|wagmi|@wagmi|modern-screenshot)"
         ]
     }
 }
