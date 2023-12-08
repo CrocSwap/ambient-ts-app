@@ -1,6 +1,5 @@
 /* eslint-disable camelcase */
 /* eslint-disable @typescript-eslint/no-explicit-any  */
-// ^ ...(JG) (╯°□°)╯︵ ┻━┻
 import {
     ANALYTICS_URL,
     BATCH_ENS_CACHE_EXPIRY,
@@ -14,13 +13,6 @@ import {
 } from '../types';
 import { fetchTimeout } from './fetchTimeout';
 
-// [x] TODO - Test, to make sure if we spam the batch interface, it can use the nonce value to prevent duplicate requests
-// [x] TODO - Test, make sure old requests are cleaned out via the manage function
-// [?] TODO - Test sending invalid requests. Analytics server should be able to handle a mix of poortly formatted requests along side well formatted requests
-// [x] TODO - Harden the response parser with typing. Ensure it makes a best effort to process the valid responses, and does not let a bad response ruin the batch
-// [x] TODO - Add in Timeout support, so individual requests can expire and not block the whole app.
-// [x] TODO: Add ability to timeout individual requests
-// [ ] TODO: Add in exponential backoff for failed requests
 class AnalyticsBatchRequestManager {
     static pendingRequests: Record<
         string,
@@ -228,7 +220,7 @@ export async function fetchBatch<K extends keyof RequestResponseMap>(
         expiry,
     });
 }
-
+// TODO - move to a test in ambient-utils
 export async function testBatchSystem() {
     // Combined request and expected response data
     const testData = [
