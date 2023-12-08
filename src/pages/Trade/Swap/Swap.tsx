@@ -517,6 +517,8 @@ function Swap(props: propsIF) {
         }
     }, [isTransactionApproved, isTransactionPending, isTransactionConfirmed]);
 
+    const [showExtraInfo, setShowExtraInfo] = useState<boolean>(false);
+
     return (
         <TradeModuleSkeleton
             activeContent={activeContent}
@@ -524,6 +526,8 @@ function Swap(props: propsIF) {
             handleSetActiveContent={handleSetActiveContent}
             chainId={chainId}
             isSwapPage={!isOnTradeRoute}
+            moduleName='Swap'
+            showExtraInfo={showExtraInfo}
             header={
                 <TradeModuleHeader
                     slippage={swapSlippage}
@@ -573,6 +577,8 @@ function Swap(props: propsIF) {
                     liquidityProviderFeeString={liquidityProviderFeeString}
                     swapGasPriceinDollars={swapGasPriceinDollars}
                     showExtraInfoDropdown={primaryQuantity !== ''}
+                    showExtraInfo={showExtraInfo}
+                    setShowExtraInfo={setShowExtraInfo}
                 />
             }
             modal={

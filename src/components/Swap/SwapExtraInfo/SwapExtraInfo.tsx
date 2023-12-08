@@ -16,6 +16,8 @@ interface propsIF {
     isOnTradeRoute?: boolean;
     effectivePriceWithDenom: number | undefined;
     showExtraInfoDropdown: boolean;
+    showExtraInfo: boolean;
+    setShowExtraInfo: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function SwapExtraInfo(props: propsIF) {
@@ -26,6 +28,8 @@ function SwapExtraInfo(props: propsIF) {
         liquidityProviderFeeString,
         swapGasPriceinDollars,
         showExtraInfoDropdown,
+        showExtraInfo,
+        setShowExtraInfo,
     } = props;
 
     const { poolPriceDisplay } = useContext(PoolContext);
@@ -110,6 +114,8 @@ function SwapExtraInfo(props: propsIF) {
             conversionRate={conversionRate}
             gasPrice={swapGasPriceinDollars}
             showDropdown={showExtraInfoDropdown}
+            showExtraInfo={showExtraInfo}
+            setShowExtraInfo={setShowExtraInfo}
         />
     );
 }

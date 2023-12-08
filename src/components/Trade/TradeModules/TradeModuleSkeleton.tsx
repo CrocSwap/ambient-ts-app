@@ -21,7 +21,9 @@ import ShareModal from '../../Global/ShareModal/ShareModal';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-
+type ModuleDimensions = {
+    [key: string]: { height: string; width: string };
+};
 interface PropsIF {
     chainId: string;
     header: ReactNode;
@@ -40,6 +42,8 @@ interface PropsIF {
     activeContent: string;
     setActiveContent: (key: string) => void;
     handleSetActiveContent: (newActiveContent: string) => void;
+    moduleName: string;
+    showExtraInfo: boolean;
 }
 
 export const TradeModuleSkeleton = (props: PropsIF) => {
@@ -58,6 +62,8 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         tutorialSteps,
         activeContent,
         handleSetActiveContent,
+        moduleName,
+        showExtraInfo,
     } = props;
 
     const {
@@ -108,9 +114,25 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         '<span style="color: var(--negative); text-transform: uppercase;">$1</span>',
     );
     const smallScreen = useMediaQuery('(max-width: 500px)');
+    const mediumScreen = useMediaQuery('(max-width: 680px)');
+
+    const moduleDimensions: ModuleDimensions = {
+        Swap: {
+            height: showExtraInfo ? 'auto' : 'auto',
+            width: 'auto',
+        },
+        Limit: {
+            height: showExtraInfo ? 'auto' : 'auto',
+            width: 'auto',
+        },
+        Range: {
+            height: showExtraInfo ? 'auto' : 'auto',
+            width: 'auto',
+        },
+    };
 
     const mainContent = (
-        <section>
+        <>
             {isTutorialActive && (
                 <FlexContainer
                     fullWidth
@@ -126,6 +148,20 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
             <ContentContainer
                 isOnTradeRoute={!isSwapPage}
                 noPadding={smallScreen && !isSwapPage}
+                height={
+                    isSwapPage
+                        ? mediumScreen || showExtraInfo
+                            ? 'auto'
+                            : '534px'
+                        : moduleDimensions[moduleName]?.height
+                }
+                width={
+                    isSwapPage
+                        ? mediumScreen
+                            ? 'auto'
+                            : '430px'
+                        : moduleDimensions[moduleName]?.width
+                }
             >
                 {header}
                 {isSwapPage || (
@@ -145,12 +181,21 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                 </motion.div>
                 {inputOptions && inputOptions}
                 <FlexContainer
+                    margin='8px 0 0 0'
+                    padding='0 32px'
+                    flexDirection='column'
+                    gap={8}
+                >
+                    {transactionDetails}
+                </FlexContainer>
+                <FlexContainer
                     flexDirection='column'
                     gap={8}
                     margin='8px 0 0 0'
                     padding='0 32px'
+                    style={{ marginTop: 'auto' }}
                 >
-                    {transactionDetails}
+                    {warnings && warnings}
                     {isUserConnected === undefined ? null : isUserConnected ===
                       true ? (
                         approveButton ? (
@@ -218,7 +263,6 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                             flat
                         />
                     )}
-                    {warnings && warnings}
                 </FlexContainer>
             </ContentContainer>
             <TutorialOverlay
@@ -226,18 +270,50 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                 setIsTutorialEnabled={setIsTutorialEnabled}
                 steps={tutorialSteps}
             />
-        </section>
+        </>
     );
 
     const confirmationContent = (
-        <ContentContainer isOnTradeRoute={!isSwapPage}>
+        <ContentContainer
+            isOnTradeRoute={!isSwapPage}
+            height={
+                isSwapPage
+                    ? mediumScreen
+                        ? 'auto'
+                        : '534px'
+                    : moduleDimensions[moduleName]?.height
+            }
+            width={
+                isSwapPage
+                    ? mediumScreen
+                        ? 'auto'
+                        : '430px'
+                    : moduleDimensions[moduleName]?.width
+            }
+        >
             {header}
             {modal}
         </ContentContainer>
     );
 
     const shareContent = (
-        <ContentContainer isOnTradeRoute={!isSwapPage}>
+        <ContentContainer
+            isOnTradeRoute={!isSwapPage}
+            height={
+                isSwapPage
+                    ? mediumScreen
+                        ? 'auto'
+                        : '534px'
+                    : moduleDimensions[moduleName]?.height
+            }
+            width={
+                isSwapPage
+                    ? mediumScreen
+                        ? 'auto'
+                        : '430px'
+                    : moduleDimensions[moduleName]?.width
+            }
+        >
             {header}
             <ShareModal />
         </ContentContainer>

@@ -88,13 +88,12 @@ export default function TransactionSubmitted(props: PropsIF) {
                     </div>
                 )}
             </div>
-            <FlexContainer
-                justifyContent='center'
-                gap={8}
-                alignItems='center'
-                style={{ marginBottom: '15px' }}
-            >
-                <Text color='text1' fontSize='header2'>
+            <FlexContainer flexDirection='column' gap={16}>
+                <Text
+                    color='text1'
+                    fontSize='header2'
+                    style={{ textAlign: 'center', width: '100%' }}
+                >
                     {type === 'Limit'
                         ? isConfirmed
                             ? 'Limit Order Success!'
@@ -125,19 +124,26 @@ export default function TransactionSubmitted(props: PropsIF) {
                         ? 'Swap Success!'
                         : 'Successfully Submitted'}
                 </Text>
+
+                <div
+                    className={`${styles.action_buttons} ${
+                        noAnimation && styles.bypass_buttons
+                    }`}
+                >
+                    <FlexContainer
+                        justifyContent='center'
+                        flexDirection='column'
+                        gap={16}
+                        alignItems='center'
+                    >
+                        {txUrlOnBlockExplorer && etherscanButton}
+                        {tokenBSymbol === 'ETH' ||
+                        currentLocation === '/trade/pool'
+                            ? null
+                            : addToMetaMaskButton}
+                    </FlexContainer>
+                </div>
             </FlexContainer>
-            <div
-                className={`${styles.action_buttons} ${
-                    noAnimation && styles.bypass_buttons
-                }`}
-            >
-                <>
-                    {txUrlOnBlockExplorer && etherscanButton}
-                    {tokenBSymbol === 'ETH' || currentLocation === '/trade/pool'
-                        ? null
-                        : addToMetaMaskButton}
-                </>
-            </div>
         </div>
     );
 }

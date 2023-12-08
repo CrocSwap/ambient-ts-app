@@ -229,7 +229,7 @@ export default function SubmitTransaction(props: propsIF) {
     );
 
     const stepperMessage = isTransactionPending ? (
-        <Text color='text2' fontSize='body'>
+        <Text color='text2' fontSize='body' style={{ textAlign: 'center' }}>
             Proceed in your wallet
         </Text>
     ) : isTransactionException ? (
@@ -239,21 +239,24 @@ export default function SubmitTransaction(props: propsIF) {
     ) : isTransactionConfirmed ? (
         transactionSubmitted
     ) : (
-        ''
+        <Text placeholder fontSize='body'>
+            ...
+        </Text>
     );
 
     if (stepperComponent)
         return (
             <FlexContainer
                 flexDirection='column'
-                gap={8}
-                alignItems='center'
+                gap={16}
                 justifyContent='space-between'
+                height='100%'
             >
                 <FlexContainer
                     minHeight='226px'
                     justifyContent='center'
                     alignItems='center'
+                    height='100%'
                 >
                     <StepperComponent
                         orientation='vertical'
@@ -265,8 +268,9 @@ export default function SubmitTransaction(props: propsIF) {
                 </FlexContainer>
                 {stepperTokensDisplay}
                 {stepperMessage}
-
-                {(isError || isTransactionConfirmed) && stepperActionButton}
+                <footer style={{ marginTop: 'auto', padding: '0 32px' }}>
+                    {(isError || isTransactionConfirmed) && stepperActionButton}
+                </footer>
             </FlexContainer>
         );
 

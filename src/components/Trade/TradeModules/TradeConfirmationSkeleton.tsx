@@ -12,7 +12,6 @@ import {
     uriToHttp,
 } from '../../../ambient-utils/dataLayer';
 import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
-import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import SubmitTransaction from './SubmitTransaction/SubmitTransaction';
 import { FlexContainer, Text } from '../../../styled/Common';
@@ -100,6 +99,21 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         abbrevThreshold: 1000000000,
     });
 
+    const svgArrow = (
+        <svg
+            xmlns='http://www.w3.org/2000/svg'
+            width='24'
+            height='15'
+            viewBox='0 0 24 15'
+            fill='none'
+        >
+            <path
+                d='M2.82 -0.000175476L12 9.15982L21.18 -0.000175476L24 2.81982L12 14.8198L0 2.81982L2.82 -0.000175476Z'
+                fill='#7371FC'
+            />
+        </svg>
+    );
+
     const tokenDisplay = (
         <>
             <ConfirmationQuantityContainer>
@@ -126,8 +140,9 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                 fullWidth
                 justifyContent='center'
                 alignItems='center'
+                padding='8px 0'
             >
-                <TokensArrow onlyDisplay />
+                {svgArrow}
             </FlexContainer>
             <ConfirmationQuantityContainer>
                 <Text fontSize='header2' color='text1'>
@@ -248,61 +263,63 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
             gap={8}
             background='dark1'
             aria-label='Transaction Confirmation modal'
+            height='100%'
         >
             {!showStepperComponent && confirmationContent}
-            <footer>
-                {!showConfirmation ? (
-                    !acknowledgeUpdate ? (
-                        <>
-                            <ConfirmationModalControl
-                                tempBypassConfirm={skipFutureConfirmation}
-                                setTempBypassConfirm={setSkipFutureConfirmation}
-                            />
-                            <Button
-                                title={statusText}
-                                action={() => {
-                                    // if this modal is launched we can infer user wants confirmation
-                                    // if user enables bypass, update all settings in parallel
-                                    // otherwise do not not make any change to persisted preferences
-                                    if (skipFutureConfirmation) {
-                                        bypassConfirmSwap.enable();
-                                        bypassConfirmLimit.enable();
-                                        bypassConfirmRange.enable();
-                                        bypassConfirmRepo.enable();
-                                    }
-                                    setShowStepperComponent(true);
-                                    initiate();
-                                }}
-                                flat
-                                disabled={!!acknowledgeUpdate}
-                                idForDOM='trade_conf_skeleton_btn'
-                            />
-                        </>
-                    ) : (
-                        acknowledgeUpdate
-                    )
-                ) : (
-                    <FlexContainer flexDirection='column' alignItems='center'>
-                        <SubmitTransaction
-                            type={type}
-                            newTransactionHash={transactionHash}
-                            txErrorCode={txErrorCode}
-                            txErrorMessage={txErrorMessage}
-                            resetConfirmation={resetConfirmation}
-                            sendTransaction={initiate}
-                            transactionPendingDisplayString={statusText}
-                            disableSubmitAgain
-                            activeStep={activeStep}
-                            setActiveStep={setActiveStep}
-                            steps={steps}
-                            stepperComponent
-                            stepperTokensDisplay={tokensDisplay}
-                            handleSetActiveContent={handleSetActiveContent}
-                            setShowStepperComponent={setShowStepperComponent}
+            {/* <footer style={{marginTop: 'auto'}}> */}
+
+            {!showConfirmation ? (
+                !acknowledgeUpdate ? (
+                    <footer style={{ marginTop: 'auto', padding: '0 32px' }}>
+                        <ConfirmationModalControl
+                            tempBypassConfirm={skipFutureConfirmation}
+                            setTempBypassConfirm={setSkipFutureConfirmation}
                         />
-                    </FlexContainer>
-                )}
-            </footer>
+                        <Button
+                            title={statusText}
+                            action={() => {
+                                // if this modal is launched we can infer user wants confirmation
+                                // if user enables bypass, update all settings in parallel
+                                // otherwise do not not make any change to persisted preferences
+                                if (skipFutureConfirmation) {
+                                    bypassConfirmSwap.enable();
+                                    bypassConfirmLimit.enable();
+                                    bypassConfirmRange.enable();
+                                    bypassConfirmRepo.enable();
+                                }
+                                setShowStepperComponent(true);
+                                initiate();
+                            }}
+                            flat
+                            disabled={!!acknowledgeUpdate}
+                            idForDOM='trade_conf_skeleton_btn'
+                        />
+                    </footer>
+                ) : (
+                    acknowledgeUpdate
+                )
+            ) : (
+                <FlexContainer flexDirection='column' height='100%'>
+                    <SubmitTransaction
+                        type={type}
+                        newTransactionHash={transactionHash}
+                        txErrorCode={txErrorCode}
+                        txErrorMessage={txErrorMessage}
+                        resetConfirmation={resetConfirmation}
+                        sendTransaction={initiate}
+                        transactionPendingDisplayString={statusText}
+                        disableSubmitAgain
+                        activeStep={activeStep}
+                        setActiveStep={setActiveStep}
+                        steps={steps}
+                        stepperComponent
+                        stepperTokensDisplay={tokensDisplay}
+                        handleSetActiveContent={handleSetActiveContent}
+                        setShowStepperComponent={setShowStepperComponent}
+                    />
+                </FlexContainer>
+            )}
+            {/* </footer> */}
         </FlexContainer>
     );
 }

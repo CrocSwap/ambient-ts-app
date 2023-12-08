@@ -688,6 +688,7 @@ export default function Limit() {
         }
     }, [isTransactionApproved, isTransactionPending, isTransactionConfirmed]);
     const [showStepperComponent, setShowStepperComponent] = useState(false);
+    const [showExtraInfo, setShowExtraInfo] = useState<boolean>(false);
 
     return (
         <TradeModuleSkeleton
@@ -695,6 +696,8 @@ export default function Limit() {
             activeContent={activeContent}
             setActiveContent={setActiveContent}
             handleSetActiveContent={handleSetActiveContent}
+            moduleName='Limit'
+            showExtraInfo={showExtraInfo}
             header={
                 <TradeModuleHeader
                     slippage={mintSlippage}
@@ -746,6 +749,8 @@ export default function Limit() {
                     startDisplayPrice={startDisplayPrice}
                     middleDisplayPrice={middleDisplayPrice}
                     endDisplayPrice={endDisplayPrice}
+                    showExtraInfo={showExtraInfo}
+                    setShowExtraInfo={setShowExtraInfo}
                 />
             }
             modal={

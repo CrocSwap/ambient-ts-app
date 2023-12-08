@@ -930,6 +930,7 @@ function Range() {
         setMaxPrice: setMaxPrice,
         setMinPrice: setMinPrice,
     };
+    const [showExtraInfo, setShowExtraInfo] = useState<boolean>(false);
 
     const rangeExtraInfoProps = {
         isQtyEntered: isQtyEntered,
@@ -945,6 +946,8 @@ function Range() {
         isBalancedMode: !advancedMode,
         aprPercentage: aprPercentage,
         daysInRange: daysInRange,
+        showExtraInfo: showExtraInfo,
+        setShowExtraInfo: setShowExtraInfo,
     };
     const [activeContent, setActiveContent] = useState('main');
     const handleSetActiveContent = (newActiveContent: string) => {
@@ -989,6 +992,8 @@ function Range() {
             activeContent={activeContent}
             setActiveContent={setActiveContent}
             handleSetActiveContent={handleSetActiveContent}
+            moduleName='Range'
+            showExtraInfo={showExtraInfo}
             header={
                 <TradeModuleHeader
                     slippage={mintSlippage}

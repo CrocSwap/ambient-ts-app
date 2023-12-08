@@ -8,6 +8,8 @@ interface propsIF {
     rangeGasPriceinDollars: string | undefined;
     isTokenABase: boolean;
     showExtraInfoDropdown: boolean;
+    showExtraInfo: boolean;
+    setShowExtraInfo: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function RangeExtraInfo(props: propsIF) {
@@ -18,6 +20,8 @@ function RangeExtraInfo(props: propsIF) {
         liquidityProviderFeeString,
         isTokenABase,
         showExtraInfoDropdown,
+        showExtraInfo,
+        setShowExtraInfo,
     } = props;
 
     const { isDenomBase, tokenA, tokenB, baseToken, quoteToken } =
@@ -56,6 +60,8 @@ function RangeExtraInfo(props: propsIF) {
             conversionRate={conversionRate}
             gasPrice={rangeGasPriceinDollars}
             showDropdown={showExtraInfoDropdown}
+            showExtraInfo={showExtraInfo}
+            setShowExtraInfo={setShowExtraInfo}
         />
     );
 }
