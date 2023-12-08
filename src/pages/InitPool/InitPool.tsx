@@ -5,7 +5,6 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
 
 // START: Import Local Files
-import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../ambient-utils/constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
@@ -67,13 +66,7 @@ import TooltipComponent from '../../components/Global/TooltipComponent/TooltipCo
 import InitButton from './InitButton';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import Button from '../../components/Form/Button';
-import {
-    addPendingTx,
-    addReceipt,
-    addTransactionByType,
-    removePendingTx,
-    updateTransactionHash,
-} from '../../utils/state/receiptDataSlice';
+
 import {
     TransactionError,
     isTransactionFailedError,
@@ -88,6 +81,7 @@ import {
     GAS_DROPS_ESTIMATE_POOL,
     NUM_GWEI_IN_WEI,
 } from '../../ambient-utils/constants/';
+import { ReceiptContext } from '../../contexts/ReceiptContext';
 // react functional component
 export default function InitPool() {
     const {
@@ -114,7 +108,14 @@ export default function InitPool() {
         tokenBDexBalance,
     } = useContext(TradeTokenContext);
 
-    const { sessionReceipts } = useAppSelector((state) => state.receiptData);
+    const {
+        addPendingTx,
+        addReceipt,
+        addTransactionByType,
+        removePendingTx,
+        updateTransactionHash,
+        sessionReceipts,
+    } = useContext(ReceiptContext);
 
     const {
         advancedMode,
@@ -1148,8 +1149,6 @@ export default function InitPool() {
         ? getUnicodeCharacter(tokenB.symbol)
         : getUnicodeCharacter(tokenA.symbol);
 
-    const dispatch = useAppDispatch();
-
     useEffect(() => {
         if (rangeWidthPercentage === 100 && !advancedMode) {
             setIsAmbient(true);
@@ -1631,16 +1630,14 @@ export default function InitPool() {
                         .token(erc20TokenWithDexBalance.address)
                         .withdraw(dexBalanceToBeRemoved, userAddress);
 
-                    dispatch(addPendingTx(tx?.hash));
+                    addPendingTx(tx?.hash);
 
                     if (tx?.hash) {
-                        dispatch(
-                            addTransactionByType({
-                                txHash: tx.hash,
-                                txType: 'Withdraw',
-                                txDescription: `Withdrawal of ${erc20TokenWithDexBalance.symbol}`,
-                            }),
-                        );
+                        addTransactionByType({
+                            txHash: tx.hash,
+                            txType: 'Withdraw',
+                            txDescription: `Withdrawal of ${erc20TokenWithDexBalance.symbol}`,
+                        });
                     }
 
                     let receipt;
@@ -1652,16 +1649,14 @@ export default function InitPool() {
 
                         if (isTransactionReplacedError(error)) {
                             IS_LOCAL_ENV && console.debug('repriced');
-                            dispatch(removePendingTx(error.hash));
+                            removePendingTx(error.hash);
 
                             const newTransactionHash = error.replacement.hash;
-                            dispatch(addPendingTx(newTransactionHash));
+                            addPendingTx(newTransactionHash);
 
-                            dispatch(
-                                updateTransactionHash({
-                                    oldHash: error.hash,
-                                    newHash: error.replacement.hash,
-                                }),
+                            updateTransactionHash(
+                                error.hash,
+                                error.replacement.hash,
                             );
                             IS_LOCAL_ENV &&
                                 console.debug({ newTransactionHash });
@@ -1673,8 +1668,8 @@ export default function InitPool() {
                     }
 
                     if (receipt) {
-                        dispatch(addReceipt(JSON.stringify(receipt)));
-                        dispatch(removePendingTx(receipt.transactionHash));
+                        addReceipt(JSON.stringify(receipt));
+                        removePendingTx(receipt.transactionHash);
                     }
                 } finally {
                     setIsWithdrawPending(false);

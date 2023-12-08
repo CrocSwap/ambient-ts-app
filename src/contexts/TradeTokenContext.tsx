@@ -8,7 +8,6 @@ import React, {
 import { usePoolMetadata } from '../App/hooks/usePoolMetadata';
 import { useTokenPairAllowance } from '../App/hooks/useTokenPairAllowance';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../ambient-utils/constants';
-import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
@@ -21,6 +20,7 @@ import { BigNumber } from 'ethers';
 import { UserDataContext } from './UserDataContext';
 import { TokenBalanceContext } from './TokenBalanceContext';
 import { TradeDataContext } from './TradeDataContext';
+import { ReceiptContext } from './ReceiptContext';
 
 interface TradeTokenContextIF {
     baseToken: {
@@ -78,8 +78,8 @@ export const TradeTokenContextProvider = (props: {
     const { isEnabled: isChartEnabled } = useContext(ChartContext);
     const { setSimpleRangeWidth } = useContext(RangeContext);
     const { tokens } = useContext(TokenContext);
+    const { sessionReceipts } = useContext(ReceiptContext);
 
-    const { receiptData } = useAppSelector((state) => state);
     const { tokenA, tokenB, baseToken, quoteToken } =
         useContext(TradeDataContext);
     const { userAddress, isUserConnected } = useContext(UserDataContext);
@@ -109,7 +109,7 @@ export const TradeTokenContextProvider = (props: {
         chainData,
         userAddress,
         searchableTokens: tokens.tokenUniv,
-        receiptCount: receiptData.sessionReceipts.length,
+        receiptCount: sessionReceipts.length,
         lastBlockNumber,
         isServerEnabled,
         cachedFetchTokenPrice,
