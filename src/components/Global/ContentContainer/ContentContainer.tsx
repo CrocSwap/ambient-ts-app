@@ -38,7 +38,7 @@ export default function ContentContainer(props: ContentContainerPropsIF) {
     return (
         <section
             className={`$ ${customWidthStyle} ${customWidthAutoStyle} ${tradeRouteStyle} ${swapRouteStyle}`}
-            style={{ height: '100%' }}
+            style={{ height: '100%', minWidth: '370px' }}
         >
             <section
                 className={`${styles.window} ${tradeRouteStyle}`}
@@ -51,6 +51,7 @@ export default function ContentContainer(props: ContentContainerPropsIF) {
                     style={{
                         padding: noPadding ? '' : '8px 16px 16px 16px',
                         height: '100%',
+                        width: '100%',
                     }}
                 >
                     {children}
