@@ -1537,9 +1537,17 @@ export default function Chart(props: propsIF) {
 
                     d3.select('#y-axis-canvas').style('cursor', 'none');
 
-                    const advancedValue = scaleData?.yScale.invert(
-                        event.sourceEvent.clientY - rectCanvas.top,
-                    );
+                    let clientY = 0;
+
+                    if (event.sourceEvent instanceof TouchEvent) {
+                        clientY =
+                            event.sourceEvent.touches[0].clientY -
+                            rectCanvas?.top;
+                    } else {
+                        clientY = event.sourceEvent.clientY - rectCanvas?.top;
+                    }
+
+                    const advancedValue = scaleData?.yScale.invert(clientY);
 
                     const low = ranges.filter(
                         (target: lineValue) => target.name === 'Min',
@@ -1787,7 +1795,6 @@ export default function Chart(props: propsIF) {
                             // to:do fix when advanced is fixed AdvancedPepe
                             setRanges((prevState) => {
                                 const newTargets = [...prevState];
-
                                 if (draggingLine === 'Max') {
                                     if (
                                         dragSwitched ||
