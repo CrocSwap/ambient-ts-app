@@ -195,7 +195,7 @@ export default function Chart(props: propsIF) {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
     const { chainData } = useContext(CrocEnvContext);
-    const { isMagnetActive } = useContext(ChartContext);
+    const { isMagnetActive, setIsChangeScaleChart } = useContext(ChartContext);
 
     const [isMagnetActiveLocal, setIsMagnetActiveLocal] = useState(
         isMagnetActive.value,
@@ -785,6 +785,12 @@ export default function Chart(props: propsIF) {
         period,
         isChartZoom,
     ]);
+
+    useEffect(() => {
+        if (isChartZoom) {
+            setIsChangeScaleChart(true);
+        }
+    }, [isChartZoom]);
 
     // Zoom
     useEffect(() => {
@@ -2159,41 +2165,8 @@ export default function Chart(props: propsIF) {
         }
     }, [scaleData, liquidityDepthScale, liquidityScale, isUserConnected]);
 
-    // when click reset chart should be auto scale
-    useEffect(() => {
-        if (
-            scaleData !== undefined &&
-            reset &&
-            poolPriceDisplay !== undefined
-        ) {
-            const nowDate = Date.now();
-
-            const snapDiff = nowDate % (period * 1000);
-
-            const snappedTime =
-                nowDate -
-                (snapDiff > period * 1000 - snapDiff
-                    ? -1 * (period * 1000 - snapDiff)
-                    : snapDiff);
-
-            const minDomain = snappedTime - 100 * 1000 * period;
-            const maxDomain = snappedTime + 39 * 1000 * period;
-
-            scaleData?.xScale.domain([minDomain, maxDomain]);
-
-            changeScale();
-
-            setReset(false);
-            setShowLatest(false);
-        }
-    }, [reset, minTickForLimit, maxTickForLimit]);
-
-    useEffect(() => {
-        if (
-            scaleData !== undefined &&
-            latest &&
-            unparsedCandleData !== undefined
-        ) {
+    function setXScaleDefault() {
+        if (scaleData) {
             const latestCandleIndex = d3.maxIndex(
                 unparsedCandleData,
                 (d) => d.time,
@@ -2204,14 +2177,55 @@ export default function Chart(props: propsIF) {
 
             const centerX = unparsedCandleData[latestCandleIndex].time * 1000;
 
-            if (rescale) {
-                scaleData?.xScale.domain([
-                    centerX - diff * 0.8,
-                    centerX + diff * 0.2,
-                ]);
+            scaleData?.xScale.domain([
+                centerX - diff * 0.9,
+                centerX + diff * 0.1,
+            ]);
+        }
+    }
 
-                changeScale();
+    function resetFunc() {
+        if (scaleData) {
+            setXScaleDefault();
+            setIsChangeScaleChart(false);
+            changeScale();
+        }
+    }
+
+    // when click reset chart should be auto scale
+    useEffect(() => {
+        if (
+            scaleData !== undefined &&
+            reset &&
+            poolPriceDisplay !== undefined
+        ) {
+            resetFunc();
+            setReset(false);
+            setShowLatest(false);
+        }
+    }, [reset, minTickForLimit, maxTickForLimit]);
+
+    // when click latest
+    useEffect(() => {
+        if (
+            scaleData !== undefined &&
+            latest &&
+            unparsedCandleData !== undefined
+        ) {
+            if (rescale) {
+                resetFunc();
             } else {
+                const latestCandleIndex = d3.maxIndex(
+                    unparsedCandleData,
+                    (d) => d.time,
+                );
+                const diff =
+                    scaleData?.xScale.domain()[1] -
+                    scaleData?.xScale.domain()[0];
+
+                const centerX =
+                    unparsedCandleData[latestCandleIndex].time * 1000;
+
                 const diffY =
                     scaleData?.yScale.domain()[1] -
                     scaleData?.yScale.domain()[0];
@@ -2234,22 +2248,17 @@ export default function Chart(props: propsIF) {
                 setYaxisDomain(domain[0], domain[1]);
 
                 scaleData?.xScale.domain([
-                    centerX - diff * 0.8,
-                    centerX + diff * 0.2,
+                    centerX - diff * 0.9,
+                    centerX + diff * 0.1,
                 ]);
+
+                render();
             }
 
             setLatest(false);
             setShowLatest(false);
         }
-    }, [
-        // diffHashSigScaleData(scaleData),
-        latest,
-        unparsedCandleData,
-        denomInBase,
-        rescale,
-        location.pathname,
-    ]);
+    }, [latest, unparsedCandleData, denomInBase, rescale, location.pathname]);
 
     const onClickRange = async (event: PointerEvent) => {
         if (scaleData && liquidityData) {
