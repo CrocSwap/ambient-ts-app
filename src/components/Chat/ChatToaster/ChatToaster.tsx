@@ -16,9 +16,11 @@ interface propsIF {
 }
 
 export default function ChatToaster(props: propsIF) {
-    setTimeout(() => {
-        props.activator(false);
-    }, 2000);
+    if (props.isActive) {
+        setTimeout(() => {
+            props.activator(false);
+        }, 2000);
+    }
 
     const typeSelector = props.type ? props.type : 'info';
 

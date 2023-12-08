@@ -24,7 +24,7 @@ interface propsIF {
 }
 export default function Menu(props: propsIF) {
     const deleteMessageListener = () => {
-        props.deleteMsgFromList(props.id, props.isModerator);
+        props.deleteMsgFromList(props.id, 'user id will be added here');
     };
 
     const setReplyMessage = () => {
@@ -64,7 +64,8 @@ export default function Menu(props: propsIF) {
     ];
 
     const filteredOptions =
-        !(props.isUsersMessage && props.isUserVerified) && !props.isModerator
+        !(props.isUsersMessage && props.isUserVerified) &&
+        !(props.isModerator && props.isUserVerified)
             ? options.filter((option) => option.label !== 'Delete')
             : options;
 

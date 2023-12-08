@@ -3,7 +3,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client';
-import { fetchEnsAddress } from '../../../App/functions/fetchAddress';
 import {
     CHAT_BACKEND_URL,
     CHAT_BACKEND_WSS_URL,
@@ -22,11 +21,24 @@ import {
 } from '../../../constants';
 import { Message } from '../Model/MessageModel';
 import { User } from '../Model/UserModel';
+import {
+    LS_USER_NON_VERIFIED_MESSAGES,
+    LS_USER_VERIFY_TOKEN,
+    getLS,
+    getUnverifiedMsgList,
+    removeFromUnverifiedList,
+    setLS,
+    setUnverifiedMsgList,
+} from '../ChatUtils';
 
 const useChatSocket = (
     room: string,
     areSubscriptionsEnabled = true,
     isChatOpen = true,
+    activateToastr: (
+        message: string,
+        type: 'success' | 'error' | 'warning' | 'info',
+    ) => void,
     address?: string,
     ensName?: string | null,
     currentUserID?: string,
@@ -46,7 +58,6 @@ const useChatSocket = (
     const [userVrfToken, setUserVrfToken] = useState<string>('');
 
     const messagesRef = useRef<Message[]>([]);
-    const [ensCache, setEnsCache] = useState<Map<string, string>>(new Map());
     messagesRef.current = messages;
 
     async function getMsgWithRest(roomInfo: string) {
@@ -218,8 +229,9 @@ const useChatSocket = (
     }
 
     async function updateUnverifiedMessages(verifyDate: Date, endDate?: Date) {
-        const nfList = localStorage.getItem('zz_ch_nfList');
-        const vrfTkn = localStorage.getItem('zz_ch_vrfTkn' + address);
+        const nonVerifiedMessages = getUnverifiedMsgList(address);
+        const vrfTkn = getLS(LS_USER_VERIFY_TOKEN, address);
+
         const response = await fetch(
             CHAT_BACKEND_URL + updateUnverifiedMessagesEndpoint,
             {
@@ -228,11 +240,7 @@ const useChatSocket = (
                 body: JSON.stringify({
                     user: currentUserID,
                     startDate: verifyDate,
-                    msgList: nfList
-                        ? nfList
-                              .split(', ')
-                              .filter((e) => e.length > 0 && e !== '')
-                        : [],
+                    msgList: nonVerifiedMessages,
                     vrfTkn: vrfTkn,
                     endDate: endDate,
                 }),
@@ -240,6 +248,11 @@ const useChatSocket = (
         );
         const messages = await response.json();
         updateMessageWithArr(messages);
+
+        // clean up local storage
+        messages.map((msg: Message) => {
+            removeFromUnverifiedList(msg._id, address);
+        });
     }
 
     async function updateUserCache() {
@@ -250,7 +263,7 @@ const useChatSocket = (
         });
         setUserMap(usmp);
         setUsers(userListData);
-        const userToken = localStorage.getItem('zz_ch_vrfTkn' + address);
+        const userToken = getLS(LS_USER_VERIFY_TOKEN, address);
         setUserVrfToken(userToken ? userToken : '');
     }
 
@@ -269,7 +282,7 @@ const useChatSocket = (
     useEffect(() => {
         async function checkVerified() {
             const data = await isUserVerified();
-            const userToken = localStorage.getItem('zz_ch_vrfTkn' + address);
+            const userToken = getLS(LS_USER_VERIFY_TOKEN, address);
             setUserVrfToken(userToken ? userToken : '');
             if (!data) return;
             setIsVerified(userToken == data.vrfTkn && data.vrfTkn != null);
@@ -296,7 +309,6 @@ const useChatSocket = (
                     ? await getAllMessages()
                     : await getMsgWithRest(room);
             setMessages(data.reverse());
-            fillEnsCache(data);
             if (data.length > 0) {
                 setLastMessage(data[data.length - 1]);
                 setLastMessageText(data[data.length - 1].text);
@@ -323,13 +335,19 @@ const useChatSocket = (
                     data.sender === currentUserID &&
                     !data.isVerified
                 ) {
-                    console.log('---- NOT VERIFIED -----');
-                    console.log(data._id);
-                    console.log(data.message);
-                    let nfList = localStorage.getItem('zz_ch_nfList');
+                    let nonVrfMessages = getLS(
+                        LS_USER_NON_VERIFIED_MESSAGES,
+                        address,
+                    );
                     const newMsgToken = ', ' + data._id;
-                    nfList = nfList ? (nfList += newMsgToken) : data._id + '';
-                    localStorage.setItem('zz_ch_nfList', nfList);
+                    nonVrfMessages = nonVrfMessages
+                        ? (nonVrfMessages += newMsgToken)
+                        : data._id + '';
+                    setLS(
+                        LS_USER_NON_VERIFIED_MESSAGES,
+                        nonVrfMessages,
+                        address,
+                    );
                 }
                 setMessages([...messagesRef.current, data]);
                 if (messagesRef.current[messagesRef.current.length - 1]) {
@@ -368,10 +386,6 @@ const useChatSocket = (
             socketRef.current.on('message-deleted-listener', (data: any) => {
                 updateMessages(data);
             });
-
-            socketRef.current.on('message-updated-listener', (data: any) => {
-                updateMessages(data);
-            });
         }
     }, [messages]);
 
@@ -382,9 +396,10 @@ const useChatSocket = (
         });
     }
 
-    async function deleteMsgFromList(msgId: string) {
+    async function deleteMsgFromList(msgId: string, userID: string) {
         const payload = {
             _id: msgId,
+            whoIsDeleting: userID,
         };
         const response = await fetch(
             `${CHAT_BACKEND_URL}/chat/api/messages/deleteMessagev2/${msgId}`,
@@ -392,6 +407,7 @@ const useChatSocket = (
                 method: 'POST',
             },
         );
+        activateToastr('Message deleted successfully', 'success');
         const data = await response.json();
         data.message.deletedMessageText = 'This message has deleted';
         if (data) {
@@ -461,23 +477,25 @@ const useChatSocket = (
 
     // update messages list with new message from server
     const updateMessages = (message: any) => {
-        const newMessageList = messages.map((e) => {
+        let newMessageList = messages.map((e) => {
             if (e._id == message._id) {
                 return message;
             } else {
                 return e;
             }
         });
+        newMessageList = newMessageList.filter(
+            (e) => e.isDeleted != true || room == 'Admins',
+        );
         setMessages([...newMessageList]);
     };
 
     // updates messages list with new message list from server
     const updateMessageWithArr = (msgListFromServer: Message[]) => {
-        console.log(msgListFromServer);
         const newVerifiedMsgIds = new Set(
             msgListFromServer.map((msg) => msg._id),
         );
-        const newMessageList = messages.map((e) => {
+        let newMessageList = messages.map((e) => {
             if (newVerifiedMsgIds.has(e._id)) {
                 return {
                     ...e,
@@ -487,22 +505,10 @@ const useChatSocket = (
                 return e;
             }
         });
+        newMessageList = newMessageList.filter(
+            (e) => e.isDeleted != true || room == 'Admins',
+        );
         setMessages([...newMessageList]);
-    };
-
-    const fillEnsCache = async (messages: Message[]) => {
-        let ensHashMapChanged = false;
-        messages.map(async (msg) => {
-            if (!ensCache?.get(msg.walletID)) {
-                const ens = await fetchEnsAddress(msg.walletID);
-                console.log('fetched es for ' + msg.walletID + ' ' + ens);
-                ensHashMapChanged = true;
-                ensCache?.set(msg.walletID, ens);
-            }
-        });
-        if (ensHashMapChanged) {
-            setEnsCache({ ...ensCache });
-        }
     };
 
     return {
@@ -529,7 +535,6 @@ const useChatSocket = (
         fetchForNotConnectedUser,
         getUserSummaryDetails,
         updateUnverifiedMessages,
-        ensCache,
     };
 };
 

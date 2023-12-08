@@ -238,6 +238,20 @@
 }
 
 
+@keyframes yellowFlash{
+    0% , 100%{
+        box-shadow: 0px 0px 28px #f3bc4144;
+        border: 1px solid #f3bc4188;
+        color: #f3bc41cc;
+        background: transparent;
+    }
+    50%{
+        box-shadow: 0px 0px 28px #f3bc4188;
+        border: 1px solid #f3bc41aa;
+        color: white;
+        background: #f3bc41cc;
+    }
+}
 
 .verify_button{
     display: block;
@@ -248,15 +262,28 @@
     top: .5rem;
     right: 2.5rem;
     font-size: .72rem;
-    color: rgba(255,255,255, .5);
-    border: 1px solid rgba(255,255,255, .1);
+    /* color: rgba(255,255,255, .5);
+    border: 1px solid rgba(255,255,255, .1); */
+    box-shadow: 0px 0px 28px #f3bc4144;
+    border: 1px solid #f3bc4188;
+    color: #f3bc41cc;
     padding: 0 .4rem;
 }
+
+.verify_button:not(.verified) svg{
+    color: #f3bc41cc;
+}
+
+.verify_button.flashed{
+    animation: yellowFlash .5s 3 ease-in-out;
+}
+
 
 
 .verify_button.verified{
     border-color: rgba(21, 190, 111, 0.75);
     cursor: default;
+    box-shadow: 0px 0px 28px rgba(21, 190, 111, 0.35);
     color: var(--positive);
 }
 

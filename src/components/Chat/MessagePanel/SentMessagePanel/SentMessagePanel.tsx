@@ -29,6 +29,7 @@ import Options from '../Options/Options';
 import Menu from '../Options/Menu/Menu';
 import useChatSocket from '../../Service/useChatSocket';
 import { m } from 'framer-motion';
+import { LS_USER_NON_VERIFIED_MESSAGES, getLS } from '../../ChatUtils';
 
 interface SentMessageProps {
     message: Message;
@@ -80,7 +81,6 @@ interface SentMessageProps {
     addReaction: (messageId: string, userId: string, reaction: string) => void;
     mentionHoverListener: (elementTop: number, walletID: string) => void;
     mentionMouseLeftListener: any;
-    ensCache: Map<string, string>;
     handleConfirmationDialog: (
         confirmationType: number,
         startDate: Date,
@@ -135,6 +135,13 @@ function SentMessagePanel(props: SentMessageProps) {
     };
 
     const messageVoted = handleInitialLikeDislike();
+
+    console.log('.............................................');
+    console.log(props.resolvedAddress);
+    console.log(props.message.walletID);
+    console.log(props.currentUser);
+    console.log(props.isCurrentUser);
+    console.log('.............................................');
 
     useEffect(() => {
         const previousMessageDate = new Date(props.previousMessage?.createdAt);
@@ -321,14 +328,6 @@ function SentMessagePanel(props: SentMessageProps) {
         } else {
             return props.message.ensName;
         }
-
-        // fetched Ens addresses from analytics server
-        // if(props.ensCache.get(props.message.walletID)){
-        //     return props.ensCache.get(props.message.walletID) + ' !!!!!!!!!!!!!!!!!!!';
-        // }
-        // else{
-        //     return props.message.walletID.slice(0, 6) + '...';
-        // }
     }
 
     function handleOpenExplorer(url: string) {
@@ -627,21 +626,6 @@ function SentMessagePanel(props: SentMessageProps) {
         setIsClickedOptions(!isClickedOptions);
     }
 
-    function verificationDateCheck() {
-        let ret = false;
-        const sender = props.message.sender;
-        const user = props.userMap?.get(sender);
-
-        if (user?.verifyDate !== undefined && user.verifyDate != undefined) {
-            if (
-                new Date(user.verifyDate) <= new Date(props.message.createdAt)
-            ) {
-                ret = true;
-            }
-        }
-        return ret;
-    }
-
     function handleLikeAndDislikeLS(messageId: string, val: number) {
         const currObj = localStorage.getItem('lkds');
         let newObj = {};
@@ -742,9 +726,12 @@ function SentMessagePanel(props: SentMessageProps) {
     }
 
     function checkLocalStorage(messageId: string) {
-        const storedMessages = localStorage.getItem('zz_ch_nfList');
-        if (storedMessages) {
-            const messageIDs = storedMessages.split(',');
+        const nonVrfMessages = getLS(
+            LS_USER_NON_VERIFIED_MESSAGES,
+            props.address,
+        );
+        if (nonVrfMessages) {
+            const messageIDs = nonVrfMessages.split(',');
             const parsedMessages: string[] = [];
             messageIDs.map((e) => {
                 parsedMessages.push(e.trim());
@@ -943,31 +930,37 @@ function SentMessagePanel(props: SentMessageProps) {
                                                 ? ''
                                                 : ''
                                         }
-                                        onClick={() => {
-                                            if (
-                                                location.pathname !==
-                                                `/${
-                                                    props.message.ensName ===
-                                                    'defaultValue'
-                                                        ? props.message.walletID
-                                                        : props.message.ensName
-                                                }`
-                                            ) {
-                                                navigate(
+                                    >
+                                        <span
+                                            onClick={() => {
+                                                if (
+                                                    location.pathname !==
                                                     `/${
-                                                        props.isCurrentUser
-                                                            ? 'account'
-                                                            : !hasEns()
+                                                        props.message
+                                                            .ensName ===
+                                                        'defaultValue'
                                                             ? props.message
                                                                   .walletID
                                                             : props.message
                                                                   .ensName
-                                                    }`,
-                                                );
-                                            }
-                                        }}
-                                    >
-                                        {showName && getShownName()}
+                                                    }`
+                                                ) {
+                                                    navigate(
+                                                        `/${
+                                                            props.isCurrentUser
+                                                                ? 'account'
+                                                                : !hasEns()
+                                                                ? props.message
+                                                                      .walletID
+                                                                : props.message
+                                                                      .ensName
+                                                        }`,
+                                                    );
+                                                }
+                                            }}
+                                        >
+                                            {showName && getShownName()}
+                                        </span>
                                         {showAvatar &&
                                             props.message.isVerified && (
                                                 <div
@@ -981,51 +974,51 @@ function SentMessagePanel(props: SentMessageProps) {
                                                     />
                                                 </div>
                                             )}
-                                    </div>
-                                    {showAvatar &&
-                                        // !verificationDateCheck() &&
-                                        !props.message.isVerified &&
-                                        props.isCurrentUser && (
-                                            <>
-                                                <DefaultTooltip
-                                                    interactive
-                                                    title={
-                                                        props.isUserVerified
-                                                            ? 'Update verification date'
-                                                            : 'Verify wallet since this message'
-                                                    }
-                                                    placement={'left'}
-                                                    arrow
-                                                    enterDelay={400}
-                                                    leaveDelay={200}
-                                                >
-                                                    <div
-                                                        className={
-                                                            styles.update_verify_date_icon
+                                        {showAvatar &&
+                                            !props.message.isVerified &&
+                                            props.isCurrentUser && (
+                                                <>
+                                                    <DefaultTooltip
+                                                        interactive
+                                                        title={
+                                                            props.isUserVerified
+                                                                ? 'Update verification date'
+                                                                : 'Verify wallet since this message'
                                                         }
-                                                        onClick={() => {
-                                                            props.handleConfirmationDialog(
-                                                                checkLocalStorage(
-                                                                    props
-                                                                        .message
-                                                                        ._id,
-                                                                )
-                                                                    ? 1
-                                                                    : 2,
-                                                                new Date(
-                                                                    props.message.createdAt,
-                                                                ),
-                                                            );
-                                                        }}
+                                                        placement={'left'}
+                                                        arrow
+                                                        enterDelay={400}
+                                                        leaveDelay={200}
                                                     >
-                                                        <AiOutlineCheck
-                                                            color='var(--other-red)'
-                                                            size={10}
-                                                        />
-                                                    </div>
-                                                </DefaultTooltip>
-                                            </>
-                                        )}
+                                                        <div
+                                                            className={
+                                                                styles.update_verify_date_icon
+                                                            }
+                                                            onClick={() => {
+                                                                props.handleConfirmationDialog(
+                                                                    checkLocalStorage(
+                                                                        props
+                                                                            .message
+                                                                            ._id,
+                                                                    )
+                                                                        ? 1
+                                                                        : 2,
+                                                                    new Date(
+                                                                        props.message.createdAt,
+                                                                    ),
+                                                                );
+                                                            }}
+                                                        >
+                                                            <AiOutlineCheck
+                                                                color='var(--other-red)'
+                                                                size={10}
+                                                            />
+                                                        </div>
+                                                    </DefaultTooltip>
+                                                </>
+                                            )}
+                                    </div>
+
                                     <PositionBox
                                         message={props.message.message}
                                         isInput={false}

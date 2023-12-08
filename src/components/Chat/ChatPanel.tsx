@@ -24,6 +24,7 @@ import ChatConfirmationPanel from './ChatConfirmationPanel/ChatConfirmationPanel
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import ChatToaster from './ChatToaster/ChatToaster';
+import { LS_USER_VERIFY_TOKEN, setLS } from './ChatUtils';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -105,8 +106,22 @@ function ChatPanel(props: propsIF) {
     const [verifyOldMessagesStartDate, setVerifyOldMessagesStartDate] =
         useState(new Date());
 
-    const [showVerifyOldMessagesToaster, setShowVerifyOldMessagesToaster] =
-        useState(false);
+    const [toastrActive, setToastrActive] = useState(false);
+    const [toastrType, setToastrType] = useState<
+        'success' | 'error' | 'warning' | 'info'
+    >('info');
+    const [toastrText, setToastrText] = useState('');
+
+    const verifyBtnRef = useRef<HTMLDivElement>(null);
+
+    const activateToastr = (
+        message: string,
+        type: 'success' | 'error' | 'warning' | 'info',
+    ) => {
+        setToastrActive(true);
+        setToastrText(message);
+        setToastrType(type);
+    };
 
     const {
         messages,
@@ -130,11 +145,11 @@ function ChatPanel(props: propsIF) {
         fetchForNotConnectedUser,
         getUserSummaryDetails,
         updateUnverifiedMessages,
-        ensCache,
     } = useChatSocket(
         room,
         isSubscriptionsEnabled,
         isChatOpen,
+        activateToastr,
         userAddress,
         ens,
         currentUser,
@@ -604,12 +619,10 @@ function ChatPanel(props: propsIF) {
             // eslint-disable-next-line
             .then((signedMessage: any) => {
                 verifyUser(signedMessage, verifyDate);
-                localStorage.setItem(
-                    'zz_ch_vrfTkn' + userAddress,
-                    signedMessage,
-                );
+                setLS(LS_USER_VERIFY_TOKEN, signedMessage, userAddress);
                 setTimeout(() => {
                     updateUserCache();
+                    activateToastr('Your wallet is verified!', 'success');
                 }, 300);
             })
             // eslint-disable-next-line
@@ -627,6 +640,7 @@ function ChatPanel(props: propsIF) {
 
             {isChatOpen && (
                 <div
+                    ref={verifyBtnRef}
                     className={`${styles.verify_button} ${
                         isVerified ? styles.verified : ''
                     } `}
@@ -769,7 +783,6 @@ function ChatPanel(props: propsIF) {
                             mentionMouseLeftListener={() => {
                                 setUserSummaryActive(false);
                             }}
-                            ensCache={ensCache}
                             handleConfirmationDialog={handleConfirmationDialog}
                         />
                     );
@@ -1097,8 +1110,18 @@ function ChatPanel(props: propsIF) {
                     setShowVerifyOldMessagesPanel(false);
                 }}
                 confirmListener={async () => {
-                    if (!isVerified)
-                        return setShowVerifyOldMessagesToaster(true);
+                    if (!isVerified) {
+                        verifyBtnRef.current?.classList.add(styles.flashed);
+                        setTimeout(() => {
+                            verifyBtnRef.current?.classList.remove(
+                                styles.flashed,
+                            );
+                        }, 1500);
+                        return activateToastr(
+                            'Please verify your wallet to verify old messages.',
+                            'warning',
+                        );
+                    }
                     await updateUnverifiedMessages(
                         verifyOldMessagesStartDate,
                         confirmationPanelContent == 2
@@ -1108,15 +1131,18 @@ function ChatPanel(props: propsIF) {
                               )
                             : undefined,
                     );
-                    setShowVerifyOldMessagesToaster(true);
+                    activateToastr(
+                        'Old messages verified successfully',
+                        'success',
+                    );
                     setShowVerifyOldMessagesPanel(false);
                 }}
             />
             <ChatToaster
-                isActive={showVerifyOldMessagesToaster && isChatOpen}
-                activator={setShowVerifyOldMessagesToaster}
-                text='Your old messages has been verified.'
-                type='success'
+                isActive={toastrActive && isChatOpen}
+                activator={setToastrActive}
+                text={toastrText}
+                type={toastrType}
             />
         </div>
     );

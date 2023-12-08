@@ -616,13 +616,11 @@
 .update_verify_date_icon{
     
     display: inline-block;
-    position: absolute;
-    top: 4px;
-    left: 96px;
     cursor: pointer;
     border-radius: .2rem;
     height: 16px;
     line-height: 16px;
+    margin-left: .5rem;
 }
 .update_verify_date_icon:hover{
     transform: scale(1.2);
@@ -833,5 +831,5 @@
 }
 
 .vrf_msg_dbg{
-    color: green;
+    /* color: green; */
 }
