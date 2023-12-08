@@ -711,6 +711,13 @@ function DrawCanvas(props: DrawCanvasProps) {
                         denomInBase: denomInBase,
                     } as bandLineData;
 
+                    const range = [
+                        scaleData?.xScale(lineData[0].x),
+                        scaleData?.xScale(lineData[1].x),
+                    ];
+
+                    bandArea.xScale().range(range);
+
                     bandArea && bandArea([bandData]);
 
                     if (activeDrawingType === 'Rect') {
