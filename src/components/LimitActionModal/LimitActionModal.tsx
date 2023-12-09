@@ -422,11 +422,11 @@ export default function LimitActionModal(props: propsIF) {
                       ? baseTokenAddress
                       : quoteTokenAddress,
                   receivingAmount: limitOrder.isBid
-                      ? baseDisplay
-                      : quoteDisplay,
+                      ? quoteDisplay
+                      : baseDisplay,
                   receivingAmountAddress: limitOrder.isBid
-                      ? baseTokenAddress
-                      : quoteTokenAddress,
+                      ? quoteTokenAddress
+                      : baseTokenAddress,
                   networkFee,
               };
 
