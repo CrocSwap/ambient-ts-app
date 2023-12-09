@@ -8,7 +8,7 @@ export type ENSRequestBodyType = { config_path: string; address: string };
 
 export type PriceRequestBodyType = {
     config_path: string;
-    chain_id: string;
+    asset_platform: string;
     token_address: string;
 };
 
