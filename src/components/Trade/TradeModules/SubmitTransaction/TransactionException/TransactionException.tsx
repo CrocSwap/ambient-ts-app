@@ -24,7 +24,7 @@ export default function TransactionException(props: propsIF) {
         : tokenB.symbol;
 
     const formattedErrorMessage =
-        'Error Message: ' + txErrorMessage.replace('err: ', '');
+        'Error Message: ' + txErrorMessage?.replace('err: ', '');
 
     return (
         <div className={styles.removal_pending}>
