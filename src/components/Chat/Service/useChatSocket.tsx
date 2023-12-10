@@ -18,7 +18,8 @@ import {
     updateUnverifiedMessagesEndpoint,
     updateVerifiedDateEndpoint,
     verifyUserEndpoint,
-} from '../../../constants';
+} from '../../../ambient-utils/constants';
+
 import { Message } from '../Model/MessageModel';
 import { User } from '../Model/UserModel';
 import {
