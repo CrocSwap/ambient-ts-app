@@ -136,13 +136,6 @@ function SentMessagePanel(props: SentMessageProps) {
 
     const messageVoted = handleInitialLikeDislike();
 
-    console.log('.............................................');
-    console.log(props.resolvedAddress);
-    console.log(props.message.walletID);
-    console.log(props.currentUser);
-    console.log(props.isCurrentUser);
-    console.log('.............................................');
-
     useEffect(() => {
         const previousMessageDate = new Date(props.previousMessage?.createdAt);
         const currentMessageDate = new Date(props.message?.createdAt);
@@ -641,8 +634,6 @@ function SentMessagePanel(props: SentMessageProps) {
             actionType: val,
         };
 
-        console.log(payloadObj);
-
         props.updateLikeDislike(props.message._id, payloadObj);
     }
 
@@ -772,8 +763,10 @@ function SentMessagePanel(props: SentMessageProps) {
                     ? styles.rise_to_bottom_wrapper
                     : ''
             }
-            ${daySeparator !== '' ? styles.has_day_separator : ''}
-            
+            ${daySeparator !== '' ? styles.has_day_separator : ''} 
+            ${showAvatar ? styles.thread_top_msg : ''} 
+
+            ${props.message.isDeleted ? styles.deleted_msg : ''}
             `}
             // style={messageStyle()}
             data-ment-index={props.mentionIndex}

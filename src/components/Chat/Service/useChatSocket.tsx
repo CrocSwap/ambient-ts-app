@@ -26,6 +26,7 @@ import {
     LS_USER_VERIFY_TOKEN,
     getLS,
     getUnverifiedMsgList,
+    getUserVerifyToken,
     removeFromUnverifiedList,
     setLS,
     setUnverifiedMsgList,
@@ -230,6 +231,7 @@ const useChatSocket = (
 
     async function updateUnverifiedMessages(verifyDate: Date, endDate?: Date) {
         const nonVerifiedMessages = getUnverifiedMsgList(address);
+        console.log(nonVerifiedMessages);
         const vrfTkn = getLS(LS_USER_VERIFY_TOKEN, address);
 
         const response = await fetch(
@@ -306,7 +308,7 @@ const useChatSocket = (
         async function getRest() {
             const data =
                 room === 'Admins'
-                    ? await getAllMessages()
+                    ? await getAllMessages(0)
                     : await getMsgWithRest(room);
             setMessages(data.reverse());
             if (data.length > 0) {
@@ -396,15 +398,18 @@ const useChatSocket = (
         });
     }
 
-    async function deleteMsgFromList(msgId: string, userID: string) {
+    async function deleteMsgFromList(msgId: string) {
         const payload = {
             _id: msgId,
-            whoIsDeleting: userID,
+            whoIsDeleting: currentUserID,
+            verifyToken: getUserVerifyToken(address),
         };
         const response = await fetch(
-            `${CHAT_BACKEND_URL}/chat/api/messages/deleteMessagev2/${msgId}`,
+            `${CHAT_BACKEND_URL}/chat/api/messages/deleteMessagev2`,
             {
                 method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
             },
         );
         activateToastr('Message deleted successfully', 'success');

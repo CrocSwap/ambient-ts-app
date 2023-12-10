@@ -1,0 +1,42 @@
+.dom_debugger_wrapper{
+
+
+    transition: all .4s ease-in-out;
+    position: fixed;
+    width: 40vw;
+    left: 30vw;
+    top: 0;
+    transform: translateY(-120%);
+    z-index: 9;
+    background: black;
+    color: white;
+
+
+    display: flex;
+    flex-direction: row;
+
+}
+
+.dom_debugger_wrapper.active{
+    transform: translateY(0);
+}
+
+
+.dom_debug_node{
+    flex:  1 1;
+    display: flex;
+    flex-direction: row;
+    margin: .5rem;
+}
+
+
+.dom_debug_key{
+    color: aquamarine;
+    opacity: .5;
+    flex:  1 1;
+}
+
+.dom_debug_value{
+    flex:  1 1;
+    color: aqua;
+}

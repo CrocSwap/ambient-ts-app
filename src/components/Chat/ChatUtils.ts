@@ -18,7 +18,8 @@ export const setLS = (key: string, data: string, personalize?: string) => {
 
 export const getUnverifiedMsgList = (address?: string) => {
     const str = getLS(LS_USER_NON_VERIFIED_MESSAGES, address);
-    const ids = str ? str.split(',').map((e) => e.trim()) : [];
+    let ids = str ? str.split(',').map((e) => e.trim()) : [];
+    ids = ids.filter((e) => e.length > 0);
     return ids;
 };
 

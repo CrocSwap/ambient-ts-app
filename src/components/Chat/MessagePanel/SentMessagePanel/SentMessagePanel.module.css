@@ -642,6 +642,7 @@
     left: 13rem; 
     color: pink;
     font-size: 10px;
+    top: .7rem;
   }
   .roomInfo_with_mention{
     position:absolute;
@@ -649,6 +650,14 @@
     color: pink;
     font-size: 10px;
     top: 1.5rem;
+  }
+
+  .thread_top_msg .roomInfo{
+    top: 1.5rem;
+  }
+
+  .deleted_msg{
+    opacity: .5;
   }
 
   .options_button {

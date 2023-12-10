@@ -25,6 +25,8 @@ import { UserDataContext } from '../../contexts/UserDataContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import ChatToaster from './ChatToaster/ChatToaster';
 import { LS_USER_VERIFY_TOKEN, setLS } from './ChatUtils';
+import { domDebug } from './DomDebugger/DomDebuggerUtils';
+import DomDebugger from './DomDebugger/DomDebugger';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -80,15 +82,12 @@ function ChatPanel(props: propsIF) {
     const [page, setPage] = useState(0);
     const [mentionIndex, setMentionIndex] = useState(-1);
     // eslint-disable-next-line
-    const [messageCheckerInterval, setMessageCheckerInterval] = useState<any>();
     const [notConnectedUserInterval, setNotConnectedUserInterval] =
         useState<any>();
     const [isInputDisabled, setIsInputDisabled] = useState<boolean>(false);
     const _cooldownVal = 12;
     const [sendMessageCooldown, setSendMessageCooldown] =
         useState<number>(_cooldownVal);
-    const [messageCooldownInterval, setSendMessageCooldownInterval] =
-        useState<any>();
 
     // CHAT_FEATURE_STATES - Feature : User Summary
     const [userSummaryToBottom, setUserSummaryToBottom] = useState(false);
@@ -211,6 +210,8 @@ function ChatPanel(props: propsIF) {
         }
     }
 
+    domDebug('alskd', Math.random() * 123);
+
     async function mentionHoverListener(elementTop: number, walletID: string) {
         // CHAT_FEATURES_WBO -  Feature : User Summary
         // const userDetails = await getUserSummaryDetails(walletID);
@@ -252,7 +253,6 @@ function ChatPanel(props: propsIF) {
     };
 
     const reactionBtnListener = (focusedMessage?: Message) => {
-        console.log('adding reaction focusedMessage', focusedMessage);
         setFocusedMessage(focusedMessage);
         setShowPicker(true);
     };
@@ -403,45 +403,7 @@ function ChatPanel(props: propsIF) {
         }
 
         if (messages.length == 0) return;
-
-        if (messageCheckerInterval != undefined) {
-            clearInterval(messageCheckerInterval);
-        }
-        const checkerInterval = setInterval(() => {
-            const currentTS = new Date().getTime();
-            const messagesInLastMinute = messages.filter(
-                (item) =>
-                    currentTS - new Date(item.createdAt).getTime() <=
-                        1000 * _cooldownVal && item.sender == currentUser,
-            );
-
-            if (messagesInLastMinute.length > 4) {
-                setIsInputDisabled(true);
-            } else {
-                setIsInputDisabled(false);
-            }
-        }, 1000);
-        setMessageCheckerInterval(checkerInterval);
     }, [messages, setMessages]);
-
-    useEffect(() => {
-        if (isInputDisabled == true) {
-            setSendMessageCooldown(_cooldownVal - 2);
-            const coolDownStart = new Date().getTime();
-
-            setSendMessageCooldownInterval(
-                setInterval(() => {
-                    const currentTS = new Date().getTime();
-                    const diff = Math.floor((currentTS - coolDownStart) / 1000);
-                    setSendMessageCooldown(_cooldownVal - 2 - diff);
-                }, 1000),
-            );
-        } else {
-            if (messageCooldownInterval != undefined) {
-                clearInterval(messageCooldownInterval);
-            }
-        }
-    }, [isInputDisabled]);
 
     function handleCloseChatPanel() {
         setIsChatOpen(false);
@@ -599,6 +561,9 @@ function ChatPanel(props: propsIF) {
         e?: any,
     ) => {
         if (e) e.stopPropagation();
+
+        if (isUserConnected == false)
+            activateToastr('Please connect your wallet first.', 'warning');
 
         const message =
             'Your wallet will be verified for chat. Please sign it for verification.';
@@ -1035,6 +1000,7 @@ function ChatPanel(props: propsIF) {
                         )}
                     </div>
                     {messageList}
+
                     {showPopUp ? sendingLink : ''}
                     {chatNotification}
 
@@ -1144,6 +1110,7 @@ function ChatPanel(props: propsIF) {
                 text={toastrText}
                 type={toastrType}
             />
+            <DomDebugger />
         </div>
     );
 }

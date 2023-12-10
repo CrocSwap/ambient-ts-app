@@ -24,7 +24,7 @@ interface propsIF {
 }
 export default function Menu(props: propsIF) {
     const deleteMessageListener = () => {
-        props.deleteMsgFromList(props.id, 'user id will be added here');
+        props.deleteMsgFromList(props.id);
     };
 
     const setReplyMessage = () => {
@@ -84,7 +84,6 @@ export default function Menu(props: propsIF) {
                 props.setIsMoreButtonPressed(false);
             }}
         >
-            {props.isUserVerified}
             {filteredOptions.map((option, index) => {
                 return (
                     <>

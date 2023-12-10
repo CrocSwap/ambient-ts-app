@@ -122,28 +122,28 @@ export default function Options(props: propsIF) {
         </TextOnlyTooltip>
     );
     const optionsWithTooltip = (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <div
-                    className={styles.id_tooltip_style}
-                    onClick={(event) => event.stopPropagation()}
-                >
-                    <span> {'More'}</span>
-                </div>
-            }
-            placement={props.tooltipTop ? 'top' : 'bottom'}
-            enterDelay={100}
-            leaveDelay={0}
+        // <TextOnlyTooltip
+        //     interactive
+        //     title={
+        //         <div
+        //             className={styles.id_tooltip_style}
+        //             onClick={(event) => event.stopPropagation()}
+        //         >
+        //             <span> {'More'}</span>
+        //         </div>
+        //     }
+        //     placement={props.tooltipTop ? 'top' : 'bottom'}
+        //     enterDelay={100}
+        //     leaveDelay={0}
+        // >
+        //     </TextOnlyTooltip>
+        <p
+            data-label='id'
+            className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
+            tabIndex={0}
         >
-            <p
-                data-label='id'
-                className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
-                tabIndex={0}
-            >
-                {options}
-            </p>
-        </TextOnlyTooltip>
+            {options}
+        </p>
     );
     return !(props.isUsersMessage && props.isUserVerified) &&
         !props.isModerator ? (
