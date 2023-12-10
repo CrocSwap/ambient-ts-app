@@ -1,9 +1,11 @@
 import { Dispatch, SetStateAction, useContext, useEffect, memo } from 'react';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import {
+    getFormattedNumber,
+    calculateSecondaryDepositQty,
+} from '../../../../ambient-utils/dataLayer';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
-import { calculateSecondaryDepositQty } from '../../../../utils/functions/calculateSecondaryDepositQty';
 import {
     linkGenMethodsIF,
     poolParamsIF,
@@ -32,6 +34,7 @@ interface propsIF {
     reverseTokens?: () => void;
     isMintLiqEnabled?: boolean;
     isInitPage?: boolean;
+    amountToReduceNativeTokenQty: number;
 }
 
 function RangeTokenInput(props: propsIF) {
@@ -55,6 +58,7 @@ function RangeTokenInput(props: propsIF) {
         reverseTokens,
         isMintLiqEnabled = true,
         isInitPage,
+        amountToReduceNativeTokenQty,
     } = props;
 
     const {
@@ -208,6 +212,7 @@ function RangeTokenInput(props: propsIF) {
                         ? disabledContent
                         : undefined
                 }
+                amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
             />
             {!hidePlus && (
                 <FlexContainer
@@ -245,6 +250,7 @@ function RangeTokenInput(props: propsIF) {
                         ? disabledContent
                         : undefined
                 }
+                amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
                 isWithdraw
             />
         </FlexContainer>

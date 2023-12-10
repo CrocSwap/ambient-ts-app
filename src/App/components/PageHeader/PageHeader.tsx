@@ -3,13 +3,12 @@ import { useLocation } from 'react-router-dom';
 import { AnimateSharedLayout } from 'framer-motion';
 import Account from './Account/Account';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
-import trimString from '../../../utils/functions/trimString';
 import logo from '../../../assets/images/logos/logo_mark.svg';
 import mainLogo from '../../../assets/images/logos/large.svg';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { BiGitBranch } from 'react-icons/bi';
-import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../constants';
+import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../ambient-utils/constants';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { AppStateContext } from '../../../contexts/AppStateContext';
@@ -20,8 +19,11 @@ import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { resetReceiptData } from '../../../utils/state/receiptDataSlice';
 
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
-import { getFormattedNumber } from '../../functions/getFormattedNumber';
-import chainNumToString from '../../functions/chainNumToString';
+import {
+    getFormattedNumber,
+    chainNumToString,
+    trimString,
+} from '../../../ambient-utils/dataLayer';
 import {
     linkGenMethodsIF,
     swapParamsIF,

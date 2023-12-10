@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react';
 import { RiArrowUpSLine, RiArrowDownSLine } from 'react-icons/ri';
-import uriToHttp from '../../../../utils/functions/uriToHttp';
+import { uriToHttp } from '../../../../ambient-utils/dataLayer';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import {
     CircleLoaderFailed,
@@ -142,7 +142,9 @@ export default function SubmitTransaction(props: propsIF) {
     );
 
     const buttonText = isTransactionException
-        ? 'Transaction Exception'
+        ? txErrorMessage?.toLowerCase().includes('gas')
+            ? 'Wallet Balance Insufficient to Cover Gas'
+            : 'Transaction Exception'
         : isTransactionDenied
         ? 'Transaction Denied'
         : lastReceipt && !isLastReceiptSuccess

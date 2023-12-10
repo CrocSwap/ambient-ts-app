@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { usePoolMetadata } from '../App/hooks/usePoolMetadata';
 import { useTokenPairAllowance } from '../App/hooks/useTokenPairAllowance';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../ambient-utils/constants';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';

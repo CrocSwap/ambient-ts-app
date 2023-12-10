@@ -16,7 +16,7 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { FlexContainer } from '../../../styled/Common';
-import truncateDecimals from '../../../utils/data/truncateDecimals';
+import { truncateDecimals } from '../../../ambient-utils/dataLayer';
 import {
     useAppSelector,
     useAppDispatch,
@@ -47,7 +47,7 @@ interface propsIF {
     isLiquidityInsufficient: boolean;
     setIsLiquidityInsufficient: Dispatch<SetStateAction<boolean>>;
     toggleDexSelection: (tokenAorB: 'A' | 'B') => void;
-    amountToReduceEth: number;
+    amountToReduceNativeTokenQty: number;
 }
 
 function SwapTokenInput(props: propsIF) {
@@ -64,7 +64,7 @@ function SwapTokenInput(props: propsIF) {
         isLiquidityInsufficient,
         setIsLiquidityInsufficient,
         toggleDexSelection,
-        amountToReduceEth,
+        amountToReduceNativeTokenQty,
     } = props;
 
     const {
@@ -336,7 +336,7 @@ function SwapTokenInput(props: propsIF) {
                 parseTokenInput={(val: string, isMax?: boolean) => {
                     setSellQtyString(formatTokenInput(val, tokenA, isMax));
                 }}
-                amountToReduceEth={amountToReduceEth}
+                amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
             />
             <FlexContainer
                 fullWidth
@@ -396,6 +396,7 @@ function SwapTokenInput(props: propsIF) {
                 parseTokenInput={(val: string, isMax?: boolean) => {
                     setBuyQtyString(formatTokenInput(val, tokenB, isMax));
                 }}
+                amountToReduceNativeTokenQty={0} // value not used for buy token
             />
         </FlexContainer>
     );

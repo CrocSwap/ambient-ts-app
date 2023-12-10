@@ -12,7 +12,7 @@ import rabbyLogo from '../../../assets/images/logos/rabby_logo.svg';
 
 import { CircleLoaderFailed } from '../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
 import WaitingConfirmation from '../../../components/Global/WaitingConfirmation/WaitingConfirmation';
-import { IS_LOCAL_ENV } from '../../../constants';
+import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 import GateWallet from './GateWallet';
 import { useTermsAgreed } from '../../hooks/useTermsAgreed';
 import { AppStateContext } from '../../../contexts/AppStateContext';

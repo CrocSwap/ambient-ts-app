@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from 'react';
 import styles from './LimitActionSettings.module.css';
 import { BsArrowLeft } from 'react-icons/bs';
 import { Button } from '@material-ui/core';
-import { IS_LOCAL_ENV } from '../../../constants';
+import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 
 interface propsIF {
     showSettings: boolean;

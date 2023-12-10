@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { GLOBAL_MODAL_PORTAL_ID } from '../constants';
+import { GLOBAL_MODAL_PORTAL_ID } from '../ambient-utils/constants';
 
 interface propsIF {
     children: ReactNode;

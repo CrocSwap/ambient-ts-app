@@ -6,7 +6,7 @@ import {
     SetStateAction,
     useContext,
 } from 'react';
-import { TokenIF } from '../../../utils/interfaces/exports';
+import { TokenIF } from '../../../ambient-utils/types';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import styles from './SoloTokenSelect.module.css';
@@ -17,11 +17,13 @@ import { ethers } from 'ethers';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
-import removeWrappedNative from '../../../utils/functions/removeWrappedNative';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../ambient-utils/constants';
+import {
+    removeWrappedNative,
+    isWethToken,
+} from '../../../ambient-utils/dataLayer';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
 import { IoIosArrowBack } from 'react-icons/io';
-import { isWethToken } from '../../../utils/data/stablePairs';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface propsIF {

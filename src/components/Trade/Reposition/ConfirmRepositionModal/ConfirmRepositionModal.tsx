@@ -1,9 +1,9 @@
 import styles from './ConfirmRepositionModal.module.css';
-import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+import { PositionIF } from '../../../../ambient-utils/types';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import SelectedRange from '../../Range/ConfirmRangeModal/SelectedRange/SelectedRange';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
-import uriToHttp from '../../../../utils/functions/uriToHttp';
+import { uriToHttp } from '../../../../ambient-utils/dataLayer';
 import TradeConfirmationSkeleton from '../../TradeModules/TradeConfirmationSkeleton';
 import { useContext, useState } from 'react';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';

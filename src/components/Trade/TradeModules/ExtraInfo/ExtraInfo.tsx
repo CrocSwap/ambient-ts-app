@@ -8,7 +8,6 @@ import {
 } from '../../../../styled/Components/TradeModules';
 
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface PropsIF {
@@ -24,10 +23,6 @@ interface PropsIF {
 
 export const ExtraInfo = (props: PropsIF) => {
     const { extraInfo, showDropdown, conversionRate, gasPrice } = props;
-
-    const {
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
 
     const { toggleDidUserFlipDenom } = useContext(TradeDataContext);
 
@@ -59,7 +54,7 @@ export const ExtraInfo = (props: PropsIF) => {
                 }
                 aria-label={`Gas cost is ${gasPrice}. Conversion rate is ${conversionRate}.`}
             >
-                {chainId === '0x1' ? (
+                {
                     <FlexContainer
                         alignItems='center'
                         padding='0 0 0 4px'
@@ -68,14 +63,8 @@ export const ExtraInfo = (props: PropsIF) => {
                     >
                         <FaGasPump size={15} /> {gasPrice ?? '…'}
                     </FlexContainer>
-                ) : (
-                    <FlexContainer
-                        alignItems='center'
-                        padding='0 0 0 4px'
-                        gap={4}
-                        style={{ pointerEvents: 'none' }}
-                    ></FlexContainer>
-                )}
+                }
+
                 <FlexContainer
                     alignItems='center'
                     onClick={(e: MouseEvent<HTMLDivElement>) => {

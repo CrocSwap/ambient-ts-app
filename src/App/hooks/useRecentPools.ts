@@ -1,7 +1,7 @@
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { useMemo, useState } from 'react';
-import { PoolIF, TokenIF } from '../../utils/interfaces/exports';
-import sortTokens from '../../utils/functions/sortTokens';
+import { PoolIF, TokenIF } from '../../ambient-utils/types';
+import { sortTokens } from '../../ambient-utils/dataLayer';
 
 export interface recentPoolsMethodsIF {
     add: (

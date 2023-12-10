@@ -11,7 +11,7 @@ import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import TransactionDetailsModal from '../../../TransactionDetails/TransactionDetailsModal';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setShouldSwapDirectionReverse } from '../../../../../utils/state/tradeDataSlice';
-import { TransactionIF } from '../../../../../utils/interfaces/exports';
+import { TransactionIF } from '../../../../../ambient-utils/types';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import { RangeContext } from '../../../../../contexts/RangeContext';

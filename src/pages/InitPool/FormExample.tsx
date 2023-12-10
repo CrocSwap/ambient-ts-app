@@ -4,8 +4,10 @@ import { Container, FlexContainer, Text } from '../../styled/Common';
 import styles from '../../components/Home/Landing/BackgroundImages.module.css';
 import RangeTokenInput from '../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
-import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
-import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
+import {
+    getFormattedNumber,
+    getUnicodeCharacter,
+} from '../../ambient-utils/dataLayer';
 import Button from '../../components/Form/Button';
 import { Chip } from '../../components/Form/Chip';
 import RangeWidth from '../../components/Form/RangeWidth/RangeWidth';
@@ -191,6 +193,7 @@ export default function ExampleForm() {
                         tokenA: false,
                         tokenB: false,
                     }}
+                    amountToReduceNativeTokenQty={0}
                 />
             </FlexContainer>
         );

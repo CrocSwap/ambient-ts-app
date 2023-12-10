@@ -5,7 +5,7 @@ import {
 } from '../App/hooks/useRecentTokens';
 import { tokenMethodsIF, useTokens } from '../App/hooks/useTokens';
 import { useTokenSearch } from '../App/hooks/useTokenSearch';
-import { TokenIF } from '../utils/interfaces/TokenIF';
+import { TokenIF } from '../ambient-utils/types';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenBalanceContext } from './TokenBalanceContext';
 

@@ -8,15 +8,14 @@ import {
     useState,
 } from 'react';
 import { HiOutlineExternalLink } from 'react-icons/hi';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
-import trimString from '../../../../utils/functions/trimString';
 import {
-    PositionIF,
-    TransactionIF,
-} from '../../../../utils/interfaces/exports';
+    trimString,
+    getFormattedNumber,
+    getUnicodeCharacter,
+} from '../../../../ambient-utils/dataLayer';
+import { PositionIF, TransactionIF } from '../../../../ambient-utils/types';
 import styles from './PositionBox.module.css';
 import { motion } from 'framer-motion';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 

@@ -1,13 +1,15 @@
 import styles from './ReceiptDisplay.module.css';
 import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
 import { MdErrorOutline } from 'react-icons/md';
-import trimString from '../../../../utils/functions/trimString';
+import {
+    trimString,
+    getChainExplorer,
+} from '../../../../ambient-utils/dataLayer';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { motion } from 'framer-motion';
 import { VscClose } from 'react-icons/vsc';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { removeReceipt } from '../../../../utils/state/receiptDataSlice';
-import { getChainExplorer } from '../../../../utils/data/chains';
 import { useContext, useEffect, useState } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import Spinner from '../../Spinner/Spinner';

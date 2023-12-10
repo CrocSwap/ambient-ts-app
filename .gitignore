@@ -29,4 +29,7 @@ yarn-error.log*
 .netlify
 .vscode/settings.json
 
-yarn.lock
+#test
+/e2e/helpers/UserData
+/e2e/helpers/metamask
+/e2e/helpers/metamask.zip

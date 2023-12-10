@@ -3,7 +3,7 @@ import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTran
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 import TransactionDetailsModal from '../../../../Global/TransactionDetails/TransactionDetailsModal';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
-import { TransactionIF } from '../../../../../utils/interfaces/exports';
+import { TransactionIF } from '../../../../../ambient-utils/types';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { txRowConstants } from '../txRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';

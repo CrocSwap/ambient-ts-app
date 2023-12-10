@@ -1,5 +1,5 @@
 import styles from './TransactionException.module.css';
-import { ZERO_ADDRESS } from '../../../../../constants';
+import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
 import DividerDark from '../../../../Global/DividerDark/DividerDark';
 import { useContext } from 'react';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
@@ -24,7 +24,7 @@ export default function TransactionException(props: propsIF) {
         : tokenB.symbol;
 
     const formattedErrorMessage =
-        'Error Message: ' + txErrorMessage.replace('err: ', '');
+        'Error Message: ' + txErrorMessage?.replace('err: ', '');
 
     return (
         <div className={styles.removal_pending}>
