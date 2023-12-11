@@ -1,7 +1,8 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
-import { performSwap } from '../../dataLayer/transactions/swap';
-import { goerliETH, goerliUSDC } from '../../constants';
+import { performSwap } from '../../../dataLayer/transactions/swap';
+import { goerliETH, goerliUSDC } from '../../../constants';
+import { isNetworkAccessDisabled } from '../../config';
 
 describe('perform swap on Goerli', () => {
     let crocEnv: CrocEnv;
@@ -22,6 +23,9 @@ describe('perform swap on Goerli', () => {
     });
 
     it('performs a swap transaction', async () => {
+        if (isNetworkAccessDisabled())
+            it.skip('skipping test -- network access disabled');
+
         const initialEthBalance = await signer.provider.getBalance(
             signer.address,
         );

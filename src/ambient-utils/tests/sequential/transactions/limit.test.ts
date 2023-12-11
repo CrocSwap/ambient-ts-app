@@ -13,6 +13,7 @@ import {
 import { goerliETH, goerliUSDC } from '../../../constants';
 import { fetchBlockNumber } from '../../../api';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { isNetworkAccessDisabled } from '../../config';
 
 describe('Submit and Remove Limit Orders on Goerli\'s ETH/USDC pool', () => {
     const sleep = (ms: number) =>
@@ -57,16 +58,17 @@ describe('Submit and Remove Limit Orders on Goerli\'s ETH/USDC pool', () => {
 
         spotPrice = await pool.spotPrice();
 
-        if (spotPrice === 0) {
-            console.log('could not determine spotPrice -- skipping test');
-            return;
-        }
+        if (spotPrice === 0) console.log('spotPrice is 0, tests will fail.');
+
         console.log(`Queried spotPrice: ${spotPrice}`);
     });
 
     it(
         'submits a buy limit order',
         async () => {
+            if (isNetworkAccessDisabled())
+                it.skip('skipping test -- network access disabled');
+
             isSellTokenBase = true;
             isDenomBase = false;
 
@@ -140,6 +142,9 @@ describe('Submit and Remove Limit Orders on Goerli\'s ETH/USDC pool', () => {
     it(
         'removes a buy limit order',
         async () => {
+            if (isNetworkAccessDisabled())
+                it.skip('skipping test -- network access disabled');
+
             await sleep(DELAY_BEFORE_REMOVAL);
 
             const initialEthBalance = await signer.provider.getBalance(
@@ -217,6 +222,9 @@ describe('Submit and Remove Limit Orders on Goerli\'s ETH/USDC pool', () => {
     it(
         'submits a sell limit order',
         async () => {
+            if (isNetworkAccessDisabled())
+                it.skip('skipping test -- network access disabled');
+
             isSellTokenBase = true;
             isDenomBase = true;
 
@@ -290,6 +298,8 @@ describe('Submit and Remove Limit Orders on Goerli\'s ETH/USDC pool', () => {
     it(
         'removes a sell limit order',
         async () => {
+            if (isNetworkAccessDisabled())
+                it.skip('skipping test -- network access disabled');
             await sleep(DELAY_BEFORE_REMOVAL);
 
             const initialEthBalance = await signer.provider.getBalance(

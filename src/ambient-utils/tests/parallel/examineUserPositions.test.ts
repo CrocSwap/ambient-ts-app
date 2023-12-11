@@ -2,14 +2,15 @@ import { ethers } from 'ethers';
 import { tokenListURIs } from '../../constants/tokenListURIs';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { GCGO_ETHEREUM_URL } from '../../constants/gcgo';
-import { querySpotPrice } from '../../dataLayer';
+import { memoizeQuerySpotPrice } from '../../dataLayer';
 import {
-    fetchTokenPrice,
     fetchContractDetails,
     fetchEnsAddress,
     fetchBlockNumber,
     fetchDecoratedUserPositions,
+    memoizeTokenPrice,
 } from '../../api';
+import { isNetworkAccessDisabled } from '../config';
 
 const readFile = async (filePath: string): Promise<string> => {
     if (
@@ -52,8 +53,8 @@ const fetchData = async () => {
         lastBlockNumber,
         tokenUniv: tokenUniv,
         crocEnv,
-        cachedFetchTokenPrice: fetchTokenPrice,
-        cachedQuerySpotPrice: querySpotPrice,
+        cachedFetchTokenPrice: memoizeTokenPrice(),
+        cachedQuerySpotPrice: memoizeQuerySpotPrice(),
         cachedTokenDetails: fetchContractDetails,
         cachedEnsResolve: fetchEnsAddress,
     });
@@ -63,13 +64,8 @@ const fetchData = async () => {
 describe('Test fetchUserPositions', () => {
     describe('userPositions', () => {
         test('ensure some positions exist', async () => {
-            if (
-                !process.env.NETWORK_ACCESS ||
-                process.env.NETWORK_ACCESS === 'false'
-            ) {
-                console.log('Skipping test due to lack of network access');
-                return;
-            }
+            if (isNetworkAccessDisabled()) return;
+
             const userPositions = await fetchData();
             expect(userPositions.length).toBeGreaterThan(0);
         });

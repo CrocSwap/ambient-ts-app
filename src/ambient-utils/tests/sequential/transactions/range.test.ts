@@ -4,7 +4,6 @@ import { createRangePositionTx } from '../../../dataLayer/transactions/range';
 import { goerliETH, goerliUSDC } from '../../../constants';
 import {
     querySpotPrice,
-    getPinnedTickFromDisplayPrice,
     calculateSecondaryDepositQty,
     getPinnedPriceValuesFromTicks,
     roundDownTick,
@@ -12,6 +11,7 @@ import {
 } from '../../../dataLayer';
 import { fetchBlockNumber } from '../../../api';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { isNetworkAccessDisabled } from '../../config';
 
 describe('submit a ETH/USDC liquidity position on Goerli', () => {
     const ETH_USDC_GOERLI_POOL_PRICE = 22698072.797389716;
@@ -126,6 +126,9 @@ describe('submit a ETH/USDC liquidity position on Goerli', () => {
     }, 30000);
 
     it('createRangePosition()', async () => {
+        if (isNetworkAccessDisabled())
+            it.skip('skipping test -- network access disabled');
+
         const initialEthBalance = await signer.provider.getBalance(
             signer.address,
         );
