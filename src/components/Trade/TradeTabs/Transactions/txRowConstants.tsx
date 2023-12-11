@@ -474,7 +474,7 @@ export const txRowConstants = (props: propsIF) => {
     const ambientPriceDisplay = (
         <div
             data-label='price'
-            className={'primary_color'}
+            className='primary_color'
             style={{
                 textAlign: 'right',
                 textTransform: 'lowercase',

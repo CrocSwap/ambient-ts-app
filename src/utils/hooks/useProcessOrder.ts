@@ -49,10 +49,15 @@ export const useProcessOrder = (
 
     /* eslint-disable-next-line camelcase */
     const body = { config_path: 'ens_address', address: limitOrder.user };
-    const { data } = useFetchBatch<'ens_address'>(body);
+    const { data, error } = useFetchBatch<'ens_address'>(body);
 
-    const ownerId = data?.ens_address || getAddress(limitOrder.user);
-    const ensName = data?.ens_address || limitOrder.ensResolution || null;
+    let ensAddress = null;
+    if (data && !error) {
+        ensAddress = data.ens_address;
+    }
+
+    const ownerId = ensAddress || getAddress(limitOrder.user);
+    const ensName = ensAddress || limitOrder.ensResolution || null;
 
     const isOrderFilled = limitOrder.claimableLiq > 0;
 

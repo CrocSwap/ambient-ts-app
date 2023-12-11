@@ -30,6 +30,11 @@ import SubmitTransaction from '../Trade/TradeModules/SubmitTransaction/SubmitTra
 import Button from '../Form/Button';
 import styles from './LimitActionModal.module.css';
 import { UserDataContext } from '../../contexts/UserDataContext';
+import {
+    GAS_DROPS_ESTIMATE_LIMIT_REMOVAL,
+    NUM_GWEI_IN_WEI,
+    GAS_DROPS_ESTIMATE_LIMIT_CLAIM,
+} from '../../ambient-utils/constants/';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -123,15 +128,16 @@ export default function LimitActionModal(props: propsIF) {
     const dispatch = useAppDispatch();
 
     const averageGasUnitsForHarvestTxInGasDrops =
-        type === 'Remove' ? 90069 : 68309;
-    const numGweiInWei = 1e-9;
+        type === 'Remove'
+            ? GAS_DROPS_ESTIMATE_LIMIT_REMOVAL
+            : GAS_DROPS_ESTIMATE_LIMIT_CLAIM;
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 averageGasUnitsForHarvestTxInGasDrops *
-                numGweiInWei *
+                NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice;
 
             setNetworkFee(
@@ -422,11 +428,11 @@ export default function LimitActionModal(props: propsIF) {
                       ? baseTokenAddress
                       : quoteTokenAddress,
                   receivingAmount: limitOrder.isBid
-                      ? baseDisplay
-                      : quoteDisplay,
+                      ? quoteDisplay
+                      : baseDisplay,
                   receivingAmountAddress: limitOrder.isBid
-                      ? baseTokenAddress
-                      : quoteTokenAddress,
+                      ? quoteTokenAddress
+                      : baseTokenAddress,
                   networkFee,
               };
 

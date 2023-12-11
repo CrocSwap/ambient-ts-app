@@ -142,7 +142,9 @@ export default function SubmitTransaction(props: propsIF) {
     );
 
     const buttonText = isTransactionException
-        ? 'Transaction Exception'
+        ? txErrorMessage?.toLowerCase().includes('gas')
+            ? 'Wallet Balance Insufficient to Cover Gas'
+            : 'Transaction Exception'
         : isTransactionDenied
         ? 'Transaction Denied'
         : lastReceipt && !isLastReceiptSuccess

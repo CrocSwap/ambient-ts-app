@@ -21,8 +21,10 @@ import {
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
 import { Text } from '../../../../styled/Common';
-import canto from '../../../../assets/images/networks/canto.png';
 import { RiExternalLinkLine } from 'react-icons/ri';
+import cantoLogo from '../../../../assets/images/networks/canto.png';
+import scrollLogo from '../../../../assets/images/networks/scroll.png';
+import ETH from '../../../../assets/images/tokens/ETH.png';
 
 interface propsIF {
     switchNetwork: ((chainId_?: number | undefined) => void) | undefined;
@@ -73,15 +75,15 @@ export default function NetworkSelector(props: propsIF) {
         <NetworkItem
             id='ethereum_network_selector'
             onClick={() => handleClick(chainMap.get('0x1'))}
-            key={'ethereum'}
+            key='ethereum'
             custom={0}
             variants={ItemEnterAnimation}
             tabIndex={0}
         >
             <ChainNameStatus tabIndex={0} active={chainId === '0x1'}>
                 <img
-                    src={chainMap.get('0x1')?.logoUrl}
-                    alt={'ethereum mainnet network'}
+                    src={ETH}
+                    alt='ethereum mainnet network'
                     width='21px'
                     height='21px'
                     style={{ borderRadius: '50%' }}
@@ -98,15 +100,15 @@ export default function NetworkSelector(props: propsIF) {
         <NetworkItem
             id='scroll_network_selector'
             onClick={() => handleClick(chainMap.get('0x82750'))}
-            key={'scroll'}
+            key='scroll'
             custom={0}
             variants={ItemEnterAnimation}
             tabIndex={0}
         >
             <ChainNameStatus tabIndex={0} active={chainId === '0x82750'}>
                 <img
-                    src={chainMap.get('0x82750')?.logoUrl}
-                    alt={'scroll network'}
+                    src={scrollLogo}
+                    alt='scroll network'
                     width='21px'
                     height='21px'
                     style={{ borderRadius: '50%' }}
@@ -123,15 +125,15 @@ export default function NetworkSelector(props: propsIF) {
         <NetworkItem
             id='canto_network_selector'
             onClick={() => window.open('http://beta.canto.io/lp', '_blank')}
-            key={'canto'}
+            key='canto'
             custom={chains.length + 1}
             variants={ItemEnterAnimation}
             tabIndex={0}
         >
             <ChainNameStatus tabIndex={0} active={false}>
                 <img
-                    src={canto}
-                    alt={'canto network'}
+                    src={cantoLogo}
+                    alt='canto network'
                     width='21px'
                     height='21px'
                     style={{ borderRadius: '50%' }}
@@ -149,15 +151,15 @@ export default function NetworkSelector(props: propsIF) {
         <NetworkItem
             id='goerli_network_selector'
             onClick={() => handleClick(chainMap.get('0x5'))}
-            key={'goerli'}
+            key='goerli'
             custom={0}
             variants={ItemEnterAnimation}
             tabIndex={0}
         >
             <ChainNameStatus tabIndex={0} active={chainId === '0x5'}>
                 <img
-                    src={chainMap.get('0x5')?.logoUrl}
-                    alt={'goerli network'}
+                    src={ETH}
+                    alt='goerli network'
                     width='21px'
                     height='21px'
                     style={{ borderRadius: '50%' }}
@@ -175,15 +177,15 @@ export default function NetworkSelector(props: propsIF) {
         <NetworkItem
             id='sepolia_network_selector'
             onClick={() => handleClick(chainMap.get('0x8274f'))}
-            key={'sepolia'}
+            key='sepolia'
             custom={0}
             variants={ItemEnterAnimation}
             tabIndex={0}
         >
             <ChainNameStatus tabIndex={0} active={chainId === '0x8274f'}>
                 <img
-                    src={chainMap.get('0x82750')?.logoUrl}
-                    alt={'goerli network'}
+                    src={scrollLogo}
+                    alt='scroll network'
                     width='21px'
                     height='21px'
                     style={{ borderRadius: '50%' }}
