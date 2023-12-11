@@ -118,7 +118,7 @@ export const ChartContainer = styled.div<{ fullScreen: boolean }>`
         width: 100%;
         min-height: 200px;
         height: 100%;
-        overflow: auto;
+        overflow: hidden;
 
         @media (min-width: 1200px) {
             background: var(--dark2);
