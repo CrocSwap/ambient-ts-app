@@ -1,12 +1,12 @@
 import styles from './ConfirmRepositionModal.module.css';
-import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+import { PositionIF } from '../../../../ambient-utils/types';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import SelectedRange from '../../Range/ConfirmRangeModal/SelectedRange/SelectedRange';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
-import uriToHttp from '../../../../utils/functions/uriToHttp';
+import { uriToHttp } from '../../../../ambient-utils/dataLayer';
 import TradeConfirmationSkeleton from '../../TradeModules/TradeConfirmationSkeleton';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     position: PositionIF;
@@ -54,9 +54,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
         onClose,
     } = props;
 
-    const { tokenA, tokenB, isDenomBase } = useAppSelector(
-        (state) => state.tradeData,
-    );
+    const { tokenA, tokenB, isDenomBase } = useContext(TradeDataContext);
 
     const baseToken = isTokenABase ? tokenA : tokenB;
     const quoteToken = isTokenABase ? tokenB : tokenA;

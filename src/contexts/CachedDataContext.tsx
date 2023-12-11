@@ -2,33 +2,33 @@ import React, { createContext } from 'react';
 import {
     FetchAddrFn,
     memoizeFetchEnsAddress,
-} from '../App/functions/fetchAddress';
-import {
     FetchContractDetailsFn,
     memoizeFetchContractDetails,
-} from '../App/functions/fetchContractDetails';
-import {
     TokenBalancesQueryFn,
     memoizeFetchTokenBalances,
-} from '../App/functions/fetchTokenBalances';
-import {
     TokenPriceFn,
     memoizeTokenPrice,
-} from '../App/functions/fetchTokenPrice';
-import { PoolStatsFn, memoizePoolStats } from '../App/functions/getPoolStats';
-import {
-    SpotPriceFn,
-    memoizeQuerySpotPrice,
-} from '../App/functions/querySpotPrice';
-import {
     FetchBlockTimeFn,
     memoizeFetchBlockTime,
-} from '../App/functions/fetchBlockTime';
+} from '../ambient-utils/api';
+
+import {
+    PoolStatsFn,
+    memoizePoolStats,
+    SpotPriceFn,
+    memoizeQuerySpotPrice,
+    memoizeGet24hChange,
+    Change24Fn,
+    memoizeGetLiquidityFee,
+    LiquidityFeeFn,
+} from '../ambient-utils/dataLayer';
 
 interface CachedDataIF {
     cachedFetchTokenBalances: TokenBalancesQueryFn;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedPoolStatsFetch: PoolStatsFn;
+    cachedGet24hChange: Change24Fn;
+    cachedGetLiquidityFee: LiquidityFeeFn;
     cachedQuerySpotPrice: SpotPriceFn;
     cachedTokenDetails: FetchContractDetailsFn;
     cachedEnsResolve: FetchAddrFn;
@@ -47,6 +47,8 @@ export const CachedDataContextProvider = (props: {
         cachedFetchTokenBalances: memoizeFetchTokenBalances(),
         cachedFetchTokenPrice: memoizeTokenPrice(),
         cachedPoolStatsFetch: memoizePoolStats(),
+        cachedGet24hChange: memoizeGet24hChange(),
+        cachedGetLiquidityFee: memoizeGetLiquidityFee(),
         cachedQuerySpotPrice: memoizeQuerySpotPrice(),
         cachedTokenDetails: memoizeFetchContractDetails(),
         cachedEnsResolve: memoizeFetchEnsAddress(),

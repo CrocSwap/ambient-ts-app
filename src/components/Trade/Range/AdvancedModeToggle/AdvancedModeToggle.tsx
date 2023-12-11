@@ -1,18 +1,12 @@
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { toggleAdvancedMode } from '../../../../utils/state/tradeDataSlice';
-import Toggle from '../../../Form/Toggle';
-import { memo } from 'react';
+import { memo, useContext } from 'react';
+import { RangeContext } from '../../../../contexts/RangeContext';
 import { FlexContainer, Text } from '../../../../styled/Common';
+import Toggle from '../../../Form/Toggle';
 
-interface propsIF {
-    advancedMode: boolean;
-}
+function AdvancedModeToggle() {
+    const { advancedMode, setAdvancedMode } = useContext(RangeContext);
 
-function AdvancedModeToggle(props: propsIF) {
-    const { advancedMode } = props;
-
-    const dispatch = useAppDispatch();
-    const handleToggle = () => dispatch(toggleAdvancedMode());
+    const handleToggle = () => setAdvancedMode(!advancedMode);
 
     return (
         <FlexContainer

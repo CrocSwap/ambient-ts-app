@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { tokenListURIs } from '../../utils/data/tokenListURIs';
-import { TokenIF, TokenListIF } from '../../utils/interfaces/exports';
-import chainNumToString from '../functions/chainNumToString';
-import { defaultTokens } from '../../utils/data/defaultTokens';
-import uriToHttp from '../../utils/functions/uriToHttp';
+import { tokenListURIs, defaultTokens } from '../../ambient-utils/constants';
+import { TokenIF, TokenListIF } from '../../ambient-utils/types';
+import { chainNumToString, uriToHttp } from '../../ambient-utils/dataLayer';
 
 export interface tokenMethodsIF {
     defaultTokens: TokenIF[];
