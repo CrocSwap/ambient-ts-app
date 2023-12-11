@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import useKeyPress from '../../../App/hooks/useKeyPress';
-import { GLOBAL_MODAL_COMPONENT_ID } from '../../../constants';
+import { GLOBAL_MODAL_COMPONENT_ID } from '../../../ambient-utils/constants';
 
 export const useModal = (
     modalCloseCustom?: () => void,

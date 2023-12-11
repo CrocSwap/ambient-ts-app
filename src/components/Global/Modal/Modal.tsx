@@ -7,7 +7,7 @@ import { RiCloseFill } from 'react-icons/ri';
 // START: Import Local Files
 import styles from './Modal.module.css';
 import GlobalModalPortal from '../../GlobalModalPortal';
-import { GLOBAL_MODAL_COMPONENT_ID } from '../../../constants';
+import { GLOBAL_MODAL_COMPONENT_ID } from '../../../ambient-utils/constants';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { Container } from '../../../styled/Common';
 

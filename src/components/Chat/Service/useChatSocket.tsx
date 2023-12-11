@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
-import { CHAT_BACKEND_WSS_URL } from '../../../constants';
+import { CHAT_BACKEND_WSS_URL } from '../../../ambient-utils/constants';
 import { Message } from '../Model/MessageModel';
 
 const useChatSocket = (

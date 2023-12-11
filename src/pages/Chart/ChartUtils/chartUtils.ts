@@ -2,8 +2,8 @@
 import { DetailedHTMLProps, HTMLAttributes, MutableRefObject } from 'react';
 import * as d3 from 'd3';
 import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
-import { CandleData } from '../../../App/functions/fetchCandleSeries';
-import { TradeDataIF } from '../../../utils/state/tradeDataSlice';
+import { CandleDataIF } from '../../../ambient-utils/types';
+import { TradeDataContextIF } from '../../../contexts/TradeDataContext';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -38,7 +38,7 @@ export type drawDataHistory = {
     data: lineData[];
     type: string;
     time: number;
-    pool: TradeDataIF;
+    pool: TradeDataContextIF;
     color: string;
     lineWidth: number;
     style: number[];
@@ -53,7 +53,7 @@ export type selectedDrawnData = {
     selectedCircle: lineData | undefined;
 };
 
-export interface CandleDataChart extends CandleData {
+export interface CandleDataChart extends CandleDataIF {
     isFakeData: boolean;
 }
 export type liquidityChartData = {

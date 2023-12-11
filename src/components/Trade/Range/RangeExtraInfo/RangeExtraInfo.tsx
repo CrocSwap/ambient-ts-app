@@ -1,6 +1,6 @@
-import { memo } from 'react';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { memo, useContext } from 'react';
 import { ExtraInfo } from '../../TradeModules/ExtraInfo/ExtraInfo';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 interface propsIF {
     poolPriceDisplay: string;
     slippageTolerance: number;
@@ -21,7 +21,7 @@ function RangeExtraInfo(props: propsIF) {
     } = props;
 
     const { isDenomBase, tokenA, tokenB, baseToken, quoteToken } =
-        useAppSelector((state) => state.tradeData);
+        useContext(TradeDataContext);
 
     const baseTokenSymbol = baseToken.symbol;
     const quoteTokenSymbol = quoteToken.symbol;
