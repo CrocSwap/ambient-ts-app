@@ -115,7 +115,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     );
     const smallScreen = useMediaQuery('(max-width: 500px)');
     const mediumScreen = useMediaQuery('(max-width: 680px)');
-    const swapPageContainerHeight = '450px';
+    const swapPageContainerHeight = '460px';
 
     const moduleDimensions: ModuleDimensions = {
         Swap: {
@@ -131,7 +131,6 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
             width: 'auto',
         },
     };
-    console.log(moduleDimensions[moduleName]?.height);
 
     const mainContent = (
         <>

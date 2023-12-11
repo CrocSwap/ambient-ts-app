@@ -20,7 +20,7 @@ import { FlexContainer, Text } from '../../../../styled/Common';
 import StepperComponent from '../../../Global/MultiStepTransaction/StepperComponent';
 import Button from '../../../Form/Button';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-
+import styles from './SubmitTransaction.module.css';
 interface propsIF {
     type:
         | 'Swap'
@@ -216,7 +216,7 @@ export default function SubmitTransaction(props: propsIF) {
                     ? 'Try again'
                     : isTransactionConfirmed
                     ? 'Send another transaction'
-                    : ''
+                    : 'Placeholder text'
             }
             action={() => {
                 isError
@@ -265,10 +265,23 @@ export default function SubmitTransaction(props: propsIF) {
                         isError={isError}
                     />
                 </FlexContainer>
-                {stepperTokensDisplay}
-                {stepperMessage}
-                <footer style={{ marginTop: 'auto', padding: '0 32px' }}>
-                    {(isError || isTransactionConfirmed) && stepperActionButton}
+                <FlexContainer
+                    flexDirection='column'
+                    gap={16}
+                    style={{ height: '160px' }}
+                >
+                    {stepperTokensDisplay}
+                    {stepperMessage}
+                </FlexContainer>
+                <footer
+                    style={{ marginTop: 'auto', padding: '0 32px' }}
+                    className={
+                        isError || isTransactionConfirmed
+                            ? styles.action_button_enabled
+                            : styles.action_button_disabled
+                    }
+                >
+                    {stepperActionButton}
                 </footer>
             </FlexContainer>
         );
