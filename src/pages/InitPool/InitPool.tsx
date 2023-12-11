@@ -79,6 +79,13 @@ import {
 } from '../../utils/TransactionError';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { RangeContext } from '../../contexts/RangeContext';
+import {
+    GAS_DROPS_ESTIMATE_INIT_WITH_POOL,
+    GAS_DROPS_ESTIMATE_INIT_WITHOUT_POOL,
+    RANGE_BUFFER_MULTIPLIER,
+    GAS_DROPS_ESTIMATE_POOL,
+    NUM_GWEI_IN_WEI,
+} from '../../ambient-utils/constants/';
 // react functional component
 export default function InitPool() {
     const {
@@ -791,16 +798,51 @@ export default function InitPool() {
         return () => clearTimeout(timer);
     }, []);
 
+    const [
+        amountToReduceNativeTokenQtyMainnet,
+        setAmountToReduceNativeTokenQtyMainnet,
+    ] = useState<number>(0.01);
+    const [
+        amountToReduceNativeTokenQtyScroll,
+        setAmountToReduceNativeTokenQtyScroll,
+    ] = useState<number>(0.0007);
+
+    const amountToReduceNativeTokenQty =
+        chainId === '0x82750' || chainId === '0x8274f'
+            ? amountToReduceNativeTokenQtyScroll
+            : amountToReduceNativeTokenQtyMainnet;
+
     // calculate price of gas for pool init
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
-            const averageInitCostInGasDrops = isMintLiqEnabled
-                ? 400000
-                : 155000;
+            const gasDropsEstimateInit = isMintLiqEnabled
+                ? GAS_DROPS_ESTIMATE_INIT_WITH_POOL
+                : GAS_DROPS_ESTIMATE_INIT_WITHOUT_POOL;
+
+            const costOfMainnetPoolInETH =
+                gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
+
+            setAmountToReduceNativeTokenQtyMainnet(
+                costOfMainnetPoolInETH * RANGE_BUFFER_MULTIPLIER,
+            );
+
+            const costOfScrollPoolInETH =
+                gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
+
+            //   IS_LOCAL_ENV &&  console.log({
+            //         gasPriceInGwei,
+            //         costOfScrollPoolInETH,
+            //         amountToReduceNativeTokenQtyScroll,
+            //     });
+
+            setAmountToReduceNativeTokenQtyScroll(
+                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER,
+            );
+
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                averageInitCostInGasDrops *
-                1e-9 *
+                gasDropsEstimateInit *
+                NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice;
 
             setInitGasPriceinDollars(
@@ -999,6 +1041,8 @@ export default function InitPool() {
         isTokenAInputDisabled,
         isWithdrawTokenAFromDexChecked,
         true, // hardcode pool initialized since we will be initializing it on confirm
+        tokenAQtyCoveredByWalletBalance,
+        amountToReduceNativeTokenQty,
         isMintLiqEnabled,
         isInitPage,
     );
@@ -1013,6 +1057,8 @@ export default function InitPool() {
         isTokenBInputDisabled,
         isWithdrawTokenBFromDexChecked,
         true, // hardcode pool initialized since we will be initializing it on confirm
+        tokenBQtyCoveredByWalletBalance,
+        amountToReduceNativeTokenQty,
         isMintLiqEnabled,
         isInitPage,
     );
@@ -1458,6 +1504,7 @@ export default function InitPool() {
                 reverseTokens={reverseTokens}
                 isMintLiqEnabled={isMintLiqEnabled}
                 isInitPage
+                amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
             />
         </FlexContainer>
     );

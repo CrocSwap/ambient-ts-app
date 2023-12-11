@@ -54,6 +54,10 @@ import { useModal } from '../../../components/Global/Modal/useModal';
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import RangeWidth from '../../../components/Form/RangeWidth/RangeWidth';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import {
+    GAS_DROPS_ESTIMATE_REPOSITION,
+    NUM_GWEI_IN_WEI,
+} from '../../../ambient-utils/constants/';
 
 function Reposition() {
     // current URL parameter string
@@ -591,11 +595,10 @@ function Reposition() {
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
-            const averageRepositionCostInGasDrops = 260705;
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                averageRepositionCostInGasDrops *
-                1e-9 *
+                GAS_DROPS_ESTIMATE_REPOSITION *
+                NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice;
 
             setRangeGasPriceinDollars(
