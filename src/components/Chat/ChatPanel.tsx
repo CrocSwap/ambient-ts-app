@@ -16,7 +16,7 @@ import NotFound from '../../pages/NotFound/NotFound';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { Message } from './Model/MessageModel';
 import { AiOutlineCheck, AiOutlineClose } from 'react-icons/ai';
-import { CROCODILE_LABS_LINKS } from '../../constants';
+import { CROCODILE_LABS_LINKS } from '../../ambient-utils/constants';
 import Picker from 'emoji-picker-react';
 import UserSummary from './MessagePanel/UserSummary/UserSummary';
 import { UserSummaryModel } from './Model/UserSummaryModel';

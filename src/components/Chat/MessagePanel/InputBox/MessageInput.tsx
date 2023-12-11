@@ -407,6 +407,7 @@ export default function MessageInput(props: MessageInputProps) {
             props.setIsReplyButtonPressed(false);
             props.setReplyMessageContent(undefined);
         }
+        setInputLength(0);
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
