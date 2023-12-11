@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
-import { LimitOrderIF } from '../../../utils/interfaces/exports';
-import { diffHashSig } from '../../../utils/functions/diffHashSig';
+import { LimitOrderIF } from '../../../ambient-utils/types';
+import { diffHashSig } from '../../../ambient-utils/dataLayer';
 import { BigNumber } from 'ethers/lib/ethers';
 
 export type LimitSortType =

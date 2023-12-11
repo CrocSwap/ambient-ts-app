@@ -1,12 +1,14 @@
 import styles from './RangeActionInfo.module.css';
 import Row from '../../Global/Row/Row';
 import DividerDark from '../../Global/DividerDark/DividerDark';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
-import uriToHttp from '../../../utils/functions/uriToHttp';
+import {
+    getFormattedNumber,
+    uriToHttp,
+} from '../../../ambient-utils/dataLayer';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import { useContext } from 'react';
 import { TokenContext } from '../../../contexts/TokenContext';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../../ambient-utils/types';
 
 interface IRemoveRangeInfoProps {
     baseTokenAddress: string;

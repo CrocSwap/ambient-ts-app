@@ -14,7 +14,7 @@ import {
     IS_LOCAL_ENV,
     MEDIUM_LINK,
     TWITTER_LINK,
-} from '../../constants';
+} from '../../ambient-utils/constants';
 import { useTermsAgreed } from '../../App/hooks/useTermsAgreed';
 import FooterCard from './FooterCard';
 

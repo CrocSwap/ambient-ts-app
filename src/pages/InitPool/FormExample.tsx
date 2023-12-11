@@ -4,15 +4,17 @@ import { Container, FlexContainer, Text } from '../../styled/Common';
 import styles from '../../components/Home/Landing/BackgroundImages.module.css';
 import RangeTokenInput from '../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
-import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
-import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
+import {
+    getFormattedNumber,
+    getUnicodeCharacter,
+} from '../../ambient-utils/dataLayer';
 import Button from '../../components/Form/Button';
 import { Chip } from '../../components/Form/Chip';
 import RangeWidth from '../../components/Form/RangeWidth/RangeWidth';
 import TokenInputQuantity from '../../components/Form/TokenInputQuantity';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import Toggle from '../../components/Form/Toggle';
 import FormFooter from './FormFooterExample';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 export default function ExampleForm() {
     const { dexBalRange } = useContext(UserPreferenceContext);
@@ -74,7 +76,7 @@ export default function ExampleForm() {
     const [minPrice, setMinPrice] = useState(10);
     const [maxPrice, setMaxPrice] = useState(100);
 
-    const { tokenA } = useAppSelector((state) => state.tradeData);
+    const { tokenA } = useContext(TradeDataContext);
 
     const rangeWidthProps = {
         rangeWidthPercentage: rangeWidthPercentage,
@@ -191,6 +193,7 @@ export default function ExampleForm() {
                         tokenA: false,
                         tokenB: false,
                     }}
+                    amountToReduceNativeTokenQty={0}
                 />
             </FlexContainer>
         );

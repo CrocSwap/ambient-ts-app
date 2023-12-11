@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { getDefaultTopPools } from '../../utils/data/defaultTopPools';
-import { PoolIF } from '../../utils/interfaces/exports';
+import { getDefaultTopPools } from '../../ambient-utils/dataLayer';
+import { PoolIF } from '../../ambient-utils/types/';
 
 // TODO:    I'm pretty sure there's no reason for this to be a hook. all the data
 // TODO:    ... consumed is hardcoded in the front, we can probably eliminate this

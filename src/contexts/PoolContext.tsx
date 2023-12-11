@@ -6,8 +6,7 @@ import React, {
     useMemo,
     useState,
 } from 'react';
-import { useAccount } from 'wagmi';
-import { estimateFrom24HrAmbientApr } from '../App/functions/fetchAprEst';
+import { estimateFrom24HrAmbientApr } from '../ambient-utils/api';
 import { usePoolPricing } from '../App/hooks/usePoolPricing';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { AppStateContext } from './AppStateContext';
@@ -16,8 +15,10 @@ import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
 import { usePoolList } from '../App/hooks/usePoolList';
-import { PoolIF, PoolStatIF } from '../utils/interfaces/exports';
+import { PoolIF, PoolStatIF } from '../ambient-utils/types';
 import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
+import { UserDataContext } from './UserDataContext';
+import { TradeDataContext } from './TradeDataContext';
 
 interface PoolContextIF {
     poolList: PoolIF[];
@@ -49,28 +50,22 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         },
     } = useContext(TradeTokenContext);
 
+    const { receiptData } = useAppSelector((state) => state);
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
+    const { isUserConnected } = useContext(UserDataContext);
     const poolList: PoolIF[] = usePoolList(
         activeNetwork.graphCacheUrl,
         crocEnv,
     );
 
-    const { tradeData, receiptData, userData } = useAppSelector(
-        (state) => state,
-    );
-    const { isConnected } = useAccount();
-
     const pool = useMemo(
-        () =>
-            crocEnv?.pool(
-                tradeData.baseToken.address,
-                tradeData.quoteToken.address,
-            ),
-        [crocEnv, tradeData.baseToken.address, tradeData.quoteToken.address],
+        () => crocEnv?.pool(baseToken.address, quoteToken.address),
+        [crocEnv, baseToken.address, quoteToken.address],
     );
 
     const poolArg: PoolIF = {
-        base: tradeData.baseToken,
-        quote: tradeData.quoteToken,
+        base: baseToken,
+        quote: quoteToken,
         chainId: chainData.chainId,
         poolIdx: chainData.poolIndex,
     };
@@ -94,8 +89,7 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         quoteTokenDecimals,
         chainData,
         receiptCount: receiptData.sessionReceipts.length,
-        isUserLoggedIn: isConnected,
-        isUserIdle: userData.isUserIdle,
+        isUserLoggedIn: !!isUserConnected,
         lastBlockNumber,
         isServerEnabled,
         cachedQuerySpotPrice,

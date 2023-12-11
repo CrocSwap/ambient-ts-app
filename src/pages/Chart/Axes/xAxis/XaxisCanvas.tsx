@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState, useContext, memo } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useLocation } from 'react-router-dom';
 import {
     diffHashSig,
     diffHashSigScaleData,
-} from '../../../../utils/functions/diffHashSig';
+} from '../../../../ambient-utils/dataLayer';
 import {
     crosshair,
     renderCanvasArray,
@@ -17,8 +16,9 @@ import {
 import { CandleContext } from '../../../../contexts/CandleContext';
 import { correctStyleForData, xAxisTick } from './calculateXaxisTicks';
 import moment from 'moment';
-import { CandleData } from '../../../../App/functions/fetchCandleSeries';
+import { CandleDataIF } from '../../../../ambient-utils/types';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { RangeContext } from '../../../../contexts/RangeContext';
 interface xAxisIF {
     scaleData: scaleData | undefined;
     lastCrDate: number | undefined;
@@ -34,9 +34,9 @@ interface xAxisIF {
     setXaxisActiveTooltip: React.Dispatch<React.SetStateAction<string>>;
     setCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
     setIsCrDataIndActive: React.Dispatch<React.SetStateAction<boolean>>;
-    unparsedCandleData: CandleData[];
-    firstCandleData: CandleData;
-    lastCandleData: CandleData;
+    unparsedCandleData: CandleDataIF[];
+    firstCandleData: CandleDataIF;
+    lastCandleData: CandleDataIF;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     changeScale: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -84,8 +84,7 @@ function XAxisCanvas(props: xAxisIF) {
     const [xAxisZoom, setXaxisZoom] =
         useState<d3.ZoomBehavior<Element, unknown>>();
 
-    const tradeData = useAppSelector((state) => state.tradeData);
-
+    const { advancedMode } = useContext(RangeContext);
     const utcDiff = moment().utcOffset();
     const utcDiffHours = Math.floor(utcDiff / 60);
 
@@ -436,7 +435,7 @@ function XAxisCanvas(props: xAxisIF) {
         location.pathname,
         isLineDrag,
         unparsedCandleData?.length,
-        tradeData.advancedMode,
+        advancedMode,
         lastCrDate,
         xAxisActiveTooltip,
         timeOfEndCandle,

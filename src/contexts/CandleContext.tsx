@@ -7,22 +7,23 @@ import {
     useState,
     useContext,
 } from 'react';
+import { fetchCandleSeriesHybrid } from '../ambient-utils/api';
 import {
-    CandleData,
-    fetchCandleSeriesHybrid,
-} from '../App/functions/fetchCandleSeries';
-import { CandlesByPoolAndDuration } from '../utils/state/graphDataSlice';
+    CandleDataIF,
+    CandlesByPoolAndDurationIF,
+} from '../ambient-utils/types';
 import { candleDomain, candleScale } from '../utils/state/tradeDataSlice';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../ambient-utils/constants';
 
 interface CandleContextIF {
-    candleData: CandlesByPoolAndDuration | undefined;
+    candleData: CandlesByPoolAndDurationIF | undefined;
     setCandleData: Dispatch<
-        SetStateAction<CandlesByPoolAndDuration | undefined>
+        SetStateAction<CandlesByPoolAndDurationIF | undefined>
     >;
     isCandleDataNull: boolean;
     setIsCandleDataNull: Dispatch<SetStateAction<boolean>>;
@@ -61,7 +62,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         useState<AbortController | null>(null);
 
     const [candleData, setCandleData] = useState<
-        CandlesByPoolAndDuration | undefined
+        CandlesByPoolAndDurationIF | undefined
     >();
     const [isCandleDataNull, setIsCandleDataNull] = useState(false);
     const [isCandleSelected, setIsCandleSelected] = useState<
@@ -135,7 +136,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         if (isChartEnabled && isUserOnline && candleScale.isShowLatestCandle) {
             const interval = setInterval(() => {
                 fetchCandles(true);
-            }, 60000);
+            }, CACHE_UPDATE_FREQ_IN_MS);
             return () => clearInterval(interval);
         }
     }, [
@@ -246,10 +247,11 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         )
             .then((incrCandles) => {
                 if (incrCandles && candleData && !isZoomRequestCanceled) {
-                    const newCandles: CandleData[] = [];
+                    const newCandles: CandleDataIF[] = [];
                     if (incrCandles.candles.length === 0) {
                         candleData.candles.sort(
-                            (a: CandleData, b: CandleData) => b.time - a.time,
+                            (a: CandleDataIF, b: CandleDataIF) =>
+                                b.time - a.time,
                         );
                         setTimeOfEndCandle(
                             candleData.candles[candleData.candles.length - 1]

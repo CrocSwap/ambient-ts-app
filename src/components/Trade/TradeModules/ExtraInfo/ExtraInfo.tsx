@@ -6,10 +6,9 @@ import {
     ExtraDetailsContainer,
     ExtraInfoContainer,
 } from '../../../../styled/Components/TradeModules';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
+
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface PropsIF {
     extraInfo: {
@@ -25,11 +24,7 @@ interface PropsIF {
 export const ExtraInfo = (props: PropsIF) => {
     const { extraInfo, showDropdown, conversionRate, gasPrice } = props;
 
-    const {
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
-
-    const dispatch = useAppDispatch();
+    const { toggleDidUserFlipDenom } = useContext(TradeDataContext);
 
     const [showExtraInfo, setShowExtraInfo] = useState<boolean>(false);
 
@@ -59,7 +54,7 @@ export const ExtraInfo = (props: PropsIF) => {
                 }
                 aria-label={`Gas cost is ${gasPrice}. Conversion rate is ${conversionRate}.`}
             >
-                {chainId === '0x1' ? (
+                {
                     <FlexContainer
                         alignItems='center'
                         padding='0 0 0 4px'
@@ -68,18 +63,12 @@ export const ExtraInfo = (props: PropsIF) => {
                     >
                         <FaGasPump size={15} /> {gasPrice ?? '…'}
                     </FlexContainer>
-                ) : (
-                    <FlexContainer
-                        alignItems='center'
-                        padding='0 0 0 4px'
-                        gap={4}
-                        style={{ pointerEvents: 'none' }}
-                    ></FlexContainer>
-                )}
+                }
+
                 <FlexContainer
                     alignItems='center'
                     onClick={(e: MouseEvent<HTMLDivElement>) => {
-                        dispatch(toggleDidUserFlipDenom());
+                        toggleDidUserFlipDenom();
                         e.stopPropagation();
                     }}
                 >
