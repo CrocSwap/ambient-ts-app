@@ -3,12 +3,13 @@ import { GCGO_OVERRIDE_URL } from '../../constants';
 import { TokenPriceFn } from '../../api';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 
-export const getLiquidityFee = async (
+const getLiquidityFee = async (
     base: string,
     quote: string,
     poolIdx: number,
     chainId: string,
     graphCacheUrl: string,
+    _cacheTimeTag: number | string,
 ): Promise<number | undefined> => {
     const poolStatsFreshEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/pool_stats?'
@@ -334,8 +335,6 @@ async function expandTokenStats(
     };
 }
 
-export { get24hChange };
-
 export type PoolStatsFn = (
     chain: string,
     baseToken: string,
@@ -358,10 +357,23 @@ export type Change24Fn = (
     _cacheTimeTag: number | string,
 ) => Promise<number | undefined>;
 
+export type LiquidityFeeFn = (
+    base: string,
+    quote: string,
+    poolIdx: number,
+    chainId: string,
+    graphCacheUrl: string,
+    _cacheTimeTag: number | string,
+) => Promise<number | undefined>;
+
 export function memoizePoolStats(): PoolStatsFn {
     return memoizeCacheQueryFn(fetchPoolStats) as PoolStatsFn;
 }
 
 export function memoizeGet24hChange(): Change24Fn {
     return memoizeCacheQueryFn(get24hChange) as Change24Fn;
+}
+
+export function memoizeGetLiquidityFee(): LiquidityFeeFn {
+    return memoizeCacheQueryFn(getLiquidityFee) as LiquidityFeeFn;
 }

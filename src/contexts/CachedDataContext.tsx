@@ -19,6 +19,8 @@ import {
     memoizeQuerySpotPrice,
     memoizeGet24hChange,
     Change24Fn,
+    memoizeGetLiquidityFee,
+    LiquidityFeeFn,
 } from '../ambient-utils/dataLayer';
 
 interface CachedDataIF {
@@ -26,6 +28,7 @@ interface CachedDataIF {
     cachedFetchTokenPrice: TokenPriceFn;
     cachedPoolStatsFetch: PoolStatsFn;
     cachedGet24hChange: Change24Fn;
+    cachedGetLiquidityFee: LiquidityFeeFn;
     cachedQuerySpotPrice: SpotPriceFn;
     cachedTokenDetails: FetchContractDetailsFn;
     cachedEnsResolve: FetchAddrFn;
@@ -45,6 +48,7 @@ export const CachedDataContextProvider = (props: {
         cachedFetchTokenPrice: memoizeTokenPrice(),
         cachedPoolStatsFetch: memoizePoolStats(),
         cachedGet24hChange: memoizeGet24hChange(),
+        cachedGetLiquidityFee: memoizeGetLiquidityFee(),
         cachedQuerySpotPrice: memoizeQuerySpotPrice(),
         cachedTokenDetails: memoizeFetchContractDetails(),
         cachedEnsResolve: memoizeFetchEnsAddress(),

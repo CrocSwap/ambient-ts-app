@@ -25,7 +25,6 @@ import {
     SpotPriceFn,
     getLimitOrderData,
     getPositionData,
-    getLiquidityFee,
 } from '../../ambient-utils/dataLayer';
 import useDebounce from './useDebounce';
 import { Provider } from '@ethersproject/providers';
@@ -33,6 +32,7 @@ import { DataLoadingContext } from '../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { RangeContext } from '../../contexts/RangeContext';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 
 interface PoolParamsHookIF {
     crocEnv?: CrocEnv;
@@ -69,6 +69,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         setLiquidityPending,
         setLiquidityFee,
     } = useContext(GraphDataContext);
+
+    const { cachedGetLiquidityFee } = useContext(CachedDataContext);
 
     const { setAdvancedLowTick, setAdvancedHighTick, setAdvancedMode } =
         useContext(RangeContext);
@@ -204,12 +206,13 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
                 // retrieve pool liquidity provider fee
                 if (props.isServerEnabled) {
-                    getLiquidityFee(
+                    cachedGetLiquidityFee(
                         sortedTokens[0],
                         sortedTokens[1],
                         props.chainData.poolIndex,
                         props.chainData.chainId,
                         props.graphCacheUrl,
+                        Math.floor(Date.now() / 60000),
                     )
                         .then((liquidityFeeNum) => {
                             if (liquidityFeeNum)
