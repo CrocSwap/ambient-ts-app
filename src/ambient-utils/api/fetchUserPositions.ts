@@ -1,8 +1,20 @@
 import { GCGO_OVERRIDE_URL } from '../constants';
-import { SpotPriceFn, getLimitOrderData, getPositionData } from '../dataLayer';
+import {
+    SpotPriceFn,
+    getLimitOrderData,
+    getPositionData,
+    querySpotPrice,
+} from '../dataLayer';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { Provider } from '@ethersproject/providers';
-import { TokenPriceFn, FetchContractDetailsFn, FetchAddrFn } from '../api';
+import {
+    TokenPriceFn,
+    FetchContractDetailsFn,
+    FetchAddrFn,
+    fetchTokenPrice,
+    fetchContractDetails,
+    fetchEnsAddress,
+} from '../api';
 import {
     TokenIF,
     PositionIF,
@@ -10,6 +22,14 @@ import {
     LimitOrderIF,
     LimitOrderServerIF,
 } from '../types';
+// /
+// /
+// /
+import { fetchBlockNumber } from '../api/fetchBlockNumber';
+import { ethers } from 'ethers';
+import { tokenListURIs } from '../constants/tokenListURIs';
+import fetchTokenList from '../api/fetchTokenList';
+import { GCGO_ETHEREUM_URL } from '../constants/gcgo';
 
 const fetchUserPositions = async ({
     urlTarget,
@@ -196,10 +216,110 @@ const fetchDecorated = async ({
     return [];
 };
 
+const readFile = async (filePath: string): Promise<string> => {
+    if (
+        typeof process !== 'undefined' &&
+        process.versions &&
+        process.versions.node
+    ) {
+        const fs = await import('fs/promises');
+        return fs.readFile(filePath, 'utf8');
+    }
+    throw new Error('Local file access is not supported in this environment');
+};
+
+const fetchSimpleDecorated = async ({
+    urlTarget,
+    user,
+    chainId,
+    gcUrl,
+    ensResolution = true,
+    annotate = true,
+    omitKnockout = true,
+    addValue = true,
+    tokenUniv,
+    crocEnv,
+    lastBlockNumber,
+    cachedFetchTokenPrice,
+    cachedQuerySpotPrice,
+    cachedTokenDetails,
+    cachedEnsResolve,
+}: {
+    urlTarget: string;
+    user: string;
+    chainId: string;
+    gcUrl?: string;
+    ensResolution?: boolean;
+    annotate?: boolean;
+    omitKnockout?: boolean;
+    addValue?: boolean;
+    tokenUniv?: TokenIF[];
+    crocEnv?: CrocEnv;
+    lastBlockNumber?: number;
+    cachedFetchTokenPrice?: TokenPriceFn;
+    cachedQuerySpotPrice?: SpotPriceFn;
+    cachedTokenDetails?: FetchContractDetailsFn;
+    cachedEnsResolve?: FetchAddrFn;
+}) => {
+    // Compute and set defaults only if necessary
+    if (!gcUrl) {
+        gcUrl = GCGO_ETHEREUM_URL;
+    }
+
+    if (!tokenUniv) {
+        const tokenURI = tokenListURIs['ambient'];
+        const defaultTokenUniv = await readFile('./public/' + tokenURI)
+            .then((fileContents) => JSON.parse(fileContents))
+            .then((response) => ({
+                ...response,
+                uri: './public/' + tokenURI,
+                dateRetrieved: new Date().toISOString(),
+                isUserImported: false,
+            }));
+        tokenUniv = defaultTokenUniv.tokens;
+    }
+    let provider = undefined;
+    if (!crocEnv) {
+        const infuraUrl =
+            'https://mainnet.infura.io/v3/' + process.env.REACT_APP_INFURA_KEY;
+        const defaultSigner = undefined;
+        provider = new ethers.providers.JsonRpcProvider(infuraUrl);
+        crocEnv = new CrocEnv(provider, defaultSigner);
+    }
+    if (!lastBlockNumber) {
+        if (!crocEnv) {
+            provider = new ethers.providers.JsonRpcProvider(infuraUrl);
+        }
+        lastBlockNumber = await fetchBlockNumber(provider.connection.url);
+    }
+
+    cachedFetchTokenPrice = cachedFetchTokenPrice || fetchTokenPrice;
+    cachedQuerySpotPrice = cachedQuerySpotPrice || querySpotPrice;
+    cachedTokenDetails = cachedTokenDetails || fetchContractDetails;
+    cachedEnsResolve = cachedEnsResolve || fetchEnsAddress;
+
+    return await fetchDecorated({
+        urlTarget,
+        user,
+        chainId,
+        gcUrl,
+        provider,
+        lastBlockNumber,
+        tokenUniv,
+        crocEnv,
+        cachedFetchTokenPrice,
+        cachedQuerySpotPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    });
+};
+
 export const UserPositions = {
+    fetchSimpleDecorated: fetchSimpleDecorated,
     fetch: fetchUserPositions,
     decorate: decorateUserPositions,
     fetchDecorated: fetchDecorated,
 };
 
 export const fetchDecoratedUserPositions = fetchDecorated;
+export const fetchSimpleDecoratedUserPositions = fetchSimpleDecorated;
