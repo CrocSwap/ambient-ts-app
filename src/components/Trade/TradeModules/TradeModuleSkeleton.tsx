@@ -115,10 +115,11 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     );
     const smallScreen = useMediaQuery('(max-width: 500px)');
     const mediumScreen = useMediaQuery('(max-width: 680px)');
+    const swapPageContainerHeight = '450px';
 
     const moduleDimensions: ModuleDimensions = {
         Swap: {
-            height: showExtraInfo ? 'auto' : 'auto',
+            height: showExtraInfo ? 'auto' : '200px',
             width: 'auto',
         },
         Limit: {
@@ -152,7 +153,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     isSwapPage
                         ? mediumScreen || showExtraInfo
                             ? 'auto'
-                            : '534px'
+                            : swapPageContainerHeight
                         : moduleDimensions[moduleName]?.height
                 }
                 width={
@@ -280,7 +281,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                 isSwapPage
                     ? mediumScreen
                         ? 'auto'
-                        : '534px'
+                        : swapPageContainerHeight
                     : moduleDimensions[moduleName]?.height
             }
             width={
@@ -303,7 +304,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                 isSwapPage
                     ? mediumScreen
                         ? 'auto'
-                        : '534px'
+                        : swapPageContainerHeight
                     : moduleDimensions[moduleName]?.height
             }
             width={

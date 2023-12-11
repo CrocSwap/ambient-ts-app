@@ -253,7 +253,6 @@ export default function SubmitTransaction(props: propsIF) {
                 height='100%'
             >
                 <FlexContainer
-                    minHeight='226px'
                     justifyContent='center'
                     alignItems='center'
                     height='100%'
