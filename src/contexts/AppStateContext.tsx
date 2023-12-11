@@ -10,7 +10,10 @@ import {
     snackbarMethodsIF,
     useSnackbar,
 } from '../components/Global/SnackbarComponent/useSnackbar';
-import { CHAT_ENABLED } from '../constants';
+import {
+    CHAT_ENABLED,
+    CACHE_UPDATE_FREQ_IN_MS,
+} from '../ambient-utils/constants';
 
 interface AppStateContextIF {
     appOverlay: { isActive: boolean; setIsActive: (val: boolean) => void };
@@ -136,7 +139,7 @@ export const AppStateContextProvider = (props: {
                 getStatus().then((isChatUp) => {
                     setIsChatEnabled(isChatUp);
                 });
-            }, 60000);
+            }, CACHE_UPDATE_FREQ_IN_MS);
             return () => clearInterval(interval);
         }
     }, [isChatEnabled, CHAT_ENABLED]);

@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
-import { TransactionIF } from '../../../utils/interfaces/exports';
-import { diffHashSig } from '../../../utils/functions/diffHashSig';
+import { TransactionIF } from '../../../ambient-utils/types';
+import { diffHashSig } from '../../../ambient-utils/dataLayer';
 import { BigNumber } from 'ethers/lib/ethers';
 
 export type TxSortType =

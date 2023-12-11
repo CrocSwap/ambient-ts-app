@@ -9,21 +9,9 @@ import styles from './TableMenus.module.css';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import TransactionDetailsModal from '../../../TransactionDetails/TransactionDetailsModal';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../../utils/hooks/reduxToolkit';
-import {
-    setAdvancedHighTick,
-    setAdvancedLowTick,
-    setAdvancedMode,
-    setShouldSwapDirectionReverse,
-    setShouldRangeDirectionReverse,
-    setPrimaryQuantityRange,
-    setRangeTicksCopied,
-    setIsTokenAPrimary,
-} from '../../../../../utils/state/tradeDataSlice';
-import { TransactionIF } from '../../../../../utils/interfaces/exports';
+import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
+import { setShouldSwapDirectionReverse } from '../../../../../utils/state/tradeDataSlice';
+import { TransactionIF } from '../../../../../ambient-utils/types';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import { RangeContext } from '../../../../../contexts/RangeContext';
@@ -36,6 +24,7 @@ import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useModal } from '../../../Modal/useModal';
 import { Chip } from '../../../../Form/Chip';
 import { FlexContainer } from '../../../../../styled/Common';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -51,7 +40,15 @@ export default function TransactionsMenu(props: propsIF) {
     const {
         chainData: { blockExplorer, chainId },
     } = useContext(CrocEnvContext);
-    const { setSimpleRangeWidth } = useContext(RangeContext);
+    const {
+        setSimpleRangeWidth,
+        setPrimaryQuantityRange,
+        setRangeTicksCopied,
+        setAdvancedHighTick,
+        setAdvancedLowTick,
+        setAdvancedMode,
+    } = useContext(RangeContext);
+
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
@@ -69,8 +66,12 @@ export default function TransactionsMenu(props: propsIF) {
         ? useMediaQuery('(max-width: 1500px)')
         : useMediaQuery('(max-width: 1250px)');
 
-    const tradeData = useAppSelector((state) => state.tradeData);
-
+    const {
+        tokenA,
+        isTokenAPrimary,
+        setIsTokenAPrimary,
+        disableReverseTokens,
+    } = useContext(TradeDataContext);
     const menuItemRef = useRef<HTMLDivElement>(null);
 
     const dispatch = useAppDispatch();
@@ -81,6 +82,7 @@ export default function TransactionsMenu(props: propsIF) {
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const handleCopyClick = () => {
+        if (disableReverseTokens) return;
         setActiveMobileComponent('trade');
         if (tx.entityType === 'swap') {
             handlePulseAnimation('swap');
@@ -91,41 +93,38 @@ export default function TransactionsMenu(props: propsIF) {
         }
 
         if (tx.positionType === 'ambient') {
-            dispatch(setRangeTicksCopied(true));
+            setRangeTicksCopied(true);
             setSimpleRangeWidth(100);
-            dispatch(setAdvancedMode(false));
+            setAdvancedMode(false);
             const shouldReverse =
-                tradeData.tokenA.address.toLowerCase() !==
-                tx.base.toLowerCase();
+                tokenA.address.toLowerCase() !== tx.base.toLowerCase();
             if (shouldReverse) {
-                dispatch(setPrimaryQuantityRange(''));
-                dispatch(setShouldRangeDirectionReverse(true));
+                setPrimaryQuantityRange('');
             }
         } else if (tx.positionType === 'concentrated') {
             setTimeout(() => {
-                dispatch(setRangeTicksCopied(true));
-                dispatch(setAdvancedLowTick(tx.bidTick));
-                dispatch(setAdvancedHighTick(tx.askTick));
-                dispatch(setAdvancedMode(true));
+                setRangeTicksCopied(true);
+                setAdvancedLowTick(tx.bidTick);
+                setAdvancedHighTick(tx.askTick);
+                setAdvancedMode(true);
                 const shouldReverse =
-                    tradeData.tokenA.address.toLowerCase() !==
-                    tx.base.toLowerCase();
+                    tokenA.address.toLowerCase() !== tx.base.toLowerCase();
                 if (shouldReverse) {
-                    dispatch(setPrimaryQuantityRange(''));
-                    dispatch(setShouldRangeDirectionReverse(true));
+                    setPrimaryQuantityRange('');
                 }
             }, 1000);
         } else if (tx.entityType === 'swap') {
             const shouldReverse =
-                tradeData.tokenA.address.toLowerCase() ===
+                tokenA.address.toLowerCase() ===
                 (tx.isBuy ? tx.quote.toLowerCase() : tx.base.toLowerCase());
             if (shouldReverse) {
+                setIsTokenAPrimary(!isTokenAPrimary);
                 dispatch(setShouldSwapDirectionReverse(true));
             }
         } else if (tx.entityType === 'limitOrder') {
-            tradeData.tokenA.address.toLowerCase() !==
+            tokenA.address.toLowerCase() !==
                 (tx.isBuy ? tx.base.toLowerCase() : tx.quote.toLowerCase()) &&
-                dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
+                setIsTokenAPrimary(!isTokenAPrimary);
             // URL params for link to limit page
             const limitLinkParams: limitParamsIF = {
                 chain: chainId,
@@ -160,6 +159,7 @@ export default function TransactionsMenu(props: propsIF) {
     );
 
     const copyButtonFunction = (entityType: string) => {
+        if (disableReverseTokens) return;
         switch (entityType) {
             case 'liqchange':
                 linkGenPool.navigate({
@@ -206,7 +206,10 @@ export default function TransactionsMenu(props: propsIF) {
     };
 
     const copyButton = (
-        <Chip onClick={() => copyButtonFunction(tx.entityType)}>
+        <Chip
+            disabled={disableReverseTokens}
+            onClick={() => copyButtonFunction(tx.entityType)}
+        >
             {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
         </Chip>
     );

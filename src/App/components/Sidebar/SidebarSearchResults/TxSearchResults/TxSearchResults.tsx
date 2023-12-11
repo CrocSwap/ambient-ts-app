@@ -1,7 +1,7 @@
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useContext } from 'react';
-import { TransactionIF } from '../../../../../utils/interfaces/exports';
+import { TransactionIF } from '../../../../../ambient-utils/types';
 import TxLI from './TxLI';
 import {
     useLinkGen,

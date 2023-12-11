@@ -2,12 +2,14 @@ import { ReactNode, createContext, useContext, useRef, useState } from 'react';
 import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
-import { PoolIF } from '../utils/interfaces/exports';
-import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
-import { getFormattedNumber } from '../App/functions/getFormattedNumber';
+import { PoolIF } from '../ambient-utils/types';
+import {
+    getMoneynessRank,
+    getFormattedNumber,
+} from '../ambient-utils/dataLayer';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { get24hChange } from '../App/functions/getPoolStats';
 import { CrocEnvContext } from './CrocEnvContext';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../ambient-utils/constants';
 
 export interface ExploreContextIF {
     pools: {
@@ -48,6 +50,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         cachedPoolStatsFetch,
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
+        cachedGet24hChange,
     } = useContext(CachedDataContext);
 
     const { activeNetwork } = useContext(CrocEnvContext);
@@ -92,7 +95,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             pool.base.address,
             pool.quote.address,
             poolIdx,
-            Math.floor(Date.now() / 60000),
+            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
             crocEnv,
             activeNetwork.graphCacheUrl,
             cachedFetchTokenPrice,
@@ -114,13 +117,14 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             : '';
         // human readable price change over last 24 hours
         let priceChangePercent: string;
-        const priceChangeRaw: number | undefined = await get24hChange(
+        const priceChangeRaw: number | undefined = await cachedGet24hChange(
             chainId,
             pool.base.address,
             pool.quote.address,
             poolIdx,
             shouldInvert,
             activeNetwork.graphCacheUrl,
+            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
         );
         if (!priceChangeRaw) {
             priceChangePercent = '';

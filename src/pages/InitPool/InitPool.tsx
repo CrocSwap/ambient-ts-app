@@ -7,21 +7,23 @@ import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitP
 // START: Import Local Files
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../ambient-utils/constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
-import { useAccount } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
-import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
-import { exponentialNumRegEx } from '../../utils/regex/exports';
+import {
+    getFormattedNumber,
+    exponentialNumRegEx,
+    getUnicodeCharacter,
+    getMoneynessRank,
+    truncateDecimals,
+} from '../../ambient-utils/dataLayer';
 
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import InitPoolTokenSelect from '../../components/Global/InitPoolTokenSelect/InitPoolTokenSelect';
 
-import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { PoolContext } from '../../contexts/PoolContext';
 import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
-// import { toggleAdvancedMode } from '../../utils/state/tradeDataSlice';
 import { LuEdit2 } from 'react-icons/lu';
 import { FiExternalLink, FiRefreshCw } from 'react-icons/fi';
 import { FlexContainer, Text } from '../../styled/Common';
@@ -35,7 +37,6 @@ import { useTokenBalancesAndAllowances } from '../../App/hooks/useTokenBalancesA
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import Spinner from '../../components/Global/Spinner/Spinner';
 import AdvancedModeToggle from '../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
-import { getMoneynessRank } from '../../utils/functions/getMoneynessRank';
 import { WarningBox } from '../../components/RangeActionModal/WarningBox/WarningBox';
 import InitSkeleton from './InitSkeleton';
 import InitConfirmation from './InitConfirmation';
@@ -56,18 +57,15 @@ import {
     DEFAULT_MAX_PRICE_DIFF_PERCENTAGE,
     DEFAULT_MIN_PRICE_DIFF_PERCENTAGE,
 } from '../Trade/Range/Range';
-import {
-    setAdvancedLowTick,
-    setAdvancedHighTick,
-} from '../../utils/state/tradeDataSlice';
+
 import { concDepositSkew, fromDisplayPrice } from '@crocswap-libs/sdk';
-import truncateDecimals from '../../utils/data/truncateDecimals';
 
 import { useHandleRangeButtonMessage } from '../../App/hooks/useHandleRangeButtonMessage';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useRangeInputDisable } from '../Trade/Range/useRangeInputDisable';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 import InitButton from './InitButton';
+import { UserDataContext } from '../../contexts/UserDataContext';
 import Button from '../../components/Form/Button';
 import {
     addPendingTx,
@@ -81,6 +79,15 @@ import {
     isTransactionFailedError,
     isTransactionReplacedError,
 } from '../../utils/TransactionError';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { RangeContext } from '../../contexts/RangeContext';
+import {
+    GAS_DROPS_ESTIMATE_INIT_WITH_POOL,
+    GAS_DROPS_ESTIMATE_INIT_WITHOUT_POOL,
+    RANGE_BUFFER_MULTIPLIER,
+    GAS_DROPS_ESTIMATE_POOL,
+    NUM_GWEI_IN_WEI,
+} from '../../ambient-utils/constants/';
 // react functional component
 export default function InitPool() {
     const {
@@ -108,17 +115,16 @@ export default function InitPool() {
     } = useContext(TradeTokenContext);
 
     const { sessionReceipts } = useAppSelector((state) => state.receiptData);
+
     const {
-        tradeData: {
-            tokenA,
-            tokenB,
-            baseToken,
-            quoteToken,
-            advancedMode,
-            advancedHighTick,
-            advancedLowTick,
-        },
-    } = useAppSelector((state) => state);
+        advancedMode,
+        advancedHighTick,
+        advancedLowTick,
+        setAdvancedHighTick,
+        setAdvancedLowTick,
+    } = useContext(RangeContext);
+    const { tokenA, tokenB, baseToken, quoteToken } =
+        useContext(TradeDataContext);
 
     useEffect(() => {
         setIsWithdrawTokenAFromDexChecked(parseFloat(tokenADexBalance) > 0);
@@ -137,7 +143,7 @@ export default function InitPool() {
         tknA.toLowerCase() === tokenA.address.toLowerCase() &&
         tknB.toLowerCase() === tokenB.address.toLowerCase();
 
-    const { isConnected, address: userAddress } = useAccount();
+    const { isUserConnected, userAddress } = useContext(UserDataContext);
 
     const {
         baseTokenDexBalance,
@@ -319,12 +325,8 @@ export default function InitPool() {
                   );
 
             isDenomBase
-                ? dispatch(
-                      setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick),
-                  )
-                : dispatch(
-                      setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick),
-                  );
+                ? setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick)
+                : setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
 
             const highGeometricDifferencePercentage = parseFloat(
                 truncateDecimals(
@@ -392,12 +394,8 @@ export default function InitPool() {
                   );
 
             !isDenomBase
-                ? dispatch(
-                      setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick),
-                  )
-                : dispatch(
-                      setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick),
-                  );
+                ? setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick)
+                : setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
 
             !isDenomBase
                 ? setMinPrice(
@@ -709,8 +707,8 @@ export default function InitPool() {
                 pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
             );
 
-            dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
-            dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
+            setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick);
+            setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
 
             const highTickDiff =
                 pinnedDisplayPrices.pinnedHighTick - selectedPoolPriceTick;
@@ -802,16 +800,51 @@ export default function InitPool() {
         return () => clearTimeout(timer);
     }, []);
 
+    const [
+        amountToReduceNativeTokenQtyMainnet,
+        setAmountToReduceNativeTokenQtyMainnet,
+    ] = useState<number>(0.01);
+    const [
+        amountToReduceNativeTokenQtyScroll,
+        setAmountToReduceNativeTokenQtyScroll,
+    ] = useState<number>(0.0007);
+
+    const amountToReduceNativeTokenQty =
+        chainId === '0x82750' || chainId === '0x8274f'
+            ? amountToReduceNativeTokenQtyScroll
+            : amountToReduceNativeTokenQtyMainnet;
+
     // calculate price of gas for pool init
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
-            const averageInitCostInGasDrops = isMintLiqEnabled
-                ? 400000
-                : 155000;
+            const gasDropsEstimateInit = isMintLiqEnabled
+                ? GAS_DROPS_ESTIMATE_INIT_WITH_POOL
+                : GAS_DROPS_ESTIMATE_INIT_WITHOUT_POOL;
+
+            const costOfMainnetPoolInETH =
+                gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
+
+            setAmountToReduceNativeTokenQtyMainnet(
+                costOfMainnetPoolInETH * RANGE_BUFFER_MULTIPLIER,
+            );
+
+            const costOfScrollPoolInETH =
+                gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
+
+            //   IS_LOCAL_ENV &&  console.log({
+            //         gasPriceInGwei,
+            //         costOfScrollPoolInETH,
+            //         amountToReduceNativeTokenQtyScroll,
+            //     });
+
+            setAmountToReduceNativeTokenQtyScroll(
+                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER,
+            );
+
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                averageInitCostInGasDrops *
-                1e-9 *
+                gasDropsEstimateInit *
+                NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice;
 
             setInitGasPriceinDollars(
@@ -1010,6 +1043,8 @@ export default function InitPool() {
         isTokenAInputDisabled,
         isWithdrawTokenAFromDexChecked,
         true, // hardcode pool initialized since we will be initializing it on confirm
+        tokenAQtyCoveredByWalletBalance,
+        amountToReduceNativeTokenQty,
         isMintLiqEnabled,
         isInitPage,
     );
@@ -1024,6 +1059,8 @@ export default function InitPool() {
         isTokenBInputDisabled,
         isWithdrawTokenBFromDexChecked,
         true, // hardcode pool initialized since we will be initializing it on confirm
+        tokenBQtyCoveredByWalletBalance,
+        amountToReduceNativeTokenQty,
         isMintLiqEnabled,
         isInitPage,
     );
@@ -1083,7 +1120,7 @@ export default function InitPool() {
         sendRangePosition,
         sendInit,
         poolExists,
-        isConnected,
+        isConnected: !!isUserConnected,
         connectButtonDelayElapsed,
         isTokenAAllowanceSufficient,
         isTokenBAllowanceSufficient,
@@ -1151,8 +1188,8 @@ export default function InitPool() {
                 pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
             );
 
-            dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
-            dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
+            setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick);
+            setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
 
             setMaxPrice(
                 parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
@@ -1469,6 +1506,7 @@ export default function InitPool() {
                 reverseTokens={reverseTokens}
                 isMintLiqEnabled={isMintLiqEnabled}
                 isInitPage
+                amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
             />
         </FlexContainer>
     );
@@ -1680,7 +1718,7 @@ export default function InitPool() {
                     <FlexContainer
                         overlay={isRangeBoundsAndCollateralDisabled && 'blur'}
                     >
-                        <AdvancedModeToggle advancedMode={advancedMode} />
+                        <AdvancedModeToggle />
                     </FlexContainer>
 
                     {!hideContentOnMobile && (
