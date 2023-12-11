@@ -9,6 +9,7 @@ import {
 } from '../ambient-utils/dataLayer';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { CrocEnvContext } from './CrocEnvContext';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../ambient-utils/constants';
 
 export interface ExploreContextIF {
     pools: {
@@ -94,7 +95,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             pool.base.address,
             pool.quote.address,
             poolIdx,
-            Math.floor(Date.now() / 60000),
+            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
             crocEnv,
             activeNetwork.graphCacheUrl,
             cachedFetchTokenPrice,
@@ -123,7 +124,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             poolIdx,
             shouldInvert,
             activeNetwork.graphCacheUrl,
-            Math.floor(Date.now() / 60000),
+            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
         );
         if (!priceChangeRaw) {
             priceChangePercent = '';

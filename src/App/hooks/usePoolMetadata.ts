@@ -7,7 +7,10 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { GCGO_OVERRIDE_URL } from '../../ambient-utils/constants';
+import {
+    GCGO_OVERRIDE_URL,
+    CACHE_UPDATE_FREQ_IN_MS,
+} from '../../ambient-utils/constants';
 import {
     LimitOrderServerIF,
     PositionIF,
@@ -212,7 +215,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         props.chainData.poolIndex,
                         props.chainData.chainId,
                         props.graphCacheUrl,
-                        Math.floor(Date.now() / 60000),
+                        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
                     )
                         .then((liquidityFeeNum) => {
                             if (liquidityFeeNum)

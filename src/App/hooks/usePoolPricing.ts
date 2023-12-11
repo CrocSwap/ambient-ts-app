@@ -10,6 +10,7 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { RangeContext } from '../../contexts/RangeContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../../ambient-utils/constants';
 
 interface PoolPricingPropsIF {
     crocEnv?: CrocEnv;
@@ -177,7 +178,7 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
                         props.chainData.poolIndex,
                         isDenomBase,
                         activeNetwork.graphCacheUrl,
-                        Math.floor(Date.now() / 60000),
+                        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
                     );
 
                     if (!priceChangeResult) {

@@ -14,6 +14,7 @@ import { sortBaseQuoteTokens, toDisplayPrice } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { PoolIF, PoolStatIF } from '../../ambient-utils/types';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../../ambient-utils/constants';
 
 const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
     const {
@@ -177,7 +178,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                     pool.base.address,
                     pool.quote.address,
                     poolIndex,
-                    Math.floor(Date.now() / 60000),
+                    Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
                     crocEnv,
                     activeNetwork.graphCacheUrl,
                     cachedFetchTokenPrice,
@@ -229,7 +230,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                         poolIndex,
                         shouldInvertDisplay,
                         activeNetwork.graphCacheUrl,
-                        Math.floor(Date.now() / 60000),
+                        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
                     );
 
                     if (!priceChangeResult) {
