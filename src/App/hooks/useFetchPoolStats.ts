@@ -8,7 +8,6 @@ import {
     getUnicodeCharacter,
     getMoneynessRank,
     getFormattedNumber,
-    get24hChange,
 } from '../../ambient-utils/dataLayer';
 import { estimateFrom24HrRangeApr } from '../../ambient-utils/api';
 import { sortBaseQuoteTokens, toDisplayPrice } from '@crocswap-libs/sdk';
@@ -24,6 +23,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         cachedPoolStatsFetch,
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
+        cachedGet24hChange,
     } = useContext(CachedDataContext);
     const {
         crocEnv,
@@ -222,13 +222,14 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                 }
 
                 try {
-                    const priceChangeResult = await get24hChange(
+                    const priceChangeResult = await cachedGet24hChange(
                         chainId,
                         baseAddr,
                         quoteAddr,
                         poolIndex,
                         shouldInvertDisplay,
                         activeNetwork.graphCacheUrl,
+                        Math.floor(Date.now() / 60000),
                     );
 
                     if (!priceChangeResult) {

@@ -176,6 +176,7 @@ const get24hChange = async (
     poolIdx: number,
     denomInBase: boolean,
     graphCacheUrl: string,
+    _cacheTimeTag: number | string,
 ): Promise<number | undefined> => {
     const poolStatsFreshEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/pool_stats?'
@@ -347,6 +348,20 @@ export type PoolStatsFn = (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ) => Promise<PoolStatsIF>;
 
+export type Change24Fn = (
+    chainId: string,
+    baseToken: string,
+    quoteToken: string,
+    poolIdx: number,
+    denomInBase: boolean,
+    graphCacheUrl: string,
+    _cacheTimeTag: number | string,
+) => Promise<number | undefined>;
+
 export function memoizePoolStats(): PoolStatsFn {
     return memoizeCacheQueryFn(fetchPoolStats) as PoolStatsFn;
+}
+
+export function memoizeGet24hChange(): Change24Fn {
+    return memoizeCacheQueryFn(get24hChange) as Change24Fn;
 }

@@ -5,10 +5,11 @@ import {
     setLimitTick,
     setPoolPriceNonDisplay,
 } from '../../utils/state/tradeDataSlice';
-import { get24hChange, SpotPriceFn } from '../../ambient-utils/dataLayer';
+import { SpotPriceFn } from '../../ambient-utils/dataLayer';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { RangeContext } from '../../contexts/RangeContext';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 
 interface PoolPricingPropsIF {
     crocEnv?: CrocEnv;
@@ -32,6 +33,8 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
     const { isDenomBase, setDidUserFlipDenom } = useContext(TradeDataContext);
     const { setPrimaryQuantityRange } = useContext(RangeContext);
     const { activeNetwork } = useContext(CrocEnvContext);
+
+    const { cachedGet24hChange } = useContext(CachedDataContext);
 
     // value for whether a pool exists on current chain and token pair
     // ... true => pool exists
@@ -167,13 +170,14 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
                 props.quoteTokenAddress
             ) {
                 try {
-                    const priceChangeResult = await get24hChange(
+                    const priceChangeResult = await cachedGet24hChange(
                         props.chainData.chainId,
                         props.baseTokenAddress,
                         props.quoteTokenAddress,
                         props.chainData.poolIndex,
                         isDenomBase,
                         activeNetwork.graphCacheUrl,
+                        Math.floor(Date.now() / 60000),
                     );
 
                     if (!priceChangeResult) {
