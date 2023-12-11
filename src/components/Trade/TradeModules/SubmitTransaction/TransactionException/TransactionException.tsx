@@ -1,7 +1,9 @@
 import styles from './TransactionException.module.css';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
-import { ZERO_ADDRESS } from '../../../../../constants';
+import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
 import DividerDark from '../../../../Global/DividerDark/DividerDark';
+import { useContext } from 'react';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import { RangeContext } from '../../../../../contexts/RangeContext';
 
 interface propsIF {
     txErrorMessage: string;
@@ -10,20 +12,19 @@ interface propsIF {
 export default function TransactionException(props: propsIF) {
     const { txErrorMessage } = props;
     const rangeModuleActive = location.pathname.includes('/trade/pool');
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const { isTokenAPrimaryRange } = useContext(RangeContext);
+    const { tokenA, tokenB } = useContext(TradeDataContext);
 
     const isEthSecondary =
-        (tradeData.isTokenAPrimaryRange &&
-            tradeData.tokenB.address === ZERO_ADDRESS) ||
-        (!tradeData.isTokenAPrimaryRange &&
-            tradeData.tokenA.address === ZERO_ADDRESS);
+        (isTokenAPrimaryRange && tokenB.address === ZERO_ADDRESS) ||
+        (!isTokenAPrimaryRange && tokenA.address === ZERO_ADDRESS);
 
-    const primaryTokenSymbol = tradeData.isTokenAPrimaryRange
-        ? tradeData.tokenA.symbol
-        : tradeData.tokenB.symbol;
+    const primaryTokenSymbol = isTokenAPrimaryRange
+        ? tokenA.symbol
+        : tokenB.symbol;
 
     const formattedErrorMessage =
-        'Error Message: ' + txErrorMessage.replace('err: ', '');
+        'Error Message: ' + txErrorMessage?.replace('err: ', '');
 
     return (
         <div className={styles.removal_pending}>

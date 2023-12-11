@@ -1,13 +1,13 @@
 import styles from './CurrentDataInfo.module.css';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
-import { Dispatch, memo, SetStateAction } from 'react';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { CandleData } from '../../../../App/functions/fetchCandleSeries';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { Dispatch, memo, SetStateAction, useContext } from 'react';
+import { CandleDataIF } from '../../../../ambient-utils/types';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface CurrentDataInfoPropsIF {
     showTooltip: boolean;
-    currentData: CandleData | undefined;
+    currentData: CandleDataIF | undefined;
     currentVolumeData: number | undefined;
     showLatest: boolean;
     setLatest: Dispatch<SetStateAction<boolean>>;
@@ -33,8 +33,7 @@ function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
         return getFormattedNumber({ value: data, zeroDisplay: '-' });
     }
 
-    const tradeData = useAppSelector((state) => state.tradeData);
-    const denominationsInBase = tradeData.isDenomBase;
+    const { isDenomBase } = useContext(TradeDataContext);
 
     return (
         <div className={styles.chart_tooltips}>
@@ -43,25 +42,25 @@ function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
                     {currentData &&
                         'O: ' +
                             formattedCurrentData(
-                                denominationsInBase
+                                isDenomBase
                                     ? currentData.invPriceOpenExclMEVDecimalCorrected
                                     : currentData.priceOpenExclMEVDecimalCorrected,
                             ) +
                             ' H: ' +
                             formattedCurrentData(
-                                denominationsInBase
+                                isDenomBase
                                     ? currentData.invMinPriceExclMEVDecimalCorrected
                                     : currentData.maxPriceExclMEVDecimalCorrected,
                             ) +
                             ' L: ' +
                             formattedCurrentData(
-                                denominationsInBase
+                                isDenomBase
                                     ? currentData.invMaxPriceExclMEVDecimalCorrected
                                     : currentData.minPriceExclMEVDecimalCorrected,
                             ) +
                             ' C: ' +
                             formattedCurrentData(
-                                denominationsInBase
+                                isDenomBase
                                     ? currentData.invPriceCloseExclMEVDecimalCorrected
                                     : currentData.priceCloseExclMEVDecimalCorrected,
                             ) +

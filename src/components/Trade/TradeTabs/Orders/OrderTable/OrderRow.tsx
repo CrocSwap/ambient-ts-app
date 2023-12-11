@@ -2,8 +2,7 @@ import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
 import OrdersMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import OrderDetailsModal from '../../../../OrderDetails/OrderDetailsModal/OrderDetailsModal';
 import { memo, useContext, useEffect, useRef } from 'react';
-import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
+import { LimitOrderIF } from '../../../../../ambient-utils/types';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { orderRowConstants } from '../orderRowConstants';
@@ -11,15 +10,15 @@ import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useModal } from '../../../../Global/Modal/useModal';
 import { OrderRow as OrderRowStyled } from '../../../../../styled/Components/TransactionTable';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
 interface propsIF {
     limitOrder: LimitOrderIF;
     isAccountView: boolean;
     tableView: 'small' | 'medium' | 'large';
-    fetchedEnsAddress?: string;
 }
 
 function OrderRow(props: propsIF) {
-    const { tableView, limitOrder, isAccountView, fetchedEnsAddress } = props;
+    const { tableView, limitOrder, isAccountView } = props;
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
@@ -32,9 +31,7 @@ function OrderRow(props: propsIF) {
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
 
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
 
     const {
         posHash,
@@ -67,12 +64,7 @@ function OrderRow(props: propsIF) {
         originalPositionLiqQuote,
         expectedPositionLiqBase,
         expectedPositionLiqQuote,
-    } = useProcessOrder(
-        limitOrder,
-        userAddress,
-        isAccountView,
-        fetchedEnsAddress,
-    );
+    } = useProcessOrder(limitOrder, userAddress, isAccountView);
 
     const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
         useModal();

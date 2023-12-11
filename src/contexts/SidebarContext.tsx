@@ -13,9 +13,8 @@ import {
     useRecentPools,
 } from '../App/hooks/useRecentPools';
 import { sidebarMethodsIF, useSidebar } from '../App/hooks/useSidebar';
-import { IS_LOCAL_ENV } from '../constants';
-import { diffHashSig } from '../utils/functions/diffHashSig';
-import isJsonString from '../utils/functions/isJsonString';
+import { IS_LOCAL_ENV } from '../ambient-utils/constants';
+import { diffHashSig, isJsonString } from '../ambient-utils/dataLayer';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { AppStateContext } from './AppStateContext';
 import { CrocEnvContext } from './CrocEnvContext';

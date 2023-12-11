@@ -18,7 +18,7 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
-import { PositionIF } from '../../../utils/interfaces/exports';
+import { PositionIF, PositionServerIF } from '../../../ambient-utils/types';
 import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import {
@@ -34,22 +34,30 @@ import {
     TransactionError,
 } from '../../../utils/TransactionError';
 import useDebounce from '../../../App/hooks/useDebounce';
-import { setAdvancedMode } from '../../../utils/state/tradeDataSlice';
-import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../../constants';
+import {
+    GCGO_OVERRIDE_URL,
+    IS_LOCAL_ENV,
+} from '../../../ambient-utils/constants';
 import { FiExternalLink } from 'react-icons/fi';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { RangeContext } from '../../../contexts/RangeContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { getPositionData } from '../../../App/functions/getPositionData';
+import {
+    getPositionData,
+    getFormattedNumber,
+} from '../../../ambient-utils/dataLayer';
 import { TokenContext } from '../../../contexts/TokenContext';
-import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import RangeWidth from '../../../components/Form/RangeWidth/RangeWidth';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import {
+    GAS_DROPS_ESTIMATE_REPOSITION,
+    NUM_GWEI_IN_WEI,
+} from '../../../ambient-utils/constants/';
 
 function Reposition() {
     // current URL parameter string
@@ -78,6 +86,7 @@ function Reposition() {
         setMinRangePrice: setMinPrice,
         setCurrentRangeInReposition,
         setRescaleRangeBoundariesWithSlider,
+        setAdvancedMode,
     } = useContext(RangeContext);
 
     const [isOpen, openModal, closeModal] = useModal();
@@ -145,14 +154,11 @@ function Reposition() {
     }, [crocEnv, lastBlockNumber, position?.positionId]);
 
     const {
-        tradeData: {
-            tokenA,
-            tokenB,
-            isTokenABase,
-            poolPriceNonDisplay: currentPoolPriceNonDisplay,
-            isDenomBase,
-        },
+        tradeData: { poolPriceNonDisplay: currentPoolPriceNonDisplay },
     } = useAppSelector((state) => state);
+
+    const { isDenomBase, tokenA, tokenB, isTokenABase } =
+        useContext(TradeDataContext);
 
     const currentPoolPriceTick =
         Math.log(currentPoolPriceNonDisplay) / Math.log(1.0001);
@@ -210,7 +216,7 @@ function Reposition() {
 
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('set Advanced Mode to false');
-        dispatch(setAdvancedMode(false));
+        setAdvancedMode(false);
     }, []);
 
     useEffect(() => {
@@ -589,11 +595,10 @@ function Reposition() {
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
-            const averageRepositionCostInGasDrops = 260705;
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                averageRepositionCostInGasDrops *
-                1e-9 *
+                GAS_DROPS_ESTIMATE_REPOSITION *
+                NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice;
 
             setRangeGasPriceinDollars(

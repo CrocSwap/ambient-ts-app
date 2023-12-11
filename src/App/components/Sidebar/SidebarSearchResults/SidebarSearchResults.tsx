@@ -2,12 +2,13 @@ import PoolsSearchResults from './PoolsSearchResults/PoolsSearchResults';
 import PositionsSearchResults from './PositionsSearchResults';
 import OrdersSearchResults from './OrdersSearchResults';
 import TxSearchResults from './TxSearchResults/TxSearchResults';
-import { PoolStatsFn } from '../../../functions/getPoolStats';
+import { PoolStatsFn } from '../../../../ambient-utils/dataLayer';
+import { TokenPriceFn } from '../../../../ambient-utils/api';
 import { sidebarSearchIF } from '../../../hooks/useSidebarSearch';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { TokenPriceFn } from '../../../functions/fetchTokenPrice';
 import { SearchResultsContainer } from '../../../../styled/Components/Sidebar';
 import { Text } from '../../../../styled/Common';
+import { useContext } from 'react';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 interface propsIF {
     cachedPoolStatsFetch: PoolStatsFn;
@@ -17,9 +18,7 @@ interface propsIF {
 
 export default function SidebarSearchResults(props: propsIF) {
     const { searchData, cachedPoolStatsFetch, cachedFetchTokenPrice } = props;
-    const { isLoggedIn: isUserConnected } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { isUserConnected } = useContext(UserDataContext);
 
     return (
         <SearchResultsContainer
