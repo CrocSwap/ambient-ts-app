@@ -262,6 +262,12 @@ function Toolbar(props: ToolbarProps) {
         }
     };
 
+    const handleDeleteAll = () => {
+        setSelectedDrawnShape(undefined);
+        setActiveDrawingType('Cross');
+        deleteAllShapes();
+    };
+
     return (
         <div
             className={` ${
@@ -377,7 +383,7 @@ function Toolbar(props: ToolbarProps) {
                                             ? styles.icon_active_container
                                             : styles.icon_inactive_container
                                     }
-                                    onClick={() => deleteAllShapes()}
+                                    onClick={() => handleDeleteAll()}
                                 >
                                     <img src={trashIcon} alt='' />
                                 </div>
