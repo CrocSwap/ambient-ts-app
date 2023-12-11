@@ -46,6 +46,8 @@ export const calculateSecondaryDepositQty = (
         }
     }
 
+    console.log({ secondaryQuantity });
+
     if (secondaryQuantity) {
         if (
             secondaryQuantity === Infinity ||

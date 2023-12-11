@@ -11,13 +11,6 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../ambient-utils/constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
-import {
-    getFormattedNumber,
-    exponentialNumRegEx,
-    getUnicodeCharacter,
-    getMoneynessRank,
-    truncateDecimals,
-} from '../../ambient-utils/dataLayer';
 
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import InitPoolTokenSelect from '../../components/Global/InitPoolTokenSelect/InitPoolTokenSelect';
@@ -47,11 +40,16 @@ import { CurrencyQuantityInput } from '../../styled/Components/TradeModules';
 import RangeTokenInput from '../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
 import { useCreateRangePosition } from '../../App/hooks/useCreateRangePosition';
 import {
+    getFormattedNumber,
+    exponentialNumRegEx,
+    getUnicodeCharacter,
+    getMoneynessRank,
+    truncateDecimals,
     getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
     roundDownTick,
     roundUpTick,
-} from '../Trade/Range/rangeFunctions';
+} from '../../ambient-utils/dataLayer';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import {
     DEFAULT_MAX_PRICE_DIFF_PERCENTAGE,

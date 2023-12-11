@@ -1,14 +1,15 @@
-import { fetchDecoratedUserPositions } from '../api/fetchUserPositions';
-import { fetchBlockNumber } from '../api/fetchBlockNumber';
 import { ethers } from 'ethers';
-import { FetchContractDetailsFn } from '../api/fetchContractDetails';
-import { FetchAddrFn } from '../api/fetchAddress';
-import { tokenListURIs } from '../constants/tokenListURIs';
-import fetchTokenList from '../api/fetchTokenList';
+import { tokenListURIs } from '../../constants/tokenListURIs';
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { GCGO_ETHEREUM_URL } from '../constants/gcgo';
-import { querySpotPrice } from '../dataLayer';
-import { fetchTokenPrice, fetchContractDetails, fetchEnsAddress } from '../api';
+import { GCGO_ETHEREUM_URL } from '../../constants/gcgo';
+import { querySpotPrice } from '../../dataLayer';
+import {
+    fetchTokenPrice,
+    fetchContractDetails,
+    fetchEnsAddress,
+    fetchBlockNumber,
+    fetchDecoratedUserPositions,
+} from '../../api';
 
 const readFile = async (filePath: string): Promise<string> => {
     if (

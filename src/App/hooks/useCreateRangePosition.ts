@@ -19,6 +19,7 @@ import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { RangeContext } from '../../contexts/RangeContext';
+import { createRangePositionTx } from '../../ambient-utils/dataLayer/transactions/range';
 
 export function useCreateRangePosition() {
     const dispatch = useAppDispatch();
@@ -76,65 +77,37 @@ export function useCreateRangePosition() {
 
         if (!crocEnv) return;
 
-        const pool = crocEnv.pool(tokenA.address, tokenB.address);
-
-        const poolPrice = await pool.displayPrice();
-
-        const minPrice = poolPrice * (1 - slippageTolerancePercentage / 100);
-        const maxPrice = poolPrice * (1 + slippageTolerancePercentage / 100);
-
         let tx;
-        try {
-            tx = await (isAmbient
-                ? isTokenAPrimaryRange
-                    ? pool.mintAmbientQuote(
-                          tokenAInputQty, // TODO: implementation should disable or not
-                          //   isTokenAInputDisabled ? 0 : tokenAInputQty,
 
-                          [minPrice, maxPrice],
-                          {
-                              surplus: [
-                                  isWithdrawTokenAFromDexChecked,
-                                  isWithdrawTokenBFromDexChecked,
-                              ],
-                          },
-                      )
-                    : pool.mintAmbientBase(
-                          tokenBInputQty,
-                          //   isTokenBInputDisabled ? 0 : tokenBInputQty,
-                          [minPrice, maxPrice],
-                          {
-                              surplus: [
-                                  isWithdrawTokenAFromDexChecked,
-                                  isWithdrawTokenBFromDexChecked,
-                              ],
-                          },
-                      )
-                : isTokenAPrimaryRange
-                ? pool.mintRangeQuote(
-                      tokenAInputQty,
-                      //   isTokenAInputDisabled ? 0 : tokenAInputQty,
-                      [defaultLowTick, defaultHighTick],
-                      [minPrice, maxPrice],
-                      {
-                          surplus: [
-                              isWithdrawTokenAFromDexChecked,
-                              isWithdrawTokenBFromDexChecked,
-                          ],
-                      },
-                  )
-                : pool.mintRangeBase(
-                      tokenBInputQty,
-                      //   isTokenBInputDisabled ? 0 : tokenBInputQty,
-                      [defaultLowTick, defaultHighTick],
-                      [minPrice, maxPrice],
-                      {
-                          surplus: [
-                              isWithdrawTokenAFromDexChecked,
-                              isWithdrawTokenBFromDexChecked,
-                          ],
-                      },
-                  ));
+        console.log({
+            isAmbient,
+            slippageTolerancePercentage,
+            tokenAInputQty,
+            tokenBInputQty,
+            isTokenAPrimaryRange,
+            defaultLowTick,
+            defaultHighTick,
+        });
+
+        try {
+            tx = await createRangePositionTx({
+                crocEnv,
+                isAmbient,
+                slippageTolerancePercentage,
+                tokenA: {
+                    address: tokenA.address,
+                    qty: tokenAInputQty,
+                    isWithdrawFromDexChecked: isWithdrawTokenAFromDexChecked,
+                },
+                tokenB: {
+                    address: tokenB.address,
+                    qty: tokenBInputQty,
+                    isWithdrawFromDexChecked: isWithdrawTokenBFromDexChecked,
+                },
+                isTokenAPrimaryRange,
+                tick: { low: defaultLowTick, high: defaultHighTick },
+            });
+
             setNewRangeTransactionHash(tx?.hash);
             dispatch(addPendingTx(tx?.hash));
             if (tx?.hash)

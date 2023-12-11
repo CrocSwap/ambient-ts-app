@@ -102,6 +102,17 @@
     "jest": {
         "transformIgnorePatterns": [
             "/node_modules/(?!d3|d3-array|internmap|delaunator|robust-predicates|wagmi|@wagmi|modern-screenshot)"
-        ]
+        ],
+        "projects": [
+    {
+      "displayName": "sequential",
+      "testMatch": ["src/ambient-utils/tests/sequential/**/*.test.js"],
+      "runInBand": true
+    },
+    {
+      "displayName": "parallel",
+      "testMatch": ["src/ambient-utils/tests/parallel/**/*.test.js"]
+    }
+  ]
     }
 }

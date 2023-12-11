@@ -19,7 +19,6 @@ import {
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
 import { PositionIF, PositionServerIF } from '../../../ambient-utils/types';
-import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import {
     addPendingTx,
@@ -46,6 +45,7 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import {
     getPositionData,
     getFormattedNumber,
+    getPinnedPriceValuesFromTicks,
 } from '../../../ambient-utils/dataLayer';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';

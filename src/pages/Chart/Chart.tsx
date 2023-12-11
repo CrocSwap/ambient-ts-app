@@ -20,11 +20,6 @@ import {
 import { PoolContext } from '../../contexts/PoolContext';
 import './Chart.css';
 import { pinTickLower, pinTickUpper, tickToPrice } from '@crocswap-libs/sdk';
-import {
-    getPinnedPriceValuesFromDisplayPrices,
-    getPinnedPriceValuesFromTicks,
-    getPinnedTickFromDisplayPrice,
-} from '../Trade/Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import useHandleSwipeBack from '../../utils/hooks/useHandleSwipeBack';
 import { candleTimeIF } from '../../App/hooks/useChartSettings';
@@ -33,6 +28,9 @@ import {
     diffHashSig,
     diffHashSigChart,
     diffHashSigScaleData,
+    getPinnedPriceValuesFromDisplayPrices,
+    getPinnedPriceValuesFromTicks,
+    getPinnedTickFromDisplayPrice,
 } from '../../ambient-utils/dataLayer';
 import { CandleContext } from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';

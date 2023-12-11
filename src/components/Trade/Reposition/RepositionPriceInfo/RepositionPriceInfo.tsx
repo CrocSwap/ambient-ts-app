@@ -1,39 +1,14 @@
-// START: Import Local Files
-// import { capitalConcFactor, tickToPrice } from '@crocswap-libs/sdk';
-// import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useContext, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
-// import { getPinnedPriceValuesFromTicks } from '../../../../pages/Trade/Range/rangeFunctions';
 import { getUnicodeCharacter } from '../../../../ambient-utils/dataLayer';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { PositionIF } from '../../../../ambient-utils/types';
-// import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
-// import DividerDark from '../../../Global/DividerDark/DividerDark';
 import styles from './RepositionPriceInfo.module.css';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
-// import { AiOutlineQuestionCircle } from 'react-icons/ai';
-// import AprExplanation from '../../../Global/Informational/AprExplanation';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-// import { AppStateContext } from '../../../../contexts/AppStateContext';
-// import { PoolContext } from '../../../../contexts/PoolContext';
-
-// import truncateDecimals from '../../../../ambient-utils/dataLayer';
-// import makeCurrentPrice from './makeCurrentPrice';
-// import { TokenPairIF } from '../../../../ambient-utils/types';
-
-// interface for component props
-// interface IRepositionPriceInfoPropsIF {
-//     tokenPair: TokenPairIF;
-//     spotPriceDisplay: string;
-//     maxPriceDisplay: string;
-//     minPriceDisplay: string;
-//     aprPercentage: number;
-//     didUserFlipDenom: boolean;
-//     poolPriceCharacter: string;
-// }
 
 interface IRepositionPriceInfoProps {
     position: PositionIF;

@@ -26,22 +26,21 @@ import {
     diffHashSig,
     isStablePair,
     truncateDecimals,
-} from '../../../ambient-utils/dataLayer';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { PositionIF } from '../../../ambient-utils/types';
-import { rangeTutorialSteps } from '../../../utils/tutorial/Range';
-import {
     getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
     roundDownTick,
     roundUpTick,
-} from './rangeFunctions';
+} from '../../../ambient-utils/dataLayer';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { PositionIF } from '../../../ambient-utils/types';
+import { rangeTutorialSteps } from '../../../utils/tutorial/Range';
 
 import { useApprove } from '../../../App/functions/approve';
 import { useHandleRangeButtonMessage } from '../../../App/hooks/useHandleRangeButtonMessage';
 import { useRangeInputDisable } from './useRangeInputDisable';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { fetchBlockNumber } from '../../../ambient-utils/api';
 
 export const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 export const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
@@ -950,6 +949,32 @@ function Range() {
         aprPercentage: aprPercentage,
         daysInRange: daysInRange,
     };
+
+    useEffect(() => {
+        let blockNumber = -1;
+        (async () => {
+            blockNumber = await fetchBlockNumber(
+                'https://goerli.infura.io/v3/c2d502344b024adf84b313c663131ada',
+            );
+            const poolPrice = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+
+            console.log({
+                poolPriceNonDisplay,
+                poolPrice,
+                defaultLowTick,
+                defaultHighTick,
+                lastBlockNumber: blockNumber,
+                tokenAInputQty,
+                tokenBInputQty,
+            });
+        })();
+    }, [
+        poolPriceNonDisplay,
+        defaultLowTick,
+        defaultHighTick,
+        tokenAInputQty,
+        tokenBInputQty,
+    ]);
 
     return (
         <TradeModuleSkeleton

@@ -5,7 +5,7 @@ import {
     getFormattedNumber,
     getPriceImpactString,
     isStablePair,
-    getSwapTxReceipt,
+    getTxReceipt,
     performSwap,
 } from '../../../ambient-utils/dataLayer';
 import Button from '../../../components/Form/Button';
@@ -193,7 +193,6 @@ function Swap(props: propsIF) {
             : amountToReduceEthMainnet;
 
     useEffect(() => {
-        console.log('determining swap button status + isAllowed');
         if (isSellLoading || isBuyLoading) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('...');
@@ -257,13 +256,11 @@ function Swap(props: propsIF) {
     ]);
 
     useEffect(() => {
-        console.log('resetting swap transaction hash');
         setNewSwapTransactionHash('');
     }, [baseToken.address + quoteToken.address]);
 
     // calculate price of gas for swap
     useEffect(() => {
-        console.log('calculating swap gas price');
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const averageSwapCostInGasDrops = isSellTokenNativeToken
                 ? 100000
@@ -307,12 +304,10 @@ function Swap(props: propsIF) {
     ]);
 
     useEffect(() => {
-        console.log('setting isWithdrawFromDexChecked');
         setIsWithdrawFromDexChecked(parseFloat(tokenADexBalance) > 0);
     }, [tokenADexBalance]);
 
     const resetConfirmation = () => {
-        console.log('resetting confirmation');
         setShowConfirmation(false);
         setTxErrorCode('');
         setTxErrorMessage('');
@@ -320,13 +315,10 @@ function Swap(props: propsIF) {
     };
 
     async function initiateSwap() {
-        console.log('initiating swap');
         resetConfirmation();
 
         setShowConfirmation(true);
         if (!crocEnv) return;
-
-        console.log('crocenv exists!');
 
         const qty = isTokenAPrimary
             ? sellQtyString.replaceAll(',', '')
@@ -336,8 +328,6 @@ function Swap(props: propsIF) {
 
         let tx;
         try {
-            console.log('setting swap plan...');
-
             const sellTokenAddress = isQtySell
                 ? tokenA.address
                 : tokenB.address;
@@ -353,13 +343,10 @@ function Swap(props: propsIF) {
                 isSaveAsDexSurplusChecked,
             });
 
-            console.log('swapping based on plan');
-
             setNewSwapTransactionHash(tx?.hash);
             dispatch(addPendingTx(tx?.hash));
 
             if (tx.hash) {
-                console.log('adding transaction to list (by type)');
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
@@ -393,10 +380,8 @@ function Swap(props: propsIF) {
         if (tx) {
             let receipt;
             try {
-                console.log('getting tx receipt');
-                receipt = await getSwapTxReceipt(tx);
+                receipt = await getTxReceipt(tx);
             } catch (e) {
-                console.log('error getting tx receipt or something');
                 const error = e as TransactionError;
                 console.error({ error });
                 // The user used "speed up" or something similar
@@ -423,9 +408,6 @@ function Swap(props: propsIF) {
             }
 
             if (receipt) {
-                console.log(
-                    'adding receipt to list of receipts + removing pending tx',
-                );
                 dispatch(addReceipt(JSON.stringify(receipt)));
                 dispatch(removePendingTx(receipt.transactionHash));
             }
@@ -645,7 +627,6 @@ function Swap(props: propsIF) {
                         }
                         disabled={isApprovalPending}
                         action={async () => {
-                            console.log('seeking approval for tokenA');
                             await approve(tokenA.address, tokenA.symbol);
                         }}
                         flat
