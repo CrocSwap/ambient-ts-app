@@ -119,18 +119,19 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
 
     const moduleDimensions: ModuleDimensions = {
         Swap: {
-            height: showExtraInfo ? 'auto' : '200px',
+            height: mediumScreen || showExtraInfo ? 'auto' : '500px',
             width: 'auto',
         },
         Limit: {
-            height: showExtraInfo ? 'auto' : 'auto',
+            height: mediumScreen || showExtraInfo ? 'auto' : '600px',
             width: 'auto',
         },
         Range: {
-            height: showExtraInfo ? 'auto' : 'auto',
+            height: mediumScreen || showExtraInfo ? 'auto' : '670px',
             width: 'auto',
         },
     };
+    console.log(moduleDimensions[moduleName]?.height);
 
     const mainContent = (
         <>
