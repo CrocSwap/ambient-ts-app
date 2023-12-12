@@ -18,8 +18,8 @@ import { isNetworkAccessDisabled } from '../../config';
 describe('Submit and Remove Limit Orders on Goerli\'s ETH/USDC pool', () => {
     const sleep = (ms: number) =>
         new Promise((resolve) => setTimeout(resolve, ms));
-    const TEST_TIMEOUT = 60 * 1000; // 60 seconds
-    const DELAY_BEFORE_REMOVAL = 20 * 1000; // 10 seconds
+    const TEST_TIMEOUT = 90 * 1000; // 90 seconds
+    const DELAY_BEFORE_REMOVAL = 30 * 1000; // 30 seconds
     const TEST_USER =
         process.env.TEST_USER || '0x648a62958D11Ea1De1F73ff3F5ecb9FBEE1bBa01';
     const providerUrl =
@@ -142,6 +142,7 @@ describe('Submit and Remove Limit Orders on Goerli\'s ETH/USDC pool', () => {
         it(
             'removes a buy limit order',
             async () => {
+                // TODO: update with a loop that checks for liquidity on the chain (with timeout)
                 await sleep(DELAY_BEFORE_REMOVAL);
 
                 const initialEthBalance = await signer.provider.getBalance(
