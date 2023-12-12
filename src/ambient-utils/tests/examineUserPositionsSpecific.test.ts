@@ -10,6 +10,7 @@ import { GCGO_ETHEREUM_URL } from '../constants/gcgo';
 import { querySpotPrice } from '../dataLayer';
 import { fetchTokenPrice, fetchContractDetails, fetchEnsAddress } from '../api';
 import tokenUniverseData from '../testing-only-ambient-token-list.json';
+import { PositionIF } from '../types';
 
 const fetchData = async () => {
     const tokenUniv = tokenUniverseData.tokens;
@@ -23,7 +24,7 @@ const fetchData = async () => {
     const lastBlockNumber = await fetchBlockNumber(infuraUrl);
     const signer = undefined;
     const crocEnv = new CrocEnv(provider, signer);
-    const updatedLedger = await fetchDecoratedUserPositions({
+    const updatedLedger = await fetchDecoratedUserPositions<PositionIF>({
         urlTarget: urlTarget,
         user: userAddress,
         chainId: chainId,

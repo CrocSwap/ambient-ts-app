@@ -32,7 +32,7 @@ import fetchTokenList from '../api/fetchTokenList';
 import { GCGO_ETHEREUM_URL } from '../constants/gcgo';
 
 const fetchUserPositions = async ({
-    urlTarget,
+    recordType,
     user,
     chainId,
     gcUrl,
@@ -41,7 +41,7 @@ const fetchUserPositions = async ({
     omitKnockout = true,
     addValue = true,
 }: {
-    urlTarget: string;
+    recordType: PositionIF | LimitOrderIF;
     user: string;
     chainId: string;
     gcUrl?: string;
@@ -59,7 +59,7 @@ const fetchUserPositions = async ({
         : gcUrl + '/user_limit_orders?';
 
     let selectedEndpoint;
-    if (urlTarget == 'limit_order_states') {
+    if (recordType == LimitOrderIF) {
         selectedEndpoint = userLimitOrderStatesCacheEndpoint;
     } else {
         // default to 'user_positions'
@@ -80,7 +80,7 @@ const fetchUserPositions = async ({
 };
 
 const decorateUserPositions = async ({
-    urlTarget,
+    recordType,
     userPositions,
     tokenUniv,
     crocEnv,
@@ -92,7 +92,7 @@ const decorateUserPositions = async ({
     cachedTokenDetails,
     cachedEnsResolve,
 }: {
-    urlTarget: string;
+    recordType: PositionIF | LimitOrderIF;
     userPositions: PositionIF[] | LimitOrderIF[];
     tokenUniv: TokenIF[];
     crocEnv: CrocEnv;
@@ -105,7 +105,7 @@ const decorateUserPositions = async ({
     cachedEnsResolve: FetchAddrFn;
 }) => {
     const skipENSFetch = true;
-    if (urlTarget == 'limit_order_states') {
+    if (recordType == LimitOrderIF) {
         return await Promise.all(
             (userPositions as LimitOrderServerIF[]).map(
                 (position: LimitOrderServerIF) => {
@@ -126,7 +126,7 @@ const decorateUserPositions = async ({
             ),
         );
     } else {
-        // default to 'user_positions'
+        // default to 'PositionIF'
         return await Promise.all(
             (userPositions as PositionServerIF[]).map(
                 async (position: PositionServerIF) => {
@@ -150,7 +150,7 @@ const decorateUserPositions = async ({
 };
 
 const fetchDecorated = async ({
-    urlTarget,
+    recordType,
     user,
     chainId,
     gcUrl, // TODO, Handle in Data Layer
@@ -167,7 +167,7 @@ const fetchDecorated = async ({
     cachedTokenDetails, // TODO, Handle in Data Layer
     cachedEnsResolve, // TODO, Handle in Data Layer
 }: {
-    urlTarget: string;
+    recordType: PositionIF | LimitOrderIF;
     user: string;
     chainId: string;
     gcUrl?: string;
@@ -185,7 +185,7 @@ const fetchDecorated = async ({
     cachedEnsResolve: FetchAddrFn;
 }): Promise<PositionIF[] | LimitOrderIF[]> => {
     const response = await fetchUserPositions({
-        urlTarget,
+        recordType,
         user,
         chainId,
         gcUrl,
@@ -199,7 +199,7 @@ const fetchDecorated = async ({
     const userPositions = json?.data;
     if (userPositions && crocEnv) {
         const updatedPositions = await decorateUserPositions({
-            urlTarget,
+            recordType,
             userPositions,
             tokenUniv,
             crocEnv,
@@ -216,20 +216,8 @@ const fetchDecorated = async ({
     return [];
 };
 
-const readFile = async (filePath: string): Promise<string> => {
-    if (
-        typeof process !== 'undefined' &&
-        process.versions &&
-        process.versions.node
-    ) {
-        const fs = await import('fs/promises');
-        return fs.readFile(filePath, 'utf8');
-    }
-    throw new Error('Local file access is not supported in this environment');
-};
-
 const fetchSimpleDecorated = async ({
-    urlTarget,
+    recordType,
     user,
     chainId,
     gcUrl,
@@ -245,7 +233,7 @@ const fetchSimpleDecorated = async ({
     cachedTokenDetails,
     cachedEnsResolve,
 }: {
-    urlTarget: string;
+    recordType: PositionIF | LimitOrderIF;
     user: string;
     chainId: string;
     gcUrl?: string;
@@ -261,22 +249,14 @@ const fetchSimpleDecorated = async ({
     cachedTokenDetails?: FetchContractDetailsFn;
     cachedEnsResolve?: FetchAddrFn;
 }) => {
-    // Compute and set defaults only if necessary
     if (!gcUrl) {
         gcUrl = GCGO_ETHEREUM_URL;
     }
 
     if (!tokenUniv) {
-        const tokenURI = tokenListURIs['ambient'];
-        const defaultTokenUniv = await readFile('./public/' + tokenURI)
-            .then((fileContents) => JSON.parse(fileContents))
-            .then((response) => ({
-                ...response,
-                uri: './public/' + tokenURI,
-                dateRetrieved: new Date().toISOString(),
-                isUserImported: false,
-            }));
-        tokenUniv = defaultTokenUniv.tokens;
+        // It is unclear where, if this is run without a bound ambient app, where the token universe should come from.
+        // However, this problem should likely be addressed after V0 of the data layer
+        throw new Error('NEED A METHOD TO GET TOKEN UNIVERSE');
     }
     let provider = undefined;
     if (!crocEnv) {
@@ -299,7 +279,7 @@ const fetchSimpleDecorated = async ({
     cachedEnsResolve = cachedEnsResolve || fetchEnsAddress;
 
     return await fetchDecorated({
-        urlTarget,
+        recordType,
         user,
         chainId,
         gcUrl,
@@ -314,6 +294,7 @@ const fetchSimpleDecorated = async ({
     });
 };
 
+// TODO remove UserPositions section
 export const UserPositions = {
     fetchSimpleDecorated: fetchSimpleDecorated,
     fetch: fetchUserPositions,
@@ -321,5 +302,6 @@ export const UserPositions = {
     fetchDecorated: fetchDecorated,
 };
 
+// TODO remove UserPositions section
 export const fetchDecoratedUserPositions = fetchDecorated;
 export const fetchSimpleDecoratedUserPositions = fetchSimpleDecorated;
