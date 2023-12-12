@@ -22,14 +22,24 @@ const OptionColorContainer = styled.div`
 
 const OptionColor = styled.div<{
     backgroundColor: string | undefined;
+    disabled: boolean;
 }>`
     background: ${({ backgroundColor }) =>
         backgroundColor ? backgroundColor : '#242f3f'};
+
+    filter: ${({ disabled }) =>
+        disabled ? 'brightness(0.8)' : 'brightness(1)'};
+
     align-items: center;
     justify-content: center;
-    cursor: pointer;
 
-    border-radius: 3px;
+    cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
+
+    box-shadow: 1px 1px 2px 1px
+        ${({ disabled }) =>
+            disabled ? 'rgba(0, 0, 0, 0.1)' : 'rgba(0, 0, 0, 0.8)'};
+
+    border-radius: 1.5px;
 
     border-width: 1.5px;
     border-style: solid;
@@ -41,26 +51,35 @@ const OptionColor = styled.div<{
     display: flex;
 `;
 
-const OptionStyleContainer = styled.div`
-    background: #242f3f;
+const OptionStyleContainer = styled.div<{
+    disabled: boolean;
+}>`
+    background: ${({ disabled }) => (disabled ? '#242f3f' : '#2f3d52')};
     align-items: center;
     justify-content: center;
-    cursor: pointer;
 
-    border-radius: 3px;
+    box-shadow: 1px 1px 2px 1px
+        ${({ disabled }) =>
+            disabled ? 'rgba(0, 0, 0, 0.1)' : 'rgba(0, 0, 0, 0.8)'};
+
+    cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
+
+    border-radius: 1.5px;
 
     border-width: 1.5px;
     border-style: solid;
-    border-color: #434c58;
+    border-color: ${({ disabled }) =>
+        disabled ? 'rgba(67, 76, 88, 0.7)' : '#949ead'};
 
     height: 20px;
-    width: 25px;
+    width: 32px;
 
-    padding: 4px;
+    padding: 1px;
     display: flex;
 
     &:hover {
-        border-color: #949ead;
+        filter: ${({ disabled }) =>
+            disabled ? 'brightness(1)' : 'brightness(1.2)'};
     }
 `;
 
@@ -288,6 +307,16 @@ const StyledCheckbox = styled.div<{
     }
 `;
 
+const LineWidthOptions = styled.div<{
+    backgroundColor: string | undefined;
+}>`
+    border: 0 solid
+        ${({ backgroundColor }) =>
+            backgroundColor ? backgroundColor : '#8b98a5'};
+    height: 0;
+    width: 20px;
+`;
+
 export {
     FloatingToolbarSettingsContainer,
     LineSettings,
@@ -313,4 +342,5 @@ export {
     StyledCheckbox,
     CheckboxContainer,
     Icon,
+    LineWidthOptions,
 };
