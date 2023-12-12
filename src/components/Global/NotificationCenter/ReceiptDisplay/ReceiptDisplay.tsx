@@ -8,12 +8,11 @@ import {
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { motion } from 'framer-motion';
 import { VscClose } from 'react-icons/vsc';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { removeReceipt } from '../../../../utils/state/receiptDataSlice';
 import { useContext, useEffect, useState } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import Spinner from '../../Spinner/Spinner';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 
 interface ReceiptDisplayPropsIF {
     status: 'successful' | 'failed' | 'pending';
@@ -30,6 +29,7 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
     } = useContext(CrocEnvContext);
 
     const { cachedFetchBlockTime } = useContext(CachedDataContext);
+    const { removeReceipt } = useContext(ReceiptContext);
 
     const pending = <Spinner size={30} bg={'var(--dark2)'} weight={2} />;
     const failed = <MdErrorOutline size={30} color='#7371fc ' />;
@@ -56,8 +56,6 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
 
     const blockExplorer = getChainExplorer(chainId);
     const EtherscanTx = `${blockExplorer}tx/${hash}`;
-
-    const dispatch = useAppDispatch();
 
     const [blockTime, setBlockTime] = useState<number | undefined>();
 
@@ -128,7 +126,7 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
                         >
                             <VscClose
                                 onClick={() => {
-                                    dispatch(removeReceipt(hash));
+                                    removeReceipt(hash);
                                 }}
                                 size={20}
                             />

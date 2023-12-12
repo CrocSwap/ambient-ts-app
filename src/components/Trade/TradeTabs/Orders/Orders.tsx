@@ -1,6 +1,5 @@
 /* eslint-disable no-irregular-whitespace */
 import { useContext, useEffect, useRef, useState, memo } from 'react';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
 import OrderRow from './OrderTable/OrderRow';
@@ -25,6 +24,7 @@ import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 
 // interface for props for react functional component
 interface propsIF {
@@ -62,9 +62,9 @@ function Orders(props: propsIF) {
     const dataLoadingStatus = useContext(DataLoadingContext);
     const { userAddress } = useContext(UserDataContext);
 
-    const { transactionsByType, pendingTransactions } = useAppSelector(
-        (state) => state.receiptData,
-    );
+    const { transactionsByType, pendingTransactions } =
+        useContext(ReceiptContext);
+
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     const baseTokenSymbol = baseToken.symbol;

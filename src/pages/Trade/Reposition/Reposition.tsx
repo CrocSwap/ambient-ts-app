@@ -14,20 +14,11 @@ import ConfirmRepositionModal from '../../../components/Trade/Reposition/Confirm
 import Button from '../../../components/Form/Button';
 // START: Import Other Local Files
 import styles from './Reposition.module.css';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../utils/hooks/reduxToolkit';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { PositionIF, PositionServerIF } from '../../../ambient-utils/types';
 import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import {
-    addPendingTx,
-    addReceipt,
-    addTransactionByType,
-    removePendingTx,
-    updateTransactionHash,
-} from '../../../utils/state/receiptDataSlice';
+
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
@@ -58,6 +49,7 @@ import {
     GAS_DROPS_ESTIMATE_REPOSITION,
     NUM_GWEI_IN_WEI,
 } from '../../../ambient-utils/constants/';
+import { ReceiptContext } from '../../../contexts/ReceiptContext';
 
 function Reposition() {
     // current URL parameter string
@@ -79,6 +71,13 @@ function Reposition() {
     const { tokens } = useContext(TokenContext);
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
     const { bypassConfirmRepo } = useContext(UserPreferenceContext);
+    const {
+        addPendingTx,
+        addReceipt,
+        addTransactionByType,
+        removePendingTx,
+        updateTransactionHash,
+    } = useContext(ReceiptContext);
     const {
         simpleRangeWidth,
         setSimpleRangeWidth,
@@ -107,7 +106,6 @@ function Reposition() {
     const isRepositionSent = newRepositionTransactionHash !== '';
 
     const locationHook = useLocation();
-    const dispatch = useAppDispatch();
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     // navigate the user to the redirect URL path if locationHook.state has no data
@@ -302,28 +300,26 @@ function Reposition() {
 
             tx = await repo.rebal();
             setNewRepositionTransactionHash(tx?.hash);
-            dispatch(addPendingTx(tx?.hash));
+            addPendingTx(tx?.hash);
             if (tx?.hash)
-                dispatch(
-                    addTransactionByType({
-                        txHash: tx.hash,
-                        txAction: 'Reposition',
-                        txType: 'Range',
-                        txDescription: `Reposition ${position.baseSymbol}+${position.quoteSymbol}`,
-                        txDetails: {
-                            baseAddress: position.base,
-                            quoteAddress: position.quote,
-                            poolIdx: poolIndex,
-                            baseSymbol: position.baseSymbol,
-                            quoteSymbol: position.quoteSymbol,
-                            baseTokenDecimals: baseTokenDecimals,
-                            quoteTokenDecimals: quoteTokenDecimals,
-                            lowTick: pinnedLowTick,
-                            highTick: pinnedHighTick,
-                            gridSize: lookupChain(position.chainId).gridSize,
-                        },
-                    }),
-                );
+                addTransactionByType({
+                    txHash: tx.hash,
+                    txAction: 'Reposition',
+                    txType: 'Range',
+                    txDescription: `Reposition ${position.baseSymbol}+${position.quoteSymbol}`,
+                    txDetails: {
+                        baseAddress: position.base,
+                        quoteAddress: position.quote,
+                        poolIdx: poolIndex,
+                        baseSymbol: position.baseSymbol,
+                        quoteSymbol: position.quoteSymbol,
+                        baseTokenDecimals: baseTokenDecimals,
+                        quoteTokenDecimals: quoteTokenDecimals,
+                        lowTick: pinnedLowTick,
+                        highTick: pinnedHighTick,
+                        gridSize: lookupChain(position.chainId).gridSize,
+                    },
+                });
             // We want the user to exit themselves
             // navigate(redirectPath, { replace: true });
         } catch (error) {
@@ -345,15 +341,11 @@ function Reposition() {
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
                 IS_LOCAL_ENV && console.debug('repriced');
-                dispatch(removePendingTx(error.hash));
+                removePendingTx(error.hash);
                 const newTransactionHash = error.replacement.hash;
-                dispatch(addPendingTx(newTransactionHash));
-                dispatch(
-                    updateTransactionHash({
-                        oldHash: error.hash,
-                        newHash: error.replacement.hash,
-                    }),
-                );
+                addPendingTx(newTransactionHash);
+
+                updateTransactionHash(error.hash, error.replacement.hash);
                 setNewRepositionTransactionHash(newTransactionHash);
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
@@ -362,8 +354,8 @@ function Reposition() {
             }
         }
         if (receipt) {
-            dispatch(addReceipt(JSON.stringify(receipt)));
-            dispatch(removePendingTx(receipt.transactionHash));
+            addReceipt(JSON.stringify(receipt));
+            removePendingTx(receipt.transactionHash);
         }
     };
 

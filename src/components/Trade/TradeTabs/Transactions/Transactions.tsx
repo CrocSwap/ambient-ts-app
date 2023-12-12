@@ -1,7 +1,6 @@
 /* eslint-disable no-irregular-whitespace */
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { TransactionIF, CandleDataIF } from '../../../../ambient-utils/types';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { Dispatch, useState, useEffect, useRef, useContext, memo } from 'react';
 
 import { Pagination } from '@mui/material';
@@ -33,6 +32,7 @@ import { FlexContainer, Text } from '../../../../styled/Common';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 
 interface propsIF {
     filter?: CandleDataIF | undefined;
@@ -93,9 +93,8 @@ function Transactions(props: propsIF) {
 
     const dataLoadingStatus = useContext(DataLoadingContext);
     const { changesByUser, changesByPool } = useContext(GraphDataContext);
-    const { transactionsByType, pendingTransactions } = useAppSelector(
-        (state) => state.receiptData,
-    );
+    const { transactionsByType, pendingTransactions } =
+        useContext(ReceiptContext);
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     const selectedBaseAddress = baseToken.address;

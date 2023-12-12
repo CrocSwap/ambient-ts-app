@@ -8,7 +8,6 @@ import React, {
 } from 'react';
 import { estimateFrom24HrAmbientApr } from '../ambient-utils/api';
 import { usePoolPricing } from '../App/hooks/usePoolPricing';
-import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
@@ -19,6 +18,7 @@ import { PoolIF, PoolStatIF } from '../ambient-utils/types';
 import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
 import { UserDataContext } from './UserDataContext';
 import { TradeDataContext } from './TradeDataContext';
+import { ReceiptContext } from './ReceiptContext';
 
 interface PoolContextIF {
     poolList: PoolIF[];
@@ -50,7 +50,7 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         },
     } = useContext(TradeTokenContext);
 
-    const { receiptData } = useAppSelector((state) => state);
+    const { sessionReceipts } = useContext(ReceiptContext);
     const { baseToken, quoteToken } = useContext(TradeDataContext);
     const { isUserConnected } = useContext(UserDataContext);
     const poolList: PoolIF[] = usePoolList(
@@ -88,7 +88,7 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         baseTokenDecimals,
         quoteTokenDecimals,
         chainData,
-        receiptCount: receiptData.sessionReceipts.length,
+        receiptCount: sessionReceipts.length,
         isUserLoggedIn: !!isUserConnected,
         lastBlockNumber,
         isServerEnabled,
