@@ -55,7 +55,6 @@ import LimitLineChart from './LimitLine/LimitLineChart';
 import FeeRateChart from './FeeRate/FeeRateChart';
 import RangeLinesChart from './RangeLine/RangeLinesChart';
 import {
-    LS_KEY_CHART_ANNOTATIONS,
     CandleDataChart,
     SubChartValue,
     bandLineData,
@@ -63,7 +62,6 @@ import {
     calculateFibRetracementBandAreas,
     chartItemStates,
     crosshair,
-    defaultCandleBandwith,
     drawDataHistory,
     fillLiqAdvanced,
     formatTimeDifference,
@@ -106,6 +104,11 @@ import { actionKeyIF } from './ChartUtils/useUndoRedo';
 import { formatDollarAmountAxis } from '../../utils/numbers';
 import { ChartContext } from '../../contexts/ChartContext';
 import { useDrawSettings } from '../../App/hooks/useDrawSettings';
+import {
+    LS_KEY_CHART_ANNOTATIONS,
+    defaultCandleBandwith,
+    xAxisBuffer,
+} from './ChartUtils/chartConstants';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -285,7 +288,7 @@ export default function Chart(props: propsIF) {
         : 0;
 
     const d3Container = useRef<HTMLDivElement | null>(null);
-
+    const toolbarRef = useRef<HTMLDivElement | null>(null);
     const d3CanvasCrosshair = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasMarketLine = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasMain = useRef<HTMLDivElement | null>(null);
@@ -563,7 +566,7 @@ export default function Chart(props: propsIF) {
     }, [period]);
 
     useEffect(() => {
-        useHandleSwipeBack(d3Container);
+        useHandleSwipeBack(d3Container, toolbarRef);
     }, [d3Container === null]);
 
     useEffect(() => {
@@ -2187,8 +2190,8 @@ export default function Chart(props: propsIF) {
             const centerX = unparsedCandleData[latestCandleIndex].time * 1000;
 
             scaleData?.xScale.domain([
-                centerX - diff * 0.9,
-                centerX + diff * 0.1,
+                centerX - diff * xAxisBuffer,
+                centerX + diff * (1 - xAxisBuffer),
             ]);
         }
     }
@@ -2257,8 +2260,8 @@ export default function Chart(props: propsIF) {
                 setYaxisDomain(domain[0], domain[1]);
 
                 scaleData?.xScale.domain([
-                    centerX - diff * 0.9,
-                    centerX + diff * 0.1,
+                    centerX - diff * xAxisBuffer,
+                    centerX + diff * (1 - xAxisBuffer),
                 ]);
 
                 render();
@@ -5130,8 +5133,9 @@ export default function Chart(props: propsIF) {
                         height: '100%',
                     }}
                 >
-                    <div className='chart_grid'>
+                    <div className='chart_grid' id='chart_grid'>
                         <Toolbar
+                            toolbarRef={toolbarRef}
                             activeDrawingType={activeDrawingType}
                             setActiveDrawingType={setActiveDrawingType}
                             isToolbarOpen={isToolbarOpen}

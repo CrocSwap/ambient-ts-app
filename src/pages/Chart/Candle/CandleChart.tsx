@@ -1,7 +1,6 @@
 import { useContext, useEffect, useRef, useState, useMemo } from 'react';
 import {
     chartItemStates,
-    defaultCandleBandwith,
     renderCanvasArray,
     scaleData,
     setCanvasResolution,
@@ -12,6 +11,7 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { CandleDataIF } from '../../../ambient-utils/types';
 import { ChartContext } from '../../../contexts/ChartContext';
+import { defaultCandleBandwith } from '../ChartUtils/chartConstants';
 
 interface candlePropsIF {
     chartItemStates: chartItemStates;

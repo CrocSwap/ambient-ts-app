@@ -4,8 +4,8 @@ import {
     chartSettingsMethodsIF,
     useChartSettings,
 } from '../App/hooks/useChartSettings';
-import { LS_KEY_CHART_ANNOTATIONS } from '../pages/Chart/ChartUtils/chartUtils';
 import { getLocalStorageItem } from '../ambient-utils/dataLayer';
+import { LS_KEY_CHART_ANNOTATIONS } from '../pages/Chart/ChartUtils/chartConstants';
 
 type TradeTableState = 'Expanded' | 'Collapsed' | undefined;
 

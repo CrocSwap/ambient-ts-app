@@ -40,6 +40,7 @@ import { useUndoRedo } from '../../Chart/ChartUtils/useUndoRedo';
 import { updatesIF } from '../../../utils/hooks/useUrlParams';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { xAxisBuffer } from '../../Chart/ChartUtils/chartConstants';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface propsIF {
@@ -759,8 +760,8 @@ function TradeCandleStickChart(props: propsIF) {
 
             const centerX = snappedTime;
             scaleData?.xScale.domain([
-                centerX - diff * 0.9,
-                centerX + diff * 0.1,
+                centerX - diff * xAxisBuffer,
+                centerX + diff * (1 - xAxisBuffer),
             ]);
 
             setCandleScale((prev: candleScale) => {

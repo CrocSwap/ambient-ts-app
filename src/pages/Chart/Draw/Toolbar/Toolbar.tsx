@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, {
+    MutableRefObject,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import styles from './Toolbar.module.css';
 import drawLine from '../../../../assets/images/icons/draw/draw_line.svg';
 import drawCross from '../../../../assets/images/icons/draw/draw_cross.svg';
@@ -21,6 +27,7 @@ import { useMediaQuery } from '@material-ui/core';
 import { actionKeyIF } from '../../ChartUtils/useUndoRedo';
 
 interface ToolbarProps {
+    toolbarRef: MutableRefObject<any>;
     activeDrawingType: string;
     setActiveDrawingType: React.Dispatch<React.SetStateAction<string>>;
     isToolbarOpen: boolean;
@@ -71,6 +78,7 @@ function Toolbar(props: ToolbarProps) {
         drawActionStack,
         actionKey,
         setSelectedDrawnShape,
+        toolbarRef,
     } = props;
 
     const mobileView = useMediaQuery('(max-width: 600px)');
@@ -78,6 +86,8 @@ function Toolbar(props: ToolbarProps) {
     const { setIsMagnetActive, isMagnetActive } = useContext(ChartContext);
     const feeRate = document.getElementById('fee_rate_chart');
     const tvl = document.getElementById('tvl_chart');
+
+    const chart = document.getElementById('chart_grid');
 
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -92,11 +102,15 @@ function Toolbar(props: ToolbarProps) {
             tvl.style.gridTemplateColumns =
                 column + 'px auto 1fr auto minmax(1em, max-content)';
         }
+
+        if (chart) {
+            chart.style.gridTemplateColumns =
+                column + 'px auto 1fr auto minmax(1em, max-content)';
+        }
     }, [isToolbarOpen, feeRate, tvl]);
 
     const [isHoveredUp, setIsHoveredUp] = useState(false);
     const [isHoveredDown, setIsHoveredDown] = useState(false);
-    const toolbarRef = useRef<HTMLDivElement>(null);
     const handleMouseMove = () => {
         const scrollContainer = scrollContainerRef.current;
 
@@ -253,15 +267,6 @@ function Toolbar(props: ToolbarProps) {
         </div>
     );
 
-    const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-        const delta = e.deltaY;
-        if (delta < 0) {
-            handleScroll('up');
-        } else {
-            handleScroll('down');
-        }
-    };
-
     const handleDeleteAll = () => {
         setSelectedDrawnShape(undefined);
         setActiveDrawingType('Cross');
@@ -275,6 +280,9 @@ function Toolbar(props: ToolbarProps) {
             } ${styles.toolbar_container} `}
             id='toolbar_container'
             ref={toolbarRef}
+            style={{
+                backgroundColor: mobileView ? 'var(--dark1)' : 'var(--dark2)',
+            }}
             onMouseLeave={handleMouseLeave}
             onMouseMove={handleMouseMove}
         >
@@ -286,9 +294,8 @@ function Toolbar(props: ToolbarProps) {
                 <div
                     className={styles.scrollableDiv}
                     ref={scrollContainerRef}
-                    onWheel={handleWheel}
                     style={{
-                        height: mobileView ? 'auto' : chartHeights - 10 + 'px',
+                        height: chartHeights + 3 + 'px',
                     }}
                 >
                     {isHoveredUp && upScroll}
