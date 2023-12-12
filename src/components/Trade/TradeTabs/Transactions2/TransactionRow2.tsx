@@ -10,6 +10,7 @@ import TxButton from './TxButton';
 import TxValue from './TxValue';
 import { TransactionIF } from '../../../../ambient-utils/types';
 import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
+import TxSide from './TxSide';
 
 export type btnIconNameType =
     | 'overflowBtn'
@@ -69,6 +70,9 @@ export default function TransactionRow2(props: propsIF) {
                         width={elemMeta[1]}
                     />
                 );
+            } else if (elemMeta[0] === 'txSide') {
+                console.log('rendering this one!')
+                elemForDOM === <TxSide tx={tx} isAccountPage={isAccountPage} width={elemMeta[1]} />;
             } else if (elemMeta[0] === 'txValue') {
                 elemForDOM = <TxValue width={elemMeta[1]} tx={tx} />;
             } else if (elemMeta[0] === 'overflowBtn') {
@@ -180,6 +184,7 @@ export default function TransactionRow2(props: propsIF) {
         'timeStamp',
         'txId',
         'txWallet',
+        'txSide',
         'txValue',
     ];
 
@@ -190,6 +195,7 @@ export default function TransactionRow2(props: propsIF) {
         'walletBtn',
         'overflowBtn',
     ];
+
     const actionButtonsMenu: columnSlugsType[] = [
         'editBtn',
         'removeBtn',
@@ -201,8 +207,8 @@ export default function TransactionRow2(props: propsIF) {
     ];
 
     const menuItemRef = useRef<HTMLDivElement>(null);
-
     useOnClickOutside(menuItemRef, hideMenu);
+
     return (
         <li className={styles.tx_li}>
             {infoCells.map((elem: columnSlugsType) => renderElem(elem))}

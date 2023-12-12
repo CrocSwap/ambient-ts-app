@@ -11,6 +11,7 @@ const columnsAndSizes = {
     txId: 140,
     txWallet: 140,
     txValue: 140,
+    txSide: 40,
     overflowBtn: 60,
     editBtn: 60,
     harvestBtn: 60,
@@ -68,6 +69,7 @@ export default function Transactions2(props: propsIF) {
         'timeStamp',
         'txId',
         'txWallet',
+        'txSide',
         'txValue',
         'overflowBtn',
         'editBtn',
@@ -149,7 +151,7 @@ export default function Transactions2(props: propsIF) {
             )),
         [columnsToRender.current.length, openMenuRow, transactionsData.length],
     );
-
+console.log(columnsToRender.current);
     return (
         <ol className={styles.tx_ol} ref={containerRef}>
             {transactionRows}
