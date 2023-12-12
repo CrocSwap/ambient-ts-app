@@ -27,6 +27,7 @@ import { useMediaQuery } from '@material-ui/core';
 import { actionKeyIF } from '../../ChartUtils/useUndoRedo';
 
 interface ToolbarProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     toolbarRef: MutableRefObject<any>;
     activeDrawingType: string;
     setActiveDrawingType: React.Dispatch<React.SetStateAction<string>>;
