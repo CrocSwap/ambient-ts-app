@@ -2,13 +2,14 @@ import { ethers } from 'ethers';
 import { tokenListURIs } from '../../constants/tokenListURIs';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { GCGO_ETHEREUM_URL } from '../../constants/gcgo';
-import { memoizeQuerySpotPrice } from '../../dataLayer';
+import { PoolQueryFn, querySpotPrice } from '../../dataLayer';
 import {
     fetchContractDetails,
     fetchEnsAddress,
     fetchBlockNumber,
     fetchDecoratedUserPositions,
-    memoizeTokenPrice,
+    fetchTokenPrice,
+    TokenPriceFn,
 } from '../../api';
 import { isNetworkAccessDisabled } from '../config';
 
@@ -53,8 +54,8 @@ const fetchData = async () => {
         lastBlockNumber,
         tokenUniv: tokenUniv,
         crocEnv,
-        cachedFetchTokenPrice: memoizeTokenPrice(),
-        cachedQuerySpotPrice: memoizeQuerySpotPrice(),
+        cachedFetchTokenPrice: fetchTokenPrice as TokenPriceFn,
+        cachedQuerySpotPrice: querySpotPrice as PoolQueryFn,
         cachedTokenDetails: fetchContractDetails,
         cachedEnsResolve: fetchEnsAddress,
     });
@@ -63,11 +64,13 @@ const fetchData = async () => {
 
 describe('Test fetchUserPositions', () => {
     describe('userPositions', () => {
-        test('ensure some positions exist', async () => {
-            if (isNetworkAccessDisabled()) return;
-
-            const userPositions = await fetchData();
-            expect(userPositions.length).toBeGreaterThan(0);
-        });
+        if (isNetworkAccessDisabled()) {
+            it.skip('skipping all fetchUserPositions tests -- network access disabled', () => {});
+        } else {
+            it('ensure some positions exist', async () => {
+                const userPositions = await fetchData();
+                expect(userPositions.length).toBeGreaterThan(0);
+            });
+        }
     });
 });

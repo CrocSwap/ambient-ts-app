@@ -1,4 +1,4 @@
-import { CrocEnv, concDepositSkew, toDisplayPrice } from '@crocswap-libs/sdk';
+import { CrocEnv, concDepositSkew } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { createRangePositionTx } from '../../../dataLayer/transactions/range';
 import { goerliETH, goerliUSDC } from '../../../constants';
@@ -125,53 +125,54 @@ describe('submit a ETH/USDC liquidity position on Goerli', () => {
         console.log(`Calculating Token B Quantity to be: ${tokenBQty}`);
     }, 30000);
 
-    it('createRangePosition()', async () => {
-        if (isNetworkAccessDisabled())
-            it.skip('skipping test -- network access disabled');
+    if (isNetworkAccessDisabled()) {
+        it.skip('skipping all range tests -- network access disabled', () => {});
+    } else {
+        it('createRangePosition()', async () => {
+            const initialEthBalance = await signer.provider.getBalance(
+                signer.address,
+            );
 
-        const initialEthBalance = await signer.provider.getBalance(
-            signer.address,
-        );
+            console.log(
+                'Initial ETH balance:',
+                ethers.utils.formatEther(initialEthBalance),
+            );
 
-        console.log(
-            'Initial ETH balance:',
-            ethers.utils.formatEther(initialEthBalance),
-        );
+            const params = {
+                crocEnv,
+                isAmbient: false,
+                slippageTolerancePercentage: 5,
+                isTokenAPrimaryRange: true,
+                tokenA: {
+                    address: tokenA.address,
+                    qty: tokenAQty,
+                    isWithdrawFromDexChecked: false,
+                },
+                tokenB: {
+                    address: tokenB.address,
+                    qty: tokenBQty,
+                    isWithdrawFromDexChecked: false,
+                },
+                tick,
+            };
 
-        const params = {
-            crocEnv,
-            isAmbient: false,
-            slippageTolerancePercentage: 5,
-            isTokenAPrimaryRange: true,
-            tokenA: {
-                address: tokenA.address,
-                qty: tokenAQty,
-                isWithdrawFromDexChecked: false,
-            },
-            tokenB: {
-                address: tokenB.address,
-                qty: tokenBQty,
-                isWithdrawFromDexChecked: false,
-            },
-            tick,
-        };
+            const tx = await createRangePositionTx(params);
+            expect(tx).toBeDefined();
+            expect(tx.hash).toBeDefined();
 
-        const tx = await createRangePositionTx(params);
-        expect(tx).toBeDefined();
-        expect(tx.hash).toBeDefined();
+            const receipt = await tx.wait();
+            expect(receipt.status).toEqual(1);
 
-        const receipt = await tx.wait();
-        expect(receipt.status).toEqual(1);
+            const finalEthBalance = await signer.provider.getBalance(
+                signer.address,
+            );
+            console.log(
+                'Final ETH balance:',
+                ethers.utils.formatEther(finalEthBalance),
+            );
 
-        const finalEthBalance = await signer.provider.getBalance(
-            signer.address,
-        );
-        console.log(
-            'Final ETH balance:',
-            ethers.utils.formatEther(finalEthBalance),
-        );
-
-        expect(finalEthBalance.lt(initialEthBalance)).toBe(true);
-        // TODO: add another assertion for a minimum decrease in balance i.e. 0.01 ETH
-    }, 30000);
+            expect(finalEthBalance.lt(initialEthBalance)).toBe(true);
+            // TODO: add another assertion for a minimum decrease in balance i.e. 0.01 ETH
+        }, 30000);
+    }
 });
