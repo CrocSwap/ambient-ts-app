@@ -4,6 +4,8 @@
     grid-row: 3;
     width: 9px;
     transition: all 600ms ease-in-out;
+    position: absolute;
+    z-index: 1;
    
 }
 
@@ -18,6 +20,8 @@
 
 .scrollableDiv::-webkit-scrollbar {
     width: 0; 
+    display: none;
+
 }
 
 .scrollableDiv::-webkit-scrollbar-thumb {

@@ -1,6 +1,13 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function useHandleSwipeBack(ref: any) {
+function useHandleSwipeBack(ref: any, exceptionDivRef?: any) {
     const handleSwipeBack = (event: WheelEvent | TouchEvent) => {
+        if (
+            exceptionDivRef.current &&
+            exceptionDivRef.current.contains(event.target as Node)
+        ) {
+            return;
+        }
+
         event.preventDefault();
     };
 
