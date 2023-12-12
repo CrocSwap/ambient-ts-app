@@ -517,6 +517,8 @@ function Swap(props: propsIF) {
         }
     }, [isTransactionApproved, isTransactionPending, isTransactionConfirmed]);
 
+    console.log({ showStepperComponent });
+
     const [showExtraInfo, setShowExtraInfo] = useState<boolean>(false);
 
     return (
@@ -538,6 +540,7 @@ function Swap(props: propsIF) {
                     handleSetActiveContent={handleSetActiveContent}
                     handleReset={resetConfirmation}
                     setShowStepperComponent={setShowStepperComponent}
+                    showStepperComponent={showStepperComponent}
                 />
             }
             input={

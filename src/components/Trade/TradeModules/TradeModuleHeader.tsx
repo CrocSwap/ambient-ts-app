@@ -23,6 +23,7 @@ interface propsIF {
     handleSetActiveContent: (newActiveContent: string) => void;
     handleReset: () => void;
     setShowStepperComponent: React.Dispatch<React.SetStateAction<boolean>>;
+    showStepperComponent: boolean;
 }
 
 function TradeModuleHeader(props: propsIF) {
@@ -35,6 +36,7 @@ function TradeModuleHeader(props: propsIF) {
         handleSetActiveContent,
         handleReset,
         setShowStepperComponent,
+        showStepperComponent,
     } = props;
 
     const [isSettingsModalOpen, openSettingsModal, closeSettingsModal] =
@@ -75,7 +77,11 @@ function TradeModuleHeader(props: propsIF) {
     };
 
     const handleGoBack = () => {
-        handleSetActiveContent('main');
+        if (showStepperComponent) {
+            handleSetActiveContent('confirmation');
+        } else {
+            handleSetActiveContent('main');
+        }
         handleReset();
         setShowStepperComponent(false);
     };

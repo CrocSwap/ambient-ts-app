@@ -707,6 +707,7 @@ export default function Limit() {
                     handleSetActiveContent={handleSetActiveContent}
                     handleReset={resetConfirmation}
                     setShowStepperComponent={setShowStepperComponent}
+                    showStepperComponent={showStepperComponent}
                 />
             }
             input={
