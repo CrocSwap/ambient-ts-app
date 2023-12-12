@@ -8,10 +8,8 @@ import {
 } from 'react';
 import { TokenIF } from '../../../ambient-utils/types';
 import TokenSelect from '../TokenSelect/TokenSelect';
-import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import styles from './SoloTokenSelect.module.css';
 import SoloTokenImport from './SoloTokenImport';
-import { setSoloToken } from '../../../utils/state/soloTokenDataSlice';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ethers } from 'ethers';
 import { TokenContext } from '../../../contexts/TokenContext';
@@ -62,10 +60,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         getRecentTokens,
     } = useContext(TokenContext);
 
-    const { tokenA, tokenB } = useContext(TradeDataContext);
-
-    // instance of hook used to retrieve data from RTK
-    const dispatch = useAppDispatch();
+    const { tokenA, tokenB, setSoloToken } = useContext(TradeDataContext);
 
     // hook to generate a navigation action for when modal is closed
     // no arg ➡ hook will infer destination from current URL path
@@ -76,10 +71,8 @@ export const SoloTokenSelect = (props: propsIF) => {
         if (isCustom) {
             tokens.acknowledge(tkn);
         }
-        // dispatch token data object to RTK
-        if (isSingleToken) {
-            dispatch(setSoloToken(tkn));
-        }
+
+        if (isSingleToken) setSoloToken(tkn);
 
         // array of recent tokens from App.tsx (current session only)
         const recentTokens = getRecentTokens();

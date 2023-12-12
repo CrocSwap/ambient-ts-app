@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useState } from 'react';
 import {
     getRecentTokensParamsIF,
     useRecentTokens,
@@ -8,6 +8,7 @@ import { useTokenSearch } from '../App/hooks/useTokenSearch';
 import { TokenIF } from '../ambient-utils/types';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenBalanceContext } from './TokenBalanceContext';
+import { goerliETH } from '../ambient-utils/constants';
 
 interface TokenContextIF {
     tokens: tokenMethodsIF;

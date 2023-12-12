@@ -1,10 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
 import tradeDataReducer from './tradeDataSlice';
-import soloTokenReducer from './soloTokenDataSlice';
 export const store = configureStore({
     reducer: {
         tradeData: tradeDataReducer,
-        soloTokenData: soloTokenReducer,
     },
 });
 

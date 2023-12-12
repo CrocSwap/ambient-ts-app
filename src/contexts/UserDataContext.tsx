@@ -2,6 +2,7 @@ import React, { Dispatch, SetStateAction, createContext } from 'react';
 import { useAccount, useConnect, useDisconnect, useEnsName } from 'wagmi';
 import { ConnectArgs, Connector } from '@wagmi/core';
 import { checkBlacklist } from '../ambient-utils/constants';
+import { TokenIF } from '../ambient-utils/types';
 
 interface UserDataContextIF {
     isUserConnected: boolean | undefined;

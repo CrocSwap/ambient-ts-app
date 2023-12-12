@@ -33,6 +33,7 @@ import {
 } from '../../../styled/Components/Portfolio';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface propsIF {
     fullLayoutActive: boolean;
@@ -51,9 +52,8 @@ export default function ExchangeBalance(props: propsIF) {
 
     const { mainnetProvider } = useContext(CrocEnvContext);
 
-    const selectedToken: TokenIF = useAppSelector(
-        (state) => state.soloTokenData.token,
-    );
+    const { soloToken: selectedToken } = useContext(TradeDataContext);
+
     const { userAddress } = useContext(UserDataContext);
 
     const { crocEnv } = useContext(CrocEnvContext);
