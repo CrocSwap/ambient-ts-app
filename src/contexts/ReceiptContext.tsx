@@ -61,7 +61,6 @@ export const ReceiptContextProvider = (props: {
         string[]
     >([]);
 
-    console.log({ pendingTransactions });
     const [transactionsByType, setTransactionsByType] = React.useState<
         TransactionByType[]
     >([]);
@@ -86,32 +85,23 @@ export const ReceiptContextProvider = (props: {
             };
         }
     };
+
     const removePendingTx = (pendingTx: string) => {
-        const index = pendingTransactions.indexOf(pendingTx);
-        if (index > -1) {
-            pendingTransactions.splice(index, 1);
-            setPendingTransactions(pendingTransactions);
-        }
+        const updatedPendingTransactions = pendingTransactions.filter(
+            (p) => p !== pendingTx,
+        );
+        setPendingTransactions(updatedPendingTransactions);
     };
 
     const removeReceipt = (txHash: string) => {
-        const indexOfPendingTransaction = pendingTransactions.indexOf(txHash);
-        const indexOfSessionReceipt = sessionReceipts.findIndex(
-            (receipt) =>
-                JSON.parse(receipt).transactionHash.toLowerCase() ===
+        removePendingTx(txHash);
+
+        const updatedReceipts = sessionReceipts.filter(
+            (r) =>
+                JSON.parse(r).transactionHash.toLowerCase() !==
                 txHash.toLowerCase(),
         );
-
-        if (indexOfPendingTransaction > -1) {
-            pendingTransactions.splice(indexOfPendingTransaction, 1);
-
-            setPendingTransactions(pendingTransactions);
-        }
-        if (indexOfSessionReceipt > -1) {
-            sessionReceipts.splice(indexOfSessionReceipt, 1);
-
-            setSessionReceipts(sessionReceipts);
-        }
+        setSessionReceipts(updatedReceipts);
     };
 
     const resetReceiptData = () => {
