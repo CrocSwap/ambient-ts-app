@@ -9,30 +9,11 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 import { GCGO_ETHEREUM_URL } from '../constants/gcgo';
 import { querySpotPrice } from '../dataLayer';
 import { fetchTokenPrice, fetchContractDetails, fetchEnsAddress } from '../api';
-
-const readFile = async (filePath: string): Promise<string> => {
-    if (
-        typeof process !== 'undefined' &&
-        process.versions &&
-        process.versions.node
-    ) {
-        const fs = await import('fs/promises');
-        return fs.readFile(filePath, 'utf8');
-    }
-    throw new Error('Local file access is not supported in this environment');
-};
+import tokenUniverseData from '../testing-only-ambient-token-list.json';
 
 const fetchData = async () => {
-    const tokenURI = tokenListURIs['ambient'];
-    let tokenUniv = await readFile('./public/' + tokenURI)
-        .then((fileContents) => JSON.parse(fileContents))
-        .then((response) => ({
-            ...response,
-            uri: './public/' + tokenURI,
-            dateRetrieved: new Date().toISOString(),
-            isUserImported: false,
-        }));
-    tokenUniv = tokenUniv.tokens;
+    const tokenUniv = tokenUniverseData.tokens;
+
     const infuraUrl =
         'https://mainnet.infura.io/v3/' + process.env.REACT_APP_INFURA_KEY;
     const provider = new ethers.providers.JsonRpcProvider(infuraUrl);
