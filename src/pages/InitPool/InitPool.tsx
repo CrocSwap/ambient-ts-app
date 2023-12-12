@@ -5,7 +5,6 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
 
 // START: Import Local Files
-import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 
 import {
     IS_LOCAL_ENV,
@@ -71,13 +70,7 @@ import TooltipComponent from '../../components/Global/TooltipComponent/TooltipCo
 import InitButton from './InitButton';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import Button from '../../components/Form/Button';
-import {
-    addPendingTx,
-    addReceipt,
-    addTransactionByType,
-    removePendingTx,
-    updateTransactionHash,
-} from '../../utils/state/receiptDataSlice';
+
 import {
     TransactionError,
     isTransactionFailedError,
@@ -86,6 +79,14 @@ import {
 import InitSettings from './InitSettings';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { RangeContext } from '../../contexts/RangeContext';
+import {
+    GAS_DROPS_ESTIMATE_INIT_WITH_POOL,
+    GAS_DROPS_ESTIMATE_INIT_WITHOUT_POOL,
+    RANGE_BUFFER_MULTIPLIER,
+    GAS_DROPS_ESTIMATE_POOL,
+    NUM_GWEI_IN_WEI,
+} from '../../ambient-utils/constants/';
+import { ReceiptContext } from '../../contexts/ReceiptContext';
 // react functional component
 export default function InitPool() {
     const {
@@ -112,7 +113,14 @@ export default function InitPool() {
         tokenBDexBalance,
     } = useContext(TradeTokenContext);
 
-    const { sessionReceipts } = useAppSelector((state) => state.receiptData);
+    const {
+        addPendingTx,
+        addReceipt,
+        addTransactionByType,
+        removePendingTx,
+        updateTransactionHash,
+        sessionReceipts,
+    } = useContext(ReceiptContext);
 
     const {
         advancedMode,
@@ -799,16 +807,51 @@ export default function InitPool() {
         return () => clearTimeout(timer);
     }, []);
 
+    const [
+        amountToReduceNativeTokenQtyMainnet,
+        setAmountToReduceNativeTokenQtyMainnet,
+    ] = useState<number>(0.01);
+    const [
+        amountToReduceNativeTokenQtyScroll,
+        setAmountToReduceNativeTokenQtyScroll,
+    ] = useState<number>(0.0007);
+
+    const amountToReduceNativeTokenQty =
+        chainId === '0x82750' || chainId === '0x8274f'
+            ? amountToReduceNativeTokenQtyScroll
+            : amountToReduceNativeTokenQtyMainnet;
+
     // calculate price of gas for pool init
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
-            const averageInitCostInGasDrops = isMintLiqEnabled
-                ? 400000
-                : 155000;
+            const gasDropsEstimateInit = isMintLiqEnabled
+                ? GAS_DROPS_ESTIMATE_INIT_WITH_POOL
+                : GAS_DROPS_ESTIMATE_INIT_WITHOUT_POOL;
+
+            const costOfMainnetPoolInETH =
+                gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
+
+            setAmountToReduceNativeTokenQtyMainnet(
+                costOfMainnetPoolInETH * RANGE_BUFFER_MULTIPLIER,
+            );
+
+            const costOfScrollPoolInETH =
+                gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
+
+            //   IS_LOCAL_ENV &&  console.log({
+            //         gasPriceInGwei,
+            //         costOfScrollPoolInETH,
+            //         amountToReduceNativeTokenQtyScroll,
+            //     });
+
+            setAmountToReduceNativeTokenQtyScroll(
+                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER,
+            );
+
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                averageInitCostInGasDrops *
-                1e-9 *
+                gasDropsEstimateInit *
+                NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice;
 
             setInitGasPriceinDollars(
@@ -1007,6 +1050,8 @@ export default function InitPool() {
         isTokenAInputDisabled,
         isWithdrawTokenAFromDexChecked,
         true, // hardcode pool initialized since we will be initializing it on confirm
+        tokenAQtyCoveredByWalletBalance,
+        amountToReduceNativeTokenQty,
         isMintLiqEnabled,
         isInitPage,
     );
@@ -1021,6 +1066,8 @@ export default function InitPool() {
         isTokenBInputDisabled,
         isWithdrawTokenBFromDexChecked,
         true, // hardcode pool initialized since we will be initializing it on confirm
+        tokenBQtyCoveredByWalletBalance,
+        amountToReduceNativeTokenQty,
         isMintLiqEnabled,
         isInitPage,
     );
@@ -1121,8 +1168,6 @@ export default function InitPool() {
         : !isTokenABase
         ? getUnicodeCharacter(tokenB.symbol)
         : getUnicodeCharacter(tokenA.symbol);
-
-    const dispatch = useAppDispatch();
 
     useEffect(() => {
         if (rangeWidthPercentage === 100 && !advancedMode) {
@@ -1480,6 +1525,7 @@ export default function InitPool() {
                 reverseTokens={reverseTokens}
                 isMintLiqEnabled={isMintLiqEnabled}
                 isInitPage
+                amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
             />
         </FlexContainer>
     );
@@ -1604,16 +1650,14 @@ export default function InitPool() {
                         .token(erc20TokenWithDexBalance.address)
                         .withdraw(dexBalanceToBeRemoved, userAddress);
 
-                    dispatch(addPendingTx(tx?.hash));
+                    addPendingTx(tx?.hash);
 
                     if (tx?.hash) {
-                        dispatch(
-                            addTransactionByType({
-                                txHash: tx.hash,
-                                txType: 'Withdraw',
-                                txDescription: `Withdrawal of ${erc20TokenWithDexBalance.symbol}`,
-                            }),
-                        );
+                        addTransactionByType({
+                            txHash: tx.hash,
+                            txType: 'Withdraw',
+                            txDescription: `Withdrawal of ${erc20TokenWithDexBalance.symbol}`,
+                        });
                     }
 
                     let receipt;
@@ -1625,16 +1669,14 @@ export default function InitPool() {
 
                         if (isTransactionReplacedError(error)) {
                             IS_LOCAL_ENV && console.debug('repriced');
-                            dispatch(removePendingTx(error.hash));
+                            removePendingTx(error.hash);
 
                             const newTransactionHash = error.replacement.hash;
-                            dispatch(addPendingTx(newTransactionHash));
+                            addPendingTx(newTransactionHash);
 
-                            dispatch(
-                                updateTransactionHash({
-                                    oldHash: error.hash,
-                                    newHash: error.replacement.hash,
-                                }),
+                            updateTransactionHash(
+                                error.hash,
+                                error.replacement.hash,
                             );
                             IS_LOCAL_ENV &&
                                 console.debug({ newTransactionHash });
@@ -1646,8 +1688,8 @@ export default function InitPool() {
                     }
 
                     if (receipt) {
-                        dispatch(addReceipt(JSON.stringify(receipt)));
-                        dispatch(removePendingTx(receipt.transactionHash));
+                        addReceipt(JSON.stringify(receipt));
+                        removePendingTx(receipt.transactionHash);
                     }
                 } finally {
                     setIsWithdrawPending(false);

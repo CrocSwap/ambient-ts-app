@@ -1,11 +1,6 @@
-import { Dispatch, RefObject, SetStateAction } from 'react';
+import { Dispatch, RefObject, SetStateAction, useContext } from 'react';
 import ReceiptDisplay from '../ReceiptDisplay/ReceiptDisplay';
 
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
-import { resetReceiptData } from '../../../../utils/state/receiptDataSlice';
 import {
     Container,
     Content,
@@ -14,6 +9,7 @@ import {
     MainContainer,
 } from './NotificationTable.styles';
 import { FlexContainer } from '../../../../styled/Common';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 
 interface NotificationTableProps {
     showNotificationTable: boolean;
@@ -26,13 +22,10 @@ const NotificationTable = (props: NotificationTableProps) => {
     const { showNotificationTable, pendingTransactions, notificationItemRef } =
         props;
 
-    const dispatch = useAppDispatch();
+    const { resetReceiptData, transactionsByType, sessionReceipts } =
+        useContext(ReceiptContext);
 
-    const receiptData = useAppSelector((state) => state.receiptData);
-
-    const transactionsByType = receiptData.transactionsByType;
-
-    const parsedReceipts = receiptData.sessionReceipts.map((receipt) =>
+    const parsedReceipts = sessionReceipts.map((receipt) =>
         JSON.parse(receipt),
     );
 
@@ -103,7 +96,7 @@ const NotificationTable = (props: NotificationTableProps) => {
                 <FlexContainer justifyContent='center'>
                     <FooterButton
                         onClick={() => {
-                            dispatch(resetReceiptData());
+                            resetReceiptData();
                         }}
                         aria-label='Clear all'
                     >

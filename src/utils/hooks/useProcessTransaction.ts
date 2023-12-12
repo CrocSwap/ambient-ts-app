@@ -34,8 +34,13 @@ export const useProcessTransaction = (
 
     /* eslint-disable-next-line camelcase */
     const body = { config_path: 'ens_address', address: tx.user };
-    const { data } = useFetchBatch<'ens_address'>(body);
-    const ensName = data?.ens_address || tx.ensResolution || null;
+    const { data, error } = useFetchBatch<'ens_address'>(body);
+
+    let ensAddress = null;
+    if (data && !error) {
+        ensAddress = data.ens_address;
+    }
+    const ensName = ensAddress || tx.ensResolution || null;
 
     const isOwnerActiveAccount =
         ownerId.toLowerCase() === account?.toLowerCase();

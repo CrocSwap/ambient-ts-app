@@ -6,7 +6,6 @@ import NetworkSelector from './NetworkSelector/NetworkSelector';
 import logo from '../../../assets/images/logos/logo_mark.svg';
 import mainLogo from '../../../assets/images/logos/large.svg';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
-import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { BiGitBranch } from 'react-icons/bi';
 import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../ambient-utils/constants';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
@@ -16,7 +15,6 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-import { resetReceiptData } from '../../../utils/state/receiptDataSlice';
 
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import {
@@ -48,6 +46,7 @@ import { useSwitchNetwork } from 'wagmi';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { ReceiptContext } from '../../../contexts/ReceiptContext';
 
 const PageHeader = function () {
     const {
@@ -77,6 +76,7 @@ const PageHeader = function () {
     } = useContext(TradeTokenContext);
     const { userAddress, isUserConnected, disconnectUser, ensName } =
         useContext(UserDataContext);
+    const { resetReceiptData } = useContext(ReceiptContext);
     const { switchNetwork } = useSwitchNetwork();
 
     // eslint-disable-next-line
@@ -85,8 +85,6 @@ const PageHeader = function () {
     const accountAddress =
         isUserConnected && userAddress ? trimString(userAddress, 6, 6) : '';
 
-    const dispatch = useAppDispatch();
-
     const clickLogout = useCallback(async () => {
         setCrocEnv(undefined);
         setBaseTokenBalance('');
@@ -94,7 +92,7 @@ const PageHeader = function () {
         setBaseTokenDexBalance('');
         setQuoteTokenDexBalance('');
         resetUserGraphData();
-        dispatch(resetReceiptData());
+        resetReceiptData();
         resetTokenBalances();
         setShowAllData(true);
         disconnectUser();

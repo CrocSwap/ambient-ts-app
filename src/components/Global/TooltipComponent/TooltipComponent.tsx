@@ -1,6 +1,7 @@
 import styles from './TooltipComponent.module.css';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
+import { memo } from 'react';
 
 interface TooltipComponentProps {
     title: string;
@@ -22,7 +23,7 @@ interface TooltipComponentProps {
         | undefined;
 }
 
-export default function TooltipComponent(props: TooltipComponentProps) {
+function TooltipComponent(props: TooltipComponentProps) {
     return (
         <DefaultTooltip
             title={props.title}
@@ -42,3 +43,5 @@ export default function TooltipComponent(props: TooltipComponentProps) {
         </DefaultTooltip>
     );
 }
+
+export default memo(TooltipComponent);
