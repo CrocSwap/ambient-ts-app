@@ -1365,15 +1365,22 @@ export default function Chart(props: propsIF) {
     function setLimitForNoGoZone(newLimitValue: number) {
         const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
 
-        const diffNoGoZoneMin = Math.abs(newLimitValue - noGoZoneMin);
-        const diffNoGoZoneMax = Math.abs(newLimitValue - noGoZoneMax);
-        if (newLimitValue >= noGoZoneMin && newLimitValue <= noGoZoneMax) {
-            if (diffNoGoZoneMin > diffNoGoZoneMax) {
-                newLimitValue = noGoZoneMax;
-            } else {
-                newLimitValue = noGoZoneMin;
+        if (newLimitValue > noGoZoneMin && newLimitValue < noGoZoneMax) {
+            if (newLimitValue > noGoZoneMin) {
+                if (newLimitValue < limit) {
+                    newLimitValue = noGoZoneMax;
+                } else {
+                    newLimitValue = noGoZoneMin;
+                }
+            } else if (newLimitValue < noGoZoneMax) {
+                if (newLimitValue > limit) {
+                    newLimitValue = noGoZoneMin;
+                } else {
+                    newLimitValue = noGoZoneMax;
+                }
             }
         }
+
         return newLimitValue;
     }
 
@@ -3486,8 +3493,8 @@ export default function Chart(props: propsIF) {
 
                     if (
                         !(
-                            newLimitValue >= noGoZoneMin &&
-                            newLimitValue <= noGoZoneMax
+                            newLimitValue > noGoZoneMin &&
+                            newLimitValue < noGoZoneMax
                         )
                     ) {
                         onBlurLimitRate(limit, newLimitValue);
