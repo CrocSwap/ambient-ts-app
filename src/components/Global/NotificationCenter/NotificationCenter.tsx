@@ -1,20 +1,16 @@
 import { AnimateSharedLayout } from 'framer-motion';
-import { useEffect, useRef, useState, useMemo } from 'react';
+import { useEffect, useRef, useState, useMemo, useContext } from 'react';
 import NotificationTable from './NotificationTable/NotificationTable';
 import ActivityIndicator from './ActivityIndicator/ActivityIndicator';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
-import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
+import { getReceiptTxHashes } from '../../../ambient-utils/dataLayer';
+import { ReceiptContext } from '../../../contexts/ReceiptContext';
 
 const NotificationCenter = () => {
     const [showNotificationTable, setShowNotificationTable] =
         useState<boolean>(false);
 
-    const receiptData = useAppSelector((state) => state.receiptData);
-
-    const pendingTransactions = receiptData.pendingTransactions;
-
-    const sessionReceipts = receiptData.sessionReceipts;
+    const { pendingTransactions, sessionReceipts } = useContext(ReceiptContext);
 
     const txCount = pendingTransactions.length + sessionReceipts.length;
 
@@ -24,13 +20,13 @@ const NotificationCenter = () => {
         }
     }, [txCount]);
 
-    const receiveReceiptHashes = useMemo(
+    const receivedReceiptHashes = useMemo(
         () => getReceiptTxHashes(sessionReceipts),
-        [sessionReceipts],
+        [JSON.stringify(sessionReceipts)],
     );
 
     const currentPendingTransactionsArray = pendingTransactions.filter(
-        (hash: string) => !receiveReceiptHashes.includes(hash),
+        (hash: string) => !receivedReceiptHashes.includes(hash),
     );
 
     const notificationItemRef = useRef<HTMLDivElement>(null);
@@ -55,7 +51,7 @@ const NotificationCenter = () => {
             <div>
                 <span ref={activityCenterRef}>
                     <ActivityIndicator
-                        value={receiveReceiptHashes.length}
+                        value={receivedReceiptHashes.length}
                         pending={currentPendingTransactionsArray.length > 0}
                         showNotificationTable={showNotificationTable}
                         setShowNotificationTable={setShowNotificationTable}

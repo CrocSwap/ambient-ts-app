@@ -4,24 +4,28 @@ import styles from './OrderDetailsModal.module.css';
 import OrderDetailsHeader from '../OrderDetailsHeader/OrderDetailsHeader';
 import PriceInfo from '../PriceInfo/PriceInfo';
 import { useProcessOrder } from '../../../utils/hooks/useProcessOrder';
-import { LimitOrderIF } from '../../../utils/interfaces/exports';
+import { LimitOrderIF, LimitOrderServerIF } from '../../../ambient-utils/types';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import OrderDetailsSimplify from '../OrderDetailsSimplify/OrderDetailsSimplify';
 import TransactionDetailsGraph from '../../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
-import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../../constants';
+import {
+    GCGO_OVERRIDE_URL,
+    IS_LOCAL_ENV,
+} from '../../../ambient-utils/constants';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import { LimitOrderServerIF } from '../../../utils/interfaces/LimitOrderIF';
-import { getLimitOrderData } from '../../../App/functions/getLimitOrderData';
+import {
+    getLimitOrderData,
+    getFormattedNumber,
+    printDomToImage,
+} from '../../../ambient-utils/dataLayer';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import modalBackground from '../../../assets/images/backgrounds/background.png';
-import printDomToImage from '../../../utils/functions/printDomToImage';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import Modal from '../../Global/Modal/Modal';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -52,9 +56,7 @@ export default function OrderDetailsModal(props: propsIF) {
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
 
     const {
         baseTokenSymbol,
@@ -128,6 +130,8 @@ export default function OrderDetailsModal(props: propsIF) {
             )
                 .then((response) => response?.json())
                 .then((json) => {
+                    // temporarily skip ENS fetch
+                    const skipENSFetch = true;
                     const positionPayload = json?.data as LimitOrderServerIF;
                     return getLimitOrderData(
                         positionPayload,
@@ -140,6 +144,7 @@ export default function OrderDetailsModal(props: propsIF) {
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
                         cachedEnsResolve,
+                        skipENSFetch,
                     );
                 })
                 .then((positionStats: LimitOrderIF) => {

@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { RiArrowUpSLine, RiArrowDownSLine } from 'react-icons/ri';
-import uriToHttp from '../../../../utils/functions/uriToHttp';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { uriToHttp } from '../../../../ambient-utils/dataLayer';
 import {
     CircleLoaderFailed,
     CircleLoaderCompleted,
@@ -17,6 +16,8 @@ import {
     SubmitTransactionExtraButton,
 } from '../../../../styled/Components/TradeModules';
 import { FlexContainer } from '../../../../styled/Common';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 
 interface propsIF {
     type:
@@ -29,23 +30,25 @@ interface propsIF {
         | 'Reset';
     newTransactionHash: string;
     txErrorCode: string;
+    txErrorMessage: string;
     resetConfirmation: () => void;
     sendTransaction: () => Promise<void>;
     transactionPendingDisplayString: string;
     disableSubmitAgain?: boolean;
 }
 export default function SubmitTransaction(props: propsIF) {
-    const receiptData = useAppSelector((state) => state.receiptData);
-
     const {
         type,
         newTransactionHash,
         txErrorCode,
+        txErrorMessage,
         resetConfirmation,
         sendTransaction,
         transactionPendingDisplayString,
         disableSubmitAgain,
     } = props;
+
+    const { pendingTransactions, sessionReceipts } = useContext(ReceiptContext);
 
     const isTransactionApproved = newTransactionHash !== '';
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
@@ -57,9 +60,9 @@ export default function SubmitTransaction(props: propsIF) {
     );
     const isTransactionConfirmed =
         isTransactionApproved &&
-        !receiptData.pendingTransactions.includes(newTransactionHash);
+        !pendingTransactions.includes(newTransactionHash);
 
-    const { tokenB } = useAppSelector((state) => state.tradeData);
+    const { tokenB } = useContext(TradeDataContext);
 
     const confirmSendMessage = (
         <WaitingConfirmation
@@ -81,15 +84,13 @@ export default function SubmitTransaction(props: propsIF) {
             initiateTx={sendTransaction}
         />
     );
-    const transactionException = <TransactionException />;
+    const transactionException = (
+        <TransactionException txErrorMessage={txErrorMessage} />
+    );
 
     const lastReceipt =
-        receiptData?.sessionReceipts.length > 0
-            ? JSON.parse(
-                  receiptData.sessionReceipts[
-                      receiptData.sessionReceipts.length - 1
-                  ],
-              )
+        sessionReceipts.length > 0
+            ? JSON.parse(sessionReceipts[sessionReceipts.length - 1])
             : null;
 
     const isLastReceiptSuccess = lastReceipt?.status === 1;
@@ -137,7 +138,9 @@ export default function SubmitTransaction(props: propsIF) {
     );
 
     const buttonText = isTransactionException
-        ? 'Transaction Exception'
+        ? txErrorMessage?.toLowerCase().includes('gas')
+            ? 'Wallet Balance Insufficient to Cover Gas'
+            : 'Transaction Exception'
         : isTransactionDenied
         ? 'Transaction Denied'
         : lastReceipt && !isLastReceiptSuccess

@@ -1,7 +1,6 @@
 /* eslint-disable no-irregular-whitespace */
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import { TransactionIF } from '../../../../utils/interfaces/exports';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { TransactionIF, CandleDataIF } from '../../../../ambient-utils/types';
 import { Dispatch, useState, useEffect, useRef, useContext, memo } from 'react';
 
 import { Pagination } from '@mui/material';
@@ -15,13 +14,12 @@ import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropd
 import Spinner from '../../../Global/Spinner/Spinner';
 import { CandleContext } from '../../../../contexts/CandleContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
-import { CandleData } from '../../../../App/functions/fetchCandleSeries';
+import { fetchPoolRecentChanges } from '../../../../ambient-utils/api';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { fetchPoolRecentChanges } from '../../../../App/functions/fetchPoolRecentChanges';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import { IS_LOCAL_ENV } from '../../../../constants';
+import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { TransactionRowPlaceholder } from './TransactionsTable/TransactionRowPlaceholder';
@@ -31,10 +29,13 @@ import {
     ViewMoreButton,
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
-import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
+import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 
 interface propsIF {
-    filter?: CandleData | undefined;
+    filter?: CandleDataIF | undefined;
     activeAccountTransactionData?: TransactionIF[];
     connectedAccountActive?: boolean;
     isAccountView: boolean; // when viewing from /account: fullscreen and not paginated
@@ -90,14 +91,16 @@ function Transactions(props: propsIF) {
     const NUM_TRANSACTIONS_WHEN_COLLAPSED = isAccountView ? 13 : 10; // Number of transactions we show when the table is collapsed (i.e. half page)
     // NOTE: this is done to improve rendering speed for this page.
 
-    const graphData = useAppSelector((state) => state?.graphData);
-    const tradeData = useAppSelector((state) => state.tradeData);
-    const { transactionsByType, pendingTransactions } = useAppSelector(
-        (state) => state.receiptData,
-    );
+    const dataLoadingStatus = useContext(DataLoadingContext);
+    const { changesByUser, changesByPool } = useContext(GraphDataContext);
+    const { transactionsByType, pendingTransactions } =
+        useContext(ReceiptContext);
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
 
-    const selectedBase = tradeData.baseToken.address;
-    const selectedQuote = tradeData.quoteToken.address;
+    const selectedBaseAddress = baseToken.address;
+    const selectedQuoteAddress = quoteToken.address;
+    const quoteTokenSymbol = quoteToken?.symbol;
+    const baseTokenSymbol = baseToken?.symbol;
 
     const [transactionData, setTransactionData] = useState<TransactionIF[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -111,24 +114,24 @@ function Transactions(props: propsIF) {
             setTransactionData(activeAccountTransactionData || []);
         else if (!showAllData)
             setTransactionData(
-                graphData?.changesByUser?.changes.filter(
+                changesByUser.changes.filter(
                     (tx) =>
                         tx.base.toLowerCase() ===
-                            tradeData.baseToken.address.toLowerCase() &&
+                            baseToken.address.toLowerCase() &&
                         tx.quote.toLowerCase() ===
-                            tradeData.quoteToken.address.toLowerCase() &&
+                            quoteToken.address.toLowerCase() &&
                         tx.changeType !== 'fill' &&
                         tx.changeType !== 'cross',
                 ),
             );
         else {
             setTransactionData(
-                graphData?.changesByPool?.changes.filter(
+                changesByPool.changes.filter(
                     (tx) =>
                         tx.base.toLowerCase() ===
-                            tradeData.baseToken.address.toLowerCase() &&
+                            baseToken.address.toLowerCase() &&
                         tx.quote.toLowerCase() ===
-                            tradeData.quoteToken.address.toLowerCase() &&
+                            quoteToken.address.toLowerCase() &&
                         tx.changeType !== 'fill' &&
                         tx.changeType !== 'cross',
                 ),
@@ -138,8 +141,8 @@ function Transactions(props: propsIF) {
         showAllData,
         isCandleSelected,
         activeAccountTransactionData,
-        graphData?.changesByUser,
-        graphData?.changesByPool,
+        changesByUser,
+        changesByPool,
     ]);
 
     useEffect(() => {
@@ -148,28 +151,22 @@ function Transactions(props: propsIF) {
 
     useEffect(() => {
         if (isAccountView && connectedAccountActive)
-            setIsLoading(
-                graphData?.dataLoadingStatus.isConnectedUserTxDataLoading,
-            );
+            setIsLoading(dataLoadingStatus.isConnectedUserTxDataLoading);
         else if (isAccountView)
-            setIsLoading(
-                graphData?.dataLoadingStatus.isLookupUserTxDataLoading,
-            );
+            setIsLoading(dataLoadingStatus.isLookupUserTxDataLoading);
         else if (isCandleSelected) {
-            setIsLoading(graphData?.dataLoadingStatus.isCandleDataLoading);
+            setIsLoading(dataLoadingStatus.isCandleDataLoading);
         } else if (!showAllData)
-            setIsLoading(
-                graphData?.dataLoadingStatus.isConnectedUserTxDataLoading,
-            );
-        else setIsLoading(graphData?.dataLoadingStatus.isPoolTxDataLoading);
+            setIsLoading(dataLoadingStatus.isConnectedUserTxDataLoading);
+        else setIsLoading(dataLoadingStatus.isPoolTxDataLoading);
     }, [
         isCandleSelected,
         showAllData,
         connectedAccountActive,
-        graphData?.dataLoadingStatus.isConnectedUserTxDataLoading,
-        graphData?.dataLoadingStatus.isLookupUserTxDataLoading,
-        graphData?.dataLoadingStatus.isPoolTxDataLoading,
-        graphData?.dataLoadingStatus.isCandleDataLoading,
+        dataLoadingStatus.isConnectedUserTxDataLoading,
+        dataLoadingStatus.isLookupUserTxDataLoading,
+        dataLoadingStatus.isPoolTxDataLoading,
+        dataLoadingStatus.isCandleDataLoading,
     ]);
 
     const relevantTransactionsByType = transactionsByType.filter(
@@ -177,9 +174,9 @@ function Transactions(props: propsIF) {
             tx.txAction &&
             pendingTransactions.includes(tx.txHash) &&
             tx.txDetails?.baseAddress.toLowerCase() ===
-                tradeData.baseToken.address.toLowerCase() &&
+                baseToken.address.toLowerCase() &&
             tx.txDetails?.quoteAddress.toLowerCase() ===
-                tradeData.quoteToken.address.toLowerCase() &&
+                quoteToken.address.toLowerCase() &&
             tx.txDetails?.poolIdx === poolIndex,
     );
 
@@ -216,8 +213,8 @@ function Transactions(props: propsIF) {
         provider &&
         fetchPoolRecentChanges({
             tokenList: tokens.tokenUniv,
-            base: selectedBase,
-            quote: selectedQuote,
+            base: selectedBaseAddress,
+            quote: selectedQuoteAddress,
             poolIdx: poolIndex,
             chainId: chainId,
             annotate: true,
@@ -285,9 +282,6 @@ function Transactions(props: propsIF) {
     useEffect(() => {
         if (isCandleSelected) getCandleData();
     }, [lastBlockNumWait]);
-
-    const quoteTokenSymbol = tradeData.quoteToken?.symbol;
-    const baseTokenSymbol = tradeData.baseToken?.symbol;
 
     // Changed this to have the sort icon be inline with the last row rather than under it
     const walID = (
@@ -477,8 +471,9 @@ function Transactions(props: propsIF) {
                 alignItems='center'
                 justifyContent='center'
                 gap={isSmallScreen ? 4 : 8}
-                margin='16px auto'
+                margin={isSmallScreen ? 'auto' : '16px auto'}
                 background='dark1'
+                flexDirection={isSmallScreen ? 'column' : 'row'}
             >
                 <RowsPerPageDropdown
                     rowsPerPage={rowsPerPage}
@@ -507,12 +502,6 @@ function Transactions(props: propsIF) {
             </FlexContainer>
         );
 
-    const { ensAddressMapping, addData } = useENSAddresses();
-
-    useEffect(() => {
-        addData(sortedTransactions);
-    }, [sortedTransactions]);
-
     const currentRowItemContent = () =>
         _DATA.currentData.map((tx, idx) => (
             <TransactionRow
@@ -521,7 +510,6 @@ function Transactions(props: propsIF) {
                 tx={tx}
                 tableView={tableView}
                 isAccountView={isAccountView}
-                fetchedEnsAddress={ensAddressMapping.get(tx.user)}
             />
         ));
 
@@ -566,10 +554,7 @@ function Transactions(props: propsIF) {
             isAccountView={isAccountView}
         />
     ) : (
-        <FlexContainer
-            flexDirection='column'
-            onKeyDown={handleKeyDownViewTransaction}
-        >
+        <div onKeyDown={handleKeyDownViewTransaction}>
             <ul ref={listRef} id='current_row_scroll'>
                 {!isAccountView &&
                     pendingTransactions.length > 0 &&
@@ -685,7 +670,7 @@ function Transactions(props: propsIF) {
                 </FlexContainer>
             )}
             {/* Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render */}
-        </FlexContainer>
+        </div>
     );
 
     useEffect(() => {
@@ -697,7 +682,7 @@ function Transactions(props: propsIF) {
     }, [isTradeTableExpanded]);
 
     return (
-        <FlexContainer flexDirection='column' fullHeight>
+        <FlexContainer flexDirection='column' fullHeight={!isSmallScreen}>
             <div>{headerColumnsDisplay}</div>
 
             <div style={{ flex: 1, overflow: 'auto' }}>

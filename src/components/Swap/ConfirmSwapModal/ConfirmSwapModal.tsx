@@ -2,10 +2,10 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 
 // START: Import Other Local Files
-import { TokenPairIF } from '../../../utils/interfaces/exports';
+import { TokenPairIF } from '../../../ambient-utils/types';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import TradeConfirmationSkeleton from '../../Trade/TradeModules/TradeConfirmationSkeleton';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
 import { FlexContainer, Text } from '../../../styled/Common';
@@ -18,6 +18,7 @@ interface propsIF {
     newSwapTransactionHash: string;
     tokenPair: TokenPairIF;
     txErrorCode: string;
+    txErrorMessage: string;
     showConfirmation: boolean;
     resetConfirmation: () => void;
     slippageTolerancePercentage: number;
@@ -38,6 +39,7 @@ export default function ConfirmSwapModal(props: propsIF) {
         newSwapTransactionHash,
         tokenPair,
         txErrorCode,
+        txErrorMessage,
         resetConfirmation,
         showConfirmation,
         slippageTolerancePercentage,
@@ -227,6 +229,7 @@ export default function ConfirmSwapModal(props: propsIF) {
             transactionDetails={transactionDetails}
             transactionHash={newSwapTransactionHash}
             txErrorCode={txErrorCode}
+            txErrorMessage={txErrorMessage}
             showConfirmation={showConfirmation}
             statusText={
                 !showConfirmation

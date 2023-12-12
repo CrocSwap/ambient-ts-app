@@ -1,21 +1,14 @@
 import { useContext } from 'react';
-import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-
-import {
-    addPendingTx,
-    addReceipt,
-    addTransactionByType,
-    removePendingTx,
-    updateTransactionHash,
-} from '../../utils/state/receiptDataSlice';
 
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
-import { IS_LOCAL_ENV } from '../../constants';
+import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { ReceiptContext } from '../../contexts/ReceiptContext';
 export function useSendInit(
     setNewInitTransactionHash: React.Dispatch<
         React.SetStateAction<string | undefined>
@@ -23,14 +16,18 @@ export function useSendInit(
     setIsInitPending: React.Dispatch<React.SetStateAction<boolean>>,
     setIsTxCompletedInit: React.Dispatch<React.SetStateAction<boolean>>,
     setTxErrorCode: React.Dispatch<React.SetStateAction<string>>,
+    setTxErrorMessage: React.Dispatch<React.SetStateAction<string>>,
     resetConfirmation: () => void, // Include resetConfirmation as an argument
 ) {
-    const dispatch = useAppDispatch();
     const { crocEnv } = useContext(CrocEnvContext);
-
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
     const {
-        tradeData: { baseToken, quoteToken },
-    } = useAppSelector((state) => state);
+        addPendingTx,
+        addReceipt,
+        addTransactionByType,
+        removePendingTx,
+        updateTransactionHash,
+    } = useContext(ReceiptContext);
 
     const sendInit = async (
         initialPriceInBaseDenom: number | undefined,
@@ -47,15 +44,13 @@ export function useSendInit(
                     .initPool(initialPriceInBaseDenom);
 
                 setNewInitTransactionHash(tx?.hash);
-                if (tx) dispatch(addPendingTx(tx?.hash));
+                if (tx) addPendingTx(tx?.hash);
                 if (tx?.hash)
-                    dispatch(
-                        addTransactionByType({
-                            txHash: tx.hash,
-                            txType: 'Init',
-                            txDescription: `Pool Initialization of ${quoteToken.symbol} / ${baseToken.symbol}`,
-                        }),
-                    );
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txType: 'Init',
+                        txDescription: `Pool Initialization of ${quoteToken.symbol} / ${baseToken.symbol}`,
+                    });
                 let receipt;
                 try {
                     if (tx) receipt = await tx.wait();
@@ -64,16 +59,14 @@ export function useSendInit(
                     console.error({ error });
                     if (isTransactionReplacedError(error)) {
                         IS_LOCAL_ENV && console.debug('repriced');
-                        dispatch(removePendingTx(error.hash));
+                        removePendingTx(error.hash);
 
                         const newTransactionHash = error.replacement.hash;
-                        dispatch(addPendingTx(newTransactionHash));
+                        addPendingTx(newTransactionHash);
 
-                        dispatch(
-                            updateTransactionHash({
-                                oldHash: error.hash,
-                                newHash: error.replacement.hash,
-                            }),
+                        updateTransactionHash(
+                            error.hash,
+                            error.replacement.hash,
                         );
                         setNewInitTransactionHash(newTransactionHash);
 
@@ -84,8 +77,8 @@ export function useSendInit(
                     }
                 }
                 if (receipt) {
-                    dispatch(addReceipt(JSON.stringify(receipt)));
-                    dispatch(removePendingTx(receipt.transactionHash));
+                    addReceipt(JSON.stringify(receipt));
+                    removePendingTx(receipt.transactionHash);
                     if (cb) cb();
                     setIsTxCompletedInit(true);
                 }
@@ -97,6 +90,7 @@ export function useSendInit(
                 }
                 console.error({ error });
                 setTxErrorCode(error?.code);
+                setTxErrorMessage(error?.data?.message);
             } finally {
                 setIsInitPending(false);
             }

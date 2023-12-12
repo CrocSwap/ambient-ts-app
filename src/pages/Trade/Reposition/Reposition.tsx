@@ -14,42 +14,42 @@ import ConfirmRepositionModal from '../../../components/Trade/Reposition/Confirm
 import Button from '../../../components/Form/Button';
 // START: Import Other Local Files
 import styles from './Reposition.module.css';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../utils/hooks/reduxToolkit';
-import { PositionIF } from '../../../utils/interfaces/exports';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { PositionIF, PositionServerIF } from '../../../ambient-utils/types';
 import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import {
-    addPendingTx,
-    addReceipt,
-    addTransactionByType,
-    removePendingTx,
-    updateTransactionHash,
-} from '../../../utils/state/receiptDataSlice';
+
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
     TransactionError,
 } from '../../../utils/TransactionError';
 import useDebounce from '../../../App/hooks/useDebounce';
-import { setAdvancedMode } from '../../../utils/state/tradeDataSlice';
-import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../../constants';
+import {
+    GCGO_OVERRIDE_URL,
+    IS_LOCAL_ENV,
+} from '../../../ambient-utils/constants';
 import { FiExternalLink } from 'react-icons/fi';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { RangeContext } from '../../../contexts/RangeContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { getPositionData } from '../../../App/functions/getPositionData';
+import {
+    getPositionData,
+    getFormattedNumber,
+} from '../../../ambient-utils/dataLayer';
 import { TokenContext } from '../../../contexts/TokenContext';
-import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import RangeWidth from '../../../components/Form/RangeWidth/RangeWidth';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import {
+    GAS_DROPS_ESTIMATE_REPOSITION,
+    NUM_GWEI_IN_WEI,
+} from '../../../ambient-utils/constants/';
+import { ReceiptContext } from '../../../contexts/ReceiptContext';
 
 function Reposition() {
     // current URL parameter string
@@ -72,12 +72,20 @@ function Reposition() {
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
     const { bypassConfirmRepo } = useContext(UserPreferenceContext);
     const {
+        addPendingTx,
+        addReceipt,
+        addTransactionByType,
+        removePendingTx,
+        updateTransactionHash,
+    } = useContext(ReceiptContext);
+    const {
         simpleRangeWidth,
         setSimpleRangeWidth,
         setMaxRangePrice: setMaxPrice,
         setMinRangePrice: setMinPrice,
         setCurrentRangeInReposition,
         setRescaleRangeBoundariesWithSlider,
+        setAdvancedMode,
     } = useContext(RangeContext);
 
     const [isOpen, openModal, closeModal] = useModal();
@@ -86,17 +94,18 @@ function Reposition() {
         useState('');
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [txErrorCode, setTxErrorCode] = useState('');
+    const [txErrorMessage, setTxErrorMessage] = useState('');
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setTxErrorCode('');
+        setTxErrorMessage('');
         setNewRepositionTransactionHash('');
     };
 
     const isRepositionSent = newRepositionTransactionHash !== '';
 
     const locationHook = useLocation();
-    const dispatch = useAppDispatch();
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     // navigate the user to the redirect URL path if locationHook.state has no data
@@ -143,14 +152,11 @@ function Reposition() {
     }, [crocEnv, lastBlockNumber, position?.positionId]);
 
     const {
-        tradeData: {
-            tokenA,
-            tokenB,
-            isTokenABase,
-            poolPriceNonDisplay: currentPoolPriceNonDisplay,
-            isDenomBase,
-        },
+        tradeData: { poolPriceNonDisplay: currentPoolPriceNonDisplay },
     } = useAppSelector((state) => state);
+
+    const { isDenomBase, tokenA, tokenB, isTokenABase } =
+        useContext(TradeDataContext);
 
     const currentPoolPriceTick =
         Math.log(currentPoolPriceNonDisplay) / Math.log(1.0001);
@@ -208,7 +214,7 @@ function Reposition() {
 
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('set Advanced Mode to false');
-        dispatch(setAdvancedMode(false));
+        setAdvancedMode(false);
     }, []);
 
     useEffect(() => {
@@ -279,6 +285,7 @@ function Reposition() {
         if (!crocEnv) return;
         let tx;
         setTxErrorCode('');
+        setTxErrorMessage('');
 
         resetConfirmation();
         setShowConfirmation(true);
@@ -293,28 +300,26 @@ function Reposition() {
 
             tx = await repo.rebal();
             setNewRepositionTransactionHash(tx?.hash);
-            dispatch(addPendingTx(tx?.hash));
+            addPendingTx(tx?.hash);
             if (tx?.hash)
-                dispatch(
-                    addTransactionByType({
-                        txHash: tx.hash,
-                        txAction: 'Reposition',
-                        txType: 'Range',
-                        txDescription: `Reposition ${position.baseSymbol}+${position.quoteSymbol}`,
-                        txDetails: {
-                            baseAddress: position.base,
-                            quoteAddress: position.quote,
-                            poolIdx: poolIndex,
-                            baseSymbol: position.baseSymbol,
-                            quoteSymbol: position.quoteSymbol,
-                            baseTokenDecimals: baseTokenDecimals,
-                            quoteTokenDecimals: quoteTokenDecimals,
-                            lowTick: pinnedLowTick,
-                            highTick: pinnedHighTick,
-                            gridSize: lookupChain(position.chainId).gridSize,
-                        },
-                    }),
-                );
+                addTransactionByType({
+                    txHash: tx.hash,
+                    txAction: 'Reposition',
+                    txType: 'Range',
+                    txDescription: `Reposition ${position.baseSymbol}+${position.quoteSymbol}`,
+                    txDetails: {
+                        baseAddress: position.base,
+                        quoteAddress: position.quote,
+                        poolIdx: poolIndex,
+                        baseSymbol: position.baseSymbol,
+                        quoteSymbol: position.quoteSymbol,
+                        baseTokenDecimals: baseTokenDecimals,
+                        quoteTokenDecimals: quoteTokenDecimals,
+                        lowTick: pinnedLowTick,
+                        highTick: pinnedHighTick,
+                        gridSize: lookupChain(position.chainId).gridSize,
+                    },
+                });
             // We want the user to exit themselves
             // navigate(redirectPath, { replace: true });
         } catch (error) {
@@ -323,6 +328,7 @@ function Reposition() {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
+            setTxErrorMessage(error?.data?.message);
         }
 
         let receipt;
@@ -335,15 +341,11 @@ function Reposition() {
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
                 IS_LOCAL_ENV && console.debug('repriced');
-                dispatch(removePendingTx(error.hash));
+                removePendingTx(error.hash);
                 const newTransactionHash = error.replacement.hash;
-                dispatch(addPendingTx(newTransactionHash));
-                dispatch(
-                    updateTransactionHash({
-                        oldHash: error.hash,
-                        newHash: error.replacement.hash,
-                    }),
-                );
+                addPendingTx(newTransactionHash);
+
+                updateTransactionHash(error.hash, error.replacement.hash);
                 setNewRepositionTransactionHash(newTransactionHash);
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
@@ -352,8 +354,8 @@ function Reposition() {
             }
         }
         if (receipt) {
-            dispatch(addReceipt(JSON.stringify(receipt)));
-            dispatch(removePendingTx(receipt.transactionHash));
+            addReceipt(JSON.stringify(receipt));
+            removePendingTx(receipt.transactionHash);
         }
     };
 
@@ -430,7 +432,8 @@ function Reposition() {
                     setCurrentQuoteQtyDisplayTruncated('...');
                     return;
                 }
-
+                // temporarily skip ENS fetch
+                const skipENSFetch = true;
                 const positionStats = await getPositionData(
                     json.data as PositionServerIF,
                     tokens.tokenUniv,
@@ -442,6 +445,7 @@ function Reposition() {
                     cachedQuerySpotPrice,
                     cachedTokenDetails,
                     cachedEnsResolve,
+                    skipENSFetch,
                 );
                 const liqBaseNum =
                     positionStats.positionLiqBaseDecimalCorrected;
@@ -583,11 +587,10 @@ function Reposition() {
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
-            const averageRepositionCostInGasDrops = 260705;
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                averageRepositionCostInGasDrops *
-                1e-9 *
+                GAS_DROPS_ESTIMATE_REPOSITION *
+                NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice;
 
             setRangeGasPriceinDollars(
@@ -665,6 +668,7 @@ function Reposition() {
                                     newRepositionTransactionHash
                                 }
                                 txErrorCode={txErrorCode}
+                                txErrorMessage={txErrorMessage}
                                 sendTransaction={sendRepositionTransaction}
                                 resetConfirmation={resetConfirmation}
                                 transactionPendingDisplayString={`Repositioning transaction with ${tokenA.symbol} and ${tokenB.symbol}`}
@@ -703,6 +707,7 @@ function Reposition() {
                     newRepositionTransactionHash={newRepositionTransactionHash}
                     resetConfirmation={resetConfirmation}
                     txErrorCode={txErrorCode}
+                    txErrorMessage={txErrorMessage}
                     minPriceDisplay={minPriceDisplay}
                     maxPriceDisplay={maxPriceDisplay}
                     currentBaseQtyDisplayTruncated={

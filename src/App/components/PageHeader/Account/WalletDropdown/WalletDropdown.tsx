@@ -1,14 +1,14 @@
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { CgProfile } from 'react-icons/cg';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-import { getChainExplorer } from '../../../../../utils/data/chains';
+import {
+    getChainExplorer,
+    getFormattedNumber,
+} from '../../../../../ambient-utils/dataLayer';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
-import { TokenIF } from '../../../../../utils/interfaces/exports';
+import { TokenIF } from '../../../../../ambient-utils/types';
 import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
-
-import { getFormattedNumber } from '../../../../functions/getFormattedNumber';
 import { LogoutButton } from '../../../../../components/Global/LogoutButton/LogoutButton';
 import {
     NameDisplay,
@@ -24,20 +24,20 @@ import {
     AccountLink,
 } from '../../../../../styled/Components/Header';
 import { FlexContainer } from '../../../../../styled/Common';
-import { ZERO_ADDRESS } from '../../../../../constants';
 import { BigNumber } from 'ethers';
 import { toDisplayQty } from '@crocswap-libs/sdk';
-import { ethereumMainnet } from '../../../../../utils/networks/ethereumMainnet';
-import { mainnetUSDC } from '../../../../../utils/data/defaultTokens';
+import {
+    ZERO_ADDRESS,
+    supportedNetworks,
+} from '../../../../../ambient-utils/constants';
 import IconWithTooltip from '../../../../../components/Global/IconWithTooltip/IconWithTooltip';
-import { supportedNetworks } from '../../../../../utils/networks';
+import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
 
 interface WalletDropdownPropsIF {
     ensName: string;
     accountAddress: string;
     handleCopyAddress: () => void;
     clickOutsideHandler: () => void;
-    connectorName: string | undefined;
     clickLogout: () => void;
     accountAddressFull: string;
 }
@@ -55,7 +55,6 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         accountAddress,
         handleCopyAddress,
         clickOutsideHandler,
-        // connectorName,
         clickLogout,
         accountAddressFull,
     } = props;
@@ -63,12 +62,9 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
-    const defaultPair: [TokenIF, TokenIF] =
-        supportedNetworks[chainId].defaultPair;
+    const { tokenBalances } = useContext(TokenBalanceContext);
+    const defaultPair = supportedNetworks[chainId].defaultPair;
 
-    const tokenBalances: TokenIF[] | undefined = useAppSelector(
-        (state) => state.userData.tokenBalances,
-    );
     const nativeData: TokenIF | undefined =
         tokenBalances &&
         tokenBalances.find((tkn: TokenIF) => tkn.address === ZERO_ADDRESS);
@@ -106,7 +102,24 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     const [usdcUsdValueForDom, setUsdcUsdValueForDom] = useState<
         string | undefined
     >();
+
+    const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
+        number | undefined
+    >();
+
+    const { crocEnv } = useContext(CrocEnvContext);
+
     useEffect(() => {
+        if (!crocEnv) return;
+        Promise.resolve(
+            cachedFetchTokenPrice(ZERO_ADDRESS, chainId, crocEnv),
+        ).then((price) => {
+            if (price?.usdPrice !== undefined) {
+                setEthMainnetUsdPrice(price.usdPrice);
+            } else {
+                setEthMainnetUsdPrice(undefined);
+            }
+        });
         if (usdcData === undefined) {
             setUsdcUsdValueForDom(undefined);
             setUsdcBalanceForDom(undefined);
@@ -134,9 +147,8 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 : '0.00';
 
         setUsdcBalanceForDom(usdcCombinedBalanceDisplayTruncated);
-
         Promise.resolve(
-            cachedFetchTokenPrice(mainnetUSDC.address, ethereumMainnet.chainId),
+            cachedFetchTokenPrice(usdcData.address, chainId, crocEnv),
         ).then((price) => {
             if (price?.usdPrice !== undefined) {
                 const usdValueNum: number =
@@ -153,9 +165,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 setUsdcUsdValueForDom(undefined);
             }
         });
-    }, [chainId, JSON.stringify(usdcData)]);
-
-    const { ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    }, [crocEnv, chainId, JSON.stringify(usdcData)]);
 
     const nativeCombinedBalance =
         nativeData?.walletBalance !== undefined

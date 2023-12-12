@@ -4,47 +4,41 @@ import RangeActionTokenHeader from './RangeActionTokenHeader/RangeActionTokenHea
 import RemoveRangeInfo from './RangeActionInfo/RemoveRangeInfo';
 import { useContext, useEffect, useMemo, useState } from 'react';
 
-import { PositionIF } from '../../utils/interfaces/exports';
+import { PositionIF, PositionServerIF } from '../../ambient-utils/types';
 import { BigNumber } from 'ethers';
-import {
-    ambientPosSlot,
-    concPosSlot,
-    CrocPositionView,
-} from '@crocswap-libs/sdk';
+import { CrocPositionView } from '@crocswap-libs/sdk';
 import Button from '../Form/Button';
 import RangeActionSettings from './RangeActionSettings/RangeActionSettings';
 import ExtraControls from './RangeActionExtraControls/RangeActionExtraControls';
-import {
-    addPendingTx,
-    addPositionPendingUpdate,
-    addReceipt,
-    addTransactionByType,
-    removePendingTx,
-    removePositionPendingUpdate,
-    updateTransactionHash,
-} from '../../utils/state/receiptDataSlice';
-import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
+
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
-import { isStablePair } from '../../utils/data/stablePairs';
-import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../constants';
+import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
-import { getPositionData } from '../../App/functions/getPositionData';
+import {
+    getPositionData,
+    getFormattedNumber,
+    isStablePair,
+} from '../../ambient-utils/dataLayer';
 import { TokenContext } from '../../contexts/TokenContext';
-import { PositionServerIF } from '../../utils/interfaces/PositionIF';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
-import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import HarvestPositionInfo from './RangeActionInfo/HarvestPositionInfo';
 import ModalHeader from '../Global/ModalHeader/ModalHeader';
 import { RangeModalActionType } from '../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import Modal from '../Global/Modal/Modal';
 import SubmitTransaction from '../Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import {
+    GAS_DROPS_ESTIMATE_RANGE_REMOVAL,
+    GAS_DROPS_ESTIMATE_RANGE_HARVEST,
+    NUM_GWEI_IN_WEI,
+} from '../../ambient-utils/constants/';
+import { ReceiptContext } from '../../contexts/ReceiptContext';
 
 interface propsIF {
     type: RangeModalActionType;
@@ -89,6 +83,13 @@ export default function RangeActionModal(props: propsIF) {
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { mintSlippage, dexBalRange } = useContext(UserPreferenceContext);
+    const {
+        addPendingTx,
+        addReceipt,
+        addTransactionByType,
+        removePendingTx,
+        updateTransactionHash,
+    } = useContext(ReceiptContext);
 
     const { tokens } = useContext(TokenContext);
 
@@ -111,22 +112,21 @@ export default function RangeActionModal(props: propsIF) {
         ? GCGO_OVERRIDE_URL + '/position_stats?'
         : activeNetwork.graphCacheUrl + '/position_stats?';
 
-    const dispatch = useAppDispatch();
-
     const [removalGasPriceinDollars, setRemovalGasPriceinDollars] = useState<
         string | undefined
     >();
 
     const averageGasUnitsForRemovalTxInGasDrops =
-        type === 'Remove' ? 94500 : 92500;
-    const numGweiInWei = 1e-9;
+        type === 'Remove'
+            ? GAS_DROPS_ESTIMATE_RANGE_REMOVAL
+            : GAS_DROPS_ESTIMATE_RANGE_HARVEST;
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 averageGasUnitsForRemovalTxInGasDrops *
-                numGweiInWei *
+                NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice;
 
             setRemovalGasPriceinDollars(
@@ -201,6 +201,8 @@ export default function RangeActionModal(props: propsIF) {
                     .then((json) => json?.data)
                     .then(async (data: PositionServerIF) => {
                         if (data && crocEnv && provider) {
+                            // temporarily skip ENS fetch
+                            const skipENSFetch = true;
                             const position = await getPositionData(
                                 data,
                                 tokens.tokenUniv,
@@ -212,6 +214,7 @@ export default function RangeActionModal(props: propsIF) {
                                 cachedQuerySpotPrice,
                                 cachedTokenDetails,
                                 cachedEnsResolve,
+                                skipENSFetch,
                             );
                             setPosLiqBaseDecimalCorrected(
                                 position.positionLiqBaseDecimalCorrected,
@@ -312,11 +315,13 @@ export default function RangeActionModal(props: propsIF) {
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newTransactionHash, setNewTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
+    const [txErrorMessage, setTxErrorMessage] = useState('');
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setNewTransactionHash('');
         setTxErrorCode('');
+        setTxErrorMessage('');
     };
 
     useEffect(() => {
@@ -324,23 +329,6 @@ export default function RangeActionModal(props: propsIF) {
             resetConfirmation();
         }
     }, [txErrorCode, isOpen]);
-
-    const posHash =
-        position.positionType === 'ambient'
-            ? ambientPosSlot(
-                  position.user,
-                  position.base,
-                  position.quote,
-                  poolIndex,
-              )
-            : concPosSlot(
-                  position.user,
-                  position.base,
-                  position.quote,
-                  position.bidTick,
-                  position.askTick,
-                  poolIndex,
-              );
 
     const isPairStable: boolean = isStablePair(
         baseTokenAddress,
@@ -362,8 +350,6 @@ export default function RangeActionModal(props: propsIF) {
         const lowLimit = spotPrice * (1 - persistedSlippage / 100);
         const highLimit = spotPrice * (1 + persistedSlippage / 100);
 
-        dispatch(addPositionPendingUpdate(posHash as string));
-
         let tx;
         if (position.positionType === 'ambient') {
             if (removalPercentage === 100) {
@@ -374,7 +360,7 @@ export default function RangeActionModal(props: propsIF) {
                         surplus: dexBalRange.outputToDexBal.isEnabled,
                     });
                     IS_LOCAL_ENV && console.debug(tx?.hash);
-                    dispatch(addPendingTx(tx?.hash));
+                    addPendingTx(tx?.hash);
                     setNewTransactionHash(tx?.hash);
                 } catch (error) {
                     if (
@@ -384,8 +370,8 @@ export default function RangeActionModal(props: propsIF) {
                         location.reload();
                     }
                     console.error({ error });
-                    dispatch(removePositionPendingUpdate(posHash as string));
                     setTxErrorCode(error?.code);
+                    setTxErrorMessage(error?.data?.message);
                 }
             } else {
                 try {
@@ -393,7 +379,7 @@ export default function RangeActionModal(props: propsIF) {
                         lowLimit,
                         highLimit,
                     ]);
-                    dispatch(addPendingTx(tx?.hash));
+                    addPendingTx(tx?.hash);
                     IS_LOCAL_ENV && console.debug(tx?.hash);
                     setNewTransactionHash(tx?.hash);
                 } catch (error) {
@@ -404,8 +390,8 @@ export default function RangeActionModal(props: propsIF) {
                         location.reload();
                     }
                     IS_LOCAL_ENV && console.debug({ error });
-                    dispatch(removePositionPendingUpdate(posHash as string));
                     setTxErrorCode(error?.code);
+                    setTxErrorMessage(error?.data?.message);
                 }
             }
         } else if (position.positionType === 'concentrated') {
@@ -417,7 +403,7 @@ export default function RangeActionModal(props: propsIF) {
                     { surplus: dexBalRange.outputToDexBal.isEnabled },
                 );
                 IS_LOCAL_ENV && console.debug(tx?.hash);
-                dispatch(addPendingTx(tx?.hash));
+                addPendingTx(tx?.hash);
                 setNewTransactionHash(tx?.hash);
             } catch (error) {
                 if (
@@ -427,7 +413,7 @@ export default function RangeActionModal(props: propsIF) {
                 }
                 console.error({ error });
                 setTxErrorCode(error?.code);
-                dispatch(removePositionPendingUpdate(posHash as string));
+                setTxErrorMessage(error?.data?.message);
             }
         } else {
             IS_LOCAL_ENV &&
@@ -435,27 +421,25 @@ export default function RangeActionModal(props: propsIF) {
         }
 
         if (tx?.hash)
-            dispatch(
-                addTransactionByType({
-                    txHash: tx.hash,
-                    txAction: 'Remove',
-                    txType: 'Range',
-                    txDescription: `Remove Range ${position.baseSymbol}+${position.quoteSymbol}`,
-                    txDetails: {
-                        baseAddress: position.base,
-                        quoteAddress: position.quote,
-                        poolIdx: poolIndex,
-                        baseSymbol: position.baseSymbol,
-                        quoteSymbol: position.quoteSymbol,
-                        baseTokenDecimals: position.baseDecimals,
-                        quoteTokenDecimals: position.quoteDecimals,
-                        isAmbient: isAmbient,
-                        lowTick: position.bidTick,
-                        highTick: position.askTick,
-                        gridSize: lookupChain(position.chainId).gridSize,
-                    },
-                }),
-            );
+            addTransactionByType({
+                txHash: tx.hash,
+                txAction: 'Remove',
+                txType: 'Range',
+                txDescription: `Remove Range ${position.baseSymbol}+${position.quoteSymbol}`,
+                txDetails: {
+                    baseAddress: position.base,
+                    quoteAddress: position.quote,
+                    poolIdx: poolIndex,
+                    baseSymbol: position.baseSymbol,
+                    quoteSymbol: position.quoteSymbol,
+                    baseTokenDecimals: position.baseDecimals,
+                    quoteTokenDecimals: position.quoteDecimals,
+                    isAmbient: isAmbient,
+                    lowTick: position.bidTick,
+                    highTick: position.askTick,
+                    gridSize: lookupChain(position.chainId).gridSize,
+                },
+            });
 
         let receipt;
 
@@ -468,16 +452,12 @@ export default function RangeActionModal(props: propsIF) {
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
                 IS_LOCAL_ENV && console.debug('repriced');
-                dispatch(removePendingTx(error.hash));
+                removePendingTx(error.hash);
                 const newTransactionHash = error.replacement.hash;
                 setNewTransactionHash(newTransactionHash);
-                dispatch(addPendingTx(newTransactionHash));
-                dispatch(
-                    updateTransactionHash({
-                        oldHash: error.hash,
-                        newHash: error.replacement.hash,
-                    }),
-                );
+                addPendingTx(newTransactionHash);
+
+                updateTransactionHash(error.hash, error.replacement.hash);
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
@@ -486,9 +466,8 @@ export default function RangeActionModal(props: propsIF) {
         if (receipt) {
             IS_LOCAL_ENV && console.debug('dispatching receipt');
             IS_LOCAL_ENV && console.debug({ receipt });
-            dispatch(addReceipt(JSON.stringify(receipt)));
-            dispatch(removePendingTx(receipt.transactionHash));
-            dispatch(removePositionPendingUpdate(posHash as string));
+            addReceipt(JSON.stringify(receipt));
+            removePendingTx(receipt.transactionHash);
         }
     };
 
@@ -506,43 +485,38 @@ export default function RangeActionModal(props: propsIF) {
         if (position.positionType === 'concentrated') {
             try {
                 IS_LOCAL_ENV && console.debug('Harvesting 100% of fees.');
-                dispatch(addPositionPendingUpdate(posHash as string));
                 tx = await pool.harvestRange(
                     [position.bidTick, position.askTick],
                     [lowLimit, highLimit],
                     { surplus: dexBalRange.outputToDexBal.isEnabled },
                 );
                 IS_LOCAL_ENV && console.debug(tx?.hash);
-                dispatch(addPendingTx(tx?.hash));
+                addPendingTx(tx?.hash);
                 setNewTransactionHash(tx?.hash);
                 if (tx?.hash)
-                    dispatch(
-                        addTransactionByType({
-                            txHash: tx.hash,
-                            txAction: 'Harvest',
-                            txType: 'Range',
-                            txDescription: `Harvest Rewards ${position.baseSymbol}+${position.quoteSymbol}`,
-                            txDetails: {
-                                baseAddress: position.base,
-                                quoteAddress: position.quote,
-                                poolIdx: poolIndex,
-                                baseSymbol: position.baseSymbol,
-                                quoteSymbol: position.quoteSymbol,
-                                baseTokenDecimals: position.baseDecimals,
-                                quoteTokenDecimals: position.quoteDecimals,
-                                isAmbient: isAmbient,
-                                lowTick: position.bidTick,
-                                highTick: position.askTick,
-                                gridSize: lookupChain(position.chainId)
-                                    .gridSize,
-                            },
-                        }),
-                    );
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txAction: 'Harvest',
+                        txType: 'Range',
+                        txDescription: `Harvest Rewards ${position.baseSymbol}+${position.quoteSymbol}`,
+                        txDetails: {
+                            baseAddress: position.base,
+                            quoteAddress: position.quote,
+                            poolIdx: poolIndex,
+                            baseSymbol: position.baseSymbol,
+                            quoteSymbol: position.quoteSymbol,
+                            baseTokenDecimals: position.baseDecimals,
+                            quoteTokenDecimals: position.quoteDecimals,
+                            isAmbient: isAmbient,
+                            lowTick: position.bidTick,
+                            highTick: position.askTick,
+                            gridSize: lookupChain(position.chainId).gridSize,
+                        },
+                    });
             } catch (error) {
                 console.error({ error });
-                dispatch(removePositionPendingUpdate(posHash as string));
                 setTxErrorCode(error?.code);
-                dispatch(removePositionPendingUpdate(posHash as string));
+                setTxErrorMessage(error?.data?.message);
                 if (
                     error.reason === 'sending a transaction requires a signer'
                 ) {
@@ -564,16 +538,12 @@ export default function RangeActionModal(props: propsIF) {
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
                 IS_LOCAL_ENV && console.debug('repriced');
-                dispatch(removePendingTx(error.hash));
+                removePendingTx(error.hash);
                 const newTransactionHash = error.replacement.hash;
                 setNewTransactionHash(newTransactionHash);
-                dispatch(addPendingTx(newTransactionHash));
-                dispatch(
-                    updateTransactionHash({
-                        oldHash: error.hash,
-                        newHash: error.replacement.hash,
-                    }),
-                );
+                addPendingTx(newTransactionHash);
+
+                updateTransactionHash(error.hash, error.replacement.hash);
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
             }
@@ -581,9 +551,8 @@ export default function RangeActionModal(props: propsIF) {
         if (receipt) {
             IS_LOCAL_ENV && console.debug('dispatching receipt');
             IS_LOCAL_ENV && console.debug({ receipt });
-            dispatch(addReceipt(JSON.stringify(receipt)));
-            dispatch(removePendingTx(receipt.transactionHash));
-            dispatch(removePositionPendingUpdate(posHash as string));
+            addReceipt(JSON.stringify(receipt));
+            removePendingTx(receipt.transactionHash);
         }
     };
 
@@ -646,6 +615,7 @@ export default function RangeActionModal(props: propsIF) {
                     }
                     newTransactionHash={newTransactionHash}
                     txErrorCode={txErrorCode}
+                    txErrorMessage={txErrorMessage}
                     resetConfirmation={resetConfirmation}
                     sendTransaction={type === 'Remove' ? removeFn : harvestFn}
                     transactionPendingDisplayString={

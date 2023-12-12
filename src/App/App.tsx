@@ -28,7 +28,7 @@ import SidebarFooter from '../components/Global/Sidebar/SidebarFooter/SidebarFoo
 
 /** * **** Import Local Files *******/
 import './App.css';
-import { IS_LOCAL_ENV } from '../constants';
+import { IS_LOCAL_ENV } from '../ambient-utils/constants';
 import ChatPanel from '../components/Chat/ChatPanel';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';

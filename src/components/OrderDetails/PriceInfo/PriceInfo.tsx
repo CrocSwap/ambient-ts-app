@@ -1,12 +1,12 @@
 import styles from './PriceInfo.module.css';
 
-import { LimitOrderIF, TokenIF } from '../../../utils/interfaces/exports';
+import { LimitOrderIF, TokenIF } from '../../../ambient-utils/types';
 import OpenOrderStatus from '../../Global/OpenOrderStatus/OpenOrderStatus';
 import { useLocation } from 'react-router-dom';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import { useContext } from 'react';
 import { TokenContext } from '../../../contexts/TokenContext';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 
 type ItemIF = {
     slug: string;

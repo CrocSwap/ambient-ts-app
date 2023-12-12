@@ -9,9 +9,13 @@ import {
     useState,
 } from 'react';
 import { FaGasPump } from 'react-icons/fa';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import useDebounce from '../../../../App/hooks/useDebounce';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
+import {
+    IS_LOCAL_ENV,
+    ZERO_ADDRESS,
+    checkBlacklist,
+} from '../../../../ambient-utils/constants';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { FlexContainer, Text } from '../../../../styled/Common';
@@ -25,23 +29,19 @@ import {
     isTransactionFailedError,
     isTransactionReplacedError,
 } from '../../../../utils/TransactionError';
-import { checkBlacklist } from '../../../../utils/data/blacklist';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
-import { TokenIF } from '../../../../utils/interfaces/exports';
-import {
-    addPendingTx,
-    addReceipt,
-    addTransactionByType,
-    removePendingTx,
-    updateTransactionHash,
-} from '../../../../utils/state/receiptDataSlice';
+import { TokenIF } from '../../../../ambient-utils/types';
+
 import Toggle from '../../../Form/Toggle';
 import CurrencySelector from '../../../Form/CurrencySelector';
 import TransferAddressInput from '../Transfer/TransferAddressInput';
 import Button from '../../../Form/Button';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
+import {
+    NUM_GWEI_IN_WEI,
+    GAS_DROPS_ESTIMATE_WITHDRAWAL_NATIVE,
+    GAS_DROPS_ESTIMATE_WITHDRAWAL_ERC20,
+} from '../../../../ambient-utils/constants/';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -65,18 +65,18 @@ export default function Withdraw(props: propsIF) {
         secondaryEnsName,
         setTokenModalOpen,
     } = props;
-    const {
-        crocEnv,
-        ethMainnetUsdPrice,
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
 
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
 
-    const dispatch = useAppDispatch();
+    const {
+        addPendingTx,
+        addReceipt,
+        addTransactionByType,
+        removePendingTx,
+        updateTransactionHash,
+    } = useContext(ReceiptContext);
 
     const selectedTokenDecimals = selectedToken.decimals;
 
@@ -204,15 +204,13 @@ export default function Withdraw(props: propsIF) {
                         .token(selectedToken.address)
                         .withdraw(depositQtyDisplay, userAddress);
                 }
-                dispatch(addPendingTx(tx?.hash));
+                addPendingTx(tx?.hash);
                 if (tx?.hash)
-                    dispatch(
-                        addTransactionByType({
-                            txHash: tx.hash,
-                            txType: 'Withdraw',
-                            txDescription: `Withdrawal of ${selectedToken.symbol}`,
-                        }),
-                    );
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txType: 'Withdraw',
+                        txDescription: `Withdrawal of ${selectedToken.symbol}`,
+                    });
 
                 let receipt;
                 try {
@@ -224,16 +222,14 @@ export default function Withdraw(props: propsIF) {
                     // in their client, but we now have the updated info
                     if (isTransactionReplacedError(error)) {
                         IS_LOCAL_ENV && console.debug('repriced');
-                        dispatch(removePendingTx(error.hash));
+                        removePendingTx(error.hash);
 
                         const newTransactionHash = error.replacement.hash;
-                        dispatch(addPendingTx(newTransactionHash));
+                        addPendingTx(newTransactionHash);
 
-                        dispatch(
-                            updateTransactionHash({
-                                oldHash: error.hash,
-                                newHash: error.replacement.hash,
-                            }),
+                        updateTransactionHash(
+                            error.hash,
+                            error.replacement.hash,
                         );
                         IS_LOCAL_ENV && console.debug({ newTransactionHash });
                         receipt = error.receipt;
@@ -244,8 +240,8 @@ export default function Withdraw(props: propsIF) {
                 }
 
                 if (receipt) {
-                    dispatch(addReceipt(JSON.stringify(receipt)));
-                    dispatch(removePendingTx(receipt.transactionHash));
+                    addReceipt(JSON.stringify(receipt));
+                    removePendingTx(receipt.transactionHash);
                     resetWithdrawQty();
                 }
             } catch (error) {
@@ -341,20 +337,16 @@ export default function Withdraw(props: propsIF) {
 
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
-    const averageGasUnitsForEthWithdrawalInGasDrops = 48000;
-    const averageGasUnitsForErc20WithdrawalInGasDrops = 60000;
-    const gweiInWei = 1e-9;
-
     // calculate price of gas for withdrawal
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                gweiInWei *
+                NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice *
                 (isTokenEth
-                    ? averageGasUnitsForEthWithdrawalInGasDrops
-                    : averageGasUnitsForErc20WithdrawalInGasDrops);
+                    ? GAS_DROPS_ESTIMATE_WITHDRAWAL_NATIVE
+                    : GAS_DROPS_ESTIMATE_WITHDRAWAL_ERC20);
 
             setWithdrawGasPriceinDollars(
                 getFormattedNumber({
@@ -388,7 +380,7 @@ export default function Withdraw(props: propsIF) {
                         <MaxButton onClick={handleBalanceClick}>Max</MaxButton>
                     )}
                 </FlexContainer>
-                {chainId === '0x1' && (
+                {
                     <GasPump>
                         <SVGContainer>
                             <FaGasPump size={12} />{' '}
@@ -397,7 +389,7 @@ export default function Withdraw(props: propsIF) {
                             ? withdrawGasPriceinDollars
                             : '…'}
                     </GasPump>
-                )}
+                }
             </FlexContainer>
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}

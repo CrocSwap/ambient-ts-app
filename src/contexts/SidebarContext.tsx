@@ -13,12 +13,11 @@ import {
     useRecentPools,
 } from '../App/hooks/useRecentPools';
 import { sidebarMethodsIF, useSidebar } from '../App/hooks/useSidebar';
-import { IS_LOCAL_ENV } from '../constants';
-import { diffHashSig } from '../utils/functions/diffHashSig';
-import isJsonString from '../utils/functions/isJsonString';
-import { useAppSelector } from '../utils/hooks/reduxToolkit';
+import { IS_LOCAL_ENV } from '../ambient-utils/constants';
+import { diffHashSig, isJsonString } from '../ambient-utils/dataLayer';
 import { AppStateContext } from './AppStateContext';
 import { CrocEnvContext } from './CrocEnvContext';
+import { ReceiptContext } from './ReceiptContext';
 
 interface SidebarStateIF {
     recentPools: recentPoolsMethodsIF;
@@ -37,11 +36,11 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
     } = useContext(AppStateContext);
     const { chainData } = useContext(CrocEnvContext);
 
-    const { receiptData } = useAppSelector((state) => state);
+    const { sessionReceipts } = useContext(ReceiptContext);
+
     const lastReceipt =
-        receiptData.sessionReceipts.length > 0 &&
-        isJsonString(receiptData.sessionReceipts[0])
-            ? JSON.parse(receiptData.sessionReceipts[0])
+        sessionReceipts.length > 0 && isJsonString(sessionReceipts[0])
+            ? JSON.parse(sessionReceipts[0])
             : null;
     const isLastReceiptSuccess = lastReceipt?.status === 1;
     const lastReceiptHash = useMemo(

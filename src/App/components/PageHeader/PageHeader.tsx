@@ -3,17 +3,11 @@ import { useLocation } from 'react-router-dom';
 import { AnimateSharedLayout } from 'framer-motion';
 import Account from './Account/Account';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
-import trimString from '../../../utils/functions/trimString';
 import logo from '../../../assets/images/logos/logo_mark.svg';
 import mainLogo from '../../../assets/images/logos/large.svg';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../utils/hooks/reduxToolkit';
-import { useAccount, useDisconnect, useEnsName, useSwitchNetwork } from 'wagmi';
 import { BiGitBranch } from 'react-icons/bi';
-import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../constants';
+import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../ambient-utils/constants';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { AppStateContext } from '../../../contexts/AppStateContext';
@@ -21,15 +15,13 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-import { resetUserGraphData } from '../../../utils/state/graphDataSlice';
-import { resetReceiptData } from '../../../utils/state/receiptDataSlice';
-import {
-    resetTokenData,
-    resetUserAddresses,
-} from '../../../utils/state/userDataSlice';
+
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
-import { getFormattedNumber } from '../../functions/getFormattedNumber';
-import chainNumToString from '../../functions/chainNumToString';
+import {
+    getFormattedNumber,
+    chainNumToString,
+    trimString,
+} from '../../../ambient-utils/dataLayer';
 import {
     linkGenMethodsIF,
     swapParamsIF,
@@ -49,6 +41,12 @@ import {
 import { FlexContainer } from '../../../styled/Common';
 import Button from '../../../components/Form/Button';
 import { version as appVersion } from '../../../../package.json';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { useSwitchNetwork } from 'wagmi';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { ReceiptContext } from '../../../contexts/ReceiptContext';
 
 const PageHeader = function () {
     const {
@@ -60,6 +58,8 @@ const PageHeader = function () {
     const {
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
+    const { resetTokenBalances } = useContext(TokenBalanceContext);
+    const { resetUserGraphData } = useContext(GraphDataContext);
 
     const { poolPriceDisplay } = useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
@@ -74,17 +74,16 @@ const PageHeader = function () {
             setDexBalance: setQuoteTokenDexBalance,
         },
     } = useContext(TradeTokenContext);
-    const { address, isConnected } = useAccount();
-    const { data: ensName } = useEnsName({ address });
+    const { userAddress, isUserConnected, disconnectUser, ensName } =
+        useContext(UserDataContext);
+    const { resetReceiptData } = useContext(ReceiptContext);
+    const { switchNetwork } = useSwitchNetwork();
 
     // eslint-disable-next-line
     const [mobileNavToggle, setMobileNavToggle] = useState<boolean>(false);
 
     const accountAddress =
-        isConnected && address ? trimString(address, 6, 6) : '';
-
-    const dispatch = useAppDispatch();
-    const { disconnect } = useDisconnect();
+        isUserConnected && userAddress ? trimString(userAddress, 6, 6) : '';
 
     const clickLogout = useCallback(async () => {
         setCrocEnv(undefined);
@@ -92,19 +91,18 @@ const PageHeader = function () {
         setQuoteTokenBalance('');
         setBaseTokenDexBalance('');
         setQuoteTokenDexBalance('');
-        dispatch(resetUserGraphData());
-        dispatch(resetReceiptData());
-        dispatch(resetTokenData());
-        dispatch(resetUserAddresses());
+        resetUserGraphData();
+        resetReceiptData();
+        resetTokenBalances();
         setShowAllData(true);
-        disconnect();
+        disconnectUser();
     }, []);
 
     const accountProps = {
         accountAddress: accountAddress,
-        accountAddressFull: isConnected && address ? address : '',
+        accountAddressFull: isUserConnected && userAddress ? userAddress : '',
         ensName: ensName || '',
-        isUserLoggedIn: isConnected,
+        isUserLoggedIn: isUserConnected,
         clickLogout: clickLogout,
     };
     const desktopScreen = useMediaQuery('(min-width: 1020px)');
@@ -122,27 +120,21 @@ const PageHeader = function () {
 
     const location = useLocation();
 
-    const tradeData = useAppSelector((state) => state.tradeData);
-
-    const baseSymbol = tradeData.baseToken.symbol;
-    const quoteSymbol = tradeData.quoteToken.symbol;
-    const isDenomBase = tradeData.isDenomBase;
-    const baseAddressInRtk = tradeData.baseToken.address;
-    const quoteAddressInRtk = tradeData.quoteToken.address;
+    const { tokenA, tokenB, baseToken, quoteToken, isDenomBase } =
+        useContext(TradeDataContext);
+    const baseSymbol = baseToken.symbol;
+    const quoteSymbol = quoteToken.symbol;
+    const baseAddressInRtk = baseToken.address;
+    const quoteAddressInRtk = quoteToken.address;
 
     useEffect(() => {
         if (baseAddressInRtk && quoteAddressInRtk && crocEnv) {
             const promise = crocEnv
-                .pool(tradeData.baseToken.address, tradeData.quoteToken.address)
+                .pool(baseToken.address, quoteToken.address)
                 .isInit();
             Promise.resolve(promise).then((poolExists: boolean) => {
                 poolExists &&
-                    recentPools.add(
-                        tradeData.baseToken,
-                        tradeData.quoteToken,
-                        chainId,
-                        poolId,
-                    );
+                    recentPools.add(baseToken, quoteToken, chainId, poolId);
             });
         }
     }, [baseAddressInRtk, quoteAddressInRtk, crocEnv]);
@@ -217,9 +209,9 @@ const PageHeader = function () {
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const swapParams: swapParamsIF = {
-        chain: chainNumToString(tradeData.tokenA.chainId),
-        tokenA: tradeData.tokenA.address,
-        tokenB: tradeData.tokenB.address,
+        chain: chainNumToString(tokenA.chainId),
+        tokenA: tokenA.address,
+        tokenB: tokenB.address,
     };
 
     interface linkDataIF {
@@ -257,7 +249,7 @@ const PageHeader = function () {
         {
             title: 'Account',
             destination: '/account',
-            shouldDisplay: isConnected,
+            shouldDisplay: !!isUserConnected,
         },
     ];
 
@@ -327,8 +319,6 @@ const PageHeader = function () {
         </AnimateSharedLayout>
     );
 
-    const { switchNetwork } = useSwitchNetwork();
-
     // ----------------------------END OF NAVIGATION FUNCTIONALITY-------------------------------------
     const [show, handleShow] = useState(false);
 
@@ -389,7 +379,7 @@ const PageHeader = function () {
                                 ) : null}
                             </FlexContainer>
                             <NetworkSelector switchNetwork={switchNetwork} />
-                            {!isConnected && connectWagmiButton}
+                            {!isUserConnected && connectWagmiButton}
                             <Account {...accountProps} />
                             <NotificationCenter />
                         </FlexContainer>
