@@ -64,7 +64,11 @@ interface FloatingToolbarSettingsProps {
     setDrawnShapeHistory: React.Dispatch<
         React.SetStateAction<drawDataHistory[]>
     >;
-    addDrawActionStack: (item: drawDataHistory, isNewShape: boolean) => void;
+    addDrawActionStack: (
+        item: drawDataHistory,
+        isNewShape: boolean,
+        type: string,
+    ) => void;
     colorPicker: { lineColor: string; borderColor: string; background: string };
 }
 
@@ -193,7 +197,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
 
                 saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
 
-                addDrawActionStack(item[changedItemIndex], false);
+                addDrawActionStack(item[changedItemIndex], false, 'update');
 
                 return item;
             });

@@ -53,7 +53,11 @@ interface DrawCanvasProps {
         React.SetStateAction<selectedDrawnData | undefined>
     >;
     denomInBase: boolean;
-    addDrawActionStack: (item: drawDataHistory, isNewShape: boolean) => void;
+    addDrawActionStack: (
+        item: drawDataHistory,
+        isNewShape: boolean,
+        type: string,
+    ) => void;
     period: number;
     crosshairData: crosshair[];
     snapForCandle: (
@@ -455,7 +459,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                         }
                         return prevData;
                     });
-                    addDrawActionStack(endPoint, true);
+                    addDrawActionStack(endPoint, true, 'create');
                 }
             } else {
                 setActiveDrawingType('Cross');

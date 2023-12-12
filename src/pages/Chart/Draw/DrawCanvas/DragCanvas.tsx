@@ -27,7 +27,12 @@ interface DragCanvasProps {
         React.SetStateAction<selectedDrawnData | undefined>
     >;
     denomInBase: boolean;
-    addDrawActionStack: (item: drawDataHistory, isNewShape: boolean) => void;
+    addDrawActionStack: (
+        item: drawDataHistory,
+        isNewShape: boolean,
+        type: string,
+        updatedData: drawDataHistory | undefined,
+    ) => void;
     snapForCandle: (
         point: number,
         filtered: Array<CandleDataIF>,
@@ -414,6 +419,7 @@ export default function DragCanvas(props: DragCanvasProps) {
 
                 if (previousIndex !== -1) {
                     const originalData = drawnShapeHistory[previousIndex].data;
+
                     previousData = originalData.map((item) => {
                         return { ...item };
                     });
@@ -544,12 +550,21 @@ export default function DragCanvas(props: DragCanvasProps) {
 
                 if (!cancelDrag) {
                     if (
+                        previousData &&
                         tempLastData &&
                         isDragging &&
                         dragTimeout &&
                         event.sourceEvent.timeStamp - dragTimeout > 200
                     ) {
-                        addDrawActionStack(tempLastData, false);
+                        const updatedStackData = structuredClone(tempLastData);
+                        updatedStackData.data = previousData;
+
+                        addDrawActionStack(
+                            updatedStackData,
+                            false,
+                            'update',
+                            tempLastData,
+                        );
                     }
                 } else {
                     if (previousData) {

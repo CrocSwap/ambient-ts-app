@@ -14,6 +14,12 @@ export interface actionKeyIF {
     tokenB: string;
 }
 
+export interface actionStackIF {
+    type: string;
+    time: number;
+    data: Array<drawDataHistory>;
+}
+
 export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
     const initialData = localStorage.getItem(LS_KEY_CHART_ANNOTATIONS);
     const initialArray = initialData
@@ -29,10 +35,11 @@ export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
     } = useContext(CrocEnvContext);
 
     const [drawActionStack, setDrawActionStack] = useState(
-        new Map<actionKeyIF, drawDataHistory[]>(),
+        new Map<actionKeyIF, Array<actionStackIF>>(),
     );
 
-    const [undoStack] = useState(new Map<actionKeyIF, drawDataHistory[]>());
+    const [undoStack] = useState(new Map<actionKeyIF, Array<actionStackIF>>());
+
     const [isLocalStorageFetched, setIsLocalStorageFetched] = useState(false);
 
     const currentPool = useContext(TradeDataContext);
@@ -150,213 +157,120 @@ export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
             },
         );
 
-        if (actionList) {
-            deletedItems.forEach((item) => {
-                const findItem = actionList.find((i) => {
-                    return (
-                        JSON.stringify(i.data) === JSON.stringify(item.data) &&
-                        i.time === item.time
-                    );
-                });
+        if (actionList && deletedItems.length > 0) {
+            const newActionStack: actionStackIF = {
+                type: 'deleteAll',
+                time: new Date().getTime(),
+                data: deletedItems,
+            };
 
-                if (findItem) {
-                    const tempHistoryData = {
-                        data: [
-                            {
-                                x: -1,
-                                y: -1,
-                                denomInBase: denomInBase,
-                            },
-                            {
-                                x: -1,
-                                y: -1,
-                                denomInBase: denomInBase,
-                            },
-                        ],
-                        type: findItem.type,
-                        time: findItem.time,
-                        pool: findItem.pool,
-                        border: findItem.border,
-                        line: findItem.line,
-                        background: findItem.background,
-                        extraData: findItem.extraData,
-                        extendLeft: findItem.extendLeft,
-                        extendRight: findItem.extendRight,
-                        labelPlacement: findItem.labelPlacement,
-                        labelAlignment: findItem.labelAlignment,
-                        reverse: findItem.reverse,
-                    };
-
-                    drawActionStack.get(actionKey)?.push(tempHistoryData);
-                }
-            });
+            drawActionStack.get(actionKey)?.push(newActionStack);
         }
 
         setDrawnShapeHistory(filteredDrawnShapeHistory);
     }, [actionKey, drawnShapeHistory]);
 
     useEffect(() => {
-        initialArray.forEach((element: drawDataHistory) => {
-            const tempData = {
-                data: [
-                    {
-                        x: element.data[0].x,
-                        y: element.data[0].y,
-                        denomInBase: denomInBase,
-                    },
-                    {
-                        x: element.data[1].x,
-                        y: element.data[1].y,
-                        denomInBase: denomInBase,
-                    },
-                ],
-                type: element.type,
-                time: element.time,
-                pool: element.pool,
-                border: element.border,
-                line: element.line,
-                background: element.background,
-                extraData: element.extraData,
-                extendLeft: element.extendLeft,
-                extendRight: element.extendRight,
-                labelPlacement: element.labelPlacement,
-                labelAlignment: element.labelAlignment,
-                reverse: element.reverse,
-            };
-
-            if (!drawActionStack.has(actionKey)) {
-                if (
-                    (actionKey.tokenA === element.pool.tokenA &&
-                        actionKey.tokenB === element.pool.tokenB) ||
-                    (actionKey.tokenA === element.pool.tokenB &&
-                        actionKey.tokenB === element.pool.tokenA)
-                ) {
-                    drawActionStack.set(actionKey, [tempData]);
-                } else {
-                    drawActionStack.set(actionKey, []);
-                }
-            } else {
-                const actionList = drawActionStack
-                    .get(actionKey)
-                    ?.find((item) => item.time === element.time);
-                if (
-                    actionList === undefined &&
-                    actionKey.tokenA === element.pool.tokenA &&
-                    actionKey.tokenB === element.pool.tokenB
-                ) {
-                    drawActionStack.get(actionKey)?.push(tempData);
-                }
-            }
-        });
+        drawActionStack.set(actionKey, []);
     }, [actionKey]);
 
     const deleteItem = useCallback(
         (item: drawDataHistory) => {
-            const actionList = drawActionStack.get(actionKey);
+            const tempHistoryData = {
+                data: [
+                    {
+                        x: item.data[0].x,
+                        y: item.data[0].y,
+                        denomInBase: item.data[0].denomInBase,
+                    },
+                    {
+                        x: item.data[1].x,
+                        y: item.data[1].y,
+                        denomInBase: item.data[1].denomInBase,
+                    },
+                ],
+                type: item.type,
+                time: item.time,
+                pool: item.pool,
+                border: item.border,
+                line: item.line,
+                background: item.background,
+                extraData: item.extraData,
+                extendLeft: item.extendLeft,
+                extendRight: item.extendRight,
+                labelPlacement: item.labelPlacement,
+                labelAlignment: item.labelAlignment,
+                reverse: item.reverse,
+            };
 
-            if (actionList) {
-                const findItem = actionList.find((i) => {
-                    return (
-                        JSON.stringify(i.data) === JSON.stringify(item.data) &&
-                        i.time === item.time
-                    );
-                });
+            const newActionStack: actionStackIF = {
+                type: 'delete',
+                time: new Date().getTime(),
+                data: [tempHistoryData],
+            };
 
-                if (findItem) {
-                    const tempHistoryData = {
-                        data: [
-                            {
-                                x: 0,
-                                y: 0,
-                                denomInBase: denomInBase,
-                            },
-                            {
-                                x: 0,
-                                y: 0,
-                                denomInBase: denomInBase,
-                            },
-                        ],
-                        type: findItem.type,
-                        time: findItem.time,
-                        pool: findItem.pool,
-                        border: findItem.border,
-                        line: findItem.line,
-                        background: findItem.background,
-                        extraData: findItem.extraData,
-                        extendLeft: findItem.extendLeft,
-                        extendRight: findItem.extendRight,
-                        labelPlacement: findItem.labelPlacement,
-                        labelAlignment: findItem.labelAlignment,
-                        reverse: findItem.reverse,
-                    };
+            drawActionStack.get(actionKey)?.push(newActionStack);
 
-                    drawActionStack.get(actionKey)?.push(tempHistoryData);
-                }
+            if (undoStack.has(actionKey)) {
+                undoStack.set(actionKey, []);
             }
         },
-        [actionKey, drawActionStack, denomInBase],
+        [actionKey, drawActionStack, denomInBase, undoStack],
     );
 
     const undoDrawnShapeHistory = useCallback(
-        (action: drawDataHistory) => {
-            const actions = drawActionStack
-                .get(actionKey)
-                ?.filter((item) => item.time === action.time);
-
+        (action: actionStackIF) => {
             let tempData: drawDataHistory | undefined = undefined;
 
             const index = drawnShapeHistory.findIndex(
                 (item) =>
-                    JSON.stringify(item.time) === JSON.stringify(action.time),
+                    JSON.stringify(item.time) ===
+                    JSON.stringify(action.data[0].time),
             );
 
-            let lastActionData: drawDataHistory | undefined = undefined;
+            const tempDataArray: drawDataHistory[] = [];
 
-            if (actions && actions?.length > 0) {
-                lastActionData = actions[actions?.length - 1];
-                tempData = {
-                    data: [
-                        {
-                            x: lastActionData.data[0].x,
-                            y: lastActionData.data[0].y,
-                            denomInBase: lastActionData.data[0].denomInBase,
-                        },
-                        {
-                            x: lastActionData.data[1].x,
-                            y: lastActionData.data[1].y,
-                            denomInBase: lastActionData.data[0].denomInBase,
-                        },
-                    ],
-                    type: lastActionData.type,
-                    time: lastActionData.time,
-                    pool: lastActionData.pool,
-                    border: structuredClone(lastActionData.border),
-                    line: structuredClone(lastActionData.line),
-                    background: structuredClone(lastActionData.background),
-                    extraData: structuredClone(lastActionData.extraData),
-                    extendLeft: lastActionData.extendLeft,
-                    extendRight: lastActionData.extendRight,
-                    labelPlacement: lastActionData.labelPlacement,
-                    labelAlignment: lastActionData.labelAlignment,
-                    reverse: lastActionData.reverse,
-                } as drawDataHistory;
-            }
+            action.data.forEach((shapeData, index) => {
+                if (action.type !== 'update' || index === 0) {
+                    tempData = {
+                        data: [
+                            {
+                                x: shapeData.data[0].x,
+                                y: shapeData.data[0].y,
+                                denomInBase: shapeData.data[0].denomInBase,
+                            },
+                            {
+                                x: shapeData.data[1].x,
+                                y: shapeData.data[1].y,
+                                denomInBase: shapeData.data[0].denomInBase,
+                            },
+                        ],
+                        type: shapeData.type,
+                        time: shapeData.time,
+                        pool: shapeData.pool,
+                        border: structuredClone(shapeData.border),
+                        line: structuredClone(shapeData.line),
+                        background: structuredClone(shapeData.background),
+                        extraData: structuredClone(shapeData.extraData),
+                        extendLeft: shapeData.extendLeft,
+                        extendRight: shapeData.extendRight,
+                        labelPlacement: shapeData.labelPlacement,
+                        labelAlignment: shapeData.labelAlignment,
+                        reverse: shapeData.reverse,
+                    } as drawDataHistory;
+
+                    tempDataArray.push(tempData);
+                }
+            });
 
             setDrawnShapeHistory((prev) => {
-                if (tempData) {
-                    const shouldFill =
-                        (action.data[0].x === 0 || action.data[0].x === -1) &&
-                        (action.data[0].y === 0 || action.data[0].y === -1) &&
-                        (action.data[1].x === 0 || action.data[1].x === -1) &&
-                        (action.data[1].y === 0 || action.data[1].y === -1);
+                if (action.type !== 'create' && tempData) {
+                    const shouldFill = ['delete', 'deleteAll'].includes(
+                        action.type,
+                    );
 
-                    if (
-                        shouldFill &&
-                        JSON.stringify(lastActionData) !==
-                            JSON.stringify(action) &&
-                        index === -1
-                    ) {
-                        return [...prev, tempData];
+                    if (shouldFill && index === -1) {
+                        return [...prev, ...tempDataArray];
                     } else {
                         const newDrawnShapeHistory = [...prev];
                         newDrawnShapeHistory[index] = tempData;
@@ -365,10 +279,11 @@ export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
                     }
                 } else {
                     const newDrawnShapeHistory = [...prev];
+
                     return newDrawnShapeHistory.filter(
                         (item) =>
                             JSON.stringify(item.data) !==
-                            JSON.stringify(action.data),
+                            JSON.stringify(action.data[0].data),
                     );
                 }
             });
@@ -380,148 +295,99 @@ export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
         const actionList = drawActionStack.get(actionKey);
 
         if (actionList) {
-            const actionArray: Array<drawDataHistory | undefined> = [];
+            const action = actionList?.pop();
 
-            if (
-                actionList.length > 0 &&
-                actionList[actionList.length - 1].data[0].x === -1 &&
-                actionList[actionList.length - 1].data[0].y === -1
-            ) {
-                actionList.forEach((obj) => {
-                    if (obj.data[0].x === -1 && obj.data[0].y === -1) {
-                        const tempData = {
-                            data: [
-                                {
-                                    x: obj.data[0].x,
-                                    y: obj.data[0].y,
-                                    denomInBase: obj.data[0].denomInBase,
-                                },
-                                {
-                                    x: obj.data[1].x,
-                                    y: obj.data[1].y,
-                                    denomInBase: obj.data[0].denomInBase,
-                                },
-                            ],
-                            type: obj.type,
-                            time: obj.time,
-                            pool: obj.pool,
-                            border: structuredClone(obj.border),
-                            line: structuredClone(obj.line),
-                            background: structuredClone(obj.background),
-                            extraData: structuredClone(obj.extraData),
-                            extendLeft: obj.extendLeft,
-                            extendRight: obj.extendRight,
-                            labelPlacement: obj.labelPlacement,
-                            labelAlignment: obj.labelAlignment,
-                            reverse: obj.reverse,
-                        } as drawDataHistory;
+            if (action) {
+                undoDrawnShapeHistory(action);
 
-                        actionArray.push(tempData);
+                if (!undoStack.has(actionKey)) {
+                    undoStack.set(actionKey, []);
+                }
+
+                const undoStackList = undoStack.get(actionKey);
+
+                if (undoStackList) {
+                    const lastDataUndoStack =
+                        undoStackList[undoStackList?.length - 1];
+
+                    const shouldFillWithActionData = [
+                        'delete',
+                        'deleteAll',
+                    ].includes(action.type);
+
+                    if (
+                        undoStackList?.length === 0 ||
+                        !(
+                            lastDataUndoStack.time === action.time &&
+                            ['delete', 'deleteAll'].includes(
+                                lastDataUndoStack.type,
+                            ) &&
+                            shouldFillWithActionData
+                        )
+                    ) {
+                        undoStack.get(actionKey)?.push(action);
                     }
-                });
-
-                actionList.splice(actionArray.length, actionList.length);
-            } else if (actionArray.length === 0) {
-                actionArray.push(actionList.pop());
-            }
-
-            if (actionArray.length > 0) {
-                actionArray.forEach((action) => {
-                    if (action) {
-                        undoDrawnShapeHistory(action);
-                        if (!undoStack.has(actionKey)) {
-                            undoStack.set(actionKey, []);
-                        }
-
-                        const undoStackList = undoStack.get(actionKey);
-
-                        if (undoStackList) {
-                            const lastDataUndoStack =
-                                undoStackList[undoStackList?.length - 1];
-
-                            const shouldFillWithActionData =
-                                (action.data[0].x === 0 ||
-                                    action.data[0].x === -1) &&
-                                (action.data[0].y === 0 ||
-                                    action.data[0].y === -1) &&
-                                (action.data[1].x === 0 ||
-                                    action.data[1].x === -1) &&
-                                (action.data[1].y === 0 ||
-                                    action.data[1].y === -1);
-
-                            if (
-                                undoStackList.length === 0 ||
-                                !(
-                                    lastDataUndoStack.time === action.time &&
-                                    (lastDataUndoStack.data[0].x === 0 ||
-                                        lastDataUndoStack.data[0].x === -1) &&
-                                    (lastDataUndoStack.data[0].y === 0 ||
-                                        lastDataUndoStack.data[0].y === -1) &&
-                                    (lastDataUndoStack.data[1].x === 0 ||
-                                        lastDataUndoStack.data[1].x === -1) &&
-                                    (lastDataUndoStack.data[1].y === 0 ||
-                                        lastDataUndoStack.data[1].y === -1) &&
-                                    shouldFillWithActionData
-                                )
-                            ) {
-                                undoStack.get(actionKey)?.push(action);
-                            }
-                        }
-                    }
-                });
+                }
             }
         }
     }, [actionKey, drawActionStack, undoDrawnShapeHistory, undoStack]);
 
     const redoDrawnShapeHistory = useCallback(
-        (action: drawDataHistory) => {
-            const tempData = {
-                data: [
-                    {
-                        x: action.data[0].x,
-                        y: action.data[0].y,
-                        denomInBase: action.data[0].denomInBase,
-                    },
-                    {
-                        x: action.data[1].x,
-                        y: action.data[1].y,
-                        denomInBase: action.data[0].denomInBase,
-                    },
-                ],
-                type: action.type,
-                time: action.time,
-                pool: action.pool,
-                border: structuredClone(action.border),
-                line: structuredClone(action.line),
-                background: structuredClone(action.background),
-                extraData: structuredClone(action.extraData),
-                extendLeft: action.extendLeft,
-                extendRight: action.extendRight,
-                labelPlacement: action.labelPlacement,
-                labelAlignment: action.labelAlignment,
-                reverse: action.reverse,
-            } as drawDataHistory;
+        (action: actionStackIF) => {
+            action.data.forEach((element, i) => {
+                if (action.type !== 'update' || i === 1) {
+                    const tempData = {
+                        data: [
+                            {
+                                x: element.data[0].x,
+                                y: element.data[0].y,
+                                denomInBase: element.data[0].denomInBase,
+                            },
+                            {
+                                x: element.data[1].x,
+                                y: element.data[1].y,
+                                denomInBase: element.data[0].denomInBase,
+                            },
+                        ],
+                        type: element.type,
+                        time: element.time,
+                        pool: element.pool,
+                        border: structuredClone(element.border),
+                        line: structuredClone(element.line),
+                        background: structuredClone(element.background),
+                        extraData: structuredClone(element.extraData),
+                        extendLeft: element.extendLeft,
+                        extendRight: element.extendRight,
+                        labelPlacement: element.labelPlacement,
+                        labelAlignment: element.labelAlignment,
+                        reverse: element.reverse,
+                    } as drawDataHistory;
 
-            if (
-                action.data[0].x !== 0 &&
-                action.data[0].y !== 0 &&
-                action.data[1].x !== 0 &&
-                action.data[1].y !== 0
-            ) {
-                const index = drawnShapeHistory.findIndex(
-                    (item) => item.time === action.time,
-                );
+                    const index = drawnShapeHistory.findIndex(
+                        (item) => item.time === action.data[0].time,
+                    );
 
-                setDrawnShapeHistory((prev) => {
-                    const updatedHistory = [...prev];
-                    if (index !== -1) {
-                        updatedHistory[index] = tempData;
-                        return updatedHistory;
-                    } else {
-                        return [...prev, tempData];
-                    }
-                });
-            }
+                    setDrawnShapeHistory((prev) => {
+                        const updatedHistory = [...prev];
+
+                        const shouldDelete = ['delete', 'deleteAll'].includes(
+                            action.type,
+                        );
+
+                        if (shouldDelete) {
+                            updatedHistory.splice(index, index + 1);
+                            return updatedHistory;
+                        } else {
+                            if (index !== -1) {
+                                updatedHistory[index] = tempData;
+                                return updatedHistory;
+                            } else {
+                                return [...prev, tempData];
+                            }
+                        }
+                    });
+                }
+            });
         },
         [drawnShapeHistory, setDrawnShapeHistory],
     );
@@ -529,43 +395,18 @@ export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
     const redo = useCallback(() => {
         if (drawActionStack.has(actionKey)) {
             const undoActionList = undoStack.get(actionKey);
+
             if (undoActionList) {
                 const lastValue = undoActionList[undoActionList?.length - 1];
 
                 if (lastValue) {
-                    if (undoActionList) {
-                        drawActionStack.get(actionKey)?.push({
-                            data: [
-                                {
-                                    x: lastValue.data[0].x,
-                                    y: lastValue.data[0].y,
-                                    denomInBase: lastValue.data[0].denomInBase,
-                                },
-                                {
-                                    x: lastValue.data[1].x,
-                                    y: lastValue.data[1].y,
-                                    denomInBase: lastValue.data[0].denomInBase,
-                                },
-                            ],
-                            pool: lastValue.pool,
-                            time: lastValue.time,
-                            type: lastValue.type,
-                            border: structuredClone(lastValue.border),
-                            line: structuredClone(lastValue.line),
-                            background: structuredClone(lastValue.background),
-                            extraData: structuredClone(lastValue.extraData),
-                            extendLeft: lastValue.extendLeft,
-                            extendRight: lastValue.extendRight,
-                            labelPlacement: lastValue.labelPlacement,
-                            labelAlignment: lastValue.labelAlignment,
-                            reverse: lastValue.reverse,
-                        });
-                    }
-                    if (undoActionList) {
-                        const action = undoActionList.pop();
-                        if (action) {
-                            redoDrawnShapeHistory(action);
-                        }
+                    drawActionStack
+                        .get(actionKey)
+                        ?.push(structuredClone(lastValue));
+
+                    const action = undoActionList.pop();
+                    if (action) {
+                        redoDrawnShapeHistory(action);
                     }
                 }
             }
@@ -573,24 +414,49 @@ export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
     }, [actionKey, drawActionStack, undoStack, redoDrawnShapeHistory]);
 
     const addDrawActionStack = useCallback(
-        (tempLastData: drawDataHistory, isNewShape: boolean) => {
-            const tempDta = {
-                data: structuredClone(tempLastData.data),
-                type: tempLastData.type,
-                time: tempLastData.time,
-                pool: tempLastData.pool,
-                border: structuredClone(tempLastData.border),
-                line: structuredClone(tempLastData.line),
-                background: structuredClone(tempLastData.background),
-                extraData: structuredClone(tempLastData.extraData),
-                extendLeft: tempLastData.extendLeft,
-                extendRight: tempLastData.extendRight,
-                labelPlacement: tempLastData.labelPlacement,
-                labelAlignment: tempLastData.labelAlignment,
-                reverse: tempLastData.reverse,
-            };
+        (
+            tempLastData: drawDataHistory,
+            isNewShape: boolean,
+            type: string,
+            updatedData: drawDataHistory | undefined = undefined,
+        ) => {
+            const tempDta = [
+                {
+                    data: structuredClone(tempLastData.data),
+                    type: tempLastData.type,
+                    time: tempLastData.time,
+                    pool: tempLastData.pool,
+                    border: structuredClone(tempLastData.border),
+                    line: structuredClone(tempLastData.line),
+                    background: structuredClone(tempLastData.background),
+                    extraData: structuredClone(tempLastData.extraData),
+                    extendLeft: tempLastData.extendLeft,
+                    extendRight: tempLastData.extendRight,
+                    labelPlacement: tempLastData.labelPlacement,
+                    labelAlignment: tempLastData.labelAlignment,
+                    reverse: tempLastData.reverse,
+                },
+            ];
 
-            const tempMap = new Map<actionKeyIF, drawDataHistory[]>(
+            if (type === 'update' && updatedData) {
+                tempDta.push({
+                    data: structuredClone(updatedData.data),
+                    type: updatedData.type,
+                    time: updatedData.time,
+                    pool: updatedData.pool,
+                    border: structuredClone(updatedData.border),
+                    line: structuredClone(updatedData.line),
+                    background: structuredClone(updatedData.background),
+                    extraData: structuredClone(updatedData.extraData),
+                    extendLeft: updatedData.extendLeft,
+                    extendRight: updatedData.extendRight,
+                    labelPlacement: updatedData.labelPlacement,
+                    labelAlignment: updatedData.labelAlignment,
+                    reverse: updatedData.reverse,
+                });
+            }
+
+            const tempMap = new Map<actionKeyIF, actionStackIF[]>(
                 drawActionStack,
             );
 
@@ -603,13 +469,25 @@ export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
                     const values = tempMap.get(actionKey);
                     if (values) {
                         if (actions) {
-                            actions.push(tempDta);
+                            const newActionStack: actionStackIF = {
+                                type: type,
+                                time: new Date().getTime(),
+                                data: tempDta,
+                            };
+
+                            actions?.push(newActionStack);
                         }
                     }
                 }
                 setDrawActionStack(tempMap);
             } else {
-                drawActionStack.set(actionKey, [tempDta]);
+                const newActionStack: actionStackIF = {
+                    type: type,
+                    time: new Date().getTime(),
+                    data: tempDta,
+                };
+
+                drawActionStack.set(actionKey, [newActionStack]);
             }
 
             if (isNewShape) {
