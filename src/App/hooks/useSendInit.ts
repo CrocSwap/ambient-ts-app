@@ -1,13 +1,16 @@
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
+
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
-import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { FunctionArray } from '../../ambient-utils/types';
+
 import { ReceiptContext } from '../../contexts/ReceiptContext';
 export function useSendInit(
     setNewInitTransactionHash: React.Dispatch<
@@ -31,7 +34,7 @@ export function useSendInit(
 
     const sendInit = async (
         initialPriceInBaseDenom: number | undefined,
-        cb?: () => void,
+        cbs?: FunctionArray,
     ) => {
         resetConfirmation();
 
@@ -79,7 +82,11 @@ export function useSendInit(
                 if (receipt) {
                     addReceipt(JSON.stringify(receipt));
                     removePendingTx(receipt.transactionHash);
-                    if (cb) cb();
+                    if (cbs) {
+                        for (const cb of cbs) {
+                            await cb();
+                        }
+                    }
                     setIsTxCompletedInit(true);
                 }
             } catch (error) {

@@ -28,3 +28,6 @@ export * from './NetworkIF';
 export * from './ScaleDataIF';
 
 export * from './TradeTableDataRow';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type FunctionArray = ((...args: any[]) => void)[];
