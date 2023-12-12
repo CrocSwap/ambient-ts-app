@@ -40,15 +40,15 @@ const fetchData = async () => {
     return updatedLedger;
 };
 
-describe('Test fetchUserPositions', () => {
+describe('Test fetchUserPositions Specific', () => {
+    jest.setTimeout(10000); // Set timeout to 10000 ms (10 seconds)
     describe('userPositions', () => {
         test('ensure some positions exist', async () => {
             if (
                 !process.env.NETWORK_ACCESS ||
                 process.env.NETWORK_ACCESS === 'false'
             ) {
-                // test.skip();
-                // console.log('Skipping test due to lack of network access');
+                console.log('Skipping test due to lack of network access');
                 return;
             }
             const userPositions = await fetchData();
