@@ -4,22 +4,44 @@ import { getAddress } from 'ethers/lib/utils.js';
 import TimeStamp from './TimeStamp';
 import TxId from './TxId';
 import TxWallet from './TxWallet';
-import { useContext } from 'react';
+import { useContext, useRef } from 'react';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import TxButton from './TxButton';
 import TxValue from './TxValue';
 import { TransactionIF } from '../../../../ambient-utils/types';
+import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 
-export type btnIconNameType = 'overflowBtn'|'editBtn'|'harvestBtn'|'addBtn'|'removeBtn'|'leafBtn'|'shareBtn'|'exportBtn'|'walletBtn'|'copyBtn'|'downloadBtn';
+export type btnIconNameType =
+    | 'overflowBtn'
+    | 'editBtn'
+    | 'harvestBtn'
+    | 'addBtn'
+    | 'removeBtn'
+    | 'leafBtn'
+    | 'shareBtn'
+    | 'exportBtn'
+    | 'walletBtn'
+    | 'copyBtn'
+    | 'downloadBtn';
 
 interface propsIF {
     tx: TransactionIF;
     columnsToShow: [columnSlugsType, number][];
     isAccountPage: boolean;
+    isMenuOpen: boolean;
+    onMenuToggle: () => void;
+    hideMenu: () => void;
 }
 
 export default function TransactionRow2(props: propsIF) {
-    const { tx, columnsToShow, isAccountPage } = props;
+    const {
+        tx,
+        columnsToShow,
+        isAccountPage,
+        isMenuOpen,
+        onMenuToggle,
+        hideMenu,
+    } = props;
 
     const { userAddress } = useContext(UserDataContext);
     const ownerId: string = getAddress(tx.user);
@@ -28,9 +50,11 @@ export default function TransactionRow2(props: propsIF) {
         ? getAddress(tx.user).toLowerCase() !== userAddress.toLowerCase()
         : false;
 
-    const renderElem = (el: columnSlugsType): JSX.Element|null => {
-        const elemMeta = columnsToShow.find((col: [columnSlugsType, number]) => col[0] === el);
-        let elemForDOM: JSX.Element|null = null;
+    const renderElem = (el: columnSlugsType): JSX.Element | null => {
+        const elemMeta = columnsToShow.find(
+            (col: [columnSlugsType, number]) => col[0] === el,
+        );
+        let elemForDOM: JSX.Element | null = null;
         if (elemMeta) {
             if (elemMeta[0] === 'timeStamp') {
                 elemForDOM = <TimeStamp tx={tx} width={elemMeta[1]} />;
@@ -49,52 +73,108 @@ export default function TransactionRow2(props: propsIF) {
                 elemForDOM = <TxValue width={elemMeta[1]} tx={tx} />;
             } else if (elemMeta[0] === 'overflowBtn') {
                 elemForDOM = (
-                    <TxButton width={elemMeta[1]} iconName='overflowBtn' hide={false} />
+                    <TxButton
+                        tx={tx}
+                        width={elemMeta[1]}
+                        iconName='overflowBtn'
+                        hide={false}
+                        onMenuToggle={onMenuToggle}
+                    />
                 );
             } else if (elemMeta[0] === 'editBtn') {
                 elemForDOM = (
-                    <TxButton width={elemMeta[1]} iconName='editBtn' hide={false} />
+                    <TxButton
+                        tx={tx}
+                        width={elemMeta[1]}
+                        iconName='editBtn'
+                        hide={false}
+                    />
                 );
             } else if (elemMeta[0] === 'harvestBtn') {
                 elemForDOM = (
-                    <TxButton width={elemMeta[1]} iconName='harvestBtn' hide={false} />
+                    <TxButton
+                        tx={tx}
+                        width={elemMeta[1]}
+                        iconName='harvestBtn'
+                        hide={false}
+                    />
                 );
             } else if (elemMeta[0] === 'addBtn') {
                 elemForDOM = (
-                    <TxButton width={elemMeta[1]} iconName='addBtn' hide={false} />
+                    <TxButton
+                        tx={tx}
+                        width={elemMeta[1]}
+                        iconName='addBtn'
+                        hide={false}
+                    />
                 );
             } else if (elemMeta[0] === 'leafBtn') {
                 elemForDOM = (
-                    <TxButton width={elemMeta[1]} iconName='leafBtn' hide={false} />
+                    <TxButton
+                        tx={tx}
+                        width={elemMeta[1]}
+                        iconName='leafBtn'
+                        hide={false}
+                    />
                 );
             } else if (elemMeta[0] === 'removeBtn') {
                 elemForDOM = (
-                    <TxButton width={elemMeta[1]} iconName='removeBtn' hide={false} />
+                    <TxButton
+                        tx={tx}
+                        width={elemMeta[1]}
+                        iconName='removeBtn'
+                        hide={false}
+                    />
                 );
             } else if (elemMeta[0] === 'shareBtn') {
                 elemForDOM = (
-                    <TxButton width={elemMeta[1]} iconName='shareBtn' hide={false} />
+                    <TxButton
+                        tx={tx}
+                        width={elemMeta[1]}
+                        iconName='shareBtn'
+                        hide={false}
+                    />
                 );
             } else if (elemMeta[0] === 'exportBtn') {
                 elemForDOM = (
-                    <TxButton width={elemMeta[1]} iconName='exportBtn' hide={false} />
+                    <TxButton
+                        tx={tx}
+                        width={elemMeta[1]}
+                        iconName='exportBtn'
+                        hide={false}
+                    />
                 );
             } else if (elemMeta[0] === 'walletBtn') {
                 elemForDOM = (
-                    <TxButton width={elemMeta[1]} iconName='walletBtn' hide={false} />
+                    <TxButton
+                        tx={tx}
+                        width={elemMeta[1]}
+                        iconName='walletBtn'
+                        hide={false}
+                    />
                 );
             } else if (elemMeta[0] === 'copyBtn') {
                 elemForDOM = (
-                    <TxButton width={elemMeta[1]} iconName='copyBtn' hide={false} />
+                    <TxButton
+                        tx={tx}
+                        width={elemMeta[1]}
+                        iconName='copyBtn'
+                        hide={false}
+                    />
                 );
             } else if (elemMeta[0] === 'downloadBtn') {
                 elemForDOM = (
-                    <TxButton width={elemMeta[1]} iconName='downloadBtn' hide={false} />
+                    <TxButton
+                        tx={tx}
+                        width={elemMeta[1]}
+                        iconName='downloadBtn'
+                        hide={false}
+                    />
                 );
             }
         }
         return elemForDOM;
-    }
+    };
 
     const infoCells: columnSlugsType[] = [
         'timeStamp',
@@ -110,12 +190,31 @@ export default function TransactionRow2(props: propsIF) {
         'walletBtn',
         'overflowBtn',
     ];
+    const actionButtonsMenu: columnSlugsType[] = [
+        'editBtn',
+        'removeBtn',
+        'copyBtn',
+        'walletBtn',
+        'leafBtn',
+        'editBtn',
+        'removeBtn',
+    ];
 
+    const menuItemRef = useRef<HTMLDivElement>(null);
+
+    useOnClickOutside(menuItemRef, hideMenu);
     return (
         <li className={styles.tx_li}>
             {infoCells.map((elem: columnSlugsType) => renderElem(elem))}
-            <div className={styles.action_buttons}>
+            <div className={styles.action_buttons} ref={menuItemRef}>
                 {actionButtons.map((elem: columnSlugsType) => renderElem(elem))}
+                {isMenuOpen && (
+                    <div className={styles.overflow_menu_container}>
+                        {actionButtonsMenu.map((elem: columnSlugsType) =>
+                            renderElem(elem),
+                        )}
+                    </div>
+                )}
             </div>
         </li>
     );

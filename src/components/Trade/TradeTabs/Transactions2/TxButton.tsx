@@ -7,15 +7,23 @@ import { MdShare } from 'react-icons/md';
 import { FaPlus, FaTimes } from 'react-icons/fa';
 import { PiArrowFatLineDownBold } from 'react-icons/pi';
 import { btnIconNameType } from './TransactionRow2';
+import { TransactionIF } from '../../../../ambient-utils/types';
 
 interface propsIF {
     width: number;
     iconName: btnIconNameType;
     hide: boolean;
+    onMenuToggle?: () => void;
+    tx: TransactionIF;
 }
 
 export default function TxButton(props: propsIF) {
-    const { width, iconName, hide } = props;
+    const { width, iconName, hide, onMenuToggle } = props;
+
+    const handleButtonClick = () => {
+        onMenuToggle ? onMenuToggle() : alert(iconName);
+    };
+
     false && width;
     let icon: JSX.Element;
     switch (iconName) {
@@ -58,9 +66,11 @@ export default function TxButton(props: propsIF) {
     // middle wrapper is how we get the icon
     return (
         <div className={styles.tx_button_wrapper}>
-            {hide || <div className={styles.tx_button}>
-                {icon}
-            </div>}
+            {hide || (
+                <div className={styles.tx_button} onClick={handleButtonClick}>
+                    {icon}
+                </div>
+            )}
         </div>
     );
 }
