@@ -4,6 +4,7 @@ import { PoolStatsFn, getFormattedNumber } from '../../ambient-utils/dataLayer';
 import { TokenPriceFn } from '../../ambient-utils/api';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../../ambient-utils/constants';
 
 export const usePoolStats = (
     pool: PoolIF,
@@ -27,7 +28,7 @@ export const usePoolStats = (
                 pool.base.address,
                 pool.quote.address,
                 pool.poolIdx,
-                Math.floor(Date.now() / 60000),
+                Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
                 crocEnv,
                 activeNetwork.graphCacheUrl,
                 cachedFetchTokenPrice,

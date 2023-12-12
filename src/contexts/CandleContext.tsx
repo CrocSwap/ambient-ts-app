@@ -18,6 +18,7 @@ import { CachedDataContext } from './CachedDataContext';
 import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../ambient-utils/constants';
 
 interface CandleContextIF {
     candleData: CandlesByPoolAndDurationIF | undefined;
@@ -135,7 +136,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         if (isChartEnabled && isUserOnline && candleScale.isShowLatestCandle) {
             const interval = setInterval(() => {
                 fetchCandles(true);
-            }, 60000);
+            }, CACHE_UPDATE_FREQ_IN_MS);
             return () => clearInterval(interval);
         }
     }, [
