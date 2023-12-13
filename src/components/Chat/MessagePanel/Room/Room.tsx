@@ -302,7 +302,9 @@ export default function Room(props: propsIF) {
     }
 
     function handleRoomClick(event: any, name: string) {
-        props.setRoom(event.target.dataset.value);
+        event.target.dataset.value != undefined
+            ? props.setRoom(event.target.dataset.value)
+            : props.setRoom(name);
         if (name.toString() === 'Current Pool') {
             setIsCurrentPool(true);
             if (showCurrentPoolButton) {
