@@ -3,7 +3,6 @@ import { useEffect, useState, useContext, memo, useRef } from 'react';
 
 // START: Import Local Files
 import { Pagination } from '@mui/material';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
 import { PositionIF } from '../../../../ambient-utils/types';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -29,6 +28,7 @@ import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -66,9 +66,9 @@ function Ranges(props: propsIF) {
     const { userPositionsByPool, positionsByPool } =
         useContext(GraphDataContext);
     const dataLoadingStatus = useContext(DataLoadingContext);
-    const { transactionsByType, pendingTransactions } = useAppSelector(
-        (state) => state.receiptData,
-    );
+
+    const { transactionsByType, pendingTransactions } =
+        useContext(ReceiptContext);
 
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 

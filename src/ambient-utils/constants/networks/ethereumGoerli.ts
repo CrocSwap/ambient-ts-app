@@ -9,11 +9,11 @@ import {
 } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
-import { GCGO_ETHEREUM_URL } from '../gcgo';
+import { GCGO_TESTNET_URL } from '../gcgo';
 
 export const ethereumGoerli: NetworkIF = {
     chainId: '0x5',
-    graphCacheUrl: GCGO_ETHEREUM_URL,
+    graphCacheUrl: GCGO_TESTNET_URL,
     wagmiChain,
     shouldPollBlock: false,
     marketData: '0x1',
@@ -25,10 +25,6 @@ export const ethereumGoerli: NetworkIF = {
         new TopPool(goerliUSDT, goerliUSDC, lookupChain('0x5').poolIndex),
     ],
     getGasPriceInGwei: async () => {
-        const response = await fetch(
-            'https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=KNJM7A9ST1Q1EESYXPPQITIP7I8EFSY456',
-        );
-        const gasPrice = (await response.json()).result.ProposeGasPrice;
-        return gasPrice ? parseInt(gasPrice) : undefined;
+        return 15;
     },
 };
