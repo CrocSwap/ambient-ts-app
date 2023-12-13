@@ -32,6 +32,7 @@ import { LiquidityDataLocal } from './TradeCharts';
 import { CandleDataIF } from '../../../ambient-utils/types';
 import {
     chartItemStates,
+    getInitialDisplayCandleCount,
     liquidityChartData,
     scaleData,
 } from '../../Chart/ChartUtils/chartUtils';
@@ -751,14 +752,17 @@ function TradeCandleStickChart(props: propsIF) {
 
     const resetChart = () => {
         if (scaleData && unparsedCandleData) {
-            const diff =
-                scaleData?.xScale.domain()[1] - scaleData?.xScale.domain()[0];
+            const localInitialDisplayCandleCount =
+                getInitialDisplayCandleCount(mobileView);
             const nowDate = Date.now();
 
             const snapDiff = nowDate % (period * 1000);
             const snappedTime = nowDate + (period * 1000 - snapDiff);
 
             const centerX = snappedTime;
+            const diff =
+                (localInitialDisplayCandleCount * period * 1000) / xAxisBuffer;
+
             scaleData?.xScale.domain([
                 centerX - diff * xAxisBuffer,
                 centerX + diff * (1 - xAxisBuffer),

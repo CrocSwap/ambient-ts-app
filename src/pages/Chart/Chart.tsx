@@ -65,6 +65,7 @@ import {
     drawDataHistory,
     fillLiqAdvanced,
     formatTimeDifference,
+    getInitialDisplayCandleCount,
     getXandYLocationForChart,
     lineData,
     lineValue,
@@ -2179,15 +2180,16 @@ export default function Chart(props: propsIF) {
 
     function setXScaleDefault() {
         if (scaleData) {
-            const latestCandleIndex = d3.maxIndex(
-                unparsedCandleData,
-                (d) => d.time,
-            );
+            const localInitialDisplayCandleCount =
+                getInitialDisplayCandleCount(mobileView);
+            const nowDate = Date.now();
 
+            const snapDiff = nowDate % (period * 1000);
+            const snappedTime = nowDate + (period * 1000 - snapDiff);
+
+            const centerX = snappedTime;
             const diff =
-                scaleData?.xScale.domain()[1] - scaleData?.xScale.domain()[0];
-
-            const centerX = unparsedCandleData[latestCandleIndex].time * 1000;
+                (localInitialDisplayCandleCount * period * 1000) / xAxisBuffer;
 
             scaleData?.xScale.domain([
                 centerX - diff * xAxisBuffer,
