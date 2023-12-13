@@ -1,14 +1,5 @@
 import { useContext } from 'react';
-import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-
-import {
-    addPendingTx,
-    addReceipt,
-    addTransactionByType,
-    removePendingTx,
-    updateTransactionHash,
-} from '../../utils/state/receiptDataSlice';
 
 import {
     isTransactionFailedError,
@@ -19,10 +10,9 @@ import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { RangeContext } from '../../contexts/RangeContext';
+import { ReceiptContext } from '../../contexts/ReceiptContext';
 
 export function useCreateRangePosition() {
-    const dispatch = useAppDispatch();
-
     const {
         crocEnv,
         chainData: { gridSize, poolIndex },
@@ -34,6 +24,13 @@ export function useCreateRangePosition() {
 
     const { tokenA, tokenB, baseToken, quoteToken } =
         useContext(TradeDataContext);
+    const {
+        addPendingTx,
+        addReceipt,
+        addTransactionByType,
+        removePendingTx,
+        updateTransactionHash,
+    } = useContext(ReceiptContext);
     const { isTokenAPrimaryRange } = useContext(RangeContext);
 
     const isTokenABase = tokenA.address === baseTokenAddress;
@@ -136,31 +133,29 @@ export function useCreateRangePosition() {
                       },
                   ));
             setNewRangeTransactionHash(tx?.hash);
-            dispatch(addPendingTx(tx?.hash));
+            addPendingTx(tx?.hash);
             if (tx?.hash)
-                dispatch(
-                    addTransactionByType({
-                        txHash: tx.hash,
-                        txAction: 'Add',
-                        txType: 'Range',
-                        txDescription: isAdd
-                            ? `Add to Range ${tokenA.symbol}+${tokenB.symbol}`
-                            : `Create Range ${tokenA.symbol}+${tokenB.symbol}`,
-                        txDetails: {
-                            baseAddress: baseToken.address,
-                            quoteAddress: quoteToken.address,
-                            poolIdx: poolIndex,
-                            baseSymbol: baseToken.symbol,
-                            quoteSymbol: quoteToken.symbol,
-                            baseTokenDecimals: baseTokenDecimals,
-                            quoteTokenDecimals: quoteTokenDecimals,
-                            isAmbient: isAmbient,
-                            lowTick: defaultLowTick,
-                            highTick: defaultHighTick,
-                            gridSize: gridSize,
-                        },
-                    }),
-                );
+                addTransactionByType({
+                    txHash: tx.hash,
+                    txAction: 'Add',
+                    txType: 'Range',
+                    txDescription: isAdd
+                        ? `Add to Range ${tokenA.symbol}+${tokenB.symbol}`
+                        : `Create Range ${tokenA.symbol}+${tokenB.symbol}`,
+                    txDetails: {
+                        baseAddress: baseToken.address,
+                        quoteAddress: quoteToken.address,
+                        poolIdx: poolIndex,
+                        baseSymbol: baseToken.symbol,
+                        quoteSymbol: quoteToken.symbol,
+                        baseTokenDecimals: baseTokenDecimals,
+                        quoteTokenDecimals: quoteTokenDecimals,
+                        isAmbient: isAmbient,
+                        lowTick: defaultLowTick,
+                        highTick: defaultHighTick,
+                        gridSize: gridSize,
+                    },
+                });
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
@@ -180,23 +175,19 @@ export function useCreateRangePosition() {
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
                 IS_LOCAL_ENV && console.debug('repriced');
-                dispatch(removePendingTx(error.hash));
+                removePendingTx(error.hash);
                 const newTransactionHash = error.replacement.hash;
-                dispatch(addPendingTx(newTransactionHash));
-                dispatch(
-                    updateTransactionHash({
-                        oldHash: error.hash,
-                        newHash: error.replacement.hash,
-                    }),
-                );
+                addPendingTx(newTransactionHash);
+
+                updateTransactionHash(error.hash, error.replacement.hash);
                 setNewRangeTransactionHash(newTransactionHash);
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
             }
         }
         if (receipt) {
-            dispatch(addReceipt(JSON.stringify(receipt)));
-            dispatch(removePendingTx(receipt.transactionHash));
+            addReceipt(JSON.stringify(receipt));
+            removePendingTx(receipt.transactionHash);
             if (setIsTxCompletedRange) {
                 setIsTxCompletedRange(true);
             }

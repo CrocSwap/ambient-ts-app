@@ -1,15 +1,15 @@
 import { Dispatch, SetStateAction } from 'react';
 import { scaleData } from './chartUtils';
 import * as d3 from 'd3';
-import { candleDomain } from '../../../utils/state/tradeDataSlice';
+import { CandleDomainIF } from '../../../ambient-utils/types';
 
 const maxNumCandlesForZoom = 2000;
 
 export class Zoom {
-    setCandleDomains: Dispatch<SetStateAction<candleDomain>>;
+    setCandleDomains: Dispatch<SetStateAction<CandleDomainIF>>;
     period: number;
     constructor(
-        setCandleDomains: Dispatch<SetStateAction<candleDomain>>,
+        setCandleDomains: Dispatch<SetStateAction<CandleDomainIF>>,
         period: number,
     ) {
         this.setCandleDomains = setCandleDomains;
