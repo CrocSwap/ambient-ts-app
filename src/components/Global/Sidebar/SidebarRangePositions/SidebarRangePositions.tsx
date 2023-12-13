@@ -58,7 +58,7 @@ export default function SidebarRangePositions(props: propsIF) {
     const handleRangePositionClick = (pos: PositionIF): void => {
         setOutsideControl(true);
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
-        setCurrentPositionActive(pos.firstMintTx);
+        setCurrentPositionActive(pos.positionId);
         setShowAllData(false);
         // URL params for link to pool page
         const poolLinkParams: poolParamsIF = {
