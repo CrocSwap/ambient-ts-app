@@ -5133,7 +5133,15 @@ export default function Chart(props: propsIF) {
                         height: '100%',
                     }}
                 >
-                    <div className='chart_grid' id='chart_grid'>
+                    <div
+                        className='chart_grid'
+                        id='chart_grid'
+                        style={{
+                            gridTemplateColumns:
+                                (isToolbarOpen ? 38 : 9) +
+                                'px auto 1fr auto minmax(1em, max-content)',
+                        }}
+                    >
                         <Toolbar
                             toolbarRef={toolbarRef}
                             activeDrawingType={activeDrawingType}
@@ -5292,6 +5300,7 @@ export default function Chart(props: propsIF) {
                                 isChartZoom={isChartZoom}
                                 lastCandleData={lastCandleData}
                                 firstCandleData={firstCandleData}
+                                isToolbarOpen={isToolbarOpen}
                             />
                         </>
                     )}
@@ -5325,6 +5334,7 @@ export default function Chart(props: propsIF) {
                                 isChartZoom={isChartZoom}
                                 zoomBase={zoomBase}
                                 setIsChartZoom={setIsChartZoom}
+                                isToolbarOpen={isToolbarOpen}
                             />
                         </>
                     )}
