@@ -301,10 +301,10 @@ export default function Room(props: propsIF) {
         setIsActive(!isActive);
     }
 
-    function handleRoomClick(event: any, name: string) {
-        event.target.dataset.value != undefined
-            ? props.setRoom(event.target.dataset.value)
-            : props.setRoom(name);
+    function handleRoomClick(event: any, name: string, poolName?: string) {
+        console.log(event);
+        props.setRoom(event.target.dataset.value || poolName);
+
         if (name.toString() === 'Current Pool') {
             setIsCurrentPool(true);
             if (showCurrentPoolButton) {
@@ -478,6 +478,7 @@ export default function Room(props: propsIF) {
                                         pool.quote.symbol +
                                             ' / ' +
                                             pool.base.symbol,
+                                        pool.name,
                                     )
                                 }
                             >
