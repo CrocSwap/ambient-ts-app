@@ -19,12 +19,11 @@ import {
     TokenIF,
     PositionIF,
     PositionServerIF,
-    LimitOrderIF,
+    //    LimitOrderIF,
     LimitOrderServerIF,
 } from '../types';
-// /
-// /
-// /
+import { LimitOrderIF } from '../types/limitOrder/LimitOrderIF';
+
 import { fetchBlockNumber } from '../api/fetchBlockNumber';
 import { ethers } from 'ethers';
 import { tokenListURIs } from '../constants/tokenListURIs';
@@ -221,6 +220,7 @@ const fetchSimpleDecorated = async ({
     user,
     chainId,
     gcUrl,
+    provider,
     ensResolution = true,
     annotate = true,
     omitKnockout = true,
@@ -237,6 +237,7 @@ const fetchSimpleDecorated = async ({
     user: string;
     chainId: string;
     gcUrl?: string;
+    provider: Provider;
     ensResolution?: boolean;
     annotate?: boolean;
     omitKnockout?: boolean;
@@ -254,20 +255,21 @@ const fetchSimpleDecorated = async ({
     }
 
     if (!tokenUniv) {
-        // It is unclear where, if this is run without a bound ambient app, where the token universe should come from.
+        // It is unclear the token universe should come from.
         // However, this problem should likely be addressed after V0 of the data layer
-        throw new Error('NEED A METHOD TO GET TOKEN UNIVERSE');
+        throw new Error('UNIMPLEMENTED: NEED A METHOD TO GET TOKEN UNIVERSE');
     }
-    let provider = undefined;
     if (!crocEnv) {
         const infuraUrl =
             'https://mainnet.infura.io/v3/' + process.env.REACT_APP_INFURA_KEY;
         const defaultSigner = undefined;
-        provider = new ethers.providers.JsonRpcProvider(infuraUrl);
+        if (!provider) {
+            provider = new ethers.providers.JsonRpcProvider(infuraUrl);
+        }
         crocEnv = new CrocEnv(provider, defaultSigner);
     }
     if (!lastBlockNumber) {
-        if (!crocEnv) {
+        if (!provider) {
             provider = new ethers.providers.JsonRpcProvider(infuraUrl);
         }
         lastBlockNumber = await fetchBlockNumber(provider.connection.url);
@@ -304,4 +306,4 @@ export const UserPositions = {
 
 // TODO remove UserPositions section
 export const fetchDecoratedUserPositions = fetchDecorated;
-export const fetchSimpleDecoratedUserPositions = fetchSimpleDecorated;
+export const fetchRecords = fetchSimpleDecorated;

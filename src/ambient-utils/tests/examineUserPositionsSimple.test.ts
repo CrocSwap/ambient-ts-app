@@ -1,4 +1,4 @@
-import { fetchSimpleDecoratedUserPositions } from '../api/fetchUserPositions';
+import { fetchRecords } from '../api/fetchUserPositions';
 import tokenUniverseData from '../testing-only-ambient-token-list.json';
 import { PositionIF, LimitOrderIF } from '../types';
 // TransactionIF
@@ -15,26 +15,15 @@ describe('Test fetchUserPositions Simple', () => {
             }
             const userAddress = '0xfd3fa9d94eeb4e9889e60e37d0f1fe24ec59f7e1';
             const chainId = '0x1';
-            const urlTarget = 'user_positions';
             const tokenUniv = tokenUniverseData.tokens;
-            const userPositions = await fetchSimpleDecoratedUserPositions({
+
+            const userPositions = await fetchRecords({
                 recordType: PositionIF,
-                urlTarget: urlTarget,
                 user: userAddress,
                 chainId: chainId,
                 tokenUniv: tokenUniv,
             });
             console.log(userPositions);
-            expect(userPositions.length).toBeGreaterThan(0);
-
-            const userLimitOrders = await fetchSimpleDecoratedUserPositions({
-                recordType: LimitOrderIF,
-                urlTarget: urlTarget,
-                user: userAddress,
-                chainId: chainId,
-                tokenUniv: tokenUniv,
-            });
-            console.log(userLimitOrders);
             expect(userPositions.length).toBeGreaterThan(0);
         });
     });
