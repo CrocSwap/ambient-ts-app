@@ -27,7 +27,6 @@ import {
     isStablePair,
     truncateDecimals,
 } from '../../../ambient-utils/dataLayer';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { PositionIF } from '../../../ambient-utils/types';
 import { rangeTutorialSteps } from '../../../utils/tutorial/Range';
 import {
@@ -42,6 +41,12 @@ import { useHandleRangeButtonMessage } from '../../../App/hooks/useHandleRangeBu
 import { useRangeInputDisable } from './useRangeInputDisable';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import {
+    GAS_DROPS_ESTIMATE_POOL,
+    NUM_GWEI_IN_WEI,
+    RANGE_BUFFER_MULTIPLIER,
+} from '../../../ambient-utils/constants/';
+import { ReceiptContext } from '../../../contexts/ReceiptContext';
 
 export const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 export const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
@@ -91,18 +96,20 @@ function Range() {
     const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
         UserPreferenceContext,
     );
+    const { pendingTransactions } = useContext(ReceiptContext);
     const { positionsByUser, liquidityFee } = useContext(GraphDataContext);
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     // eslint-disable-next-line
     const [isOpen, openModal, closeModal] = useModal();
-    const receiptData = useAppSelector((state) => state.receiptData);
 
     const {
-        tradeData: { poolPriceNonDisplay },
-    } = useAppSelector((state) => state);
-
-    const { isDenomBase, tokenA, tokenB, baseToken, quoteToken } =
-        useContext(TradeDataContext);
+        isDenomBase,
+        tokenA,
+        tokenB,
+        baseToken,
+        quoteToken,
+        poolPriceNonDisplay,
+    } = useContext(TradeDataContext);
 
     // RangeTokenInput state values
     const [tokenAInputQty, setTokenAInputQty] = useState<string>(
@@ -792,13 +799,46 @@ function Range() {
         }
     }, [rangeHighBoundFieldBlurred, chartTriggeredBy]);
 
+    const [
+        amountToReduceNativeTokenQtyMainnet,
+        setAmountToReduceNativeTokenQtyMainnet,
+    ] = useState<number>(0.01);
+    const [
+        amountToReduceNativeTokenQtyScroll,
+        setAmountToReduceNativeTokenQtyScroll,
+    ] = useState<number>(0.0007);
+
+    const amountToReduceNativeTokenQty =
+        chainId === '0x82750' || chainId === '0x8274f'
+            ? amountToReduceNativeTokenQtyScroll
+            : amountToReduceNativeTokenQtyMainnet;
+
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
-            const averageRangeCostInGasDrops = 140000;
+            const costOfMainnetPoolInETH =
+                gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
+
+            setAmountToReduceNativeTokenQtyMainnet(
+                costOfMainnetPoolInETH * RANGE_BUFFER_MULTIPLIER,
+            );
+
+            const costOfScrollPoolInETH =
+                gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
+
+            //   IS_LOCAL_ENV &&  console.log({
+            //         gasPriceInGwei,
+            //         costOfScrollPoolInETH,
+            //         amountToReduceNativeTokenQtyScroll,
+            //     });
+
+            setAmountToReduceNativeTokenQtyScroll(
+                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER,
+            );
+
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                averageRangeCostInGasDrops *
-                1e-9 *
+                GAS_DROPS_ESTIMATE_POOL *
+                NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice;
 
             setRangeGasPriceinDollars(
@@ -868,6 +908,8 @@ function Range() {
         isTokenAInputDisabled,
         isWithdrawTokenAFromDexChecked,
         isPoolInitialized,
+        tokenAQtyCoveredByWalletBalance,
+        amountToReduceNativeTokenQty,
     );
     const {
         tokenAllowed: tokenBAllowed,
@@ -880,6 +922,8 @@ function Range() {
         isTokenBInputDisabled,
         isWithdrawTokenBFromDexChecked,
         isPoolInitialized,
+        tokenBQtyCoveredByWalletBalance,
+        amountToReduceNativeTokenQty,
     );
 
     const { approve, isApprovalPending } = useApprove();
@@ -964,7 +1008,7 @@ function Range() {
     );
     const isTransactionConfirmed =
         isTransactionApproved &&
-        !receiptData.pendingTransactions.includes(newRangeTransactionHash);
+        !pendingTransactions.includes(newRangeTransactionHash);
 
     const rangeSteps = [
         { label: 'Sign transaction' },
@@ -1029,6 +1073,7 @@ function Range() {
                         tokenA: isTokenAInputDisabled,
                         tokenB: isTokenBInputDisabled,
                     }}
+                    amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
                 />
             }
             inputOptions={

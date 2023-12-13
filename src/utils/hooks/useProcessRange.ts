@@ -1,6 +1,5 @@
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import {
     getChainExplorer,
     getUnicodeCharacter,
@@ -22,11 +21,7 @@ export const useProcessRange = (
 ) => {
     const blockExplorer = getChainExplorer(position.chainId);
 
-    const tradeData = useAppSelector((state) => state.tradeData);
-
-    const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
-
-    const { isDenomBase } = useContext(TradeDataContext);
+    const { isDenomBase, poolPriceNonDisplay } = useContext(TradeDataContext);
 
     const tokenAAddress = position.base;
     const tokenBAddress = position.quote;
@@ -70,10 +65,15 @@ export const useProcessRange = (
 
     /* eslint-disable-next-line camelcase */
     const body = { config_path: 'ens_address', address: position.user };
-    const { data } = useFetchBatch<'ens_address'>(body);
+    const { data, error } = useFetchBatch<'ens_address'>(body);
 
-    const ensName = data?.ens_address
-        ? data?.ens_address
+    let ensAddress = null;
+    if (data && !error) {
+        ensAddress = data.ens_address;
+    }
+
+    const ensName = ensAddress
+        ? ensAddress
         : position.ensResolution
         ? position.ensResolution
         : null;

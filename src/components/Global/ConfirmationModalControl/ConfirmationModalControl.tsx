@@ -40,7 +40,7 @@ export default function ConfirmationModalControl(props: propsIF) {
                     tabIndex={0}
                 >{`Skip the Confirmation Step for ${moduleName}`}</p>
             ) : (
-                <p tabIndex={0}>Skip this confirmation step in the future.</p>
+                <p tabIndex={0}>Skip this confirmation step in future</p>
             )}
             <Toggle
                 key={compKey}

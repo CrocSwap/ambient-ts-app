@@ -1,7 +1,6 @@
 import { useState, useContext } from 'react';
 import { RiArrowUpSLine, RiArrowDownSLine } from 'react-icons/ri';
 import { uriToHttp } from '../../../../ambient-utils/dataLayer';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import {
     CircleLoaderFailed,
     CircleLoaderCompleted,
@@ -21,6 +20,8 @@ import StepperComponent from '../../../Global/MultiStepTransaction/StepperCompon
 import Button from '../../../Form/Button';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import styles from './SubmitTransaction.module.css';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+
 interface propsIF {
     type:
         | 'Swap'
@@ -49,8 +50,6 @@ interface propsIF {
     setShowStepperComponent?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export default function SubmitTransaction(props: propsIF) {
-    const receiptData = useAppSelector((state) => state.receiptData);
-
     const {
         type,
         newTransactionHash,
@@ -69,6 +68,8 @@ export default function SubmitTransaction(props: propsIF) {
         setShowStepperComponent,
     } = props;
 
+    const { pendingTransactions, sessionReceipts } = useContext(ReceiptContext);
+
     const isTransactionApproved = newTransactionHash !== '';
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
@@ -79,7 +80,7 @@ export default function SubmitTransaction(props: propsIF) {
     );
     const isTransactionConfirmed =
         isTransactionApproved &&
-        !receiptData.pendingTransactions.includes(newTransactionHash);
+        !pendingTransactions.includes(newTransactionHash);
 
     const { tokenB } = useContext(TradeDataContext);
 
@@ -111,12 +112,8 @@ export default function SubmitTransaction(props: propsIF) {
     );
 
     const lastReceipt =
-        receiptData?.sessionReceipts.length > 0
-            ? JSON.parse(
-                  receiptData.sessionReceipts[
-                      receiptData.sessionReceipts.length - 1
-                  ],
-              )
+        sessionReceipts.length > 0
+            ? JSON.parse(sessionReceipts[sessionReceipts.length - 1])
             : null;
 
     const isLastReceiptSuccess = lastReceipt?.status === 1;
@@ -165,7 +162,9 @@ export default function SubmitTransaction(props: propsIF) {
     );
 
     const buttonText = isTransactionException
-        ? 'Transaction Exception'
+        ? txErrorMessage?.toLowerCase().includes('gas')
+            ? 'Wallet Balance Insufficient to Cover Gas'
+            : 'Transaction Exception'
         : isTransactionDenied
         ? 'Transaction Denied'
         : lastReceipt && !isLastReceiptSuccess

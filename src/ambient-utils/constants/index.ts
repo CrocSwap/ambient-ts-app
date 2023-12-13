@@ -5,6 +5,7 @@ export * from './gcgo';
 export * from './slippage';
 export * from './tokenListURIs';
 export * from './tokenUnicodeCharMap';
+export * from './gasEstimates';
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 // allow a local environment variable to be defined in [app_repo]/.env.local to set a name for dev environment
@@ -91,3 +92,5 @@ export const BATCH_SIZE_DELAY = process.env.REACT_APP_BATCH_SIZE_DELAY
 export const REQUEST_TIMEOUT_DELAY = process.env.REACT_APP_REQUEST_TIMEOUT_DELAY
     ? parseFloat(process.env.REACT_APP_REQUEST_TIMEOUT_DELAY)
     : 3000;
+
+export const CACHE_UPDATE_FREQ_IN_MS = 60000; // 1 minute

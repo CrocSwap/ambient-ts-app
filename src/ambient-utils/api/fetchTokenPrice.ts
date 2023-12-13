@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import {
     memoizePromiseFn,
-    translateTestnetToken,
+    translateToken,
     querySpotPrice,
     truncateDecimals,
 } from '../dataLayer/functions';
@@ -18,29 +18,32 @@ export const fetchTokenPrice = async (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _lastTime: number,
 ) => {
-    const address = translateTestnetToken(dispToken);
+    const address = translateToken(dispToken, chain);
 
     const defaultPair = supportedNetworks[chain].defaultPair;
 
     try {
         const body = {
             config_path: 'price',
-            chain_id: chain,
+            asset_platform: chain === '0x82750' ? 'scroll' : 'ethereum',
             token_address: address,
         };
 
-        const { value } = await fetchBatch<'price'>(body);
-        return value;
+        const response = await fetchBatch<'price'>(body);
+
+        if ('error' in response) throw new Error(response.error);
+
+        return response.value;
     } catch (error) {
         // if token is USDC, return 0.999
-        if (address.toLowerCase() === defaultPair[1].address.toLowerCase()) {
+        if (dispToken.toLowerCase() === defaultPair[1].address.toLowerCase()) {
             return {
                 usdPrice: 0.9995309916951084,
                 usdPriceFormatted: 1,
             };
         } else if (
             // if token is ETH, return current value of ETH-USDC pool
-            address.toLowerCase() === defaultPair[0].address.toLowerCase()
+            dispToken.toLowerCase() === defaultPair[0].address.toLowerCase()
         ) {
             if (!crocEnv) return;
             const spotPrice = await querySpotPrice(

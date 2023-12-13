@@ -17,17 +17,8 @@ import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { FlexContainer } from '../../../styled/Common';
 import { truncateDecimals } from '../../../ambient-utils/dataLayer';
-import {
-    useAppSelector,
-    useAppDispatch,
-} from '../../../utils/hooks/reduxToolkit';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { formatTokenInput } from '../../../utils/numbers';
-import {
-    setShouldSwapDirectionReverse,
-    setPrimaryQuantity,
-    setLimitTick,
-} from '../../../utils/state/tradeDataSlice';
 import TokenInputWithWalletBalance from '../../Form/TokenInputWithWalletBalance';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import { UserDataContext } from '../../../contexts/UserDataContext';
@@ -47,7 +38,7 @@ interface propsIF {
     isLiquidityInsufficient: boolean;
     setIsLiquidityInsufficient: Dispatch<SetStateAction<boolean>>;
     toggleDexSelection: (tokenAorB: 'A' | 'B') => void;
-    amountToReduceEth: number;
+    amountToReduceNativeTokenQty: number;
 }
 
 function SwapTokenInput(props: propsIF) {
@@ -64,7 +55,7 @@ function SwapTokenInput(props: propsIF) {
         isLiquidityInsufficient,
         setIsLiquidityInsufficient,
         toggleDexSelection,
-        amountToReduceEth,
+        amountToReduceNativeTokenQty,
     } = props;
 
     const {
@@ -86,12 +77,7 @@ function SwapTokenInput(props: propsIF) {
     const { showSwapPulseAnimation } = useContext(TradeTableContext);
     const { setIsTokenAPrimaryRange, isTokenAPrimaryRange } =
         useContext(RangeContext);
-    const dispatch = useAppDispatch();
     const { isUserConnected } = useContext(UserDataContext);
-
-    const { primaryQuantity, shouldSwapDirectionReverse } = useAppSelector(
-        (state) => state.tradeData,
-    );
     const {
         tokenA,
         tokenB,
@@ -99,6 +85,11 @@ function SwapTokenInput(props: propsIF) {
         setIsTokenAPrimary,
         disableReverseTokens,
         setDisableReverseTokens,
+        primaryQuantity,
+        setPrimaryQuantity,
+        setLimitTick,
+        shouldSwapDirectionReverse,
+        setShouldSwapDirectionReverse,
     } = useContext(TradeDataContext);
     // hook to generate navigation actions with pre-loaded path
     const linkGenAny: linkGenMethodsIF = useLinkGen();
@@ -134,7 +125,7 @@ function SwapTokenInput(props: propsIF) {
         }
         setIsTokenAPrimaryRange(!isTokenAPrimaryRange);
 
-        dispatch(setLimitTick(undefined));
+        setLimitTick(undefined);
     };
 
     const handleBlockUpdate = () => {
@@ -153,7 +144,7 @@ function SwapTokenInput(props: propsIF) {
     useEffect(() => {
         if (shouldSwapDirectionReverse) {
             reverseTokens(false);
-            dispatch(setShouldSwapDirectionReverse(false));
+            setShouldSwapDirectionReverse(false);
         }
     }, [shouldSwapDirectionReverse]);
 
@@ -200,7 +191,7 @@ function SwapTokenInput(props: propsIF) {
     const debouncedTokenAChangeEvent = (value: string) => {
         setIsBuyLoading(true);
         setSellQtyString(value);
-        dispatch(setPrimaryQuantity(value));
+        setPrimaryQuantity(value);
         setLastInput(value);
 
         setIsTokenAPrimary(true);
@@ -209,7 +200,7 @@ function SwapTokenInput(props: propsIF) {
     const debouncedTokenBChangeEvent = (value: string) => {
         setIsSellLoading(true);
         setBuyQtyString(value);
-        dispatch(setPrimaryQuantity(value));
+        setPrimaryQuantity(value);
         setLastInput(value);
 
         setIsTokenAPrimary(false);
@@ -336,7 +327,7 @@ function SwapTokenInput(props: propsIF) {
                 parseTokenInput={(val: string, isMax?: boolean) => {
                     setSellQtyString(formatTokenInput(val, tokenA, isMax));
                 }}
-                amountToReduceEth={amountToReduceEth}
+                amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
             />
             <FlexContainer
                 fullWidth
@@ -396,6 +387,7 @@ function SwapTokenInput(props: propsIF) {
                 parseTokenInput={(val: string, isMax?: boolean) => {
                     setBuyQtyString(formatTokenInput(val, tokenB, isMax));
                 }}
+                amountToReduceNativeTokenQty={0} // value not used for buy token
             />
         </FlexContainer>
     );

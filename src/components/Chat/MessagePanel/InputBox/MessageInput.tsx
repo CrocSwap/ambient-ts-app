@@ -30,7 +30,7 @@ export default function MessageInput(props: MessageInputProps) {
     } = useContext(AppStateContext);
 
     const { sendMsg } = useChatSocket(
-        props.room.toUpperCase(),
+        props.room?.toUpperCase(),
         isSubscriptionsEnabled,
         isChatOpen,
     );

@@ -7,20 +7,11 @@ import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
 import { FlexContainer } from '../../../../styled/Common';
 import { truncateDecimals } from '../../../../ambient-utils/dataLayer';
 import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
-import {
     limitParamsIF,
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
 import { formatTokenInput } from '../../../../utils/numbers';
-import {
-    setLimitTick,
-    setPoolPriceNonDisplay,
-    setPrimaryQuantity,
-} from '../../../../utils/state/tradeDataSlice';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import TokenInputWithWalletBalance from '../../../Form/TokenInputWithWalletBalance';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
@@ -36,7 +27,7 @@ interface propsIF {
     isSaveAsDexSurplusChecked: boolean;
     handleLimitButtonMessage: (val: number) => void;
     toggleDexSelection: (tokenAorB: 'A' | 'B') => void;
-    amountToReduceEth: number;
+    amountToReduceNativeTokenQty: number;
 }
 
 function LimitTokenInput(props: propsIF) {
@@ -48,7 +39,7 @@ function LimitTokenInput(props: propsIF) {
         isSaveAsDexSurplusChecked,
         handleLimitButtonMessage,
         toggleDexSelection,
-        amountToReduceEth,
+        amountToReduceNativeTokenQty,
     } = props;
 
     const {
@@ -69,15 +60,21 @@ function LimitTokenInput(props: propsIF) {
     } = useContext(TradeTokenContext);
     const { showOrderPulseAnimation } = useContext(TradeTableContext);
 
-    const dispatch = useAppDispatch();
     // hook to generate navigation actions with pre-loaded path
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
     const { isUserConnected } = useContext(UserDataContext);
 
-    const { primaryQuantity } = useAppSelector((state) => state.tradeData);
-
-    const { tokenA, tokenB, isTokenAPrimary, isDenomBase, setIsTokenAPrimary } =
-        useContext(TradeDataContext);
+    const {
+        tokenA,
+        tokenB,
+        isTokenAPrimary,
+        isDenomBase,
+        setIsTokenAPrimary,
+        setLimitTick,
+        setPoolPriceNonDisplay,
+        primaryQuantity,
+        setPrimaryQuantity,
+    } = useContext(TradeDataContext);
 
     const isSellTokenBase = pool?.baseToken.tokenAddr === tokenA.address;
 
@@ -89,8 +86,8 @@ function LimitTokenInput(props: propsIF) {
         : quoteTokenDexBalance;
 
     const reverseTokens = (): void => {
-        dispatch(setLimitTick(undefined));
-        dispatch(setPoolPriceNonDisplay(0));
+        setLimitTick(undefined);
+        setPoolPriceNonDisplay(0);
 
         const limitLinkParams: limitParamsIF = {
             chain: chainId,
@@ -126,7 +123,7 @@ function LimitTokenInput(props: propsIF) {
             // set token input quantity to be unparsed input
             setTokenAInputQty(value);
             setIsTokenAPrimary(true);
-            dispatch(setPrimaryQuantity(inputStr));
+            setPrimaryQuantity(inputStr);
 
             if (!isDenomBase) {
                 rawTokenBQty = isSellTokenBase
@@ -169,7 +166,7 @@ function LimitTokenInput(props: propsIF) {
             // set token input quantity to be unparsed input
             setTokenBInputQty(value);
             setIsTokenAPrimary(false);
-            dispatch(setPrimaryQuantity(inputStr));
+            setPrimaryQuantity(inputStr);
 
             if (!isDenomBase) {
                 rawTokenAQty = isSellTokenBase
@@ -222,7 +219,7 @@ function LimitTokenInput(props: propsIF) {
                     setTokenAInputQty(formatTokenInput(val, tokenA, isMax));
                 }}
                 showWallet={isUserConnected}
-                amountToReduceEth={amountToReduceEth}
+                amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
             />
             <FlexContainer
                 fullWidth
@@ -251,6 +248,7 @@ function LimitTokenInput(props: propsIF) {
                 parseTokenInput={(val: string, isMax?: boolean) => {
                     setTokenBInputQty(formatTokenInput(val, tokenB, isMax));
                 }}
+                amountToReduceNativeTokenQty={0} // value not used for buy token
             />
         </FlexContainer>
     );
