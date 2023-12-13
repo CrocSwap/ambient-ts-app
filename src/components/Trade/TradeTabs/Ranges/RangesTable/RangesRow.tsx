@@ -112,14 +112,6 @@ function RangesRow(props: propsIF) {
             ? `position-${position.firstMintTx}`
             : '';
 
-    useEffect(() => {
-        if (positionDomId !== '') {
-            console.log(JSON.stringify(position.firstMintTx));
-            console.log(JSON.stringify(currentPositionActive));
-            console.log(JSON.stringify(positionDomId));
-        }
-    }, [positionDomId]);
-
     const activePositionRef = useRef(null);
 
     const sideCharacter = isAccountView
