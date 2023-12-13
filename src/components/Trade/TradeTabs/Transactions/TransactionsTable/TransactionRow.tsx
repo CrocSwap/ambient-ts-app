@@ -18,9 +18,10 @@ interface propsIF {
     tx: TransactionIF;
     tableView: 'small' | 'medium' | 'large';
     isAccountView: boolean;
+    openDetailsModal: () => void;
 }
 function TransactionRow(props: propsIF) {
-    const { idForDOM, tableView, tx, isAccountView } = props;
+    const { idForDOM, tableView, tx, isAccountView, openDetailsModal } = props;
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -68,8 +69,13 @@ function TransactionRow(props: propsIF) {
         setCurrentTxActiveInTransactions,
     } = useContext(TradeTableContext);
 
-    const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
-        useModal();
+    // const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
+    //     useModal();
+
+    // const closeModal = () => {
+    //     setCurrentTxActiveInTransactions('');
+    //     closeDetailsModal();
+    // }
 
     // only show all data when on trade tab page
     const showAllData = !isAccountView && showAllDataSelection;
@@ -137,7 +143,7 @@ function TransactionRow(props: propsIF) {
         console.log('handleKeyPress');
 
         if (event.key === 'Enter') {
-            openDetailsModal();
+            handleRowClick();
         } else if (event.ctrlKey && event.key === 'c') {
             // These will be shortcuts for the row menu. I will implement these at another time. -JR
         }
@@ -201,11 +207,6 @@ function TransactionRow(props: propsIF) {
     } = txRowConstants(txRowConstantsProps);
 
     function handleRowClick() {
-        console.log('handleRowClick');
-        if (tx.txId === currentTxActiveInTransactions) {
-            return;
-        }
-        setCurrentTxActiveInTransactions('');
         openDetailsModal();
     }
 
@@ -254,16 +255,16 @@ function TransactionRow(props: propsIF) {
                     />
                 </div>
             </TransactionRowStyled>
-            {isDetailsModalOpen && (
+            {/* {isDetailsModalOpen && currentTxActiveInTransactions === tx.txId && (
                 <TransactionDetailsModal
                     tx={tx}
                     isBaseTokenMoneynessGreaterOrEqual={
                         isBaseTokenMoneynessGreaterOrEqual
                     }
                     isAccountView={isAccountView}
-                    onClose={closeDetailsModal}
+                    onClose={closeModal}
                 />
-            )}
+            )} */}
         </>
     );
 }

@@ -33,6 +33,9 @@ import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import { useModal } from '../../../Global/Modal/useModal';
+import TransactionDetailsModal from '../../../Global/TransactionDetails/TransactionDetailsModal';
+import { getMoneynessRank } from '../../../../ambient-utils/dataLayer';
 
 interface propsIF {
     filter?: CandleDataIF | undefined;
@@ -502,15 +505,48 @@ function Transactions(props: propsIF) {
             </FlexContainer>
         );
 
+    const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
+        useModal();
+
+    const { currentTxActiveInTransactions, setCurrentTxActiveInTransactions } =
+        useContext(TradeTableContext);
+
+    const closeModal = () => {
+        setCurrentTxActiveInTransactions('');
+        closeDetailsModal();
+    };
+
+    const openModal = (txId: string) => {
+        setCurrentTxActiveInTransactions(txId);
+        openDetailsModal();
+    };
+
+    const getBaseTokenMoneynessGreaterOrEqual = (tx: TransactionIF) =>
+        getMoneynessRank(tx.baseSymbol) - getMoneynessRank(tx.quoteSymbol) >= 0;
+
     const currentRowItemContent = () =>
         _DATA.currentData.map((tx, idx) => (
-            <TransactionRow
-                key={idx}
-                idForDOM={`tx_row_${idx}`}
-                tx={tx}
-                tableView={tableView}
-                isAccountView={isAccountView}
-            />
+            <>
+                <TransactionRow
+                    key={idx}
+                    idForDOM={`tx_row_${idx}`}
+                    tx={tx}
+                    tableView={tableView}
+                    isAccountView={isAccountView}
+                    openDetailsModal={() => openModal(tx.txId)}
+                />
+                {isDetailsModalOpen &&
+                    tx.txId === currentTxActiveInTransactions && (
+                        <TransactionDetailsModal
+                            tx={tx}
+                            isBaseTokenMoneynessGreaterOrEqual={getBaseTokenMoneynessGreaterOrEqual(
+                                tx,
+                            )}
+                            isAccountView={isAccountView}
+                            onClose={closeModal}
+                        />
+                    )}
+            </>
         ));
 
     const handleKeyDownViewTransaction = (
