@@ -134,8 +134,8 @@ export default function ConfirmLimitModal(props: propsIF) {
 
     const extraNotes = (
         <Text fontSize='body' color='accent2' style={{ textAlign: 'center' }}>
-            {`${tokenB.symbol} will be available for withdrawal after the limit order is filled. 
-        ${tokenA.symbol} can be withdrawn at any time before fill completion.`}
+            {`${tokenB.symbol} will be claimable after the limit order is filled. 
+        ${tokenA.symbol} can be removed at any time before fill completion.`}
         </Text>
     );
 
