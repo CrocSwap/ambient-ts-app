@@ -93,7 +93,7 @@ const NotificationTable = (props: NotificationTableProps) => {
                     {successfulTransactionsDisplay}
                 </Content>
 
-                <FlexContainer justifyContent='center'>
+                <FlexContainer justifyContent='center' margin='auto'>
                     <FooterButton
                         onClick={() => {
                             resetReceiptData();

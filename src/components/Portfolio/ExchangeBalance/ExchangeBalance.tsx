@@ -311,8 +311,8 @@ export default function ExchangeBalance(props: propsIF) {
                 {(!fullLayoutActive || columnView || isModalView) && (
                     <PortfolioInfoText>
                         Collateral deposited into the Ambient Finance exchange
-                        can be traded at lower gas costs. Collateral can be
-                        withdrawn at any time.
+                        can be traded at lower gas costs and withdrawn at any
+                        time.
                     </PortfolioInfoText>
                 )}
             </PortfolioMotionContainer>
