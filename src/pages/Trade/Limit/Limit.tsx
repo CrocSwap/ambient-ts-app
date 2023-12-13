@@ -26,12 +26,6 @@ import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import {
-    useAppSelector,
-    useAppDispatch,
-} from '../../../utils/hooks/reduxToolkit';
-
-import { setLimitTick } from '../../../utils/state/tradeDataSlice';
-import {
     TransactionError,
     isTransactionReplacedError,
     isTransactionFailedError,
@@ -70,25 +64,6 @@ export default function Limit() {
             dexBalance: quoteTokenDexBalance,
         },
     } = useContext(TradeTokenContext);
-
-    const { mintSlippage, dexBalLimit, bypassConfirmLimit } = useContext(
-        UserPreferenceContext,
-    );
-
-    const dispatch = useAppDispatch();
-    // eslint-disable-next-line
-    const [isOpen, openModal, closeModal] = useModal();
-    const { limitTick, poolPriceNonDisplay, primaryQuantity } = useAppSelector(
-        (state) => state.tradeData,
-    );
-    const {
-        baseToken,
-        quoteToken,
-        tokenA,
-        tokenB,
-        isTokenAPrimary,
-        isDenomBase,
-    } = useContext(TradeDataContext);
     const {
         addPendingTx,
         addReceipt,
@@ -97,6 +72,24 @@ export default function Limit() {
         updateTransactionHash,
         pendingTransactions,
     } = useContext(ReceiptContext);
+    const { mintSlippage, dexBalLimit, bypassConfirmLimit } = useContext(
+        UserPreferenceContext,
+    );
+
+    // eslint-disable-next-line
+    const [isOpen, openModal, closeModal] = useModal();
+    const {
+        baseToken,
+        quoteToken,
+        tokenA,
+        tokenB,
+        isTokenAPrimary,
+        isDenomBase,
+        setLimitTick,
+        limitTick,
+        poolPriceNonDisplay,
+        primaryQuantity,
+    } = useContext(TradeDataContext);
     const { liquidityFee } = useContext(GraphDataContext);
     const { urlParamMap, updateURL } = useTradeData();
 
@@ -208,7 +201,7 @@ export default function Limit() {
                     : pinTickUpper(initialLimitRateNonDisplay, gridSize);
 
                 IS_LOCAL_ENV && console.debug({ pinnedTick });
-                dispatch(setLimitTick(pinnedTick));
+                setLimitTick(pinnedTick);
 
                 const tickPrice = tickToPrice(pinnedTick);
                 const tickDispPrice = pool.toDisplayPrice(tickPrice);

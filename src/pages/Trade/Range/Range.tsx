@@ -27,7 +27,6 @@ import {
     isStablePair,
     truncateDecimals,
 } from '../../../ambient-utils/dataLayer';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { PositionIF } from '../../../ambient-utils/types';
 import { rangeTutorialSteps } from '../../../utils/tutorial/Range';
 import {
@@ -97,18 +96,20 @@ function Range() {
     const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
         UserPreferenceContext,
     );
+    const { pendingTransactions } = useContext(ReceiptContext);
     const { positionsByUser, liquidityFee } = useContext(GraphDataContext);
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     // eslint-disable-next-line
     const [isOpen, openModal, closeModal] = useModal();
 
     const {
-        tradeData: { poolPriceNonDisplay },
-    } = useAppSelector((state) => state);
-
-    const { isDenomBase, tokenA, tokenB, baseToken, quoteToken } =
-        useContext(TradeDataContext);
-    const { pendingTransactions } = useContext(ReceiptContext);
+        isDenomBase,
+        tokenA,
+        tokenB,
+        baseToken,
+        quoteToken,
+        poolPriceNonDisplay,
+    } = useContext(TradeDataContext);
 
     // RangeTokenInput state values
     const [tokenAInputQty, setTokenAInputQty] = useState<string>(

@@ -1,6 +1,5 @@
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import {
     getChainExplorer,
     getUnicodeCharacter,
@@ -22,11 +21,7 @@ export const useProcessRange = (
 ) => {
     const blockExplorer = getChainExplorer(position.chainId);
 
-    const tradeData = useAppSelector((state) => state.tradeData);
-
-    const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
-
-    const { isDenomBase } = useContext(TradeDataContext);
+    const { isDenomBase, poolPriceNonDisplay } = useContext(TradeDataContext);
 
     const tokenAAddress = position.base;
     const tokenBAddress = position.quote;

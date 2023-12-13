@@ -49,6 +49,7 @@ interface propsIF {
     poolPrice?: string;
     minPrice?: string;
     maxPrice?: string;
+    fillEnd?: string;
 }
 
 export default function TradeConfirmationSkeleton(props: propsIF) {
@@ -74,9 +75,9 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         handleSetActiveContent,
         showStepperComponent,
         setShowStepperComponent,
-        poolPrice,
         minPrice,
         maxPrice,
+        fillEnd,
     } = props;
 
     const {
@@ -141,6 +142,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                 justifyContent='center'
                 alignItems='center'
                 padding='8px 0'
+                style={{ pointerEvents: 'none' }}
             >
                 {svgArrow}
             </FlexContainer>
@@ -249,9 +251,9 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                         {formattedTokenBQuantity} {tokenB.symbol}
                     </Text>
                 </FlexContainer>
-                {poolPrice && (
+                {fillEnd && (
                     <Text fontSize='body' color='text2' align='center'>
-                        @ {poolPrice}
+                        @ {fillEnd}
                     </Text>
                 )}
             </FlexContainer>

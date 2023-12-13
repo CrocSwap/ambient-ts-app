@@ -46,8 +46,6 @@ export default function TransactionDetailsGraph(
             ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
             : true;
 
-    // const tradeData = useAppSelector((state) => state.tradeData);
-
     const baseTokenAddress = tx.base;
     const quoteTokenAddress = tx.quote;
 
