@@ -137,6 +137,7 @@ export const PortfolioInfoText = styled.div`
     text-align: center;
     padding: 8px;
     border-radius: var(--border-radius);
+    margin-bottom: 4px;
 
     /* prevents the exchange balance sidebar from expanding downward on open */
     max-height: 80px;
