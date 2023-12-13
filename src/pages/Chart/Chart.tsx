@@ -1436,8 +1436,8 @@ export default function Chart(props: propsIF) {
                     // Update newLimitValue if it's outside the No-Go Zone
                     if (
                         !(
-                            newLimitValue >= noGoZoneMin &&
-                            newLimitValue <= noGoZoneMax
+                            newLimitValue > noGoZoneMin &&
+                            newLimitValue < noGoZoneMax
                         )
                     ) {
                         setLimit(() => {
@@ -3170,6 +3170,7 @@ export default function Chart(props: propsIF) {
             quoteTokenDecimals,
             lookupChain(chainId).gridSize,
         );
+
         setNoGoZoneBoundaries(() => {
             return noGoZoneBoundaries;
         });
