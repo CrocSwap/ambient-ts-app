@@ -28,7 +28,7 @@ d3fc-svg {
     height: 100%;
     overflow: hidden;
     display: grid;
-    grid-template-columns: auto auto 1fr auto minmax(1em, max-content);
+    grid-template-columns: 1% auto 1fr auto minmax(1em, max-content);
     grid-template-rows: minmax(0em, max-content) auto 1fr auto;
     transition: all 600ms ease-in-out;
 }

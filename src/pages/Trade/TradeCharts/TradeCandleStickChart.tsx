@@ -40,6 +40,7 @@ import { useUndoRedo } from '../../Chart/ChartUtils/useUndoRedo';
 import { updatesIF } from '../../../utils/hooks/useUrlParams';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { xAxisBuffer } from '../../Chart/ChartUtils/chartConstants';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface propsIF {
@@ -77,7 +78,7 @@ function TradeCandleStickChart(props: propsIF) {
 
     const { candleData, isFetchingCandle, isCandleDataNull, setCandleScale } =
         useContext(CandleContext);
-    const { chartSettings } = useContext(ChartContext);
+    const { chartSettings, isChangeScaleChart } = useContext(ChartContext);
     const { chainData } = useContext(CrocEnvContext);
     const { poolPriceDisplay: poolPriceWithoutDenom, isPoolInitialized } =
         useContext(PoolContext);
@@ -705,7 +706,11 @@ function TradeCandleStickChart(props: propsIF) {
 
                 let firstTime = Math.floor(fethcingCandles / 1000);
 
-                if (firstTime > minDate && fethcingCandles > domainLeft) {
+                if (
+                    firstTime > minDate &&
+                    fethcingCandles > domainLeft &&
+                    isChangeScaleChart
+                ) {
                     let nCandles = Math.floor(
                         (fethcingCandles - domainLeft) / (period * 1000),
                     );
@@ -745,36 +750,36 @@ function TradeCandleStickChart(props: propsIF) {
     }, [period, diffHashSig(unparsedCandleData)]);
 
     const resetChart = () => {
-        const nowDate = Date.now();
+        if (scaleData && unparsedCandleData) {
+            const diff =
+                scaleData?.xScale.domain()[1] - scaleData?.xScale.domain()[0];
+            const nowDate = Date.now();
 
-        const snapDiff = nowDate % (period * 1000);
+            const snapDiff = nowDate % (period * 1000);
+            const snappedTime = nowDate + (period * 1000 - snapDiff);
 
-        const snappedTime =
-            nowDate -
-            (snapDiff > period * 1000 - snapDiff
-                ? -1 * (period * 1000 - snapDiff)
-                : snapDiff);
+            const centerX = snappedTime;
+            scaleData?.xScale.domain([
+                centerX - diff * xAxisBuffer,
+                centerX + diff * (1 - xAxisBuffer),
+            ]);
 
-        const minDomain = snappedTime - 100 * 1000 * period;
-        const maxDomain = snappedTime + 39 * 1000 * period;
-
-        scaleData?.xScale.domain([minDomain, maxDomain]);
-
-        setCandleScale((prev: candleScale) => {
-            return {
-                isFetchForTimeframe: !prev.isFetchForTimeframe,
-                lastCandleDate: undefined,
-                nCandles: 200,
-                isShowLatestCandle: true,
-            };
-        });
+            setCandleScale((prev: candleScale) => {
+                return {
+                    isFetchForTimeframe: !prev.isFetchForTimeframe,
+                    lastCandleDate: undefined,
+                    nCandles: 200,
+                    isShowLatestCandle: true,
+                };
+            });
+        }
     };
     // resetting Chart
     useEffect(() => {
-        if (isCandleDataNull && scaleData) {
+        if (scaleData) {
             resetChart();
         }
-    }, [isCandleDataNull]);
+    }, [isCandleDataNull, scaleData === undefined]);
 
     useEffect(() => {
         const timer = setTimeout(() => {

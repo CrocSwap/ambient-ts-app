@@ -28,8 +28,8 @@ import {
     CheckboxContainer,
     StyledCheckbox,
     Icon,
+    LineWidthOptions,
 } from './FloatingToolbarSettingsCss';
-import { AiOutlineMinus, AiOutlineDash } from 'react-icons/ai';
 import { SketchPicker } from 'react-color';
 import {
     OptionsTab,
@@ -37,6 +37,9 @@ import {
     OptionsTabStyle,
 } from './FloatingToolbarCss';
 import Divider from '../../../../components/Global/Divider/Divider';
+import lineOptionSvg from '../../../../assets/images/icons/draw/lineOptions/line.svg';
+import dashOptionSvg from '../../../../assets/images/icons/draw/lineOptions/dash.svg';
+import dottedOptionSvg from '../../../../assets/images/icons/draw/lineOptions/dotted.svg';
 
 interface FloatingToolbarSettingsProps {
     selectedDrawnShape: selectedDrawnData | undefined;
@@ -239,7 +242,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
     return (
         <>
             <FloatingToolbarSettingsContainer
-            // onClick={() => closeAllOptions('none')}
+                onClick={() => closeAllOptions('none')}
             >
                 {selectedDrawnShape && (
                     <LineContainer>
@@ -278,6 +281,16 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                 <OptionColorContainer>
                                     <OptionColor
                                         backgroundColor={selectedDrawnShape?.data.line.color.toString()}
+                                        disabled={
+                                            !selectedDrawnShape?.data.line
+                                                .active
+                                        }
+                                        style={{
+                                            pointerEvents: selectedDrawnShape
+                                                ?.data.line.active
+                                                ? 'auto'
+                                                : 'none',
+                                        }}
                                         onClick={(
                                             event: MouseEvent<HTMLElement>,
                                         ) => {
@@ -288,6 +301,15 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                 </OptionColorContainer>
 
                                 <OptionStyleContainer
+                                    disabled={
+                                        !selectedDrawnShape?.data.line.active
+                                    }
+                                    style={{
+                                        pointerEvents: selectedDrawnShape?.data
+                                            .line.active
+                                            ? 'auto'
+                                            : 'none',
+                                    }}
                                     onClick={(
                                         event: MouseEvent<HTMLDivElement>,
                                     ) => {
@@ -295,10 +317,26 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                         closeAllOptions('lineSize');
                                     }}
                                 >
-                                    <AiOutlineMinus color='white' />
+                                    <LineWidthOptions
+                                        backgroundColor={'#cfd7e3'}
+                                        style={{
+                                            borderTopWidth:
+                                                selectedDrawnShape?.data.line
+                                                    .lineWidth + 'px',
+                                        }}
+                                    ></LineWidthOptions>
                                 </OptionStyleContainer>
 
                                 <OptionStyleContainer
+                                    disabled={
+                                        !selectedDrawnShape?.data.line.active
+                                    }
+                                    style={{
+                                        pointerEvents: selectedDrawnShape?.data
+                                            .line.active
+                                            ? 'auto'
+                                            : 'none',
+                                    }}
                                     onClick={(
                                         event: MouseEvent<HTMLDivElement>,
                                     ) => {
@@ -306,13 +344,26 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                         closeAllOptions('lineStyle');
                                     }}
                                 >
-                                    <AiOutlineDash color='white' />
+                                    <img
+                                        src={
+                                            selectedDrawnShape &&
+                                            (0 ===
+                                            selectedDrawnShape.data.line.dash[0]
+                                                ? lineOptionSvg
+                                                : 5 ===
+                                                  selectedDrawnShape.data.line
+                                                      .dash[0]
+                                                ? dashOptionSvg
+                                                : dottedOptionSvg)
+                                        }
+                                        alt=''
+                                    />
                                 </OptionStyleContainer>
                             </LineSettingsRight>
                         </LineSettings>
 
                         {borderOptions.includes(
-                            selectedDrawnShape.data.type,
+                            selectedDrawnShape?.data.type,
                         ) && (
                             <LineSettings>
                                 <LineSettingsLeft>
@@ -322,7 +373,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                 selectedDrawnShape?.data.type,
                                             ) &&
                                                 handleEditLines(
-                                                    !selectedDrawnShape.data
+                                                    !selectedDrawnShape?.data
                                                         .border.active,
                                                     'border',
                                                 );
@@ -330,7 +381,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                     >
                                         <StyledCheckbox
                                             checked={
-                                                selectedDrawnShape.data.border
+                                                selectedDrawnShape?.data.border
                                                     .active
                                             }
                                             disabled={borderOptionDisabled.includes(
@@ -349,6 +400,17 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                     <OptionColorContainer>
                                         <OptionColor
                                             backgroundColor={selectedDrawnShape?.data.border.color.toString()}
+                                            disabled={
+                                                !selectedDrawnShape?.data.border
+                                                    .active
+                                            }
+                                            style={{
+                                                pointerEvents:
+                                                    selectedDrawnShape?.data
+                                                        .border.active
+                                                        ? 'auto'
+                                                        : 'none',
+                                            }}
                                             onClick={(
                                                 event: MouseEvent<HTMLDivElement>,
                                             ) => {
@@ -359,6 +421,16 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                     </OptionColorContainer>
 
                                     <OptionStyleContainer
+                                        disabled={
+                                            !selectedDrawnShape?.data.border
+                                                .active
+                                        }
+                                        style={{
+                                            pointerEvents: selectedDrawnShape
+                                                ?.data.border.active
+                                                ? 'auto'
+                                                : 'none',
+                                        }}
                                         onClick={(
                                             event: MouseEvent<HTMLDivElement>,
                                         ) => {
@@ -366,10 +438,28 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                             closeAllOptions('borderSize');
                                         }}
                                     >
-                                        <AiOutlineMinus color='white' />
+                                        <LineWidthOptions
+                                            backgroundColor={'#cfd7e3'}
+                                            style={{
+                                                borderTopWidth:
+                                                    selectedDrawnShape?.data
+                                                        .border.lineWidth +
+                                                    'px',
+                                            }}
+                                        ></LineWidthOptions>
                                     </OptionStyleContainer>
 
                                     <OptionStyleContainer
+                                        disabled={
+                                            !selectedDrawnShape?.data.border
+                                                .active
+                                        }
+                                        style={{
+                                            pointerEvents: selectedDrawnShape
+                                                ?.data.border.active
+                                                ? 'auto'
+                                                : 'none',
+                                        }}
                                         onClick={(
                                             event: MouseEvent<HTMLDivElement>,
                                         ) => {
@@ -377,21 +467,35 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                             closeAllOptions('borderStyle');
                                         }}
                                     >
-                                        <AiOutlineDash color='white' />
+                                        <img
+                                            src={
+                                                selectedDrawnShape &&
+                                                (0 ===
+                                                selectedDrawnShape.data.border
+                                                    .dash[0]
+                                                    ? lineOptionSvg
+                                                    : 5 ===
+                                                      selectedDrawnShape.data
+                                                          .border.dash[0]
+                                                    ? dashOptionSvg
+                                                    : dottedOptionSvg)
+                                            }
+                                            alt=''
+                                        />
                                     </OptionStyleContainer>
                                 </LineSettingsRight>
                             </LineSettings>
                         )}
 
                         {backgroundOptions.includes(
-                            selectedDrawnShape.data.type,
+                            selectedDrawnShape?.data.type,
                         ) && (
                             <LineSettings>
                                 <LineSettingsLeft>
                                     <CheckboxContainer
                                         onClick={() => {
                                             handleEditLines(
-                                                !selectedDrawnShape.data
+                                                !selectedDrawnShape?.data
                                                     .background.active,
                                                 'background',
                                             );
@@ -399,7 +503,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                     >
                                         <StyledCheckbox
                                             checked={
-                                                selectedDrawnShape.data
+                                                selectedDrawnShape?.data
                                                     .background.active
                                             }
                                             disabled={false}
@@ -415,6 +519,17 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                     <OptionColorContainer>
                                         <OptionColor
                                             backgroundColor={selectedDrawnShape?.data.background.color.toString()}
+                                            disabled={
+                                                !selectedDrawnShape?.data
+                                                    .background.active
+                                            }
+                                            style={{
+                                                pointerEvents:
+                                                    selectedDrawnShape?.data
+                                                        .background.active
+                                                        ? 'auto'
+                                                        : 'none',
+                                            }}
                                             onClick={(
                                                 event: MouseEvent<HTMLDivElement>,
                                             ) => {
@@ -467,6 +582,12 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                         <OptionColorContainer>
                                             <OptionColor
                                                 backgroundColor={item.color}
+                                                disabled={!item.active}
+                                                style={{
+                                                    pointerEvents: item.active
+                                                        ? 'auto'
+                                                        : 'none',
+                                                }}
                                                 onClick={(
                                                     event: MouseEvent<HTMLDivElement>,
                                                 ) => {
@@ -484,6 +605,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                         style={{
                                                             position:
                                                                 'absolute',
+                                                            zIndex: 99,
                                                             top:
                                                                 70 +
                                                                 Number(
@@ -626,7 +748,10 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                             <LineSettingsLeft>
                                 <DropDownContainer>
                                     <DropDownHeader
-                                        onClick={() => {
+                                        onClick={(
+                                            event: MouseEvent<HTMLElement>,
+                                        ) => {
+                                            event.stopPropagation();
                                             setisLabelAlignmentOptionTabActive(
                                                 false,
                                             );
@@ -652,13 +777,16 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                                     : undefined
                                                             }
                                                             key={index}
-                                                            onClick={() =>
+                                                            onClick={(
+                                                                event: MouseEvent<HTMLElement>,
+                                                            ) => {
+                                                                event.stopPropagation();
                                                                 handleEditLabel(
                                                                     item.value,
                                                                     isLabelPlacementOptionTabActive,
                                                                     isLabelAlignmentOptionTabActive,
-                                                                )
-                                                            }
+                                                                );
+                                                            }}
                                                         >
                                                             {item.name}
                                                         </ListItem>
@@ -671,7 +799,10 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
 
                                 <DropDownContainer>
                                     <DropDownHeader
-                                        onClick={() => {
+                                        onClick={(
+                                            event: MouseEvent<HTMLElement>,
+                                        ) => {
+                                            event.stopPropagation();
                                             setisLabelPlacementOptionTabActive(
                                                 false,
                                             );
@@ -821,7 +952,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                     )
                                 }
                             >
-                                {item.icon} {item.name}
+                                <img src={item.icon} alt='' /> {item.name}
                             </OptionsTabStyle>
                         ))}
                     </OptionsTab>

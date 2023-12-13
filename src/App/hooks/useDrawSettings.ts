@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { LS_KEY_CHART_ANNOTATIONS } from '../../pages/Chart/ChartUtils/chartUtils';
 import {
     defaultDrawnShapeEditAttributes,
     defaultFibonacciDrawnShapeEditAttributes,
@@ -7,6 +6,7 @@ import {
     defaultRectDrawnShapeEditAttributes,
 } from '../../pages/Chart/ChartUtils/drawConstants';
 import { diffHashSig } from '../../ambient-utils/dataLayer';
+import { LS_KEY_CHART_ANNOTATIONS } from '../../pages/Chart/ChartUtils/chartConstants';
 
 export const useDrawSettings = () => {
     function getLineOptions(itemType: string) {

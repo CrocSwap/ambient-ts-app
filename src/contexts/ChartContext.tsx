@@ -4,8 +4,8 @@ import {
     chartSettingsMethodsIF,
     useChartSettings,
 } from '../App/hooks/useChartSettings';
-import { LS_KEY_CHART_ANNOTATIONS } from '../pages/Chart/ChartUtils/chartUtils';
 import { getLocalStorageItem } from '../ambient-utils/dataLayer';
+import { LS_KEY_CHART_ANNOTATIONS } from '../pages/Chart/ChartUtils/chartConstants';
 
 type TradeTableState = 'Expanded' | 'Collapsed' | undefined;
 
@@ -29,6 +29,8 @@ interface ChartContextIF {
     tradeTableState: TradeTableState;
     isMagnetActive: { value: boolean };
     setIsMagnetActive: React.Dispatch<{ value: boolean }>;
+    isChangeScaleChart: boolean;
+    setIsChangeScaleChart: React.Dispatch<boolean>;
 }
 
 export const ChartContext = createContext<ChartContextIF>({} as ChartContextIF);
@@ -57,6 +59,9 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     const [isMagnetActive, setIsMagnetActive] = useState({
         value: chartAnnotations?.isMagnetActive ?? false,
     });
+
+    const [isChangeScaleChart, setIsChangeScaleChart] = useState(false);
+
     const [chartHeights, setChartHeights] = useState<{
         current: number;
         saved: number;
@@ -134,6 +139,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         tradeTableState,
         isMagnetActive,
         setIsMagnetActive,
+        isChangeScaleChart,
+        setIsChangeScaleChart,
     };
 
     useEffect(() => {

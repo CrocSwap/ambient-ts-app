@@ -18,12 +18,7 @@ import {
 } from '../../ChartUtils/chartUtils';
 import * as d3 from 'd3';
 import { ChartContext } from '../../../../contexts/ChartContext';
-import {
-    AiOutlineDash,
-    AiOutlineDelete,
-    AiOutlineMinus,
-    AiOutlineSmallDash,
-} from 'react-icons/ai';
+import { AiOutlineDelete } from 'react-icons/ai';
 import { TbLayoutGridAdd } from 'react-icons/tb';
 import { SketchPicker } from 'react-color';
 import { IoCloseOutline } from 'react-icons/io5';
@@ -38,6 +33,10 @@ import {
     defaultLineDrawnShapeEditAttributes,
     defaultRectDrawnShapeEditAttributes,
 } from '../../ChartUtils/drawConstants';
+import lineOptionSvg from '../../../../assets/images/icons/draw/lineOptions/line.svg';
+import dashOptionSvg from '../../../../assets/images/icons/draw/lineOptions/dash.svg';
+import dottedOptionSvg from '../../../../assets/images/icons/draw/lineOptions/dotted.svg';
+import { LineWidthOptions } from './FloatingToolbarSettingsCss';
 
 interface FloatingToolbarProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -353,7 +352,19 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 closeAllOptions('size');
                 setIsSizeOptionTabActive((prev) => !prev);
             },
-            icon: <AiOutlineMinus color='white' />,
+            icon: (
+                <LineWidthOptions
+                    backgroundColor={'#8b98a5'}
+                    style={{
+                        borderTopWidth:
+                            selectedDrawnShape &&
+                            (!['Rect'].includes(selectedDrawnShape?.data.type)
+                                ? selectedDrawnShape.data.line.lineWidth
+                                : selectedDrawnShape.data.border.lineWidth) +
+                                'px',
+                    }}
+                ></LineWidthOptions>
+            ),
             hover: '#434c58',
             exclude: [''],
             include: [''],
@@ -365,7 +376,25 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 closeAllOptions('style');
                 setIsStyleOptionTabActive((prev) => !prev);
             },
-            icon: <AiOutlineDash color='white' />,
+            icon: (
+                <img
+                    src={
+                        selectedDrawnShape &&
+                        (0 ===
+                        (!['Rect'].includes(selectedDrawnShape?.data.type)
+                            ? selectedDrawnShape.data.line.dash[0]
+                            : selectedDrawnShape.data.border.dash[0])
+                            ? lineOptionSvg
+                            : 5 ===
+                              (!['Rect'].includes(selectedDrawnShape?.data.type)
+                                  ? selectedDrawnShape.data.line.dash[0]
+                                  : selectedDrawnShape.data.border.dash[0])
+                            ? dashOptionSvg
+                            : dottedOptionSvg)
+                    }
+                    alt=''
+                />
+            ),
             hover: '#434c58',
             exclude: ['FibRetracement'],
             include: [''],
@@ -407,23 +436,49 @@ function FloatingToolbar(props: FloatingToolbarProps) {
             name: '1px',
             value: 1,
             icon: (
-                <AiOutlineMinus color='white' width={'1px'} height={'15px'} />
+                <LineWidthOptions
+                    backgroundColor={'#cfd7e3'}
+                    style={{
+                        borderTopWidth: '1px',
+                    }}
+                ></LineWidthOptions>
             ),
         },
         {
             name: '2px',
             value: 2,
-            icon: <AiOutlineMinus color='white' />,
+            icon: (
+                <LineWidthOptions
+                    backgroundColor={'#cfd7e3'}
+                    style={{
+                        borderTopWidth: '2px',
+                    }}
+                ></LineWidthOptions>
+            ),
         },
         {
             name: '3px',
             value: 3,
-            icon: <AiOutlineMinus color='white' />,
+            icon: (
+                <LineWidthOptions
+                    backgroundColor={'#cfd7e3'}
+                    style={{
+                        borderTopWidth: '3px',
+                    }}
+                ></LineWidthOptions>
+            ),
         },
         {
             name: '4px',
             value: 4,
-            icon: <AiOutlineMinus color='white' />,
+            icon: (
+                <LineWidthOptions
+                    backgroundColor={'#cfd7e3'}
+                    style={{
+                        borderTopWidth: '4px',
+                    }}
+                ></LineWidthOptions>
+            ),
         },
     ];
 
@@ -431,17 +486,17 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         {
             name: 'Line',
             value: [0, 0],
-            icon: <AiOutlineMinus color='white' />,
+            icon: lineOptionSvg,
         },
         {
             name: 'Dashed',
             value: [5, 5],
-            icon: <AiOutlineDash color='white' />,
+            icon: dashOptionSvg,
         },
         {
             name: 'Dotted',
             value: [3, 6],
-            icon: <AiOutlineSmallDash color='white' />,
+            icon: dottedOptionSvg,
         },
     ];
 
@@ -755,7 +810,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                                 )
                             }
                         >
-                            {item.icon} {item.name}
+                            <img src={item.icon} alt='' /> {item.name}
                         </OptionsTabStyle>
                     ))}
                 </OptionsTab>
