@@ -125,12 +125,14 @@
     .main_content {
         overflow-y: scroll;
 
-        max-height: 75vh;
+       
     }
 
     .swap_route,
     .no_background {
         width: 95%;
+        overflow-y: scroll;
+
        
     }
 }
