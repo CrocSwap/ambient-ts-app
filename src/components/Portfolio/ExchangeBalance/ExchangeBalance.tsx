@@ -14,13 +14,11 @@ import {
     useEffect,
     useContext,
 } from 'react';
-import { TokenIF } from '../../../ambient-utils/types';
 import { BigNumber } from 'ethers';
 import { fetchEnsAddress } from '../../../ambient-utils/api';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 import { FlexContainer } from '../../../styled/Common';
@@ -33,6 +31,7 @@ import {
 } from '../../../styled/Components/Portfolio';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface propsIF {
     fullLayoutActive: boolean;
@@ -51,9 +50,8 @@ export default function ExchangeBalance(props: propsIF) {
 
     const { mainnetProvider } = useContext(CrocEnvContext);
 
-    const selectedToken: TokenIF = useAppSelector(
-        (state) => state.soloTokenData.token,
-    );
+    const { soloToken: selectedToken } = useContext(TradeDataContext);
+
     const { userAddress } = useContext(UserDataContext);
 
     const { crocEnv } = useContext(CrocEnvContext);

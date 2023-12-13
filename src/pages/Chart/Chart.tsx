@@ -10,12 +10,6 @@ import {
     MouseEvent,
 } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import {
-    setLimitTick,
-    candleScale,
-    candleDomain,
-} from '../../utils/state/tradeDataSlice';
 
 import { PoolContext } from '../../contexts/PoolContext';
 import './Chart.css';
@@ -48,6 +42,8 @@ import { RangeContext } from '../../contexts/RangeContext';
 import {
     CandleDataIF,
     CandlesByPoolAndDurationIF,
+    CandleDomainIF,
+    CandleScaleIF,
 } from '../../ambient-utils/types';
 import CandleChart from './Candle/CandleChart';
 import LiquidityChart from './Liquidity/LiquidityChart';
@@ -203,10 +199,11 @@ export default function Chart(props: propsIF) {
 
     const [isDragActive, setIsDragActive] = useState(false);
 
-    const [localCandleDomains, setLocalCandleDomains] = useState<candleDomain>({
-        lastCandleDate: undefined,
-        domainBoundry: undefined,
-    });
+    const [localCandleDomains, setLocalCandleDomains] =
+        useState<CandleDomainIF>({
+            lastCandleDate: undefined,
+            domainBoundry: undefined,
+        });
 
     const {
         minRangePrice: minPrice,
@@ -219,7 +216,6 @@ export default function Chart(props: propsIF) {
         simpleRangeWidth: rangeSimpleRangeWidth,
         setSimpleRangeWidth: setRangeSimpleRangeWidth,
     } = useContext(RangeContext);
-    // const { handlePulseAnimation } = useContext(TradeTableContext);
 
     const currentPool = useContext(TradeDataContext);
 
@@ -230,6 +226,8 @@ export default function Chart(props: propsIF) {
         isTokenABase: isBid,
         isTokenAPrimary,
         setIsTokenAPrimary,
+        limitTick,
+        setLimitTick,
     } = currentPool;
 
     const [isChartZoom, setIsChartZoom] = useState(false);
@@ -237,7 +235,6 @@ export default function Chart(props: propsIF) {
     const [chartHeights, setChartHeights] = useState(0);
     const { isUserConnected } = useContext(UserDataContext);
 
-    const tradeData = useAppSelector((state) => state.tradeData);
     const { isTokenAPrimaryRange, advancedMode } = useContext(RangeContext);
 
     const [minTickForLimit, setMinTickForLimit] = useState<number>(0);
@@ -274,8 +271,6 @@ export default function Chart(props: propsIF) {
     const d3CanvasMarketLine = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasMain = useRef<HTMLDivElement | null>(null);
     const d3CanvasCrIndicator = useRef<HTMLInputElement | null>(null);
-
-    const dispatch = useAppDispatch();
 
     const location = useLocation();
 
@@ -738,7 +733,7 @@ export default function Chart(props: propsIF) {
                 xDomain[0] < lastCandleData?.time * 1000 &&
                 lastCandleData?.time * 1000 < xDomain[1];
 
-            setCandleScale((prev: candleScale) => {
+            setCandleScale((prev: CandleScaleIF) => {
                 return {
                     isFetchForTimeframe: prev.isFetchForTimeframe,
                     lastCandleDate: Math.floor(domainMax / 1000),
@@ -1149,8 +1144,8 @@ export default function Chart(props: propsIF) {
     }, [poolPriceWithoutDenom, denomInBase]);
     // set default limit tick
     useEffect(() => {
-        if (tradeData.limitTick && Math.abs(tradeData.limitTick) === Infinity)
-            dispatch(setLimitTick(undefined));
+        if (limitTick && Math.abs(limitTick) === Infinity)
+            setLimitTick(undefined);
     }, []);
 
     // calculate range value for denom
@@ -4197,7 +4192,7 @@ export default function Chart(props: propsIF) {
                 ? pinTickLower(limit, chainData.gridSize)
                 : pinTickUpper(limit, chainData.gridSize);
 
-            dispatch(setLimitTick(pinnedTick));
+            setLimitTick(pinnedTick);
 
             // if user moves limit price to other side of the current price
             // ... then redirect to new URL params (to reverse the token
