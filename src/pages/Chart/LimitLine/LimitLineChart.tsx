@@ -9,9 +9,9 @@ import {
 } from '../ChartUtils/chartUtils';
 import { createTriangle } from '../ChartUtils/triangle';
 import { useLocation } from 'react-router-dom';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { tickToPrice } from '@crocswap-libs/sdk';
 import { PoolContext } from '../../../contexts/PoolContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface propsIF {
     scaleData: scaleData | undefined;
@@ -54,9 +54,8 @@ export default function LimitLineChart(props: propsIF) {
 
     const location = useLocation();
 
-    const tradeData = useAppSelector((state) => state.tradeData);
-
     const { pool } = useContext(PoolContext);
+    const { limitTick } = useContext(TradeDataContext);
 
     const [limitLine, setLimitLine] = useState<any>();
     const [triangleLimit, setTriangleLimit] = useState<any>();
@@ -212,18 +211,16 @@ export default function LimitLineChart(props: propsIF) {
 
     useEffect(() => {
         setLimitLineValue();
-    }, [location, tradeData.limitTick, isDenomBase]);
+    }, [location, limitTick, isDenomBase]);
 
     const setLimitLineValue = () => {
         if (
-            tradeData.limitTick === undefined ||
-            Array.isArray(tradeData.limitTick) ||
-            isNaN(tradeData.limitTick)
+            limitTick === undefined ||
+            Array.isArray(limitTick) ||
+            isNaN(limitTick)
         )
             return;
-        const limitDisplayPrice = pool?.toDisplayPrice(
-            tickToPrice(tradeData.limitTick),
-        );
+        const limitDisplayPrice = pool?.toDisplayPrice(tickToPrice(limitTick));
         limitDisplayPrice?.then((limit) => {
             setLimit(() => {
                 return isDenomBase ? limit : 1 / limit || 0;

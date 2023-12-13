@@ -26,12 +26,6 @@ import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import {
-    useAppSelector,
-    useAppDispatch,
-} from '../../../utils/hooks/reduxToolkit';
-
-import { setLimitTick } from '../../../utils/state/tradeDataSlice';
-import {
     TransactionError,
     isTransactionReplacedError,
     isTransactionFailedError,
@@ -81,11 +75,7 @@ export default function Limit() {
         UserPreferenceContext,
     );
 
-    const dispatch = useAppDispatch();
     const [isOpen, openModal, closeModal] = useModal();
-    const { limitTick, poolPriceNonDisplay, primaryQuantity } = useAppSelector(
-        (state) => state.tradeData,
-    );
     const {
         baseToken,
         quoteToken,
@@ -93,6 +83,10 @@ export default function Limit() {
         tokenB,
         isTokenAPrimary,
         isDenomBase,
+        setLimitTick,
+        limitTick,
+        poolPriceNonDisplay,
+        primaryQuantity,
     } = useContext(TradeDataContext);
     const { liquidityFee } = useContext(GraphDataContext);
     const { urlParamMap, updateURL } = useTradeData();
@@ -205,7 +199,7 @@ export default function Limit() {
                     : pinTickUpper(initialLimitRateNonDisplay, gridSize);
 
                 IS_LOCAL_ENV && console.debug({ pinnedTick });
-                dispatch(setLimitTick(pinnedTick));
+                setLimitTick(pinnedTick);
 
                 const tickPrice = tickToPrice(pinnedTick);
                 const tickDispPrice = pool.toDisplayPrice(tickPrice);

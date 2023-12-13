@@ -14,7 +14,6 @@ import ConfirmRepositionModal from '../../../components/Trade/Reposition/Confirm
 import Button from '../../../components/Form/Button';
 // START: Import Other Local Files
 import styles from './Reposition.module.css';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { PositionIF, PositionServerIF } from '../../../ambient-utils/types';
 import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
@@ -152,11 +151,12 @@ function Reposition() {
     }, [crocEnv, lastBlockNumber, position?.positionId]);
 
     const {
-        tradeData: { poolPriceNonDisplay: currentPoolPriceNonDisplay },
-    } = useAppSelector((state) => state);
-
-    const { isDenomBase, tokenA, tokenB, isTokenABase } =
-        useContext(TradeDataContext);
+        isDenomBase,
+        tokenA,
+        tokenB,
+        isTokenABase,
+        poolPriceNonDisplay: currentPoolPriceNonDisplay,
+    } = useContext(TradeDataContext);
 
     const currentPoolPriceTick =
         Math.log(currentPoolPriceNonDisplay) / Math.log(1.0001);

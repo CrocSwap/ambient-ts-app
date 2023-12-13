@@ -24,7 +24,6 @@ import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { FlexContainer } from '../../../styled/Common';
 import { WarningContainer } from '../../../styled/Components/TradeModules';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 import {
     TransactionError,
@@ -86,9 +85,6 @@ function Swap(props: propsIF) {
     const [isModalOpen, openModal, closeModal] = useModal();
     // use URL pathway to determine if user is in swap or market page
     // depending on location we pull data on the tx in progress differently
-    const {
-        tradeData: { primaryQuantity },
-    } = useAppSelector((state) => state);
     // TODO: confirm this doesn't break data that needs to be different when on trade page
     const { liquidityFee } = useContext(GraphDataContext);
     const {
@@ -98,6 +94,7 @@ function Swap(props: propsIF) {
         quoteToken,
         isTokenAPrimary,
         isDenomBase,
+        primaryQuantity,
     } = useContext(TradeDataContext);
 
     const [sellQtyString, setSellQtyString] = useState<string>(
