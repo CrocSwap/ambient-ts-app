@@ -1,0 +1,19 @@
+.level_page_container{
+    background: url(../../assets/images/backgrounds/level_bg.png) no-repeat;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+   
+
+   
+   
+
+    
+}

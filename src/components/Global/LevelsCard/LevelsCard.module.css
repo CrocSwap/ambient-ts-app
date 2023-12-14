@@ -5,7 +5,7 @@ flex-direction: column;
 justify-content: center;
 align-items: center;
 gap: 16px;
-background: var(--dark2, rgba(23, 29, 39, 0.30));
+background:  rgba(23, 29, 39, 0.30);
 
 /* blur/card */
 backdrop-filter: blur(10px);

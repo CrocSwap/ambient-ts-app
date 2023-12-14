@@ -14,7 +14,6 @@ import accountImage from '../../../assets/images/backgrounds/account_image.svg';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { useContext } from 'react';
 import LevelsCard from '../../Global/LevelsCard/LevelsCard';
-import { FlexContainer } from '../../../styled/Common';
 interface propsIF {
     ensName: string;
     resolvedAddress: string;

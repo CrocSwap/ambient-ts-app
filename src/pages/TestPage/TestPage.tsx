@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { FlexContainer } from '../../styled/Common';
 import StepperComponent from '../../components/Global/MultiStepTransaction/StepperComponent';
-import LevelsCard from '../../components/Global/LevelsCard/LevelsCard';
 
 export default function TestPage() {
     const [activeStep, setActiveStep] = useState(0);
@@ -58,23 +57,19 @@ export default function TestPage() {
 
     return (
         <FlexContainer flexDirection='row' justifyContent='space-around'>
-            <LevelsCard />
+            {questionContent}
+
+            <StepperComponent
+                orientation='vertical'
+                steps={[
+                    { label: 'Question 1' },
+                    { label: 'Question 2' },
+                    { label: 'Question 3' },
+                ]}
+                activeStep={activeStep}
+                setActiveStep={setActiveStep}
+                isError={isError}
+            />
         </FlexContainer>
-        // <FlexContainer flexDirection='row' justifyContent='space-around'>
-        //     {questionContent}
-
-        //     <StepperComponent
-        //         orientation='vertical'
-        //         steps={[
-        //             { label: 'Question 1' },
-        //             { label: 'Question 2' },
-        //             { label: 'Question 3' },
-        //         ]}
-        //         activeStep={activeStep}
-        //         setActiveStep={setActiveStep}
-        //         isError={isError}
-        //     />
-
-        // </FlexContainer>
     );
 }
