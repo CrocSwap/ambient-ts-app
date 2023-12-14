@@ -2,6 +2,13 @@ import { FlexContainer, Text } from '../../../styled/Common';
 import styles from './LevelsCard.module.css';
 import { LuCopy, LuExternalLink, LuShare2 } from 'react-icons/lu';
 import LevelLine from '../LevelLine/LevelLine';
+import { useContext, useMemo } from 'react';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { trimString } from '../../../ambient-utils/dataLayer';
+import { useParams } from 'react-router-dom';
+import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 const pointsData = [
     { date: '18/09/23', points: 1600 },
@@ -15,6 +22,31 @@ interface LevelsCardPropsIF {
 
 export default function LevelsCard(props: LevelsCardPropsIF) {
     const { levelOnly } = props;
+    const { userAddress, ensName } = useContext(UserDataContext);
+    const { address: addressFromParams } = useParams();
+    const [_, copy] = useCopyToClipboard();
+    const {
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
+    const {
+        chainData: { blockExplorer },
+    } = useContext(CrocEnvContext);
+    function handleOpenExplorer(address: string) {
+        if (address && blockExplorer) {
+            const explorerUrl = `${blockExplorer}address/${address}`;
+            window.open(explorerUrl);
+        }
+    }
+
+    const resolvedAddress = '';
+
+    function handleCopyAddress() {
+        copy(resolvedAddress ? resolvedAddress : userAddress ?? '');
+        const copiedData = resolvedAddress ? resolvedAddress : userAddress;
+
+        openSnackbar(`${copiedData} copied`, 'info');
+    }
+
     const header = (
         <FlexContainer flexDirection='row' gap={16} alignItems='center'>
             <div className={styles.user_image}>
@@ -26,17 +58,25 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
             <FlexContainer flexDirection='column'>
                 <FlexContainer flexDirection='row' gap={16}>
                     <Text fontSize='header2' color='text1'>
-                        miyuki.eth
+                        {ensName ? ensName : userAddress ? userAddress : ''}
                     </Text>
-                    <LuExternalLink size={18} />
-                    <LuCopy size={18} />
+                    <LuExternalLink
+                        size={18}
+                        onClick={(e) => {
+                            handleOpenExplorer(
+                                resolvedAddress || (userAddress ?? ''),
+                            );
+                            e.stopPropagation();
+                        }}
+                    />
+                    <LuCopy size={18} onClick={handleCopyAddress} />
                 </FlexContainer>
                 <FlexContainer flexDirection='row' gap={16}>
                     <Text fontSize='body' color='text2'>
                         Metamask
                     </Text>
                     <Text fontSize='body' color='text2'>
-                        0xAbCd...5587
+                        {trimString(userAddress ?? '', 6, 4, '…')}
                     </Text>
                 </FlexContainer>
             </FlexContainer>

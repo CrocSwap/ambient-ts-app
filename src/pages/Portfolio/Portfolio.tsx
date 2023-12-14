@@ -11,7 +11,7 @@ import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileS
 // START: Import Other Local Files
 import { TokenIF } from '../../ambient-utils/types';
 import { fetchEnsAddress } from '../../ambient-utils/api';
-import { Navigate, useParams } from 'react-router-dom';
+import { Navigate, useLocation, useParams } from 'react-router-dom';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../ambient-utils/dataLayer';
@@ -268,6 +268,15 @@ function Portfolio() {
         resolvedAddress: resolvedAddress ?? '',
         setShowProfileSettings: setShowProfileSettings,
         connectedAccountActive: connectedAccountActive,
+    };
+
+    const LevelPageProps = {
+        ensName: connectedAccountActive
+            ? ensName ?? ''
+            : secondaryEnsName
+            ? secondaryEnsName
+            : '',
+        resolvedAddress: resolvedAddress ?? '',
     };
 
     const profileSettingsProps = {
