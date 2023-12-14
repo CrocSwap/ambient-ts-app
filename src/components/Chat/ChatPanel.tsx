@@ -270,49 +270,28 @@ function ChatPanel(props: propsIF) {
     });
 
     useEffect(() => {
-        // console.log('first assignment')
-        // let interval;
-        // if (userAddress == undefined && notConnectedUserInterval == undefined) {
-        //     interval = setInterval(() => {
-        //         fetchForNotConnectedUser();
-        //     }, 10000);
-        //     if (notConnectedUserInterval)
-        //         clearInterval(notConnectedUserInterval);
-
-        //     setNotConnectedUserInterval(interval);
-        // }else if(notConnectedUserInterval){
-        //     clearInterval(notConnectedUserInterval);
-        // }
-
         return clearInterval(notConnectedUserInterval);
     }, []);
 
     useEffect(() => {
-        console.log(userAddress, room);
-        console.log('....................................');
-        console.log('room changed', room);
-
-        if (room == undefined) return;
+        if (room == undefined) {
+            return;
+        }
 
         if (notConnectedUserInterval) {
-            console.log('clearing current interval');
             clearInterval(notConnectedUserInterval);
         }
 
         if (userAddress == undefined) {
-            console.log('Creating new interval for ', room);
+            if (isChatOpen == false) return;
             const interval = setInterval(() => {
-                console.log(
-                    '--------- that interval asssigned on use effect, user address or room change',
-                    room,
-                );
                 fetchForNotConnectedUser();
             }, 10000);
             setNotConnectedUserInterval(interval);
         }
 
         return clearInterval(notConnectedUserInterval);
-    }, [userAddress, room]);
+    }, [userAddress, room, isChatOpen]);
 
     useEffect(() => {
         if (scrollDirection === 'Scroll Up') {

@@ -77,7 +77,6 @@ const useChatSocket = (
     }
 
     async function fetchForNotConnectedUser() {
-        console.log('fetchfornotconnecteduser', room);
         const encodedRoomInfo = encodeURIComponent(room);
         const url = `${CHAT_BACKEND_URL}${getMessageWithRestEndpoint}${encodedRoomInfo}`;
         const response = await fetch(url, {
@@ -236,7 +235,6 @@ const useChatSocket = (
 
     async function updateUnverifiedMessages(verifyDate: Date, endDate?: Date) {
         const nonVerifiedMessages = getUnverifiedMsgList(address);
-        console.log(nonVerifiedMessages);
         const vrfTkn = getLS(LS_USER_VERIFY_TOKEN, address);
 
         const response = await fetch(
