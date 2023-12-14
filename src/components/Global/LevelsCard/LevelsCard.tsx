@@ -9,6 +9,7 @@ import { useParams } from 'react-router-dom';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 
 const pointsData = [
     { date: '18/09/23', points: 1600 },
@@ -18,10 +19,11 @@ const pointsData = [
 
 interface LevelsCardPropsIF {
     levelOnly?: boolean;
+    resolvedAddress?: string;
 }
 
 export default function LevelsCard(props: LevelsCardPropsIF) {
-    const { levelOnly } = props;
+    const { levelOnly, resolvedAddress } = props;
     const { userAddress, ensName } = useContext(UserDataContext);
     const { address: addressFromParams } = useParams();
     const [_, copy] = useCopyToClipboard();
@@ -31,14 +33,25 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
     const {
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
+
+    const connectedAccountActive = useMemo(
+        () =>
+            userAddress
+                ? addressFromParams
+                    ? resolvedAddress?.toLowerCase() ===
+                      userAddress.toLowerCase()
+                        ? true
+                        : false
+                    : true
+                : false,
+        [addressFromParams, resolvedAddress, userAddress],
+    );
     function handleOpenExplorer(address: string) {
         if (address && blockExplorer) {
             const explorerUrl = `${blockExplorer}address/${address}`;
             window.open(explorerUrl);
         }
     }
-
-    const resolvedAddress = '';
 
     function handleCopyAddress() {
         copy(resolvedAddress ? resolvedAddress : userAddress ?? '');
@@ -47,14 +60,22 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
         openSnackbar(`${copiedData} copied`, 'info');
     }
 
+    const jazziconsSeed = resolvedAddress
+        ? resolvedAddress.toLowerCase()
+        : userAddress?.toLowerCase() ?? '';
+
+    const myJazzicon = (
+        <Jazzicon diameter={50} seed={jsNumberForAddress(jazziconsSeed)} />
+    );
+
+    const jazziconsToDisplay =
+        (resolvedAddress || connectedAccountActive) && myJazzicon
+            ? myJazzicon
+            : null;
+
     const header = (
         <FlexContainer flexDirection='row' gap={16} alignItems='center'>
-            <div className={styles.user_image}>
-                <img
-                    src='https://pxbar.com/wp-content/uploads/2023/09/instagram-profile-picture.jpg'
-                    alt=''
-                />
-            </div>
+            <div className={styles.user_image}>{jazziconsToDisplay}</div>
             <FlexContainer flexDirection='column'>
                 <FlexContainer flexDirection='row' gap={16}>
                     <Text fontSize='header2' color='text1'>
