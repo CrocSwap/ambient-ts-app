@@ -26,18 +26,6 @@ import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import {
-    useAppSelector,
-    useAppDispatch,
-} from '../../../utils/hooks/reduxToolkit';
-import {
-    addPendingTx,
-    addTransactionByType,
-    removePendingTx,
-    addReceipt,
-    updateTransactionHash,
-} from '../../../utils/state/receiptDataSlice';
-import { setLimitTick } from '../../../utils/state/tradeDataSlice';
-import {
     TransactionError,
     isTransactionReplacedError,
     isTransactionFailedError,
@@ -53,6 +41,7 @@ import {
     LIMIT_BUFFER_MULTIPLIER,
     NUM_GWEI_IN_WEI,
 } from '../../../ambient-utils/constants/';
+import { ReceiptContext } from '../../../contexts/ReceiptContext';
 
 export default function Limit() {
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
@@ -75,15 +64,18 @@ export default function Limit() {
             dexBalance: quoteTokenDexBalance,
         },
     } = useContext(TradeTokenContext);
+    const {
+        addPendingTx,
+        addReceipt,
+        addTransactionByType,
+        removePendingTx,
+        updateTransactionHash,
+    } = useContext(ReceiptContext);
     const { mintSlippage, dexBalLimit, bypassConfirmLimit } = useContext(
         UserPreferenceContext,
     );
 
-    const dispatch = useAppDispatch();
     const [isOpen, openModal, closeModal] = useModal();
-    const { limitTick, poolPriceNonDisplay, primaryQuantity } = useAppSelector(
-        (state) => state.tradeData,
-    );
     const {
         baseToken,
         quoteToken,
@@ -91,6 +83,10 @@ export default function Limit() {
         tokenB,
         isTokenAPrimary,
         isDenomBase,
+        setLimitTick,
+        limitTick,
+        poolPriceNonDisplay,
+        primaryQuantity,
     } = useContext(TradeDataContext);
     const { liquidityFee } = useContext(GraphDataContext);
     const { urlParamMap, updateURL } = useTradeData();
@@ -203,7 +199,7 @@ export default function Limit() {
                     : pinTickUpper(initialLimitRateNonDisplay, gridSize);
 
                 IS_LOCAL_ENV && console.debug({ pinnedTick });
-                dispatch(setLimitTick(pinnedTick));
+                setLimitTick(pinnedTick);
 
                 const tickPrice = tickToPrice(pinnedTick);
                 const tickDispPrice = pool.toDisplayPrice(tickPrice);
@@ -526,37 +522,35 @@ export default function Limit() {
         let tx;
         try {
             tx = await ko.mint({ surplus: isWithdrawFromDexChecked });
-            dispatch(addPendingTx(tx?.hash));
+            addPendingTx(tx?.hash);
             setNewLimitOrderTransactionHash(tx.hash);
             if (tx?.hash)
-                dispatch(
-                    addTransactionByType({
-                        txHash: tx.hash,
-                        txAction:
-                            tokenB.address.toLowerCase() ===
-                            quoteToken.address.toLowerCase()
-                                ? 'Buy'
-                                : 'Sell',
-                        txType: 'Limit',
-                        txDescription: `Add Limit ${tokenA.symbol}→${tokenB.symbol}`,
-                        txDetails: {
-                            baseAddress: baseToken.address,
-                            quoteAddress: quoteToken.address,
-                            baseTokenDecimals: baseToken.decimals,
-                            quoteTokenDecimals: quoteToken.decimals,
-                            poolIdx: poolIndex,
-                            baseSymbol: baseToken.symbol,
-                            quoteSymbol: quoteToken.symbol,
-                            lowTick: isSellTokenBase
-                                ? limitTick
-                                : limitTick - gridSize,
-                            highTick: isSellTokenBase
-                                ? limitTick + gridSize
-                                : limitTick,
-                            isBid: isSellTokenBase,
-                        },
-                    }),
-                );
+                addTransactionByType({
+                    txHash: tx.hash,
+                    txAction:
+                        tokenB.address.toLowerCase() ===
+                        quoteToken.address.toLowerCase()
+                            ? 'Buy'
+                            : 'Sell',
+                    txType: 'Limit',
+                    txDescription: `Add Limit ${tokenA.symbol}→${tokenB.symbol}`,
+                    txDetails: {
+                        baseAddress: baseToken.address,
+                        quoteAddress: quoteToken.address,
+                        baseTokenDecimals: baseToken.decimals,
+                        quoteTokenDecimals: quoteToken.decimals,
+                        poolIdx: poolIndex,
+                        baseSymbol: baseToken.symbol,
+                        quoteSymbol: quoteToken.symbol,
+                        lowTick: isSellTokenBase
+                            ? limitTick
+                            : limitTick - gridSize,
+                        highTick: isSellTokenBase
+                            ? limitTick + gridSize
+                            : limitTick,
+                        isBid: isSellTokenBase,
+                    },
+                });
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
@@ -579,15 +573,11 @@ export default function Limit() {
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
                 IS_LOCAL_ENV && console.debug('repriced');
-                dispatch(removePendingTx(error.hash));
+                removePendingTx(error.hash);
                 const newTransactionHash = error.replacement.hash;
-                dispatch(addPendingTx(newTransactionHash));
-                dispatch(
-                    updateTransactionHash({
-                        oldHash: error.hash,
-                        newHash: error.replacement.hash,
-                    }),
-                );
+                addPendingTx(newTransactionHash);
+
+                updateTransactionHash(error.hash, error.replacement.hash);
                 setNewLimitOrderTransactionHash(newTransactionHash);
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
@@ -597,8 +587,8 @@ export default function Limit() {
         }
 
         if (receipt) {
-            dispatch(addReceipt(JSON.stringify(receipt)));
-            dispatch(removePendingTx(receipt.transactionHash));
+            addReceipt(JSON.stringify(receipt));
+            removePendingTx(receipt.transactionHash);
         }
     };
 

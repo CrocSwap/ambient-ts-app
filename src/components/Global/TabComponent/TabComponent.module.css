@@ -128,9 +128,6 @@
     display: flex;
     flex-direction: row;
 }
-.tap_option_right {
-    display: none;
-}
 
 .tab_icon_container {
     background: var(--dark3);

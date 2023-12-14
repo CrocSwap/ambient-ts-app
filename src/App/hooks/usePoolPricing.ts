@@ -1,10 +1,5 @@
 import { ChainSpec, CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import {
-    setLimitTick,
-    setPoolPriceNonDisplay,
-} from '../../utils/state/tradeDataSlice';
 import { SpotPriceFn } from '../../ambient-utils/dataLayer';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
@@ -29,9 +24,13 @@ interface PoolPricingPropsIF {
 
 /* Hooks to pull the pricing data for a given pool, including spot price and 24-hour direction change */
 export function usePoolPricing(props: PoolPricingPropsIF) {
-    const dispatch = useAppDispatch();
-    const tradeData = useAppSelector((state) => state.tradeData);
-    const { isDenomBase, setDidUserFlipDenom } = useContext(TradeDataContext);
+    const {
+        isDenomBase,
+        setDidUserFlipDenom,
+        poolPriceNonDisplay,
+        setPoolPriceNonDisplay,
+        setLimitTick,
+    } = useContext(TradeDataContext);
     const { setPrimaryQuantityRange } = useContext(RangeContext);
     const { activeNetwork } = useContext(CrocEnvContext);
 
@@ -88,7 +87,7 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
         setDidUserFlipDenom(false); // reset so a new token pair is re-evaluated for price > 1
         setPoolPriceChangePercent(undefined);
         if (!props.pathname.includes('limitTick')) {
-            dispatch(setLimitTick(undefined));
+            setLimitTick(undefined);
         }
     }, [
         props.baseTokenAddress,
@@ -146,8 +145,8 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
                         setPoolPriceDisplay(newDisplayPrice);
                     }
                 }
-                if (spotPrice && spotPrice !== tradeData.poolPriceNonDisplay) {
-                    dispatch(setPoolPriceNonDisplay(spotPrice));
+                if (spotPrice && spotPrice !== poolPriceNonDisplay) {
+                    setPoolPriceNonDisplay(spotPrice);
                 }
             })();
         }
@@ -158,7 +157,7 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
         props.baseTokenDecimals,
         props.quoteTokenDecimals,
         !!props.crocEnv,
-        tradeData.poolPriceNonDisplay === 0,
+        poolPriceNonDisplay === 0,
         props.isUserLoggedIn,
     ]);
 

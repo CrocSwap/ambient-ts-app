@@ -11,7 +11,6 @@
         "@emotion/styled": "^11.10.5",
         "@material-ui/core": "^4.12.4",
         "@mui/material": "^5.8.2",
-        "@reduxjs/toolkit": "^1.8.1",
         "@types/react-color": "^3.0.7",
         "babel-plugin-styled-components": "^2.1.4",
         "d3": "^7.4.4",
@@ -34,7 +33,6 @@
         "react-icons": "^4.3.1",
         "react-jazzicon": "^1.0.4",
         "react-lottie-player": "^1.4.3",
-        "react-redux": "^8.0.1",
         "react-reveal": "^1.2.2",
         "react-router-dom": "^6.3.0",
         "react-transition-group": "^4.4.2",
@@ -46,12 +44,17 @@
     },
     "scripts": {
         "start": "node -v | grep -q \"v16\" && yarn run start:regular || yarn run start:legacy",
-        "start:legacy": "yarn && react-scripts --openssl-legacy-provider start",
-        "start:regular": "yarn && react-scripts start",
+        "start:legacy": "yarn && yarn run start-only:legacy",
+        "start:regular": "yarn && yarn run start-only:regular",
+        "start-only": "node -v | grep -q \"v16\" && yarn run start-only:regular || yarn run start-only:legacy",
+        "start-only:legacy": "react-scripts --openssl-legacy-provider start",
+        "start-only:regular": "react-scripts start",
         "build": "node -v | grep -q \"v16\" && yarn run build:regular || yarn run build:legacy",
         "build:legacy": "react-scripts --openssl-legacy-provider --max_old_space_size=4096 build",
         "build:regular": "react-scripts --max_old_space_size=4096 build",
         "test": "react-scripts test",
+        "test:sequential": "react-scripts test --runInBand --testPathPattern=ambient-utils/tests/sequential",
+        "test:parallel": "react-scripts test --testPathPattern=ambient-utils/tests/parallel",
         "test:nowatch": "react-scripts test --watchAll=false",
         "eject": "react-scripts eject",
         "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
@@ -98,7 +101,7 @@
     },
     "jest": {
         "transformIgnorePatterns": [
-            "/node_modules/(?!d3|d3-array|internmap|delaunator|robust-predicates|wagmi|@wagmi)"
+            "/node_modules/(?!d3|d3-array|internmap|delaunator|robust-predicates|wagmi|@wagmi|modern-screenshot)"
         ]
     }
 }

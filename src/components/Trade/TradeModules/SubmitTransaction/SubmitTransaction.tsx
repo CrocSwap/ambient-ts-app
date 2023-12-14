@@ -1,7 +1,6 @@
 import { useContext, useState } from 'react';
 import { RiArrowUpSLine, RiArrowDownSLine } from 'react-icons/ri';
 import { uriToHttp } from '../../../../ambient-utils/dataLayer';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import {
     CircleLoaderFailed,
     CircleLoaderCompleted,
@@ -18,6 +17,7 @@ import {
 } from '../../../../styled/Components/TradeModules';
 import { FlexContainer } from '../../../../styled/Common';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 
 interface propsIF {
     type:
@@ -37,8 +37,6 @@ interface propsIF {
     disableSubmitAgain?: boolean;
 }
 export default function SubmitTransaction(props: propsIF) {
-    const receiptData = useAppSelector((state) => state.receiptData);
-
     const {
         type,
         newTransactionHash,
@@ -50,6 +48,8 @@ export default function SubmitTransaction(props: propsIF) {
         disableSubmitAgain,
     } = props;
 
+    const { pendingTransactions, sessionReceipts } = useContext(ReceiptContext);
+
     const isTransactionApproved = newTransactionHash !== '';
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
@@ -60,7 +60,7 @@ export default function SubmitTransaction(props: propsIF) {
     );
     const isTransactionConfirmed =
         isTransactionApproved &&
-        !receiptData.pendingTransactions.includes(newTransactionHash);
+        !pendingTransactions.includes(newTransactionHash);
 
     const { tokenB } = useContext(TradeDataContext);
 
@@ -89,12 +89,8 @@ export default function SubmitTransaction(props: propsIF) {
     );
 
     const lastReceipt =
-        receiptData?.sessionReceipts.length > 0
-            ? JSON.parse(
-                  receiptData.sessionReceipts[
-                      receiptData.sessionReceipts.length - 1
-                  ],
-              )
+        sessionReceipts.length > 0
+            ? JSON.parse(sessionReceipts[sessionReceipts.length - 1])
             : null;
 
     const isLastReceiptSuccess = lastReceipt?.status === 1;

@@ -24,17 +24,7 @@ import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { FlexContainer } from '../../../styled/Common';
 import { WarningContainer } from '../../../styled/Components/TradeModules';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../utils/hooks/reduxToolkit';
-import {
-    addPendingTx,
-    addTransactionByType,
-    removePendingTx,
-    addReceipt,
-    updateTransactionHash,
-} from '../../../utils/state/receiptDataSlice';
+
 import {
     TransactionError,
     isTransactionReplacedError,
@@ -54,6 +44,7 @@ import {
     NUM_GWEI_IN_WEI,
     SWAP_BUFFER_MULTIPLIER,
 } from '../../../ambient-utils/constants/';
+import { ReceiptContext } from '../../../contexts/ReceiptContext';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -80,17 +71,20 @@ function Swap(props: propsIF) {
     const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
         UserPreferenceContext,
     );
+    const {
+        addPendingTx,
+        addReceipt,
+        addTransactionByType,
+        removePendingTx,
+        updateTransactionHash,
+    } = useContext(ReceiptContext);
 
-    const dispatch = useAppDispatch();
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
     !pathname.includes('/trade') && useUrlParams(tokens, chainId, provider);
     const [isModalOpen, openModal, closeModal] = useModal();
     // use URL pathway to determine if user is in swap or market page
     // depending on location we pull data on the tx in progress differently
-    const {
-        tradeData: { primaryQuantity },
-    } = useAppSelector((state) => state);
     // TODO: confirm this doesn't break data that needs to be different when on trade page
     const { liquidityFee } = useContext(GraphDataContext);
     const {
@@ -100,6 +94,7 @@ function Swap(props: propsIF) {
         quoteToken,
         isTokenAPrimary,
         isDenomBase,
+        primaryQuantity,
     } = useContext(TradeDataContext);
 
     const [sellQtyString, setSellQtyString] = useState<string>(
@@ -371,28 +366,26 @@ function Swap(props: propsIF) {
             });
 
             setNewSwapTransactionHash(tx?.hash);
-            dispatch(addPendingTx(tx?.hash));
+            addPendingTx(tx?.hash);
             if (tx.hash)
-                dispatch(
-                    addTransactionByType({
-                        txHash: tx.hash,
-                        txAction:
-                            buyTokenAddress.toLowerCase() ===
-                            quoteToken.address.toLowerCase()
-                                ? 'Buy'
-                                : 'Sell',
-                        txType: 'Market',
-                        txDescription: `Swap ${tokenA.symbol}→${tokenB.symbol}`,
-                        txDetails: {
-                            baseAddress: baseToken.address,
-                            quoteAddress: quoteToken.address,
-                            poolIdx: poolIndex,
-                            baseSymbol: baseToken.symbol,
-                            quoteSymbol: quoteToken.symbol,
-                            isBid: isSellTokenBase,
-                        },
-                    }),
-                );
+                addTransactionByType({
+                    txHash: tx.hash,
+                    txAction:
+                        buyTokenAddress.toLowerCase() ===
+                        quoteToken.address.toLowerCase()
+                            ? 'Buy'
+                            : 'Sell',
+                    txType: 'Market',
+                    txDescription: `Swap ${tokenA.symbol}→${tokenB.symbol}`,
+                    txDetails: {
+                        baseAddress: baseToken.address,
+                        quoteAddress: quoteToken.address,
+                        poolIdx: poolIndex,
+                        baseSymbol: baseToken.symbol,
+                        quoteSymbol: quoteToken.symbol,
+                        isBid: isSellTokenBase,
+                    },
+                });
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
@@ -412,17 +405,12 @@ function Swap(props: propsIF) {
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
                 IS_LOCAL_ENV && console.debug('repriced');
-                dispatch(removePendingTx(error.hash));
+                removePendingTx(error.hash);
 
                 const newTransactionHash = error.replacement.hash;
-                dispatch(addPendingTx(newTransactionHash));
+                addPendingTx(newTransactionHash);
 
-                dispatch(
-                    updateTransactionHash({
-                        oldHash: error.hash,
-                        newHash: error.replacement.hash,
-                    }),
-                );
+                updateTransactionHash(error.hash, error.replacement.hash);
                 setNewSwapTransactionHash(newTransactionHash);
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
@@ -432,8 +420,8 @@ function Swap(props: propsIF) {
         }
 
         if (receipt) {
-            dispatch(addReceipt(JSON.stringify(receipt)));
-            dispatch(removePendingTx(receipt.transactionHash));
+            addReceipt(JSON.stringify(receipt));
+            removePendingTx(receipt.transactionHash);
         }
     }
 
