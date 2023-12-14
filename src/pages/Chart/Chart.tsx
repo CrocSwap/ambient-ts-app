@@ -111,6 +111,7 @@ import { useDrawSettings } from '../../App/hooks/useDrawSettings';
 import {
     LS_KEY_CHART_ANNOTATIONS,
     defaultCandleBandwith,
+    mainCanvasElementId,
     xAxisBuffer,
 } from './ChartUtils/chartConstants';
 
@@ -1553,6 +1554,7 @@ export default function Chart(props: propsIF) {
             let offsetY = 0;
             const dragRange = d3
                 .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
+                .filter((event) => filterDragEvent(event, rectCanvas.left))
                 .on('start', (event) => {
                     setCrosshairActive('none');
                     document.addEventListener('keydown', cancelDragEvent);
@@ -1964,8 +1966,25 @@ export default function Chart(props: propsIF) {
         isTokenABase,
         chainData.gridSize,
         rescale,
+        liqMaxActiveLiq,
     ]);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function filterDragEvent(event: any, leftPositin: number) {
+        const checkMainCanvas =
+            event.target.offsetParent.id === mainCanvasElementId;
+        if (event.type.includes('touch') && checkMainCanvas) {
+            const eventPointX = event.targetTouches[0].clientX - leftPositin;
+
+            const isHoverLiqidite = liqMaxActiveLiq
+                ? eventPointX <= liqMaxActiveLiq
+                : false;
+
+            return isHoverLiqidite;
+        }
+
+        return true;
+    }
     // dragLimit
     useEffect(() => {
         const canvas = d3
@@ -1993,6 +2012,7 @@ export default function Chart(props: propsIF) {
         };
         const dragLimit = d3
             .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
+            .filter((event) => filterDragEvent(event, rectCanvas.left))
             .on('start', (event) => {
                 // When the drag starts:
                 // hide the cursor
@@ -2111,6 +2131,7 @@ export default function Chart(props: propsIF) {
         isTokenABase,
         chainData.gridSize,
         rescale,
+        liqMaxActiveLiq,
     ]);
 
     useEffect(() => {
@@ -5301,6 +5322,7 @@ export default function Chart(props: propsIF) {
                         <d3fc-canvas
                             ref={d3CanvasMain}
                             className='main-canvas'
+                            id={mainCanvasElementId}
                         ></d3fc-canvas>
 
                         {activeDrawingType !== 'Cross' && scaleData && (

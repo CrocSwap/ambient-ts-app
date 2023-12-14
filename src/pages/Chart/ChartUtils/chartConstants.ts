@@ -4,3 +4,4 @@ export const xAxisBuffer = 0.8;
 export const initialDisplayCandleCount = 100;
 export const initialDisplayCandleCountForMobile = 30;
 export const xAxisHeightPixel = 32;
+export const mainCanvasElementId = 'main-canvas';
