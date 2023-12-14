@@ -524,30 +524,36 @@ function Transactions(props: propsIF) {
     const getBaseTokenMoneynessGreaterOrEqual = (tx: TransactionIF) =>
         getMoneynessRank(tx.baseSymbol) - getMoneynessRank(tx.quoteSymbol) >= 0;
 
-    const currentRowItemContent = () =>
-        _DATA.currentData.map((tx, idx) => (
+    const currentRowItemContent = () => {
+        const activeTx = _DATA.currentData.find(
+            (tx) => tx.txId === currentTxActiveInTransactions,
+        );
+
+        return (
             <>
-                <TransactionRow
-                    key={idx}
-                    idForDOM={`tx_row_${idx}`}
-                    tx={tx}
-                    tableView={tableView}
-                    isAccountView={isAccountView}
-                    openDetailsModal={() => openModal(tx.txId)}
-                />
-                {isDetailsModalOpen &&
-                    tx.txId === currentTxActiveInTransactions && (
-                        <TransactionDetailsModal
-                            tx={tx}
-                            isBaseTokenMoneynessGreaterOrEqual={getBaseTokenMoneynessGreaterOrEqual(
-                                tx,
-                            )}
-                            isAccountView={isAccountView}
-                            onClose={closeModal}
-                        />
-                    )}
+                {_DATA.currentData.map((tx, idx) => (
+                    <TransactionRow
+                        key={idx}
+                        idForDOM={`tx_row_${idx}`}
+                        tx={tx}
+                        tableView={tableView}
+                        isAccountView={isAccountView}
+                        openDetailsModal={() => openModal(tx.txId)}
+                    />
+                ))}
+                {isDetailsModalOpen && activeTx && (
+                    <TransactionDetailsModal
+                        tx={activeTx}
+                        isBaseTokenMoneynessGreaterOrEqual={getBaseTokenMoneynessGreaterOrEqual(
+                            activeTx,
+                        )}
+                        isAccountView={isAccountView}
+                        onClose={closeModal}
+                    />
+                )}
             </>
-        ));
+        );
+    };
 
     const handleKeyDownViewTransaction = (
         event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,

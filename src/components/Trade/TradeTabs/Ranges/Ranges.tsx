@@ -4,7 +4,7 @@ import { useEffect, useState, useContext, memo, useRef } from 'react';
 // START: Import Local Files
 import { Pagination } from '@mui/material';
 import { useSortedPositions } from '../useSortedPositions';
-import { PositionIF } from '../../../../ambient-utils/types';
+import { PositionIF, RangeModalAction } from '../../../../ambient-utils/types';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
@@ -29,6 +29,8 @@ import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import RangeDetailsModal from '../../../RangeDetails/RangeDetailsModal/RangeDetailsModal';
+import RangeActionModal from '../../../RangeActionModal/RangeActionModal';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -38,15 +40,33 @@ interface propsIF {
     activeAccountPositionData?: PositionIF[];
     connectedAccountActive?: boolean;
     isAccountView: boolean;
+    isRangeDetailsModalOpen: boolean;
+    isRangeActionModalOpen: boolean;
+    openRangeModal: (positionId: string, type: 'action' | 'details') => void;
+    closeRangeModal: (type: 'action' | 'details') => void;
+    rangeModalAction: RangeModalAction;
+    setRangeModalAction: React.Dispatch<React.SetStateAction<RangeModalAction>>;
 }
 
 // react functional component
 function Ranges(props: propsIF) {
-    const { activeAccountPositionData, connectedAccountActive, isAccountView } =
-        props;
+    const {
+        activeAccountPositionData,
+        connectedAccountActive,
+        isAccountView,
+        isRangeDetailsModalOpen,
+        isRangeActionModalOpen,
+        openRangeModal,
+        closeRangeModal,
+        setRangeModalAction,
+        rangeModalAction,
+    } = props;
 
-    const { showAllData: showAllDataSelection, toggleTradeTable } =
-        useContext(TradeTableContext);
+    const {
+        showAllData: showAllDataSelection,
+        toggleTradeTable,
+        currentPositionActive,
+    } = useContext(TradeTableContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
@@ -368,15 +388,45 @@ function Ranges(props: propsIF) {
         </RangeRowStyled>
     );
 
-    const currentRowItemContent = () =>
-        _DATA.currentData.map((position, idx) => (
-            <RangesRow
-                key={idx}
-                position={position}
-                isAccountView={isAccountView}
-                tableView={tableView}
-            />
-        ));
+    const currentRowItemContent = () => {
+        const activePos = _DATA.currentData.find(
+            (pos) => pos.positionId === currentPositionActive,
+        );
+        return (
+            <>
+                {_DATA.currentData.map((position, idx) => (
+                    <RangesRow
+                        key={idx}
+                        position={position}
+                        isAccountView={isAccountView}
+                        tableView={tableView}
+                        openDetailsModal={() =>
+                            openRangeModal(position.positionId, 'details')
+                        }
+                        openActionModal={() =>
+                            openRangeModal(position.positionId, 'action')
+                        }
+                        setRangeModalAction={setRangeModalAction}
+                    />
+                ))}
+                {isRangeDetailsModalOpen && activePos && (
+                    <RangeDetailsModal
+                        position={activePos}
+                        isAccountView={isAccountView}
+                        onClose={() => closeRangeModal('details')}
+                    />
+                )}
+                {isRangeActionModalOpen && activePos && (
+                    <RangeActionModal
+                        type={rangeModalAction}
+                        position={activePos}
+                        onClose={() => closeRangeModal('details')}
+                        isAccountView={isAccountView}
+                    />
+                )}
+            </>
+        );
+    };
 
     useEffect(() => {
         if (_DATA.currentData.length && !isTradeTableExpanded) {
