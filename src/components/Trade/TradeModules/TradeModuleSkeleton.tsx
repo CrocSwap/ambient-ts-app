@@ -10,7 +10,6 @@ import {
     AcknowledgeText,
 } from '../../../styled/Components/TradeModules';
 import { TutorialButton } from '../../../styled/Components/Tutorial';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import ContentContainer from '../../Global/ContentContainer/ContentContainer';
 import TutorialOverlay from '../../Global/TutorialOverlay/TutorialOverlay';
 import Button from '../../Form/Button';
@@ -63,8 +62,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
 
     const { isUserConnected } = useContext(UserDataContext);
 
-    const { limitTick } = useAppSelector((state) => state.tradeData);
-    const { tokenA, tokenB } = useContext(TradeDataContext);
+    const { tokenA, tokenB, limitTick } = useContext(TradeDataContext);
 
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 

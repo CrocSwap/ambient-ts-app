@@ -9,8 +9,6 @@ import styles from './TableMenus.module.css';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import TransactionDetailsModal from '../../../TransactionDetails/TransactionDetailsModal';
-import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
-import { setShouldSwapDirectionReverse } from '../../../../../utils/state/tradeDataSlice';
 import { TransactionIF } from '../../../../../ambient-utils/types';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
@@ -71,10 +69,9 @@ export default function TransactionsMenu(props: propsIF) {
         isTokenAPrimary,
         setIsTokenAPrimary,
         disableReverseTokens,
+        setShouldSwapDirectionReverse,
     } = useContext(TradeDataContext);
     const menuItemRef = useRef<HTMLDivElement>(null);
-
-    const dispatch = useAppDispatch();
 
     // hooks to generate navigation actions with pre-loaded paths
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
@@ -119,7 +116,7 @@ export default function TransactionsMenu(props: propsIF) {
                 (tx.isBuy ? tx.quote.toLowerCase() : tx.base.toLowerCase());
             if (shouldReverse) {
                 setIsTokenAPrimary(!isTokenAPrimary);
-                dispatch(setShouldSwapDirectionReverse(true));
+                setShouldSwapDirectionReverse(true);
             }
         } else if (tx.entityType === 'limitOrder') {
             tokenA.address.toLowerCase() !==

@@ -16,7 +16,6 @@ import { BsCaretDownFill } from 'react-icons/bs';
 import TradeCharts from './TradeCharts/TradeCharts';
 import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 // START: Import Local Files
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { CandleContext } from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
@@ -72,9 +71,8 @@ function Trade() {
         setActiveMobileComponent,
     } = useContext(TradeTableContext);
 
-    const { tradeData } = useAppSelector((state) => state);
-    const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
-    const { limitTick } = tradeData;
+    const { baseToken, quoteToken, isDenomBase, limitTick } =
+        useContext(TradeDataContext);
 
     const { urlParamMap, updateURL } = useUrlParams(tokens, chainId, provider);
 
@@ -246,7 +244,6 @@ function Trade() {
                     <Outlet
                         context={{
                             urlParamMap: urlParamMap,
-                            tradeData: tradeData,
                             limitTick: limitTick,
                             updateURL: updateURL,
                         }}
@@ -353,7 +350,6 @@ function Trade() {
             >
                 <Outlet
                     context={{
-                        tradeData: tradeData,
                         urlParamMap: urlParamMap,
                         limitTick: limitTick,
                         updateURL: updateURL,
