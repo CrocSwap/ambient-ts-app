@@ -32,6 +32,7 @@ import {
 } from '../../../../../ambient-utils/constants';
 import IconWithTooltip from '../../../../../components/Global/IconWithTooltip/IconWithTooltip';
 import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
+import LevelsCard from '../../../../../components/Global/LevelsCard/LevelsCard';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -275,11 +276,12 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                         </IconWithTooltip>
                     </NameDisplay>
                     <WalletDisplay gap={16} alignItems='center'>
-                        <p>Connected Wallet Address:</p>
+                        <p>Metamask</p>
                         <p>{props.accountAddress}</p>
                     </WalletDisplay>
                 </FlexContainer>
             </NameDisplayContainer>
+            <LevelsCard levelOnly />
             <WalletContent>
                 {tokensData.map((tokenData) => (
                     <TokenAmountDisplay

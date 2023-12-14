@@ -6,10 +6,15 @@ import PortfolioBannerAccount from './PortfolioBannerAccount/PortfolioBannerAcco
 
 // START: Import Other Local Files
 import { trimString } from '../../../ambient-utils/dataLayer';
-import { PortfolioBannerRectangleContainer } from '../../../styled/Components/Portfolio';
+import {
+    PortfolioBannerLevelContainer,
+    PortfolioBannerRectangleContainer,
+} from '../../../styled/Components/Portfolio';
 import accountImage from '../../../assets/images/backgrounds/account_image.svg';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { useContext } from 'react';
+import LevelsCard from '../../Global/LevelsCard/LevelsCard';
+import { FlexContainer } from '../../../styled/Common';
 interface propsIF {
     ensName: string;
     resolvedAddress: string;
@@ -50,6 +55,9 @@ export default function PortfolioBanner(props: propsIF) {
                 truncatedAccountAddress={truncatedAccountAddress}
                 jazziconsToDisplay={jazziconsToDisplay}
             />
+            <PortfolioBannerLevelContainer>
+                <LevelsCard levelOnly />
+            </PortfolioBannerLevelContainer>
         </PortfolioBannerRectangleContainer>
     );
 }

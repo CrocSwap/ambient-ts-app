@@ -56,10 +56,9 @@ max-width: 100%;
 .level_only_container{
 display: flex;
 flex-direction: row;
-    width: 324px;
-    height: 58px;
-    background-color: var(--dark1);
-    padding: 8px;
+align-items: center;
+    width: 100%;
+    /* padding: 8px; */
     gap: 8px;
 }
 .level_border{

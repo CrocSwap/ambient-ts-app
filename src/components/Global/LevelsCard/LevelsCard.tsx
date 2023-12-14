@@ -1,18 +1,20 @@
-import { FaExternalLinkAlt } from 'react-icons/fa';
 import { FlexContainer, Text } from '../../../styled/Common';
 import styles from './LevelsCard.module.css';
-import { FiCopy } from 'react-icons/fi';
 import { LuCopy, LuExternalLink, LuShare2 } from 'react-icons/lu';
 import LevelLine from '../LevelLine/LevelLine';
-import DividerDark from '../DividerDark/DividerDark';
-import Divider from '../Divider/Divider';
+
 const pointsData = [
     { date: '18/09/23', points: 1600 },
     { date: '11/09/23', points: 800 },
     { date: '04/09/23', points: 1200 },
 ];
 
-export default function LevelsCard() {
+interface LevelsCardPropsIF {
+    levelOnly?: boolean;
+}
+
+export default function LevelsCard(props: LevelsCardPropsIF) {
+    const { levelOnly } = props;
     const header = (
         <FlexContainer flexDirection='row' gap={16} alignItems='center'>
             <div className={styles.user_image}>
@@ -94,8 +96,7 @@ export default function LevelsCard() {
         </div>
     );
 
-    const yes = true;
-    if (yes) return levelDisplay;
+    if (levelOnly) return levelDisplay;
 
     return (
         <div className={styles.main_container}>

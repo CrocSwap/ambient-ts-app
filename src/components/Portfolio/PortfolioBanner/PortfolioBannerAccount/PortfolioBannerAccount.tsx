@@ -89,7 +89,7 @@ export default function PortfolioBannerAccount(
             >
                 {props.jazziconsToDisplay}
 
-                <FlexContainer flexDirection='column'>
+                <FlexContainer flexDirection='column' gap={4}>
                     <FlexContainer
                         fontWeight='300'
                         fontSize='header1'

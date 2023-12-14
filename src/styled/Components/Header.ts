@@ -235,6 +235,7 @@ export const TokenAmount = styled(FlexContainer)`
 `;
 
 export const NameDisplayContainer = styled(FlexContainer)`
+    padding: 0 32px;
     margin: 0 auto;
     overflow: visible;
     .image {
@@ -292,7 +293,7 @@ export const WalletWrapper = styled(FlexContainer)`
     position: absolute;
     top: 50px;
     width: 347px;
-    height: 280px;
+    height: 350px;
     right: -40px;
     z-index: 9999;
     padding: 8px 1rem;
