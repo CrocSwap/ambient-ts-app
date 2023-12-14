@@ -18,7 +18,7 @@ import {
 } from '../../ChartUtils/chartUtils';
 import { ArrowContainer } from '../../../../styled/Components/Chart';
 import { useMediaQuery } from '@material-ui/core';
-import { actionKeyIF } from '../../ChartUtils/useUndoRedo';
+import { actionKeyIF, actionStackIF } from '../../ChartUtils/useUndoRedo';
 import { xAxisHeightPixel } from '../../ChartUtils/chartConstants';
 
 interface ToolbarProps {
@@ -37,8 +37,8 @@ interface ToolbarProps {
     d3ContainerHeight: number;
     undo: () => void;
     redo: () => void;
-    undoStack: Map<actionKeyIF, drawDataHistory[]>;
-    drawActionStack: Map<actionKeyIF, drawDataHistory[]>;
+    undoStack: Map<actionKeyIF, Array<actionStackIF>>;
+    drawActionStack: Map<actionKeyIF, Array<actionStackIF>>;
     actionKey: actionKeyIF;
     setSelectedDrawnShape: React.Dispatch<
         React.SetStateAction<selectedDrawnData | undefined>
@@ -56,7 +56,7 @@ interface undoRedoButtonList {
     icon: any;
     label: string;
     operation: () => void;
-    stack: Map<actionKeyIF, drawDataHistory[]>;
+    stack: Map<actionKeyIF, Array<actionStackIF>>;
 }
 
 function Toolbar(props: ToolbarProps) {
@@ -326,8 +326,6 @@ function Toolbar(props: ToolbarProps) {
                                         }}
                                         className={
                                             item.stack.has(actionKey) &&
-                                            item.stack.get(actionKey)
-                                                ?.length !== undefined &&
                                             Number(
                                                 item.stack.get(actionKey)
                                                     ?.length,
@@ -338,8 +336,6 @@ function Toolbar(props: ToolbarProps) {
                                         onClick={() => {
                                             if (
                                                 item.stack.has(actionKey) &&
-                                                item.stack.get(actionKey)
-                                                    ?.length !== undefined &&
                                                 Number(
                                                     item.stack.get(actionKey)
                                                         ?.length,

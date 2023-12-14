@@ -74,7 +74,6 @@ export const defaultRectDrawnShapeEditAttributes = {
 
 export const defaultDpRangeDrawnShapeEditAttributes = {
     line: { active: true, ...defaultShapeAttributes },
-
     border: { active: false, ...defaultShapeAttributes },
     background: { active: true, ...defaultShapeBackgroundAttributes },
 };
@@ -82,6 +81,5 @@ export const defaultDpRangeDrawnShapeEditAttributes = {
 export const defaultDrawnShapeEditAttributes = {
     border: { active: true, ...defaultShapeAttributes },
     background: { active: true, ...defaultShapeBackgroundAttributes },
-
     line: { active: false, ...defaultShapeAttributes },
 };

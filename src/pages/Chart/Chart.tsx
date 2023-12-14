@@ -101,7 +101,7 @@ import { updatesIF } from '../../utils/hooks/useUrlParams';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
-import { actionKeyIF } from './ChartUtils/useUndoRedo';
+import { actionKeyIF, actionStackIF } from './ChartUtils/useUndoRedo';
 import { formatDollarAmountAxis } from '../../utils/numbers';
 import { ChartContext } from '../../contexts/ChartContext';
 import { useDrawSettings } from '../../App/hooks/useDrawSettings';
@@ -155,9 +155,13 @@ interface propsIF {
     >;
     deleteItem: (item: drawDataHistory) => void;
     updateURL: (changes: updatesIF) => void;
-    addDrawActionStack: (item: drawDataHistory, isNewShape: boolean) => void;
-    drawActionStack: Map<actionKeyIF, drawDataHistory[]>;
-    undoStack: Map<actionKeyIF, drawDataHistory[]>;
+    addDrawActionStack: (
+        item: drawDataHistory,
+        isNewShape: boolean,
+        type: string,
+    ) => void;
+    drawActionStack: Map<actionKeyIF, Array<actionStackIF>>;
+    undoStack: Map<actionKeyIF, Array<actionStackIF>>;
     deleteAllShapes: () => void;
     actionKey: actionKeyIF;
 }

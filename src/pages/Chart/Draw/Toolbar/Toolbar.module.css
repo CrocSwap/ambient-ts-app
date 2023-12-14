@@ -9,7 +9,7 @@
    
 }
 
-.scrollableDiv{
+.scrollableDiv {
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -25,7 +25,7 @@
 }
 
 .scrollableDiv::-webkit-scrollbar-thumb {
-    background-color: transparent; 
+    background-color: transparent;
 }
 
 .icon_card {
@@ -53,9 +53,8 @@
     cursor: pointer;
 }
 
-
 .arrowContainer_container {
-    position:absolute;
+    position: absolute;
     display: flex;
     width: 45px;
     height: 25px;
@@ -66,7 +65,7 @@
     cursor: pointer;
     z-index: 1;
     opacity: 0.9;
-    left:-8px;
+    left: -8px;
     align-items: center;
     background-color: #101626c2;
 }
@@ -127,7 +126,6 @@
     gap: 10px;
 }
 
-.undo_redo_button_active:hover
 .icon_active_container:hover {
     background: #242f3f;
 }
@@ -196,8 +194,6 @@
     border-radius: 4px;
     gap: 10px;
     cursor: pointer;
-
-    filter: invert(39%) sepia(27%) saturate(240%) hue-rotate(171deg) brightness(100%) contrast(82%);
 }
 
 .undo_redo_button_passive {
@@ -208,6 +204,18 @@
     padding: 2px;
     border-radius: 4px;
     gap: 10px;
+}
 
-    filter: invert(39%) sepia(27%) saturate(240%) hue-rotate(171deg) brightness(30%) contrast(82%);
+.undo_redo_button_active img {
+    filter: invert(39%) sepia(27%) saturate(240%) hue-rotate(171deg)
+        brightness(100%) contrast(82%);
+}
+
+.undo_redo_button_active:hover {
+    background: #242f3f;
+}
+
+.undo_redo_button_passive img {
+    filter: invert(39%) sepia(27%) saturate(240%) hue-rotate(171deg)
+        brightness(50%) contrast(82%);
 }

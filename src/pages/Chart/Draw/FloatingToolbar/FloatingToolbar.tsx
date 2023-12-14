@@ -51,7 +51,11 @@ interface FloatingToolbarProps {
     setIsDragActive: React.Dispatch<boolean>;
     setIsShapeEdited: React.Dispatch<boolean>;
     deleteItem: (item: drawDataHistory) => void;
-    addDrawActionStack: (item: drawDataHistory, isNewShape: boolean) => void;
+    addDrawActionStack: (
+        item: drawDataHistory,
+        isNewShape: boolean,
+        type: string,
+    ) => void;
 }
 
 function FloatingToolbar(props: FloatingToolbarProps) {
@@ -65,6 +69,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         setIsShapeEdited,
         addDrawActionStack,
     } = props;
+
     const floatingDivRef = useRef<HTMLDivElement>(null);
     const { isFullScreen: fullScreenChart } = useContext(ChartContext);
     const [isDragging, setIsDragging] = useState(false);
@@ -171,7 +176,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
 
                 saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
 
-                addDrawActionStack(item[changedItemIndex], false);
+                addDrawActionStack(item[changedItemIndex], false, 'update');
 
                 return item;
             });
@@ -191,7 +196,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
 
                 saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
 
-                addDrawActionStack(item[changedItemIndex], false);
+                addDrawActionStack(item[changedItemIndex], false, 'update');
                 return item;
             });
             setIsShapeEdited(true);
@@ -217,7 +222,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 type === 'reverse' && (item[changedItemIndex].reverse = value);
 
                 saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
-                addDrawActionStack(item[changedItemIndex], false);
+                addDrawActionStack(item[changedItemIndex], false, 'update');
                 return item;
             });
             setIsShapeEdited(true);
@@ -238,7 +243,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 line && (item[changedItemIndex].line.dash = array);
                 border && (item[changedItemIndex].border.dash = array);
                 saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
-                addDrawActionStack(item[changedItemIndex], false);
+                addDrawActionStack(item[changedItemIndex], false, 'update');
                 return item;
             });
             setIsShapeEdited(true);
@@ -260,7 +265,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 alignment && (item[changedItemIndex].labelAlignment = value);
                 saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
 
-                addDrawActionStack(item[changedItemIndex], false);
+                addDrawActionStack(item[changedItemIndex], false, 'update');
                 return item;
             });
             setIsShapeEdited(true);
@@ -555,7 +560,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
 
             saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
 
-            addDrawActionStack(item[changedItemIndex], false);
+            addDrawActionStack(item[changedItemIndex], false, 'update');
 
             return item;
         });

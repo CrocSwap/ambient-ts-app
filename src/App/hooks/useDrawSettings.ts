@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import {
-    defaultDrawnShapeEditAttributes,
     defaultFibonacciDrawnShapeEditAttributes,
     defaultLineDrawnShapeEditAttributes,
     defaultRectDrawnShapeEditAttributes,
+    defaultDpRangeDrawnShapeEditAttributes,
 } from '../../pages/Chart/ChartUtils/drawConstants';
 import { diffHashSig } from '../../ambient-utils/dataLayer';
 import { LS_KEY_CHART_ANNOTATIONS } from '../../pages/Chart/ChartUtils/chartConstants';
@@ -29,7 +29,7 @@ export const useDrawSettings = () => {
         getLineOptions('FibRetracement') ??
         defaultFibonacciDrawnShapeEditAttributes;
     const dPRangeOptions =
-        getLineOptions('DPRange') ?? defaultDrawnShapeEditAttributes;
+        getLineOptions('DPRange') ?? defaultDpRangeDrawnShapeEditAttributes;
 
     const drawSettings = useMemo(() => {
         return {
