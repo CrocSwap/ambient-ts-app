@@ -5,7 +5,6 @@ import { Dispatch, useState, useEffect, useRef, useContext, memo } from 'react';
 
 import { Pagination } from '@mui/material';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
-import TransactionRow from './TransactionsTable/TransactionRow';
 import { useSortedTxs } from '../useSortedTxs';
 import NoTableData from '../NoTableData/NoTableData';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
@@ -33,9 +32,7 @@ import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
-import { useModal } from '../../../Global/Modal/useModal';
-import TransactionDetailsModal from '../../../Global/TransactionDetails/TransactionDetailsModal';
-import { getMoneynessRank } from '../../../../ambient-utils/dataLayer';
+import TableRows from '../TableRows';
 
 interface propsIF {
     filter?: CandleDataIF | undefined;
@@ -505,56 +502,6 @@ function Transactions(props: propsIF) {
             </FlexContainer>
         );
 
-    const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
-        useModal();
-
-    const { currentTxActiveInTransactions, setCurrentTxActiveInTransactions } =
-        useContext(TradeTableContext);
-
-    const closeModal = () => {
-        setCurrentTxActiveInTransactions('');
-        closeDetailsModal();
-    };
-
-    const openModal = (txId: string) => {
-        setCurrentTxActiveInTransactions(txId);
-        openDetailsModal();
-    };
-
-    const getBaseTokenMoneynessGreaterOrEqual = (tx: TransactionIF) =>
-        getMoneynessRank(tx.baseSymbol) - getMoneynessRank(tx.quoteSymbol) >= 0;
-
-    const currentRowItemContent = () => {
-        const activeTx = _DATA.currentData.find(
-            (tx) => tx.txId === currentTxActiveInTransactions,
-        );
-
-        return (
-            <>
-                {_DATA.currentData.map((tx, idx) => (
-                    <TransactionRow
-                        key={idx}
-                        idForDOM={`tx_row_${idx}`}
-                        tx={tx}
-                        tableView={tableView}
-                        isAccountView={isAccountView}
-                        openDetailsModal={() => openModal(tx.txId)}
-                    />
-                ))}
-                {isDetailsModalOpen && activeTx && (
-                    <TransactionDetailsModal
-                        tx={activeTx}
-                        isBaseTokenMoneynessGreaterOrEqual={getBaseTokenMoneynessGreaterOrEqual(
-                            activeTx,
-                        )}
-                        isAccountView={isAccountView}
-                        onClose={closeModal}
-                    />
-                )}
-            </>
-        );
-    };
-
     const handleKeyDownViewTransaction = (
         event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
     ) => {
@@ -698,7 +645,12 @@ function Transactions(props: propsIF) {
                             </>
                         );
                     })}
-                {currentRowItemContent()}
+                <TableRows
+                    type='Transaction'
+                    data={_DATA.currentData}
+                    tableView={tableView}
+                    isAccountView={isAccountView}
+                />
             </ul>
             {showViewMoreButton && (
                 <FlexContainer

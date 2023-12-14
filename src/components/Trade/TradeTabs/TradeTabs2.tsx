@@ -36,7 +36,7 @@ import { CandleContext } from '../../../contexts/CandleContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { ChartContext } from '../../../contexts/ChartContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { CandleDataIF, RangeModalAction } from '../../../ambient-utils/types';
+import { CandleDataIF } from '../../../ambient-utils/types';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { FlexContainer } from '../../../styled/Common';
 import { ClearButton } from '../../../styled/Components/TransactionTable';
@@ -44,7 +44,6 @@ import TableInfo from '../TableInfo/TableInfo';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { useModal } from '../../Global/Modal/useModal';
 interface propsIF {
     filter: CandleDataIF | undefined;
     setTransactionFilter: Dispatch<SetStateAction<CandleDataIF | undefined>>;
@@ -309,45 +308,10 @@ function TradeTabs2(props: propsIF) {
 
     // -------------------------------DATA-----------------------------------------
 
-    // Range modal
-    const [
-        isRangeDetailsModalOpen,
-        openRangeDetailsModal,
-        closeRangeDetailsModal,
-    ] = useModal();
-    const [
-        isRangeActionModalOpen,
-        openRangeActionModal,
-        closeRangeActionModal,
-    ] = useModal();
-
-    const closeRangeModal = (modalType: 'action' | 'details') => {
-        setCurrentPositionActive('');
-        modalType === 'action'
-            ? closeRangeActionModal()
-            : closeRangeDetailsModal();
-    };
-
-    const openRangeModal = (posId: string, modalType: 'action' | 'details') => {
-        setCurrentPositionActive(posId);
-        modalType === 'action'
-            ? openRangeActionModal()
-            : openRangeDetailsModal();
-    };
-
-    const [rangeModalAction, setRangeModalAction] =
-        useState<RangeModalAction>('Harvest');
-
     // Props for <Ranges/> React Element
     const rangesProps = {
         notOnTradeRoute: false,
         isAccountView: false,
-        isRangeDetailsModalOpen,
-        isRangeActionModalOpen,
-        openRangeModal,
-        closeRangeModal,
-        rangeModalAction,
-        setRangeModalAction,
     };
 
     // Props for <Transactions/> React Element
