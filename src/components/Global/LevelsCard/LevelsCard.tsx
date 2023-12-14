@@ -65,6 +65,38 @@ export default function LevelsCard() {
         </div>
     );
 
+    const levelDisplay = (
+        <div className={styles.level_only_container}>
+            <div className={styles.level_border}>
+                <div className={styles.level_border_content}>16</div>
+            </div>
+
+            <FlexContainer
+                flexDirection='column'
+                justifyContent='space-between'
+                height='100%'
+            >
+                <FlexContainer
+                    flexDirection='row'
+                    width='100%'
+                    justifyContent='space-between'
+                >
+                    <Text fontSize='header1' color='text1'>
+                        Level 16{' '}
+                    </Text>
+                    <Text fontSize='header1' color='text2'>
+                        XP: 16, 425{' '}
+                    </Text>
+                </FlexContainer>
+
+                <LevelLine percentage={20} width='250px' />
+            </FlexContainer>
+        </div>
+    );
+
+    const yes = true;
+    if (yes) return levelDisplay;
+
     return (
         <div className={styles.main_container}>
             {header}
