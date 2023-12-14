@@ -66,14 +66,6 @@ function TransactionRow(props: propsIF) {
         setCurrentTxActiveInTransactions,
     } = useContext(TradeTableContext);
 
-    // const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
-    //     useModal();
-
-    // const closeModal = () => {
-    //     setCurrentTxActiveInTransactions('');
-    //     closeDetailsModal();
-    // }
-
     // only show all data when on trade tab page
     const showAllData = !isAccountView && showAllDataSelection;
 
