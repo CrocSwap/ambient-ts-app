@@ -45,8 +45,8 @@ export const Text = styled.span<TextProps>`
             : ''
     }
     ${fontWeight ? `font-weight: ${fontWeight};` : ''}
-    ${align ? `text-align: ${align}` : ''}
-    ${cursor ? `cursor: ${cursor}` : ''}
+    ${align ? `text-align: ${align};` : ''}
+    ${cursor ? `cursor: ${cursor};` : ''}
     ${margin ? `margin: ${margin};` : ''}
     ${marginLeft ? `margin-left: ${marginLeft};` : ''}
     ${marginTop ? `margin-top: ${marginTop};` : ''}
