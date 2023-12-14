@@ -65,6 +65,7 @@ import {
     drawDataHistory,
     fillLiqAdvanced,
     formatTimeDifference,
+    getInitialDisplayCandleCount,
     getXandYLocationForChart,
     lineData,
     lineValue,
@@ -2183,15 +2184,16 @@ export default function Chart(props: propsIF) {
 
     function setXScaleDefault() {
         if (scaleData) {
-            const latestCandleIndex = d3.maxIndex(
-                unparsedCandleData,
-                (d) => d.time,
-            );
+            const localInitialDisplayCandleCount =
+                getInitialDisplayCandleCount(mobileView);
+            const nowDate = Date.now();
 
+            const snapDiff = nowDate % (period * 1000);
+            const snappedTime = nowDate + (period * 1000 - snapDiff);
+
+            const centerX = snappedTime;
             const diff =
-                scaleData?.xScale.domain()[1] - scaleData?.xScale.domain()[0];
-
-            const centerX = unparsedCandleData[latestCandleIndex].time * 1000;
+                (localInitialDisplayCandleCount * period * 1000) / xAxisBuffer;
 
             scaleData?.xScale.domain([
                 centerX - diff * xAxisBuffer,
@@ -5137,7 +5139,15 @@ export default function Chart(props: propsIF) {
                         height: '100%',
                     }}
                 >
-                    <div className='chart_grid' id='chart_grid'>
+                    <div
+                        className='chart_grid'
+                        id='chart_grid'
+                        style={{
+                            gridTemplateColumns:
+                                (isToolbarOpen ? 38 : 9) +
+                                'px auto 1fr auto minmax(1em, max-content)',
+                        }}
+                    >
                         <Toolbar
                             toolbarRef={toolbarRef}
                             activeDrawingType={activeDrawingType}
@@ -5296,6 +5306,7 @@ export default function Chart(props: propsIF) {
                                 isChartZoom={isChartZoom}
                                 lastCandleData={lastCandleData}
                                 firstCandleData={firstCandleData}
+                                isToolbarOpen={isToolbarOpen}
                             />
                         </>
                     )}
@@ -5329,6 +5340,7 @@ export default function Chart(props: propsIF) {
                                 isChartZoom={isChartZoom}
                                 zoomBase={zoomBase}
                                 setIsChartZoom={setIsChartZoom}
+                                isToolbarOpen={isToolbarOpen}
                             />
                         </>
                     )}

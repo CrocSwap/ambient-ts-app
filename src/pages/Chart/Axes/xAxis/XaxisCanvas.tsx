@@ -19,6 +19,7 @@ import moment from 'moment';
 import { CandleDataIF } from '../../../../ambient-utils/types';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { RangeContext } from '../../../../contexts/RangeContext';
+import { xAxisHeightPixel } from '../../ChartUtils/chartConstants';
 interface xAxisIF {
     scaleData: scaleData | undefined;
     lastCrDate: number | undefined;
@@ -584,7 +585,7 @@ function XAxisCanvas(props: xAxisIF) {
             id='x-axis'
             className='x-axis'
             style={{
-                height: '32px',
+                height: xAxisHeightPixel + 'px',
                 width: '100%',
                 gridColumn: 3,
                 gridRow: 4,

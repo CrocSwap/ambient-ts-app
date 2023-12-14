@@ -1,10 +1,4 @@
-import React, {
-    MutableRefObject,
-    useContext,
-    useEffect,
-    useRef,
-    useState,
-} from 'react';
+import React, { MutableRefObject, useContext, useRef, useState } from 'react';
 import styles from './Toolbar.module.css';
 import drawLine from '../../../../assets/images/icons/draw/draw_line.svg';
 import drawCross from '../../../../assets/images/icons/draw/draw_cross.svg';
@@ -25,6 +19,7 @@ import {
 import { ArrowContainer } from '../../../../styled/Components/Chart';
 import { useMediaQuery } from '@material-ui/core';
 import { actionKeyIF, actionStackIF } from '../../ChartUtils/useUndoRedo';
+import { xAxisHeightPixel } from '../../ChartUtils/chartConstants';
 
 interface ToolbarProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -72,7 +67,6 @@ function Toolbar(props: ToolbarProps) {
         setIsToolbarOpen,
         setIsMagnetActiveLocal,
         deleteAllShapes,
-        chartHeights,
         undo,
         redo,
         undoStack,
@@ -80,35 +74,13 @@ function Toolbar(props: ToolbarProps) {
         actionKey,
         setSelectedDrawnShape,
         toolbarRef,
+        d3ContainerHeight,
     } = props;
 
     const mobileView = useMediaQuery('(max-width: 600px)');
 
     const { setIsMagnetActive, isMagnetActive } = useContext(ChartContext);
-    const feeRate = document.getElementById('fee_rate_chart');
-    const tvl = document.getElementById('tvl_chart');
-
-    const chart = document.getElementById('chart_grid');
-
     const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const column = isToolbarOpen ? 38 : 9;
-
-        if (feeRate) {
-            feeRate.style.gridTemplateColumns =
-                column + 'px auto 1fr auto minmax(1em, max-content)';
-        }
-        if (tvl) {
-            tvl.style.gridTemplateColumns =
-                column + 'px auto 1fr auto minmax(1em, max-content)';
-        }
-
-        if (chart) {
-            chart.style.gridTemplateColumns =
-                column + 'px auto 1fr auto minmax(1em, max-content)';
-        }
-    }, [isToolbarOpen, feeRate, tvl]);
 
     const [isHoveredUp, setIsHoveredUp] = useState(false);
     const [isHoveredDown, setIsHoveredDown] = useState(false);
@@ -255,7 +227,7 @@ function Toolbar(props: ToolbarProps) {
         <div
             className={styles.arrowContainer_container}
             style={{
-                top: chartHeights + 'px',
+                top: d3ContainerHeight - xAxisHeightPixel + 'px',
                 position: 'absolute',
                 width: toolbarRef.current
                     ? `${toolbarRef.current.clientWidth + 7}px`
@@ -296,7 +268,8 @@ function Toolbar(props: ToolbarProps) {
                     className={styles.scrollableDiv}
                     ref={scrollContainerRef}
                     style={{
-                        height: chartHeights + 3 + 'px',
+                        height:
+                            d3ContainerHeight - (xAxisHeightPixel - 2) + 'px',
                     }}
                 >
                     {isHoveredUp && upScroll}

@@ -718,12 +718,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                         'visibility',
                         percentage !== '0.0' ? 'visible' : 'hidden',
                     )
-                    .style(
-                        'top',
-                        offsetY +
-                            (event instanceof TouchEvent ? 40 : 80) +
-                            'px',
-                    )
+                    .style('top', offsetY - 20 + 'px')
                     .style('left', offsetX - 80 + 'px');
             }
         }
@@ -790,13 +785,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                         'visibility',
                         percentage !== '0.0' ? 'visible' : 'hidden',
                     )
-                    .style(
-                        'top',
-                        event.pageY -
-                            mainCanvasBoundingClientRect.top +
-                            50 +
-                            'px',
-                    )
+                    .style('top', offsetY - 20 + 'px')
                     .style('left', offsetX - 80 + 'px');
             }
         }
