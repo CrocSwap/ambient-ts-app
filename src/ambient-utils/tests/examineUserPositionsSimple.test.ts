@@ -1,6 +1,6 @@
 import { fetchRecords } from '../api/fetchUserPositions';
 import tokenUniverseData from '../testing-only-ambient-token-list.json';
-import { PositionIF, LimitOrderIF } from '../types';
+import { PositionIF, LimitOrderIF, RecordType } from '../types';
 // TransactionIF
 describe('Test fetchUserPositions Simple', () => {
     jest.setTimeout(10000); // Set timeout to 10000 ms (10 seconds)
@@ -18,7 +18,7 @@ describe('Test fetchUserPositions Simple', () => {
             const tokenUniv = tokenUniverseData.tokens;
 
             const userPositions = await fetchRecords({
-                recordType: PositionIF,
+                recordType: RecordType.Position,
                 user: userAddress,
                 chainId: chainId,
                 tokenUniv: tokenUniv,

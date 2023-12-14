@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect } from 'react';
-import { fetchUserRecentChanges, UserPositions } from '../ambient-utils/api';
+import { fetchUserRecentChanges, fetchRecords } from '../ambient-utils/api';
 import useDebounce from '../App/hooks/useDebounce';
 import { IS_LOCAL_ENV } from '../ambient-utils/constants';
 import {
@@ -8,6 +8,7 @@ import {
     LimitOrderIF,
     TransactionIF,
     LiquidityDataIF,
+    RecordType,
 } from '../ambient-utils/types';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
@@ -230,15 +231,15 @@ export const GraphDataContextProvider = (props: {
             ) {
                 return;
             }
-            const urlTargets = ['limit_order_states', 'user_positions'];
-            for (let i = 0; i < urlTargets.length; i++) {
+            const recordTargets = [RecordType.Position, RecordType.LimitOrder];
+            for (let i = 0; i < recordTargets.length; i++) {
                 IS_LOCAL_ENV &&
                     console.debug(
-                        'fetching user positions for ' + urlTargets[i],
+                        'fetching user positions for ' + recordTargets[i],
                     );
                 try {
-                    const updatedLedger = await UserPositions.fetchDecorated({
-                        urlTarget: urlTargets[i],
+                    const updatedLedger = await fetchRecords({
+                        recordType: recordTargets[i],
                         user: userAddress,
                         chainId: chainData.chainId,
                         gcUrl: activeNetwork.graphCacheUrl,
@@ -252,7 +253,7 @@ export const GraphDataContextProvider = (props: {
                         cachedEnsResolve,
                     });
 
-                    if (urlTargets[i] == 'user_positions') {
+                    if (recordTargets[i] == RecordType.Position) {
                         setPositionsByUser({
                             dataReceived: true,
                             positions: updatedLedger as PositionIF[],
@@ -277,7 +278,7 @@ export const GraphDataContextProvider = (props: {
                 }
                 IS_LOCAL_ENV &&
                     console.debug(
-                        'fetching user limit orders ' + urlTargets[i],
+                        'fetching user limit orders ' + recordTargets[i],
                     );
             }
 

@@ -19,10 +19,29 @@ import {
     TokenIF,
     PositionIF,
     PositionServerIF,
-    //    LimitOrderIF,
+    LimitOrderIF,
     LimitOrderServerIF,
+    RecordType,
 } from '../types';
-import { LimitOrderIF } from '../types/limitOrder/LimitOrderIF';
+
+interface RecordRequestIF {
+    recordType: RecordType;
+    user: string;
+    chainId: string;
+    gcUrl?: string;
+    ensResolution?: boolean;
+    annotate?: boolean;
+    omitKnockout?: boolean;
+    addValue?: boolean;
+    tokenUniv: TokenIF[];
+    crocEnv: CrocEnv;
+    provider: Provider;
+    lastBlockNumber: number;
+    cachedFetchTokenPrice: TokenPriceFn;
+    cachedQuerySpotPrice: SpotPriceFn;
+    cachedTokenDetails: FetchContractDetailsFn;
+    cachedEnsResolve: FetchAddrFn;
+}
 
 import { fetchBlockNumber } from '../api/fetchBlockNumber';
 import { ethers } from 'ethers';
@@ -40,7 +59,7 @@ const fetchUserPositions = async ({
     omitKnockout = true,
     addValue = true,
 }: {
-    recordType: PositionIF | LimitOrderIF;
+    recordType: RecordType;
     user: string;
     chainId: string;
     gcUrl?: string;
@@ -58,7 +77,7 @@ const fetchUserPositions = async ({
         : gcUrl + '/user_limit_orders?';
 
     let selectedEndpoint;
-    if (recordType == LimitOrderIF) {
+    if (recordType == RecordType.LimitOrder) {
         selectedEndpoint = userLimitOrderStatesCacheEndpoint;
     } else {
         // default to 'user_positions'
@@ -91,7 +110,7 @@ const decorateUserPositions = async ({
     cachedTokenDetails,
     cachedEnsResolve,
 }: {
-    recordType: PositionIF | LimitOrderIF;
+    recordType: RecordType;
     userPositions: PositionIF[] | LimitOrderIF[];
     tokenUniv: TokenIF[];
     crocEnv: CrocEnv;
@@ -104,7 +123,7 @@ const decorateUserPositions = async ({
     cachedEnsResolve: FetchAddrFn;
 }) => {
     const skipENSFetch = true;
-    if (recordType == LimitOrderIF) {
+    if (recordType == RecordType.LimitOrder) {
         return await Promise.all(
             (userPositions as LimitOrderServerIF[]).map(
                 (position: LimitOrderServerIF) => {
@@ -165,24 +184,7 @@ const fetchDecorated = async ({
     cachedQuerySpotPrice, // TODO, Handle in Data Layer
     cachedTokenDetails, // TODO, Handle in Data Layer
     cachedEnsResolve, // TODO, Handle in Data Layer
-}: {
-    recordType: PositionIF | LimitOrderIF;
-    user: string;
-    chainId: string;
-    gcUrl?: string;
-    ensResolution?: boolean;
-    annotate?: boolean;
-    omitKnockout?: boolean;
-    addValue?: boolean;
-    tokenUniv: TokenIF[];
-    crocEnv: CrocEnv;
-    provider: Provider;
-    lastBlockNumber: number;
-    cachedFetchTokenPrice: TokenPriceFn;
-    cachedQuerySpotPrice: SpotPriceFn;
-    cachedTokenDetails: FetchContractDetailsFn;
-    cachedEnsResolve: FetchAddrFn;
-}): Promise<PositionIF[] | LimitOrderIF[]> => {
+}: RecordRequestIF): Promise<PositionIF[] | LimitOrderIF[]> => {
     const response = await fetchUserPositions({
         recordType,
         user,
@@ -232,35 +234,18 @@ const fetchSimpleDecorated = async ({
     cachedQuerySpotPrice,
     cachedTokenDetails,
     cachedEnsResolve,
-}: {
-    recordType: PositionIF | LimitOrderIF;
-    user: string;
-    chainId: string;
-    gcUrl?: string;
-    provider: Provider;
-    ensResolution?: boolean;
-    annotate?: boolean;
-    omitKnockout?: boolean;
-    addValue?: boolean;
-    tokenUniv?: TokenIF[];
-    crocEnv?: CrocEnv;
-    lastBlockNumber?: number;
-    cachedFetchTokenPrice?: TokenPriceFn;
-    cachedQuerySpotPrice?: SpotPriceFn;
-    cachedTokenDetails?: FetchContractDetailsFn;
-    cachedEnsResolve?: FetchAddrFn;
-}) => {
+}: RecordRequestIF) => {
     if (!gcUrl) {
         gcUrl = GCGO_ETHEREUM_URL;
     }
-
+    let infuraUrl = '';
     if (!tokenUniv) {
         // It is unclear the token universe should come from.
         // However, this problem should likely be addressed after V0 of the data layer
         throw new Error('UNIMPLEMENTED: NEED A METHOD TO GET TOKEN UNIVERSE');
     }
     if (!crocEnv) {
-        const infuraUrl =
+        infuraUrl =
             'https://mainnet.infura.io/v3/' + process.env.REACT_APP_INFURA_KEY;
         const defaultSigner = undefined;
         if (!provider) {
@@ -269,16 +254,26 @@ const fetchSimpleDecorated = async ({
         crocEnv = new CrocEnv(provider, defaultSigner);
     }
     if (!lastBlockNumber) {
+        if (infuraUrl.length == 0) {
+            infuraUrl =
+                'https://mainnet.infura.io/v3/' +
+                process.env.REACT_APP_INFURA_KEY;
+        }
         if (!provider) {
             provider = new ethers.providers.JsonRpcProvider(infuraUrl);
         }
-        lastBlockNumber = await fetchBlockNumber(provider.connection.url);
+        lastBlockNumber = await fetchBlockNumber(
+            (provider as ethers.providers.JsonRpcProvider).connection.url,
+        );
     }
 
-    cachedFetchTokenPrice = cachedFetchTokenPrice || fetchTokenPrice;
-    cachedQuerySpotPrice = cachedQuerySpotPrice || querySpotPrice;
-    cachedTokenDetails = cachedTokenDetails || fetchContractDetails;
-    cachedEnsResolve = cachedEnsResolve || fetchEnsAddress;
+    cachedFetchTokenPrice =
+        cachedFetchTokenPrice || (fetchTokenPrice as TokenPriceFn);
+    cachedQuerySpotPrice =
+        cachedQuerySpotPrice || (querySpotPrice as SpotPriceFn);
+    cachedTokenDetails =
+        cachedTokenDetails || (fetchContractDetails as FetchContractDetailsFn);
+    cachedEnsResolve = cachedEnsResolve || (fetchEnsAddress as FetchAddrFn);
 
     return await fetchDecorated({
         recordType,
@@ -296,14 +291,4 @@ const fetchSimpleDecorated = async ({
     });
 };
 
-// TODO remove UserPositions section
-export const UserPositions = {
-    fetchSimpleDecorated: fetchSimpleDecorated,
-    fetch: fetchUserPositions,
-    decorate: decorateUserPositions,
-    fetchDecorated: fetchDecorated,
-};
-
-// TODO remove UserPositions section
-export const fetchDecoratedUserPositions = fetchDecorated;
 export const fetchRecords = fetchSimpleDecorated;
