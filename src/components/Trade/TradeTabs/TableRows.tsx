@@ -125,7 +125,7 @@ function TableRows({
         } else if (type === 'Order') {
             setActiveRecord(
                 (data as LimitOrderIF[]).find((order) => {
-                    return order.id === currentLimitOrderActive;
+                    return order.limitOrderId === currentLimitOrderActive;
                 }),
             );
         } else {
@@ -213,10 +213,10 @@ function TableRows({
                         tableView={tableView}
                         isAccountView={isAccountView}
                         openDetailsModal={() =>
-                            openLimitModal(order.id, 'details')
+                            openLimitModal(order.limitOrderId, 'details')
                         }
                         openActionModal={() =>
-                            openLimitModal(order.id, 'action')
+                            openLimitModal(order.limitOrderId, 'action')
                         }
                         setLimitModalAction={setLimitModalAction}
                     />

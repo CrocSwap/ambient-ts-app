@@ -99,6 +99,7 @@ function TradeTabs2(props: propsIF) {
     const {
         showAllData,
         setShowAllData,
+        setCurrentLimitOrderActive,
         setCurrentPositionActive,
         setCurrentTxActiveInTransactions,
         outsideControl,
@@ -386,6 +387,7 @@ function TradeTabs2(props: propsIF) {
     const clickOutsideHandler = () => {
         setCurrentTxActiveInTransactions('');
         setCurrentPositionActive('');
+        setCurrentLimitOrderActive('');
     };
 
     const clearButtonOrNull = isCandleSelected ? (
