@@ -151,6 +151,7 @@ export default function OrdersMenu(props: propsIF) {
     const menuContent = (
         <div className={styles.menu_column}>
             {detailsButton}
+            {!minView && claimButton}
             {!minView && copyButton}
             {!minView && removeButton}
             {!isAccountView && walletButton}

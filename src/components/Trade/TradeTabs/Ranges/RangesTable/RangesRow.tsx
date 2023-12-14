@@ -112,17 +112,9 @@ function RangesRow(props: propsIF) {
     };
 
     const positionDomId =
-        position.firstMintTx === currentPositionActive
-            ? `position-${position.firstMintTx}`
+        position.positionId === currentPositionActive
+            ? `position-${position.positionId}`
             : '';
-
-    useEffect(() => {
-        if (positionDomId !== '') {
-            console.log(JSON.stringify(position.firstMintTx));
-            console.log(JSON.stringify(currentPositionActive));
-            console.log(JSON.stringify(positionDomId));
-        }
-    }, [positionDomId]);
 
     const activePositionRef = useRef(null);
 
@@ -160,7 +152,7 @@ function RangesRow(props: propsIF) {
     }
 
     useEffect(() => {
-        position.firstMintTx === currentPositionActive ? scrollToDiv() : null;
+        position.positionId === currentPositionActive ? scrollToDiv() : null;
     }, [currentPositionActive]);
 
     const usernameColor: 'text1' | 'accent1' | 'accent2' =
@@ -248,9 +240,6 @@ function RangesRow(props: propsIF) {
     } = rangeRowConstants(rangeRowConstantsProps);
 
     function handleRowClick() {
-        if (position?.firstMintTx === currentPositionActive) {
-            return;
-        }
         setCurrentPositionActive('');
         openDetailsModal();
     }
@@ -262,7 +251,7 @@ function RangesRow(props: propsIF) {
                 account={isAccountView}
                 leaderboard={isLeaderboard}
                 active={
-                    position.firstMintTx === currentPositionActive ||
+                    position.positionId === currentPositionActive ||
                     position.positionId === currentRangeInReposition ||
                     position.positionId === currentRangeInAdd
                 }
