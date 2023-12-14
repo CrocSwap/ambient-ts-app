@@ -70,55 +70,59 @@ export default function Menu(props: propsIF) {
             : options;
 
     return (
-        <div
-            className={`${styles.dropdown_item}
-        ${props.riseToBottom ? styles.rise_to_bottom : ''}
-        `}
-            onMouseOver={() => {
-                props.setIsMoreButtonPressed(true);
-            }}
-            onMouseEnter={() => {
-                props.setIsMoreButtonPressed(true);
-            }}
-            onMouseLeave={() => {
-                props.setIsMoreButtonPressed(false);
-            }}
-        >
-            {filteredOptions.map((option, index) => {
-                return (
-                    <>
-                        <div
-                            className={styles.dropdown_node}
-                            onClick={() => {
-                                if (option.listener) option.listener();
-                            }}
-                            style={{
-                                animationDelay: `${
-                                    (options.length - index - 1) * 0.1
-                                }s`,
-                            }}
-                        >
-                            <div className={styles.dropdown_node_icon}>
-                                {option.icon}
-                            </div>
-                            <div className={styles.dropdown_node_label}>
-                                {option.label}
-                            </div>
-                        </div>
-                    </>
-                );
-            })}
+        <>
+            {filteredOptions.length > 0 && (
+                <div
+                    className={`${styles.dropdown_item}
+            ${props.riseToBottom ? styles.rise_to_bottom : ''}
+            `}
+                    onMouseOver={() => {
+                        props.setIsMoreButtonPressed(true);
+                    }}
+                    onMouseEnter={() => {
+                        props.setIsMoreButtonPressed(true);
+                    }}
+                    onMouseLeave={() => {
+                        props.setIsMoreButtonPressed(false);
+                    }}
+                >
+                    {filteredOptions.map((option, index) => {
+                        return (
+                            <>
+                                <div
+                                    className={styles.dropdown_node}
+                                    onClick={() => {
+                                        if (option.listener) option.listener();
+                                    }}
+                                    style={{
+                                        animationDelay: `${
+                                            (options.length - index - 1) * 0.1
+                                        }s`,
+                                    }}
+                                >
+                                    <div className={styles.dropdown_node_icon}>
+                                        {option.icon}
+                                    </div>
+                                    <div className={styles.dropdown_node_label}>
+                                        {option.label}
+                                    </div>
+                                </div>
+                            </>
+                        );
+                    })}
 
-            {/*             
-            <BsFillReplyFill size={10} />
-            <BsEmojiSmileUpsideDown size={10} />
-            <FiDelete
-                size={10}
-                color='red'
-                onClick={() => {
-                    closePanel();
-                }}
-            /> */}
-        </div>
+                    {/*             
+                <BsFillReplyFill size={10} />
+                <BsEmojiSmileUpsideDown size={10} />
+                <FiDelete
+                    size={10}
+                    color='red'
+                    onClick={() => {
+                        closePanel();
+                    }}
+                /> */}
+                </div>
+            )}
+        </>
     );
 }

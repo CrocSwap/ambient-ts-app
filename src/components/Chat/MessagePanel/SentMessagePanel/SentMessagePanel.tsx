@@ -777,48 +777,53 @@ function SentMessagePanel(props: SentMessageProps) {
             {!props.message.isDeleted || props.isModerator ? (
                 <div className={styles.msg_bubble_content}>
                     <div className={styles.msg_bubble_front}>
-                        <div
+                        {/* <div
                             className={styles.flip_trigger}
                             onClick={() => {
                                 setFlipped(true);
                             }}
-                        ></div>
-                        {props.address && (
-                            <div
-                                ref={optionsButtonRef}
-                                className={styles.options_button}
-                            >
-                                <Options
-                                    setIsReplyButtonPressed={
-                                        props.setIsReplyButtonPressed
-                                    }
-                                    message={props.message}
-                                    isReplyButtonPressed={
-                                        props.isReplyButtonPressed
-                                    }
-                                    replyMessageContent={
-                                        props.replyMessageContent
-                                    }
-                                    setReplyMessageContent={
-                                        props.setReplyMessageContent
-                                    }
-                                    isMoreButtonPressed={isMoreButtonPressed}
-                                    setIsMoreButtonPressed={
-                                        setIsMoreButtonPressed
-                                    }
-                                    addReactionListener={
-                                        props.addReactionListener
-                                    }
-                                    tooltipTop={shouldOptionsRiseToBottom()}
-                                    isModerator={props.isModerator}
-                                    isUsersMessage={
-                                        props.message.sender ===
-                                        props.currentUser
-                                    }
-                                    isUserVerified={props.isUserVerified}
-                                />
-                            </div>
-                        )}
+                        ></div> */}
+                        {props.address &&
+                            (props.isCurrentUser || props.isModerator) && // TODO WBO : this control will be removed when other features enabled
+                            props.isUserVerified &&
+                            !props.message.isDeleted && (
+                                <div
+                                    ref={optionsButtonRef}
+                                    className={styles.options_button}
+                                >
+                                    <Options
+                                        setIsReplyButtonPressed={
+                                            props.setIsReplyButtonPressed
+                                        }
+                                        message={props.message}
+                                        isReplyButtonPressed={
+                                            props.isReplyButtonPressed
+                                        }
+                                        replyMessageContent={
+                                            props.replyMessageContent
+                                        }
+                                        setReplyMessageContent={
+                                            props.setReplyMessageContent
+                                        }
+                                        isMoreButtonPressed={
+                                            isMoreButtonPressed
+                                        }
+                                        setIsMoreButtonPressed={
+                                            setIsMoreButtonPressed
+                                        }
+                                        addReactionListener={
+                                            props.addReactionListener
+                                        }
+                                        tooltipTop={shouldOptionsRiseToBottom()}
+                                        isModerator={props.isModerator}
+                                        isUsersMessage={
+                                            props.message.sender ===
+                                            props.currentUser
+                                        }
+                                        isUserVerified={props.isUserVerified}
+                                    />
+                                </div>
+                            )}
 
                         <div>
                             {daySeparator === '' ? (

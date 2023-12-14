@@ -302,6 +302,9 @@
 .verify_button_icon{
     margin: 0 .2rem; 
 }
+.verify_button_mod_icon{
+    margin-top: .1rem;
+}
 
 /* 
 #chatReactionWrapper aside.emoji-picker-react{

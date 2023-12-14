@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './DomDebugger.module.css';
+import { getLS } from '../ChatUtils';
+import { clearDomDebug } from './DomDebuggerUtils';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface propsIF {
@@ -7,9 +9,13 @@ interface propsIF {
 }
 
 export default function DomDebugger(props: propsIF) {
-    const [debugEnabled, setDebugEnabled] = useState(
-        window.location.href.indexOf('localhost:') >= 0,
-    );
+    const [debugEnabled, setDebugEnabled] = useState(false);
+    useEffect(() => {
+        const lsVal = getLS('debugEnabled');
+        if (lsVal) {
+            setDebugEnabled(window.location.href.indexOf('localhost:') >= 0);
+        }
+    }, []);
 
     return (
         <>
@@ -19,7 +25,16 @@ export default function DomDebugger(props: propsIF) {
                     className={
                         styles.dom_debugger_wrapper + '  ' + styles.active
                     }
-                ></div>
+                >
+                    {' '}
+                    <div
+                        className={styles.dom_debug_clear}
+                        onClick={clearDomDebug}
+                    >
+                        clear
+                    </div>
+                    <div className={styles.dom_debug_nodes_wrapper}></div>
+                </div>
             )}
         </>
     );

@@ -76,14 +76,18 @@ const useChatSocket = (
         return data.reverse();
     }
 
-    async function fetchForNotConnectedUser(roomInfo: string) {
-        const encodedRoomInfo = encodeURIComponent(roomInfo);
+    async function fetchForNotConnectedUser() {
+        console.log('fetchfornotconnecteduser', room);
+        const encodedRoomInfo = encodeURIComponent(room);
         const url = `${CHAT_BACKEND_URL}${getMessageWithRestEndpoint}${encodedRoomInfo}`;
         const response = await fetch(url, {
             method: 'GET',
         });
         const data = await response.json();
         setMessages(data.reverse());
+        setLastMessage(data);
+        setLastMessageText(data.message);
+        setMessageUser(data.sender);
     }
 
     async function getAllMessages(p?: number) {

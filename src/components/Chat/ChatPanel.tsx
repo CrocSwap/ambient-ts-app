@@ -15,8 +15,7 @@ import { trimString } from '../../ambient-utils/dataLayer';
 import NotFound from '../../pages/NotFound/NotFound';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { Message } from './Model/MessageModel';
-import { AiOutlineCheck, AiOutlineClose } from 'react-icons/ai';
-import { CROCODILE_LABS_LINKS } from '../../ambient-utils/constants';
+import { AiOutlineCheck, AiOutlineClose, AiOutlineUser } from 'react-icons/ai';
 import Picker from 'emoji-picker-react';
 import UserSummary from './MessagePanel/UserSummary/UserSummary';
 import { UserSummaryModel } from './Model/UserSummaryModel';
@@ -27,6 +26,7 @@ import ChatToaster from './ChatToaster/ChatToaster';
 import { LS_USER_VERIFY_TOKEN, setLS } from './ChatUtils';
 import { domDebug } from './DomDebugger/DomDebuggerUtils';
 import DomDebugger from './DomDebugger/DomDebugger';
+import { CROCODILE_LABS_LINKS } from '../../ambient-utils/constants';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -210,8 +210,6 @@ function ChatPanel(props: propsIF) {
         }
     }
 
-    domDebug('alskd', Math.random() * 123);
-
     async function mentionHoverListener(elementTop: number, walletID: string) {
         // CHAT_FEATURES_WBO -  Feature : User Summary
         // const userDetails = await getUserSummaryDetails(walletID);
@@ -264,16 +262,6 @@ function ChatPanel(props: propsIF) {
         }
     };
     useEffect(() => {
-        if (userAddress == undefined && notConnectedUserInterval == undefined) {
-            const interval = setInterval(() => {
-                fetchForNotConnectedUser(room);
-            }, 10000);
-            if (notConnectedUserInterval)
-                clearInterval(notConnectedUserInterval);
-
-            setNotConnectedUserInterval(interval);
-        }
-
         document.body.addEventListener('keydown', closeOnEscapeKeyDown);
         document.body.addEventListener('keydown', openChatPanel);
         return function cleanUp() {
@@ -282,17 +270,49 @@ function ChatPanel(props: propsIF) {
     });
 
     useEffect(() => {
+        // console.log('first assignment')
+        // let interval;
+        // if (userAddress == undefined && notConnectedUserInterval == undefined) {
+        //     interval = setInterval(() => {
+        //         fetchForNotConnectedUser();
+        //     }, 10000);
+        //     if (notConnectedUserInterval)
+        //         clearInterval(notConnectedUserInterval);
+
+        //     setNotConnectedUserInterval(interval);
+        // }else if(notConnectedUserInterval){
+        //     clearInterval(notConnectedUserInterval);
+        // }
+
+        return clearInterval(notConnectedUserInterval);
+    }, []);
+
+    useEffect(() => {
+        console.log(userAddress, room);
+        console.log('....................................');
+        console.log('room changed', room);
+
+        if (room == undefined) return;
+
         if (notConnectedUserInterval) {
+            console.log('clearing current interval');
             clearInterval(notConnectedUserInterval);
         }
 
         if (userAddress == undefined) {
+            console.log('Creating new interval for ', room);
             const interval = setInterval(() => {
-                fetchForNotConnectedUser(room);
+                console.log(
+                    '--------- that interval asssigned on use effect, user address or room change',
+                    room,
+                );
+                fetchForNotConnectedUser();
             }, 10000);
             setNotConnectedUserInterval(interval);
         }
-    }, [userAddress]);
+
+        return clearInterval(notConnectedUserInterval);
+    }, [userAddress, room]);
 
     useEffect(() => {
         if (scrollDirection === 'Scroll Up') {
@@ -611,6 +631,17 @@ function ChatPanel(props: propsIF) {
                     } `}
                     onClick={(e) => verifyWallet(0, new Date(), e)}
                 >
+                    {isModerator && isVerified && (
+                        <AiOutlineUser
+                            className={
+                                styles.verify_button_icon +
+                                ' ' +
+                                styles.verify_button_mod_icon
+                            }
+                            color='var(--other-green)'
+                            size={14}
+                        ></AiOutlineUser>
+                    )}
                     {isVerified ? (
                         <>
                             <AiOutlineCheck

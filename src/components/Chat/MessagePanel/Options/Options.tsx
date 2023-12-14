@@ -146,7 +146,7 @@ export default function Options(props: propsIF) {
         </p>
     );
     return !(props.isUsersMessage && props.isUserVerified) &&
-        !props.isModerator ? (
+        !(props.isModerator && props.isUserVerified) ? (
         <>
             {/* CHAT_FEATURES_WBO - Feature : Add Reaction | Reply */}
             {/* This conditional rendering will be removed after opening other features. */}
