@@ -1,8 +1,7 @@
-import { Provider, Signer } from '@ethersproject/providers';
+import { Provider } from '@ethersproject/providers';
 import { TopPool } from '../constants/networks/TopPool';
 import { TokenIF } from './token/TokenIF';
-import { ethers } from 'ethers';
-import { fetchBlockNumber } from '../../api/fetchBlockNumber';
+import { Signer } from 'ethers';
 import { CrocEnv } from '@crocswap-libs/sdk';
 
 export interface NetworkIF {
@@ -25,4 +24,9 @@ export interface NetworkSessionIF {
     signer?: Signer;
     gcUrl: string;
     crocEnv: CrocEnv;
+}
+
+export interface NetworkUserSessionIF {
+    networkSession: NetworkSessionIF;
+    userAddress: string;
 }

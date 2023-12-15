@@ -45,8 +45,8 @@ interface RecordRequestIF {
 
 import { fetchBlockNumber } from '../api/fetchBlockNumber';
 import { ethers } from 'ethers';
-import { tokenListURIs } from '../constants/tokenListURIs';
-import fetchTokenList from '../api/fetchTokenList';
+// import { tokenListURIs } from '../constants/tokenListURIs';
+// import fetchTokenList from '../api/fetchTokenList';
 import { GCGO_ETHEREUM_URL } from '../constants/gcgo';
 
 const fetchUserPositions = async ({
@@ -281,6 +281,10 @@ const fetchSimpleDecorated = async ({
         chainId,
         gcUrl,
         provider,
+        ensResolution,
+        annotate,
+        omitKnockout,
+        addValue,
         lastBlockNumber,
         tokenUniv,
         crocEnv,
