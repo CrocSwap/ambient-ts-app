@@ -142,7 +142,13 @@ function TableRows({
                 }),
             );
         }
-    }, [type, data]);
+    }, [
+        type,
+        data,
+        currentPositionActive,
+        currentLimitOrderActive,
+        currentTxActiveInTransactions,
+    ]);
 
     const rangeContent = () => {
         return (
