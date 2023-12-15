@@ -1,8 +1,6 @@
-// Want to create a map of tokens[chainId] == list of unique tokens by chain, knowing there will be duplicates
 import { tokenListURIs } from '../constants';
-import { TokenIF } from '../types';
-import { fetchTokenList } from '../api';
-
+import { TokenIF, TokenListIF } from '../types';
+import fetchTokenList from './fetchTokenList';
 const tokenUniverses = new Map<string, TokenIF[]>();
 
 function processTokenList(
@@ -13,7 +11,6 @@ function processTokenList(
         if (!universe.has(token.chainId)) {
             universe.set(token.chainId, new Map<string, TokenIF>());
         }
-
         const currentTokens = universe.get(token.chainId);
         if (!currentTokens.has(token.address)) {
             currentTokens.set(token.address, token);
@@ -26,14 +23,9 @@ export async function downloadAllTokenUniverses(): Promise<
 > {
     if (tokenUniverses.size > 0) return tokenUniverses;
     const universes = new Map<string, Map<string, TokenIF>>();
-
-    console.log('Building Token List');
-    for (const uri of tokenListURIs) {
-        console.log('Building Token List 2');
+    for (const uri of Object.values(tokenListURIs)) {
         try {
-            console.log('Building Token List 3');
             const tokenList = await fetchTokenList(uri);
-            console.log('Building Token List 4');
             processTokenList(tokenList.tokens, universes);
         } catch (error) {
             console.warn(
@@ -42,9 +34,11 @@ export async function downloadAllTokenUniverses(): Promise<
             );
         }
     }
-
     universes.forEach((tokens, chainId) => {
-        tokenUniverses.set(chainId, Array.from(tokens.values()));
+        tokenUniverses.set(
+            '0x' + chainId.toString(16),
+            Array.from(tokens.values()),
+        );
     });
     return tokenUniverses;
 }

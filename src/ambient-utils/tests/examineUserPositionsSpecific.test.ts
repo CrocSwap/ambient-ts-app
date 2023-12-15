@@ -7,23 +7,12 @@ import fetchTokenList from '../api/fetchTokenList';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { querySpotPrice } from '../dataLayer';
 import { fetchTokenPrice, fetchContractDetails, fetchEnsAddress } from '../api';
-// import tokenUniverseMainnet from '../testing-only-ambient-token-list.json';
-// import tokenUniverseTestnet from '../testing-only-testnet-token-list.json';
 import { PositionIF, RecordType } from '../types';
 import { createNetworkSession } from '../constants/networks/createNetworkSession';
 
 const fetchData = async () => {
-    const mainnetSession = await createNetworkSession({
-        chainId: '0x1',
-        // tokenUniverse:tokenUniverseMainnet.tokens,
-        // infuraUrl: 'https://mainnet.infura.io/v3/' + process.env.REACT_APP_INFURA_KEY
-    });
-    const goerliSession = await createNetworkSession({
-        chainId: '0x5',
-        // tokenUniverse:tokenUniverseTestnet.tokens,
-        // infuraUrl:'https://goerli.infura.io/v3/' + process.env.REACT_APP_INFURA_KEY
-    });
-
+    const mainnetSession = await createNetworkSession({ chainId: '0x1' });
+    const goerliSession = await createNetworkSession({ chainId: '0x5' });
     const sess = goerliSession;
     const userAddress = '0x648a62958D11Ea1De1F73ff3F5ecb9FBEE1bBa01';
     const updatedLedger = await fetchRecords({
