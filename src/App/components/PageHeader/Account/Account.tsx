@@ -12,11 +12,13 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { trimString } from '../../../../ambient-utils/dataLayer';
 import { ExchangeBalanceDropdown } from '../ExchangeBalanceDropdown/ExchangeBalanceDropdown';
 import {
+    LevelButton,
     TitleGradientButton,
     WalletName,
 } from '../../../../styled/Components/Header';
 import { FlexContainer } from '../../../../styled/Common';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import LevelDropdown from './LevelDropdown/LevelDropdown';
 // TODO: use user context instead of UseAccount
 interface propsIF {
     accountAddress: string;
@@ -47,16 +49,23 @@ export default function Account(props: propsIF) {
 
     const [openNavbarMenu, setOpenNavbarMenu] = useState(false);
     const [showWalletDropdown, setShowWalletDropdown] = useState(false);
+    const [showLevelDropdown, setShowLevelDropdown] = useState(false);
 
     useEffect(() => {
-        !isUserConnected ? setShowWalletDropdown(false) : null;
+        if (!isUserConnected) {
+            setShowWalletDropdown(false);
+            setShowLevelDropdown(false);
+        }
     }, [isUserConnected]);
 
     const walletDropdownItemRef = useRef<HTMLDivElement>(null);
+    const levelDropdownItemRef = useRef<HTMLDivElement>(null);
     const clickOutsideHandler = () => {
         setShowWalletDropdown(false);
+        setShowLevelDropdown(false);
     };
     UseOnClickOutside(walletDropdownItemRef, clickOutsideHandler);
+    UseOnClickOutside(levelDropdownItemRef, clickOutsideHandler);
 
     const ariaLabel =
         'You are currently on a focus mode on the account dropdown menu. To enter focus mode, press tab once again.  To exit focus mode, press escape.';
@@ -67,8 +76,10 @@ export default function Account(props: propsIF) {
     useEffect(() => {
         if (isEscapePressed) {
             setShowWalletDropdown(false);
+            setShowLevelDropdown(false);
         }
     }, [isEscapePressed]);
+
     const walletDisplay = (
         <section
             style={{ position: 'relative', fontSize: '16px' }}
@@ -97,6 +108,30 @@ export default function Account(props: propsIF) {
             ) : null}
         </section>
     );
+    const levelDisplay = (
+        <section
+            style={{ position: 'relative', fontSize: '16px' }}
+            ref={levelDropdownItemRef}
+            aria-label={mainAriaLabel}
+        >
+            <LevelButton
+                tabIndex={0}
+                onClick={() => setShowLevelDropdown(!showLevelDropdown)}
+                aria-label={ariaLabel}
+            >
+                16
+            </LevelButton>
+            {showLevelDropdown ? (
+                <LevelDropdown
+                    ensName={ensName !== '' ? ensName : ''}
+                    accountAddress={props.accountAddress}
+                    handleCopyAddress={handleCopyAddress}
+                    accountAddressFull={props.accountAddressFull}
+                    clickOutsideHandler={clickOutsideHandler}
+                />
+            ) : null}
+        </section>
+    );
 
     return (
         <FlexContainer
@@ -106,6 +141,7 @@ export default function Account(props: propsIF) {
             overflow='visible'
         >
             {isUserConnected && walletDisplay}
+            {isUserConnected && levelDisplay}
             {isUserConnected && <ExchangeBalanceDropdown />}
             <NavItem
                 icon={<FiMoreHorizontal size={20} color='#CDC1FF' />}

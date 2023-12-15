@@ -293,7 +293,7 @@ export const WalletWrapper = styled(FlexContainer)`
     position: absolute;
     top: 50px;
     width: 347px;
-    height: 350px;
+    height: 280px;
     right: -40px;
     z-index: 9999;
     padding: 8px 1rem;
@@ -301,6 +301,27 @@ export const WalletWrapper = styled(FlexContainer)`
     opacity: 1;
     bottom: 85px;
     pointer-events: auto;
+`;
+export const LevelWrapper = styled(FlexContainer)`
+    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: 0px 45px 30px rgba(0, 0, 0, 0.5);
+    background: var(--dark2);
+    position: absolute;
+    top: 50px;
+    width: 347px;
+    right: 15px;
+    z-index: 9999;
+    padding: 8px 1rem;
+    border: 1px solid var(--accent1);
+
+    opacity: 1;
+    bottom: 85px;
+    pointer-events: auto;
+
+    display: flex;
+    flex-direction: column;
+    height: 136px;
+    gap: 8px;
 `;
 
 // Account
@@ -330,6 +351,23 @@ export const TitleGradientButton = styled.button`
         font-size: var(--body-size);
         line-height: var(--body-lh);
     }
+`;
+
+export const LevelButton = styled.button`
+    outline: none;
+    border: none;
+    background: var(--accent1);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    padding: 4px 3px 4px 4px;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text1);
 `;
 
 export const WalletName = styled.p`
