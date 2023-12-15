@@ -2140,7 +2140,7 @@ export default function Chart(props: propsIF) {
         if (reset) {
             const candleDomain = {
                 lastCandleDate: new Date().getTime(),
-                domainBoundry: lastCandleData?.time * 1000,
+                domainBoundry: lastCandleData?.time * 1000 - period * 1000,
             };
 
             setCandleDomains(candleDomain);
