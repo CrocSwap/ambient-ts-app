@@ -71,7 +71,6 @@ function TableRows({
     const [rankingMap] = useState<Map<string, number>>(new Map());
 
     useEffect(() => {
-        console.log('positions by pay');
         positionsByApy?.forEach((posId, idx) => {
             rankingMap.set(posId, idx + 1);
         });

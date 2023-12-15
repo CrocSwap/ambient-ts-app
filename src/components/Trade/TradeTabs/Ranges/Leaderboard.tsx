@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useContext, useEffect, useState, memo, useMemo } from 'react';
+import { useContext, useEffect, useState, memo } from 'react';
 
 // START: Import Local Files
 import Pagination from '../../../Global/Pagination/Pagination';
@@ -200,11 +200,6 @@ function Leaderboard() {
 
     // TODO: we can probably severely reduce the number of wrappers in this JSX
 
-    const memoizedData = useMemo(
-        () => usePaginateDataOrNull,
-        [usePaginateDataOrNull],
-    );
-
     return (
         <FlexContainer flexDirection='column' fullHeight>
             <RangeRowStyled size={tableView} leaderboard header>
@@ -223,7 +218,7 @@ function Leaderboard() {
                 {positionsByApy.length > 0 && (
                     <TableRows
                         type='Range'
-                        data={memoizedData}
+                        data={usePaginateDataOrNull}
                         isAccountView={false}
                         isLeaderboard={true}
                         tableView={tableView}
