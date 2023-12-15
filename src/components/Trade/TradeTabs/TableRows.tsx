@@ -68,10 +68,14 @@ function TableRows({
         modalType === 'action' ? openActionModal() : openDetailsModal();
     };
 
-    const getRank = (positionId: string) => {
-        if (!positionsByApy || positionsByApy.length === 0) return;
-        return positionsByApy.findIndex((posId) => posId === positionId) + 1;
-    };
+    const [rankingMap] = useState<Map<string, number>>(new Map());
+
+    useEffect(() => {
+        console.log('positions by pay');
+        positionsByApy?.forEach((posId, idx) => {
+            rankingMap.set(posId, idx + 1);
+        });
+    }, [positionsByApy]);
     // ----------------------
 
     // Transaction Modal Controls
@@ -116,6 +120,7 @@ function TableRows({
     const [activeRecord, setActiveRecord] = useState<ActiveRecord>(undefined);
 
     useEffect(() => {
+        console.log('TableRows useEffect');
         if (type === 'Range') {
             setActiveRecord(
                 (data as PositionIF[]).find((position) => {
@@ -137,6 +142,11 @@ function TableRows({
         }
     }, [type, data]);
 
+    useEffect(() => {
+        console.log({ type });
+        console.log({ data });
+    }, [data.length]);
+
     const rangeContent = () => {
         return (
             <>
@@ -147,7 +157,7 @@ function TableRows({
                         tableView={tableView}
                         isAccountView={isAccountView}
                         isLeaderboard={isLeaderboard}
-                        rank={getRank(position.positionId)}
+                        rank={rankingMap.get(position.positionId)}
                         openDetailsModal={() =>
                             openRangeModal(position.positionId, 'details')
                         }

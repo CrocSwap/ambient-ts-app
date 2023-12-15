@@ -239,11 +239,6 @@ function RangesRow(props: propsIF) {
         rangeDisplay,
     } = rangeRowConstants(rangeRowConstantsProps);
 
-    function handleRowClick() {
-        setCurrentPositionActive('');
-        openDetailsModal();
-    }
-
     return (
         <>
             <RangeRowStyled
@@ -256,7 +251,7 @@ function RangesRow(props: propsIF) {
                     position.positionId === currentRangeInAdd
                 }
                 user={userNameToDisplay === 'You' && showAllData}
-                onClick={handleRowClick}
+                onClick={openDetailsModal}
                 id={positionDomId}
                 ref={currentPositionActive ? activePositionRef : null}
             >

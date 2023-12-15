@@ -1,5 +1,5 @@
 /* eslint-disable no-irregular-whitespace */
-import { useContext, useEffect, useRef, useState, memo } from 'react';
+import { useContext, useEffect, useRef, useState, memo, useMemo } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
 import { useSortedLimits } from '../useSortedLimits';
@@ -416,6 +416,9 @@ function Orders(props: propsIF) {
             }
         }
     };
+
+    const memoizedData = useMemo(() => _DATA.currentData, [_DATA.currentData]);
+
     const orderDataOrNull = shouldDisplayNoTableData ? (
         <NoTableData type='limits' isAccountView={isAccountView} />
     ) : (
@@ -439,7 +442,7 @@ function Orders(props: propsIF) {
                     ))}
                 <TableRows
                     type='Order'
-                    data={_DATA.currentData}
+                    data={memoizedData}
                     tableView={tableView}
                     isAccountView={isAccountView}
                 />

@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useEffect, useState, useContext, memo, useRef } from 'react';
+import { useEffect, useState, useContext, memo, useRef, useMemo } from 'react';
 
 // START: Import Local Files
 import { Pagination } from '@mui/material';
@@ -395,6 +395,8 @@ function Ranges(props: propsIF) {
         (relevantTransactionsByType.length === 0 ||
             pendingTransactions.length === 0);
 
+    const memoizedData = useMemo(() => _DATA.currentData, [_DATA.currentData]);
+
     const rangeDataOrNull = !shouldDisplayNoTableData ? (
         <div>
             <ul ref={listRef} id='current_row_scroll'>
@@ -414,7 +416,7 @@ function Ranges(props: propsIF) {
                     ))}
                 <TableRows
                     type='Range'
-                    data={_DATA.currentData}
+                    data={memoizedData}
                     isAccountView={isAccountView}
                     tableView={tableView}
                 />
