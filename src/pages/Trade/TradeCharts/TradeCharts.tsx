@@ -27,6 +27,7 @@ import { updatesIF } from '../../../utils/hooks/useUrlParams';
 import { FlexContainer } from '../../../styled/Common';
 import { MainContainer } from '../../../styled/Components/Chart';
 import { TutorialButton } from '../../../styled/Components/Tutorial';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -180,6 +181,8 @@ function TradeCharts(props: propsIF) {
 
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
+    const { isConfirmationActive } = useContext(TradeDataContext);
+
     return (
         <MainContainer
             flexDirection='column'
@@ -188,9 +191,13 @@ function TradeCharts(props: propsIF) {
             style={{
                 padding: isChartFullScreen ? '1rem' : '0',
                 background: isChartFullScreen ? 'var(--dark2)' : '',
+                opacity: isConfirmationActive ? '0.6' : '1',
+                pointerEvents: isConfirmationActive ? 'none' : 'initial',
+                cursor: isConfirmationActive ? 'progress' : 'initial',
             }}
             ref={chartCanvasRef}
         >
+            {/* {isConfirmationActive &&  <Text style={{textAlign: 'center'}} fontSize='body' color='accent5'> Transaction in progress...</Text>} */}
             <div>
                 {isTutorialActive && (
                     <FlexContainer

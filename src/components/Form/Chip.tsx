@@ -17,7 +17,8 @@ const purpleOutlineHover = `
 &:hover svg {
     color: var(--accent1) !important;
 }`;
-const greyOutlineHover = `                
+const greyOutlineHover = `     
+opacity: 0.5;           
 &:hover {
     border: 1px solid var(--text2);
     color: var(--text2);
@@ -36,7 +37,6 @@ export const Chip = styled.button<PropsIF>`
     height: 23px;
     padding: 5px 8px;
     text-decoration: none;
-    cursor: pointer;
     font-size: var(--body-size);
 
     border: 1px solid var(--dark3);
@@ -47,21 +47,21 @@ export const Chip = styled.button<PropsIF>`
         switch (variant) {
             case 'secondary':
                 return `
-                color: var(--text2);
-                background-color: var(--dark2);
-                ${disabled ? greyOutlineHover : purpleOutlineHover}
+                    color: var(--text2);
+                    background-color: var(--dark2);
+                    ${disabled ? greyOutlineHover : purpleOutlineHover}
                 `;
             case 'filled':
-                return `background-color: var(--accent1);
-                color: var(--text1);`;
-
+                return `
+                    background-color: var(--accent1);
+                    color: var(--text1);
+                `;
             case 'outlined':
             default:
                 return `
-                color: var(--text1);
-                background: var(--dark1);
-                ${disabled ? greyOutlineHover : purpleOutlineHover}
-
+                    color: var(--text1);
+                    background: var(--dark1);
+                    ${disabled ? greyOutlineHover : purpleOutlineHover}
                 `;
         }
     }}

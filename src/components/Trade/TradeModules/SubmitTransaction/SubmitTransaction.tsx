@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { RiArrowUpSLine, RiArrowDownSLine } from 'react-icons/ri';
 import { uriToHttp } from '../../../../ambient-utils/dataLayer';
 import {
@@ -82,7 +82,11 @@ export default function SubmitTransaction(props: propsIF) {
         isTransactionApproved &&
         !pendingTransactions.includes(newTransactionHash);
 
-    const { tokenB } = useContext(TradeDataContext);
+    const { tokenB, deactivateConfirmation, activateConfirmation } =
+        useContext(TradeDataContext);
+
+    // const {isConfirmationActive,  activateConfirmation,deactivateConfirmation } =
+    // useContext(TradeDataContext);
 
     const confirmSendMessage = (
         <WaitingConfirmation
@@ -193,6 +197,7 @@ export default function SubmitTransaction(props: propsIF) {
                     onClick={() => {
                         resetConfirmation();
                         sendTransaction();
+                        activateConfirmation(type);
                     }}
                 >
                     Retry
@@ -208,6 +213,10 @@ export default function SubmitTransaction(props: propsIF) {
         isTransactionException ||
         (lastReceipt && !isLastReceiptSuccess);
 
+    useEffect(() => {
+        if (isError) deactivateConfirmation();
+    }, [isError]);
+
     const stepperActionButton = (
         <Button
             title={
@@ -219,7 +228,9 @@ export default function SubmitTransaction(props: propsIF) {
             }
             action={() => {
                 isError
-                    ? (resetConfirmation(), sendTransaction())
+                    ? (resetConfirmation(),
+                      sendTransaction(),
+                      activateConfirmation(type))
                     : handleReset();
             }}
             flat

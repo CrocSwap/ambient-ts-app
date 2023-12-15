@@ -20,6 +20,7 @@ import {
     ConfirmationQuantityContainer,
 } from '../../../styled/Components/TradeModules';
 import { FiPlus } from 'react-icons/fi';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface propsIF {
     type: 'Swap' | 'Limit' | 'Range' | 'Reposition';
@@ -89,6 +90,8 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
 
     const [skipFutureConfirmation, setSkipFutureConfirmation] =
         useState<boolean>(false);
+
+    const { activateConfirmation } = useContext(TradeDataContext);
 
     const formattedTokenAQuantity = getFormattedNumber({
         value: tokenAQuantity ? parseFloat(tokenAQuantity) : undefined,
@@ -291,6 +294,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                                 }
                                 setShowStepperComponent(true);
                                 initiate();
+                                activateConfirmation(type);
                             }}
                             flat
                             disabled={!!acknowledgeUpdate}
