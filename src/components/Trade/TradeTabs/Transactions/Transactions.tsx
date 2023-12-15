@@ -1,15 +1,7 @@
 /* eslint-disable no-irregular-whitespace */
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { TransactionIF, CandleDataIF } from '../../../../ambient-utils/types';
-import {
-    Dispatch,
-    useState,
-    useEffect,
-    useRef,
-    useContext,
-    memo,
-    useMemo,
-} from 'react';
+import { Dispatch, useState, useEffect, useRef, useContext, memo } from 'react';
 
 import { Pagination } from '@mui/material';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
@@ -544,18 +536,6 @@ function Transactions(props: propsIF) {
         !isAccountView &&
         sortedTransactions.length > NUM_TRANSACTIONS_WHEN_COLLAPSED;
 
-    const memoizedData = useMemo(() => _DATA.currentData, [_DATA.currentData]);
-    const transactionRows = useMemo(() => {
-        return (
-            <TableRows
-                type='Transaction'
-                data={memoizedData}
-                tableView={tableView}
-                isAccountView={isAccountView}
-            />
-        );
-    }, [memoizedData, tableView, isAccountView]);
-
     const transactionDataOrNull = shouldDisplayNoTableData ? (
         <NoTableData
             setSelectedDate={setSelectedDate}
@@ -665,7 +645,12 @@ function Transactions(props: propsIF) {
                             </>
                         );
                     })}
-                {transactionRows}
+                <TableRows
+                    type='Transaction'
+                    data={_DATA.currentData}
+                    tableView={tableView}
+                    isAccountView={isAccountView}
+                />
             </ul>
             {showViewMoreButton && (
                 <FlexContainer
