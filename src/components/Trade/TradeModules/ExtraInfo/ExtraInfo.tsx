@@ -71,6 +71,7 @@ export const ExtraInfo = (props: PropsIF) => {
                         toggleDidUserFlipDenom();
                         e.stopPropagation();
                     }}
+                    cursor='pointer'
                 >
                     {conversionRate}
                 </FlexContainer>
