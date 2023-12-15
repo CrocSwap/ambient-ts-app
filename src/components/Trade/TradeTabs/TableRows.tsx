@@ -58,6 +58,7 @@ function TableRows({
     const closeRangeModal = (modalType: 'action' | 'details') => {
         setCurrentPositionActive('');
         modalType === 'action' ? closeActionModal() : closeDetailsModal();
+        setActiveRecord(undefined);
     };
 
     const openRangeModal = (
@@ -81,6 +82,7 @@ function TableRows({
     const closeTransactionModal = () => {
         setCurrentTxActiveInTransactions('');
         closeDetailsModal();
+        setActiveRecord(undefined);
     };
 
     const openTransactionModal = (recordId: string) => {
@@ -103,6 +105,7 @@ function TableRows({
     const closeLimitModal = (modalType: 'action' | 'details') => {
         setCurrentLimitOrderActive('');
         modalType === 'action' ? closeActionModal() : closeDetailsModal();
+        setActiveRecord(undefined);
     };
 
     const openLimitModal = (
@@ -141,11 +144,6 @@ function TableRows({
         }
     }, [type, data]);
 
-    useEffect(() => {
-        console.log({ type });
-        console.log({ data });
-    }, [data.length]);
-
     const rangeContent = () => {
         return (
             <>
@@ -166,6 +164,7 @@ function TableRows({
                         setRangeModalAction={setRangeModalAction}
                     />
                 ))}
+                {console.log({ activeRecord })}
                 {isDetailsModalOpen && activeRecord && (
                     <RangeDetailsModal
                         position={activeRecord as PositionIF}
