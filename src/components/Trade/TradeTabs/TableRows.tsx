@@ -1,4 +1,4 @@
-import { memo, useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
     LimitModalAction,
     LimitOrderIF,
@@ -261,4 +261,4 @@ function TableRows({
     );
 }
 
-export default memo(TableRows);
+export default TableRows;

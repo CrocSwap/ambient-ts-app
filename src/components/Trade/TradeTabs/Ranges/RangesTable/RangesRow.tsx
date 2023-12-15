@@ -205,7 +205,7 @@ function RangesRow(props: propsIF) {
         baseTokenSymbol,
         quoteTokenSymbol,
         isLeaderboard,
-        rank: rank,
+        rank,
         elapsedTimeString,
         maxRangeDenomByMoneyness,
         isAccountView,
