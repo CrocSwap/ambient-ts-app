@@ -42,6 +42,10 @@ export default function CandleChart(props: candlePropsIF) {
     const [candlestick, setCandlestick] = useState<any>();
 
     const [isFirstRender, setIsFirstRender] = useState(true);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [prevlastCandleTime, setPrevlastCandleTime] = useState(
+        lastCandleData.time,
+    );
     const selectedCandleColor = '#E480FF';
     const crocCandleLightColor = '#CDC1FF';
     const crocCandleBorderLightColor = '#CDC1FF';
@@ -68,11 +72,18 @@ export default function CandleChart(props: candlePropsIF) {
         if (tradeTableState === 'Expanded' || isFirstRender) return;
         if (data && data.length > 0 && scaleData) {
             if (!showLatest) {
+                let diff = 1;
                 const domainLeft = scaleData?.xScale.domain()[0];
                 const domainRight = scaleData?.xScale.domain()[1];
+
+                setPrevlastCandleTime((prev) => {
+                    diff = (lastCandleData.time - prev) / period;
+                    return lastCandleData.time;
+                });
+
                 scaleData?.xScale.domain([
-                    domainLeft + period * 1000,
-                    domainRight + period * 1000,
+                    domainLeft + diff * period * 1000,
+                    domainRight + diff * period * 1000,
                 ]);
             }
         }
