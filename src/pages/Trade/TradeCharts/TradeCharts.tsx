@@ -27,7 +27,6 @@ import { updatesIF } from '../../../utils/hooks/useUrlParams';
 import { FlexContainer } from '../../../styled/Common';
 import { MainContainer } from '../../../styled/Components/Chart';
 import { TutorialButton } from '../../../styled/Components/Tutorial';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 // interface for React functional component props
 interface propsIF {

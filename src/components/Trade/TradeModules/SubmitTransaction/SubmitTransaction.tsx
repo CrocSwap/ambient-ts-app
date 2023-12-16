@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext } from 'react';
 import { RiArrowUpSLine, RiArrowDownSLine } from 'react-icons/ri';
 import { uriToHttp } from '../../../../ambient-utils/dataLayer';
 import {
@@ -82,8 +82,7 @@ export default function SubmitTransaction(props: propsIF) {
         isTransactionApproved &&
         !pendingTransactions.includes(newTransactionHash);
 
-    const { tokenB, deactivateConfirmation, activateConfirmation } =
-        useContext(TradeDataContext);
+    const { tokenB, activateConfirmation } = useContext(TradeDataContext);
 
     // const {isConfirmationActive,  activateConfirmation,deactivateConfirmation } =
     // useContext(TradeDataContext);

@@ -20,7 +20,6 @@ import {
     ConfirmationQuantityContainer,
 } from '../../../styled/Components/TradeModules';
 import { FiPlus } from 'react-icons/fi';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface propsIF {
     type: 'Swap' | 'Limit' | 'Range' | 'Reposition';
