@@ -89,6 +89,7 @@ export default function Limit() {
         limitTick,
         poolPriceNonDisplay,
         primaryQuantity,
+        activateConfirmation,
     } = useContext(TradeDataContext);
     const { liquidityFee } = useContext(GraphDataContext);
     const { urlParamMap, updateURL } = useTradeData();
@@ -822,7 +823,10 @@ export default function Limit() {
                         areBothAckd
                             ? bypassConfirmLimit.isEnabled
                                 ? sendLimitOrder
-                                : () => setActiveContent('confirmation')
+                                : () => {
+                                      setActiveContent('confirmation');
+                                      activateConfirmation('Limit');
+                                  }
                             : ackAsNeeded
                     }
                     disabled={

@@ -97,6 +97,7 @@ function Swap(props: propsIF) {
         isTokenAPrimary,
         isDenomBase,
         primaryQuantity,
+        activateConfirmation,
     } = useContext(TradeDataContext);
 
     const [sellQtyString, setSellQtyString] = useState<string>(
@@ -650,7 +651,10 @@ function Swap(props: propsIF) {
                         areBothAckd
                             ? bypassConfirmSwap.isEnabled
                                 ? initiateSwap
-                                : () => setActiveContent('confirmation')
+                                : () => {
+                                      setActiveContent('confirmation');
+                                      activateConfirmation('Swap');
+                                  }
                             : ackAsNeeded
                     }
                     disabled={

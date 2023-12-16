@@ -120,3 +120,20 @@
     top: 0;
     pointer-events: auto;
 }
+
+
+.disabled_button{
+    opacity: 0.5;
+    pointer-events: none;
+    cursor:progress;
+
+    &:hover {
+        border: 1px solid var(--text2);
+        color: var(--text2);
+    }
+    
+    &:hover svg {
+        color: var(--text2) !important;
+    }
+     
+}

@@ -181,7 +181,7 @@ function TradeCharts(props: propsIF) {
 
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
-    const { isConfirmationActive } = useContext(TradeDataContext);
+    // const { isConfirmationActive } = useContext(TradeDataContext);
 
     return (
         <MainContainer
@@ -191,9 +191,9 @@ function TradeCharts(props: propsIF) {
             style={{
                 padding: isChartFullScreen ? '1rem' : '0',
                 background: isChartFullScreen ? 'var(--dark2)' : '',
-                opacity: isConfirmationActive ? '0.6' : '1',
-                pointerEvents: isConfirmationActive ? 'none' : 'initial',
-                cursor: isConfirmationActive ? 'progress' : 'initial',
+                // opacity: isConfirmationActive ? '0.6' : '1',
+                // pointerEvents: isConfirmationActive ? 'none' : 'initial',
+                // cursor: isConfirmationActive ? 'progress' : 'initial',
             }}
             ref={chartCanvasRef}
         >

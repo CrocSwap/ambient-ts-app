@@ -213,10 +213,6 @@ export default function SubmitTransaction(props: propsIF) {
         isTransactionException ||
         (lastReceipt && !isLastReceiptSuccess);
 
-    useEffect(() => {
-        if (isError) deactivateConfirmation();
-    }, [isError]);
-
     const stepperActionButton = (
         <Button
             title={

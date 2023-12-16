@@ -109,6 +109,7 @@ function Range() {
         baseToken,
         quoteToken,
         poolPriceNonDisplay,
+        activateConfirmation,
     } = useContext(TradeDataContext);
 
     // RangeTokenInput state values
@@ -1151,6 +1152,7 @@ function Range() {
                                 ? sendTransaction
                                 : () => {
                                       setActiveContent('confirmation');
+                                      activateConfirmation('Range');
                                   }
                             : ackAsNeeded
                     }

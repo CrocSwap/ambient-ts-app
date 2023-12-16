@@ -156,31 +156,39 @@ export default function RangesMenu(props: propsIF) {
     const linkGenRepo: linkGenMethodsIF = useLinkGen('reposition');
 
     const repositionButton = (
-        <Link
-            id={`reposition_button_${position.positionId}`}
-            className={styles.reposition_button}
-            to={linkGenRepo.getFullURL({
-                chain: chainId,
-                tokenA:
-                    tokenAAddress.toLowerCase() === position.quote.toLowerCase()
-                        ? position.quote
-                        : position.base,
-                tokenB:
-                    tokenBAddress.toLowerCase() === position.base.toLowerCase()
-                        ? position.base
-                        : position.quote,
-                lowTick: position.bidTick.toString(),
-                highTick: position.askTick.toString(),
-            })}
-            onClick={() => {
-                setSimpleRangeWidth(10);
-                setCurrentRangeInReposition(position.positionId);
-                setCurrentRangeInAdd('');
-            }}
-            state={{ position: position }}
+        <DefaultTooltip
+            title={isConfirmationActive ? 'Transaction in progress' : ''}
         >
-            Reposition
-        </Link>
+            <Link
+                id={`reposition_button_${position.positionId}`}
+                className={`${styles.reposition_button} ${
+                    isConfirmationActive ? styles.disabled_button : ''
+                }`}
+                to={linkGenRepo.getFullURL({
+                    chain: chainId,
+                    tokenA:
+                        tokenAAddress.toLowerCase() ===
+                        position.quote.toLowerCase()
+                            ? position.quote
+                            : position.base,
+                    tokenB:
+                        tokenBAddress.toLowerCase() ===
+                        position.base.toLowerCase()
+                            ? position.base
+                            : position.quote,
+                    lowTick: position.bidTick.toString(),
+                    highTick: position.askTick.toString(),
+                })}
+                onClick={() => {
+                    setSimpleRangeWidth(10);
+                    setCurrentRangeInReposition(position.positionId);
+                    setCurrentRangeInAdd('');
+                }}
+                state={{ position: position }}
+            >
+                Reposition
+            </Link>
+        </DefaultTooltip>
     );
 
     const removeButton = positionMatchesLoggedInUser ? (
@@ -226,33 +234,38 @@ export default function RangesMenu(props: propsIF) {
     ) : null;
 
     const addButton = (
-        <Chip
-            id={`add_liquidity_position_${position.positionId}`}
-            onClick={() => {
-                // URL params for link to pool page
-                const poolLinkParams: poolParamsIF = {
-                    chain: chainId,
-                    tokenA:
-                        tokenAAddress.toLowerCase() ===
-                        position.quote.toLowerCase()
-                            ? position.quote
-                            : position.base,
-                    tokenB:
-                        tokenAAddress.toLowerCase() ===
-                        position.quote.toLowerCase()
-                            ? position.base
-                            : position.quote,
-                    lowTick: position.bidTick.toString(),
-                    highTick: position.askTick.toString(),
-                };
-                // navigate user to pool page with URL params defined above
-                linkGenPool.navigate(poolLinkParams);
-                handleCopyClick();
-                setCurrentRangeInAdd(position.positionId);
-            }}
+        <DefaultTooltip
+            title={isConfirmationActive ? 'Transaction in progress' : ''}
         >
-            Add
-        </Chip>
+            <Chip
+                disabled={isConfirmationActive}
+                id={`add_liquidity_position_${position.positionId}`}
+                onClick={() => {
+                    // URL params for link to pool page
+                    const poolLinkParams: poolParamsIF = {
+                        chain: chainId,
+                        tokenA:
+                            tokenAAddress.toLowerCase() ===
+                            position.quote.toLowerCase()
+                                ? position.quote
+                                : position.base,
+                        tokenB:
+                            tokenAAddress.toLowerCase() ===
+                            position.quote.toLowerCase()
+                                ? position.base
+                                : position.quote,
+                        lowTick: position.bidTick.toString(),
+                        highTick: position.askTick.toString(),
+                    };
+                    // navigate user to pool page with URL params defined above
+                    linkGenPool.navigate(poolLinkParams);
+                    handleCopyClick();
+                    setCurrentRangeInAdd(position.positionId);
+                }}
+            >
+                Add
+            </Chip>
+        </DefaultTooltip>
     );
 
     const detailsButton = <Chip onClick={openDetailsModal}>Details</Chip>;

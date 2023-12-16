@@ -42,8 +42,13 @@ function TradeModuleHeader(props: propsIF) {
     const [isSettingsModalOpen, openSettingsModal, closeSettingsModal] =
         useModal();
 
-    const { baseToken, quoteToken, isDenomBase, toggleDidUserFlipDenom } =
-        useContext(TradeDataContext);
+    const {
+        baseToken,
+        quoteToken,
+        isDenomBase,
+        toggleDidUserFlipDenom,
+        deactivateConfirmation,
+    } = useContext(TradeDataContext);
 
     const baseTokenSymbol = baseToken.symbol;
     const quoteTokenSymbol = quoteToken.symbol;
@@ -81,6 +86,7 @@ function TradeModuleHeader(props: propsIF) {
             handleSetActiveContent('confirmation');
         } else {
             handleSetActiveContent('main');
+            deactivateConfirmation();
         }
         handleReset();
         setShowStepperComponent(false);

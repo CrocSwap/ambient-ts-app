@@ -91,8 +91,6 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
     const [skipFutureConfirmation, setSkipFutureConfirmation] =
         useState<boolean>(false);
 
-    const { activateConfirmation } = useContext(TradeDataContext);
-
     const formattedTokenAQuantity = getFormattedNumber({
         value: tokenAQuantity ? parseFloat(tokenAQuantity) : undefined,
         abbrevThreshold: 1000000000,
@@ -294,7 +292,6 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                                 }
                                 setShowStepperComponent(true);
                                 initiate();
-                                activateConfirmation(type);
                             }}
                             flat
                             disabled={!!acknowledgeUpdate}
