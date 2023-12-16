@@ -121,7 +121,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
             width: 'auto',
         },
         Limit: {
-            height: mediumScreen || showExtraInfo ? 'auto' : '600px',
+            height: mediumScreen || showExtraInfo ? 'auto' : '530px',
             width: 'auto',
         },
         Range: {
