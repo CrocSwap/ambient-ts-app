@@ -67,6 +67,7 @@ import {
     defaultCandleBandwith,
     drawDataHistory,
     fillLiqAdvanced,
+    isMouseNearLine,
     lineData,
     lineValue,
     liquidityChartData,
@@ -228,6 +229,7 @@ export default function Chart(props: propsIF) {
         setIsTokenAPrimary,
         limitTick,
         setLimitTick,
+        isConfirmationActive,
     } = currentPool;
 
     const [isChartZoom, setIsChartZoom] = useState(false);
@@ -577,11 +579,6 @@ export default function Chart(props: propsIF) {
         ) {
             const offsetY =
                 chartMousemoveEvent.clientY - mainCanvasBoundingClientRect?.top;
-            const mousePlacement = scaleData?.yScale.invert(offsetY);
-            const lineBuffer =
-                (scaleData?.yScale.domain()[1] -
-                    scaleData?.yScale.domain()[0]) /
-                30;
 
             const rangeLowLineValue = ranges.filter(
                 (target: lineValue) => target.name === 'Min',
@@ -590,12 +587,17 @@ export default function Chart(props: propsIF) {
                 (target: lineValue) => target.name === 'Max',
             )[0].value;
 
-            return (
-                (mousePlacement < rangeLowLineValue + lineBuffer &&
-                    mousePlacement > rangeLowLineValue - lineBuffer) ||
-                (mousePlacement < rangeHighLineValue + lineBuffer &&
-                    mousePlacement > rangeHighLineValue - lineBuffer)
+            const checkLowLine = isMouseNearLine(
+                offsetY,
+                rangeLowLineValue,
+                scaleData,
             );
+            const checkHighLine = isMouseNearLine(
+                offsetY,
+                rangeHighLineValue,
+                scaleData,
+            );
+            return checkLowLine || checkHighLine;
         }
 
         return false;
@@ -616,21 +618,10 @@ export default function Chart(props: propsIF) {
             location.pathname.includes('/limit') &&
             scaleData
         ) {
-            const lineBuffer =
-                (scaleData?.yScale.domain()[1] -
-                    scaleData?.yScale.domain()[0]) /
-                30;
-
             const offsetY =
                 chartMousemoveEvent.clientY - mainCanvasBoundingClientRect?.top;
 
-            const mousePlacement = scaleData?.yScale.invert(offsetY);
-            const limitLineValue = limit;
-
-            return (
-                mousePlacement < limitLineValue + lineBuffer &&
-                mousePlacement > limitLineValue - lineBuffer
-            );
+            return isMouseNearLine(offsetY, limit, scaleData);
         }
         return false;
     }, [
@@ -667,7 +658,11 @@ export default function Chart(props: propsIF) {
         if (isLineDrag) {
             d3.select(d3CanvasMain.current).style('cursor', 'none');
         } else if (canUserDragLimit || canUserDragRange) {
-            d3.select(d3CanvasMain.current).style('cursor', 'row-resize');
+            if (isConfirmationActive) {
+                d3.select(d3CanvasMain.current).style('cursor', 'not-allowed');
+            } else {
+                d3.select(d3CanvasMain.current).style('cursor', 'row-resize');
+            }
         } else {
             d3.select(d3CanvasMain.current).style(
                 'cursor',
@@ -679,6 +674,7 @@ export default function Chart(props: propsIF) {
         canUserDragRange,
         isLineDrag,
         isOnCandleOrVolumeMouseLocation,
+        isConfirmationActive,
     ]);
 
     useEffect(() => {
@@ -1514,6 +1510,10 @@ export default function Chart(props: propsIF) {
                                 : 'Max';
                     }
                 })
+
+                .filter(() => {
+                    return !isConfirmationActive;
+                })
                 .on('drag', function (event) {
                     if (event.sourceEvent instanceof TouchEvent) {
                         offsetY =
@@ -1887,6 +1887,7 @@ export default function Chart(props: propsIF) {
         isTokenABase,
         chainData.gridSize,
         rescale,
+        isConfirmationActive,
     ]);
 
     // dragLimit
@@ -1916,6 +1917,9 @@ export default function Chart(props: propsIF) {
         };
         const dragLimit = d3
             .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
+            .filter(() => {
+                return !isConfirmationActive;
+            })
             .on('start', (event) => {
                 // When the drag starts:
                 // hide the cursor
@@ -2034,6 +2038,7 @@ export default function Chart(props: propsIF) {
         isTokenABase,
         chainData.gridSize,
         rescale,
+        isConfirmationActive,
     ]);
 
     useEffect(() => {
@@ -3470,7 +3475,8 @@ export default function Chart(props: propsIF) {
                     (location.pathname.includes('pool') ||
                         location.pathname.includes('reposition')) &&
                     scaleData !== undefined &&
-                    !isHoverCandleOrVolumeData
+                    !isHoverCandleOrVolumeData &&
+                    !isConfirmationActive
                 ) {
                     onClickRange(event);
                 }
@@ -3479,7 +3485,8 @@ export default function Chart(props: propsIF) {
                 if (
                     location.pathname.includes('/limit') &&
                     scaleData !== undefined &&
-                    !isHoverCandleOrVolumeData
+                    !isHoverCandleOrVolumeData &&
+                    !isConfirmationActive
                 ) {
                     let newLimitValue = scaleData?.yScale.invert(event.offsetY);
 
@@ -3573,6 +3580,7 @@ export default function Chart(props: propsIF) {
         diffHashSigChart(unparsedCandleData),
         liquidityData,
         hoveredDrawnShape,
+        isConfirmationActive,
     ]);
 
     function checkLineLocation(
@@ -4326,6 +4334,7 @@ export default function Chart(props: propsIF) {
         poolPriceDisplay,
         isChartZoom,
         selectedDrawnShape,
+        isConfirmationActive,
     };
 
     return (
