@@ -16,6 +16,8 @@ interface TradeTableContextIF {
     setCurrentPositionActive: (val: string) => void;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: (val: string) => void;
+    currentLimitOrderActive: string;
+    setCurrentLimitOrderActive: (val: string) => void;
     toggleTradeTable: () => void;
     toggleTradeTableCollapse: () => void;
     showAllData: boolean;
@@ -48,6 +50,7 @@ export const TradeTableContextProvider = (props: {
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] =
         useState('');
     const [currentPositionActive, setCurrentPositionActive] = useState('');
+    const [currentLimitOrderActive, setCurrentLimitOrderActive] = useState('');
 
     const [isTradeTableMinimized, setIsTradeTableMinimized] = useState(false);
 
@@ -79,6 +82,8 @@ export const TradeTableContextProvider = (props: {
         setCurrentTxActiveInTransactions,
         currentPositionActive,
         setCurrentPositionActive,
+        currentLimitOrderActive,
+        setCurrentLimitOrderActive,
         // chartHeight is a minimum of 4 when closed since the resizable selector is 4px in height
         toggleTradeTable: () => {
             if (

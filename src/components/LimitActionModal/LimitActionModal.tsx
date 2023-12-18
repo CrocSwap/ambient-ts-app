@@ -33,13 +33,12 @@ import { ReceiptContext } from '../../contexts/ReceiptContext';
 interface propsIF {
     limitOrder: LimitOrderIF;
     type: LimitActionType;
-    isOpen: boolean;
     onClose: () => void;
     isAccountView: boolean;
 }
 
 export default function LimitActionModal(props: propsIF) {
-    const { limitOrder, type, isOpen, onClose, isAccountView } = props;
+    const { limitOrder, type, onClose, isAccountView } = props;
     const { userAddress } = useContext(UserDataContext);
 
     const {
@@ -97,10 +96,15 @@ export default function LimitActionModal(props: propsIF) {
     };
 
     useEffect(() => {
-        if (!showConfirmation || !isOpen) {
+        if (!showConfirmation) {
             resetConfirmation();
         }
-    }, [txErrorCode, isOpen]);
+    }, [txErrorCode]);
+
+    const closeModal = () => {
+        resetConfirmation();
+        onClose();
+    };
 
     const updateLiq = async () => {
         try {
@@ -423,8 +427,8 @@ export default function LimitActionModal(props: propsIF) {
             onBackClick={resetConfirmation}
         />
     ) : (
-        <Modal usingCustomHeader onClose={onClose}>
-            <ModalHeader title={`${type} Limit Order`} onClose={onClose} />
+        <Modal usingCustomHeader onClose={closeModal}>
+            <ModalHeader title={`${type} Limit Order`} onClose={closeModal} />
             <div className={styles.main_content_container}>
                 <LimitActionTokenHeader
                     isDenomBase={isDenomBase}
