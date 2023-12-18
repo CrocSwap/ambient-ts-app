@@ -76,7 +76,8 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
 
     const { isUserConnected } = useContext(UserDataContext);
 
-    const { tokenA, tokenB, limitTick } = useContext(TradeDataContext);
+    const { tokenA, tokenB, limitTick, deactivateConfirmation } =
+        useContext(TradeDataContext);
 
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
@@ -319,6 +320,10 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     );
 
     const settingsContent = <div>I am settings</div>;
+
+    if (activeContent === 'main') {
+        deactivateConfirmation();
+    }
 
     return (
         <section>

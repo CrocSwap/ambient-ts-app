@@ -196,7 +196,6 @@ function TradeCharts(props: propsIF) {
             }}
             ref={chartCanvasRef}
         >
-            {/* {isConfirmationActive &&  <Text style={{textAlign: 'center'}} fontSize='body' color='accent5'> Transaction in progress...</Text>} */}
             <div>
                 {isTutorialActive && (
                     <FlexContainer
