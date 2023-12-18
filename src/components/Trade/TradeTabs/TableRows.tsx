@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { memo, useContext, useEffect, useState } from 'react';
 import {
     LimitModalAction,
     LimitOrderIF,
@@ -68,14 +68,6 @@ function TableRows({
         setCurrentPositionActive(recordId);
         modalType === 'action' ? openActionModal() : openDetailsModal();
     };
-
-    const [rankingMap] = useState<Map<string, number>>(new Map());
-
-    useEffect(() => {
-        positionsByApy?.forEach((posId, idx) => {
-            rankingMap.set(posId, idx + 1);
-        });
-    }, [positionsByApy]);
     // ----------------------
 
     // Transaction Modal Controls
@@ -122,7 +114,6 @@ function TableRows({
     const [activeRecord, setActiveRecord] = useState<ActiveRecord>(undefined);
 
     useEffect(() => {
-        console.log('TableRows useEffect');
         if (type === 'Range') {
             setActiveRecord(
                 (data as PositionIF[]).find((position) => {
@@ -160,7 +151,12 @@ function TableRows({
                         tableView={tableView}
                         isAccountView={isAccountView}
                         isLeaderboard={isLeaderboard}
-                        rank={rankingMap.get(position.positionId)}
+                        rank={
+                            positionsByApy
+                                ? positionsByApy.indexOf(position.positionId) +
+                                  1
+                                : undefined
+                        }
                         openDetailsModal={() =>
                             openRangeModal(position.positionId, 'details')
                         }
@@ -170,7 +166,6 @@ function TableRows({
                         setRangeModalAction={setRangeModalAction}
                     />
                 ))}
-                {console.log({ activeRecord })}
                 {isDetailsModalOpen && activeRecord && (
                     <RangeDetailsModal
                         position={activeRecord as PositionIF}
@@ -259,11 +254,11 @@ function TableRows({
 
     return (
         <>
-            {type === 'Range' && rangeContent()}
             {type === 'Transaction' && transactionContent()}
             {type == 'Order' && limitContent()}
+            {type === 'Range' && rangeContent()}
         </>
     );
 }
 
-export default TableRows;
+export default memo(TableRows);
