@@ -24,22 +24,22 @@ export default function fetchTokenList(
         );
     }
 
+    // Handle manual lists
+    const tokenListMap = new Map<string, any>([
+        ['ambient-token-list.json', ambientTokenList],
+        ['testnet-token-list.json', testnetTokenList],
+    ]);
+
     if (uri.startsWith('/') && isRunningOnLocalhost()) {
-        if (uri.includes('ambient-token-list.json')) {
-            return Promise.resolve({
-                ...ambientTokenList,
-                uri,
-                dateRetrieved: new Date().toISOString(),
-                isUserImported,
-            });
-        }
-        if (uri.includes('testnet-token-list.json')) {
-            return Promise.resolve({
-                ...testnetTokenList,
-                uri,
-                dateRetrieved: new Date().toISOString(),
-                isUserImported,
-            });
+        for (const [key, value] of tokenListMap) {
+            if (uri.includes(key)) {
+                return Promise.resolve({
+                    ...value,
+                    uri,
+                    dateRetrieved: new Date().toISOString(),
+                    isUserImported,
+                });
+            }
         }
         throw Error(`Can not access ${uri} token list if deployed locally`);
     }
