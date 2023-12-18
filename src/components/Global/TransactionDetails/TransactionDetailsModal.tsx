@@ -1,5 +1,5 @@
 import styles from './TransactionDetailsModal.module.css';
-import { useState, useRef, useContext, useEffect } from 'react';
+import { useState, useRef, useContext, useEffect, memo } from 'react';
 import TransactionDetailsHeader from './TransactionDetailsHeader/TransactionDetailsHeader';
 import TransactionDetailsPriceInfo from './TransactionDetailsPriceInfo/TransactionDetailsPriceInfo';
 import TransactionDetailsGraph from './TransactionDetailsGraph/TransactionDetailsGraph';
@@ -26,7 +26,7 @@ interface propsIF {
     onClose: () => void;
 }
 
-export default function TransactionDetailsModal(props: propsIF) {
+function TransactionDetailsModal(props: propsIF) {
     const { tx, isBaseTokenMoneynessGreaterOrEqual, isAccountView, onClose } =
         props;
     const {
@@ -187,3 +187,5 @@ export default function TransactionDetailsModal(props: propsIF) {
         </Modal>
     );
 }
+
+export default memo(TransactionDetailsModal);
