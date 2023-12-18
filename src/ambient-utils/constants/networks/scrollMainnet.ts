@@ -34,6 +34,7 @@ const wagmiChain = {
 export const scrollMainnet: NetworkIF = {
     chainId: '0x82750',
     graphCacheUrl: GCGO_SCROLL_URL,
+    evmRpcUrl: 'https://rpc.scroll.io/',
     wagmiChain,
     shouldPollBlock: true,
     marketData: '0x82750',

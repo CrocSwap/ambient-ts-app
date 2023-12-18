@@ -18,6 +18,7 @@ const fetchData = async () => {
     const updatedLedger = await fetchRecords({
         recordType: RecordType.Position,
         user: userAddress,
+
         // Session related:
         chainId: sess.chainId,
         gcUrl: sess.gcUrl,
@@ -25,7 +26,8 @@ const fetchData = async () => {
         lastBlockNumber: sess.lastBlockNumber,
         tokenUniv: sess.tokenUniv,
         crocEnv: sess.crocEnv,
-        // Run Environment related:
+
+        // Decoration Data Related:
         cachedFetchTokenPrice: fetchTokenPrice,
         cachedQuerySpotPrice: querySpotPrice,
         cachedTokenDetails: fetchContractDetails,

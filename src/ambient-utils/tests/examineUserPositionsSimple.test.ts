@@ -17,6 +17,8 @@ describe('Test fetchUserPositions Simple', () => {
             const chainId = '0x1';
             const tokenUniv = await fetchTokenUniverse(chainId);
 
+            // console.log(tokenUniv);
+
             const userPositions = await fetchRecords({
                 recordType: RecordType.Position,
                 user: userAddress,

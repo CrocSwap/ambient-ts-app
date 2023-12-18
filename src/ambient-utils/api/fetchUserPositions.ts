@@ -1,4 +1,6 @@
 import { GCGO_OVERRIDE_URL } from '../constants';
+import { createNetworkSession } from '../constants/networks/createNetworkSession';
+
 import {
     SpotPriceFn,
     getLimitOrderData,
@@ -33,14 +35,14 @@ interface RecordRequestIF {
     annotate?: boolean;
     omitKnockout?: boolean;
     addValue?: boolean;
-    tokenUniv: TokenIF[];
-    crocEnv: CrocEnv;
-    provider: Provider;
-    lastBlockNumber: number;
-    cachedFetchTokenPrice: TokenPriceFn;
-    cachedQuerySpotPrice: SpotPriceFn;
-    cachedTokenDetails: FetchContractDetailsFn;
-    cachedEnsResolve: FetchAddrFn;
+    tokenUniv?: TokenIF[];
+    crocEnv?: CrocEnv;
+    provider?: Provider;
+    lastBlockNumber?: number;
+    cachedFetchTokenPrice?: TokenPriceFn;
+    cachedQuerySpotPrice?: SpotPriceFn;
+    cachedTokenDetails?: FetchContractDetailsFn;
+    cachedEnsResolve?: FetchAddrFn;
 }
 
 import { fetchBlockNumber } from '../api/fetchBlockNumber';
@@ -235,37 +237,13 @@ const fetchSimpleDecorated = async ({
     cachedTokenDetails,
     cachedEnsResolve,
 }: RecordRequestIF) => {
-    if (!gcUrl) {
-        gcUrl = GCGO_ETHEREUM_URL;
-    }
-    let infuraUrl = '';
-    if (!tokenUniv) {
-        // It is unclear the token universe should come from.
-        // However, this problem should likely be addressed after V0 of the data layer
-        throw new Error('UNIMPLEMENTED: NEED A METHOD TO GET TOKEN UNIVERSE');
-    }
-    if (!crocEnv) {
-        infuraUrl =
-            'https://mainnet.infura.io/v3/' + process.env.REACT_APP_INFURA_KEY;
-        const defaultSigner = undefined;
-        if (!provider) {
-            provider = new ethers.providers.JsonRpcProvider(infuraUrl);
-        }
-        crocEnv = new CrocEnv(provider, defaultSigner);
-    }
-    if (!lastBlockNumber) {
-        if (infuraUrl.length == 0) {
-            infuraUrl =
-                'https://mainnet.infura.io/v3/' +
-                process.env.REACT_APP_INFURA_KEY;
-        }
-        if (!provider) {
-            provider = new ethers.providers.JsonRpcProvider(infuraUrl);
-        }
-        lastBlockNumber = await fetchBlockNumber(
-            (provider as ethers.providers.JsonRpcProvider).connection.url,
-        );
-    }
+    const sess = await createNetworkSession({
+        chainId: chainId,
+        tokenUniv: tokenUniv,
+        gcUrl: gcUrl,
+        crocEnv: crocEnv,
+        lastBlockNumber: lastBlockNumber,
+    });
 
     cachedFetchTokenPrice =
         cachedFetchTokenPrice || (fetchTokenPrice as TokenPriceFn);
@@ -276,18 +254,25 @@ const fetchSimpleDecorated = async ({
     cachedEnsResolve = cachedEnsResolve || (fetchEnsAddress as FetchAddrFn);
 
     return await fetchDecorated({
+        // Query:
         recordType,
         user,
-        chainId,
-        gcUrl,
-        provider,
+
+        // Session Information:
+        chainId: sess.chainId,
+        gcUrl: sess.gcUrl,
+        provider: sess.provider,
+        lastBlockNumber: sess.lastBlockNumber,
+        tokenUniv: sess.tokenUniv,
+        crocEnv: sess.crocEnv,
+
+        // Control flags:
         ensResolution,
         annotate,
         omitKnockout,
         addValue,
-        lastBlockNumber,
-        tokenUniv,
-        crocEnv,
+
+        // Data Sources
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
         cachedTokenDetails,

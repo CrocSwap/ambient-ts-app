@@ -9,9 +9,11 @@ import { supportedNetworks } from './index';
 // Make a best effort, based off chain ID, to give back several useful chain objects.
 // Should also support "bringing your own" values, so on the front end we can make sure not to redefine objects that are already present.
 // On the other hand, should only ever need chainId, to derive all other needed objects from scratch.
+// TODO/ENHANCEMENT add in support for signers. For now sessions only support unsiged reading ops
+// TODO/ENHANCEMENT save the session objects in memory to avoid re-creating similar sessions
 export const createNetworkSession = async ({
     chainId,
-    tokenUniverse,
+    tokenUniv,
     gcUrl,
     infuraUrl,
     provider,
@@ -19,7 +21,7 @@ export const createNetworkSession = async ({
     lastBlockNumber,
 }: {
     chainId: string;
-    tokenUniverse?: TokenIF[];
+    tokenUniv?: TokenIF[];
     gcUrl?: string;
     infuraUrl?: string;
     provider?: Provider;
@@ -32,19 +34,42 @@ export const createNetworkSession = async ({
 
     const defaultSigner = undefined;
     const network = supportedNetworks[chainId];
+    const assertExists = async <T>(
+        data: T,
+        setter: () => Promise<T>,
+    ): Promise<T> => {
+        let retData = data;
+        if (retData === undefined || retData === null) {
+            retData = await setter();
+        }
+        if (retData === undefined || retData === null || retData === '') {
+            throw new Error('Could not set a required variable');
+        }
+        return retData;
+    };
 
-    if (!infuraUrl) infuraUrl = network.wagmiChain.rpcUrls.default.http;
-    if (!gcUrl) gcUrl = network.graphCacheUrl;
-    if (!tokenUniverse) tokenUniverse = fetchTokenUniverse(network.chainId);
-    if (!provider) provider = new ethers.providers.JsonRpcProvider(infuraUrl);
-    if (!crocEnv) crocEnv = new CrocEnv(provider, defaultSigner);
-    if (!lastBlockNumber)
-        lastBlockNumber = await fetchBlockNumber(
+    // By the end of the block, we will have all the required dependencies in a non missing state (or error trying)
+    infuraUrl = await assertExists(infuraUrl, async () => network.evmRpcUrl);
+    gcUrl = await assertExists(gcUrl, async () => network.graphCacheUrl);
+    tokenUniv = await assertExists(tokenUniv, async () =>
+        fetchTokenUniverse(network.chainId),
+    );
+    provider = await assertExists(
+        provider,
+        async () => new ethers.providers.JsonRpcProvider(infuraUrl),
+    );
+    crocEnv = await assertExists(
+        crocEnv,
+        async () => new CrocEnv(provider, defaultSigner),
+    );
+    lastBlockNumber = await assertExists(lastBlockNumber, async () =>
+        fetchBlockNumber(
             (provider as ethers.providers.JsonRpcProvider).connection.url,
-        );
+        ),
+    );
 
     return {
-        tokenUniv: tokenUniverse,
+        tokenUniv: tokenUniv,
         infuraUrl: infuraUrl,
         provider: provider,
         chainId: chainId,

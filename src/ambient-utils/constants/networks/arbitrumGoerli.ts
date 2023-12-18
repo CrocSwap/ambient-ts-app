@@ -14,6 +14,9 @@ import { GCGO_ETHEREUM_URL } from '../gcgo';
 export const arbitrumGoerli: NetworkIF = {
     chainId: '0x66eed',
     graphCacheUrl: GCGO_ETHEREUM_URL,
+    evmRpcUrl:
+        'https://arbitrum-goerli.infura.io/v3/' +
+        process.env.REACT_APP_INFURA_KEY,
     wagmiChain,
     shouldPollBlock: true,
     marketData: '0x1',

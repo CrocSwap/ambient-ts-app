@@ -34,6 +34,7 @@ const wagmiChain = {
 export const scrollSepolia: NetworkIF = {
     chainId: '0x8274f',
     graphCacheUrl: GCGO_SCROLL_URL,
+    evmRpcUrl: 'https://sepolia-rpc.scroll.io/',
     wagmiChain,
     shouldPollBlock: true,
     marketData: '0x1',

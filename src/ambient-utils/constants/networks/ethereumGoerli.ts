@@ -15,6 +15,8 @@ export const ethereumGoerli: NetworkIF = {
     chainId: '0x5',
     tokenListName: 'testnet',
     graphCacheUrl: GCGO_TESTNET_URL,
+    evmRpcUrl:
+        'https://goerli.infura.io/v3/' + process.env.REACT_APP_INFURA_KEY,
     wagmiChain,
     shouldPollBlock: false,
     marketData: '0x1',

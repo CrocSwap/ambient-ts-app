@@ -25,13 +25,15 @@ export async function downloadAllTokenUniverses(): Promise<
     const universes = new Map<string, Map<string, TokenIF>>();
     for (const uri of Object.values(tokenListURIs)) {
         try {
-            const tokenList = await fetchTokenList(uri);
+            // console.log("BEFORE ERROR");
+            const tokenList = await fetchTokenList(uri, false, (error) => {
+                throw error;
+            });
             processTokenList(tokenList.tokens, universes);
+            // console.log("AFTER ERROR");
         } catch (error) {
-            console.warn(
-                `Warning: Could not load token list from URI: ${uri}`,
-                error,
-            );
+            console.log(`Log: Could not load token list from URI: ${uri}`);
+            // TODO consider logging a verbose error  console.warn(`Warning: Could not load token list from URI: ${uri}`, error);
         }
     }
     universes.forEach((tokens, chainId) => {
