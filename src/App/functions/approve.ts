@@ -1,14 +1,5 @@
 import { useContext, useState } from 'react';
-import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-
-import {
-    addPendingTx,
-    addReceipt,
-    addTransactionByType,
-    removePendingTx,
-    updateTransactionHash,
-} from '../../utils/state/receiptDataSlice';
 
 import {
     isTransactionFailedError,
@@ -17,9 +8,16 @@ import {
 } from '../../utils/TransactionError';
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
+import { ReceiptContext } from '../../contexts/ReceiptContext';
 
 export function useApprove() {
-    const dispatch = useAppDispatch();
+    const {
+        addPendingTx,
+        addReceipt,
+        addTransactionByType,
+        removePendingTx,
+        updateTransactionHash,
+    } = useContext(ReceiptContext);
 
     const { crocEnv } = useContext(CrocEnvContext);
     // TODO: useTokenBalancesAndAllowances replaces this in the init page branch
@@ -39,15 +37,14 @@ export function useApprove() {
         try {
             setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();
-            if (tx) dispatch(addPendingTx(tx?.hash));
+            if (tx) addPendingTx(tx?.hash);
             if (tx?.hash)
-                dispatch(
-                    addTransactionByType({
-                        txHash: tx.hash,
-                        txType: 'Approve',
-                        txDescription: `Approval of ${tokenSymbol}`,
-                    }),
-                );
+                addTransactionByType({
+                    txHash: tx.hash,
+                    txType: 'Approve',
+                    txDescription: `Approval of ${tokenSymbol}`,
+                });
+
             let receipt;
             try {
                 if (tx) receipt = await tx.wait();
@@ -58,17 +55,12 @@ export function useApprove() {
                 // in their client, but we now have the updated info
                 if (isTransactionReplacedError(error)) {
                     IS_LOCAL_ENV && console.debug('repriced');
-                    dispatch(removePendingTx(error.hash));
+                    removePendingTx(error.hash);
 
                     const newTransactionHash = error.replacement.hash;
-                    dispatch(addPendingTx(newTransactionHash));
+                    addPendingTx(newTransactionHash);
 
-                    dispatch(
-                        updateTransactionHash({
-                            oldHash: error.hash,
-                            newHash: error.replacement.hash,
-                        }),
-                    );
+                    updateTransactionHash(error.hash, error.replacement.hash);
                     IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {
@@ -77,8 +69,8 @@ export function useApprove() {
                 }
             }
             if (receipt) {
-                dispatch(addReceipt(JSON.stringify(receipt)));
-                dispatch(removePendingTx(receipt.transactionHash));
+                addReceipt(JSON.stringify(receipt));
+                removePendingTx(receipt.transactionHash);
             }
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {

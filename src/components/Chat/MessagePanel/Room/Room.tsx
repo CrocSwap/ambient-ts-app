@@ -475,10 +475,9 @@ export default function Room(props: propsIF) {
                                 onClick={(event: any) =>
                                     handleRoomClick(
                                         event,
-                                        pool.quote.symbol +
+                                        pool.base.symbol +
                                             ' / ' +
                                             pool.base.symbol,
-                                        pool.name,
                                     )
                                 }
                             >

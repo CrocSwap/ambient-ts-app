@@ -1,14 +1,11 @@
 import { ChainSpec, CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import {
-    setLimitTick,
-    setPoolPriceNonDisplay,
-} from '../../utils/state/tradeDataSlice';
-import { get24hChange, SpotPriceFn } from '../../ambient-utils/dataLayer';
+import { SpotPriceFn } from '../../ambient-utils/dataLayer';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { RangeContext } from '../../contexts/RangeContext';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../../ambient-utils/constants';
 
 interface PoolPricingPropsIF {
     crocEnv?: CrocEnv;
@@ -27,11 +24,17 @@ interface PoolPricingPropsIF {
 
 /* Hooks to pull the pricing data for a given pool, including spot price and 24-hour direction change */
 export function usePoolPricing(props: PoolPricingPropsIF) {
-    const dispatch = useAppDispatch();
-    const tradeData = useAppSelector((state) => state.tradeData);
-    const { isDenomBase, setDidUserFlipDenom } = useContext(TradeDataContext);
+    const {
+        isDenomBase,
+        setDidUserFlipDenom,
+        poolPriceNonDisplay,
+        setPoolPriceNonDisplay,
+        setLimitTick,
+    } = useContext(TradeDataContext);
     const { setPrimaryQuantityRange } = useContext(RangeContext);
     const { activeNetwork } = useContext(CrocEnvContext);
+
+    const { cachedGet24hChange } = useContext(CachedDataContext);
 
     // value for whether a pool exists on current chain and token pair
     // ... true => pool exists
@@ -84,7 +87,7 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
         setDidUserFlipDenom(false); // reset so a new token pair is re-evaluated for price > 1
         setPoolPriceChangePercent(undefined);
         if (!props.pathname.includes('limitTick')) {
-            dispatch(setLimitTick(undefined));
+            setLimitTick(undefined);
         }
     }, [
         props.baseTokenAddress,
@@ -142,8 +145,8 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
                         setPoolPriceDisplay(newDisplayPrice);
                     }
                 }
-                if (spotPrice && spotPrice !== tradeData.poolPriceNonDisplay) {
-                    dispatch(setPoolPriceNonDisplay(spotPrice));
+                if (spotPrice && spotPrice !== poolPriceNonDisplay) {
+                    setPoolPriceNonDisplay(spotPrice);
                 }
             })();
         }
@@ -154,7 +157,7 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
         props.baseTokenDecimals,
         props.quoteTokenDecimals,
         !!props.crocEnv,
-        tradeData.poolPriceNonDisplay === 0,
+        poolPriceNonDisplay === 0,
         props.isUserLoggedIn,
     ]);
 
@@ -167,13 +170,14 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
                 props.quoteTokenAddress
             ) {
                 try {
-                    const priceChangeResult = await get24hChange(
+                    const priceChangeResult = await cachedGet24hChange(
                         props.chainData.chainId,
                         props.baseTokenAddress,
                         props.quoteTokenAddress,
                         props.chainData.poolIndex,
                         isDenomBase,
                         activeNetwork.graphCacheUrl,
+                        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
                     );
 
                     if (!priceChangeResult) {

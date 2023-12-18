@@ -10,14 +10,16 @@ import {
 import { fetchCandleSeriesHybrid } from '../ambient-utils/api';
 import {
     CandleDataIF,
+    CandleDomainIF,
+    CandleScaleIF,
     CandlesByPoolAndDurationIF,
 } from '../ambient-utils/types';
-import { candleDomain, candleScale } from '../utils/state/tradeDataSlice';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../ambient-utils/constants';
 
 interface CandleContextIF {
     candleData: CandlesByPoolAndDurationIF | undefined;
@@ -32,10 +34,10 @@ interface CandleContextIF {
     setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
     isFetchingCandle: boolean;
     setIsFetchingCandle: Dispatch<SetStateAction<boolean>>;
-    candleDomains: candleDomain;
-    setCandleDomains: Dispatch<SetStateAction<candleDomain>>;
-    candleScale: candleScale;
-    setCandleScale: Dispatch<SetStateAction<candleScale>>;
+    candleDomains: CandleDomainIF;
+    setCandleDomains: Dispatch<SetStateAction<CandleDomainIF>>;
+    candleScale: CandleScaleIF;
+    setCandleScale: Dispatch<SetStateAction<CandleScaleIF>>;
     candleTimeLocal: number;
     timeOfEndCandle: number | undefined;
 }
@@ -75,12 +77,12 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     >();
 
     const [isFetchingCandle, setIsFetchingCandle] = useState(false);
-    const [candleDomains, setCandleDomains] = useState<candleDomain>({
+    const [candleDomains, setCandleDomains] = useState<CandleDomainIF>({
         lastCandleDate: undefined,
         domainBoundry: undefined,
     });
 
-    const [candleScale, setCandleScale] = useState<candleScale>({
+    const [candleScale, setCandleScale] = useState<CandleScaleIF>({
         lastCandleDate: undefined,
         nCandles: 200,
         isFetchForTimeframe: false,
@@ -135,7 +137,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         if (isChartEnabled && isUserOnline && candleScale.isShowLatestCandle) {
             const interval = setInterval(() => {
                 fetchCandles(true);
-            }, 60000);
+            }, CACHE_UPDATE_FREQ_IN_MS);
             return () => clearInterval(interval);
         }
     }, [

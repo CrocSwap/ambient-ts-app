@@ -11,7 +11,6 @@ import {
     diffHashSig,
     diffHashSigScaleData,
 } from '../../../ambient-utils/dataLayer';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { formatAmountWithoutDigit } from '../../../utils/numbers';
 import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
@@ -60,11 +59,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     const d3CanvasLiqHover = useRef<HTMLCanvasElement | null>(null);
     const { pool: pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
-    const tradeData = useAppSelector((state) => state.tradeData);
     const { advancedMode } = useContext(RangeContext);
-    const { isDenomBase } = useContext(TradeDataContext);
-
-    const { poolPriceNonDisplay } = tradeData;
+    const { isDenomBase, poolPriceNonDisplay } = useContext(TradeDataContext);
 
     const poolPriceDisplay = poolPriceWithoutDenom
         ? isDenomBase && poolPriceWithoutDenom

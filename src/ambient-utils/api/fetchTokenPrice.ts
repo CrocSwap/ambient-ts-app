@@ -36,14 +36,14 @@ export const fetchTokenPrice = async (
         return response.value;
     } catch (error) {
         // if token is USDC, return 0.999
-        if (address.toLowerCase() === defaultPair[1].address.toLowerCase()) {
+        if (dispToken.toLowerCase() === defaultPair[1].address.toLowerCase()) {
             return {
                 usdPrice: 0.9995309916951084,
                 usdPriceFormatted: 1,
             };
         } else if (
             // if token is ETH, return current value of ETH-USDC pool
-            address.toLowerCase() === defaultPair[0].address.toLowerCase()
+            dispToken.toLowerCase() === defaultPair[0].address.toLowerCase()
         ) {
             if (!crocEnv) return;
             const spotPrice = await querySpotPrice(

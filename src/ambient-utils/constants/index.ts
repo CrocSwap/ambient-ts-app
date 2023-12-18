@@ -93,6 +93,8 @@ export const REQUEST_TIMEOUT_DELAY = process.env.REACT_APP_REQUEST_TIMEOUT_DELAY
     ? parseFloat(process.env.REACT_APP_REQUEST_TIMEOUT_DELAY)
     : 3000;
 
+export const CACHE_UPDATE_FREQ_IN_MS = 60000; // 1 minute
+
 // Allowed links
 export const CROCODILE_LABS_LINKS = [
     'https://twitter.com/',
