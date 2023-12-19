@@ -6,6 +6,7 @@ import {
     useMemo,
     useState,
     useContext,
+    useCallback,
 } from 'react';
 import { fetchCandleSeriesHybrid } from '../ambient-utils/api';
 import {
@@ -93,7 +94,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     // this is situation-dependant but used in this file
     const candleTimeLocal = useMemo(() => {
         return chartSettings.candleTime.global.time;
-    }, [chartSettings.candleTime.global.time, location.pathname]);
+    }, [chartSettings.candleTime.global.time]);
 
     const [isManualCandleFetchRequested, setIsManualCandleFetchRequested] =
         useState(false);
@@ -117,9 +118,72 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         timeOfEndCandle,
     };
 
+    // TODO: move into ambient-utils
+    const fetchCandles = useCallback(
+        (bypassSpinner = false) => {
+            if (
+                isServerEnabled &&
+                isUserOnline &&
+                baseTokenAddress &&
+                quoteTokenAddress &&
+                candleTimeLocal &&
+                crocEnv
+            ) {
+                setIsZoomRequestCanceled(true);
+
+                const candleTime = candleScale.isShowLatestCandle
+                    ? Date.now() / 1000
+                    : candleScale.lastCandleDate || 0;
+                const nCandles =
+                    candleScale?.nCandles > 2999 ? 2999 : candleScale?.nCandles;
+
+                !bypassSpinner && setIsFetchingCandle(true);
+                setTimeOfEndCandle(undefined);
+                fetchCandleSeriesHybrid(
+                    true,
+                    chainData,
+                    activeNetwork.graphCacheUrl,
+                    candleTimeLocal,
+                    baseTokenAddress,
+                    quoteTokenAddress,
+                    candleTime,
+                    nCandles,
+                    crocEnv,
+                    cachedFetchTokenPrice,
+                ).then((candles) => {
+                    setCandleData(candles);
+
+                    const candleSeries = candles?.candles;
+                    if (candleSeries && candleSeries.length > 0) {
+                        setIsCandleDataNull(false);
+                    } else {
+                        setIsCandleDataNull(true);
+                    }
+                    setIsFetchingCandle(false);
+                });
+            } else {
+                setIsFetchingCandle(true);
+            }
+        },
+        [
+            activeNetwork.graphCacheUrl,
+            baseTokenAddress,
+            cachedFetchTokenPrice,
+            candleScale.isShowLatestCandle,
+            candleScale.lastCandleDate,
+            candleScale?.nCandles,
+            candleTimeLocal,
+            chainData,
+            crocEnv,
+            isServerEnabled,
+            isUserOnline,
+            quoteTokenAddress,
+        ],
+    );
+
     useEffect(() => {
         setCandleData(undefined);
-    }, [baseTokenAddress + quoteTokenAddress, candleTimeLocal]);
+    }, [baseTokenAddress, quoteTokenAddress, candleTimeLocal]);
 
     useEffect(() => {
         isChartEnabled && isUserOnline && fetchCandles();
@@ -129,8 +193,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isManualCandleFetchRequested,
         isChartEnabled,
         isUserOnline,
-        baseTokenAddress + quoteTokenAddress,
-        candleScale?.isFetchForTimeframe,
+        candleScale.isFetchForTimeframe,
+        fetchCandles,
     ]);
 
     useEffect(() => {
@@ -143,64 +207,14 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     }, [
         isChartEnabled,
         isUserOnline,
-        baseTokenAddress + quoteTokenAddress,
-        candleScale?.isFetchForTimeframe,
+        candleScale.isFetchForTimeframe,
         candleScale.nCandles,
         candleScale.isShowLatestCandle,
+        fetchCandles,
     ]);
-
-    const fetchCandles = (bypassSpinner = false) => {
-        if (
-            isServerEnabled &&
-            isUserOnline &&
-            baseTokenAddress &&
-            quoteTokenAddress &&
-            candleTimeLocal &&
-            crocEnv
-        ) {
-            setIsZoomRequestCanceled(true);
-
-            const candleTime = candleScale.isShowLatestCandle
-                ? Date.now() / 1000
-                : candleScale.lastCandleDate || 0;
-            const nCandles =
-                candleScale?.nCandles > 2999 ? 2999 : candleScale?.nCandles;
-
-            !bypassSpinner && setIsFetchingCandle(true);
-            setTimeOfEndCandle(undefined);
-            fetchCandleSeriesHybrid(
-                true,
-                chainData,
-                activeNetwork.graphCacheUrl,
-                candleTimeLocal,
-                baseTokenAddress,
-                quoteTokenAddress,
-                candleTime,
-                nCandles,
-                crocEnv,
-                cachedFetchTokenPrice,
-            ).then((candles) => {
-                setCandleData(candles);
-
-                const candleSeries = candles?.candles;
-                if (candleSeries && candleSeries.length > 0) {
-                    setIsCandleDataNull(false);
-                } else {
-                    setIsCandleDataNull(true);
-                }
-                setIsFetchingCandle(false);
-            });
-        } else {
-            setIsFetchingCandle(true);
-        }
-    };
 
     const domainBoundaryInSeconds = Math.floor(
         (candleDomains?.domainBoundry || 0) / 1000,
-    );
-
-    const lastCandleDateInSeconds = Math.floor(
-        (candleDomains?.lastCandleDate || 0) / 1000,
     );
 
     const minTimeMemo = useMemo(() => {
@@ -212,7 +226,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         ).getTime();
 
         return lastDate;
-    }, [candleData?.candles?.length, lastCandleDateInSeconds]);
+    }, [candleData?.candles?.length, candleDomains?.lastCandleDate]);
 
     const numDurationsNeeded = useMemo(() => {
         if (!minTimeMemo || !domainBoundaryInSeconds) return;
@@ -221,95 +235,110 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         );
 
         return numDurations > 2999 ? 2999 : numDurations;
-    }, [minTimeMemo, domainBoundaryInSeconds]);
+    }, [minTimeMemo, domainBoundaryInSeconds, candleTimeLocal]);
 
-    const fetchCandlesByNumDurations = (numDurations: number) => {
-        if (!crocEnv) {
-            return;
-        }
+    const fetchCandlesByNumDurations = useCallback(
+        (numDurations: number) => {
+            if (!crocEnv) {
+                return;
+            }
 
-        const controller = new AbortController();
-        setAbortController(controller);
+            const controller = new AbortController();
+            setAbortController(controller);
 
-        const signal = controller?.signal; // used cancel the request when the pool or timeframe changes before the zoom request end
+            const signal = controller?.signal; // used cancel the request when the pool or timeframe changes before the zoom request end
 
-        fetchCandleSeriesHybrid(
-            true,
-            chainData,
-            activeNetwork.graphCacheUrl,
-            candleTimeLocal,
-            baseTokenAddress,
-            quoteTokenAddress,
-            minTimeMemo ? minTimeMemo : 0,
-            numDurations,
-            crocEnv,
-            cachedFetchTokenPrice,
-            signal,
-        )
-            .then((incrCandles) => {
-                if (incrCandles && candleData && !isZoomRequestCanceled) {
-                    const newCandles: CandleDataIF[] = [];
-                    if (incrCandles.candles.length === 0) {
-                        candleData.candles.sort(
-                            (a: CandleDataIF, b: CandleDataIF) =>
-                                b.time - a.time,
-                        );
-                        setTimeOfEndCandle(
-                            candleData.candles[candleData.candles.length - 1]
-                                .time * 1000,
-                        );
-                    }
-
-                    for (
-                        let index = 0;
-                        index < incrCandles.candles.length;
-                        index++
-                    ) {
-                        const messageCandle = incrCandles.candles[index];
-                        const indexOfExistingCandle =
-                            candleData.candles.findIndex(
-                                (savedCandle) =>
-                                    savedCandle.time === messageCandle.time,
+            fetchCandleSeriesHybrid(
+                true,
+                chainData,
+                activeNetwork.graphCacheUrl,
+                candleTimeLocal,
+                baseTokenAddress,
+                quoteTokenAddress,
+                minTimeMemo ? minTimeMemo : 0,
+                numDurations,
+                crocEnv,
+                cachedFetchTokenPrice,
+                signal,
+            )
+                .then((incrCandles) => {
+                    if (incrCandles && candleData && !isZoomRequestCanceled) {
+                        const newCandles: CandleDataIF[] = [];
+                        if (incrCandles.candles.length === 0) {
+                            candleData.candles.sort(
+                                (a: CandleDataIF, b: CandleDataIF) =>
+                                    b.time - a.time,
                             );
-
-                        if (indexOfExistingCandle === -1) {
-                            newCandles.push(messageCandle);
-                        } else {
-                            candleData.candles[indexOfExistingCandle] =
-                                messageCandle;
+                            setTimeOfEndCandle(
+                                candleData.candles[
+                                    candleData.candles.length - 1
+                                ].time * 1000,
+                            );
                         }
-                    }
 
-                    const newSeries = Object.assign({}, candleData, {
-                        candles: candleData.candles.concat(newCandles),
-                    });
-                    setCandleData(newSeries);
-                } else {
-                    setIsZoomRequestCanceled(false);
-                }
-            })
-            .catch((e) => {
-                if (e.name === 'AbortError') {
-                    console.warn('Zoom request cancelled');
-                } else {
-                    console.error(e);
-                }
-                setIsCandleDataNull(false);
-            });
-    };
+                        for (
+                            let index = 0;
+                            index < incrCandles.candles.length;
+                            index++
+                        ) {
+                            const messageCandle = incrCandles.candles[index];
+                            const indexOfExistingCandle =
+                                candleData.candles.findIndex(
+                                    (savedCandle) =>
+                                        savedCandle.time === messageCandle.time,
+                                );
+
+                            if (indexOfExistingCandle === -1) {
+                                newCandles.push(messageCandle);
+                            } else {
+                                candleData.candles[indexOfExistingCandle] =
+                                    messageCandle;
+                            }
+                        }
+
+                        const newSeries = Object.assign({}, candleData, {
+                            candles: candleData.candles.concat(newCandles),
+                        });
+                        setCandleData(newSeries);
+                    } else {
+                        setIsZoomRequestCanceled(false);
+                    }
+                })
+                .catch((e) => {
+                    if (e.name === 'AbortError') {
+                        console.warn('Zoom request cancelled');
+                    } else {
+                        console.error(e);
+                    }
+                    setIsCandleDataNull(false);
+                });
+        },
+        [
+            activeNetwork.graphCacheUrl,
+            baseTokenAddress,
+            cachedFetchTokenPrice,
+            candleData,
+            candleTimeLocal,
+            chainData,
+            crocEnv,
+            isZoomRequestCanceled,
+            minTimeMemo,
+            quoteTokenAddress,
+        ],
+    );
 
     useEffect(() => {
         if (!numDurationsNeeded) return;
         if (numDurationsNeeded > 0 && numDurationsNeeded < 3000) {
             fetchCandlesByNumDurations(numDurationsNeeded);
         }
-    }, [numDurationsNeeded, isZoomRequestCanceled]);
+    }, [numDurationsNeeded, isZoomRequestCanceled, fetchCandlesByNumDurations]);
 
     useEffect(() => {
         if (abortController && isZoomRequestCanceled) {
             abortController.abort();
         }
-    }, [isZoomRequestCanceled]);
+    }, [abortController, isZoomRequestCanceled]);
 
     return (
         <CandleContext.Provider value={candleContext}>

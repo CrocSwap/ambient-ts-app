@@ -287,15 +287,6 @@ function Orders(props: propsIF) {
     // orders per page media queries
     const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [userAddress, showAllData, baseTokenAddress + quoteTokenAddress]);
-
-    // Get current tranges
-
-    const [page, setPage] = useState(1);
-    const resetPageToFirst = () => setPage(1);
-
     const isScreenShort =
         (isAccountView && useMediaQuery('(max-height: 900px)')) ||
         (!isAccountView && useMediaQuery('(max-height: 700px)'));
@@ -315,6 +306,22 @@ function Orders(props: propsIF) {
         changeRowsPerPage,
         count,
     } = _DATA;
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [
+        userAddress,
+        showAllData,
+        setCurrentPage,
+        baseTokenAddress,
+        quoteTokenAddress,
+    ]);
+
+    // Get current tranges
+
+    const [page, setPage] = useState(1);
+    const resetPageToFirst = () => setPage(1);
+
     const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
         setPage(p);
         _DATA.jump(p);

@@ -109,7 +109,7 @@ function MinMaxPrice(props: propsIF) {
             );
             setMinPriceInputString(low !== undefined ? low.toString() : '0.0');
         }
-    }, [maxPrice, minPrice]);
+    }, [maxPrice, minPrice, setMaxPriceInputString, setMinPriceInputString]);
 
     const increaseLowTick = (): void => {
         const updatedTick: number = rangeLowTick + tickSize;

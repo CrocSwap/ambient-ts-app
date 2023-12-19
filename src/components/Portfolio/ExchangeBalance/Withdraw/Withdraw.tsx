@@ -142,9 +142,10 @@ export default function Withdraw(props: propsIF) {
 
     const [isWithdrawPending, setIsWithdrawPending] = useState(false);
 
+    // TODO: why is this useEffect needed?
     useEffect(() => {
         setIsWithdrawPending(false);
-    }, [JSON.stringify(selectedToken)]);
+    }, [selectedToken]);
 
     useEffect(() => {
         if (isWithdrawPending) {
@@ -183,6 +184,7 @@ export default function Withdraw(props: propsIF) {
         selectedToken.symbol,
         isResolvedAddressValid,
         isSendToAddressChecked,
+        withdrawQtyNonDisplayNum,
     ]);
 
     const withdraw = async (withdrawQtyNonDisplay: string) => {

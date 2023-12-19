@@ -46,7 +46,7 @@ export const useRepoExitPath = (): string => {
         };
         // generate and return nav path
         return linkGenPool.getFullURL(poolLinkParams);
-    }, [params]);
+    }, [linkGenPool, params]);
 
     // return memoized URL pathway
     return exitPath;

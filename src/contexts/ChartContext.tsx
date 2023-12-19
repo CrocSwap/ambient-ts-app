@@ -72,7 +72,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         return () => {
             window.removeEventListener('resize', updateDimension);
         };
-    }, [window.innerHeight, chartHeights]);
+    }, [chartHeights, CHART_MAX_HEIGHT, CHART_DEFAULT_HEIGHT]);
 
     const { pathname: currentLocation } = useLocation();
     const canvasRef = useRef(null);

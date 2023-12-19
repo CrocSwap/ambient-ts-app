@@ -69,13 +69,6 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
     const profilePicDisplay = (
         <div className={styles.row}>
             <h4>Profile Pic</h4>
-            {/* {imageData[0] ? (
-                <img src={imageData[0]} alt='avatar' />
-            ) : (
-                <div className={styles.no_image}>
-                    <img src={noAvatarImage} alt='' />
-                </div>
-            )} */}
         </div>
     );
 
@@ -99,7 +92,7 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
             setId(result._id);
             setName(result.ensName);
         });
-    }, []);
+    }, [getID]);
 
     async function updateUser() {
         const response = await fetch(host + '/chat/api/auth/updateUser', {

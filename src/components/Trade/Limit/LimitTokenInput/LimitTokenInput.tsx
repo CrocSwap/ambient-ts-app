@@ -1,4 +1,11 @@
-import { Dispatch, SetStateAction, useContext, useEffect, memo } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    memo,
+    useCallback,
+} from 'react';
 import { ZERO_ADDRESS } from '../../../../ambient-utils/constants';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
@@ -104,101 +111,146 @@ function LimitTokenInput(props: propsIF) {
         isTokenAPrimary
             ? setTokenAInputQty(primaryQuantity)
             : setTokenBInputQty(primaryQuantity);
-    }, [tokenA.address, tokenB.address]);
+    }, [
+        isTokenAPrimary,
+        primaryQuantity,
+        setTokenAInputQty,
+        setTokenBInputQty,
+        tokenA.address,
+        tokenB.address,
+    ]);
+
+    const handleTokenAChangeEvent = useCallback(
+        (value?: string) => {
+            let rawTokenBQty = 0;
+            if (value !== undefined) {
+                const inputStr = formatTokenInput(value, tokenA);
+                const inputNum = parseFloat(inputStr);
+
+                // set token input quantity to be unparsed input
+                setTokenAInputQty(value);
+                setIsTokenAPrimary(true);
+                setPrimaryQuantity(inputStr);
+
+                if (!isDenomBase) {
+                    rawTokenBQty = isSellTokenBase
+                        ? (1 / limitTickDisplayPrice) * inputNum
+                        : limitTickDisplayPrice * inputNum;
+                } else {
+                    rawTokenBQty = !isSellTokenBase
+                        ? (1 / limitTickDisplayPrice) * inputNum
+                        : limitTickDisplayPrice * inputNum;
+                }
+                handleLimitButtonMessage(inputNum);
+            } else {
+                if (!isDenomBase) {
+                    rawTokenBQty = isSellTokenBase
+                        ? (1 / limitTickDisplayPrice) *
+                          parseFloat(primaryQuantity)
+                        : limitTickDisplayPrice * parseFloat(primaryQuantity);
+                } else {
+                    rawTokenBQty = !isSellTokenBase
+                        ? (1 / limitTickDisplayPrice) *
+                          parseFloat(primaryQuantity)
+                        : limitTickDisplayPrice * parseFloat(primaryQuantity);
+                }
+                handleLimitButtonMessage(parseFloat(tokenAInputQty));
+            }
+
+            const truncatedTokenBQty = rawTokenBQty
+                ? rawTokenBQty < 2
+                    ? rawTokenBQty.toPrecision(3)
+                    : truncateDecimals(rawTokenBQty, 2)
+                : '';
+
+            setTokenBInputQty(truncatedTokenBQty);
+        },
+        [
+            handleLimitButtonMessage,
+            isDenomBase,
+            isSellTokenBase,
+            limitTickDisplayPrice,
+            primaryQuantity,
+            setIsTokenAPrimary,
+            setPrimaryQuantity,
+            setTokenAInputQty,
+            setTokenBInputQty,
+            tokenA,
+            tokenAInputQty,
+        ],
+    );
+
+    const handleTokenBChangeEvent = useCallback(
+        (value?: string) => {
+            let rawTokenAQty = 0;
+            if (value !== undefined) {
+                const inputStr = formatTokenInput(value, tokenA);
+                const inputNum = parseFloat(inputStr);
+
+                // set token input quantity to be unparsed input
+                setTokenBInputQty(value);
+                setIsTokenAPrimary(false);
+                setPrimaryQuantity(inputStr);
+
+                if (!isDenomBase) {
+                    rawTokenAQty = isSellTokenBase
+                        ? limitTickDisplayPrice * inputNum
+                        : (1 / limitTickDisplayPrice) * inputNum;
+                } else {
+                    rawTokenAQty = !isSellTokenBase
+                        ? limitTickDisplayPrice * inputNum
+                        : (1 / limitTickDisplayPrice) * inputNum;
+                }
+                handleLimitButtonMessage(rawTokenAQty);
+            } else {
+                if (!isDenomBase) {
+                    rawTokenAQty = isSellTokenBase
+                        ? limitTickDisplayPrice * parseFloat(primaryQuantity)
+                        : // ? limitTickDisplayPrice * parseFloat(tokenBQtyLocal)
+                          (1 / limitTickDisplayPrice) *
+                          parseFloat(primaryQuantity);
+                } else {
+                    rawTokenAQty = !isSellTokenBase
+                        ? limitTickDisplayPrice * parseFloat(primaryQuantity)
+                        : (1 / limitTickDisplayPrice) *
+                          parseFloat(primaryQuantity);
+                }
+                handleLimitButtonMessage(rawTokenAQty);
+            }
+            const truncatedTokenAQty = rawTokenAQty
+                ? rawTokenAQty < 2
+                    ? rawTokenAQty.toPrecision(3)
+                    : truncateDecimals(rawTokenAQty, 2)
+                : '';
+
+            setTokenAInputQty(truncatedTokenAQty);
+        },
+        [
+            handleLimitButtonMessage,
+            isDenomBase,
+            isSellTokenBase,
+            limitTickDisplayPrice,
+            primaryQuantity,
+            setIsTokenAPrimary,
+            setPrimaryQuantity,
+            setTokenAInputQty,
+            setTokenBInputQty,
+            tokenA,
+        ],
+    );
 
     useEffect(() => {
         isTokenAPrimary ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
-    }, [limitTickDisplayPrice]);
+    }, [
+        handleTokenAChangeEvent,
+        handleTokenBChangeEvent,
+        isTokenAPrimary,
+        limitTickDisplayPrice,
+    ]);
 
     useEffect(() => {
         handleLimitButtonMessage(parseFloat(tokenAInputQty));
-    }, [isWithdrawFromDexChecked]);
-
-    const handleTokenAChangeEvent = (value?: string) => {
-        let rawTokenBQty = 0;
-        if (value !== undefined) {
-            const inputStr = formatTokenInput(value, tokenA);
-            const inputNum = parseFloat(inputStr);
-
-            // set token input quantity to be unparsed input
-            setTokenAInputQty(value);
-            setIsTokenAPrimary(true);
-            setPrimaryQuantity(inputStr);
-
-            if (!isDenomBase) {
-                rawTokenBQty = isSellTokenBase
-                    ? (1 / limitTickDisplayPrice) * inputNum
-                    : limitTickDisplayPrice * inputNum;
-            } else {
-                rawTokenBQty = !isSellTokenBase
-                    ? (1 / limitTickDisplayPrice) * inputNum
-                    : limitTickDisplayPrice * inputNum;
-            }
-            handleLimitButtonMessage(inputNum);
-        } else {
-            if (!isDenomBase) {
-                rawTokenBQty = isSellTokenBase
-                    ? (1 / limitTickDisplayPrice) * parseFloat(primaryQuantity)
-                    : limitTickDisplayPrice * parseFloat(primaryQuantity);
-            } else {
-                rawTokenBQty = !isSellTokenBase
-                    ? (1 / limitTickDisplayPrice) * parseFloat(primaryQuantity)
-                    : limitTickDisplayPrice * parseFloat(primaryQuantity);
-            }
-            handleLimitButtonMessage(parseFloat(tokenAInputQty));
-        }
-
-        const truncatedTokenBQty = rawTokenBQty
-            ? rawTokenBQty < 2
-                ? rawTokenBQty.toPrecision(3)
-                : truncateDecimals(rawTokenBQty, 2)
-            : '';
-
-        setTokenBInputQty(truncatedTokenBQty);
-    };
-
-    const handleTokenBChangeEvent = (value?: string) => {
-        let rawTokenAQty = 0;
-        if (value !== undefined) {
-            const inputStr = formatTokenInput(value, tokenA);
-            const inputNum = parseFloat(inputStr);
-
-            // set token input quantity to be unparsed input
-            setTokenBInputQty(value);
-            setIsTokenAPrimary(false);
-            setPrimaryQuantity(inputStr);
-
-            if (!isDenomBase) {
-                rawTokenAQty = isSellTokenBase
-                    ? limitTickDisplayPrice * inputNum
-                    : (1 / limitTickDisplayPrice) * inputNum;
-            } else {
-                rawTokenAQty = !isSellTokenBase
-                    ? limitTickDisplayPrice * inputNum
-                    : (1 / limitTickDisplayPrice) * inputNum;
-            }
-            handleLimitButtonMessage(rawTokenAQty);
-        } else {
-            if (!isDenomBase) {
-                rawTokenAQty = isSellTokenBase
-                    ? limitTickDisplayPrice * parseFloat(primaryQuantity)
-                    : // ? limitTickDisplayPrice * parseFloat(tokenBQtyLocal)
-                      (1 / limitTickDisplayPrice) * parseFloat(primaryQuantity);
-            } else {
-                rawTokenAQty = !isSellTokenBase
-                    ? limitTickDisplayPrice * parseFloat(primaryQuantity)
-                    : (1 / limitTickDisplayPrice) * parseFloat(primaryQuantity);
-            }
-            handleLimitButtonMessage(rawTokenAQty);
-        }
-        const truncatedTokenAQty = rawTokenAQty
-            ? rawTokenAQty < 2
-                ? rawTokenAQty.toPrecision(3)
-                : truncateDecimals(rawTokenAQty, 2)
-            : '';
-
-        setTokenAInputQty(truncatedTokenAQty);
-    };
+    }, [handleLimitButtonMessage, isWithdrawFromDexChecked, tokenAInputQty]);
 
     return (
         <FlexContainer flexDirection='column' gap={8}>

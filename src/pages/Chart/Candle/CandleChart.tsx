@@ -60,7 +60,8 @@ export default function CandleChart(props: candlePropsIF) {
             return parseInt(bandwidthFunction());
         }
         return defaultCandleBandwith;
-    }, [candlestick?.bandwidth()]);
+    }, [candlestick]);
+
     const { tradeTableState } = useContext(ChartContext);
 
     useEffect(() => {
@@ -76,15 +77,28 @@ export default function CandleChart(props: candlePropsIF) {
                 ]);
             }
         }
-    }, [tradeTableState, lastCandleData?.time]);
+    }, [
+        tradeTableState,
+        lastCandleData.time,
+        isFirstRender,
+        data,
+        scaleData,
+        showLatest,
+        period,
+    ]);
 
     useEffect(() => {
         setIsFirstRender(false);
     }, []);
 
+    const hashedScaleData = useMemo(
+        () => diffHashSigScaleData(scaleData),
+        [scaleData],
+    );
+
     useEffect(() => {
         renderCanvasArray([d3CanvasCandle]);
-    }, [diffHashSigScaleData(scaleData)]);
+    }, [hashedScaleData]);
 
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -116,7 +130,7 @@ export default function CandleChart(props: candlePropsIF) {
 
             setCandlestick(() => canvasCandlestick);
         }
-    }, [scaleData]);
+    }, [denomInBase, scaleData]);
 
     useEffect(() => {
         if (candlestick) {
@@ -172,7 +186,7 @@ export default function CandleChart(props: candlePropsIF) {
                 },
             );
         }
-    }, [candlestick, selectedDate]);
+    }, [candlestick, denomInBase, selectedDate]);
 
     useEffect(() => {
         const canvas = d3
@@ -195,11 +209,11 @@ export default function CandleChart(props: candlePropsIF) {
                     candlestick.context(ctx);
                 });
         }
-    }, [data, candlestick]);
+    }, [data, candlestick, scaleData?.xScale, scaleData?.yScale]);
 
     useEffect(() => {
         setBandwidth(bandwidth);
-    }, [bandwidth]);
+    }, [bandwidth, setBandwidth]);
 
     return (
         <d3fc-canvas

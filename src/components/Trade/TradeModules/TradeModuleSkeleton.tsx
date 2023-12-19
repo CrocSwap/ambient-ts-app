@@ -91,7 +91,14 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
             text = '';
         }
         return text;
-    }, [needConfirmTokenA, needConfirmTokenB]);
+    }, [
+        needConfirmTokenA,
+        needConfirmTokenB,
+        tokenA.name,
+        tokenA.symbol,
+        tokenB.name,
+        tokenB.symbol,
+    ]);
 
     const formattedAckTokenMessage = ackTokenMessage.replace(
         /\b(not)\b/g,

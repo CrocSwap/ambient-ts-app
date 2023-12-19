@@ -441,8 +441,19 @@ export const GraphDataContextProvider = (props: {
         userAddress,
         chainData.chainId,
         lastBlockNumWait,
-        !!crocEnv,
-        !!provider,
+        crocEnv,
+        provider,
+        tokens.tokenUniv,
+        tokens.defaultTokens,
+        userLimitOrderStatesCacheEndpoint,
+        userPositionsCacheEndpoint,
+        lastBlockNumber,
+        cachedFetchTokenPrice,
+        cachedQuerySpotPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+        setDataLoadingStatus,
+        activeNetwork.graphCacheUrl,
     ]);
 
     const graphDataContext: GraphDataContextIF = {

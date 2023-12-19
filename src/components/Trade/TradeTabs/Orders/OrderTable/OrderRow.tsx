@@ -4,6 +4,7 @@ import {
     Dispatch,
     SetStateAction,
     memo,
+    useCallback,
     useContext,
     useEffect,
     useRef,
@@ -127,20 +128,20 @@ function OrderRow(props: propsIF) {
     };
     useOnClickOutside(activePositionRef, clickOutsideHandler);
 
-    function scrollToDiv() {
+    const scrollToDiv = useCallback(() => {
         const element = document.getElementById(orderDomId);
         element?.scrollIntoView({
             behavior: 'smooth',
             block: 'end',
             inline: 'nearest',
         });
-    }
+    }, [orderDomId]);
 
     useEffect(() => {
         limitOrder.limitOrderId === currentLimitOrderActive
             ? scrollToDiv()
             : null;
-    }, [currentLimitOrderActive]);
+    }, [currentLimitOrderActive, limitOrder.limitOrderId, scrollToDiv]);
 
     const [_, copy] = useCopyToClipboard();
 

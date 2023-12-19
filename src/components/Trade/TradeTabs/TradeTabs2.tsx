@@ -27,11 +27,6 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import useDebounce from '../../../App/hooks/useDebounce';
-import {
-    diffHashSigLimits,
-    diffHashSigPostions,
-    diffHashSigTxs,
-} from '../../../ambient-utils/dataLayer';
 import { CandleContext } from '../../../contexts/CandleContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { ChartContext } from '../../../contexts/ChartContext';
@@ -168,6 +163,7 @@ function TradeTabs2(props: propsIF) {
         isUserConnected,
         selectedBaseAddress,
         selectedQuoteAddress,
+        setHasInitialized,
     ]);
 
     // Wait 2 seconds before refreshing to give cache server time to sync from
@@ -252,9 +248,11 @@ function TradeTabs2(props: propsIF) {
         selectedInsideTab,
         selectedOutsideTab,
         showAllData,
-        diffHashSigTxs(userChangesMatchingTokenSelection),
-        diffHashSigLimits(userLimitOrders),
-        diffHashSigPostions(userPositionsMatchingTokenSelection),
+        setHasInitialized,
+        userChangesMatchingTokenSelection.length,
+        setShowAllData,
+        userLimitOrdersMatchingTokenSelection.length,
+        userPositionsMatchingTokenSelection.length,
     ]);
 
     useEffect(() => {
@@ -303,8 +301,17 @@ function TradeTabs2(props: propsIF) {
         userAddress,
         showAllData,
         lastBlockNumWait,
-        !!crocEnv,
-        !!provider,
+        crocEnv,
+        provider,
+        tokens.tokenUniv,
+        chainId,
+        activeNetwork.graphCacheUrl,
+        lastBlockNumber,
+        cachedFetchTokenPrice,
+        cachedQuerySpotPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+        setChangesByUser,
     ]);
 
     // -------------------------------DATA-----------------------------------------

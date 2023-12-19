@@ -103,7 +103,7 @@ export const TradeDataContextProvider = (props: {
             setTokenA(_tokenA);
             setTokenB(_tokenB);
         }
-    }, [chainData.chainId]);
+    }, [chainData.chainId, tokenA.chainId]);
 
     const [soloToken, setSoloToken] = React.useState(goerliETH);
 

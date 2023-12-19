@@ -1,7 +1,15 @@
 /* eslint-disable no-irregular-whitespace */
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { TransactionIF, CandleDataIF } from '../../../../ambient-utils/types';
-import { Dispatch, useState, useEffect, useRef, useContext, memo } from 'react';
+import {
+    Dispatch,
+    useState,
+    useEffect,
+    useRef,
+    useContext,
+    memo,
+    useCallback,
+} from 'react';
 
 import { Pagination } from '@mui/material';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
@@ -143,6 +151,9 @@ function Transactions(props: propsIF) {
         activeAccountTransactionData,
         changesByUser,
         changesByPool,
+        isAccountView,
+        baseToken.address,
+        quoteToken.address,
     ]);
 
     useEffect(() => {
@@ -163,10 +174,8 @@ function Transactions(props: propsIF) {
         isCandleSelected,
         showAllData,
         connectedAccountActive,
-        dataLoadingStatus.isConnectedUserTxDataLoading,
-        dataLoadingStatus.isLookupUserTxDataLoading,
-        dataLoadingStatus.isPoolTxDataLoading,
-        dataLoadingStatus.isCandleDataLoading,
+        dataLoadingStatus,
+        isAccountView,
     ]);
 
     const relevantTransactionsByType = transactionsByType.filter(
@@ -208,54 +217,75 @@ function Transactions(props: propsIF) {
             ? 'medium'
             : 'large';
 
-    const getCandleData = () =>
+    const getCandleData = useCallback(() => {
         crocEnv &&
-        provider &&
-        fetchPoolRecentChanges({
-            tokenList: tokens.tokenUniv,
-            base: selectedBaseAddress,
-            quote: selectedQuoteAddress,
-            poolIdx: poolIndex,
-            chainId: chainId,
-            annotate: true,
-            addValue: true,
-            simpleCalc: true,
-            annotateMEV: false,
-            ensResolution: true,
-            n: 80,
-            period: candleTime.time,
-            time: filter?.time,
-            crocEnv: crocEnv,
-            graphCacheUrl: activeNetwork.graphCacheUrl,
-            provider,
-            lastBlockNumber,
-            cachedFetchTokenPrice: cachedFetchTokenPrice,
-            cachedQuerySpotPrice: cachedQuerySpotPrice,
-            cachedTokenDetails: cachedTokenDetails,
-            cachedEnsResolve: cachedEnsResolve,
-        })
-            .then((selectedCandleChangesJson) => {
-                IS_LOCAL_ENV && console.debug({ selectedCandleChangesJson });
-                if (selectedCandleChangesJson) {
-                    const selectedCandleChangesWithoutFills =
-                        selectedCandleChangesJson.filter((tx) => {
-                            if (
-                                tx.changeType !== 'fill' &&
-                                tx.changeType !== 'cross'
-                            ) {
-                                return true;
-                            } else {
-                                return false;
-                            }
-                        });
-                    setTransactionData(selectedCandleChangesWithoutFills);
-                }
-                setOutsideControl(true);
-                setSelectedInsideTab && setSelectedInsideTab(0);
-                setIsLoading(false);
+            provider &&
+            fetchPoolRecentChanges({
+                tokenList: tokens.tokenUniv,
+                base: selectedBaseAddress,
+                quote: selectedQuoteAddress,
+                poolIdx: poolIndex,
+                chainId: chainId,
+                annotate: true,
+                addValue: true,
+                simpleCalc: true,
+                annotateMEV: false,
+                ensResolution: true,
+                n: 80,
+                period: candleTime.time,
+                time: filter?.time,
+                crocEnv: crocEnv,
+                graphCacheUrl: activeNetwork.graphCacheUrl,
+                provider,
+                lastBlockNumber,
+                cachedFetchTokenPrice: cachedFetchTokenPrice,
+                cachedQuerySpotPrice: cachedQuerySpotPrice,
+                cachedTokenDetails: cachedTokenDetails,
+                cachedEnsResolve: cachedEnsResolve,
             })
-            .catch(console.error);
+                .then((selectedCandleChangesJson) => {
+                    IS_LOCAL_ENV &&
+                        console.debug({ selectedCandleChangesJson });
+                    if (selectedCandleChangesJson) {
+                        const selectedCandleChangesWithoutFills =
+                            selectedCandleChangesJson.filter((tx) => {
+                                if (
+                                    tx.changeType !== 'fill' &&
+                                    tx.changeType !== 'cross'
+                                ) {
+                                    return true;
+                                } else {
+                                    return false;
+                                }
+                            });
+                        setTransactionData(selectedCandleChangesWithoutFills);
+                    }
+                    setOutsideControl(true);
+                    setSelectedInsideTab && setSelectedInsideTab(0);
+                    setIsLoading(false);
+                })
+                .catch(console.error);
+    }, [
+        activeNetwork.graphCacheUrl,
+        cachedEnsResolve,
+        cachedFetchTokenPrice,
+        cachedQuerySpotPrice,
+        cachedTokenDetails,
+        candleTime.time,
+        chainId,
+        crocEnv,
+        filter?.time,
+        lastBlockNumber,
+        poolIndex,
+        provider,
+        selectedBaseAddress,
+        selectedQuoteAddress,
+        setOutsideControl,
+        setSelectedInsideTab,
+        tokens.tokenUniv,
+    ]);
 
+    // TODO: these two useEffects should be consolidated
     // update candle transactions on fresh load
     useEffect(() => {
         if (
@@ -274,14 +304,15 @@ function Transactions(props: propsIF) {
         isCandleSelected,
         filter?.time,
         candleTime.time,
-        !!crocEnv,
-        !!provider,
+        crocEnv,
+        provider,
+        getCandleData,
     ]);
 
     // update candle transactions on last block num change
     useEffect(() => {
         if (isCandleSelected) getCandleData();
-    }, [lastBlockNumWait]);
+    }, [getCandleData, isCandleSelected, lastBlockNumWait]);
 
     // Changed this to have the sort icon be inline with the last row rather than under it
     const walID = (

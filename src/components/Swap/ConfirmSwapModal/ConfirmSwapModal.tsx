@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 // START: Import Other Local Files
 import { TokenPairIF } from '../../../ambient-utils/types';
@@ -83,31 +83,31 @@ export default function ConfirmSwapModal(props: propsIF) {
     const [isWaitingForPriceChangeAckt, setIsWaitingForPriceChangeAckt] =
         useState<boolean>(false);
 
-    const setBaselinePriceAsync = async () => {
+    const setBaselinePriceAsync = useCallback(async () => {
         if (!pool) return;
         const newBaselinePrice = await pool.displayPrice(baselineBlockNumber);
         const baselineBuyTokenPrice = isSellTokenBase
             ? 1 / newBaselinePrice
             : newBaselinePrice;
         setBaselineBuyTokenPrice(baselineBuyTokenPrice);
-    };
+    }, [baselineBlockNumber, isSellTokenBase, pool]);
 
-    const setCurrentPriceAsync = async () => {
+    const setCurrentPriceAsync = useCallback(async () => {
         if (!pool) return;
         const currentBasePrice = await pool.displayPrice(lastBlockNumber);
         const currentBuyTokenPrice = isSellTokenBase
             ? 1 / currentBasePrice
             : currentBasePrice;
         setCurrentBuyTokenPrice(currentBuyTokenPrice);
-    };
+    }, [isSellTokenBase, lastBlockNumber, pool]);
 
     useEffect(() => {
         if (!isWaitingForPriceChangeAckt) setBaselinePriceAsync();
-    }, [isWaitingForPriceChangeAckt]);
+    }, [isWaitingForPriceChangeAckt, setBaselinePriceAsync]);
 
     useEffect(() => {
         setCurrentPriceAsync();
-    }, [lastBlockNumber]);
+    }, [lastBlockNumber, setCurrentPriceAsync]);
 
     const buyTokenPriceChangePercentage = useMemo(() => {
         if (!currentBuyTokenPrice || !baselineBuyTokenPrice) return;
