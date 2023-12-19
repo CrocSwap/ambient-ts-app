@@ -1,6 +1,34 @@
 export const LS_USER_VERIFY_TOKEN = 'CHAT_user_verify';
 export const LS_USER_NON_VERIFIED_MESSAGES = 'CHAT_non_verified_messages';
 
+export const getMessageWithRestEndpoint =
+    '/chat/api/messages/getMsgWithoutWebSocket/';
+
+export const getAllMessagesEndpoint = '/chat/api/messages/getall/';
+
+export const getMessageWithRestWithPaginationEndpoint =
+    '/chat/api/messages/getMsgWithoutWebSocket/';
+
+export const updateLikesDislikesCountEndpoint =
+    '/chat/api/messages/updateLikeDislike';
+
+export const getMentionsWithRestEndpoint = '/chat/api/messages/getMentions/';
+
+export const getUserListWithRestEndpoint = '/chat/api/auth/getUsersForMent';
+
+export const getUserIsVerified = '/chat/api/auth/isUserVerified/';
+
+export const verifyUserEndpoint = '/chat/api/auth/verifyUser';
+
+export const updateVerifiedDateEndpoint = '/chat/api/auth/updateVerifyDate';
+
+export const addReactionEndpoint = '/chat/api/messages/addReaction';
+
+export const getUserDetailsEndpoint = '/chat/api/auth/getUserByWalletID';
+
+export const updateUnverifiedMessagesEndpoint =
+    '/chat/api/messages/updateUnverifiedMessages';
+
 export const getLS = (key: string, personalize?: string) => {
     if (personalize) {
         return localStorage.getItem(`${key}_${personalize}`);

@@ -6,18 +6,6 @@ import io from 'socket.io-client';
 import {
     CHAT_BACKEND_URL,
     CHAT_BACKEND_WSS_URL,
-    addReactionEndpoint,
-    getAllMessagesEndpoint,
-    getMentionsWithRestEndpoint,
-    getMessageWithRestEndpoint,
-    getMessageWithRestWithPaginationEndpoint,
-    getUserDetailsEndpoint,
-    getUserIsVerified,
-    getUserListWithRestEndpoint,
-    updateLikesDislikesCountEndpoint,
-    updateUnverifiedMessagesEndpoint,
-    updateVerifiedDateEndpoint,
-    verifyUserEndpoint,
 } from '../../../ambient-utils/constants';
 
 import { Message } from '../Model/MessageModel';
@@ -31,6 +19,18 @@ import {
     removeFromUnverifiedList,
     setLS,
     setUnverifiedMsgList,
+    addReactionEndpoint,
+    getAllMessagesEndpoint,
+    getMentionsWithRestEndpoint,
+    getMessageWithRestEndpoint,
+    getMessageWithRestWithPaginationEndpoint,
+    getUserDetailsEndpoint,
+    getUserIsVerified,
+    getUserListWithRestEndpoint,
+    updateLikesDislikesCountEndpoint,
+    updateUnverifiedMessagesEndpoint,
+    updateVerifiedDateEndpoint,
+    verifyUserEndpoint,
 } from '../ChatUtils';
 
 const useChatSocket = (
