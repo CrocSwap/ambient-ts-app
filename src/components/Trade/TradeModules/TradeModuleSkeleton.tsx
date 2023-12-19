@@ -114,19 +114,19 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     );
     const smallScreen = useMediaQuery('(max-width: 500px)');
     const mediumScreen = useMediaQuery('(max-width: 680px)');
-    const swapPageContainerHeight = '460px';
+    const swapPageContainerHeight = showExtraInfo ? '590px' : '460px';
 
     const moduleDimensions: ModuleDimensions = {
         Swap: {
-            height: mediumScreen || showExtraInfo ? 'auto' : '500px',
+            height: mediumScreen ? 'auto' : showExtraInfo ? '600px' : '500px',
             width: 'auto',
         },
         Limit: {
-            height: mediumScreen || showExtraInfo ? 'auto' : '530px',
+            height: mediumScreen ? 'auto' : showExtraInfo ? '650px' : '510px',
             width: 'auto',
         },
         Range: {
-            height: mediumScreen || showExtraInfo ? 'auto' : '670px',
+            height: mediumScreen ? 'auto' : showExtraInfo ? '730px' : '660px',
             width: 'auto',
         },
     };
