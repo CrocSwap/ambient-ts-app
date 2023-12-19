@@ -96,7 +96,7 @@ export default function PositionsSearchResults(props: propsIF) {
     const handleClick = (position: PositionIF): void => {
         setOutsideControl(true);
         setSelectedOutsideTab(2);
-        setCurrentPositionActive(position.lastMintTx);
+        setCurrentPositionActive(position.positionId);
         setShowAllData(false);
         const { base, quote } = position;
         // URL params for link to pool page

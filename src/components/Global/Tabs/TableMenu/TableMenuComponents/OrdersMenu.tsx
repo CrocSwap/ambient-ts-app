@@ -6,11 +6,12 @@ import { CiCircleMore } from 'react-icons/ci';
 
 // START: Import Local Files
 import styles from './TableMenus.module.css';
-import OrderDetailsModal from '../../../../OrderDetails/OrderDetailsModal/OrderDetailsModal';
-import LimitActionModal from '../../../../LimitActionModal/LimitActionModal';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
-import { LimitOrderIF } from '../../../../../ambient-utils/types';
+import {
+    LimitModalAction,
+    LimitOrderIF,
+} from '../../../../../ambient-utils/types';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import {
     useLinkGen,
@@ -19,7 +20,6 @@ import {
 } from '../../../../../utils/hooks/useLinkGen';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
-import { useModal } from '../../../Modal/useModal';
 import { Chip } from '../../../../Form/Chip';
 import { FlexContainer } from '../../../../../styled/Common';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
@@ -30,8 +30,10 @@ interface propsIF {
     isOwnerActiveAccount?: boolean;
     isOrderFilled: boolean;
     isAccountView: boolean;
-    isBaseTokenMoneynessGreaterOrEqual: boolean;
     handleAccountClick: () => void;
+    openDetailsModal: () => void;
+    openActionModal: () => void;
+    setLimitModalAction: React.Dispatch<React.SetStateAction<LimitModalAction>>;
 }
 
 export type LimitActionType = 'Remove' | 'Claim';
@@ -42,9 +44,11 @@ export default function OrdersMenu(props: propsIF) {
         limitOrder,
         isOrderFilled,
         isOwnerActiveAccount,
-        isBaseTokenMoneynessGreaterOrEqual,
         isAccountView,
         handleAccountClick,
+        openDetailsModal,
+        openActionModal,
+        setLimitModalAction,
     } = props;
 
     const menuItemRef = useRef<HTMLDivElement>(null);
@@ -64,13 +68,6 @@ export default function OrdersMenu(props: propsIF) {
     // -----------------SNACKBAR----------------
 
     // -----------------END OF SNACKBAR----------------
-
-    const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
-        useModal();
-
-    const [isActionModalOpen, openActionModal, closeActionModal] = useModal();
-    const [limitModalAction, setLimitModalAction] =
-        useState<LimitActionType>('Remove');
 
     const openLimitDetailsModal = () => {
         setShowDropdownMenu(false);
@@ -154,6 +151,7 @@ export default function OrdersMenu(props: propsIF) {
     const menuContent = (
         <div className={styles.menu_column}>
             {detailsButton}
+            {!minView && claimButton}
             {!minView && copyButton}
             {!minView && removeButton}
             {!isAccountView && walletButton}
@@ -203,25 +201,6 @@ export default function OrdersMenu(props: propsIF) {
                     <div className={wrapperStyle}>{menuContent}</div>
                 </div>
             </div>
-            {isDetailsModalOpen && (
-                <OrderDetailsModal
-                    limitOrder={limitOrder}
-                    isBaseTokenMoneynessGreaterOrEqual={
-                        isBaseTokenMoneynessGreaterOrEqual
-                    }
-                    isAccountView={isAccountView}
-                    onClose={closeDetailsModal}
-                />
-            )}
-            {isActionModalOpen && (
-                <LimitActionModal
-                    limitOrder={limitOrder}
-                    type={limitModalAction}
-                    isOpen={isActionModalOpen}
-                    onClose={closeActionModal}
-                    isAccountView={isAccountView}
-                />
-            )}
         </FlexContainer>
     );
 }

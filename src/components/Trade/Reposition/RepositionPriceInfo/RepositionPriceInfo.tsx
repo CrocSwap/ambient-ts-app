@@ -1,7 +1,10 @@
 import { useContext, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { getUnicodeCharacter } from '../../../../ambient-utils/dataLayer';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import { PositionIF } from '../../../../ambient-utils/types';
+import styles from './RepositionPriceInfo.module.css';
+import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
+import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
 import { PositionIF } from '../../../../ambient-utils/types';
 import styles from './RepositionPriceInfo.module.css';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
@@ -33,9 +36,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     const {
         position,
         currentPoolPriceDisplay,
-        // currentPoolPriceTick,
         rangeWidthPercentage,
-        // isConfirmModal,
         minPriceDisplay,
         maxPriceDisplay,
         currentBaseQtyDisplayTruncated,
@@ -47,10 +48,6 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         currentMaxPrice,
     } = props;
 
-    // const {
-    //     globalPopup: { open: openGlobalPopup },
-    // } = useContext(AppStateContext);
-    // const { ambientApy } = useContext(PoolContext);
     const { repoSlippage } = useContext(UserPreferenceContext);
     const { liquidityFee } = useContext(GraphDataContext);
 
@@ -58,54 +55,6 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     const quoteSymbol = position?.quoteSymbol;
 
     const { isDenomBase } = useContext(TradeDataContext);
-
-    // const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
-    // const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
-
-    // const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
-    //     isDenomBase,
-    //     position?.baseDecimals || 18,
-    //     position?.quoteDecimals || 18,
-    //     lowTick,
-    //     highTick,
-    //     lookupChain(position.chainId).gridSize,
-    // );
-
-    // const pinnedLowTick = pinnedDisplayPrices.pinnedLowTick;
-    // const pinnedHighTick = pinnedDisplayPrices.pinnedHighTick;
-    // eslint-disable-next-line
-    const dispatch = useAppDispatch();
-
-    const baseTokenCharacter = position?.baseSymbol
-        ? getUnicodeCharacter(position?.baseSymbol)
-        : '';
-    const quoteTokenCharacter = position?.quoteSymbol
-        ? getUnicodeCharacter(position?.quoteSymbol)
-        : '';
-    // eslint-disable-next-line
-    const poolPriceCharacter = isDenomBase
-        ? quoteTokenCharacter
-        : baseTokenCharacter;
-
-    // let aprPercentage = ambientApy;
-
-    // if (ambientApy) {
-    //     const concFactor = capitalConcFactor(
-    //         tickToPrice(currentPoolPriceTick),
-    //         tickToPrice(pinnedLowTick),
-    //         tickToPrice(pinnedHighTick),
-    //     );
-    //     aprPercentage = ambientApy * concFactor;
-    // }
-
-    // const aprPercentageString = aprPercentage
-    //     ? ` ${aprPercentage.toLocaleString('en-US', {
-    //           minimumFractionDigits: 2,
-    //           maximumFractionDigits: 2,
-    //       })}%`
-    //     : '…';
-
-    // -----------------------------END OF TEMPORARY PLACE HOLDERS--------------
 
     // JSX frag for estimated APR of position
     interface RowDisplayPropsIF {
@@ -124,26 +73,6 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
             </div>
         );
     }
-
-    // const apr = (
-    //     <div className={styles.apr_display}>
-    //         <p>
-    //             Est. APR{' '}
-    //             <AiOutlineQuestionCircle
-    //                 size={14}
-    //                 onClick={() =>
-    //                     openGlobalPopup(
-    //                         <AprExplanation />,
-
-    //                         'Estimated APR',
-    //                         'right',
-    //                     )
-    //                 }
-    //             />
-    //         </p>
-    //         <p>{aprPercentageString}</p>
-    //     </div>
-    // );
 
     const feesAndSlippageData = [
         {

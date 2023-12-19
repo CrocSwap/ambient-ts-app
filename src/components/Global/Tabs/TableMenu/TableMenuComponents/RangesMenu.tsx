@@ -1,10 +1,13 @@
 // START: Import React and Dongles
-import { useState, useRef, useEffect, useContext } from 'react';
+import { useState, useRef, useEffect, useContext, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { FiExternalLink } from 'react-icons/fi';
 import { CiCircleMore } from 'react-icons/ci';
 import styles from './TableMenus.module.css';
-import { PositionIF } from '../../../../../ambient-utils/types';
+import {
+    PositionIF,
+    RangeModalAction,
+} from '../../../../../ambient-utils/types';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
@@ -18,9 +21,6 @@ import {
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
-import RangeActionModal from '../../../../RangeActionModal/RangeActionModal';
-import { useModal } from '../../../Modal/useModal';
-import RangeDetailsModal from '../../../../RangeDetails/RangeDetailsModal/RangeDetailsModal';
 import { Chip } from '../../../../Form/Chip';
 import { FlexContainer } from '../../../../../styled/Common';
 import { UserDataContext } from '../../../../../contexts/UserDataContext';
@@ -38,12 +38,13 @@ interface propsIF {
     isPositionInRange: boolean;
     handleAccountClick: () => void;
     isAccountView: boolean;
+    openDetailsModal: () => void;
+    openActionModal: () => void;
+    setRangeModalAction: React.Dispatch<React.SetStateAction<RangeModalAction>>;
 }
 
-export type RangeModalActionType = 'Harvest' | 'Remove';
-
 // React functional component
-export default function RangesMenu(props: propsIF) {
+function RangesMenu(props: propsIF) {
     const menuItemRef = useRef<HTMLDivElement>(null);
 
     const {
@@ -54,6 +55,9 @@ export default function RangesMenu(props: propsIF) {
         position,
         isPositionInRange,
         isAccountView,
+        openDetailsModal: openRangeDetailsModal,
+        openActionModal: openRangeActionModal,
+        setRangeModalAction,
     } = props;
 
     const {
@@ -74,35 +78,15 @@ export default function RangesMenu(props: propsIF) {
 
     const { isAmbient } = rangeDetailsProps;
 
-    // ---------------------MODAL FUNCTIONALITY----------------
-
-    const [
-        isRangeDetailsModalOpen,
-        openRangeDetailsModal,
-        closeRangeDetailsModal,
-    ] = useModal();
-
-    const [
-        isRangeActionModalOpen,
-        openRangeActionModal,
-        closeRangeActionModal,
-    ] = useModal();
-    const [rangeModalAction, setRangeModalAction] =
-        useState<RangeModalActionType>('Harvest');
-
     const openDetailsModal = () => {
         setShowDropdownMenu(false);
         openRangeDetailsModal();
     };
 
-    const openActionModal = (type: RangeModalActionType) => {
+    const openActionModal = (type: RangeModalAction) => {
         setShowDropdownMenu(false);
         setRangeModalAction(type);
         openRangeActionModal();
-    };
-    const handleActionModalClose = () => {
-        setShowDropdownMenu(false);
-        closeRangeActionModal();
     };
 
     const { isUserConnected } = useContext(UserDataContext);
@@ -331,23 +315,6 @@ export default function RangesMenu(props: propsIF) {
         } else return;
     }, [showDropdownMenu]);
 
-    const [cachedPosition, setCachedPosition] = useState<
-        PositionIF | undefined
-    >();
-
-    useEffect(() => {
-        if (isRangeActionModalOpen || isRangeDetailsModalOpen) {
-            if (
-                !cachedPosition ||
-                position.positionId === cachedPosition.positionId
-            ) {
-                setCachedPosition({ ...position } as PositionIF);
-            }
-        } else {
-            setCachedPosition(undefined);
-        }
-    }, [isRangeActionModalOpen, isRangeDetailsModalOpen, position]);
-
     return (
         <FlexContainer justifyContent='flex-end'>
             <div
@@ -358,22 +325,8 @@ export default function RangesMenu(props: propsIF) {
                 {rangesMenu}
                 {dropdownRangesMenu}
             </div>
-            {isRangeDetailsModalOpen && cachedPosition && (
-                <RangeDetailsModal
-                    position={cachedPosition}
-                    onClose={closeRangeDetailsModal}
-                    {...rangeDetailsProps}
-                />
-            )}
-            {isRangeActionModalOpen && cachedPosition && (
-                <RangeActionModal
-                    type={rangeModalAction}
-                    isOpen={isRangeActionModalOpen}
-                    onClose={handleActionModalClose}
-                    position={cachedPosition}
-                    {...rangeDetailsProps}
-                />
-            )}
         </FlexContainer>
     );
 }
+
+export default memo(RangesMenu);

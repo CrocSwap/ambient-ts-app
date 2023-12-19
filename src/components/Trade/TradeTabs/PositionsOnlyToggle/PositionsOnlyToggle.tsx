@@ -7,6 +7,7 @@ import { CandleDataIF } from '../../../../ambient-utils/types';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 interface PositionsOnlyToggleProps {
     setTransactionFilter: Dispatch<SetStateAction<CandleDataIF | undefined>>;
@@ -98,6 +99,8 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
         setIsCandleSelected(false);
     };
 
+    const isDesktopScreen = useMediaQuery('(min-width: 600px)');
+
     return (
         <FlexContainer
             alignItems='center'
@@ -131,8 +134,8 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                     {toggleOrNull}
                 </FlexContainer>
             )}
-            {tradeTableState !== 'Collapsed' && collapseIcon}
-            {tradeTableState !== 'Expanded' && expandIcon}
+            {tradeTableState !== 'Collapsed' && isDesktopScreen && collapseIcon}
+            {tradeTableState !== 'Expanded' && isDesktopScreen && expandIcon}
         </FlexContainer>
     );
 }

@@ -8,9 +8,6 @@ import { CiCircleMore } from 'react-icons/ci';
 import styles from './TableMenus.module.css';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
-import TransactionDetailsModal from '../../../TransactionDetails/TransactionDetailsModal';
-import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
-import { setShouldSwapDirectionReverse } from '../../../../../utils/state/tradeDataSlice';
 import { TransactionIF } from '../../../../../ambient-utils/types';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
@@ -21,7 +18,6 @@ import {
     limitParamsIF,
 } from '../../../../../utils/hooks/useLinkGen';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
-import { useModal } from '../../../Modal/useModal';
 import { Chip } from '../../../../Form/Chip';
 import { FlexContainer } from '../../../../../styled/Common';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
@@ -29,14 +25,14 @@ import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 // interface for React functional component props
 interface propsIF {
     tx: TransactionIF;
-    isBaseTokenMoneynessGreaterOrEqual: boolean;
     isAccountView: boolean;
     handleWalletClick: () => void;
+    openDetailsModal: () => void;
 }
 
 // React functional component
 export default function TransactionsMenu(props: propsIF) {
-    const { isBaseTokenMoneynessGreaterOrEqual, tx, isAccountView } = props;
+    const { tx, isAccountView, openDetailsModal } = props;
     const {
         chainData: { blockExplorer, chainId },
     } = useContext(CrocEnvContext);
@@ -55,9 +51,6 @@ export default function TransactionsMenu(props: propsIF) {
     const { handlePulseAnimation, setActiveMobileComponent } =
         useContext(TradeTableContext);
 
-    const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
-        useModal();
-
     const showAbbreviatedCopyTradeButton = isAccountView
         ? isSidebarOpen
             ? useMediaQuery('(max-width: 1700px)')
@@ -71,10 +64,9 @@ export default function TransactionsMenu(props: propsIF) {
         isTokenAPrimary,
         setIsTokenAPrimary,
         disableReverseTokens,
+        setShouldSwapDirectionReverse,
     } = useContext(TradeDataContext);
     const menuItemRef = useRef<HTMLDivElement>(null);
-
-    const dispatch = useAppDispatch();
 
     // hooks to generate navigation actions with pre-loaded paths
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
@@ -119,7 +111,7 @@ export default function TransactionsMenu(props: propsIF) {
                 (tx.isBuy ? tx.quote.toLowerCase() : tx.base.toLowerCase());
             if (shouldReverse) {
                 setIsTokenAPrimary(!isTokenAPrimary);
-                dispatch(setShouldSwapDirectionReverse(true));
+                setShouldSwapDirectionReverse(true);
             }
         } else if (tx.entityType === 'limitOrder') {
             tokenA.address.toLowerCase() !==
@@ -282,11 +274,6 @@ export default function TransactionsMenu(props: propsIF) {
         </div>
     );
 
-    const handleCloseModal = () => {
-        clickOutsideHandler();
-        closeDetailsModal();
-    };
-
     return (
         <FlexContainer justifyContent='flex-end'>
             <div
@@ -297,16 +284,6 @@ export default function TransactionsMenu(props: propsIF) {
                 {showCopyButtonOutsideDropdownMenu && transactionsMenu}
                 {dropdownTransactionsMenu}
             </div>
-            {isDetailsModalOpen && (
-                <TransactionDetailsModal
-                    tx={tx}
-                    isBaseTokenMoneynessGreaterOrEqual={
-                        isBaseTokenMoneynessGreaterOrEqual
-                    }
-                    isAccountView={isAccountView}
-                    onClose={handleCloseModal}
-                />
-            )}
         </FlexContainer>
     );
 }

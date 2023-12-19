@@ -93,5 +93,5 @@ export const REQUEST_TIMEOUT_DELAY = process.env.REACT_APP_REQUEST_TIMEOUT_DELAY
     ? parseFloat(process.env.REACT_APP_REQUEST_TIMEOUT_DELAY)
     : 3000;
 
-// Jest tests config
 export const NETWORK_ACCESS = process.env.NETWORK_ACCESS || 'disabled';
+export const CACHE_UPDATE_FREQ_IN_MS = 60000; // 1 minute
