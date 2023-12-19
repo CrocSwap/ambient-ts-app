@@ -478,6 +478,10 @@ export default function Chart(props: propsIF) {
     });
 
     const toolbarWidth = isToolbarOpen ? 40 : 10;
+
+    const [prevlastCandleTime, setPrevLastCandleTime] = useState<number>(
+        lastCandleData.time,
+    );
     const [lastCandleDataCenterX, setLastCandleDataCenterX] = useState(0);
     const [lastCandleDataCenterY, setLastCandleDataCenterY] = useState(0);
 
@@ -2224,6 +2228,8 @@ export default function Chart(props: propsIF) {
             const centerX = snappedTime;
             const diff =
                 (localInitialDisplayCandleCount * period * 1000) / xAxisBuffer;
+
+            setPrevLastCandleTime(snappedTime / 1000);
 
             scaleData?.xScale.domain([
                 centerX - diff * xAxisBuffer,
@@ -5273,6 +5279,8 @@ export default function Chart(props: propsIF) {
                             selectedDate={selectedDate}
                             showLatest={showLatest}
                             setBandwidth={setBandwidth}
+                            prevlastCandleTime={prevlastCandleTime}
+                            setPrevLastCandleTime={setPrevLastCandleTime}
                         />
 
                         <VolumeBarCanvas
