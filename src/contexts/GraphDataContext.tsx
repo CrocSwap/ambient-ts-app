@@ -372,7 +372,6 @@ export const GraphDataContextProvider = (props: {
                 console.error;
             }
         };
-        console.log('Calling Fetch Data');
         fetchData();
     }, [
         isServerEnabled,

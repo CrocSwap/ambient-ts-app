@@ -1,25 +1,10 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { ethers } from 'ethers';
 import { fetchBlockNumber } from '../../api/fetchBlockNumber';
 import { CrocEnv } from '@crocswap-libs/sdk';
-// import { ConnectArg } from '@crocswap-libs/context';
-// type ConnectArg = Provider | Signer | ChainIdentifier;
-// import { tokenListURIs } from '../constants/tokenListURIs';
-// import { TokenIF } from '../../types/token/TokenIF';
-import { NetworkIF, NetworkSessionIF, TokenIF } from '../../types';
-
+import { NetworkSessionIF, TokenIF } from '../../types';
 import { Provider } from '@ethersproject/providers';
-const tokenListURIs = {
-    ambient: '/ambient-token-list.json',
-    testnet: '/testnet-token-list.json',
-    uniswap: 'https://cloudflare-ipfs.com/ipns/tokens.uniswap.org',
-    // broken: '/broken-list.json',
-    coingecko: 'https://tokens.coingecko.com/uniswap/all.json',
-    scroll: 'https://raw.githubusercontent.com/scroll-tech/token-list/main/scroll.tokenlist.json',
-};
-
 import { fetchTokenUniverse } from '../../api/fetchTokenUniverse';
-import fetchTokenList from '../../api/fetchTokenList';
-
 import { supportedNetworks } from './index';
 
 // Make a best effort, based off chain ID, to give back several useful chain objects.

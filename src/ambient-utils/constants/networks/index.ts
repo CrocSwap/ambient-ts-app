@@ -1,4 +1,4 @@
-import { NetworkIF, NetworkSessionIF, TokenIF } from '../../types';
+import { NetworkIF, TokenIF } from '../../types';
 import { arbitrumGoerli } from './arbitrumGoerli';
 import { ethereumGoerli } from './ethereumGoerli';
 import { ethereumMainnet } from './ethereumMainnet';

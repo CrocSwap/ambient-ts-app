@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any  */
 import { Provider } from '@ethersproject/providers';
 import { TopPool } from '../constants/networks/TopPool';
 import { TokenIF } from './token/TokenIF';

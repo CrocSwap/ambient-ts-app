@@ -2,7 +2,7 @@ import { fetchRecords, fetchTokenUniverse } from '../api';
 import { PositionIF, LimitOrderIF, RecordType } from '../types';
 
 describe('Test fetchUserPositions Simple', () => {
-    jest.setTimeout(40000); // Set timeout to 10000 ms (10 seconds)
+    jest.setTimeout(40000);
     describe('userPositions', () => {
         test('ensure some positions exist', async () => {
             if (

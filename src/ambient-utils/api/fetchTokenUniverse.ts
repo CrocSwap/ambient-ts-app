@@ -1,5 +1,5 @@
 import { tokenListURIs } from '../constants';
-import { TokenIF, TokenListIF } from '../types';
+import { TokenIF } from '../types';
 import fetchTokenList from './fetchTokenList';
 const tokenUniverses = new Map<string, TokenIF[]>();
 
@@ -29,8 +29,10 @@ export async function downloadAllTokenUniverses(): Promise<
             const tokenList = await fetchTokenList(uri, false);
             processTokenList(tokenList.tokens, universes);
         } catch (error) {
-            console.log(`Log: Could not load token list from URI: ${uri}`);
-            // TODO consider logging a verbose error  console.warn(`Warning: Could not load token list from URI: ${uri}`, error);
+            console.warn(
+                `Log: Could not load token list from URI: ${uri}`,
+                error,
+            );
         }
     }
     universes.forEach((tokens, chainId) => {

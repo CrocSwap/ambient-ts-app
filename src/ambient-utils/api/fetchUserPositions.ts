@@ -1,6 +1,5 @@
-import { GCGO_OVERRIDE_URL } from '../constants';
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { createNetworkSession } from '../constants/networks/createNetworkSession';
-
 import {
     SpotPriceFn,
     getLimitOrderData,
@@ -25,7 +24,7 @@ import {
     LimitOrderServerIF,
     RecordType,
 } from '../types';
-
+// TODOJG move to types
 interface RecordRequestIF {
     recordType: RecordType;
     user: string;
@@ -44,12 +43,6 @@ interface RecordRequestIF {
     cachedTokenDetails?: FetchContractDetailsFn;
     cachedEnsResolve?: FetchAddrFn;
 }
-
-import { fetchBlockNumber } from '../api/fetchBlockNumber';
-import { ethers } from 'ethers';
-// import { tokenListURIs } from '../constants/tokenListURIs';
-// import fetchTokenList from '../api/fetchTokenList';
-import { GCGO_ETHEREUM_URL } from '../constants/gcgo';
 
 const fetchUserPositions = async ({
     recordType,
@@ -70,20 +63,12 @@ const fetchUserPositions = async ({
     omitKnockout?: boolean;
     addValue?: boolean;
 }): Promise<Response> => {
-    const userPositionsCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/user_positions?'
-        : gcUrl + '/user_positions?';
-
-    const userLimitOrderStatesCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/user_limit_orders?'
-        : gcUrl + '/user_limit_orders?';
-
     let selectedEndpoint;
     if (recordType == RecordType.LimitOrder) {
-        selectedEndpoint = userLimitOrderStatesCacheEndpoint;
+        selectedEndpoint = gcUrl + '/user_limit_orders?';
     } else {
         // default to 'user_positions'
-        selectedEndpoint = userPositionsCacheEndpoint;
+        selectedEndpoint = gcUrl + '/user_positions?';
     }
     const res = await fetch(
         selectedEndpoint +
@@ -257,6 +242,7 @@ const fetchSimpleDecorated = async ({
         chainId: chainId,
         tokenUniv: tokenUniv,
         gcUrl: gcUrl,
+        provider: provider,
         crocEnv: crocEnv,
         lastBlockNumber: lastBlockNumber,
     });

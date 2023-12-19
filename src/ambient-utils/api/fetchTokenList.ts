@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any  */
+
 import { uriToHttp } from '../dataLayer/functions/uriToHttp';
 import { TokenListIF } from '../types/token/TokenListIF';
 import ambientTokenList from '../constants/ambient-token-list.json';
