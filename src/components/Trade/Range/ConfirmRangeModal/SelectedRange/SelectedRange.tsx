@@ -4,6 +4,7 @@ import { getFormattedNumber } from '../../../../../ambient-utils/dataLayer';
 import { FlexContainer, Text } from '../../../../../styled/Common';
 import { SelectedRangeContainer } from '../../../../../styled/Components/TradeModules';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import { GraphDataContext } from '../../../../../contexts/GraphDataContext';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -35,6 +36,16 @@ function SelectedRange(props: propsIF) {
 
     const { poolPriceDisplay } = useContext(PoolContext);
     const { tokenA, tokenB } = useContext(TradeDataContext);
+
+    const { liquidityFee } = useContext(GraphDataContext);
+
+    const liquidityProviderFeeString = (liquidityFee * 100).toLocaleString(
+        undefined,
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        },
+    );
 
     const reverseDisplay =
         (isTokenABase && isDenomBase) || (!isTokenABase && !isDenomBase);
@@ -162,7 +173,7 @@ function SelectedRange(props: propsIF) {
                     {isInitPage ? 'Initial Fee Rate' : 'Current Fee Rate'}
                 </Text>
                 <Text fontSize='body' color='text2'>
-                    {isInitPage ? 'Dynamic' : '0.05%'}
+                    {isInitPage ? 'Dynamic' : `${liquidityProviderFeeString}%`}
                 </Text>
             </FlexContainer>
         </FlexContainer>
