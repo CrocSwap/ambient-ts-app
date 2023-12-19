@@ -2,9 +2,13 @@ import styles from './RangeActionModal.module.css';
 import RemoveRangeWidth from './RemoveRangeWidth/RemoveRangeWidth';
 import RangeActionTokenHeader from './RangeActionTokenHeader/RangeActionTokenHeader';
 import RemoveRangeInfo from './RangeActionInfo/RemoveRangeInfo';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { memo, useContext, useEffect, useMemo, useState } from 'react';
 
-import { PositionIF, PositionServerIF } from '../../ambient-utils/types';
+import {
+    PositionIF,
+    PositionServerIF,
+    RangeModalAction,
+} from '../../ambient-utils/types';
 import { BigNumber } from 'ethers';
 import { CrocPositionView } from '@crocswap-libs/sdk';
 import Button from '../Form/Button';
@@ -29,7 +33,6 @@ import { TokenContext } from '../../contexts/TokenContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import HarvestPositionInfo from './RangeActionInfo/HarvestPositionInfo';
 import ModalHeader from '../Global/ModalHeader/ModalHeader';
-import { RangeModalActionType } from '../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import Modal from '../Global/Modal/Modal';
 import SubmitTransaction from '../Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
@@ -39,33 +42,31 @@ import {
     NUM_GWEI_IN_WEI,
 } from '../../ambient-utils/constants/';
 import { ReceiptContext } from '../../contexts/ReceiptContext';
+import { UserDataContext } from '../../contexts/UserDataContext';
+import { useProcessRange } from '../../utils/hooks/useProcessRange';
 
 interface propsIF {
-    type: RangeModalActionType;
-    baseTokenAddress: string;
-    quoteTokenAddress: string;
-    isPositionInRange: boolean;
-    isAmbient: boolean;
-    baseTokenSymbol: string;
-    quoteTokenSymbol: string;
-    baseTokenLogoURI: string;
-    quoteTokenLogoURI: string;
-    isDenomBase: boolean;
+    type: RangeModalAction;
     position: PositionIF;
-    isOpen: boolean;
     onClose: () => void;
+    isAccountView: boolean;
 }
 
-export default function RangeActionModal(props: propsIF) {
+function RangeActionModal(props: propsIF) {
+    const { type, position, onClose, isAccountView } = props;
+
+    const { userAddress } = useContext(UserDataContext);
+
     const {
-        type,
-        position,
+        isAmbient,
         baseTokenAddress,
         quoteTokenAddress,
-        isAmbient,
-        isOpen,
-        onClose,
-    } = props;
+        baseTokenLogo: baseTokenLogoURI,
+        quoteTokenLogo: quoteTokenLogoURI,
+        baseTokenSymbol,
+        quoteTokenSymbol,
+        isPositionInRange,
+    } = useProcessRange(position, userAddress, isAccountView);
 
     const { lastBlockNumber, gasPriceInGwei } = useContext(ChainDataContext);
 
@@ -325,10 +326,15 @@ export default function RangeActionModal(props: propsIF) {
     };
 
     useEffect(() => {
-        if (!showConfirmation || !isOpen) {
+        if (!showConfirmation) {
             resetConfirmation();
         }
-    }, [txErrorCode, isOpen]);
+    }, [txErrorCode]);
+
+    const closeModal = () => {
+        resetConfirmation();
+        onClose();
+    };
 
     const isPairStable: boolean = isStablePair(
         baseTokenAddress,
@@ -667,12 +673,12 @@ export default function RangeActionModal(props: propsIF) {
         <>
             <div className={styles.header_container}>
                 <RangeActionTokenHeader
-                    isPositionInRange={props.isPositionInRange}
-                    isAmbient={props.isAmbient}
-                    baseTokenSymbol={props.baseTokenSymbol}
-                    quoteTokenSymbol={props.quoteTokenSymbol}
-                    baseTokenLogoURI={props.baseTokenLogoURI}
-                    quoteTokenLogoURI={props.quoteTokenLogoURI}
+                    isPositionInRange={isPositionInRange}
+                    isAmbient={isAmbient}
+                    baseTokenSymbol={baseTokenSymbol}
+                    quoteTokenSymbol={quoteTokenSymbol}
+                    baseTokenLogoURI={baseTokenLogoURI}
+                    quoteTokenLogoURI={quoteTokenLogoURI}
                     showSettings={showSettings}
                     setShowSettings={setShowSettings}
                     baseTokenAddress={baseTokenAddress}
@@ -689,12 +695,12 @@ export default function RangeActionModal(props: propsIF) {
                 <div className={styles.info_container}>
                     {type === 'Remove' && (
                         <RemoveRangeInfo
-                            baseTokenAddress={props.baseTokenAddress}
-                            quoteTokenAddress={props.quoteTokenAddress}
-                            baseTokenSymbol={props.baseTokenSymbol}
-                            quoteTokenSymbol={props.quoteTokenSymbol}
-                            baseTokenLogoURI={props.baseTokenLogoURI}
-                            quoteTokenLogoURI={props.quoteTokenLogoURI}
+                            baseTokenAddress={baseTokenAddress}
+                            quoteTokenAddress={quoteTokenAddress}
+                            baseTokenSymbol={baseTokenSymbol}
+                            quoteTokenSymbol={quoteTokenSymbol}
+                            baseTokenLogoURI={baseTokenLogoURI}
+                            quoteTokenLogoURI={quoteTokenLogoURI}
                             posLiqBaseDecimalCorrected={
                                 posLiqBaseDecimalCorrected
                             }
@@ -710,17 +716,17 @@ export default function RangeActionModal(props: propsIF) {
                             removalPercentage={removalPercentage}
                             baseRemovalNum={baseRemovalNum}
                             quoteRemovalNum={quoteRemovalNum}
-                            isAmbient={props.isAmbient}
+                            isAmbient={isAmbient}
                         />
                     )}
                     {type === 'Harvest' && (
                         <HarvestPositionInfo
-                            baseTokenAddress={props.baseTokenAddress}
-                            quoteTokenAddress={props.quoteTokenAddress}
-                            baseTokenSymbol={props.baseTokenSymbol}
-                            quoteTokenSymbol={props.quoteTokenSymbol}
-                            baseTokenLogoURI={props.baseTokenLogoURI}
-                            quoteTokenLogoURI={props.quoteTokenLogoURI}
+                            baseTokenAddress={baseTokenAddress}
+                            quoteTokenAddress={quoteTokenAddress}
+                            baseTokenSymbol={baseTokenSymbol}
+                            quoteTokenSymbol={quoteTokenSymbol}
+                            baseTokenLogoURI={baseTokenLogoURI}
+                            quoteTokenLogoURI={quoteTokenLogoURI}
                             baseHarvestNum={baseHarvestNum}
                             quoteHarvestNum={quoteHarvestNum}
                         />
@@ -748,9 +754,9 @@ export default function RangeActionModal(props: propsIF) {
     );
 
     return (
-        <Modal usingCustomHeader onClose={onClose}>
+        <Modal usingCustomHeader onClose={closeModal}>
             <ModalHeader
-                onClose={onClose}
+                onClose={closeModal}
                 title={
                     showSettings
                         ? `${
@@ -775,3 +781,5 @@ export default function RangeActionModal(props: propsIF) {
         </Modal>
     );
 }
+
+export default memo(RangeActionModal);
