@@ -8,11 +8,12 @@ function processTokenList(
     universe: Map<string, Map<string, TokenIF>>,
 ) {
     for (const token of tokenList) {
-        if (!universe.has(token.chainId)) {
-            universe.set(token.chainId, new Map<string, TokenIF>());
+        const strChainId = '0x' + token.chainId.toString(16);
+        if (!universe.has(strChainId)) {
+            universe.set(strChainId, new Map<string, TokenIF>());
         }
-        const currentTokens = universe.get(token.chainId);
-        if (!currentTokens.has(token.address)) {
+        const currentTokens = universe.get(strChainId);
+        if (currentTokens && !currentTokens.has(token.address)) {
             currentTokens.set(token.address, token);
         }
     }
@@ -25,22 +26,15 @@ export async function downloadAllTokenUniverses(): Promise<
     const universes = new Map<string, Map<string, TokenIF>>();
     for (const uri of Object.values(tokenListURIs)) {
         try {
-            // console.log("BEFORE ERROR");
-            const tokenList = await fetchTokenList(uri, false, (error) => {
-                throw error;
-            });
+            const tokenList = await fetchTokenList(uri, false);
             processTokenList(tokenList.tokens, universes);
-            // console.log("AFTER ERROR");
         } catch (error) {
             console.log(`Log: Could not load token list from URI: ${uri}`);
             // TODO consider logging a verbose error  console.warn(`Warning: Could not load token list from URI: ${uri}`, error);
         }
     }
     universes.forEach((tokens, chainId) => {
-        tokenUniverses.set(
-            '0x' + chainId.toString(16),
-            Array.from(tokens.values()),
-        );
+        tokenUniverses.set(chainId, Array.from(tokens.values()));
     });
     return tokenUniverses;
 }

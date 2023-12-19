@@ -1,9 +1,25 @@
 import { ethers } from 'ethers';
 import { fetchBlockNumber } from '../../api/fetchBlockNumber';
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { tokenListURIs } from '../constants/tokenListURIs';
-import { fetchTokenList, fetchTokenUniverse } from '../../api';
+// import { ConnectArg } from '@crocswap-libs/context';
+// type ConnectArg = Provider | Signer | ChainIdentifier;
+// import { tokenListURIs } from '../constants/tokenListURIs';
+// import { TokenIF } from '../../types/token/TokenIF';
+import { NetworkIF, NetworkSessionIF, TokenIF } from '../../types';
+
 import { Provider } from '@ethersproject/providers';
+const tokenListURIs = {
+    ambient: '/ambient-token-list.json',
+    testnet: '/testnet-token-list.json',
+    uniswap: 'https://cloudflare-ipfs.com/ipns/tokens.uniswap.org',
+    // broken: '/broken-list.json',
+    coingecko: 'https://tokens.coingecko.com/uniswap/all.json',
+    scroll: 'https://raw.githubusercontent.com/scroll-tech/token-list/main/scroll.tokenlist.json',
+};
+
+import { fetchTokenUniverse } from '../../api/fetchTokenUniverse';
+import fetchTokenList from '../../api/fetchTokenList';
+
 import { supportedNetworks } from './index';
 
 // Make a best effort, based off chain ID, to give back several useful chain objects.
@@ -47,6 +63,7 @@ export const createNetworkSession = async ({
         }
         return retData;
     };
+    // Following for the compiler, because it has a low IQ
 
     // By the end of the block, we will have all the required dependencies in a non missing state (or error trying)
     infuraUrl = await assertExists(infuraUrl, async () => network.evmRpcUrl);
@@ -60,7 +77,7 @@ export const createNetworkSession = async ({
     );
     crocEnv = await assertExists(
         crocEnv,
-        async () => new CrocEnv(provider, defaultSigner),
+        async () => new CrocEnv(provider as Provider, defaultSigner),
     );
     lastBlockNumber = await assertExists(lastBlockNumber, async () =>
         fetchBlockNumber(
@@ -69,13 +86,13 @@ export const createNetworkSession = async ({
     );
 
     return {
-        tokenUniv: tokenUniv,
-        infuraUrl: infuraUrl,
-        provider: provider,
+        tokenUniv: tokenUniv!,
+        infuraUrl: infuraUrl!,
+        provider: provider!,
         chainId: chainId,
-        lastBlockNumber: lastBlockNumber,
+        lastBlockNumber: lastBlockNumber!,
         signer: undefined,
-        gcUrl: gcUrl,
-        crocEnv: crocEnv,
+        gcUrl: gcUrl!,
+        crocEnv: crocEnv!,
     };
 };

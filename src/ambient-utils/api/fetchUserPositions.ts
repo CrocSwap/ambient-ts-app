@@ -173,19 +173,19 @@ const fetchDecorated = async ({
     recordType,
     user,
     chainId,
-    gcUrl, // TODO, Handle in Data Layer
-    ensResolution = true, // TODO, Handle in Data Layer
+    gcUrl,
+    ensResolution = true,
     annotate = true,
     omitKnockout = true,
     addValue = true,
-    tokenUniv, // TODO, Handle in Data Layer
-    crocEnv, // TODO, Handle in Data Layer
-    provider, // TODO, Handle in Data Layer
+    tokenUniv,
+    crocEnv,
+    provider,
     lastBlockNumber,
-    cachedFetchTokenPrice, // TODO, Handle in Data Layer
-    cachedQuerySpotPrice, // TODO, Handle in Data Layer
-    cachedTokenDetails, // TODO, Handle in Data Layer
-    cachedEnsResolve, // TODO, Handle in Data Layer
+    cachedFetchTokenPrice,
+    cachedQuerySpotPrice,
+    cachedTokenDetails,
+    cachedEnsResolve,
 }: RecordRequestIF): Promise<PositionIF[] | LimitOrderIF[]> => {
     const response = await fetchUserPositions({
         recordType,
@@ -198,21 +198,37 @@ const fetchDecorated = async ({
         addValue,
     });
     const json = await response?.json();
+    // Compromise between reusing RecordRequestIF and ensuring that these variables are safely assigned.
+    const fieldsToCheck = {
+        tokenUniv,
+        crocEnv,
+        provider,
+        lastBlockNumber,
+        cachedFetchTokenPrice,
+        cachedQuerySpotPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    };
+    for (const [key, value] of Object.entries(fieldsToCheck)) {
+        if (value === undefined || value === null) {
+            throw new Error(`The value for '${key}' is undefined or null.`);
+        }
+    }
 
     const userPositions = json?.data;
     if (userPositions && crocEnv) {
         const updatedPositions = await decorateUserPositions({
-            recordType,
-            userPositions,
-            tokenUniv,
-            crocEnv,
-            provider,
-            chainId,
-            lastBlockNumber,
-            cachedFetchTokenPrice,
-            cachedQuerySpotPrice,
-            cachedTokenDetails,
-            cachedEnsResolve,
+            recordType: recordType,
+            userPositions: userPositions,
+            tokenUniv: tokenUniv!,
+            crocEnv: crocEnv!,
+            provider: provider!,
+            chainId: chainId,
+            lastBlockNumber: lastBlockNumber!,
+            cachedFetchTokenPrice: cachedFetchTokenPrice!,
+            cachedQuerySpotPrice: cachedQuerySpotPrice!,
+            cachedTokenDetails: cachedTokenDetails!,
+            cachedEnsResolve: cachedEnsResolve!,
         });
         return updatedPositions;
     }
