@@ -1,9 +1,7 @@
 /* eslint-disable no-irregular-whitespace */
 import { useContext, useEffect, useRef, useState, memo } from 'react';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
-import OrderRow from './OrderTable/OrderRow';
 import { useSortedLimits } from '../useSortedLimits';
 import { LimitOrderIF } from '../../../../ambient-utils/types';
 import NoTableData from '../NoTableData/NoTableData';
@@ -25,6 +23,8 @@ import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import TableRows from '../TableRows';
 
 // interface for props for react functional component
 interface propsIF {
@@ -62,9 +62,9 @@ function Orders(props: propsIF) {
     const dataLoadingStatus = useContext(DataLoadingContext);
     const { userAddress } = useContext(UserDataContext);
 
-    const { transactionsByType, pendingTransactions } = useAppSelector(
-        (state) => state.receiptData,
-    );
+    const { transactionsByType, pendingTransactions } =
+        useContext(ReceiptContext);
+
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     const baseTokenSymbol = baseToken.symbol;
@@ -388,16 +388,6 @@ function Orders(props: propsIF) {
         </OrderRowStyled>
     );
 
-    const currentRowItemContent = () =>
-        _DATA.currentData.map((order, idx) => (
-            <OrderRow
-                tableView={tableView}
-                key={idx}
-                limitOrder={order}
-                isAccountView={isAccountView}
-            />
-        ));
-
     const handleKeyDownViewOrder = (
         event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
     ) => {
@@ -426,6 +416,7 @@ function Orders(props: propsIF) {
             }
         }
     };
+
     const orderDataOrNull = shouldDisplayNoTableData ? (
         <NoTableData type='limits' isAccountView={isAccountView} />
     ) : (
@@ -447,7 +438,12 @@ function Orders(props: propsIF) {
                             tableView={tableView}
                         />
                     ))}
-                {currentRowItemContent()}
+                <TableRows
+                    type='Order'
+                    data={_DATA.currentData}
+                    tableView={tableView}
+                    isAccountView={isAccountView}
+                />
             </ul>
             {
                 // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render

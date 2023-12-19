@@ -2,28 +2,19 @@ import styles from './RangeActionModal.module.css';
 import RemoveRangeWidth from './RemoveRangeWidth/RemoveRangeWidth';
 import RangeActionTokenHeader from './RangeActionTokenHeader/RangeActionTokenHeader';
 import RemoveRangeInfo from './RangeActionInfo/RemoveRangeInfo';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { memo, useContext, useEffect, useMemo, useState } from 'react';
 
-import { PositionIF, PositionServerIF } from '../../ambient-utils/types';
-import { BigNumber } from 'ethers';
 import {
-    ambientPosSlot,
-    concPosSlot,
-    CrocPositionView,
-} from '@crocswap-libs/sdk';
+    PositionIF,
+    PositionServerIF,
+    RangeModalAction,
+} from '../../ambient-utils/types';
+import { BigNumber } from 'ethers';
+import { CrocPositionView } from '@crocswap-libs/sdk';
 import Button from '../Form/Button';
 import RangeActionSettings from './RangeActionSettings/RangeActionSettings';
 import ExtraControls from './RangeActionExtraControls/RangeActionExtraControls';
-import {
-    addPendingTx,
-    addPositionPendingUpdate,
-    addReceipt,
-    addTransactionByType,
-    removePendingTx,
-    removePositionPendingUpdate,
-    updateTransactionHash,
-} from '../../utils/state/receiptDataSlice';
-import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
+
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
@@ -42,7 +33,6 @@ import { TokenContext } from '../../contexts/TokenContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import HarvestPositionInfo from './RangeActionInfo/HarvestPositionInfo';
 import ModalHeader from '../Global/ModalHeader/ModalHeader';
-import { RangeModalActionType } from '../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import Modal from '../Global/Modal/Modal';
 import SubmitTransaction from '../Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
@@ -51,33 +41,32 @@ import {
     GAS_DROPS_ESTIMATE_RANGE_HARVEST,
     NUM_GWEI_IN_WEI,
 } from '../../ambient-utils/constants/';
+import { ReceiptContext } from '../../contexts/ReceiptContext';
+import { UserDataContext } from '../../contexts/UserDataContext';
+import { useProcessRange } from '../../utils/hooks/useProcessRange';
 
 interface propsIF {
-    type: RangeModalActionType;
-    baseTokenAddress: string;
-    quoteTokenAddress: string;
-    isPositionInRange: boolean;
-    isAmbient: boolean;
-    baseTokenSymbol: string;
-    quoteTokenSymbol: string;
-    baseTokenLogoURI: string;
-    quoteTokenLogoURI: string;
-    isDenomBase: boolean;
+    type: RangeModalAction;
     position: PositionIF;
-    isOpen: boolean;
     onClose: () => void;
+    isAccountView: boolean;
 }
 
-export default function RangeActionModal(props: propsIF) {
+function RangeActionModal(props: propsIF) {
+    const { type, position, onClose, isAccountView } = props;
+
+    const { userAddress } = useContext(UserDataContext);
+
     const {
-        type,
-        position,
+        isAmbient,
         baseTokenAddress,
         quoteTokenAddress,
-        isAmbient,
-        isOpen,
-        onClose,
-    } = props;
+        baseTokenLogo: baseTokenLogoURI,
+        quoteTokenLogo: quoteTokenLogoURI,
+        baseTokenSymbol,
+        quoteTokenSymbol,
+        isPositionInRange,
+    } = useProcessRange(position, userAddress, isAccountView);
 
     const { lastBlockNumber, gasPriceInGwei } = useContext(ChainDataContext);
 
@@ -95,6 +84,13 @@ export default function RangeActionModal(props: propsIF) {
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { mintSlippage, dexBalRange } = useContext(UserPreferenceContext);
+    const {
+        addPendingTx,
+        addReceipt,
+        addTransactionByType,
+        removePendingTx,
+        updateTransactionHash,
+    } = useContext(ReceiptContext);
 
     const { tokens } = useContext(TokenContext);
 
@@ -116,8 +112,6 @@ export default function RangeActionModal(props: propsIF) {
     const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/position_stats?'
         : activeNetwork.graphCacheUrl + '/position_stats?';
-
-    const dispatch = useAppDispatch();
 
     const [removalGasPriceinDollars, setRemovalGasPriceinDollars] = useState<
         string | undefined
@@ -332,27 +326,15 @@ export default function RangeActionModal(props: propsIF) {
     };
 
     useEffect(() => {
-        if (!showConfirmation || !isOpen) {
+        if (!showConfirmation) {
             resetConfirmation();
         }
-    }, [txErrorCode, isOpen]);
+    }, [txErrorCode]);
 
-    const posHash =
-        position.positionType === 'ambient'
-            ? ambientPosSlot(
-                  position.user,
-                  position.base,
-                  position.quote,
-                  poolIndex,
-              )
-            : concPosSlot(
-                  position.user,
-                  position.base,
-                  position.quote,
-                  position.bidTick,
-                  position.askTick,
-                  poolIndex,
-              );
+    const closeModal = () => {
+        resetConfirmation();
+        onClose();
+    };
 
     const isPairStable: boolean = isStablePair(
         baseTokenAddress,
@@ -374,8 +356,6 @@ export default function RangeActionModal(props: propsIF) {
         const lowLimit = spotPrice * (1 - persistedSlippage / 100);
         const highLimit = spotPrice * (1 + persistedSlippage / 100);
 
-        dispatch(addPositionPendingUpdate(posHash as string));
-
         let tx;
         if (position.positionType === 'ambient') {
             if (removalPercentage === 100) {
@@ -386,7 +366,7 @@ export default function RangeActionModal(props: propsIF) {
                         surplus: dexBalRange.outputToDexBal.isEnabled,
                     });
                     IS_LOCAL_ENV && console.debug(tx?.hash);
-                    dispatch(addPendingTx(tx?.hash));
+                    addPendingTx(tx?.hash);
                     setNewTransactionHash(tx?.hash);
                 } catch (error) {
                     if (
@@ -396,7 +376,6 @@ export default function RangeActionModal(props: propsIF) {
                         location.reload();
                     }
                     console.error({ error });
-                    dispatch(removePositionPendingUpdate(posHash as string));
                     setTxErrorCode(error?.code);
                     setTxErrorMessage(error?.data?.message);
                 }
@@ -406,7 +385,7 @@ export default function RangeActionModal(props: propsIF) {
                         lowLimit,
                         highLimit,
                     ]);
-                    dispatch(addPendingTx(tx?.hash));
+                    addPendingTx(tx?.hash);
                     IS_LOCAL_ENV && console.debug(tx?.hash);
                     setNewTransactionHash(tx?.hash);
                 } catch (error) {
@@ -417,7 +396,6 @@ export default function RangeActionModal(props: propsIF) {
                         location.reload();
                     }
                     IS_LOCAL_ENV && console.debug({ error });
-                    dispatch(removePositionPendingUpdate(posHash as string));
                     setTxErrorCode(error?.code);
                     setTxErrorMessage(error?.data?.message);
                 }
@@ -431,7 +409,7 @@ export default function RangeActionModal(props: propsIF) {
                     { surplus: dexBalRange.outputToDexBal.isEnabled },
                 );
                 IS_LOCAL_ENV && console.debug(tx?.hash);
-                dispatch(addPendingTx(tx?.hash));
+                addPendingTx(tx?.hash);
                 setNewTransactionHash(tx?.hash);
             } catch (error) {
                 if (
@@ -442,7 +420,6 @@ export default function RangeActionModal(props: propsIF) {
                 console.error({ error });
                 setTxErrorCode(error?.code);
                 setTxErrorMessage(error?.data?.message);
-                dispatch(removePositionPendingUpdate(posHash as string));
             }
         } else {
             IS_LOCAL_ENV &&
@@ -450,27 +427,25 @@ export default function RangeActionModal(props: propsIF) {
         }
 
         if (tx?.hash)
-            dispatch(
-                addTransactionByType({
-                    txHash: tx.hash,
-                    txAction: 'Remove',
-                    txType: 'Range',
-                    txDescription: `Remove Range ${position.baseSymbol}+${position.quoteSymbol}`,
-                    txDetails: {
-                        baseAddress: position.base,
-                        quoteAddress: position.quote,
-                        poolIdx: poolIndex,
-                        baseSymbol: position.baseSymbol,
-                        quoteSymbol: position.quoteSymbol,
-                        baseTokenDecimals: position.baseDecimals,
-                        quoteTokenDecimals: position.quoteDecimals,
-                        isAmbient: isAmbient,
-                        lowTick: position.bidTick,
-                        highTick: position.askTick,
-                        gridSize: lookupChain(position.chainId).gridSize,
-                    },
-                }),
-            );
+            addTransactionByType({
+                txHash: tx.hash,
+                txAction: 'Remove',
+                txType: 'Range',
+                txDescription: `Remove Range ${position.baseSymbol}+${position.quoteSymbol}`,
+                txDetails: {
+                    baseAddress: position.base,
+                    quoteAddress: position.quote,
+                    poolIdx: poolIndex,
+                    baseSymbol: position.baseSymbol,
+                    quoteSymbol: position.quoteSymbol,
+                    baseTokenDecimals: position.baseDecimals,
+                    quoteTokenDecimals: position.quoteDecimals,
+                    isAmbient: isAmbient,
+                    lowTick: position.bidTick,
+                    highTick: position.askTick,
+                    gridSize: lookupChain(position.chainId).gridSize,
+                },
+            });
 
         let receipt;
 
@@ -483,16 +458,12 @@ export default function RangeActionModal(props: propsIF) {
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
                 IS_LOCAL_ENV && console.debug('repriced');
-                dispatch(removePendingTx(error.hash));
+                removePendingTx(error.hash);
                 const newTransactionHash = error.replacement.hash;
                 setNewTransactionHash(newTransactionHash);
-                dispatch(addPendingTx(newTransactionHash));
-                dispatch(
-                    updateTransactionHash({
-                        oldHash: error.hash,
-                        newHash: error.replacement.hash,
-                    }),
-                );
+                addPendingTx(newTransactionHash);
+
+                updateTransactionHash(error.hash, error.replacement.hash);
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
@@ -501,9 +472,8 @@ export default function RangeActionModal(props: propsIF) {
         if (receipt) {
             IS_LOCAL_ENV && console.debug('dispatching receipt');
             IS_LOCAL_ENV && console.debug({ receipt });
-            dispatch(addReceipt(JSON.stringify(receipt)));
-            dispatch(removePendingTx(receipt.transactionHash));
-            dispatch(removePositionPendingUpdate(posHash as string));
+            addReceipt(JSON.stringify(receipt));
+            removePendingTx(receipt.transactionHash);
         }
     };
 
@@ -521,44 +491,38 @@ export default function RangeActionModal(props: propsIF) {
         if (position.positionType === 'concentrated') {
             try {
                 IS_LOCAL_ENV && console.debug('Harvesting 100% of fees.');
-                dispatch(addPositionPendingUpdate(posHash as string));
                 tx = await pool.harvestRange(
                     [position.bidTick, position.askTick],
                     [lowLimit, highLimit],
                     { surplus: dexBalRange.outputToDexBal.isEnabled },
                 );
                 IS_LOCAL_ENV && console.debug(tx?.hash);
-                dispatch(addPendingTx(tx?.hash));
+                addPendingTx(tx?.hash);
                 setNewTransactionHash(tx?.hash);
                 if (tx?.hash)
-                    dispatch(
-                        addTransactionByType({
-                            txHash: tx.hash,
-                            txAction: 'Harvest',
-                            txType: 'Range',
-                            txDescription: `Harvest Rewards ${position.baseSymbol}+${position.quoteSymbol}`,
-                            txDetails: {
-                                baseAddress: position.base,
-                                quoteAddress: position.quote,
-                                poolIdx: poolIndex,
-                                baseSymbol: position.baseSymbol,
-                                quoteSymbol: position.quoteSymbol,
-                                baseTokenDecimals: position.baseDecimals,
-                                quoteTokenDecimals: position.quoteDecimals,
-                                isAmbient: isAmbient,
-                                lowTick: position.bidTick,
-                                highTick: position.askTick,
-                                gridSize: lookupChain(position.chainId)
-                                    .gridSize,
-                            },
-                        }),
-                    );
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txAction: 'Harvest',
+                        txType: 'Range',
+                        txDescription: `Harvest Rewards ${position.baseSymbol}+${position.quoteSymbol}`,
+                        txDetails: {
+                            baseAddress: position.base,
+                            quoteAddress: position.quote,
+                            poolIdx: poolIndex,
+                            baseSymbol: position.baseSymbol,
+                            quoteSymbol: position.quoteSymbol,
+                            baseTokenDecimals: position.baseDecimals,
+                            quoteTokenDecimals: position.quoteDecimals,
+                            isAmbient: isAmbient,
+                            lowTick: position.bidTick,
+                            highTick: position.askTick,
+                            gridSize: lookupChain(position.chainId).gridSize,
+                        },
+                    });
             } catch (error) {
                 console.error({ error });
-                dispatch(removePositionPendingUpdate(posHash as string));
                 setTxErrorCode(error?.code);
                 setTxErrorMessage(error?.data?.message);
-                dispatch(removePositionPendingUpdate(posHash as string));
                 if (
                     error.reason === 'sending a transaction requires a signer'
                 ) {
@@ -580,16 +544,12 @@ export default function RangeActionModal(props: propsIF) {
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
                 IS_LOCAL_ENV && console.debug('repriced');
-                dispatch(removePendingTx(error.hash));
+                removePendingTx(error.hash);
                 const newTransactionHash = error.replacement.hash;
                 setNewTransactionHash(newTransactionHash);
-                dispatch(addPendingTx(newTransactionHash));
-                dispatch(
-                    updateTransactionHash({
-                        oldHash: error.hash,
-                        newHash: error.replacement.hash,
-                    }),
-                );
+                addPendingTx(newTransactionHash);
+
+                updateTransactionHash(error.hash, error.replacement.hash);
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
             }
@@ -597,9 +557,8 @@ export default function RangeActionModal(props: propsIF) {
         if (receipt) {
             IS_LOCAL_ENV && console.debug('dispatching receipt');
             IS_LOCAL_ENV && console.debug({ receipt });
-            dispatch(addReceipt(JSON.stringify(receipt)));
-            dispatch(removePendingTx(receipt.transactionHash));
-            dispatch(removePositionPendingUpdate(posHash as string));
+            addReceipt(JSON.stringify(receipt));
+            removePendingTx(receipt.transactionHash);
         }
     };
 
@@ -714,12 +673,12 @@ export default function RangeActionModal(props: propsIF) {
         <>
             <div className={styles.header_container}>
                 <RangeActionTokenHeader
-                    isPositionInRange={props.isPositionInRange}
-                    isAmbient={props.isAmbient}
-                    baseTokenSymbol={props.baseTokenSymbol}
-                    quoteTokenSymbol={props.quoteTokenSymbol}
-                    baseTokenLogoURI={props.baseTokenLogoURI}
-                    quoteTokenLogoURI={props.quoteTokenLogoURI}
+                    isPositionInRange={isPositionInRange}
+                    isAmbient={isAmbient}
+                    baseTokenSymbol={baseTokenSymbol}
+                    quoteTokenSymbol={quoteTokenSymbol}
+                    baseTokenLogoURI={baseTokenLogoURI}
+                    quoteTokenLogoURI={quoteTokenLogoURI}
                     showSettings={showSettings}
                     setShowSettings={setShowSettings}
                     baseTokenAddress={baseTokenAddress}
@@ -736,12 +695,12 @@ export default function RangeActionModal(props: propsIF) {
                 <div className={styles.info_container}>
                     {type === 'Remove' && (
                         <RemoveRangeInfo
-                            baseTokenAddress={props.baseTokenAddress}
-                            quoteTokenAddress={props.quoteTokenAddress}
-                            baseTokenSymbol={props.baseTokenSymbol}
-                            quoteTokenSymbol={props.quoteTokenSymbol}
-                            baseTokenLogoURI={props.baseTokenLogoURI}
-                            quoteTokenLogoURI={props.quoteTokenLogoURI}
+                            baseTokenAddress={baseTokenAddress}
+                            quoteTokenAddress={quoteTokenAddress}
+                            baseTokenSymbol={baseTokenSymbol}
+                            quoteTokenSymbol={quoteTokenSymbol}
+                            baseTokenLogoURI={baseTokenLogoURI}
+                            quoteTokenLogoURI={quoteTokenLogoURI}
                             posLiqBaseDecimalCorrected={
                                 posLiqBaseDecimalCorrected
                             }
@@ -757,17 +716,17 @@ export default function RangeActionModal(props: propsIF) {
                             removalPercentage={removalPercentage}
                             baseRemovalNum={baseRemovalNum}
                             quoteRemovalNum={quoteRemovalNum}
-                            isAmbient={props.isAmbient}
+                            isAmbient={isAmbient}
                         />
                     )}
                     {type === 'Harvest' && (
                         <HarvestPositionInfo
-                            baseTokenAddress={props.baseTokenAddress}
-                            quoteTokenAddress={props.quoteTokenAddress}
-                            baseTokenSymbol={props.baseTokenSymbol}
-                            quoteTokenSymbol={props.quoteTokenSymbol}
-                            baseTokenLogoURI={props.baseTokenLogoURI}
-                            quoteTokenLogoURI={props.quoteTokenLogoURI}
+                            baseTokenAddress={baseTokenAddress}
+                            quoteTokenAddress={quoteTokenAddress}
+                            baseTokenSymbol={baseTokenSymbol}
+                            quoteTokenSymbol={quoteTokenSymbol}
+                            baseTokenLogoURI={baseTokenLogoURI}
+                            quoteTokenLogoURI={quoteTokenLogoURI}
                             baseHarvestNum={baseHarvestNum}
                             quoteHarvestNum={quoteHarvestNum}
                         />
@@ -795,9 +754,9 @@ export default function RangeActionModal(props: propsIF) {
     );
 
     return (
-        <Modal usingCustomHeader onClose={onClose}>
+        <Modal usingCustomHeader onClose={closeModal}>
             <ModalHeader
-                onClose={onClose}
+                onClose={closeModal}
                 title={
                     showSettings
                         ? `${
@@ -822,3 +781,5 @@ export default function RangeActionModal(props: propsIF) {
         </Modal>
     );
 }
+
+export default memo(RangeActionModal);

@@ -1,12 +1,10 @@
 /* eslint-disable no-irregular-whitespace */
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { TransactionIF, CandleDataIF } from '../../../../ambient-utils/types';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { Dispatch, useState, useEffect, useRef, useContext, memo } from 'react';
 
 import { Pagination } from '@mui/material';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
-import TransactionRow from './TransactionsTable/TransactionRow';
 import { useSortedTxs } from '../useSortedTxs';
 import NoTableData from '../NoTableData/NoTableData';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
@@ -33,6 +31,8 @@ import { FlexContainer, Text } from '../../../../styled/Common';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import TableRows from '../TableRows';
 
 interface propsIF {
     filter?: CandleDataIF | undefined;
@@ -93,9 +93,8 @@ function Transactions(props: propsIF) {
 
     const dataLoadingStatus = useContext(DataLoadingContext);
     const { changesByUser, changesByPool } = useContext(GraphDataContext);
-    const { transactionsByType, pendingTransactions } = useAppSelector(
-        (state) => state.receiptData,
-    );
+    const { transactionsByType, pendingTransactions } =
+        useContext(ReceiptContext);
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     const selectedBaseAddress = baseToken.address;
@@ -503,17 +502,6 @@ function Transactions(props: propsIF) {
             </FlexContainer>
         );
 
-    const currentRowItemContent = () =>
-        _DATA.currentData.map((tx, idx) => (
-            <TransactionRow
-                key={idx}
-                idForDOM={`tx_row_${idx}`}
-                tx={tx}
-                tableView={tableView}
-                isAccountView={isAccountView}
-            />
-        ));
-
     const handleKeyDownViewTransaction = (
         event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
     ) => {
@@ -657,7 +645,12 @@ function Transactions(props: propsIF) {
                             </>
                         );
                     })}
-                {currentRowItemContent()}
+                <TableRows
+                    type='Transaction'
+                    data={_DATA.currentData}
+                    tableView={tableView}
+                    isAccountView={isAccountView}
+                />
             </ul>
             {showViewMoreButton && (
                 <FlexContainer

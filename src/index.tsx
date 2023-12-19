@@ -1,8 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { store } from './utils/state/store';
-import { Provider } from 'react-redux';
 import './index.css';
 import App from './App/App';
 import './i18n/config';
@@ -103,21 +101,19 @@ if (!doReload) {
     root.render(
         <React.StrictMode>
             <WagmiConfig client={client}>
-                <Provider store={store}>
-                    <BrowserRouter>
-                        <GlobalContexts>
-                            <StyleSheetManager
-                                shouldForwardProp={(propName) =>
-                                    isValidProp(propName)
-                                }
-                            >
-                                <App />
-                            </StyleSheetManager>
+                <BrowserRouter>
+                    <GlobalContexts>
+                        <StyleSheetManager
+                            shouldForwardProp={(propName) =>
+                                isValidProp(propName)
+                            }
+                        >
+                            <App />
+                        </StyleSheetManager>
 
-                            <div id={GLOBAL_MODAL_PORTAL_ID} />
-                        </GlobalContexts>
-                    </BrowserRouter>
-                </Provider>
+                        <div id={GLOBAL_MODAL_PORTAL_ID} />
+                    </GlobalContexts>
+                </BrowserRouter>
             </WagmiConfig>
         </React.StrictMode>,
     );
