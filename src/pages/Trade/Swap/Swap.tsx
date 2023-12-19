@@ -389,7 +389,7 @@ function Swap(props: propsIF) {
                         quoteSymbol: quoteToken.symbol,
                         isBid: isSellTokenBase,
                     },
-                }),
+                });
             }
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
@@ -414,15 +414,11 @@ function Swap(props: propsIF) {
                     removePendingTx(error.hash);
 
                     const newTransactionHash = error.replacement.hash;
-                    addPendingTx(newTransactionHash);
 
-                    dispatch(
-                        updateTransactionHash({
-                            oldHash: error.hash,
-                            newHash: error.replacement.hash,
-                        }),
-                    );
+                    addPendingTx(newTransactionHash);
+                    updateTransactionHash(error.hash, error.replacement.hash);
                     setNewSwapTransactionHash(newTransactionHash);
+
                     IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {

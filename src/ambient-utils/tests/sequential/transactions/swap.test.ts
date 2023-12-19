@@ -61,6 +61,6 @@ describe('perform swap on Goerli', () => {
 
             expect(finalEthBalance.gt(initialEthBalance)).toBe(true);
             // TODO: add another assertion for a minimum increase in balance i.e. 0.01 ETH
-        }, 30000);
+        }, 60_000);
     }
 });

@@ -26,10 +26,6 @@ import {
     diffHashSig,
     isStablePair,
     truncateDecimals,
-} from '../../../ambient-utils/dataLayer';
-import { PositionIF } from '../../../ambient-utils/types';
-import { rangeTutorialSteps } from '../../../utils/tutorial/Range';
-import {
     getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
     roundDownTick,

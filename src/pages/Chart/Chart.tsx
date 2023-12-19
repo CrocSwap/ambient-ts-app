@@ -13,7 +13,6 @@ import { useLocation } from 'react-router-dom';
 
 import { PoolContext } from '../../contexts/PoolContext';
 import './Chart.css';
-import { pinTickLower, pinTickUpper, tickToPrice } from '@crocswap-libs/sdk';
 import {
     MAX_TICK,
     MIN_TICK,
@@ -22,11 +21,6 @@ import {
     tickToPrice,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
-import {
-    getPinnedPriceValuesFromDisplayPrices,
-    getPinnedPriceValuesFromTicks,
-    getPinnedTickFromDisplayPrice,
-} from '../Trade/Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import useHandleSwipeBack from '../../utils/hooks/useHandleSwipeBack';
 import { candleTimeIF } from '../../App/hooks/useChartSettings';

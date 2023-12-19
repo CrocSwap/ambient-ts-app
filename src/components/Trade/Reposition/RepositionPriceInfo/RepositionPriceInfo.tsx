@@ -1,14 +1,9 @@
 import { useContext, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
-import { getUnicodeCharacter } from '../../../../ambient-utils/dataLayer';
-import { PositionIF } from '../../../../ambient-utils/types';
 import styles from './RepositionPriceInfo.module.css';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
 import { PositionIF } from '../../../../ambient-utils/types';
-import styles from './RepositionPriceInfo.module.css';
-import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
-import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
