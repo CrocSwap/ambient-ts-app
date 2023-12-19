@@ -102,7 +102,25 @@ function TransactionDetailsModal(props: propsIF) {
                 );
             })
             .catch(console.error);
-    }, [lastBlockNumber, !!crocEnv, !!provider, chainId]);
+    }, [
+        lastBlockNumber,
+        chainId,
+        activeNetwork.graphCacheUrl,
+        tx.user,
+        tx.bidTick,
+        tx.askTick,
+        tx.base,
+        tx.quote,
+        tx.poolIdx,
+        tx.positionType,
+        crocEnv,
+        provider,
+        tokens.tokenUniv,
+        cachedFetchTokenPrice,
+        cachedQuerySpotPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    ]);
 
     const [showSettings, setShowSettings] = useState(false);
     const [showShareComponent, setShowShareComponent] = useState(true);

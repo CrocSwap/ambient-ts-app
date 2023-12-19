@@ -67,33 +67,32 @@ export const useExchangePrefs = (txType: string): dexBalanceMethodsIF => {
             localStorageSlug,
             JSON.stringify({ outputToDexBal, drawFromDexBal }),
         );
-    }, [outputToDexBal, drawFromDexBal]);
-
-    // class constructor to manage each data on preference (draw vs receive)
-    // contains the raw value + update functions
-    // objects returned by constructor are checked against the proper interface
-    class DexBalPref implements dexBalancePrefIF {
-        public readonly isEnabled: boolean;
-        public readonly enable: () => void;
-        public readonly disable: () => void;
-        public readonly toggle: () => void;
-        constructor(
-            enabled: boolean,
-            setterFn: Dispatch<SetStateAction<boolean>>,
-        ) {
-            this.isEnabled = enabled;
-            this.enable = () => setterFn(true);
-            this.disable = () => setterFn(false);
-            this.toggle = () => setterFn(!this.isEnabled);
-        }
-    }
+    }, [outputToDexBal, drawFromDexBal, localStorageSlug]);
 
     // return objects to retrieve and update user preferences
-    return useMemo(
-        () => ({
+    return useMemo(() => {
+        // class constructor to manage each data on preference (draw vs receive)
+        // contains the raw value + update functions
+        // objects returned by constructor are checked against the proper interface
+        class DexBalPref implements dexBalancePrefIF {
+            public readonly isEnabled: boolean;
+            public readonly enable: () => void;
+            public readonly disable: () => void;
+            public readonly toggle: () => void;
+            constructor(
+                enabled: boolean,
+                setterFn: Dispatch<SetStateAction<boolean>>,
+            ) {
+                this.isEnabled = enabled;
+                this.enable = () => setterFn(true);
+                this.disable = () => setterFn(false);
+                this.toggle = () => setterFn(!this.isEnabled);
+            }
+        }
+
+        return {
             outputToDexBal: new DexBalPref(outputToDexBal, setOutputToDexBal),
             drawFromDexBal: new DexBalPref(drawFromDexBal, setDrawFromDexBal),
-        }),
-        [outputToDexBal, drawFromDexBal],
-    );
+        };
+    }, [outputToDexBal, drawFromDexBal, setOutputToDexBal, setDrawFromDexBal]);
 };

@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import io from 'socket.io-client';
 import { CHAT_BACKEND_WSS_URL } from '../../../ambient-utils/constants';
 import { Message } from '../Model/MessageModel';
@@ -14,6 +14,13 @@ const useChatSocket = (
     const [lastMessage, setLastMessage] = useState<Message>();
     const [lastMessageText, setLastMessageText] = useState('');
     const [messageUser, setMessageUser] = useState<string>();
+
+    const getMsg = useCallback(async () => {
+        if (!socketRef.current) return;
+        await socketRef.current.emit('msg-recieve', {
+            room: room,
+        });
+    }, [room]);
 
     useEffect(() => {
         if (!areSubscriptionsEnabled || !isChatOpen) return;
@@ -46,14 +53,7 @@ const useChatSocket = (
         return () => {
             socketRef.current.disconnect();
         };
-    }, [room, areSubscriptionsEnabled, isChatOpen]);
-
-    async function getMsg() {
-        if (!socketRef.current) return;
-        await socketRef.current.emit('msg-recieve', {
-            room: room,
-        });
-    }
+    }, [room, areSubscriptionsEnabled, isChatOpen, getMsg]);
 
     async function sendMsg(
         currentUser: string,

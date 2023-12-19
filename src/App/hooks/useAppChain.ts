@@ -34,7 +34,7 @@ export const useAppChain = (): {
     // fn to get a chain ID param from the current URL string
     // returns `null` if chain ID is not found or fails validation
     // due to where this code is instantiated we can't use param tools
-    function getChainFromURL(): string | null {
+    const chainInURLValidated = useMemo((): string | null => {
         const { pathname } = window.location;
         let rawURL = pathname;
         let templateURL = '';
@@ -54,11 +54,11 @@ export const useAppChain = (): {
             output = null;
         }
         return output;
-    }
+    }, []);
 
     // fn to get a chain ID from the connected wallet
     // returns `null` if no wallet or if network fails validation
-    function getChainFromWallet(): string | null {
+    const chainIdFromWallet = useMemo((): string | null => {
         let output: string | null = null;
         if (chainNetwork) {
             const chainAsString: string = chainNumToString(chainNetwork.id);
@@ -66,16 +66,10 @@ export const useAppChain = (): {
             if (isValid) output = chainAsString;
         }
         return output;
-    }
-
-    // memoized and validated chain ID from the URL
-    const chainInURLValidated: string | null = useMemo(
-        () => getChainFromURL(),
-        [window.location.pathname],
-    );
+    }, [chainNetwork]);
 
     // memoized and validated chain ID from the connected wallet
-    const chainInWalletValidated = useRef<string | null>(getChainFromWallet());
+    const chainInWalletValidated = useRef<string | null>(chainIdFromWallet);
 
     // trigger chain switch in wallet when chain in URL changes
     useEffect(() => {
@@ -88,7 +82,7 @@ export const useAppChain = (): {
     useEffect(() => {
         if (chainNetwork) {
             // chain ID from wallet (current live value, not memoized in the app)
-            const incomingChainFromWallet: string | null = getChainFromWallet();
+            const incomingChainFromWallet: string | null = chainIdFromWallet;
             // if a wallet is connected, evaluate action to take
             // if none is connected, nullify memoized record of chain ID from wallet
             if (incomingChainFromWallet) {
@@ -96,10 +90,7 @@ export const useAppChain = (): {
                 if (validateChainId(incomingChainFromWallet)) {
                     // if wallet chain is valid and does not match record in app, update
                     // without this gatekeeping the app refreshes itself endlessly
-                    if (
-                        chainInWalletValidated.current !==
-                        incomingChainFromWallet
-                    ) {
+                    if (chainIdFromWallet !== incomingChainFromWallet) {
                         // update preserved chain ID in local storage
                         localStorage.setItem(
                             CHAIN_LS_KEY,
@@ -138,7 +129,16 @@ export const useAppChain = (): {
                 chainInWalletValidated.current = incomingChainFromWallet;
             }
         }
-    }, [chainNetwork?.id]);
+    }, [
+        chainNetwork,
+        chainInURLValidated,
+        switchNetwork,
+        linkGenIndex,
+        linkGenCurrent,
+        chainParam,
+        networkParam,
+        chainIdFromWallet,
+    ]);
 
     const defaultChain = getDefaultChainId();
 
@@ -167,7 +167,7 @@ export const useAppChain = (): {
             // if found, update local state with retrieved metadata
             chainMetadata && setActiveNetwork(chainMetadata);
         }
-    }, [chainInWalletValidated.current]);
+    }, [chainInWalletValidated]);
 
     // fn to allow user to manually switch chains in the app because everything
     // ... else in this file responds to changes in the browser environment
@@ -189,7 +189,7 @@ export const useAppChain = (): {
             lookupChain(activeNetwork.chainId) ?? lookupChain(defaultChain);
         // return output varibale (chain data)
         return output;
-    }, [activeNetwork.chainId]);
+    }, [activeNetwork.chainId, defaultChain]);
 
     // boolean showing if the current chain in connected wallet is supported
     // this is used to launch the network switcher automatically
@@ -207,7 +207,7 @@ export const useAppChain = (): {
         }
         // return output variable
         return isSupported;
-    }, [chainNetwork]);
+    }, [chainNetwork, chns]);
 
     return {
         chainData,

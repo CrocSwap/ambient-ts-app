@@ -98,7 +98,14 @@ export default function Stats() {
                 );
             });
         }
-    }, [crocEnv, isServerEnabled, lastBlockNumber]);
+    }, [
+        activeNetwork.graphCacheUrl,
+        cachedFetchTokenPrice,
+        chainData.chainId,
+        crocEnv,
+        isServerEnabled,
+        lastBlockNumber,
+    ]);
 
     const statCardData = [
         {

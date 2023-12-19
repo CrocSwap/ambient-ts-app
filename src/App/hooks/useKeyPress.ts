@@ -1,23 +1,32 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 // Taken and refactored from here: https://usehooks.com/useKeyPress/
 
 // Hook
 function useKeyPress(targetKey: string, onClose?: () => void): boolean {
     // State for keeping track of whether key is pressed
     const [keyPressed, setKeyPressed] = useState(false);
+
     // If pressed key is our target key then set to true
-    function downHandler({ key }: KeyboardEvent): void {
-        if (key === targetKey) {
-            onClose && onClose();
-            setKeyPressed(true);
-        }
-    }
+    const downHandler = useCallback(
+        ({ key }: KeyboardEvent): void => {
+            if (key === targetKey) {
+                onClose && onClose();
+                setKeyPressed(true);
+            }
+        },
+        [onClose, targetKey],
+    );
+
     // If released key is our target key then set to false
-    function upHandler({ key }: KeyboardEvent): void {
-        if (key === targetKey) {
-            setKeyPressed(false);
-        }
-    }
+    const upHandler = useCallback(
+        ({ key }: KeyboardEvent): void => {
+            if (key === targetKey) {
+                setKeyPressed(false);
+            }
+        },
+        [targetKey],
+    );
+
     // Add event listeners
     useEffect(() => {
         window.addEventListener('keydown', downHandler);
@@ -27,7 +36,7 @@ function useKeyPress(targetKey: string, onClose?: () => void): boolean {
             window.removeEventListener('keydown', downHandler);
             window.removeEventListener('keyup', upHandler);
         };
-    }, []); // Empty array ensures that effect is only run on mount and unmount
+    }, [downHandler, upHandler]);
 
     return keyPressed;
 }

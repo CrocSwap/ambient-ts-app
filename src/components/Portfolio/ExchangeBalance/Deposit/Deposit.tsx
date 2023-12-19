@@ -149,7 +149,7 @@ export default function Deposit(props: propsIF) {
 
     const isDepositQtyValid = useMemo(
         () => depositQtyNonDisplayNum > 0,
-        [depositQtyNonDisplay],
+        [depositQtyNonDisplayNum],
     );
 
     const isTokenAllowanceSufficient = useMemo(
@@ -172,9 +172,10 @@ export default function Deposit(props: propsIF) {
               )
             : false;
     }, [
+        selectedToken.address,
+        depositQtyNonDisplay,
         tokenWalletBalance,
         amountToReduceNativeTokenQty,
-        depositQtyNonDisplay,
     ]);
 
     const isWalletBalanceSufficientToCoverDeposit = useMemo(
@@ -240,11 +241,13 @@ export default function Deposit(props: propsIF) {
         isWalletBalanceSufficientToCoverGas,
         isDepositQtyValid,
         selectedToken.symbol,
+        depositQtyNonDisplayNum,
     ]);
 
+    // TODO: why is this useEffect needed?
     useEffect(() => {
         setIsDepositPending(false);
-    }, [JSON.stringify(selectedToken)]);
+    }, [selectedToken]);
 
     const deposit = async (depositQtyNonDisplay: string) => {
         if (crocEnv && isDepositQtyValid && userAddress) {

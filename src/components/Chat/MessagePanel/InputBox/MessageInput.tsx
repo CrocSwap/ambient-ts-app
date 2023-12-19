@@ -4,7 +4,7 @@ import { Message } from '../../Model/MessageModel';
 
 import Picker from 'emoji-picker-react';
 import styles from './MessageInput.module.css';
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import PositionBox from '../PositionBox/PositionBox';
 
 import { RiCloseFill, RiInformationLine } from 'react-icons/ri';
@@ -55,17 +55,17 @@ export default function MessageInput(props: MessageInputProps) {
         setShowEmojiPicker(false);
     };
 
-    function messageInputText() {
+    const messageInputText = useCallback(() => {
         if (isUserConnected && userAddress) {
             return 'Type to chat. Enter to submit.';
         } else {
             return 'Please connect wallet to chat.';
         }
-    }
+    }, [isUserConnected, userAddress]);
 
     useEffect(() => {
         messageInputText();
-    }, [isUserConnected, userAddress]);
+    }, [messageInputText]);
 
     const handleSendMessageButton = () => {
         handleSendMsg(message, roomId);

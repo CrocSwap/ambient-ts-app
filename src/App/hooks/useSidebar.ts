@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { getLocalStorageItem } from '../../ambient-utils/dataLayer';
 
 export interface sidebarMethodsIF {
@@ -39,26 +39,33 @@ export const useSidebar = (pathname: string): sidebarMethodsIF => {
     };
 
     // fn to open the sidebar
-    const openSidebar = (persist = false): void =>
-        changeSidebar('open', persist);
+    const openSidebar = useCallback(
+        (persist = false): void => changeSidebar('open', persist),
+        [],
+    );
 
     // fn to close the sidebar
-    const closeSidebar = (persist = false): void =>
-        changeSidebar('closed', persist);
+    const closeSidebar = useCallback(
+        (persist = false): void => changeSidebar('closed', persist),
+        [],
+    );
 
     // fn to toggle the sidebar
-    const toggleSidebar = (persist = false): void => {
-        // logic router as desired action is conditional on current value
-        // default action is to open the sidebar
-        switch (sidebar) {
-            case 'open':
-                closeSidebar(persist);
-                break;
-            case 'closed':
-            default:
-                openSidebar(persist);
-        }
-    };
+    const toggleSidebar = useCallback(
+        (persist = false): void => {
+            // logic router as desired action is conditional on current value
+            // default action is to open the sidebar
+            switch (sidebar) {
+                case 'open':
+                    closeSidebar(persist);
+                    break;
+                case 'closed':
+                default:
+                    openSidebar(persist);
+            }
+        },
+        [closeSidebar, openSidebar, sidebar],
+    );
 
     // value whether to sidebar should be hidden on the current URL path
     const hidden = useMemo<boolean>(() => {
@@ -83,6 +90,6 @@ export const useSidebar = (pathname: string): sidebarMethodsIF => {
             getStoredStatus: getStoredSidebarStatus,
             resetStoredStatus: resetPersist,
         }),
-        [sidebar, hidden, pathname],
+        [sidebar, hidden, openSidebar, closeSidebar, toggleSidebar],
     );
 };

@@ -10,5 +10,5 @@ export function useBlacklist(account: `0x${string}` | undefined): void {
             disconnectUser();
             location.replace('https://ofac.treasury.gov');
         }
-    }, [account]);
+    }, [account, disconnectUser]);
 }

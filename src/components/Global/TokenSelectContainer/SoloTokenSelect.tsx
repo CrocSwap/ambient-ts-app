@@ -182,7 +182,14 @@ export const SoloTokenSelect = (props: propsIF) => {
                 console.error(`Failed to get token metadata: ${err.message}`);
                 setCustomToken(null);
             });
-    }, [searchType, validatedInput, provider, cachedTokenDetails]);
+    }, [
+        searchType,
+        validatedInput,
+        provider,
+        cachedTokenDetails,
+        tokens,
+        chainId,
+    ]);
     // EDS Test Token 2 address (please do not delete!)
     // '0x0B0322d75bad9cA72eC7708708B54e6b38C26adA'
 
@@ -216,7 +223,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         // run hook when validated input or type of search changes
         // searchType is redundant but may be relevant in the future
         // until then it does not hurt anything to put it there
-    }, [validatedInput, searchType]);
+    }, [searchType, tokens, validatedInput]);
 
     useEffect(() => {
         if (contentRouter === 'from chain') {
@@ -224,7 +231,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         } else {
             setShowSoloSelectTokenButtons(true);
         }
-    }, [contentRouter]);
+    }, [contentRouter, setShowSoloSelectTokenButtons]);
 
     const clearInputFieldAndCloseModal = () => {
         setInput('');

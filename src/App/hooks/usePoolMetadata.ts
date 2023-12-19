@@ -111,13 +111,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             }
         }
         return matching;
-    }, [
-        props.pathname,
-        tokenA.address,
-        tokenA.chainId,
-        tokenB.address,
-        tokenB.chainId,
-    ]);
+    }, [tokenA.address, tokenB.address]);
 
     // Wait 2 seconds before refreshing to give cache server time to sync from
     // last block
@@ -163,8 +157,13 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         props.chainData.chainId,
         props.chainData.poolIndex,
         props.searchableTokens,
-        props.lastBlockNumber == 0,
-        !!props.crocEnv,
+        props,
+        ticksInParams,
+        tokenA.decimals,
+        tokenB.decimals,
+        setAdvancedLowTick,
+        setAdvancedHighTick,
+        setAdvancedMode,
     ]);
 
     // Reset loading states when token values change
@@ -189,7 +188,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             datasetName: 'isConnectedUserPoolOrderDataLoading',
             loadingStatus: true,
         });
-    }, [baseToken.address, quoteToken.address]);
+    }, [baseToken.address, quoteToken.address, setDataLoadingStatus]);
 
     // Sets up the asynchronous queries to TVL, volume and liquidity curve
     useEffect(() => {
@@ -621,8 +620,24 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         props.chainData.poolIndex,
         props.searchableTokens,
         lastBlockNumWait,
-        !!props.crocEnv,
-        !!props.provider,
+        props.crocEnv,
+        props.provider,
+        props.isServerEnabled,
+        props.graphCacheUrl,
+        props.lastBlockNumber,
+        props.cachedFetchTokenPrice,
+        props.cachedQuerySpotPrice,
+        props.cachedTokenDetails,
+        props.cachedEnsResolve,
+        cachedGetLiquidityFee,
+        setLiquidityFee,
+        setPositionsByPool,
+        setDataLoadingStatus,
+        setLeaderboardByPool,
+        setChangesByPool,
+        setLimitOrdersByPool,
+        setUserPositionsByPool,
+        setUserLimitOrdersByPool,
     ]);
 
     useEffect(() => {
@@ -668,6 +683,13 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         props.chainData.poolIndex,
         lastBlockNumWait,
         props.isChartEnabled,
+        props.chainData,
+        props.crocEnv,
+        props.lastBlockNumber,
+        props.graphCacheUrl,
+        props.cachedFetchTokenPrice,
+        setLiquidityPending,
+        setLiquidity,
     ]);
 
     return {

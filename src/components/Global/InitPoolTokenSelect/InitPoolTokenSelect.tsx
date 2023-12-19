@@ -86,7 +86,7 @@ function TokenSelectorPoolInit(props: propsIF) {
     // needed to not dismiss exchangebalance modal when closing the token select modal
     useEffect(() => {
         setTokenModalOpen(isTokenSelectOpen);
-    }, [isTokenSelectOpen]);
+    }, [isTokenSelectOpen, setTokenModalOpen]);
 
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] =
         useState(true);

@@ -1,5 +1,5 @@
 import styles from './Pagination.module.css';
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 // import { BiDotsHorizontal } from 'react-icons/bi';
 import { IoMdArrowDropleft, IoMdArrowDropright } from 'react-icons/io';
 import { motion } from 'framer-motion';
@@ -45,7 +45,7 @@ export default function Pagination(props: PaginationPropsIF) {
     const start = (currentPage - 1) * itemsPerPage + 1;
     const [end, setEnd] = useState(totalItems);
 
-    function handleUpdatePageShow() {
+    const handleUpdatePageShow = useCallback(() => {
         if (itemsPerPage < totalItems) {
             if (totalItems > currentPage * itemsPerPage) {
                 // If there are more items to show after the current page,
@@ -67,11 +67,11 @@ export default function Pagination(props: PaginationPropsIF) {
             // If there are no items to paginate, set the end index to 0.
             setEnd(0);
         }
-    }
+    }, [currentPage, itemsPerPage, totalItems]);
 
     useEffect(() => {
         handleUpdatePageShow();
-    }, [currentPage, paginate]);
+    }, [handleUpdatePageShow]);
 
     const detailPageRendered = ` showing ${start} - ${end} of ${totalItems} `;
 

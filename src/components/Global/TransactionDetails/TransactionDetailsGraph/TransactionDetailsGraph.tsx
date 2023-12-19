@@ -207,7 +207,20 @@ export default function TransactionDetailsGraph(
                 }
             }
         })();
-    }, [fetchEnabled]);
+    }, [
+        activeNetwork.graphCacheUrl,
+        baseTokenAddress,
+        cachedFetchTokenPrice,
+        chainData,
+        crocEnv,
+        fetchEnabled,
+        graphData,
+        oneHourMiliseconds,
+        quoteTokenAddress,
+        transactionType,
+        tx?.timeFirstMint,
+        tx.txTime,
+    ]);
 
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -380,8 +393,24 @@ export default function TransactionDetailsGraph(
         scaleData,
         isDenomBase,
         isAccountView,
-        !isBaseTokenMoneynessGreaterOrEqual,
+        isBaseTokenMoneynessGreaterOrEqual,
     ]);
+
+    const addExtraCandle = useCallback(
+        (
+            time: number,
+            askTickInvPriceDecimalCorrected: number,
+            askTickPriceDecimalCorrected: number,
+        ) => {
+            graphData?.push({
+                time: time,
+                invPriceCloseExclMEVDecimalCorrected:
+                    askTickInvPriceDecimalCorrected,
+                priceCloseExclMEVDecimalCorrected: askTickPriceDecimalCorrected,
+            });
+        },
+        [graphData],
+    );
 
     useEffect(() => {
         if (graphData !== undefined) {
@@ -528,7 +557,15 @@ export default function TransactionDetailsGraph(
                 return scaleData;
             });
         }
-    }, [tx, graphData]);
+    }, [
+        tx,
+        graphData,
+        transactionType,
+        isAccountView,
+        isDenomBase,
+        isBaseTokenMoneynessGreaterOrEqual,
+        addExtraCandle,
+    ]);
 
     useEffect(() => {
         if (scaleData) {
@@ -545,6 +582,73 @@ export default function TransactionDetailsGraph(
             });
         }
     }, [scaleData]);
+
+    const drawXaxis = useCallback(
+        (context: any, xScale: any, Y: any) => {
+            if (period) {
+                const _width = 15; // magic number of pixels to surrounding price
+                const minDomainLocation = scaleData?.xScale.range()[0];
+                const maxDomainLocation = scaleData?.xScale.range()[1];
+
+                const tickSize = 6;
+                let formatValue = undefined;
+
+                context.beginPath();
+                context.textAlign = 'center';
+                context.textBaseline = 'top';
+                context.fillStyle = 'rgba(189,189,189,0.6)';
+                context.font = '10px Lexend Deca';
+
+                const factor = mobileView ? 7 : 5;
+
+                const tickTempValues = scaleData.xScale.ticks(factor);
+
+                tickTempValues.map((tick: any) => {
+                    if (
+                        moment(tick).format('HH:mm') === '00:00' ||
+                        period === 86400
+                    ) {
+                        formatValue = moment(tick).format('MMM DD');
+                    } else {
+                        formatValue = moment(tick).format('HH:mm');
+                    }
+
+                    if (
+                        moment(tick)
+                            .format('DD')
+                            .match(/^(01)$/) &&
+                        moment(tick).format('HH:mm') === '00:00'
+                    ) {
+                        formatValue =
+                            moment(tick).format('MMM') === 'Jan'
+                                ? moment(tick).format('YYYY')
+                                : moment(tick).format('MMM');
+                    }
+
+                    if (
+                        !(
+                            minDomainLocation >= xScale(tick) - _width &&
+                            minDomainLocation <= xScale(tick) + _width
+                        ) &&
+                        !(
+                            maxDomainLocation >= xScale(tick) - _width &&
+                            maxDomainLocation <= xScale(tick) + _width
+                        )
+                    ) {
+                        context.fillText(
+                            formatValue,
+                            xScale(tick),
+                            Y + tickSize,
+                        );
+                    }
+                });
+                context.restore();
+
+                renderCanvasArray([d3Xaxis]);
+            }
+        },
+        [mobileView, period, scaleData.xScale],
+    );
 
     useEffect(() => {
         if (scaleData) {
@@ -568,67 +672,123 @@ export default function TransactionDetailsGraph(
                 renderCanvasArray([d3Xaxis]);
             }
         }
-    }, [xAxis, scaleData, d3Xaxis, period]);
+    }, [xAxis, scaleData, d3Xaxis, period, drawXaxis]);
 
-    const drawXaxis = (context: any, xScale: any, Y: any) => {
-        if (period) {
-            const _width = 15; // magic number of pixels to surrounding price
-            const minDomainLocation = scaleData?.xScale.range()[0];
-            const maxDomainLocation = scaleData?.xScale.range()[1];
+    const render = useCallback(() => {
+        const nd = d3.select('#d3PlotGraph').node() as any;
+        nd?.requestRedraw();
+    }, []);
 
-            const tickSize = 6;
-            let formatValue = undefined;
+    const drawYaxis = useCallback(
+        (context: any, yScale: any, X: any) => {
+            const canvas = d3
+                .select(d3Yaxis.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
 
-            context.beginPath();
-            context.textAlign = 'center';
-            context.textBaseline = 'top';
-            context.fillStyle = 'rgba(189,189,189,0.6)';
-            context.font = '10px Lexend Deca';
+            if (canvas !== null) {
+                const height = canvas.height;
 
-            const factor = mobileView ? 7 : 5;
-
-            const tickTempValues = scaleData.xScale.ticks(factor);
-
-            tickTempValues.map((tick: any) => {
-                if (
-                    moment(tick).format('HH:mm') === '00:00' ||
-                    period === 86400
-                ) {
-                    formatValue = moment(tick).format('MMM DD');
-                } else {
-                    formatValue = moment(tick).format('HH:mm');
+                let factor = height < 500 ? 6 : height.toString().length * 2;
+                if (!mobileView) {
+                    factor = 5;
                 }
+                context.stroke();
+                context.textAlign = 'center';
+                context.textBaseline = 'middle';
+                context.fillStyle = 'rgba(189,189,189,0.6)';
+                context.font = '10px Lexend Deca';
 
-                if (
-                    moment(tick)
-                        .format('DD')
-                        .match(/^(01)$/) &&
-                    moment(tick).format('HH:mm') === '00:00'
-                ) {
-                    formatValue =
-                        moment(tick).format('MMM') === 'Jan'
-                            ? moment(tick).format('YYYY')
-                            : moment(tick).format('MMM');
-                }
+                const yScaleCopy = yScale.copy();
 
-                if (
-                    !(
-                        minDomainLocation >= xScale(tick) - _width &&
-                        minDomainLocation <= xScale(tick) + _width
-                    ) &&
-                    !(
-                        maxDomainLocation >= xScale(tick) - _width &&
-                        maxDomainLocation <= xScale(tick) + _width
-                    )
-                ) {
-                    context.fillText(formatValue, xScale(tick), Y + tickSize);
-                }
-            });
-            context.restore();
+                const domain = yScale.domain();
 
-            renderCanvasArray([d3Xaxis]);
-        }
-    };
+                const buffer = Math.abs(domain[0] - domain[1]) / 30;
+
+                yScaleCopy.domain([domain[0] + buffer, domain[1] - buffer]);
+
+                const yScaleTicks = yScaleCopy.ticks(factor);
+
+                let switchFormatter = false;
+
+                yScaleTicks.forEach((element: any) => {
+                    if (element > 99999) {
+                        switchFormatter = true;
+                    }
+                });
+
+                const formatTicks = switchFormatter
+                    ? formatPoolPriceAxis
+                    : formatAmountChartData;
+
+                yScaleTicks.forEach((d: number) => {
+                    const digit = d.toString().split('.')[1]?.length;
+
+                    const isScientific = d.toString().includes('e');
+
+                    if (isScientific) {
+                        const splitNumber = d.toString().split('e');
+                        const subString =
+                            Math.abs(Number(splitNumber[1])) -
+                            (splitNumber.includes('.') ? 2 : 1);
+
+                        const scientificValue = getFormattedNumber({
+                            value: d,
+                            abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                        });
+
+                        const textScientificArray =
+                            scientificValue.split('0.0');
+                        const textScientific = textScientificArray[1].slice(
+                            1,
+                            4,
+                        );
+
+                        const factor = Math.pow(10, 3 - textScientific.length);
+
+                        const textHeight =
+                            context.measureText('0.0').actualBoundingBoxAscent +
+                            context.measureText('0.0').actualBoundingBoxDescent;
+
+                        context.beginPath();
+                        context.fillText(
+                            '0.0',
+                            X -
+                                context.measureText('0.0').width / 2 -
+                                context.measureText(subString).width / 2,
+                            yScale(d),
+                        );
+
+                        context.fillText(
+                            subString,
+                            X,
+                            yScale(d) + textHeight / 3,
+                        );
+                        context.fillText(
+                            factor * Number(textScientific),
+                            X +
+                                context.measureText(
+                                    factor * Number(textScientific),
+                                ).width /
+                                    2 +
+                                context.measureText(subString).width / 2,
+                            yScale(d),
+                        );
+                    } else {
+                        context.beginPath();
+                        context.fillText(
+                            formatTicks(d, digit ? digit : 2),
+                            X,
+                            yScale(d),
+                        );
+                    }
+                });
+
+                render();
+            }
+        },
+        [mobileView, render],
+    );
 
     useEffect(() => {
         if (scaleData) {
@@ -656,161 +816,7 @@ export default function TransactionDetailsGraph(
                 renderCanvasArray([d3Yaxis]);
             }
         }
-    }, [yAxis, scaleData, d3Yaxis]);
-
-    const drawYaxis = (context: any, yScale: any, X: any) => {
-        const canvas = d3
-            .select(d3Yaxis.current)
-            .select('canvas')
-            .node() as HTMLCanvasElement;
-
-        if (canvas !== null) {
-            const height = canvas.height;
-
-            let factor = height < 500 ? 6 : height.toString().length * 2;
-            if (!mobileView) {
-                factor = 5;
-            }
-            context.stroke();
-            context.textAlign = 'center';
-            context.textBaseline = 'middle';
-            context.fillStyle = 'rgba(189,189,189,0.6)';
-            context.font = '10px Lexend Deca';
-
-            const yScaleCopy = yScale.copy();
-
-            const domain = yScale.domain();
-
-            const buffer = Math.abs(domain[0] - domain[1]) / 30;
-
-            yScaleCopy.domain([domain[0] + buffer, domain[1] - buffer]);
-
-            const yScaleTicks = yScaleCopy.ticks(factor);
-
-            let switchFormatter = false;
-
-            yScaleTicks.forEach((element: any) => {
-                if (element > 99999) {
-                    switchFormatter = true;
-                }
-            });
-
-            const formatTicks = switchFormatter
-                ? formatPoolPriceAxis
-                : formatAmountChartData;
-
-            yScaleTicks.forEach((d: number) => {
-                const digit = d.toString().split('.')[1]?.length;
-
-                const isScientific = d.toString().includes('e');
-
-                if (isScientific) {
-                    const splitNumber = d.toString().split('e');
-                    const subString =
-                        Math.abs(Number(splitNumber[1])) -
-                        (splitNumber.includes('.') ? 2 : 1);
-
-                    const scientificValue = getFormattedNumber({
-                        value: d,
-                        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
-                    });
-
-                    const textScientificArray = scientificValue.split('0.0');
-                    const textScientific = textScientificArray[1].slice(1, 4);
-
-                    const factor = Math.pow(10, 3 - textScientific.length);
-
-                    const textHeight =
-                        context.measureText('0.0').actualBoundingBoxAscent +
-                        context.measureText('0.0').actualBoundingBoxDescent;
-
-                    context.beginPath();
-                    context.fillText(
-                        '0.0',
-                        X -
-                            context.measureText('0.0').width / 2 -
-                            context.measureText(subString).width / 2,
-                        yScale(d),
-                    );
-
-                    context.fillText(subString, X, yScale(d) + textHeight / 3);
-                    context.fillText(
-                        factor * Number(textScientific),
-                        X +
-                            context.measureText(factor * Number(textScientific))
-                                .width /
-                                2 +
-                            context.measureText(subString).width / 2,
-                        yScale(d),
-                    );
-                } else {
-                    context.beginPath();
-                    context.fillText(
-                        formatTicks(d, digit ? digit : 2),
-                        X,
-                        yScale(d),
-                    );
-                }
-            });
-
-            render();
-        }
-    };
-
-    const render = useCallback(() => {
-        const nd = d3.select('#d3PlotGraph').node() as any;
-        nd?.requestRedraw();
-    }, []);
-
-    useEffect(() => {
-        if (
-            graphData !== undefined &&
-            scaleData !== undefined &&
-            lineSeries !== undefined &&
-            crossPoint !== undefined &&
-            horizontalBand !== undefined &&
-            triangleRange !== undefined &&
-            triangleLimit !== undefined &&
-            limitPriceLine !== undefined &&
-            priceLine !== undefined
-        ) {
-            drawChart(
-                graphData,
-                scaleData,
-                lineSeries,
-                priceLine,
-                limitPriceLine,
-                crossPoint,
-                horizontalBand,
-                triangleRange,
-                triangleLimit,
-            );
-        }
-    }, [
-        scaleData,
-        lineSeries,
-        priceLine,
-        limitPriceLine,
-        graphData,
-        crossPoint,
-        transactionType,
-        horizontalBand,
-        triangleRange,
-        triangleLimit,
-    ]);
-
-    const addExtraCandle = (
-        time: number,
-        askTickInvPriceDecimalCorrected: number,
-        askTickPriceDecimalCorrected: number,
-    ) => {
-        graphData?.push({
-            time: time,
-            invPriceCloseExclMEVDecimalCorrected:
-                askTickInvPriceDecimalCorrected,
-            priceCloseExclMEVDecimalCorrected: askTickPriceDecimalCorrected,
-        });
-    };
+    }, [yAxis, scaleData, d3Yaxis, drawYaxis]);
 
     const drawChart = useCallback(
         (
@@ -1038,8 +1044,56 @@ export default function TransactionDetailsGraph(
                 render();
             }
         },
-        [tx, graphData],
+        [
+            transactionType,
+            tx,
+            period,
+            render,
+            oneHourMiliseconds,
+            isAccountView,
+            isDenomBase,
+            isBaseTokenMoneynessGreaterOrEqual,
+            addExtraCandle,
+        ],
     );
+
+    useEffect(() => {
+        if (
+            graphData !== undefined &&
+            scaleData !== undefined &&
+            lineSeries !== undefined &&
+            crossPoint !== undefined &&
+            horizontalBand !== undefined &&
+            triangleRange !== undefined &&
+            triangleLimit !== undefined &&
+            limitPriceLine !== undefined &&
+            priceLine !== undefined
+        ) {
+            drawChart(
+                graphData,
+                scaleData,
+                lineSeries,
+                priceLine,
+                limitPriceLine,
+                crossPoint,
+                horizontalBand,
+                triangleRange,
+                triangleLimit,
+            );
+        }
+    }, [
+        scaleData,
+        lineSeries,
+        priceLine,
+        limitPriceLine,
+        graphData,
+        crossPoint,
+        transactionType,
+        horizontalBand,
+        triangleRange,
+        triangleLimit,
+        drawChart,
+    ]);
 
     const loadingSpinner = <Spinner size={100} bg='var(--dark1)' centered />;
 

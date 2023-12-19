@@ -93,6 +93,10 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
         props.baseTokenAddress,
         props.quoteTokenAddress,
         props.chainData.chainId,
+        setPrimaryQuantityRange,
+        setDidUserFlipDenom,
+        props.pathname,
+        setLimitTick,
     ]);
 
     // hook to update `poolExists` when pool or crocEnv changes, or a new transaction receipt arrives
@@ -156,9 +160,13 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
         props.quoteTokenAddress,
         props.baseTokenDecimals,
         props.quoteTokenDecimals,
-        !!props.crocEnv,
-        poolPriceNonDisplay === 0,
         props.isUserLoggedIn,
+        props.crocEnv,
+        getSpotPrice,
+        poolPriceNonDisplay,
+        getDisplayPrice,
+        poolPriceDisplay,
+        setPoolPriceNonDisplay,
     ]);
 
     // Hook to asynchronously query the previous 24 hour cache change for the pool
@@ -223,6 +231,10 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
         props.baseTokenAddress,
         props.quoteTokenAddress,
         props.lastBlockNumber,
+        props.chainData.chainId,
+        props.chainData.poolIndex,
+        cachedGet24hChange,
+        activeNetwork.graphCacheUrl,
     ]);
 
     return {

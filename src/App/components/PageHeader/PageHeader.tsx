@@ -96,7 +96,18 @@ const PageHeader = function () {
         resetTokenBalances();
         setShowAllData(true);
         disconnectUser();
-    }, []);
+    }, [
+        setCrocEnv,
+        setBaseTokenBalance,
+        setQuoteTokenBalance,
+        setBaseTokenDexBalance,
+        setQuoteTokenDexBalance,
+        resetReceiptData,
+        resetTokenBalances,
+        setShowAllData,
+        disconnectUser,
+        resetUserGraphData,
+    ]);
 
     const accountProps = {
         accountAddress: accountAddress,
@@ -137,7 +148,16 @@ const PageHeader = function () {
                     recentPools.add(baseToken, quoteToken, chainId, poolId);
             });
         }
-    }, [baseAddressInRtk, quoteAddressInRtk, crocEnv]);
+    }, [
+        baseAddressInRtk,
+        quoteAddressInRtk,
+        crocEnv,
+        chainId,
+        poolId,
+        recentPools,
+        baseToken,
+        quoteToken,
+    ]);
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? isDenomBase
@@ -336,7 +356,7 @@ const PageHeader = function () {
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
-    }, []);
+    }, [location.pathname]);
 
     return (
         <PrimaryHeader

@@ -133,55 +133,55 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         candleTimeGlobal,
     ]);
 
-    // class definition for overlay setting and methods
-    class Overlay implements overlayIF {
-        // base value
-        public readonly overlay: OverlayType;
-        // pre-loaded setter functions
-        public readonly showDepth: () => void;
-        public readonly showCurve: () => void;
-        public readonly showNone: () => void;
-        // @param value ➡ current value from local state
-        // @param setterFn ➡ fn to update local state
-        constructor(
-            value: OverlayType,
-            setterFn: Dispatch<SetStateAction<OverlayType>>,
-        ) {
-            this.overlay = value;
-            this.showDepth = () => setterFn('depth');
-            this.showCurve = () => setterFn('curve');
-            this.showNone = () => setterFn('none');
-        }
-    }
-
-    class CandleTime implements candleTimeIF {
-        time: TimeInSecondsType;
-        // eslint-disable-next-line
-        changeTime: (_val: TimeInSecondsType) => void;
-        defaults: DefaultTimeIF[] = [
-            { readable: '1m', seconds: 60 },
-            { readable: '5m', seconds: 300 },
-            { readable: '15m', seconds: 900 },
-            { readable: '1h', seconds: 3600 },
-            { readable: '4h', seconds: 14400 },
-            { readable: '1d', seconds: 86400 },
-        ];
-        readableTime =
-            this.defaults.find(
-                (pair: DefaultTimeIF) => pair.seconds === this.time,
-            )?.readable ?? '15m';
-        constructor(
-            t: TimeInSecondsType,
-            setterFn: Dispatch<SetStateAction<TimeInSecondsType>>,
-        ) {
-            this.time = t;
-            this.changeTime = (val: TimeInSecondsType) => {
-                setterFn(val);
-            };
-        }
-    }
-
     const chartSettings = useMemo<chartSettingsMethodsIF>(() => {
+        // class definition for overlay setting and methods
+        class Overlay implements overlayIF {
+            // base value
+            public readonly overlay: OverlayType;
+            // pre-loaded setter functions
+            public readonly showDepth: () => void;
+            public readonly showCurve: () => void;
+            public readonly showNone: () => void;
+            // @param value ➡ current value from local state
+            // @param setterFn ➡ fn to update local state
+            constructor(
+                value: OverlayType,
+                setterFn: Dispatch<SetStateAction<OverlayType>>,
+            ) {
+                this.overlay = value;
+                this.showDepth = () => setterFn('depth');
+                this.showCurve = () => setterFn('curve');
+                this.showNone = () => setterFn('none');
+            }
+        }
+
+        class CandleTime implements candleTimeIF {
+            time: TimeInSecondsType;
+            // eslint-disable-next-line
+            changeTime: (_val: TimeInSecondsType) => void;
+            defaults: DefaultTimeIF[] = [
+                { readable: '1m', seconds: 60 },
+                { readable: '5m', seconds: 300 },
+                { readable: '15m', seconds: 900 },
+                { readable: '1h', seconds: 3600 },
+                { readable: '4h', seconds: 14400 },
+                { readable: '1d', seconds: 86400 },
+            ];
+            readableTime =
+                this.defaults.find(
+                    (pair: DefaultTimeIF) => pair.seconds === this.time,
+                )?.readable ?? '15m';
+            constructor(
+                t: TimeInSecondsType,
+                setterFn: Dispatch<SetStateAction<TimeInSecondsType>>,
+            ) {
+                this.time = t;
+                this.changeTime = (val: TimeInSecondsType) => {
+                    setterFn(val);
+                };
+            }
+        }
+
         return {
             marketOverlay: new Overlay(marketOverlay, setMarketOverlay),
             poolOverlay: new Overlay(poolOverlay, setPoolOverlay),

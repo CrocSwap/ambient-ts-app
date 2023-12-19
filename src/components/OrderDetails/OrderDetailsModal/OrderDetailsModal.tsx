@@ -198,7 +198,26 @@ export default function OrderDetailsModal(props: propsIF) {
                 })
                 .catch(console.error);
         }
-    }, [lastBlockNumber, !!crocEnv, !!provider]);
+    }, [
+        lastBlockNumber,
+        crocEnv,
+        provider,
+        activeNetwork.graphCacheUrl,
+        chainId,
+        user,
+        bidTick,
+        askTick,
+        isBid,
+        baseTokenAddress,
+        quoteTokenAddress,
+        pivotTime,
+        tokens.tokenUniv,
+        cachedFetchTokenPrice,
+        cachedQuerySpotPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+        isOrderFilled,
+    ]);
 
     const detailsRef = useRef(null);
 

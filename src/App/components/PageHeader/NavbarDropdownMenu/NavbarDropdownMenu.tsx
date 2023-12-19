@@ -51,7 +51,7 @@ function NavbarDropdownMenu(props: propsIF) {
         if (isEscapePressed) {
             setIsNavbarMenuOpen(false);
         }
-    }, [isEscapePressed]);
+    }, [isEscapePressed, setIsNavbarMenuOpen]);
 
     const ariaLabel =
         'You are currently on a focus mode on the main dropdown menu. To enter focus mode, press tab once again.  To exit focus mode, press escape.';

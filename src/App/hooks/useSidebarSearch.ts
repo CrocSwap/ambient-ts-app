@@ -177,7 +177,7 @@ export const useSidebarSearch = (
         );
         // send data to `useState()` hook which returns to the app
         setOutputPools(sortedPools);
-    }, [validatedInput]);
+    }, [SEARCH_EXACT, poolList, searchAs, tokens, validatedInput]);
 
     // array of range positions to output from the hook
     const [outputPositions, setOutputPositions] = useState<PositionIF[]>([]);
@@ -230,7 +230,13 @@ export const useSidebarSearch = (
         }
         // send positions filtered by search input to local state (to be returned from this file)
         setOutputPositions(filteredRangePositions);
-    }, [positionList.length, validatedInput]);
+    }, [
+        SEARCH_EXACT,
+        positionList,
+        positionList.length,
+        searchAs,
+        validatedInput,
+    ]);
 
     // array of range positions to output from the hook
     const [outputTxs, setOutputTxs] = useState<TransactionIF[]>([]);
@@ -272,7 +278,7 @@ export const useSidebarSearch = (
         }
         // send txs filtered by search input to local state (to be returned from this file)
         setOutputTxs(filteredTxs);
-    }, [txList.length, validatedInput]);
+    }, [SEARCH_EXACT, searchAs, txList, txList.length, validatedInput]);
 
     // array of range positions to output from the hook
     const [outputLimits, setOutputLimits] = useState<LimitOrderIF[]>([]);
@@ -318,7 +324,13 @@ export const useSidebarSearch = (
         }
         // send txs filtered by search input to local state (to be returned from this file)
         setOutputLimits(filteredLimits);
-    }, [limitOrderList.length, validatedInput]);
+    }, [
+        SEARCH_EXACT,
+        limitOrderList,
+        limitOrderList.length,
+        searchAs,
+        validatedInput,
+    ]);
 
     return {
         rawInput,

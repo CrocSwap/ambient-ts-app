@@ -74,7 +74,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 tkn.address.toLowerCase() ===
                 defaultPair[1].address.toLowerCase(),
         );
-    }, [tokenBalances]);
+    }, [tokenBalances, defaultPair]);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
     const blockExplorer = getChainExplorer(chainId);
@@ -165,7 +165,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 setUsdcUsdValueForDom(undefined);
             }
         });
-    }, [crocEnv, chainId, JSON.stringify(usdcData)]);
+    }, [crocEnv, chainId, usdcData, cachedFetchTokenPrice]);
 
     const nativeCombinedBalance =
         nativeData?.walletBalance !== undefined
