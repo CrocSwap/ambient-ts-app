@@ -286,7 +286,6 @@
 .name_default{
     width: 82px;
     height: 14px;
-    cursor: pointer;
 
     /* small */
     font-family: 'Lexend Deca';
@@ -303,6 +302,10 @@
     flex-grow: 0;
 
     margin-left: 10px;
+}
+
+.name_default_label{
+    cursor: pointer;
 }
 
 .name {
@@ -612,6 +615,10 @@
 .verified_icon{
     display: inline-block;
     margin-left: .2rem;
+    cursor: default;
+}
+.verified_icon svg{
+    cursor: default !important;
 }
 
 .update_verify_date_icon{

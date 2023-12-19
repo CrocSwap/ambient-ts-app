@@ -930,6 +930,9 @@ function SentMessagePanel(props: SentMessageProps) {
                                         }
                                     >
                                         <span
+                                            className={
+                                                styles.name_default_label
+                                            }
                                             onClick={() => {
                                                 if (
                                                     location.pathname !==

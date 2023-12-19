@@ -1,10 +1,7 @@
-import { useAccount } from 'wagmi';
-import useChatSocket from '../../Service/useChatSocket';
 import { BsEmojiSmile } from 'react-icons/bs';
 import { Message } from '../../Model/MessageModel';
 
 import Picker from 'emoji-picker-react';
-import styles from './MessageInput.module.css';
 import {
     Dispatch,
     SetStateAction,
@@ -14,14 +11,14 @@ import {
     useState,
 } from 'react';
 import PositionBox from '../PositionBox/PositionBox';
+import styles from './MessageInput.module.css';
 
 import { RiCloseFill, RiInformationLine } from 'react-icons/ri';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
-import MentionAutoComplete from './MentionAutoComplete/MentionAutoComplete';
+import CircularProgressBar from '../../../Global/OpenOrderStatus/CircularProgressBar';
 import { User, getUserLabel, userLabelForFilter } from '../../Model/UserModel';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
-import CircularProgressBar from '../../../Global/OpenOrderStatus/CircularProgressBar';
 
 interface MessageInputProps {
     currentUser: string;
