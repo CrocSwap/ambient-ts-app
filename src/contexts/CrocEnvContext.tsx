@@ -120,25 +120,27 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
 
     useBlacklist(userAddress);
 
-    const setNewCrocEnv = useCallback(async () => {
+    useEffect(() => {
         if (APP_ENVIRONMENT === 'local') {
             console.debug({ provider });
             console.debug({ signer });
             console.debug({ crocEnv });
             console.debug({ signerStatus });
         }
+    }, [crocEnv, provider, signer, signerStatus]);
+
+    useEffect(() => {
         if (isError) {
             console.error({ error });
-            setCrocEnv(undefined);
-        } else if (!provider && !signer) {
-            APP_ENVIRONMENT === 'local' &&
-                console.debug('setting crocEnv to undefined');
-            setCrocEnv(undefined);
-            return;
-        } else if (!signer && !!crocEnv) {
-            APP_ENVIRONMENT === 'local' && console.debug('keeping provider');
-            return;
-        } else if (provider && !crocEnv) {
+        } else if (APP_ENVIRONMENT === 'local' && !provider && !signer) {
+            console.debug('setting crocEnv to undefined');
+        }
+        setCrocEnv(undefined);
+    }, [error, isError, provider, signer]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const setNewCrocEnv = async () => {
+        if (provider && !crocEnv) {
             const newCrocEnv = new CrocEnv(
                 provider,
                 signer ? signer : undefined,
@@ -160,11 +162,11 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
                 setCrocEnv(newCrocEnv);
             }
         }
-    }, [crocEnv, error, isError, provider, signer, signerStatus]);
+    };
 
     useEffect(() => {
         setNewCrocEnv();
-    }, [chainData.chainId, signer, activeNetwork.chainId, setNewCrocEnv]);
+    }, [provider, setNewCrocEnv, signer, signerStatus]);
 
     useEffect(() => {
         if (provider && crocEnv) {

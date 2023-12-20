@@ -435,25 +435,23 @@ export const GraphDataContextProvider = (props: {
             }
         }
     }, [
-        isServerEnabled,
-        tokens.tokenUniv.length,
-        isUserConnected,
-        userAddress,
-        chainData.chainId,
-        lastBlockNumWait,
-        crocEnv,
-        provider,
-        tokens.tokenUniv,
-        tokens.defaultTokens,
-        userLimitOrderStatesCacheEndpoint,
-        userPositionsCacheEndpoint,
-        lastBlockNumber,
+        activeNetwork.graphCacheUrl,
+        cachedEnsResolve,
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
         cachedTokenDetails,
-        cachedEnsResolve,
+        chainData.chainId,
+        crocEnv,
+        isServerEnabled,
+        isUserConnected,
+        lastBlockNumber,
+        provider,
         setDataLoadingStatus,
-        activeNetwork.graphCacheUrl,
+        tokens.defaultTokens,
+        tokens.tokenUniv,
+        userAddress,
+        userLimitOrderStatesCacheEndpoint,
+        userPositionsCacheEndpoint,
     ]);
 
     const graphDataContext: GraphDataContextIF = {
