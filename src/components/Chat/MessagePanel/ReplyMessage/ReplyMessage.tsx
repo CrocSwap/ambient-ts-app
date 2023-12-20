@@ -1,10 +1,7 @@
-import styles from './ReplyMessage.module.css';
 import { motion } from 'framer-motion';
-import { BooleanArraySupportOption } from 'prettier';
 import { Dispatch, SetStateAction } from 'react';
-import { IoIosClose } from 'react-icons/io';
 import { GrClose } from 'react-icons/gr';
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+import styles from './ReplyMessage.module.css';
 interface propsIF {
     message: string | undefined;
     ensName: string | undefined;

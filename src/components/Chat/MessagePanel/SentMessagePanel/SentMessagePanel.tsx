@@ -1,6 +1,3 @@
-import styles from './SentMessagePanel.module.css';
-import { Message } from '../../Model/MessageModel';
-import PositionBox from '../PositionBox/PositionBox';
 import {
     Dispatch,
     SetStateAction,
@@ -9,27 +6,24 @@ import {
     useRef,
     useState,
 } from 'react';
+import { AiOutlineCheck } from 'react-icons/ai';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-import useChatApi from '../../Service/ChatApi';
 import { useLocation, useNavigate } from 'react-router-dom';
-import {
-    User,
-    getUserLabel,
-    getUserLabelForReactions,
-} from '../../Model/UserModel';
-import { AiOutlineCheck, AiOutlineCheckCircle } from 'react-icons/ai';
 import {
     DefaultTooltip,
     TextOnlyTooltip,
 } from '../../../Global/StyledTooltip/StyledTooltip';
+import { Message } from '../../Model/MessageModel';
+import { User, getUserLabelForReactions } from '../../Model/UserModel';
+import useChatApi from '../../Service/ChatApi';
+import PositionBox from '../PositionBox/PositionBox';
+import styles from './SentMessagePanel.module.css';
 
 import { IoReturnUpForwardSharp } from 'react-icons/io5';
-import ReplyMessage from '../ReplyMessage/ReplyMessage';
-import Options from '../Options/Options';
-import Menu from '../Options/Menu/Menu';
-import useChatSocket from '../../Service/useChatSocket';
-import { m } from 'framer-motion';
 import { LS_USER_NON_VERIFIED_MESSAGES, getLS } from '../../ChatUtils';
+import Menu from '../Options/Menu/Menu';
+import Options from '../Options/Options';
+import ReplyMessage from '../ReplyMessage/ReplyMessage';
 
 interface SentMessageProps {
     message: Message;

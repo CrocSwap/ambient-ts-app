@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import styles from './Room.module.css';
-import { PoolIF } from '../../../../ambient-utils/types';
+import { useContext, useEffect, useState } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import { useState, useEffect, useContext } from 'react';
+import { PoolIF } from '../../../../ambient-utils/types';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import useChatApi from '../../Service/ChatApi';
-import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import styles from './Room.module.css';
 
 interface propsIF {
     selectedRoom: any;

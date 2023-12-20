@@ -1,32 +1,31 @@
-import styles from './ChatPanel.module.css';
-import SentMessagePanel from './MessagePanel/SentMessagePanel/SentMessagePanel';
-import DividerDark from '../Global/DividerDark/DividerDark';
-import MessageInput from './MessagePanel/InputBox/MessageInput';
-import Room from './MessagePanel/Room/Room';
-import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
-import { memo, useContext, useEffect, useRef, useState } from 'react';
-import useChatSocket from './Service/useChatSocket';
-import { PoolIF } from '../../ambient-utils/types';
-import useChatApi from './Service/ChatApi';
-import { BsChatLeftFill } from 'react-icons/bs';
-import { IoIosArrowUp, IoIosArrowDown, IoIosClose } from 'react-icons/io';
-import FullChat from './FullChat/FullChat';
-import { trimString } from '../../ambient-utils/dataLayer';
-import NotFound from '../../pages/NotFound/NotFound';
-import { AppStateContext } from '../../contexts/AppStateContext';
-import { Message } from './Model/MessageModel';
-import { AiOutlineCheck, AiOutlineClose, AiOutlineUser } from 'react-icons/ai';
 import Picker from 'emoji-picker-react';
-import UserSummary from './MessagePanel/UserSummary/UserSummary';
-import { UserSummaryModel } from './Model/UserSummaryModel';
-import ChatConfirmationPanel from './ChatConfirmationPanel/ChatConfirmationPanel';
-import { UserDataContext } from '../../contexts/UserDataContext';
+import { memo, useContext, useEffect, useRef, useState } from 'react';
+import { AiOutlineCheck, AiOutlineClose, AiOutlineUser } from 'react-icons/ai';
+import { BsChatLeftFill } from 'react-icons/bs';
+import { IoIosArrowDown, IoIosArrowUp, IoIosClose } from 'react-icons/io';
+import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
+import { CROCODILE_LABS_LINKS } from '../../ambient-utils/constants';
+import { trimString } from '../../ambient-utils/dataLayer';
+import { PoolIF } from '../../ambient-utils/types';
+import { AppStateContext } from '../../contexts/AppStateContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { UserDataContext } from '../../contexts/UserDataContext';
+import NotFound from '../../pages/NotFound/NotFound';
+import DividerDark from '../Global/DividerDark/DividerDark';
+import ChatConfirmationPanel from './ChatConfirmationPanel/ChatConfirmationPanel';
+import styles from './ChatPanel.module.css';
 import ChatToaster from './ChatToaster/ChatToaster';
 import { LS_USER_VERIFY_TOKEN, setLS } from './ChatUtils';
-import { domDebug } from './DomDebugger/DomDebuggerUtils';
 import DomDebugger from './DomDebugger/DomDebugger';
-import { CROCODILE_LABS_LINKS } from '../../ambient-utils/constants';
+import FullChat from './FullChat/FullChat';
+import MessageInput from './MessagePanel/InputBox/MessageInput';
+import Room from './MessagePanel/Room/Room';
+import SentMessagePanel from './MessagePanel/SentMessagePanel/SentMessagePanel';
+import UserSummary from './MessagePanel/UserSummary/UserSummary';
+import { Message } from './Model/MessageModel';
+import { UserSummaryModel } from './Model/UserSummaryModel';
+import useChatApi from './Service/ChatApi';
+import useChatSocket from './Service/useChatSocket';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -919,6 +918,19 @@ function ChatPanel(props: propsIF) {
         />
     );
 
+    const getConfirmationPanelContent = () => {
+        switch (confirmationPanelContent) {
+            case 1:
+                return 'Your old messages that sent from this browser will be verified, do you confirm?';
+
+            case 2:
+                return 'These messages may not sent from this browser. Do you want to verify?';
+
+            default:
+                return '';
+        }
+    };
+
     const contentHeight = isChatOpen ? '479px' : '30px';
     if (props.appPage)
         return (
@@ -939,21 +951,12 @@ function ChatPanel(props: propsIF) {
                 userCurrentPool={userCurrentPool}
                 favoritePools={favoritePools}
                 setFavoritePools={setFavoritePools}
+                isChatOpen={isChatOpen}
+                isVerified={isVerified}
+                isModerator={isModerator}
+                verifyWallet={verifyWallet}
             />
         );
-
-    const getConfirmationPanelContent = () => {
-        switch (confirmationPanelContent) {
-            case 1:
-                return 'Your old messages that sent from this browser will be verified, do you confirm?';
-
-            case 2:
-                return 'These messages may not sent from this browser. Do you want to verify?';
-
-            default:
-                return '';
-        }
-    };
 
     return (
         <div

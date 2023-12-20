@@ -269,3 +269,14 @@
     }
 
 }
+
+@media only screen and (max-width: 600px){
+
+    .input {
+        width: 100vw;
+            border-radius: 0;
+            bottom: 0;
+            padding: 1.2rem;
+            margin-bottom: 0;
+    }
+}

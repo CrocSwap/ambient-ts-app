@@ -1,13 +1,9 @@
 import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
-import styles from './Options.module.css';
-import { BsFillReplyFill, BsEmojiSmileUpsideDown } from 'react-icons/bs';
-import { Message } from '../../Model/MessageModel';
+import { BsEmojiSmileUpsideDown, BsFillReplyFill } from 'react-icons/bs';
 import { SlOptions } from 'react-icons/sl';
-import {
-    DefaultTooltip,
-    TextOnlyTooltip,
-} from '../../../Global/StyledTooltip/StyledTooltip';
-import Menu from './Menu/Menu';
+import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
+import { Message } from '../../Model/MessageModel';
+import styles from './Options.module.css';
 interface propsIF {
     setIsReplyButtonPressed: Dispatch<SetStateAction<boolean>>;
     isReplyButtonPressed: boolean;

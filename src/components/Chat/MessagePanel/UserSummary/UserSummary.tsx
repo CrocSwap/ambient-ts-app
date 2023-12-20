@@ -1,10 +1,9 @@
-import styles from './UserSummary.module.css';
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import {
     UserSummaryModel,
-    getUserLabel,
     getUserLabelforSummary,
 } from '../../Model/UserSummaryModel';
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+import styles from './UserSummary.module.css';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface propsIF {

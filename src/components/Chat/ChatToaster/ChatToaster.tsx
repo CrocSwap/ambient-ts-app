@@ -1,7 +1,6 @@
 import {
     AiOutlineCheck,
     AiOutlineClose,
-    AiOutlineInfo,
     AiOutlineInfoCircle,
     AiOutlineWarning,
 } from 'react-icons/ai';

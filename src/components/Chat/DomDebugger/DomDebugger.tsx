@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import styles from './DomDebugger.module.css';
+import { useEffect, useState } from 'react';
 import { getLS } from '../ChatUtils';
+import styles from './DomDebugger.module.css';
 import { clearDomDebug } from './DomDebuggerUtils';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

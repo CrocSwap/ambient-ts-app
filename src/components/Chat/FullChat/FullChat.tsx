@@ -12,7 +12,12 @@ import {
     TbLayoutSidebarLeftExpand,
 } from 'react-icons/tb';
 import { MdOutlineChat } from 'react-icons/md';
-import { AiOutlineSound } from 'react-icons/ai';
+import {
+    AiOutlineCheck,
+    AiOutlineClose,
+    AiOutlineSound,
+    AiOutlineUser,
+} from 'react-icons/ai';
 import { IoOptions, IoNotificationsOutline } from 'react-icons/io5';
 import { Link, useParams } from 'react-router-dom';
 import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
@@ -37,6 +42,10 @@ interface FullChatPropsIF {
     // eslint-disable-next-line
     setFavoritePools: any;
     setIsChatOpen: (val: boolean) => void;
+    isChatOpen: boolean;
+    isModerator: boolean;
+    isVerified: boolean;
+    verifyWallet: (val: number, date: Date, e: any) => void;
 }
 
 interface ChannelDisplayPropsIF {
@@ -544,7 +553,6 @@ export default function FullChat(props: FullChatPropsIF) {
                             favePools={favePools}
                         />
                     ))}
-                    {rooms.length}
                 </div>
             )}
         </div>
@@ -552,6 +560,43 @@ export default function FullChat(props: FullChatPropsIF) {
     const smallScrenView = useMediaQuery('(max-width: 968px)');
     const chatContainer = (
         <div className={styles.chat_main_container}>
+            {/* {props.isChatOpen && (
+                )} */}
+            <div
+                className={`${styles.verify_button} ${
+                    props.isVerified ? styles.verified : ''
+                } `}
+                onClick={(e) => props.verifyWallet(0, new Date(), e)}
+            >
+                {props.isModerator && props.isVerified && (
+                    <AiOutlineUser
+                        className={
+                            styles.verify_button_icon +
+                            ' ' +
+                            styles.verify_button_mod_icon
+                        }
+                        color='var(--other-green)'
+                        size={14}
+                    ></AiOutlineUser>
+                )}
+                {props.isVerified ? (
+                    <>
+                        <AiOutlineCheck
+                            className={styles.verify_button_icon}
+                            color='var(--other-green)'
+                            size={10}
+                        />
+                    </>
+                ) : (
+                    <>
+                        <AiOutlineClose
+                            className={styles.verify_button_icon}
+                            size={10}
+                        />
+                        <span> Not Verified</span>
+                    </>
+                )}
+            </div>
             {messageList}
             {chatNotification}
 
