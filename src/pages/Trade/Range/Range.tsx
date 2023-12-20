@@ -39,7 +39,6 @@ import { useHandleRangeButtonMessage } from '../../../App/hooks/useHandleRangeBu
 import { useRangeInputDisable } from './useRangeInputDisable';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { fetchBlockNumber } from '../../../ambient-utils/api';
 import {
     GAS_DROPS_ESTIMATE_POOL,
     NUM_GWEI_IN_WEI,
