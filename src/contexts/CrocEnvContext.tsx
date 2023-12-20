@@ -2,6 +2,7 @@ import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import {
     ReactNode,
     createContext,
+    useCallback,
     useContext,
     useEffect,
     useState,
@@ -77,34 +78,37 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
-    function createDefaultUrlParams(chainId: string): UrlRoutesTemplate {
-        const [tokenA, tokenB]: [TokenIF, TokenIF] =
-            getDefaultPairForChain(chainId);
+    const createDefaultUrlParams = useCallback(
+        (chainId: string): UrlRoutesTemplate => {
+            const [tokenA, tokenB]: [TokenIF, TokenIF] =
+                getDefaultPairForChain(chainId);
 
-        // default URL params for swap and market modules
-        const swapParams: swapParamsIF = {
-            chain: chainId,
-            tokenA: tokenA.address,
-            tokenB: tokenB.address,
-        };
+            // default URL params for swap and market modules
+            const swapParams: swapParamsIF = {
+                chain: chainId,
+                tokenA: tokenA.address,
+                tokenB: tokenB.address,
+            };
 
-        // default URL params for the limit module
-        const limitParams: limitParamsIF = {
-            ...swapParams,
-        };
+            // default URL params for the limit module
+            const limitParams: limitParamsIF = {
+                ...swapParams,
+            };
 
-        // default URL params for the pool module
-        const poolParams: poolParamsIF = {
-            ...swapParams,
-        };
+            // default URL params for the pool module
+            const poolParams: poolParamsIF = {
+                ...swapParams,
+            };
 
-        return {
-            swap: linkGenSwap.getFullURL(swapParams),
-            market: linkGenMarket.getFullURL(swapParams),
-            limit: linkGenLimit.getFullURL(limitParams),
-            pool: linkGenPool.getFullURL(poolParams),
-        };
-    }
+            return {
+                swap: linkGenSwap.getFullURL(swapParams),
+                market: linkGenMarket.getFullURL(swapParams),
+                limit: linkGenLimit.getFullURL(limitParams),
+                pool: linkGenPool.getFullURL(poolParams),
+            };
+        },
+        [linkGenLimit, linkGenMarket, linkGenPool, linkGenSwap],
+    );
 
     const initUrl = createDefaultUrlParams(chainData.chainId);
     // why is this a `useState`? why not a `useRef` or a const?
@@ -116,7 +120,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
 
     useBlacklist(userAddress);
 
-    const setNewCrocEnv = async () => {
+    const setNewCrocEnv = useCallback(async () => {
         if (APP_ENVIRONMENT === 'local') {
             console.debug({ provider });
             console.debug({ signer });
@@ -156,15 +160,11 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
                 setCrocEnv(newCrocEnv);
             }
         }
-    };
+    }, [crocEnv, error, isError, provider, signer, signerStatus]);
+
     useEffect(() => {
         setNewCrocEnv();
-    }, [
-        crocEnv === undefined,
-        chainData.chainId,
-        signer,
-        activeNetwork.chainId,
-    ]);
+    }, [chainData.chainId, signer, activeNetwork.chainId, setNewCrocEnv]);
 
     useEffect(() => {
         if (provider && crocEnv) {
@@ -180,10 +180,11 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
                 setEthMainnetUsdPrice(usdPrice);
             })();
         }
-    }, [crocEnv, provider]);
+    }, [cachedFetchTokenPrice, crocEnv, provider]);
+
     useEffect(() => {
         setDefaultUrlParams(createDefaultUrlParams(chainData.chainId));
-    }, [chainData.chainId]);
+    }, [chainData.chainId, createDefaultUrlParams]);
 
     // data returned by this context
     const crocEnvContext = {

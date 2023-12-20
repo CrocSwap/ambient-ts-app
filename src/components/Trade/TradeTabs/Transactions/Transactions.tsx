@@ -479,10 +479,14 @@ function Transactions(props: propsIF) {
         changeRowsPerPage,
         count,
     } = _DATA;
-    const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
-        setPage(p);
-        _DATA.jump(p);
-    };
+
+    const handleChange = useCallback(
+        (e: React.ChangeEvent<unknown>, p: number) => {
+            setPage(p);
+            _DATA.jump(p);
+        },
+        [_DATA],
+    );
 
     const handleChangeRowsPerPage = (
         event:
@@ -704,7 +708,12 @@ function Transactions(props: propsIF) {
             const mockEvent = {} as React.ChangeEvent<unknown>;
             handleChange(mockEvent, 1);
         }
-    }, [isTradeTableExpanded]);
+    }, [
+        _DATA.currentData.length,
+        handleChange,
+        isTradeTableExpanded,
+        setCurrentPage,
+    ]);
 
     return (
         <FlexContainer flexDirection='column' fullHeight={!isSmallScreen}>

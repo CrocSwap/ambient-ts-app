@@ -5,7 +5,6 @@ import {
     trimString,
     getMoneynessRank,
     getElapsedTime,
-    diffHashSig,
     getFormattedNumber,
     uriToHttp,
 } from '../../ambient-utils/dataLayer';

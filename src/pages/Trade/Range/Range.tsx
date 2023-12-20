@@ -23,7 +23,6 @@ import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import {
     getFormattedNumber,
     getUnicodeCharacter,
-    diffHashSig,
     isStablePair,
     truncateDecimals,
 } from '../../../ambient-utils/dataLayer';

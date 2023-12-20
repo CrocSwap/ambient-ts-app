@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { PoolIF, TokenIF } from '../../ambient-utils/types';
 
@@ -54,83 +54,108 @@ export const useFavePools = (): favePoolsMethodsIF => {
     };
 
     // fn to add a pool to the favorites list (both local state and local storage)
-    const addPoolToFaves = (
-        tokenA: TokenIF,
-        tokenB: TokenIF,
-        chainId: string,
-        poolId: number,
-    ): void => {
-        // sort tokenA and tokenB as [base, quote]
-        const [baseAddr] = sortBaseQuoteTokens(tokenA.address, tokenB.address);
-        const [baseToken, quoteToken]: TokenIF[] =
-            baseAddr === tokenA.address ? [tokenA, tokenB] : [tokenB, tokenA];
-        // make a pool object from args conforming to PoolIF shape
-        const newPool: PoolIF = {
-            base: baseToken,
-            quote: quoteToken,
-            chainId: chainId,
-            poolIdx: poolId,
-        };
-        // local copy of favePools with newPool removed
-        const favesWithNewRemoved: PoolIF[] = removePoolFromArray(
-            newPool,
-            favePools,
-        );
-        // new array with newPool as the first value
-        const updatedPoolsArray: PoolIF[] = [newPool, ...favesWithNewRemoved];
-        // send new array of favorite pools to local state and local storage
-        setFavePools(updatedPoolsArray);
-        localStorage.setItem('favePools', JSON.stringify(updatedPoolsArray));
-    };
+    const addPoolToFaves = useCallback(
+        (
+            tokenA: TokenIF,
+            tokenB: TokenIF,
+            chainId: string,
+            poolId: number,
+        ): void => {
+            // sort tokenA and tokenB as [base, quote]
+            const [baseAddr] = sortBaseQuoteTokens(
+                tokenA.address,
+                tokenB.address,
+            );
+            const [baseToken, quoteToken]: TokenIF[] =
+                baseAddr === tokenA.address
+                    ? [tokenA, tokenB]
+                    : [tokenB, tokenA];
+            // make a pool object from args conforming to PoolIF shape
+            const newPool: PoolIF = {
+                base: baseToken,
+                quote: quoteToken,
+                chainId: chainId,
+                poolIdx: poolId,
+            };
+            // local copy of favePools with newPool removed
+            const favesWithNewRemoved: PoolIF[] = removePoolFromArray(
+                newPool,
+                favePools,
+            );
+            // new array with newPool as the first value
+            const updatedPoolsArray: PoolIF[] = [
+                newPool,
+                ...favesWithNewRemoved,
+            ];
+            // send new array of favorite pools to local state and local storage
+            setFavePools(updatedPoolsArray);
+            localStorage.setItem(
+                'favePools',
+                JSON.stringify(updatedPoolsArray),
+            );
+        },
+        [favePools],
+    );
 
     // fn to remove a pool from the favorites list (both local state and local storage)
-    const removePoolFromFaves = (
-        tokenA: TokenIF,
-        tokenB: TokenIF,
-        chainId: string,
-        poolIdx: number,
-    ): void => {
-        // sort tokenA and tokenB addresses as [base, quote]
-        const [baseAddr, quoteAddr] = sortBaseQuoteTokens(
-            tokenA.address,
-            tokenB.address,
-        );
-        // local copy of favePools with the specified pool parameters filtered out
-        const updatedPoolsArray: PoolIF[] = favePools.filter(
-            (pool: PoolIF) =>
-                pool.base.address.toLowerCase() !== baseAddr.toLowerCase() ||
-                pool.quote.address.toLowerCase() !== quoteAddr.toLowerCase() ||
-                pool.chainId !== chainId ||
-                pool.poolIdx !== poolIdx,
-        );
-        // send new array of favorite pools to local state and local storage
-        setFavePools(updatedPoolsArray);
-        localStorage.setItem('favePools', JSON.stringify(updatedPoolsArray));
-    };
+    const removePoolFromFaves = useCallback(
+        (
+            tokenA: TokenIF,
+            tokenB: TokenIF,
+            chainId: string,
+            poolIdx: number,
+        ): void => {
+            // sort tokenA and tokenB addresses as [base, quote]
+            const [baseAddr, quoteAddr] = sortBaseQuoteTokens(
+                tokenA.address,
+                tokenB.address,
+            );
+            // local copy of favePools with the specified pool parameters filtered out
+            const updatedPoolsArray: PoolIF[] = favePools.filter(
+                (pool: PoolIF) =>
+                    pool.base.address.toLowerCase() !==
+                        baseAddr.toLowerCase() ||
+                    pool.quote.address.toLowerCase() !==
+                        quoteAddr.toLowerCase() ||
+                    pool.chainId !== chainId ||
+                    pool.poolIdx !== poolIdx,
+            );
+            // send new array of favorite pools to local state and local storage
+            setFavePools(updatedPoolsArray);
+            localStorage.setItem(
+                'favePools',
+                JSON.stringify(updatedPoolsArray),
+            );
+        },
+        [favePools],
+    );
 
     // fn to determine if a pool is favorited according to pool metadata
-    const checkFavePools = (
-        addrTokenA: string,
-        addrTokenB: string,
-        chainId: string,
-        poolIdx: number,
-    ): boolean => {
-        // sort token addresses as [base, quote]
-        const [baseAddr, quoteAddr]: string[] = sortBaseQuoteTokens(
-            addrTokenA,
-            addrTokenB,
-        );
-        // return boolean indicating whether a relevant pool is favorited
-        return favePools.some(
-            (favePool: PoolIF) =>
-                favePool.base.address.toLowerCase() ===
-                    baseAddr.toLowerCase() &&
-                favePool.quote.address.toLowerCase() ===
-                    quoteAddr.toLowerCase() &&
-                favePool.chainId === chainId &&
-                favePool.poolIdx === poolIdx,
-        );
-    };
+    const checkFavePools = useCallback(
+        (
+            addrTokenA: string,
+            addrTokenB: string,
+            chainId: string,
+            poolIdx: number,
+        ): boolean => {
+            // sort token addresses as [base, quote]
+            const [baseAddr, quoteAddr]: string[] = sortBaseQuoteTokens(
+                addrTokenA,
+                addrTokenB,
+            );
+            // return boolean indicating whether a relevant pool is favorited
+            return favePools.some(
+                (favePool: PoolIF) =>
+                    favePool.base.address.toLowerCase() ===
+                        baseAddr.toLowerCase() &&
+                    favePool.quote.address.toLowerCase() ===
+                        quoteAddr.toLowerCase() &&
+                    favePool.chainId === chainId &&
+                    favePool.poolIdx === poolIdx,
+            );
+        },
+        [favePools],
+    );
 
     return useMemo(
         () => ({
@@ -139,6 +164,6 @@ export const useFavePools = (): favePoolsMethodsIF => {
             add: addPoolToFaves,
             remove: removePoolFromFaves,
         }),
-        [favePools],
+        [addPoolToFaves, checkFavePools, favePools, removePoolFromFaves],
     );
 };

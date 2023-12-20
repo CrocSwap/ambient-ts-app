@@ -33,12 +33,7 @@ export const TokenContextProvider = (props: { children: React.ReactNode }) => {
     );
 
     const [outputTokens, validatedInput, setInput, searchType, rawInput] =
-        useTokenSearch(
-            chainData.chainId,
-            tokens,
-            tokenBalances ?? [],
-            getRecentTokens,
-        );
+        useTokenSearch(chainData.chainId, tokens, tokenBalances ?? []);
 
     const addTokenInfo = (token: TokenIF): TokenIF => {
         const oldToken: TokenIF | undefined = tokens.getTokenByAddress(

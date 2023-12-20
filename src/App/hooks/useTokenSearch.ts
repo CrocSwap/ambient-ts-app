@@ -11,7 +11,6 @@ export const useTokenSearch = (
     chainId: string,
     tokens: tokenMethodsIF,
     walletTokens: TokenIF[],
-    getRecentTokens: () => TokenIF[],
 ): [TokenIF[], string, Dispatch<SetStateAction<string>>, string, string] => {
     // TODO: debounce this input later
     // TODO: figure out if we need to update EVERYTHING to the debounced value

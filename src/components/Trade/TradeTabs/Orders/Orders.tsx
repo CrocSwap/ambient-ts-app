@@ -1,5 +1,12 @@
 /* eslint-disable no-irregular-whitespace */
-import { useContext, useEffect, useRef, useState, memo } from 'react';
+import {
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+    memo,
+    useCallback,
+} from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
 import { useSortedLimits } from '../useSortedLimits';
@@ -322,10 +329,13 @@ function Orders(props: propsIF) {
     const [page, setPage] = useState(1);
     const resetPageToFirst = () => setPage(1);
 
-    const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
-        setPage(p);
-        _DATA.jump(p);
-    };
+    const handleChange = useCallback(
+        (e: React.ChangeEvent<unknown>, p: number) => {
+            setPage(p);
+            _DATA.jump(p);
+        },
+        [_DATA],
+    );
 
     const handleChangeRowsPerPage = (
         event:
@@ -478,7 +488,12 @@ function Orders(props: propsIF) {
             const mockEvent = {} as React.ChangeEvent<unknown>;
             handleChange(mockEvent, 1);
         }
-    }, [isTradeTableExpanded]);
+    }, [
+        _DATA.currentData.length,
+        handleChange,
+        isTradeTableExpanded,
+        setCurrentPage,
+    ]);
 
     return (
         <FlexContainer flexDirection='column' fullHeight={!isSmallScreen}>

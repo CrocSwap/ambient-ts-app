@@ -6,6 +6,7 @@ import React, {
     useState,
     useContext,
     useCallback,
+    useMemo,
 } from 'react';
 import useWebSocket from 'react-use-websocket';
 import {
@@ -45,7 +46,10 @@ export const ChainDataContextProvider = (props: {
         useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
 
-    const client = new Client(process.env.REACT_APP_COVALENT_API_KEY || '');
+    const client = useMemo(
+        () => new Client(process.env.REACT_APP_COVALENT_API_KEY || ''),
+        [],
+    );
 
     const { userAddress, isUserConnected } = useContext(UserDataContext);
 

@@ -1,5 +1,12 @@
 // START: Import React and Dongles
-import { useContext, useEffect, useMemo, useState, memo } from 'react';
+import {
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+    memo,
+    useCallback,
+} from 'react';
 import { useLocation, useParams, Navigate } from 'react-router-dom';
 import {
     CrocPositionView,
@@ -129,11 +136,11 @@ function Reposition() {
         if (position) {
             setCurrentRangeInReposition(position.positionId);
         }
-    }, [position]);
+    }, [position, setCurrentRangeInReposition]);
 
     const [concLiq, setConcLiq] = useState<string>('');
 
-    const updateConcLiq = async () => {
+    const updateConcLiq = useCallback(async () => {
         if (!crocEnv || !position) return;
         const pool = crocEnv.pool(position.base, position.quote);
         const pos = new CrocPositionView(pool, position.user);
@@ -143,12 +150,12 @@ function Reposition() {
         ).liq.toString();
 
         setConcLiq(liquidity);
-    };
+    }, [crocEnv, position]);
 
     useEffect(() => {
         if (!crocEnv || !position) return;
         updateConcLiq();
-    }, [crocEnv, lastBlockNumber, position?.positionId]);
+    }, [crocEnv, lastBlockNumber, position, updateConcLiq]);
 
     const {
         isDenomBase,
@@ -215,12 +222,12 @@ function Reposition() {
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('set Advanced Mode to false');
         setAdvancedMode(false);
-    }, []);
+    }, [setAdvancedMode]);
 
     useEffect(() => {
         setSimpleRangeWidth(10);
         setNewRepositionTransactionHash('');
-    }, [position]);
+    }, [position, setSimpleRangeWidth]);
 
     useEffect(() => {
         if (simpleRangeWidth !== rangeWidthPercentage) {
@@ -231,14 +238,14 @@ function Reposition() {
             ) as HTMLInputElement;
             if (sliderInput) sliderInput.value = simpleRangeWidth.toString();
         }
-    }, [simpleRangeWidth]);
+    }, [rangeWidthPercentage, setSimpleRangeWidth, simpleRangeWidth]);
 
     useEffect(() => {
         if (simpleRangeWidth !== rangeWidthPercentage) {
             setSimpleRangeWidth(rangeWidthPercentage);
             setRangeWidthPercentage(rangeWidthPercentage);
         }
-    }, [rangeWidthPercentage]);
+    }, [rangeWidthPercentage, setSimpleRangeWidth, simpleRangeWidth]);
 
     useEffect(() => {
         if (!position) {
@@ -268,7 +275,13 @@ function Reposition() {
             setPinnedLowTick(pinnedDisplayPrices.pinnedLowTick);
             setPinnedHighTick(pinnedDisplayPrices.pinnedHighTick);
         }
-    }, [position.positionId, rangeWidthPercentage, currentPoolPriceTick]);
+    }, [
+        position.positionId,
+        rangeWidthPercentage,
+        currentPoolPriceTick,
+        position,
+        isDenomBase,
+    ]);
 
     function mintArgsForReposition(
         lowTick: number,
@@ -390,12 +403,12 @@ function Reposition() {
         if (pinnedMinPriceDisplayTruncated !== undefined) {
             setMinPrice(parseFloat(pinnedMinPriceDisplayTruncated));
         }
-    }, [pinnedMinPriceDisplayTruncated]);
+    }, [pinnedMinPriceDisplayTruncated, setMinPrice]);
 
     useEffect(() => {
         setMaxPriceDisplay(pinnedMaxPriceDisplayTruncated);
         setMaxPrice(parseFloat(pinnedMaxPriceDisplayTruncated));
-    }, [pinnedMaxPriceDisplayTruncated]);
+    }, [pinnedMaxPriceDisplayTruncated, setMaxPrice]);
 
     const [currentBaseQtyDisplayTruncated, setCurrentBaseQtyDisplayTruncated] =
         useState<string>(position?.positionLiqBaseTruncated || '0.00');
@@ -409,7 +422,7 @@ function Reposition() {
         : activeNetwork.graphCacheUrl + '/position_stats?';
     const poolIndex = lookupChain(position.chainId).poolIndex;
 
-    const fetchCurrentCollateral = () => {
+    const fetchCurrentCollateral = useCallback(() => {
         fetch(
             positionStatsCacheEndpoint +
                 new URLSearchParams({
@@ -462,11 +475,29 @@ function Reposition() {
                 setCurrentQuoteQtyDisplayTruncated(liqQuoteDisplay || '0.00');
             })
             .catch(console.error);
-    };
+    }, [
+        cachedEnsResolve,
+        cachedFetchTokenPrice,
+        cachedQuerySpotPrice,
+        cachedTokenDetails,
+        crocEnv,
+        lastBlockNumber,
+        poolIndex,
+        position.askTick,
+        position.base,
+        position.bidTick,
+        position.chainId,
+        position.positionType,
+        position.quote,
+        position.user,
+        positionStatsCacheEndpoint,
+        provider,
+        tokens.tokenUniv,
+    ]);
 
     useEffect(() => {
         fetchCurrentCollateral();
-    }, [lastBlockNumber, JSON.stringify(position), !!crocEnv, !!provider]);
+    }, [fetchCurrentCollateral, lastBlockNumber, position, crocEnv, provider]);
 
     const [newBaseQtyDisplay, setNewBaseQtyDisplay] = useState<string>('...');
     const [newQuoteQtyDisplay, setNewQuoteQtyDisplay] = useState<string>('...');
@@ -489,6 +520,7 @@ function Reposition() {
             quoteTokenDecimals,
             debouncedLowTick,
             debouncedHighTick,
+            position.chainId,
         ],
     );
 
@@ -507,6 +539,7 @@ function Reposition() {
             quoteTokenDecimals,
             debouncedLowTick,
             debouncedHighTick,
+            position.chainId,
         ],
     );
 
@@ -525,6 +558,7 @@ function Reposition() {
             quoteTokenDecimals,
             debouncedLowTick,
             debouncedHighTick,
+            position.chainId,
         ],
     );
 
@@ -543,6 +577,7 @@ function Reposition() {
             quoteTokenDecimals,
             debouncedLowTick,
             debouncedHighTick,
+            position.chainId,
         ],
     );
 
@@ -576,9 +611,13 @@ function Reposition() {
     }, [
         crocEnv,
         concLiq,
-        debouncedLowTick, // Debounce because effect involves on-chain call
+        debouncedLowTick,
         debouncedHighTick,
         currentPoolPriceTick,
+        position.base,
+        position.quote,
+        position.bidTick,
+        position.askTick,
     ]);
 
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
