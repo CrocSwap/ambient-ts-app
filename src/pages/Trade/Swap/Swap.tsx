@@ -581,6 +581,7 @@ function Swap(props: propsIF) {
                         sellQtyString={sellQtyString}
                         buyQtyString={buyQtyString}
                         isTokenAPrimary={isTokenAPrimary}
+                        priceImpactWarning={priceImpactWarning}
                     />
                 ) : (
                     <></>

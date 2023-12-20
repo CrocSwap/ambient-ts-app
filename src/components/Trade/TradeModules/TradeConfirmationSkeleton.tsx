@@ -39,6 +39,7 @@ interface propsIF {
     transactionDetails?: React.ReactNode;
     acknowledgeUpdate?: React.ReactNode;
     extraNotes?: React.ReactNode;
+    priceImpactWarning?: JSX.Element | undefined;
 }
 
 export default function TradeConfirmationSkeleton(props: propsIF) {
@@ -58,6 +59,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         poolTokenDisplay,
         acknowledgeUpdate,
         extraNotes,
+        priceImpactWarning,
     } = props;
 
     const {
@@ -155,6 +157,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                         {transactionDetails}
                     </ConfirmationDetailsContainer>
                 )}
+                {priceImpactWarning}
                 {extraNotes && extraNotes}
                 <footer>
                     {!showConfirmation ? (
