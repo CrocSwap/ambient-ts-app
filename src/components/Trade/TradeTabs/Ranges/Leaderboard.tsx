@@ -7,7 +7,6 @@ import Pagination from '../../../Global/Pagination/Pagination';
 import { useSortedPositions } from '../useSortedPositions';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
-import RangesRow from './RangesTable/RangesRow';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { RangeRow as RangeRowStyled } from '../../../../styled/Components/TransactionTable';
@@ -15,6 +14,7 @@ import { FlexContainer } from '../../../../styled/Common';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import TableRows from '../TableRows';
 
 // react functional component
 function Leaderboard() {
@@ -198,21 +198,6 @@ function Leaderboard() {
         },
     ];
 
-    const rowItemContent = usePaginateDataOrNull?.map((position, idx) => (
-        <RangesRow
-            key={idx}
-            position={position}
-            rank={
-                positionsByApy.findIndex(
-                    (posId) => posId === position.positionId,
-                ) + 1
-            }
-            isAccountView={false}
-            isLeaderboard={true}
-            tableView={tableView}
-        />
-    ));
-
     // TODO: we can probably severely reduce the number of wrappers in this JSX
 
     return (
@@ -229,7 +214,18 @@ function Leaderboard() {
                     />
                 ))}
             </RangeRowStyled>
-            <div style={{ flex: 1, overflow: 'auto' }}>{rowItemContent}</div>
+            <div style={{ flex: 1, overflow: 'auto' }}>
+                {positionsByApy.length > 0 && (
+                    <TableRows
+                        type='Range'
+                        data={usePaginateDataOrNull}
+                        isAccountView={false}
+                        isLeaderboard={true}
+                        tableView={tableView}
+                        positionsByApy={positionsByApy}
+                    />
+                )}
+            </div>
             <FlexContainer
                 as='footer'
                 alignItems='center'

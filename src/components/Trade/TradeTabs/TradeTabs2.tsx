@@ -99,6 +99,7 @@ function TradeTabs2(props: propsIF) {
     const {
         showAllData,
         setShowAllData,
+        setCurrentLimitOrderActive,
         setCurrentPositionActive,
         setCurrentTxActiveInTransactions,
         outsideControl,
@@ -307,6 +308,7 @@ function TradeTabs2(props: propsIF) {
     ]);
 
     // -------------------------------DATA-----------------------------------------
+
     // Props for <Ranges/> React Element
     const rangesProps = {
         notOnTradeRoute: false,
@@ -385,6 +387,7 @@ function TradeTabs2(props: propsIF) {
     const clickOutsideHandler = () => {
         setCurrentTxActiveInTransactions('');
         setCurrentPositionActive('');
+        setCurrentLimitOrderActive('');
     };
 
     const clearButtonOrNull = isCandleSelected ? (
