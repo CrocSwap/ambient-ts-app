@@ -70,56 +70,67 @@ function validateLedgerSets(set1: Array<any>, set2: Array<any>): boolean {
 
     return true;
 }
-describe('Test fetchUserPositions Specific', () => {
+describe('Test fetchRecords Specific', () => {
     jest.setTimeout(30000);
     describe('userPositions', () => {
-        test('ensure some positions exist', async () => {
-            if (
-                !process.env.NETWORK_ACCESS ||
-                process.env.NETWORK_ACCESS === 'false'
-            ) {
-                console.log('Skipping test due to lack of network access');
-                return;
-            }
-
-            // const userAddress = '0x648a62958D11Ea1De1F73ff3F5ecb9FBEE1bBa01';
-            // let chainId = '0x5';
-            const userChains = [
-                {
-                    userAddress: '0x648a62958D11Ea1De1F73ff3F5ecb9FBEE1bBa01',
-                    chainId: '0x5',
-                },
-                {
-                    userAddress: '0xfd3fa9d94eeb4e9889e60e37d0f1fe24ec59f7e1',
-                    chainId: '0x1',
-                },
-            ];
-            const recordTypes = [RecordType.Position, RecordType.LimitOrder];
-
-            for (const userChain of userChains) {
-                for (const recordType of recordTypes) {
-                    const userRecords = await fetchRecords({
-                        recordType: recordType,
-                        user: userChain.userAddress,
-                        chainId: userChain.chainId,
-                    });
-                    expect(userRecords.length).toBeGreaterThan(0);
-                    const userPositions = await fetchDataForChain(
-                        recordType,
-                        userChain.userAddress,
-                        userChain.chainId,
-                    );
-                    // console.log(userPositions);
-                    expect(userPositions.length).toBeGreaterThan(0);
-
-                    // Validate the sets
-                    const isValid = validateLedgerSets(
-                        userRecords,
-                        userPositions,
-                    );
-                    expect(isValid).toBeTruthy();
+        if (
+            !process.env.NETWORK_ACCESS ||
+            process.env.NETWORK_ACCESS === 'false'
+        ) {
+            it.skip('ensure some positions exist', () => {
+                return true;
+            });
+        } else {
+            test('ensure some positions exist', async () => {
+                if (
+                    !process.env.NETWORK_ACCESS ||
+                    process.env.NETWORK_ACCESS === 'false'
+                ) {
+                    console.log('Skipping test due to lack of network access');
+                    return;
                 }
-            }
-        });
+                const userChains = [
+                    {
+                        userAddress:
+                            '0x648a62958D11Ea1De1F73ff3F5ecb9FBEE1bBa01',
+                        chainId: '0x5',
+                    },
+                    {
+                        userAddress:
+                            '0xfd3fa9d94eeb4e9889e60e37d0f1fe24ec59f7e1',
+                        chainId: '0x1',
+                    },
+                ];
+                const recordTypes = [
+                    RecordType.Position,
+                    RecordType.LimitOrder,
+                ];
+
+                for (const userChain of userChains) {
+                    for (const recordType of recordTypes) {
+                        const userRecords = await fetchRecords({
+                            recordType: recordType,
+                            user: userChain.userAddress,
+                            chainId: userChain.chainId,
+                        });
+                        expect(userRecords.length).toBeGreaterThan(0);
+                        const userPositions = await fetchDataForChain(
+                            recordType,
+                            userChain.userAddress,
+                            userChain.chainId,
+                        );
+                        // console.log(userPositions);
+                        expect(userPositions.length).toBeGreaterThan(0);
+
+                        // Validate the sets
+                        const isValid = validateLedgerSets(
+                            userRecords,
+                            userPositions,
+                        );
+                        expect(isValid).toBeTruthy();
+                    }
+                }
+            });
+        }
     });
 });
