@@ -129,44 +129,61 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         }
     }, [crocEnv, provider, signer, signerStatus]);
 
-    useEffect(() => {
-        if (isError) {
-            console.error({ error });
-        } else if (APP_ENVIRONMENT === 'local' && !provider && !signer) {
-            console.debug('setting crocEnv to undefined');
-        }
-        setCrocEnv(undefined);
-    }, [error, isError, provider, signer]);
+    const [chainIdFromSigner, setChainIdFromSigner] = useState<
+        number | undefined
+    >();
+    const [chainIdFromProvider, setChainIdFromProvider] = useState<
+        number | undefined
+    >();
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const setNewCrocEnv = async () => {
-        if (provider && !crocEnv) {
-            const newCrocEnv = new CrocEnv(
-                provider,
-                signer ? signer : undefined,
-            );
-            setCrocEnv(newCrocEnv);
-        } else {
-            // If signer and provider are set to different chains (as can happen)
-            // after a network switch, it causes a lot of performance killing timeouts
-            // and errors
-            if (
-                (await signer?.getChainId()) ==
-                (await provider.getNetwork()).chainId
-            ) {
-                const newCrocEnv = new CrocEnv(
-                    provider,
-                    signer ? signer : undefined,
-                );
-                APP_ENVIRONMENT === 'local' && console.debug({ newCrocEnv });
-                setCrocEnv(newCrocEnv);
+    useEffect(() => {
+        (async () => {
+            setChainIdFromSigner(await signer?.getChainId());
+        })();
+    }, [signer]);
+
+    useEffect(() => {
+        (async () => {
+            setChainIdFromProvider((await provider.getNetwork()).chainId);
+        })();
+    }, [provider]);
+
+    useEffect(() => {
+        setCrocEnv((currentCrocEnv) => {
+            if (isError) {
+                console.error({ error });
+                return undefined;
+            } else if (APP_ENVIRONMENT === 'local' && !provider && !signer) {
+                console.debug('setting crocEnv to undefined');
+                return undefined;
+            } else if (provider) {
+                if (!currentCrocEnv) {
+                    const newCrocEnv = new CrocEnv(
+                        provider,
+                        signer ? signer : undefined,
+                    );
+                    return newCrocEnv;
+                }
+            } else {
+                if (chainIdFromProvider === chainIdFromSigner) {
+                    const newCrocEnv = new CrocEnv(
+                        provider,
+                        signer ? signer : undefined,
+                    );
+                    APP_ENVIRONMENT === 'local' &&
+                        console.debug({ newCrocEnv });
+                    return newCrocEnv;
+                }
             }
-        }
-    };
-
-    useEffect(() => {
-        setNewCrocEnv();
-    }, [provider, setNewCrocEnv, signer, signerStatus]);
+        });
+    }, [
+        chainIdFromProvider,
+        chainIdFromSigner,
+        error,
+        isError,
+        provider,
+        signer,
+    ]);
 
     useEffect(() => {
         if (provider && crocEnv) {

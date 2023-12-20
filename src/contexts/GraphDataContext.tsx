@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect } from 'react';
 import { fetchUserRecentChanges } from '../ambient-utils/api';
 import { getLimitOrderData, getPositionData } from '../ambient-utils/dataLayer';
-import useDebounce from '../App/hooks/useDebounce';
 import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../ambient-utils/constants';
 import {
     TokenIF,
@@ -221,10 +220,6 @@ export const GraphDataContextProvider = (props: {
     useEffect(() => {
         resetUserGraphData();
     }, [isUserConnected, userAddress]);
-
-    // Wait 2 seconds before refreshing to give cache server time to sync from
-    // last block
-    const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
 
     useEffect(() => {
         // This useEffect controls a series of other dispatches that fetch data on update of the user object
