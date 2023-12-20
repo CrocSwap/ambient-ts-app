@@ -61,7 +61,7 @@ describe('Submit and Remove Limit Orders on Goerli\'s ETH/USDC pool', () => {
         if (spotPrice === 0) console.log('spotPrice is 0, tests will fail.');
 
         console.log(`Queried spotPrice: ${spotPrice}`);
-    });
+    }, TEST_TIMEOUT);
 
     if (isNetworkAccessDisabled()) {
         it.skip('skipping all limit order tests -- network access disabled', () => {});

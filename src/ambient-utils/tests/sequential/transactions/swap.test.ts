@@ -21,7 +21,7 @@ describe('perform swap on Goerli', () => {
         signer = new ethers.Wallet(walletPrivateKey, provider);
 
         crocEnv = new CrocEnv(provider, signer);
-    });
+    }, TEST_TIMEOUT);
 
     if (isNetworkAccessDisabled()) {
         it.skip('skipping all swap tests -- network access disabled', () => {});

@@ -124,7 +124,7 @@ describe('submit a ETH/USDC liquidity position on Goerli', () => {
                 depositSkew,
             ) || TOKEN_B_QTY;
         console.log(`Calculating Token B Quantity to be: ${tokenBQty}`);
-    }, 30000);
+    }, TEST_TIMEOUT);
 
     if (isNetworkAccessDisabled()) {
         it.skip('skipping all range tests -- network access disabled', () => {});
