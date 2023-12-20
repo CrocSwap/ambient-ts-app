@@ -46,30 +46,23 @@ export const UserPreferenceContextProvider = (props: {
     const { tokenA, tokenB, setDenomInBase, isDenomBase, didUserFlipDenom } =
         useContext(TradeDataContext);
 
-    const userPreferencesProps = useMemo(() => {
-        return {
-            favePools: useFavePools(),
-            swapSlippage: useSlippage('swap', slippage.swap),
-            mintSlippage: useSlippage('mint', slippage.mint),
-            repoSlippage: useSlippage('repo', slippage.reposition),
-            dexBalSwap: useExchangePrefs('swap'),
-            dexBalLimit: useExchangePrefs('limit'),
-            dexBalRange: useExchangePrefs('range'),
-            bypassConfirmSwap: useSkipConfirm('swap'),
-            bypassConfirmLimit: useSkipConfirm('limit'),
-            bypassConfirmRange: useSkipConfirm('range'),
-            bypassConfirmRepo: useSkipConfirm('repo'),
-        };
-    }, []);
-
     // Memoize the object being passed to context. This assumes that all of the individual top-level values
     // in the userPreferencesProps object are themselves correctly memo-ized at the object level. E.g. the
     // value from `useSlippage()` or `useSkipConfirm()` should be a new object reference if and only if their
     // content needs to be updated
-    const userPreferences = useMemo(
-        () => userPreferencesProps,
-        [userPreferencesProps],
-    );
+    const userPreferences = {
+        favePools: useFavePools(),
+        swapSlippage: useSlippage('swap', slippage.swap),
+        mintSlippage: useSlippage('mint', slippage.mint),
+        repoSlippage: useSlippage('repo', slippage.reposition),
+        dexBalSwap: useExchangePrefs('swap'),
+        dexBalLimit: useExchangePrefs('limit'),
+        dexBalRange: useExchangePrefs('range'),
+        bypassConfirmSwap: useSkipConfirm('swap'),
+        bypassConfirmLimit: useSkipConfirm('limit'),
+        bypassConfirmRange: useSkipConfirm('range'),
+        bypassConfirmRepo: useSkipConfirm('repo'),
+    };
 
     const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(() => {
         if (baseTokenAddress && quoteTokenAddress) {
