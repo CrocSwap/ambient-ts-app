@@ -725,7 +725,11 @@ function TradeCandleStickChart(props: propsIF) {
                             nCandles = nCandles + (nDiffFirstTime + 100);
                         } else {
                             firstTime = firstTime + period * 100;
-                            nCandles = 200;
+                            nCandles =
+                                Math.floor(
+                                    Math.abs(firstTime - domainLeft / 1000) /
+                                        period,
+                                ) + 10;
                         }
                     }
 
