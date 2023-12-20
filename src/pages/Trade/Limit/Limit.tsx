@@ -516,15 +516,6 @@ export default function Limit() {
         const qty = isTokenAPrimary ? sellQty : buyQty;
         const type = isTokenAPrimary ? 'sell' : 'buy';
 
-        console.log(
-            limitTick,
-            buyToken,
-            sellToken,
-            qty,
-            type,
-            isWithdrawFromDexChecked,
-        );
-
         let tx;
         try {
             tx = await submitLimitOrder({

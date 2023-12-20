@@ -76,16 +76,6 @@ export function useCreateRangePosition() {
 
         let tx;
 
-        console.log({
-            isAmbient,
-            slippageTolerancePercentage,
-            tokenAInputQty,
-            tokenBInputQty,
-            isTokenAPrimaryRange,
-            defaultLowTick,
-            defaultHighTick,
-        });
-
         try {
             tx = await createRangePositionTx({
                 crocEnv,
