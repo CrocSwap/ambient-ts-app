@@ -20,16 +20,20 @@ describe('Submit and Remove Limit Orders on Goerli\'s ETH/USDC pool', () => {
         new Promise((resolve) => setTimeout(resolve, ms));
     const TEST_TIMEOUT = 90 * 1000; // 90 seconds
     const DELAY_BEFORE_REMOVAL = 30 * 1000; // 30 seconds
+
+    const providerUrl =
+        process.env.PROVIDER_URL || 'https://goerli.infura.io/v3/';
+    const providerKey =
+        process.env.PROVIDER_KEY || 'c2d502344b024adf84b313c663131ada';
+    const providerUrlWithKey = providerUrl + providerKey;
+
     const TEST_USER =
         process.env.TEST_USER || '0x648a62958D11Ea1De1F73ff3F5ecb9FBEE1bBa01';
-    const providerUrl =
-        process.env.GOERLI_PROVIDER_URL ||
-        'https://goerli.infura.io/v3/c2d502344b024adf84b313c663131ada';
     const walletPrivateKey =
-        process.env.GOERLI_PRIVATE_KEY ||
+        process.env.TEST_USER_PRIVATE_KEY ||
         'f95fc54b0f7c16b5b81998b084c1d17e27b0252c6578cebcfdf02cd1ba50221a';
 
-    const provider = new ethers.providers.JsonRpcProvider(providerUrl);
+    const provider = new ethers.providers.JsonRpcProvider(providerUrlWithKey);
     const signer = new ethers.Wallet(walletPrivateKey, provider);
 
     const crocEnv = new CrocEnv(provider, signer);
@@ -53,7 +57,7 @@ describe('Submit and Remove Limit Orders on Goerli\'s ETH/USDC pool', () => {
     let limit: number;
 
     beforeAll(async () => {
-        lastBlockNumber = await fetchBlockNumber(providerUrl);
+        lastBlockNumber = await fetchBlockNumber(providerUrlWithKey);
         console.log(`Fetched lastBlockNumber: ${lastBlockNumber}`);
 
         spotPrice = await pool.spotPrice();

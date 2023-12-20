@@ -11,16 +11,27 @@ describe('perform swap on Goerli', () => {
 
     beforeAll(() => {
         const providerUrl =
-            process.env.GOERLI_PROVIDER_URL ||
-            'https://goerli.infura.io/v3/c2d502344b024adf84b313c663131ada';
+            process.env.PROVIDER_URL || 'https://goerli.infura.io/v3/';
+        const providerKey =
+            process.env.PROVIDER_KEY || 'c2d502344b024adf84b313c663131ada';
+        const providerUrlWithKey = providerUrl + providerKey;
+
         const walletPrivateKey =
-            process.env.GOERLI_PRIVATE_KEY ||
+            process.env.TEST_USER_PRIVATE_KEY ||
             'f95fc54b0f7c16b5b81998b084c1d17e27b0252c6578cebcfdf02cd1ba50221a';
 
-        const provider = new ethers.providers.JsonRpcProvider(providerUrl);
+        const provider = new ethers.providers.JsonRpcProvider(
+            providerUrlWithKey,
+        );
+        console.log(`Using provider: ${JSON.stringify(provider)}`);
+
         signer = new ethers.Wallet(walletPrivateKey, provider);
+        console.log(`Using signer: ${JSON.stringify(signer)}`);
 
         crocEnv = new CrocEnv(provider, signer);
+        console.log(
+            `Successfully initialized crocEnv: ${JSON.stringify(crocEnv)}`,
+        );
     }, TEST_TIMEOUT);
 
     if (isNetworkAccessDisabled()) {
