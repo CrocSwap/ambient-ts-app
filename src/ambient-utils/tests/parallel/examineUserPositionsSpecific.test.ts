@@ -7,6 +7,7 @@ import {
 } from '../../api';
 import { RecordType } from '../../types';
 import { createNetworkSession } from '../../constants/networks/createNetworkSession';
+import { isNetworkAccessDisabled } from '../config';
 
 const fetchDataForChain = async (
     recordType: RecordType,
@@ -76,10 +77,7 @@ describe('Test fetchUserPositions Specific', () => {
     jest.setTimeout(30000);
     describe('userPositions', () => {
         test('ensure some positions exist', async () => {
-            if (
-                !process.env.NETWORK_ACCESS ||
-                process.env.NETWORK_ACCESS === 'false'
-            ) {
+            if (isNetworkAccessDisabled()) {
                 console.log('Skipping test due to lack of network access');
                 return;
             }

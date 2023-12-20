@@ -993,32 +993,6 @@ function Range() {
         daysInRange: daysInRange,
     };
 
-    useEffect(() => {
-        let blockNumber = -1;
-        (async () => {
-            blockNumber = await fetchBlockNumber(
-                'https://goerli.infura.io/v3/c2d502344b024adf84b313c663131ada',
-            );
-            const poolPrice = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
-
-            console.log({
-                poolPriceNonDisplay,
-                poolPrice,
-                defaultLowTick,
-                defaultHighTick,
-                lastBlockNumber: blockNumber,
-                tokenAInputQty,
-                tokenBInputQty,
-            });
-        })();
-    }, [
-        poolPriceNonDisplay,
-        defaultLowTick,
-        defaultHighTick,
-        tokenAInputQty,
-        tokenBInputQty,
-    ]);
-
     return (
         <TradeModuleSkeleton
             chainId={chainId}

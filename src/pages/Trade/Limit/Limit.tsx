@@ -186,8 +186,6 @@ export default function Limit() {
             if (limitTick === undefined && !!poolPriceNonDisplay && crocEnv) {
                 if (!pool) return;
 
-                console.log('limit tick undefined case');
-
                 const spotPrice = await cachedQuerySpotPrice(
                     crocEnv,
                     pool.baseToken.tokenAddr,
@@ -198,27 +196,19 @@ export default function Limit() {
                 // if the spot price is 0, the pool is uninitialized and we can't calculate a limit price
                 if (spotPrice === 0) return;
 
-                console.log({ spotPrice });
-
                 const initialLimitRateNonDisplay =
                     spotPrice * (isSellTokenBase ? 0.985 : 1.015);
-
-                console.log({ initialLimitRateNonDisplay });
 
                 const pinnedTick: number = isSellTokenBase
                     ? pinTickLower(initialLimitRateNonDisplay, gridSize)
                     : pinTickUpper(initialLimitRateNonDisplay, gridSize);
 
-                console.log({ pinnedTick });
-
                 IS_LOCAL_ENV && console.debug({ pinnedTick });
-              
+
                 setLimitTick(pinnedTick);
 
                 const tickPrice = tickToPrice(pinnedTick);
                 const tickDispPrice = pool.toDisplayPrice(tickPrice);
-
-                console.log({ tickDispPrice });
 
                 tickDispPrice.then((tp) => {
                     const displayPriceWithDenom = isDenomBase ? tp : 1 / tp;
@@ -283,13 +273,9 @@ export default function Limit() {
             } else if (limitTick !== undefined) {
                 if (!pool) return;
 
-                console.log('limit tick not udnefined case');
-
                 const tickPrice = tickToPrice(limitTick);
 
                 const tickDispPrice = pool.toDisplayPrice(tickPrice);
-
-                console.log({ tickDispPrice });
 
                 tickDispPrice.then((tp) => {
                     const displayPriceWithDenom = isDenomBase ? tp : 1 / tp;
@@ -552,35 +538,33 @@ export default function Limit() {
             });
 
             if (!tx) return;
-          
+
             addPendingTx(tx?.hash);
             setNewLimitOrderTransactionHash(tx.hash);
-                addTransactionByType({
-                    txHash: tx.hash,
-                    txAction:
-                        tokenB.address.toLowerCase() ===
-                        quoteToken.address.toLowerCase()
-                            ? 'Buy'
-                            : 'Sell',
-                    txType: 'Limit',
-                    txDescription: `Add Limit ${tokenA.symbol}→${tokenB.symbol}`,
-                    txDetails: {
-                        baseAddress: baseToken.address,
-                        quoteAddress: quoteToken.address,
-                        baseTokenDecimals: baseToken.decimals,
-                        quoteTokenDecimals: quoteToken.decimals,
-                        poolIdx: poolIndex,
-                        baseSymbol: baseToken.symbol,
-                        quoteSymbol: quoteToken.symbol,
-                        lowTick: isSellTokenBase
-                            ? limitTick
-                            : limitTick - gridSize,
-                        highTick: isSellTokenBase
-                            ? limitTick + gridSize
-                            : limitTick,
-                        isBid: isSellTokenBase,
-                    },
-                });
+            addTransactionByType({
+                txHash: tx.hash,
+                txAction:
+                    tokenB.address.toLowerCase() ===
+                    quoteToken.address.toLowerCase()
+                        ? 'Buy'
+                        : 'Sell',
+                txType: 'Limit',
+                txDescription: `Add Limit ${tokenA.symbol}→${tokenB.symbol}`,
+                txDetails: {
+                    baseAddress: baseToken.address,
+                    quoteAddress: quoteToken.address,
+                    baseTokenDecimals: baseToken.decimals,
+                    quoteTokenDecimals: quoteToken.decimals,
+                    poolIdx: poolIndex,
+                    baseSymbol: baseToken.symbol,
+                    quoteSymbol: quoteToken.symbol,
+                    lowTick: isSellTokenBase ? limitTick : limitTick - gridSize,
+                    highTick: isSellTokenBase
+                        ? limitTick + gridSize
+                        : limitTick,
+                    isBid: isSellTokenBase,
+                },
+            });
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();

@@ -1,14 +1,12 @@
 import { fetchRecords } from '../../api';
 import { RecordType } from '../../types';
+import { isNetworkAccessDisabled } from '../config';
 
 describe('Test fetchUserPositions Simple', () => {
     jest.setTimeout(40000);
     describe('userPositions', () => {
         test('ensure some positions exist', async () => {
-            if (
-                !process.env.NETWORK_ACCESS ||
-                process.env.NETWORK_ACCESS === 'false'
-            ) {
+            if (isNetworkAccessDisabled()) {
                 console.log('skipping');
                 return;
             }
