@@ -93,7 +93,7 @@ function Trade() {
                 setSelectedOutsideTab(0);
             }
         },
-        [],
+        [setIsCandleSelected, setOutsideControl, setSelectedOutsideTab],
     );
 
     const [showMobileDropdown, setMobileDropdown] = useState(false);
@@ -160,11 +160,16 @@ function Trade() {
         setSelectedDate(undefined);
         changeState(false, undefined);
         setIsCandleSelected(false);
-    }, []);
+    }, [changeState, setIsCandleSelected]);
 
     useEffect(() => {
         unselectCandle();
-    }, [chartSettings.candleTime.global.time, baseToken.name, quoteToken.name]);
+    }, [
+        chartSettings.candleTime.global.time,
+        baseToken.name,
+        quoteToken.name,
+        unselectCandle,
+    ]);
 
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
     const smallScreen = useMediaQuery('(max-width: 500px)');

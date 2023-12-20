@@ -1,4 +1,4 @@
-import { MouseEvent, useEffect, useRef } from 'react';
+import { MouseEvent, useCallback, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import {
     drawDataHistory,
@@ -44,156 +44,184 @@ export default function DragCanvas(props: DragCanvasProps) {
     } = props;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const dragLine = (movemementX: number, movemementY: number) => {
-        if (hoveredDrawnShape) {
+    const dragLine = useCallback(
+        (movemementX: number, movemementY: number) => {
+            if (hoveredDrawnShape) {
+                const index = drawnShapeHistory.findIndex(
+                    (item) => item === hoveredDrawnShape?.data,
+                );
+
+                const isPointInDenom =
+                    hoveredDrawnShape?.data?.data[0].denomInBase ===
+                    denomInBase;
+
+                const denomScale = scaleData.yScale.copy();
+                denomScale.domain([
+                    1 / scaleData.yScale.domain()[0],
+                    1 / scaleData.yScale.domain()[1],
+                ]);
+
+                const scale = isPointInDenom ? scaleData.yScale : denomScale;
+
+                const lastData = [
+                    {
+                        x: scaleData.xScale.invert(
+                            scaleData.xScale(
+                                hoveredDrawnShape?.data?.data[0].x,
+                            ) + movemementX,
+                        ),
+                        y: scale.invert(
+                            scale(hoveredDrawnShape.data.data[0].y) +
+                                movemementY,
+                        ),
+                        denomInBase:
+                            hoveredDrawnShape.data?.data[0].denomInBase,
+                    },
+                    {
+                        x: scaleData.xScale.invert(
+                            scaleData.xScale(hoveredDrawnShape.data.data[1].x) +
+                                movemementX,
+                        ),
+                        y: scale.invert(
+                            scale(hoveredDrawnShape.data.data[1].y) +
+                                movemementY,
+                        ),
+                        denomInBase:
+                            hoveredDrawnShape.data?.data[1].denomInBase,
+                    },
+                ];
+
+                drawnShapeHistory[index].data = lastData;
+                hoveredDrawnShape.data.data = lastData;
+
+                render();
+            }
+        },
+        [denomInBase, drawnShapeHistory, hoveredDrawnShape, render, scaleData],
+    );
+
+    const updateDrawLine = useCallback(
+        (offsetX: number, offsetY: number, denomInBase: boolean) => {
+            const index = drawnShapeHistory.findIndex(
+                (item) => item.time === hoveredDrawnShape?.data.time,
+            );
+
+            const previosData = drawnShapeHistory[index].data;
+
+            if (drawnShapeHistory[index].type === 'Ray') {
+                previosData.forEach((data) => {
+                    data.x = scaleData.xScale.invert(offsetX);
+                    data.y =
+                        data.denomInBase === denomInBase
+                            ? scaleData.yScale.invert(offsetY)
+                            : 1 / scaleData.yScale.invert(offsetY);
+                });
+            } else {
+                const lastDataIndex = previosData.findIndex(
+                    (item) =>
+                        hoveredDrawnShape?.selectedCircle &&
+                        item.x === hoveredDrawnShape?.selectedCircle.x &&
+                        item.y ===
+                            (item.denomInBase === denomInBase
+                                ? hoveredDrawnShape?.selectedCircle.y
+                                : 1 / hoveredDrawnShape?.selectedCircle.y),
+                );
+
+                if (lastDataIndex !== -1) {
+                    if (hoveredDrawnShape && hoveredDrawnShape.selectedCircle) {
+                        hoveredDrawnShape.selectedCircle.x =
+                            scaleData.xScale.invert(offsetX);
+                        hoveredDrawnShape.selectedCircle.y =
+                            scaleData.yScale.invert(offsetY);
+                    }
+
+                    previosData[lastDataIndex].x =
+                        scaleData.xScale.invert(offsetX);
+                    previosData[lastDataIndex].y =
+                        previosData[lastDataIndex].denomInBase === denomInBase
+                            ? scaleData.yScale.invert(offsetY)
+                            : 1 / scaleData.yScale.invert(offsetY);
+                }
+            }
+            drawnShapeHistory[index].data = previosData;
+        },
+        [
+            drawnShapeHistory,
+            hoveredDrawnShape,
+            scaleData.xScale,
+            scaleData.yScale,
+        ],
+    );
+
+    const updateDrawRect = useCallback(
+        (
+            offsetX: number,
+            offsetY: number,
+            rectDragDirection: string,
+            is0Left: boolean,
+            is0Top: boolean,
+            denomInBase: boolean,
+        ) => {
             const index = drawnShapeHistory.findIndex(
                 (item) => item === hoveredDrawnShape?.data,
             );
 
-            const isPointInDenom =
-                hoveredDrawnShape?.data?.data[0].denomInBase === denomInBase;
+            if (index !== -1) {
+                const previosData = drawnShapeHistory[index].data;
 
-            const denomScale = scaleData.yScale.copy();
-            denomScale.domain([
-                1 / scaleData.yScale.domain()[0],
-                1 / scaleData.yScale.domain()[1],
-            ]);
+                const newX = scaleData.xScale.invert(offsetX);
+                const newY = scaleData.yScale.invert(offsetY);
 
-            const scale = isPointInDenom ? scaleData.yScale : denomScale;
+                const should0xMove = is0Left
+                    ? rectDragDirection.includes('Left')
+                    : rectDragDirection.includes('Right');
 
-            const lastData = [
-                {
-                    x: scaleData.xScale.invert(
-                        scaleData.xScale(hoveredDrawnShape?.data?.data[0].x) +
-                            movemementX,
-                    ),
-                    y: scale.invert(
-                        scale(hoveredDrawnShape.data.data[0].y) + movemementY,
-                    ),
-                    denomInBase: hoveredDrawnShape.data?.data[0].denomInBase,
-                },
-                {
-                    x: scaleData.xScale.invert(
-                        scaleData.xScale(hoveredDrawnShape.data.data[1].x) +
-                            movemementX,
-                    ),
-                    y: scale.invert(
-                        scale(hoveredDrawnShape.data.data[1].y) + movemementY,
-                    ),
-                    denomInBase: hoveredDrawnShape.data?.data[1].denomInBase,
-                },
-            ];
+                const should0yMove = is0Top
+                    ? rectDragDirection.includes('top')
+                    : rectDragDirection.includes('bottom');
 
-            drawnShapeHistory[index].data = lastData;
-            hoveredDrawnShape.data.data = lastData;
+                const should1xMove = is0Left
+                    ? rectDragDirection.includes('Right')
+                    : rectDragDirection.includes('Left');
 
-            render();
-        }
-    };
+                const should1yMove = is0Top
+                    ? rectDragDirection.includes('bottom')
+                    : rectDragDirection.includes('top');
 
-    function updateDrawLine(
-        offsetX: number,
-        offsetY: number,
-        denomInBase: boolean,
-    ) {
-        const index = drawnShapeHistory.findIndex(
-            (item) => item.time === hoveredDrawnShape?.data.time,
-        );
+                const newYWithDenom =
+                    previosData[0].denomInBase === denomInBase
+                        ? newY
+                        : 1 / newY;
 
-        const previosData = drawnShapeHistory[index].data;
+                previosData[0].x = should0xMove ? newX : previosData[0].x;
 
-        if (drawnShapeHistory[index].type === 'Ray') {
-            previosData.forEach((data) => {
-                data.x = scaleData.xScale.invert(offsetX);
-                data.y =
-                    data.denomInBase === denomInBase
-                        ? scaleData.yScale.invert(offsetY)
-                        : 1 / scaleData.yScale.invert(offsetY);
-            });
-        } else {
-            const lastDataIndex = previosData.findIndex(
-                (item) =>
-                    hoveredDrawnShape?.selectedCircle &&
-                    item.x === hoveredDrawnShape?.selectedCircle.x &&
-                    item.y ===
-                        (item.denomInBase === denomInBase
-                            ? hoveredDrawnShape?.selectedCircle.y
-                            : 1 / hoveredDrawnShape?.selectedCircle.y),
-            );
+                previosData[0].y = should0yMove
+                    ? newYWithDenom
+                    : previosData[0].y;
 
-            if (lastDataIndex !== -1) {
-                if (hoveredDrawnShape && hoveredDrawnShape.selectedCircle) {
-                    hoveredDrawnShape.selectedCircle.x =
-                        scaleData.xScale.invert(offsetX);
-                    hoveredDrawnShape.selectedCircle.y =
-                        scaleData.yScale.invert(offsetY);
+                previosData[1].x = should1xMove ? newX : previosData[1].x;
+
+                previosData[1].y = should1yMove
+                    ? newYWithDenom
+                    : previosData[1].y;
+
+                drawnShapeHistory[index].data = previosData;
+                if (hoveredDrawnShape) {
+                    hoveredDrawnShape.selectedCircle = {
+                        x: newX,
+                        y: newYWithDenom,
+                        denomInBase: denomInBase,
+                    };
                 }
-
-                previosData[lastDataIndex].x = scaleData.xScale.invert(offsetX);
-                previosData[lastDataIndex].y =
-                    previosData[lastDataIndex].denomInBase === denomInBase
-                        ? scaleData.yScale.invert(offsetY)
-                        : 1 / scaleData.yScale.invert(offsetY);
             }
-        }
-        drawnShapeHistory[index].data = previosData;
-    }
-
-    function updateDrawRect(
-        offsetX: number,
-        offsetY: number,
-        rectDragDirection: string,
-        is0Left: boolean,
-        is0Top: boolean,
-        denomInBase: boolean,
-    ) {
-        const index = drawnShapeHistory.findIndex(
-            (item) => item === hoveredDrawnShape?.data,
-        );
-
-        if (index !== -1) {
-            const previosData = drawnShapeHistory[index].data;
-
-            const newX = scaleData.xScale.invert(offsetX);
-            const newY = scaleData.yScale.invert(offsetY);
-
-            const should0xMove = is0Left
-                ? rectDragDirection.includes('Left')
-                : rectDragDirection.includes('Right');
-
-            const should0yMove = is0Top
-                ? rectDragDirection.includes('top')
-                : rectDragDirection.includes('bottom');
-
-            const should1xMove = is0Left
-                ? rectDragDirection.includes('Right')
-                : rectDragDirection.includes('Left');
-
-            const should1yMove = is0Top
-                ? rectDragDirection.includes('bottom')
-                : rectDragDirection.includes('top');
-
-            const newYWithDenom =
-                previosData[0].denomInBase === denomInBase ? newY : 1 / newY;
-
-            previosData[0].x = should0xMove ? newX : previosData[0].x;
-
-            previosData[0].y = should0yMove ? newYWithDenom : previosData[0].y;
-
-            previosData[1].x = should1xMove ? newX : previosData[1].x;
-
-            previosData[1].y = should1yMove ? newYWithDenom : previosData[1].y;
-
-            drawnShapeHistory[index].data = previosData;
-            if (hoveredDrawnShape) {
-                hoveredDrawnShape.selectedCircle = {
-                    x: newX,
-                    y: newYWithDenom,
-                    denomInBase: denomInBase,
-                };
-            }
-        }
-    }
+        },
+        [
+            drawnShapeHistory,
+            hoveredDrawnShape,
+            scaleData.xScale,
+            scaleData.yScale,
+        ],
+    );
 
     // mousemove
     useEffect(() => {
@@ -204,7 +232,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                 mousemove(event);
             },
         );
-    }, []);
+    }, [mousemove]);
 
     useEffect(() => {
         d3.select(d3DragCanvas.current).style(
@@ -409,7 +437,18 @@ export default function DragCanvas(props: DragCanvasProps) {
                 d3DragCanvas.current,
             ).call(dragDrawnShape);
         }
-    }, [hoveredDrawnShape, drawnShapeHistory]);
+    }, [
+        hoveredDrawnShape,
+        drawnShapeHistory,
+        setSelectedDrawnShape,
+        denomInBase,
+        setCrossHairDataFunc,
+        dragLine,
+        setIsUpdatingShape,
+        updateDrawLine,
+        updateDrawRect,
+        addDrawActionStack,
+    ]);
 
     return <d3fc-canvas ref={d3DragCanvas} />;
 }

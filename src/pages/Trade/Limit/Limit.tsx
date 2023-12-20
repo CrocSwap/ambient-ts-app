@@ -5,7 +5,7 @@ import {
     priceHalfAboveTick,
     priceHalfBelowTick,
 } from '@crocswap-libs/sdk';
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, useCallback } from 'react';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import { useTradeData } from '../../../App/hooks/useTradeData';
 import Button from '../../../components/Form/Button';
@@ -337,13 +337,18 @@ export default function Limit() {
             }
         })();
     }, [
-        !!crocEnv,
+        crocEnv,
         pool,
         limitTick,
         isDenomBase,
         priceInputFieldBlurred,
         isSellTokenBase,
-        !!poolPriceNonDisplay,
+        poolPriceNonDisplay,
+        cachedQuerySpotPrice,
+        chainId,
+        lastBlockNumber,
+        gridSize,
+        setLimitTick,
     ]);
 
     // patch limit tick into URL if it is missing, this value isn't available
@@ -356,9 +361,20 @@ export default function Limit() {
         if (!urlHasLimitTick && limitTick !== undefined) {
             updateURL({ update: [[LIMIT_TICK_KEY, limitTick]] });
         }
-    }, [limitTick]);
+    }, [limitTick, updateURL, urlParamMap]);
 
-    const updateOrderValidityStatus = async () => {
+    const updateLimitErrorMessage = useCallback(() => {
+        setLimitButtonErrorMessage(
+            `Limit ${
+                (isSellTokenBase && !isDenomBase) ||
+                (!isSellTokenBase && isDenomBase)
+                    ? 'Above Maximum'
+                    : 'Below Minimum'
+            }  Price`,
+        );
+    }, [isDenomBase, isSellTokenBase]);
+
+    const updateOrderValidityStatus = useCallback(async () => {
         try {
             if (!crocEnv) return;
             if (limitTick === undefined) return;
@@ -390,22 +406,111 @@ export default function Limit() {
         } catch (error) {
             console.error(error);
         }
-    };
+    }, [
+        crocEnv,
+        isTokenAPrimary,
+        limitTick,
+        tokenAInputQty,
+        tokenBInputQty,
+        updateLimitErrorMessage,
+        urlParamMap,
+    ]);
 
     useEffect(() => {
         updateOrderValidityStatus();
     }, [
         limitTick,
         poolPriceNonDisplay,
-        tokenAInputQty === '' && tokenBInputQty === '',
+        updateOrderValidityStatus,
         urlParamMap,
     ]);
 
     useEffect(() => {
         setNewLimitOrderTransactionHash('');
-    }, [baseToken.address + quoteToken.address]);
+    }, [baseToken.address, quoteToken.address]);
 
     const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
+
+    const handleLimitButtonMessage = useCallback(
+        (tokenAAmount: number) => {
+            if (!isPoolInitialized) {
+                setLimitAllowed(false);
+                if (isPoolInitialized === undefined)
+                    setLimitButtonErrorMessage('...');
+                if (isPoolInitialized === false)
+                    setLimitButtonErrorMessage('Pool Not Initialized');
+            } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
+                setLimitAllowed(false);
+                setLimitButtonErrorMessage('Enter an Amount');
+            } else if (!isOrderValid) {
+                setLimitAllowed(false);
+                setLimitButtonErrorMessage(
+                    `Limit ${
+                        (isSellTokenBase && !isDenomBase) ||
+                        (!isSellTokenBase && isDenomBase)
+                            ? 'Above Maximum'
+                            : 'Below Minimum'
+                    }  Price`,
+                );
+            } else {
+                if (isWithdrawFromDexChecked) {
+                    if (
+                        tokenAAmount >
+                        parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+                    ) {
+                        setLimitAllowed(false);
+                        setLimitButtonErrorMessage(
+                            `${tokenA.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
+                        );
+                    } else if (
+                        isSellTokenNativeToken &&
+                        tokenAQtyCoveredByWalletBalance +
+                            amountToReduceNativeTokenQty >
+                            parseFloat(tokenABalance) + 0.0000000001 // offset to account for floating point math inconsistencies
+                    ) {
+                        setLimitAllowed(false);
+                        setLimitButtonErrorMessage(
+                            'Wallet Balance Insufficient to Cover Gas',
+                        );
+                    } else {
+                        setLimitAllowed(true);
+                    }
+                } else {
+                    if (tokenAAmount > parseFloat(tokenABalance)) {
+                        setLimitAllowed(false);
+                        setLimitButtonErrorMessage(
+                            `${tokenA.symbol} Amount Exceeds Wallet Balance`,
+                        );
+                    } else if (
+                        isSellTokenNativeToken &&
+                        tokenAQtyCoveredByWalletBalance +
+                            amountToReduceNativeTokenQty >
+                            parseFloat(tokenABalance) + 0.0000000001 // offset to account for floating point math inconsistencies
+                    ) {
+                        setLimitAllowed(false);
+                        setLimitButtonErrorMessage(
+                            'Wallet Balance Insufficient to Cover Gas',
+                        );
+                    } else {
+                        setLimitAllowed(true);
+                    }
+                }
+            }
+        },
+        [
+            amountToReduceNativeTokenQty,
+            isDenomBase,
+            isOrderValid,
+            isPoolInitialized,
+            isSellTokenBase,
+            isSellTokenNativeToken,
+            isWithdrawFromDexChecked,
+            tokenA.symbol,
+            tokenABalance,
+            tokenADexBalance,
+            tokenAQtyCoveredByWalletBalance,
+        ],
+    );
 
     useEffect(() => {
         handleLimitButtonMessage(parseFloat(tokenAInputQty));
@@ -420,6 +525,7 @@ export default function Limit() {
         tokenAQtyCoveredByWalletBalance,
         tokenABalance,
         amountToReduceNativeTokenQty,
+        handleLimitButtonMessage,
     ]);
 
     useEffect(() => {
@@ -484,16 +590,6 @@ export default function Limit() {
         setTxErrorMessage('');
         setNewLimitOrderTransactionHash('');
     };
-
-    const updateLimitErrorMessage = () =>
-        setLimitButtonErrorMessage(
-            `Limit ${
-                (isSellTokenBase && !isDenomBase) ||
-                (!isSellTokenBase && isDenomBase)
-                    ? 'Above Maximum'
-                    : 'Below Minimum'
-            }  Price`,
-        );
 
     const sendLimitOrder = async () => {
         if (!crocEnv) return;
@@ -589,72 +685,6 @@ export default function Limit() {
         if (receipt) {
             addReceipt(JSON.stringify(receipt));
             removePendingTx(receipt.transactionHash);
-        }
-    };
-
-    const handleLimitButtonMessage = (tokenAAmount: number) => {
-        if (!isPoolInitialized) {
-            setLimitAllowed(false);
-            if (isPoolInitialized === undefined)
-                setLimitButtonErrorMessage('...');
-            if (isPoolInitialized === false)
-                setLimitButtonErrorMessage('Pool Not Initialized');
-        } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
-            setLimitAllowed(false);
-            setLimitButtonErrorMessage('Enter an Amount');
-        } else if (!isOrderValid) {
-            setLimitAllowed(false);
-            setLimitButtonErrorMessage(
-                `Limit ${
-                    (isSellTokenBase && !isDenomBase) ||
-                    (!isSellTokenBase && isDenomBase)
-                        ? 'Above Maximum'
-                        : 'Below Minimum'
-                }  Price`,
-            );
-        } else {
-            if (isWithdrawFromDexChecked) {
-                if (
-                    tokenAAmount >
-                    parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
-                ) {
-                    setLimitAllowed(false);
-                    setLimitButtonErrorMessage(
-                        `${tokenA.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
-                    );
-                } else if (
-                    isSellTokenNativeToken &&
-                    tokenAQtyCoveredByWalletBalance +
-                        amountToReduceNativeTokenQty >
-                        parseFloat(tokenABalance) + 0.0000000001 // offset to account for floating point math inconsistencies
-                ) {
-                    setLimitAllowed(false);
-                    setLimitButtonErrorMessage(
-                        'Wallet Balance Insufficient to Cover Gas',
-                    );
-                } else {
-                    setLimitAllowed(true);
-                }
-            } else {
-                if (tokenAAmount > parseFloat(tokenABalance)) {
-                    setLimitAllowed(false);
-                    setLimitButtonErrorMessage(
-                        `${tokenA.symbol} Amount Exceeds Wallet Balance`,
-                    );
-                } else if (
-                    isSellTokenNativeToken &&
-                    tokenAQtyCoveredByWalletBalance +
-                        amountToReduceNativeTokenQty >
-                        parseFloat(tokenABalance) + 0.0000000001 // offset to account for floating point math inconsistencies
-                ) {
-                    setLimitAllowed(false);
-                    setLimitButtonErrorMessage(
-                        'Wallet Balance Insufficient to Cover Gas',
-                    );
-                } else {
-                    setLimitAllowed(true);
-                }
-            }
         }
     };
 

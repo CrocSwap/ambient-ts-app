@@ -245,7 +245,6 @@ function Swap(props: propsIF) {
     }, [
         crocEnv,
         isPoolInitialized,
-        isPoolInitialized === undefined, // Needed to distinguish false from undefined
         poolPriceDisplay,
         tokenA.address,
         tokenB.address,
@@ -260,11 +259,14 @@ function Swap(props: propsIF) {
         tokenABalance,
         tokenAQtyCoveredByWalletBalance,
         amountToReduceNativeTokenQty,
+        isLiquidityInsufficient,
+        tokenADexBalance,
+        tokenA.symbol,
     ]);
 
     useEffect(() => {
         setNewSwapTransactionHash('');
-    }, [baseToken.address + quoteToken.address]);
+    }, [baseToken.address, quoteToken.address]);
 
     // calculate price of gas for swap
     useEffect(() => {

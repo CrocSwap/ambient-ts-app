@@ -92,7 +92,7 @@ export const useProcessOrder = (
             getMoneynessRank(limitOrder.baseSymbol) -
                 getMoneynessRank(limitOrder.quoteSymbol) >=
             0,
-        [limitOrder.base, limitOrder.base, limitOrder.chainId],
+        [limitOrder.baseSymbol, limitOrder.quoteSymbol],
     );
 
     const [startPriceDisplay, setStartPriceDisplay] = useState<
@@ -402,7 +402,12 @@ export const useProcessOrder = (
                     : invIntialTokenQtyTruncated,
             );
         }
-    }, [diffHashSig(limitOrder), isDenomBase, isAccountView]);
+    }, [
+        limitOrder,
+        isDenomBase,
+        isAccountView,
+        isBaseTokenMoneynessGreaterOrEqual,
+    ]);
 
     return {
         // wallet and id data

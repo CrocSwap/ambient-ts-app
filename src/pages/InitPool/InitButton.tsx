@@ -52,9 +52,6 @@ export default function InitButton(props: PropsIF) {
         rangeButtonErrorMessageTokenA,
         rangeButtonErrorMessageTokenB,
         setActiveContent,
-        initialPriceInBaseDenom,
-        sendRangePosition,
-        sendInit,
         poolExists,
         isConnected,
         connectButtonDelayElapsed,
@@ -122,10 +119,7 @@ export default function InitButton(props: PropsIF) {
         erc20TokenWithDexBalance,
         rangeButtonErrorMessageTokenA,
         rangeButtonErrorMessageTokenB,
-        initialPriceInBaseDenom,
-        isMintLiqEnabled,
-        sendRangePosition,
-        sendInit,
+        setActiveContent,
     ]);
 
     const poolExistsButton = (

@@ -31,7 +31,7 @@ export const useProcessRange = (
             getMoneynessRank(position.baseSymbol) -
                 getMoneynessRank(position.quoteSymbol) >=
             0,
-        [position.base, position.base, position.chainId],
+        [position.baseSymbol, position.quoteSymbol],
     );
 
     const baseQty = position.positionLiqBaseTruncated;

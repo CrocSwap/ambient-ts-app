@@ -214,6 +214,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         isTxCompletedInit,
         transactionApprovedRange,
         isTxCompletedRange,
+        setActiveStep,
     ]);
 
     const isError = isTransactionDenied || isTransactionException;

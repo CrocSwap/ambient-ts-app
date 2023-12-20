@@ -94,7 +94,13 @@ function Portfolio() {
                 setResolvedAddressInContext('');
             }
         })();
-    }, [addressFromParams, isAddressHex, isAddressEns, mainnetProvider]);
+    }, [
+        addressFromParams,
+        isAddressHex,
+        isAddressEns,
+        mainnetProvider,
+        setResolvedAddressInContext,
+    ]);
 
     const [secondaryEnsName, setSecondaryEnsName] = useState('');
     // check for ENS name account changes
@@ -193,12 +199,16 @@ function Portfolio() {
         })();
     }, [
         crocEnv,
-        client !== undefined,
         resolvedAddress,
         chainId,
         everyFiveMinutes,
         connectedAccountActive,
         activeNetwork.graphCacheUrl,
+        client,
+        resolvedAddressTokens,
+        cachedFetchTokenBalances,
+        cachedTokenDetails,
+        tokens,
     ]);
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);

@@ -217,7 +217,12 @@ function Range() {
               )
             : advancedLowTick;
         return value;
-    }, [advancedLowTick, currentPoolPriceTick, shouldResetAdvancedLowTick]);
+    }, [
+        advancedLowTick,
+        currentPoolPriceTick,
+        gridSize,
+        shouldResetAdvancedLowTick,
+    ]);
 
     // default high tick to seed in the DOM (range upper value)
     const defaultHighTick = useMemo<number>(() => {
@@ -229,7 +234,12 @@ function Range() {
               )
             : advancedHighTick;
         return value;
-    }, [advancedHighTick, currentPoolPriceTick, shouldResetAdvancedHighTick]);
+    }, [
+        advancedHighTick,
+        currentPoolPriceTick,
+        gridSize,
+        shouldResetAdvancedHighTick,
+    ]);
 
     const userPositions = positionsByUser.positions.filter(
         (x) => x.chainId === chainId,
@@ -251,12 +261,7 @@ function Range() {
                     return false;
                 }
             }),
-        [
-            diffHashSig(userPositions),
-            isAmbient,
-            defaultLowTick,
-            defaultHighTick,
-        ],
+        [userPositions, isAmbient, defaultLowTick, defaultHighTick],
     );
 
     const tokenASurplusMinusTokenARemainderNum =
@@ -343,6 +348,7 @@ function Range() {
             quoteTokenDecimals,
             defaultLowTick,
             defaultHighTick,
+            gridSize,
         ],
     );
     const pinnedMinPriceDisplayTruncatedInQuote = useMemo(
@@ -360,6 +366,7 @@ function Range() {
             quoteTokenDecimals,
             defaultLowTick,
             defaultHighTick,
+            gridSize,
         ],
     );
     const pinnedMaxPriceDisplayTruncatedInBase = useMemo(
@@ -377,6 +384,7 @@ function Range() {
             quoteTokenDecimals,
             defaultLowTick,
             defaultHighTick,
+            gridSize,
         ],
     );
     const pinnedMaxPriceDisplayTruncatedInQuote = useMemo(
@@ -394,6 +402,7 @@ function Range() {
             quoteTokenDecimals,
             defaultLowTick,
             defaultHighTick,
+            gridSize,
         ],
     );
 
@@ -432,24 +441,24 @@ function Range() {
             ) as HTMLInputElement;
             if (sliderInput) sliderInput.value = simpleRangeWidth.toString();
         }
-    }, [simpleRangeWidth]);
+    }, [rangeWidthPercentage, setSimpleRangeWidth, simpleRangeWidth]);
 
     useEffect(() => {
         if (simpleRangeWidth !== rangeWidthPercentage) {
             setSimpleRangeWidth(rangeWidthPercentage);
         }
-    }, [rangeWidthPercentage]);
+    }, [rangeWidthPercentage, setSimpleRangeWidth, simpleRangeWidth]);
 
     useEffect(() => {
         setNewRangeTransactionHash('');
         setPinnedDisplayPrices(undefined);
-    }, [baseToken.address + quoteToken.address]);
+    }, [baseToken.address, quoteToken.address]);
 
     useEffect(() => {
         if (!isAdd) {
             setCurrentRangeInAdd('');
         }
-    }, [isAdd]);
+    }, [isAdd, setCurrentRangeInAdd]);
 
     const { isTokenAInputDisabled, isTokenBInputDisabled } =
         useRangeInputDisable(
@@ -513,15 +522,21 @@ function Range() {
         advancedMode,
         isDenomBase,
         currentPoolPriceTick,
-        baseToken.address + quoteToken.address,
+        baseToken.address,
+        quoteToken.address,
         baseTokenDecimals,
         quoteTokenDecimals,
+        gridSize,
+        setAdvancedLowTick,
+        setAdvancedHighTick,
+        setMaxPrice,
+        setMinPrice,
     ]);
 
     useEffect(() => {
         if (isTokenAInputDisabled) setIsTokenAPrimaryRange(false);
         if (isTokenBInputDisabled) setIsTokenAPrimaryRange(true);
-    }, [isTokenAInputDisabled, isTokenBInputDisabled]);
+    }, [isTokenAInputDisabled, isTokenBInputDisabled, setIsTokenAPrimaryRange]);
 
     useEffect(() => {
         setIsWithdrawTokenAFromDexChecked(parseFloat(tokenADexBalance) > 0);
@@ -619,6 +634,11 @@ function Range() {
         baseTokenDecimals,
         quoteTokenDecimals,
         advancedMode,
+        gridSize,
+        setAdvancedLowTick,
+        setAdvancedHighTick,
+        setMaxPrice,
+        setMinPrice,
     ]);
 
     useEffect(() => {
@@ -707,7 +727,24 @@ function Range() {
             setChartTriggeredBy('none');
             setIsLinesSwitched(false);
         }
-    }, [rangeLowBoundFieldBlurred, chartTriggeredBy]);
+    }, [
+        rangeLowBoundFieldBlurred,
+        chartTriggeredBy,
+        minPrice,
+        maxPrice,
+        isDenomBase,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+        gridSize,
+        setAdvancedLowTick,
+        setAdvancedHighTick,
+        setMinPrice,
+        setMaxPrice,
+        isLinesSwitched,
+        currentPoolPriceTick,
+        setChartTriggeredBy,
+        setIsLinesSwitched,
+    ]);
 
     useEffect(() => {
         if (rangeHighBoundFieldBlurred || chartTriggeredBy === 'high_line') {
@@ -795,7 +832,24 @@ function Range() {
             setChartTriggeredBy('none');
             setIsLinesSwitched(false);
         }
-    }, [rangeHighBoundFieldBlurred, chartTriggeredBy]);
+    }, [
+        rangeHighBoundFieldBlurred,
+        chartTriggeredBy,
+        maxPrice,
+        minPrice,
+        isDenomBase,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+        gridSize,
+        setMinPrice,
+        setMaxPrice,
+        setAdvancedLowTick,
+        setAdvancedHighTick,
+        isLinesSwitched,
+        currentPoolPriceTick,
+        setChartTriggeredBy,
+        setIsLinesSwitched,
+    ]);
 
     const [
         amountToReduceNativeTokenQtyMainnet,

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // START: Import React and Dongles
 import { useContext, useEffect, useMemo, useState } from 'react';
 
@@ -262,7 +263,7 @@ export default function InitPool() {
 
     useEffect(() => {
         setIsDenomBase(!isBaseTokenMoneynessGreaterOrEqual);
-    }, [isBaseTokenMoneynessGreaterOrEqual, tokenA.address + tokenB.address]);
+    }, [isBaseTokenMoneynessGreaterOrEqual, tokenA.address, tokenB.address]);
 
     const isTokenPairDefault =
         baseToken.address === ZERO_ADDRESS && quoteToken.symbol === 'USDC';
