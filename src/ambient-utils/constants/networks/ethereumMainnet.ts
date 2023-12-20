@@ -14,6 +14,8 @@ import { GCGO_ETHEREUM_URL } from '../gcgo';
 export const ethereumMainnet: NetworkIF = {
     chainId: '0x1',
     graphCacheUrl: GCGO_ETHEREUM_URL,
+    evmRpcUrl:
+        'https://mainnet.infura.io/v3/' + process.env.REACT_APP_INFURA_KEY,
     wagmiChain,
     shouldPollBlock: false,
     marketData: '0x1',

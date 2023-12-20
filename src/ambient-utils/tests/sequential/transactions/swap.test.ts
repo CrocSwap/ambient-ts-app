@@ -7,6 +7,7 @@ import { isNetworkAccessDisabled } from '../../config';
 describe('perform swap on Goerli', () => {
     let crocEnv: CrocEnv;
     let signer: ethers.Wallet;
+    const TEST_TIMEOUT = 60_000;
 
     beforeAll(() => {
         const providerUrl =
@@ -25,42 +26,46 @@ describe('perform swap on Goerli', () => {
     if (isNetworkAccessDisabled()) {
         it.skip('skipping all swap tests -- network access disabled', () => {});
     } else {
-        it('performs a swap transaction', async () => {
-            const initialEthBalance = await signer.provider.getBalance(
-                signer.address,
-            );
-            console.log(
-                'Initial balance:',
-                ethers.utils.formatEther(initialEthBalance),
-            );
+        it(
+            'performs a swap transaction',
+            async () => {
+                const initialEthBalance = await signer.provider.getBalance(
+                    signer.address,
+                );
+                console.log(
+                    'Initial balance:',
+                    ethers.utils.formatEther(initialEthBalance),
+                );
 
-            const params = {
-                crocEnv,
-                qty: '1000',
-                buyTokenAddress: goerliETH.address,
-                sellTokenAddress: goerliUSDC.address,
-                slippageTolerancePercentage: 1,
-                isWithdrawFromDexChecked: false,
-                isSaveAsDexSurplusChecked: false,
-            };
+                const params = {
+                    crocEnv,
+                    qty: '1000',
+                    buyTokenAddress: goerliETH.address,
+                    sellTokenAddress: goerliUSDC.address,
+                    slippageTolerancePercentage: 1,
+                    isWithdrawFromDexChecked: false,
+                    isSaveAsDexSurplusChecked: false,
+                };
 
-            const tx = await performSwap(params);
-            expect(tx).toBeDefined();
-            expect(tx.hash).toBeDefined();
+                const tx = await performSwap(params);
+                expect(tx).toBeDefined();
+                expect(tx.hash).toBeDefined();
 
-            const receipt = await tx.wait();
-            expect(receipt.status).toEqual(1);
+                const receipt = await tx.wait();
+                expect(receipt.status).toEqual(1);
 
-            const finalEthBalance = await signer.provider.getBalance(
-                signer.address,
-            );
-            console.log(
-                'Final balance:',
-                ethers.utils.formatEther(finalEthBalance),
-            );
+                const finalEthBalance = await signer.provider.getBalance(
+                    signer.address,
+                );
+                console.log(
+                    'Final balance:',
+                    ethers.utils.formatEther(finalEthBalance),
+                );
 
-            expect(finalEthBalance.gt(initialEthBalance)).toBe(true);
-            // TODO: add another assertion for a minimum increase in balance i.e. 0.01 ETH
-        }, 60_000);
+                expect(finalEthBalance.gt(initialEthBalance)).toBe(true);
+                // TODO: add another assertion for a minimum increase in balance i.e. 0.01 ETH
+            },
+            TEST_TIMEOUT,
+        );
     }
 });

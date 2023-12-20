@@ -1,18 +1,51 @@
-import { GCGO_OVERRIDE_URL } from '../constants';
-import { SpotPriceFn, getLimitOrderData, getPositionData } from '../dataLayer';
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { createNetworkSession } from '../constants/networks/createNetworkSession';
+import {
+    SpotPriceFn,
+    getLimitOrderData,
+    getPositionData,
+    querySpotPrice,
+} from '../dataLayer';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { Provider } from '@ethersproject/providers';
-import { TokenPriceFn, FetchContractDetailsFn, FetchAddrFn } from '../api';
+import {
+    TokenPriceFn,
+    FetchContractDetailsFn,
+    FetchAddrFn,
+    fetchTokenPrice,
+    fetchContractDetails,
+    fetchEnsAddress,
+} from '../api';
 import {
     TokenIF,
     PositionIF,
     PositionServerIF,
     LimitOrderIF,
     LimitOrderServerIF,
+    RecordType,
 } from '../types';
+// TODOJG move to types
+interface RecordRequestIF {
+    recordType: RecordType;
+    user: string;
+    chainId: string;
+    gcUrl?: string;
+    ensResolution?: boolean;
+    annotate?: boolean;
+    omitKnockout?: boolean;
+    addValue?: boolean;
+    tokenUniv?: TokenIF[];
+    crocEnv?: CrocEnv;
+    provider?: Provider;
+    lastBlockNumber?: number;
+    cachedFetchTokenPrice?: TokenPriceFn;
+    cachedQuerySpotPrice?: SpotPriceFn;
+    cachedTokenDetails?: FetchContractDetailsFn;
+    cachedEnsResolve?: FetchAddrFn;
+}
 
 const fetchUserPositions = async ({
-    urlTarget,
+    recordType,
     user,
     chainId,
     gcUrl,
@@ -21,7 +54,7 @@ const fetchUserPositions = async ({
     omitKnockout = true,
     addValue = true,
 }: {
-    urlTarget: string;
+    recordType: RecordType;
     user: string;
     chainId: string;
     gcUrl?: string;
@@ -30,20 +63,12 @@ const fetchUserPositions = async ({
     omitKnockout?: boolean;
     addValue?: boolean;
 }): Promise<Response> => {
-    const userPositionsCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/user_positions?'
-        : gcUrl + '/user_positions?';
-
-    const userLimitOrderStatesCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/user_limit_orders?'
-        : gcUrl + '/user_limit_orders?';
-
     let selectedEndpoint;
-    if (urlTarget == 'limit_order_states') {
-        selectedEndpoint = userLimitOrderStatesCacheEndpoint;
+    if (recordType == RecordType.LimitOrder) {
+        selectedEndpoint = gcUrl + '/user_limit_orders?';
     } else {
         // default to 'user_positions'
-        selectedEndpoint = userPositionsCacheEndpoint;
+        selectedEndpoint = gcUrl + '/user_positions?';
     }
     const res = await fetch(
         selectedEndpoint +
@@ -60,7 +85,7 @@ const fetchUserPositions = async ({
 };
 
 const decorateUserPositions = async ({
-    urlTarget,
+    recordType,
     userPositions,
     tokenUniv,
     crocEnv,
@@ -72,7 +97,7 @@ const decorateUserPositions = async ({
     cachedTokenDetails,
     cachedEnsResolve,
 }: {
-    urlTarget: string;
+    recordType: RecordType;
     userPositions: PositionIF[] | LimitOrderIF[];
     tokenUniv: TokenIF[];
     crocEnv: CrocEnv;
@@ -85,7 +110,7 @@ const decorateUserPositions = async ({
     cachedEnsResolve: FetchAddrFn;
 }) => {
     const skipENSFetch = true;
-    if (urlTarget == 'limit_order_states') {
+    if (recordType == RecordType.LimitOrder) {
         return await Promise.all(
             (userPositions as LimitOrderServerIF[]).map(
                 (position: LimitOrderServerIF) => {
@@ -106,7 +131,7 @@ const decorateUserPositions = async ({
             ),
         );
     } else {
-        // default to 'user_positions'
+        // default to 'PositionIF'
         return await Promise.all(
             (userPositions as PositionServerIF[]).map(
                 async (position: PositionServerIF) => {
@@ -130,42 +155,25 @@ const decorateUserPositions = async ({
 };
 
 const fetchDecorated = async ({
-    urlTarget,
+    recordType,
     user,
     chainId,
-    gcUrl, // TODO, Handle in Data Layer
-    ensResolution = true, // TODO, Handle in Data Layer
+    gcUrl,
+    ensResolution = true,
     annotate = true,
     omitKnockout = true,
     addValue = true,
-    tokenUniv, // TODO, Handle in Data Layer
-    crocEnv, // TODO, Handle in Data Layer
-    provider, // TODO, Handle in Data Layer
+    tokenUniv,
+    crocEnv,
+    provider,
     lastBlockNumber,
-    cachedFetchTokenPrice, // TODO, Handle in Data Layer
-    cachedQuerySpotPrice, // TODO, Handle in Data Layer
-    cachedTokenDetails, // TODO, Handle in Data Layer
-    cachedEnsResolve, // TODO, Handle in Data Layer
-}: {
-    urlTarget: string;
-    user: string;
-    chainId: string;
-    gcUrl?: string;
-    ensResolution?: boolean;
-    annotate?: boolean;
-    omitKnockout?: boolean;
-    addValue?: boolean;
-    tokenUniv: TokenIF[];
-    crocEnv: CrocEnv;
-    provider: Provider;
-    lastBlockNumber: number;
-    cachedFetchTokenPrice: TokenPriceFn;
-    cachedQuerySpotPrice: SpotPriceFn;
-    cachedTokenDetails: FetchContractDetailsFn;
-    cachedEnsResolve: FetchAddrFn;
-}): Promise<PositionIF[] | LimitOrderIF[]> => {
+    cachedFetchTokenPrice,
+    cachedQuerySpotPrice,
+    cachedTokenDetails,
+    cachedEnsResolve,
+}: RecordRequestIF): Promise<PositionIF[] | LimitOrderIF[]> => {
     const response = await fetchUserPositions({
-        urlTarget,
+        recordType,
         user,
         chainId,
         gcUrl,
@@ -175,31 +183,103 @@ const fetchDecorated = async ({
         addValue,
     });
     const json = await response?.json();
+    // Compromise between reusing RecordRequestIF and ensuring that these variables are safely assigned.
+    const fieldsToCheck = {
+        tokenUniv,
+        crocEnv,
+        provider,
+        lastBlockNumber,
+        cachedFetchTokenPrice,
+        cachedQuerySpotPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    };
+    for (const [key, value] of Object.entries(fieldsToCheck)) {
+        if (value === undefined || value === null) {
+            throw new Error(`The value for '${key}' is undefined or null.`);
+        }
+    }
 
     const userPositions = json?.data;
     if (userPositions && crocEnv) {
         const updatedPositions = await decorateUserPositions({
-            urlTarget,
-            userPositions,
-            tokenUniv,
-            crocEnv,
-            provider,
-            chainId,
-            lastBlockNumber,
-            cachedFetchTokenPrice,
-            cachedQuerySpotPrice,
-            cachedTokenDetails,
-            cachedEnsResolve,
+            recordType: recordType,
+            userPositions: userPositions,
+            tokenUniv: tokenUniv!,
+            crocEnv: crocEnv!,
+            provider: provider!,
+            chainId: chainId,
+            lastBlockNumber: lastBlockNumber!,
+            cachedFetchTokenPrice: cachedFetchTokenPrice!,
+            cachedQuerySpotPrice: cachedQuerySpotPrice!,
+            cachedTokenDetails: cachedTokenDetails!,
+            cachedEnsResolve: cachedEnsResolve!,
         });
         return updatedPositions;
     }
     return [];
 };
 
-export const UserPositions = {
-    fetch: fetchUserPositions,
-    decorate: decorateUserPositions,
-    fetchDecorated: fetchDecorated,
+const fetchSimpleDecorated = async ({
+    recordType,
+    user,
+    chainId,
+    gcUrl,
+    provider,
+    ensResolution = true,
+    annotate = true,
+    omitKnockout = true,
+    addValue = true,
+    tokenUniv,
+    crocEnv,
+    lastBlockNumber,
+    cachedFetchTokenPrice,
+    cachedQuerySpotPrice,
+    cachedTokenDetails,
+    cachedEnsResolve,
+}: RecordRequestIF) => {
+    const sess = await createNetworkSession({
+        chainId: chainId,
+        tokenUniv: tokenUniv,
+        gcUrl: gcUrl,
+        provider: provider,
+        crocEnv: crocEnv,
+        lastBlockNumber: lastBlockNumber,
+    });
+
+    cachedFetchTokenPrice =
+        cachedFetchTokenPrice || (fetchTokenPrice as TokenPriceFn);
+    cachedQuerySpotPrice =
+        cachedQuerySpotPrice || (querySpotPrice as SpotPriceFn);
+    cachedTokenDetails =
+        cachedTokenDetails || (fetchContractDetails as FetchContractDetailsFn);
+    cachedEnsResolve = cachedEnsResolve || (fetchEnsAddress as FetchAddrFn);
+
+    return await fetchDecorated({
+        // Query:
+        recordType,
+        user,
+
+        // Session Information:
+        chainId: sess.chainId,
+        gcUrl: sess.gcUrl,
+        provider: sess.provider,
+        lastBlockNumber: sess.lastBlockNumber,
+        tokenUniv: sess.tokenUniv,
+        crocEnv: sess.crocEnv,
+
+        // Control flags:
+        ensResolution,
+        annotate,
+        omitKnockout,
+        addValue,
+
+        // Data Sources
+        cachedFetchTokenPrice,
+        cachedQuerySpotPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    });
 };
 
-export const fetchDecoratedUserPositions = fetchDecorated;
+export const fetchRecords = fetchSimpleDecorated;
