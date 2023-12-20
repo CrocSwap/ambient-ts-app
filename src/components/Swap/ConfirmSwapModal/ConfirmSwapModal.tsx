@@ -28,6 +28,7 @@ interface propsIF {
     buyQtyString: string;
     onClose?: () => void;
     isTokenAPrimary: boolean;
+    priceImpactWarning: JSX.Element | undefined;
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
@@ -49,6 +50,7 @@ export default function ConfirmSwapModal(props: propsIF) {
         buyQtyString,
         onClose = () => null,
         isTokenAPrimary,
+        priceImpactWarning,
     } = props;
 
     const { pool } = useContext(PoolContext);
@@ -241,6 +243,7 @@ export default function ConfirmSwapModal(props: propsIF) {
             acknowledgeUpdate={
                 isWaitingForPriceChangeAckt && priceIncreaseComponent
             }
+            priceImpactWarning={priceImpactWarning}
         />
     );
 }

@@ -7,7 +7,6 @@ import { useSortedPositions } from '../useSortedPositions';
 import { PositionIF } from '../../../../ambient-utils/types';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
-import RangesRow from './RangesTable/RangesRow';
 import NoTableData from '../NoTableData/NoTableData';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
@@ -29,6 +28,7 @@ import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import TableRows from '../TableRows';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -368,16 +368,6 @@ function Ranges(props: propsIF) {
         </RangeRowStyled>
     );
 
-    const currentRowItemContent = () =>
-        _DATA.currentData.map((position, idx) => (
-            <RangesRow
-                key={idx}
-                position={position}
-                isAccountView={isAccountView}
-                tableView={tableView}
-            />
-        ));
-
     useEffect(() => {
         if (_DATA.currentData.length && !isTradeTableExpanded) {
             setCurrentPage(1);
@@ -422,7 +412,12 @@ function Ranges(props: propsIF) {
                             tableView={tableView}
                         />
                     ))}
-                {currentRowItemContent()}
+                <TableRows
+                    type='Range'
+                    data={_DATA.currentData}
+                    isAccountView={isAccountView}
+                    tableView={tableView}
+                />
             </ul>
             {
                 // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
