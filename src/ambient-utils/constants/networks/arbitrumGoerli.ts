@@ -11,12 +11,15 @@ import { TopPool } from './TopPool';
 import { Provider } from '@ethersproject/providers';
 import { GCGO_ETHEREUM_URL } from '../gcgo';
 
+const PROVIDER_KEY =
+    process.env.NODE_ENV === 'test'
+        ? process.env.PROVIDER_KEY
+        : process.env.REACT_APP_INFURA_KEY;
+
 export const arbitrumGoerli: NetworkIF = {
     chainId: '0x66eed',
     graphCacheUrl: GCGO_ETHEREUM_URL,
-    evmRpcUrl:
-        'https://arbitrum-goerli.infura.io/v3/' +
-        process.env.REACT_APP_INFURA_KEY,
+    evmRpcUrl: 'https://arbitrum-goerli.infura.io/v3/' + PROVIDER_KEY,
     wagmiChain,
     shouldPollBlock: true,
     marketData: '0x1',
