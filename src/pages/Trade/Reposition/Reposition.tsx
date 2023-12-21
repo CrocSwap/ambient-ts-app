@@ -50,6 +50,7 @@ import {
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import MultiContentComponent from '../../../components/Global/MultiStepTransaction/MultiContentComponent';
 import RepositionSkeleton from './RepositionSkeleton';
+import TransactionSettingsModal from '../../../components/Global/TransactionSettingsModal/TransactionSettingsModal';
 
 function Reposition() {
     // current URL parameter string
@@ -70,7 +71,9 @@ function Reposition() {
     } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
-    const { bypassConfirmRepo } = useContext(UserPreferenceContext);
+    const { bypassConfirmRepo, repoSlippage } = useContext(
+        UserPreferenceContext,
+    );
     const {
         addPendingTx,
         addReceipt,
@@ -624,7 +627,6 @@ function Reposition() {
         </a>
     );
 
-    const settingsContent = <div>I am settings</div>;
     const [activeContent, setActiveContent] = useState('main');
     const handleSetActiveContent = (newActiveContent: string) => {
         setActiveContent(newActiveContent);
@@ -665,17 +667,30 @@ function Reposition() {
         }
     }, [isTransactionApproved, isTransactionPending, isTransactionConfirmed]);
 
+    const repositionSkeletonProps = {
+        setRangeWidthPercentage,
+        positionHash: position.firstMintTx,
+        resetTxHash: () => setNewRepositionTransactionHash(''),
+        activeContent,
+        handleSetActiveContent,
+        handleReset: resetConfirmation,
+        showStepperComponent,
+        setShowStepperComponent,
+    };
+
+    const settingsContent = (
+        <RepositionSkeleton {...repositionSkeletonProps}>
+            <TransactionSettingsModal
+                module='Reposition'
+                slippage={repoSlippage}
+                bypassConfirm={bypassConfirmRepo}
+                onClose={closeModal}
+            />
+        </RepositionSkeleton>
+    );
+
     const mainContent = (
-        <RepositionSkeleton
-            setRangeWidthPercentage={setRangeWidthPercentage}
-            positionHash={position.firstMintTx}
-            resetTxHash={() => setNewRepositionTransactionHash('')}
-            activeContent={activeContent}
-            handleSetActiveContent={handleSetActiveContent}
-            handleReset={resetConfirmation}
-            showStepperComponent={showStepperComponent}
-            setShowStepperComponent={setShowStepperComponent}
-        >
+        <RepositionSkeleton {...repositionSkeletonProps}>
             <div className={styles.repositionContainer}>
                 <div className={styles.reposition_content}>
                     <RangeWidth
@@ -754,16 +769,7 @@ function Reposition() {
     );
 
     const confirmationContent = (
-        <RepositionSkeleton
-            setRangeWidthPercentage={setRangeWidthPercentage}
-            positionHash={position.firstMintTx}
-            resetTxHash={() => setNewRepositionTransactionHash('')}
-            activeContent={activeContent}
-            handleSetActiveContent={handleSetActiveContent}
-            handleReset={resetConfirmation}
-            showStepperComponent={showStepperComponent}
-            setShowStepperComponent={setShowStepperComponent}
-        >
+        <RepositionSkeleton {...repositionSkeletonProps}>
             <ConfirmRepositionModal
                 isPositionInRange={isPositionInRange}
                 position={position as PositionIF}

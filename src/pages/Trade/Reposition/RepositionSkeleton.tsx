@@ -105,22 +105,27 @@ function RepositionHeader(props: RepositionHeaderPropsIF) {
                     aria-label='back button'
                 />
                 <p className={styles.title}>
-                    {' '}
-                    Reposition: {trimString(positionHash, 5, 4, '…')}
+                    {activeContent === 'settings'
+                        ? 'Pool Settings'
+                        : `Reposition: ${trimString(positionHash, 5, 4, '…')}`}
                 </p>
-                <img
-                    className={styles.settings_icon}
-                    src={settingsIcon}
-                    alt='settings'
-                    onClick={openModal}
-                />
+                {activeContent === 'settings' ? (
+                    <div />
+                ) : (
+                    <img
+                        className={styles.settings_icon}
+                        src={settingsIcon}
+                        alt='settings'
+                        onClick={() => handleSetActiveContent('settings')}
+                    />
+                )}
             </TradeModuleHeaderContainer>
             {isOpen && (
                 <TransactionSettingsModal
                     module='Reposition'
                     slippage={repoSlippage}
                     bypassConfirm={bypassConfirmRepo}
-                    onClose={closeModal}
+                    onClose={handleGoBack}
                 />
             )}
         </>

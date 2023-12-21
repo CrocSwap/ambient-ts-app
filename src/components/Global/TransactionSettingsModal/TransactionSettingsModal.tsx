@@ -59,73 +59,70 @@ export default function TransactionSettingsModal(props: propsIF) {
     } ${module} confirmation modal`;
 
     return (
-        <Modal title={`${module} Settings`} onClose={onClose}>
-            <SettingsContainer
-                flexDirection='column'
-                justifyContent='space-between'
-                gap={12}
-                padding='16px'
-            >
-                <section>
-                    {module !== 'Limit Order' && (
-                        <SlippageTolerance
-                            persistedSlippage={persistedSlippage}
-                            setCurrentSlippage={setCurrentSlippage}
-                            handleKeyDown={handleKeyDown}
-                            presets={
-                                isPairStable
-                                    ? slippage.presets.stable
-                                    : slippage.presets.volatile
-                            }
-                        />
-                    )}
-                    {module === 'Swap' && currentSlippage > 1 && (
-                        <FlexContainer
-                            alignItems='center'
-                            padding='12px 8px 0 8px'
-                            color='accent2'
-                            fullWidth
-                        >
-                            <FiAlertTriangle size={28} color='var(--accent2)' />
-                            <div style={{ flex: 1, paddingLeft: '8px' }}>
-                                <Text
-                                    fontSize='body'
-                                    style={{
-                                        minWidth: '100%',
-                                        maxWidth: 'min-content',
-                                    }}
-                                >
-                                    Your transaction may be frontrun and result
-                                    in an unfavorable trade
-                                </Text>
-                            </div>
-                        </FlexContainer>
-                    )}
-                    <ConfirmationModalControl
-                        tempBypassConfirm={currentSkipConfirm}
-                        setTempBypassConfirm={setCurrentSkipConfirm}
-                        displayInSettings={true}
-                    />
-                </section>
-                <div style={{ padding: '0 16px' }}>
-                    <Button
-                        idForDOM='update_settings_button'
-                        title={
-                            module === 'Limit Order'
-                                ? 'Submit Settings'
-                                : currentSlippage > 0
-                                ? 'Submit'
-                                : 'Enter a Valid Slippage'
+        // <Modal title={`${module} Settings`} onClose={onClose}>
+        <SettingsContainer
+            flexDirection='column'
+            justifyContent='space-between'
+            gap={12}
+        >
+            <section>
+                {module !== 'Limit Order' && (
+                    <SlippageTolerance
+                        persistedSlippage={persistedSlippage}
+                        setCurrentSlippage={setCurrentSlippage}
+                        handleKeyDown={handleKeyDown}
+                        presets={
+                            isPairStable
+                                ? slippage.presets.stable
+                                : slippage.presets.volatile
                         }
-                        action={updateSettings}
-                        disabled={
-                            module !== 'Limit Order' && currentSlippage <= 0
-                        }
-                        flat
-                        customAriaLabel={confirmAriaLabel}
                     />
-                </div>
-            </SettingsContainer>
-        </Modal>
+                )}
+                {module === 'Swap' && currentSlippage > 1 && (
+                    <FlexContainer
+                        alignItems='center'
+                        padding='12px 8px 0 8px'
+                        color='accent2'
+                        fullWidth
+                    >
+                        <FiAlertTriangle size={28} color='var(--accent2)' />
+                        <div style={{ flex: 1, paddingLeft: '8px' }}>
+                            <Text
+                                fontSize='body'
+                                style={{
+                                    minWidth: '100%',
+                                    maxWidth: 'min-content',
+                                }}
+                            >
+                                Your transaction may be frontrun and result in
+                                an unfavorable trade
+                            </Text>
+                        </div>
+                    </FlexContainer>
+                )}
+                <ConfirmationModalControl
+                    tempBypassConfirm={currentSkipConfirm}
+                    setTempBypassConfirm={setCurrentSkipConfirm}
+                    displayInSettings={true}
+                />
+            </section>
+            <div style={{ padding: '0 16px' }}>
+                <Button
+                    idForDOM='update_settings_button'
+                    title={
+                        module === 'Limit Order'
+                            ? 'Submit Settings'
+                            : currentSlippage > 0
+                            ? 'Submit'
+                            : 'Enter a Valid Slippage'
+                    }
+                    action={updateSettings}
+                    disabled={module !== 'Limit Order' && currentSlippage <= 0}
+                    flat
+                    customAriaLabel={confirmAriaLabel}
+                />
+            </div>
+        </SettingsContainer>
+        // </Modal>
     );
 }
