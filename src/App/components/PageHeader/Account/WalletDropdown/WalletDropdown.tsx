@@ -231,7 +231,6 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 accountAddress={props.accountAddress}
                 handleCopyAddress={handleCopyAddress}
                 accountAddressFull={props.accountAddressFull}
-                clickOutsideHandler={clickOutsideHandler}
             />
             <WalletContent>
                 {tokensData.map((tokenData) => (

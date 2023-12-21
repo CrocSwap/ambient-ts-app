@@ -16,7 +16,6 @@ interface LevelDropdownPropsIF {
     ensName: string;
     accountAddress: string;
     handleCopyAddress: () => void;
-    clickOutsideHandler: () => void;
     accountAddressFull: string;
 }
 

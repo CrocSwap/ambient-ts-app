@@ -6,12 +6,11 @@ interface LevelDropdownPropsIF {
     ensName: string;
     accountAddress: string;
     handleCopyAddress: () => void;
-    clickOutsideHandler: () => void;
     accountAddressFull: string;
 }
 
 export default function LevelDropdown(props: LevelDropdownPropsIF) {
-    const { ensName, handleCopyAddress, clickOutsideHandler } = props;
+    const { ensName, handleCopyAddress } = props;
 
     return (
         <LevelWrapper>
@@ -20,7 +19,6 @@ export default function LevelDropdown(props: LevelDropdownPropsIF) {
                 accountAddress={props.accountAddress}
                 handleCopyAddress={handleCopyAddress}
                 accountAddressFull={props.accountAddressFull}
-                clickOutsideHandler={clickOutsideHandler}
             />
             <LevelsCard levelOnly />
         </LevelWrapper>

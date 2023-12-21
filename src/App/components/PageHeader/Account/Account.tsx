@@ -60,12 +60,10 @@ export default function Account(props: propsIF) {
 
     const walletDropdownItemRef = useRef<HTMLDivElement>(null);
     const levelDropdownItemRef = useRef<HTMLDivElement>(null);
-    const clickOutsideHandler = () => {
-        setShowWalletDropdown(false);
-        setShowLevelDropdown(false);
-    };
-    UseOnClickOutside(walletDropdownItemRef, clickOutsideHandler);
-    UseOnClickOutside(levelDropdownItemRef, clickOutsideHandler);
+    const clickOutsideWalletHandler = () => setShowWalletDropdown(false);
+    const clickOutsideLevelHandler = () => setShowLevelDropdown(false);
+    UseOnClickOutside(walletDropdownItemRef, clickOutsideWalletHandler);
+    UseOnClickOutside(levelDropdownItemRef, clickOutsideLevelHandler);
 
     const ariaLabel =
         'You are currently on a focus mode on the account dropdown menu. To enter focus mode, press tab once again.  To exit focus mode, press escape.';
@@ -103,7 +101,7 @@ export default function Account(props: propsIF) {
                     handleCopyAddress={handleCopyAddress}
                     clickLogout={clickLogout}
                     accountAddressFull={props.accountAddressFull}
-                    clickOutsideHandler={clickOutsideHandler}
+                    clickOutsideHandler={clickOutsideWalletHandler}
                 />
             ) : null}
         </section>
@@ -127,7 +125,6 @@ export default function Account(props: propsIF) {
                     accountAddress={props.accountAddress}
                     handleCopyAddress={handleCopyAddress}
                     accountAddressFull={props.accountAddressFull}
-                    clickOutsideHandler={clickOutsideHandler}
                 />
             ) : null}
         </section>
