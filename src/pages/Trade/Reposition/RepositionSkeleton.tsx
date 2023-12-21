@@ -3,9 +3,6 @@ import ContentContainer from '../../../components/Global/ContentContainer/Conten
 import { RangeContext } from '../../../contexts/RangeContext';
 import { TradeModuleHeaderContainer } from '../../../styled/Components/TradeModules';
 import { useRepoExitPath } from '../../../components/Trade/Reposition/RepositionHeader/useRepoExitPath';
-import TransactionSettingsModal from '../../../components/Global/TransactionSettingsModal/TransactionSettingsModal';
-import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
-import { useModal } from '../../../components/Global/Modal/useModal';
 import { useNavigate } from 'react-router-dom';
 import { trimString } from '../../../ambient-utils/dataLayer';
 import settingsIcon from '../../../assets/images/icons/settings.svg';
@@ -55,13 +52,8 @@ function RepositionHeader(props: RepositionHeaderPropsIF) {
         setCurrentRangeInReposition,
         setAdvancedMode,
     } = useContext(RangeContext);
-    const { bypassConfirmRepo, repoSlippage } = useContext(
-        UserPreferenceContext,
-    );
 
     const { deactivateConfirmation } = useContext(TradeDataContext);
-
-    const [isOpen, openModal, closeModal] = useModal();
 
     const navigate = useNavigate();
 
@@ -120,14 +112,6 @@ function RepositionHeader(props: RepositionHeaderPropsIF) {
                     />
                 )}
             </TradeModuleHeaderContainer>
-            {isOpen && (
-                <TransactionSettingsModal
-                    module='Reposition'
-                    slippage={repoSlippage}
-                    bypassConfirm={bypassConfirmRepo}
-                    onClose={handleGoBack}
-                />
-            )}
         </>
     );
 }

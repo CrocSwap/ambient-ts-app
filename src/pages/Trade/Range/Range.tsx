@@ -1039,6 +1039,8 @@ function Range() {
             handleSetActiveContent={handleSetActiveContent}
             moduleName='Range'
             showExtraInfo={showExtraInfo}
+            slippage={mintSlippage}
+            bypassConfirm={bypassConfirmRange}
             header={
                 <TradeModuleHeader
                     slippage={mintSlippage}
@@ -1165,7 +1167,7 @@ function Range() {
                     flat={true}
                 />
             }
-            bypassConfirm={
+            bypassConfirmDisplay={
                 showConfirmation && bypassConfirmRange.isEnabled ? (
                     <SubmitTransaction
                         type='Range'

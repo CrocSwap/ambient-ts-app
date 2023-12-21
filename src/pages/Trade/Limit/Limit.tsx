@@ -728,6 +728,8 @@ export default function Limit() {
             handleSetActiveContent={handleSetActiveContent}
             moduleName='Limit'
             showExtraInfo={showExtraInfo}
+            slippage={mintSlippage}
+            bypassConfirm={bypassConfirmLimit}
             header={
                 <TradeModuleHeader
                     slippage={mintSlippage}
@@ -838,7 +840,7 @@ export default function Limit() {
                     flat
                 />
             }
-            bypassConfirm={
+            bypassConfirmDisplay={
                 showConfirmation && bypassConfirmLimit.isEnabled ? (
                     <SubmitTransaction
                         type='Limit'

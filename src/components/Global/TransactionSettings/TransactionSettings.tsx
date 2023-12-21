@@ -7,7 +7,6 @@ import { SettingsContainer } from '../../../styled/Components/TradeModules';
 import { isStablePair } from '../../../ambient-utils/dataLayer';
 import Button from '../../Form/Button';
 import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationModalControl';
-import Modal from '../Modal/Modal';
 import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
@@ -15,17 +14,19 @@ export type TransactionModuleType =
     | 'Swap'
     | 'Limit Order'
     | 'Pool'
-    | 'Reposition';
+    | 'Reposition'
+    | string;
 
 // interface for component props
 interface propsIF {
     module: TransactionModuleType;
     slippage: SlippageMethodsIF;
     bypassConfirm: skipConfirmIF;
+
     onClose: () => void;
 }
 
-export default function TransactionSettingsModal(props: propsIF) {
+export default function TransactionSettings(props: propsIF) {
     const { module, slippage, onClose, bypassConfirm } = props;
     const { tokenA, tokenB } = useContext(TradeDataContext);
 
@@ -43,13 +44,14 @@ export default function TransactionSettingsModal(props: propsIF) {
         useState<number>(persistedSlippage);
 
     const [currentSkipConfirm, setCurrentSkipConfirm] = useState<boolean>(
-        bypassConfirm.isEnabled,
+        bypassConfirm?.isEnabled || false,
     );
 
     const updateSettings = (): void => {
         isPairStable
             ? slippage.updateStable(currentSlippage)
             : slippage.updateVolatile(currentSlippage);
+
         bypassConfirm.setValue(currentSkipConfirm);
         onClose();
     };
@@ -59,7 +61,6 @@ export default function TransactionSettingsModal(props: propsIF) {
     } ${module} confirmation modal`;
 
     return (
-        // <Modal title={`${module} Settings`} onClose={onClose}>
         <SettingsContainer
             flexDirection='column'
             justifyContent='space-between'
@@ -123,6 +124,5 @@ export default function TransactionSettingsModal(props: propsIF) {
                 />
             </div>
         </SettingsContainer>
-        // </Modal>
     );
 }

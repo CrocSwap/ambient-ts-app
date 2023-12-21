@@ -20,6 +20,9 @@ import ShareModal from '../../Global/ShareModal/ShareModal';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
+import TransactionSettings from '../../Global/TransactionSettings/TransactionSettings';
+import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 type ModuleDimensions = {
     [key: string]: { height: string; width: string };
 };
@@ -30,7 +33,9 @@ interface PropsIF {
     transactionDetails: ReactNode;
     modal: ReactNode | undefined;
     button: ReactNode;
-    bypassConfirm: ReactNode | undefined;
+    bypassConfirm: skipConfirmIF;
+    bypassConfirmDisplay: ReactNode | undefined;
+
     approveButton: ReactNode | undefined;
     warnings?: ReactNode | undefined;
     // eslint-disable-next-line
@@ -43,6 +48,8 @@ interface PropsIF {
     handleSetActiveContent: (newActiveContent: string) => void;
     moduleName: string;
     showExtraInfo: boolean;
+
+    slippage: SlippageMethodsIF;
 }
 
 export const TradeModuleSkeleton = (props: PropsIF) => {
@@ -56,6 +63,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         modal,
         button,
         bypassConfirm,
+        bypassConfirmDisplay,
         approveButton,
         warnings,
         tutorialSteps,
@@ -63,6 +71,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         handleSetActiveContent,
         moduleName,
         showExtraInfo,
+        slippage,
     } = props;
 
     const {
@@ -131,6 +140,21 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         },
     };
 
+    const contentContainerProps = {
+        isOnTradeRoute: !isSwapPage,
+        noPadding: smallScreen && !isSwapPage,
+        height: isSwapPage
+            ? mediumScreen || showExtraInfo
+                ? 'auto'
+                : swapPageContainerHeight
+            : moduleDimensions[moduleName]?.height,
+        width: isSwapPage
+            ? mediumScreen
+                ? 'auto'
+                : '430px'
+            : moduleDimensions[moduleName]?.width,
+    };
+
     const mainContent = (
         <>
             {isTutorialActive && (
@@ -145,24 +169,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     </TutorialButton>
                 </FlexContainer>
             )}{' '}
-            <ContentContainer
-                isOnTradeRoute={!isSwapPage}
-                noPadding={smallScreen && !isSwapPage}
-                height={
-                    isSwapPage
-                        ? mediumScreen || showExtraInfo
-                            ? 'auto'
-                            : swapPageContainerHeight
-                        : moduleDimensions[moduleName]?.height
-                }
-                width={
-                    isSwapPage
-                        ? mediumScreen
-                            ? 'auto'
-                            : '430px'
-                        : moduleDimensions[moduleName]?.width
-                }
-            >
+            <ContentContainer {...contentContainerProps}>
                 {header}
                 {isSwapPage || (
                     <TradeLinks
@@ -202,7 +209,9 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                             approveButton
                         ) : (
                             <>
-                                {!bypassConfirm ? button : bypassConfirm}
+                                {!bypassConfirmDisplay
+                                    ? button
+                                    : bypassConfirmDisplay}
                                 {ackTokenMessage && (
                                     // NO
                                     <AcknowledgeText
@@ -297,29 +306,25 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     );
 
     const shareContent = (
-        <ContentContainer
-            isOnTradeRoute={!isSwapPage}
-            height={
-                isSwapPage
-                    ? mediumScreen
-                        ? 'auto'
-                        : swapPageContainerHeight
-                    : moduleDimensions[moduleName]?.height
-            }
-            width={
-                isSwapPage
-                    ? mediumScreen
-                        ? 'auto'
-                        : '430px'
-                    : moduleDimensions[moduleName]?.width
-            }
-        >
+        <ContentContainer {...contentContainerProps}>
             {header}
             <ShareModal />
         </ContentContainer>
     );
 
-    const settingsContent = <div>I am settings</div>;
+    const settingsContent = (
+        <ContentContainer {...contentContainerProps}>
+            {header}
+            <TransactionSettings
+                module={moduleName}
+                slippage={slippage}
+                bypassConfirm={bypassConfirm}
+                onClose={() => {
+                    handleSetActiveContent('main');
+                }}
+            />
+        </ContentContainer>
+    );
 
     if (activeContent === 'main') {
         deactivateConfirmation();

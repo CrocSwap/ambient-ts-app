@@ -50,7 +50,7 @@ import {
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import MultiContentComponent from '../../../components/Global/MultiStepTransaction/MultiContentComponent';
 import RepositionSkeleton from './RepositionSkeleton';
-import TransactionSettingsModal from '../../../components/Global/TransactionSettingsModal/TransactionSettingsModal';
+import TransactionSettings from '../../../components/Global/TransactionSettings/TransactionSettings';
 
 function Reposition() {
     // current URL parameter string
@@ -680,7 +680,7 @@ function Reposition() {
 
     const settingsContent = (
         <RepositionSkeleton {...repositionSkeletonProps}>
-            <TransactionSettingsModal
+            <TransactionSettings
                 module='Reposition'
                 slippage={repoSlippage}
                 bypassConfirm={bypassConfirmRepo}

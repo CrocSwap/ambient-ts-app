@@ -1,13 +1,10 @@
-import { memo, useContext } from 'react';
+import React, { memo, useContext } from 'react';
 import { AiOutlineShareAlt } from 'react-icons/ai';
-import TransactionSettingsModal, {
-    TransactionModuleType,
-} from '../../Global/TransactionSettingsModal/TransactionSettingsModal';
+import { TransactionModuleType } from '../../Global/TransactionSettings/TransactionSettings';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
-import { useModal } from '../../Global/Modal/useModal';
 import { TradeModuleHeaderContainer } from '../../../styled/Components/TradeModules';
 import { Text } from '../../../styled/Common';
 import { SettingsSvg } from '../../../assets/images/icons/settingsSvg';
@@ -28,8 +25,6 @@ interface propsIF {
 
 function TradeModuleHeader(props: propsIF) {
     const {
-        slippage,
-        bypassConfirm,
         settingsTitle,
         isSwapPage,
         activeContent,
@@ -38,9 +33,6 @@ function TradeModuleHeader(props: propsIF) {
         setShowStepperComponent,
         showStepperComponent,
     } = props;
-
-    const [isSettingsModalOpen, openSettingsModal, closeSettingsModal] =
-        useModal();
 
     const {
         baseToken,
@@ -143,7 +135,9 @@ function TradeModuleHeader(props: propsIF) {
                     {activeContent === 'main' ? (
                         <IconWithTooltip title='Settings' placement='left'>
                             <div
-                                onClick={openSettingsModal}
+                                onClick={() =>
+                                    handleSetActiveContent('settings')
+                                }
                                 id='settings_button'
                                 role='button'
                                 tabIndex={0}
@@ -157,18 +151,6 @@ function TradeModuleHeader(props: propsIF) {
                     )}
                 </TradeModuleHeaderContainer>
             </div>
-            {isSettingsModalOpen && (
-                <TransactionSettingsModal
-                    module={settingsTitle}
-                    slippage={slippage}
-                    bypassConfirm={bypassConfirm}
-                    onClose={() => {
-                        closeSettingsModal();
-                        handleGoBack();
-                    }}
-                />
-            )}
-            {/* {isShareModalOpen && <ShareModal onClose={closeShareModal} />} */}
         </>
     );
 }

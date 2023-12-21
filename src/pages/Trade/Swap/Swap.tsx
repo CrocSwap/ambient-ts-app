@@ -547,6 +547,8 @@ function Swap(props: propsIF) {
             isSwapPage={!isOnTradeRoute}
             moduleName='Swap'
             showExtraInfo={showExtraInfo}
+            slippage={swapSlippage}
+            bypassConfirm={bypassConfirmSwap}
             header={
                 <TradeModuleHeader
                     slippage={swapSlippage}
@@ -666,7 +668,7 @@ function Swap(props: propsIF) {
                     flat
                 />
             }
-            bypassConfirm={
+            bypassConfirmDisplay={
                 showConfirmation && bypassConfirmSwap.isEnabled ? (
                     <SubmitTransaction
                         type='Swap'
