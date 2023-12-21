@@ -8,6 +8,7 @@ import {
     ReactNode,
     ReactElement,
     useContext,
+    useCallback,
 } from 'react';
 // eslint-disable-next-line
 import { motion, AnimateSharedLayout } from 'framer-motion';
@@ -87,9 +88,9 @@ export default function TabComponent(props: TabPropsIF) {
             (item) => item.label === selectedTab.label,
         );
         if (currentTabData) setSelectedTab(currentTabData);
-    }, [data, outsideControl]);
+    }, [data, outsideControl, selectedTab.label]);
 
-    function handleOutside2() {
+    const handleOutside2 = useCallback(() => {
         if (!outsideControl) {
             return;
         } else {
@@ -101,7 +102,7 @@ export default function TabComponent(props: TabPropsIF) {
                 }
             }
         }
-    }
+    }, [data, outsideControl, selectedOutsideTab]);
 
     useEffect(() => {
         if (shouldSyncWithTradeModules) handleOutside2();
@@ -110,6 +111,7 @@ export default function TabComponent(props: TabPropsIF) {
         selectedOutsideTab,
         outsideControl,
         shouldSyncWithTradeModules,
+        handleOutside2,
     ]);
 
     function handleMobileMenuIcon(icon: string, label: string) {

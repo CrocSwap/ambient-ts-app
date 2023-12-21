@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext, useCallback } from 'react';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
@@ -101,7 +101,14 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                 }
             })();
         }
-    }, [isServerEnabled, chainId, crocEnv, lastBlockNumber]);
+    }, [
+        isServerEnabled,
+        chainId,
+        crocEnv,
+        lastBlockNumber,
+        pool,
+        cachedQuerySpotPrice,
+    ]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>(undefined);
     const [poolTvl, setPoolTvl] = useState<string | undefined>(undefined);
@@ -150,9 +157,9 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
 
     useEffect(() => {
         resetPoolStats();
-    }, [JSON.stringify(pool)]);
+    }, [pool]);
 
-    const fetchPoolStats = () => {
+    const fetchPoolStats = useCallback(() => {
         (async () => {
             if (
                 poolIndex &&
@@ -271,7 +278,22 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                 }
             }
         })();
-    };
+    }, [
+        activeNetwork.graphCacheUrl,
+        baseAddr,
+        cachedFetchTokenPrice,
+        cachedGet24hChange,
+        cachedPoolStatsFetch,
+        chainId,
+        crocEnv,
+        lastBlockNumber,
+        pool.base.address,
+        pool.quote.address,
+        poolIndex,
+        provider,
+        quoteAddr,
+        shouldInvertDisplay,
+    ]);
 
     const poolPrice =
         poolPriceDisplay === undefined
@@ -294,9 +316,9 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         isServerEnabled,
         shouldInvertDisplay,
         lastBlockNumber,
-        !!crocEnv,
-        !!provider,
+        crocEnv,
         poolIndex,
+        fetchPoolStats,
     ]);
 
     return {

@@ -67,7 +67,7 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
                     : undefined;
             if (blockTime) setBlockTime(blockTime);
         })();
-    }, [provider, txBlockNumber]);
+    }, [cachedFetchBlockTime, provider, txBlockNumber]);
 
     const elapsedTimeInSecondsNum = blockTime
         ? Date.now() / 1000 - blockTime

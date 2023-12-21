@@ -15,15 +15,20 @@ export const useRecentTokens = (
 } => {
     const [recentTokens, setRecentTokens] = useState<TokenIF[]>([]);
 
+    // fn to clear list of recent tokens
+    const resetRecentTokens = useCallback(() => {
+        setRecentTokens([]);
+    }, []);
+
     // hook to reset recent tokens when the user switches chains
-    useEffect(() => resetRecentTokens(), [chainId]);
+    useEffect(() => resetRecentTokens(), [chainId, resetRecentTokens]);
 
     // fn to add a token to the recentTokens array
     const addRecentToken = useCallback(
         (tkn: TokenIF): void => {
             setRecentTokens([tkn, ...recentTokens]);
         },
-        [chainId],
+        [recentTokens],
     );
 
     // fn to return recent tokens from local state
@@ -45,13 +50,8 @@ export const useRecentTokens = (
                     options.count ?? relevantTokens.length + 1,
                 );
             },
-        [chainId],
+        [chainId, recentTokens],
     );
-
-    // fn to clear list of recent tokens
-    const resetRecentTokens = useCallback(() => {
-        setRecentTokens([]);
-    }, [chainId]);
 
     return {
         addRecentToken,

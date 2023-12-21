@@ -1,6 +1,11 @@
-import { Dispatch, SetStateAction, useMemo, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useCallback,
+    useMemo,
+    useState,
+} from 'react';
 import { LimitOrderIF } from '../../../ambient-utils/types';
-import { diffHashSig } from '../../../ambient-utils/dataLayer';
 import { BigNumber } from 'ethers/lib/ethers';
 
 export type LimitSortType =
@@ -80,45 +85,41 @@ export const useSortedLimits = (
     const [reverseSort, setReverseSort] = useState<boolean>(false);
 
     // router to pass data through the appropriate sort function
-    const sortData = (data: LimitOrderIF[]): LimitOrderIF[] => {
-        // variable to hold output
-        let sortedData: LimitOrderIF[];
-        // router to apply a specific sort function
-        switch (sortBy) {
-            case 'wallet':
-            case 'walletid':
-                sortedData = sortByWallet(data);
-                break;
-            case 'pool':
-                sortedData = sortByPool(data);
-                break;
-            case 'price':
-                sortedData = sortByPrice(data);
-                break;
-            case 'value':
-                sortedData = sortByValue(data);
-                break;
-            case 'time':
-                sortedData = sortByTime(data);
-                break;
-            default:
-                return sortByTime(data);
-        }
-        // return reversed data if user wants data reversed
-        return reverseSort ? [...sortedData].reverse() : sortedData;
-    };
-
-    // Generates a fingerprint from the positions objects. Used for comparison
-    // in below React hook
-    const ordersHashSum = useMemo<string>(
-        () => diffHashSig(limitOrders),
-        [limitOrders],
+    const sortData = useCallback(
+        (data: LimitOrderIF[]): LimitOrderIF[] => {
+            // variable to hold output
+            let sortedData: LimitOrderIF[];
+            // router to apply a specific sort function
+            switch (sortBy) {
+                case 'wallet':
+                case 'walletid':
+                    sortedData = sortByWallet(data);
+                    break;
+                case 'pool':
+                    sortedData = sortByPool(data);
+                    break;
+                case 'price':
+                    sortedData = sortByPrice(data);
+                    break;
+                case 'value':
+                    sortedData = sortByValue(data);
+                    break;
+                case 'time':
+                    sortedData = sortByTime(data);
+                    break;
+                default:
+                    return sortByTime(data);
+            }
+            // return reversed data if user wants data reversed
+            return reverseSort ? [...sortedData].reverse() : sortedData;
+        },
+        [reverseSort, sortBy],
     );
 
     // array of positions sorted by the relevant column
     const sortedLimitOrders = useMemo<LimitOrderIF[]>(
         () => sortData(limitOrders),
-        [sortBy, reverseSort, ordersHashSum],
+        [sortData, limitOrders],
     );
 
     return [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimitOrders];

@@ -112,7 +112,14 @@ function ChatPanel(props: propsIF) {
                 messageEnd.current?.scrollHeight,
             );
         }
-    }, [lastMessage]);
+    }, [
+        currentUser,
+        ensName,
+        lastMessage,
+        messageUser,
+        scrollDirection,
+        userAddress,
+    ]);
 
     useEffect(() => {
         setScrollDirection('Scroll Down');
@@ -145,7 +152,6 @@ function ChatPanel(props: propsIF) {
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             (result: any) => {
                                 if (result.status === 'OK') {
-                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                     updateMessageUser(
                                         currentUser as string,
                                         ensName,
@@ -164,21 +170,34 @@ function ChatPanel(props: propsIF) {
         } else {
             setCurrentUser(undefined);
         }
-    }, [ens, userAddress, isChatOpen, isFullScreen, setUserCurrentPool]);
+    }, [
+        ens,
+        userAddress,
+        isChatOpen,
+        isFullScreen,
+        setUserCurrentPool,
+        getID,
+        saveUser,
+        ensName,
+        updateUser,
+        currentUser,
+        userCurrentPool,
+        updateMessageUser,
+    ]);
 
     useEffect(() => {
         setIsScrollToBottomButtonPressed(false);
         scrollToBottom();
         setNotification(0);
         getMsg();
-    }, [room, isChatOpen === false]);
+    }, [room, isChatOpen, getMsg]);
 
     useEffect(() => {
         if (isMessageDeleted === true) {
             getMsg();
             window.scrollTo(0, 0);
         }
-    }, [isMessageDeleted]);
+    }, [getMsg, isMessageDeleted]);
 
     useEffect(() => {
         setIsScrollToBottomButtonPressed(false);

@@ -105,7 +105,13 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 setHasSeparator(true);
             }
         }
-    }, [props.message]);
+    }, [
+        props.message,
+        props.nextMessage?.createdAt,
+        props.nextMessage?.sender,
+        props.previousMessage?.createdAt,
+        props.previousMessage?.sender,
+    ]);
 
     const formatAMPM = (str: string) => {
         const date = new Date(str);

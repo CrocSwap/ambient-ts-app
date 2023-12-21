@@ -1,5 +1,12 @@
 // START: Import React and Dongles
-import { useEffect, useState, useContext, memo, useRef } from 'react';
+import {
+    useEffect,
+    useState,
+    useContext,
+    memo,
+    useRef,
+    useCallback,
+} from 'react';
 
 // START: Import Local Files
 import { Pagination } from '@mui/material';
@@ -137,13 +144,6 @@ function Ranges(props: propsIF) {
             ? 'medium'
             : 'large';
 
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [userAddress, showAllData, baseTokenAddress + quoteTokenAddress]);
-
-    const [page, setPage] = useState(1);
-    const resetPageToFirst = () => setPage(1);
-
     const isScreenShort =
         (isAccountView && useMediaQuery('(max-height: 900px)')) ||
         (!isAccountView && useMediaQuery('(max-height: 700px)'));
@@ -163,10 +163,27 @@ function Ranges(props: propsIF) {
         changeRowsPerPage,
         count,
     } = _DATA;
-    const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
-        setPage(p);
-        _DATA.jump(p);
-    };
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [
+        userAddress,
+        showAllData,
+        baseTokenAddress,
+        quoteTokenAddress,
+        setCurrentPage,
+    ]);
+
+    const [page, setPage] = useState(1);
+    const resetPageToFirst = () => setPage(1);
+
+    const handleChange = useCallback(
+        (e: React.ChangeEvent<unknown>, p: number) => {
+            setPage(p);
+            _DATA.jump(p);
+        },
+        [_DATA],
+    );
 
     const handleChangeRowsPerPage = (
         event:
@@ -374,7 +391,12 @@ function Ranges(props: propsIF) {
             const mockEvent = {} as React.ChangeEvent<unknown>;
             handleChange(mockEvent, 1);
         }
-    }, [isTradeTableExpanded]);
+    }, [
+        _DATA.currentData.length,
+        handleChange,
+        isTradeTableExpanded,
+        setCurrentPage,
+    ]);
 
     const relevantTransactionsByType = transactionsByType.filter(
         (tx) =>

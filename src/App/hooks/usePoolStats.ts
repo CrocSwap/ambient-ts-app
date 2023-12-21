@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { PoolIF } from '../../ambient-utils/types';
 import { PoolStatsFn, getFormattedNumber } from '../../ambient-utils/dataLayer';
 import { TokenPriceFn } from '../../ambient-utils/api';
@@ -18,7 +18,7 @@ export const usePoolStats = (
 
     const { activeNetwork } = useContext(CrocEnvContext);
 
-    const fetchPoolStats = () => {
+    const fetchPoolStats = useCallback(() => {
         (async () => {
             if (!crocEnv) {
                 return;
@@ -44,11 +44,20 @@ export const usePoolStats = (
                 : undefined;
             setPoolTvl(tvlString);
         })();
-    };
+    }, [
+        activeNetwork.graphCacheUrl,
+        cachedFetchTokenPrice,
+        cachedPoolStatsFetch,
+        crocEnv,
+        pool.base.address,
+        pool.chainId,
+        pool.poolIdx,
+        pool.quote.address,
+    ]);
 
     useEffect(() => {
         fetchPoolStats(); // NOTE: we assume that a block occurs more frequently than once a minute
-    }, [lastBlockNumber ?? []]);
+    }, [fetchPoolStats]);
 
     return [poolVolume ?? '…', poolTvl ?? '…'];
 };

@@ -1,11 +1,14 @@
-import { useEffect, useRef, useState, useContext, memo } from 'react';
+import {
+    useEffect,
+    useRef,
+    useState,
+    useContext,
+    memo,
+    useCallback,
+} from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { useLocation } from 'react-router-dom';
-import {
-    diffHashSig,
-    diffHashSigScaleData,
-} from '../../../../ambient-utils/dataLayer';
 import {
     crosshair,
     renderCanvasArray,
@@ -102,172 +105,197 @@ function XAxisCanvas(props: xAxisIF) {
         }
     }, [scaleData, location]);
 
-    const formatDateTicks = (value: Date | number, type: string) => {
-        let formatValue = undefined;
+    const formatDateTicks = useCallback(
+        (value: Date | number, type: string) => {
+            let formatValue = undefined;
 
-        if (type === 'tick') {
-            if (moment(value).format('HH:mm') === '00:00' || period === 86400) {
-                formatValue = moment(value).format('DD');
-            } else {
-                formatValue = moment(value).format('HH:mm');
+            if (type === 'tick') {
+                if (
+                    moment(value).format('HH:mm') === '00:00' ||
+                    period === 86400
+                ) {
+                    formatValue = moment(value).format('DD');
+                } else {
+                    formatValue = moment(value).format('HH:mm');
+                }
+
+                if (
+                    moment(value)
+                        .format('DD')
+                        .match(/^(01)$/) &&
+                    moment(value).format('HH:mm') === '00:00'
+                ) {
+                    formatValue =
+                        moment(value).format('MMM') === 'Jan'
+                            ? moment(value).format('YYYY')
+                            : moment(value).format('MMM');
+                }
             }
 
-            if (
-                moment(value)
-                    .format('DD')
-                    .match(/^(01)$/) &&
-                moment(value).format('HH:mm') === '00:00'
-            ) {
-                formatValue =
-                    moment(value).format('MMM') === 'Jan'
-                        ? moment(value).format('YYYY')
-                        : moment(value).format('MMM');
+            if (type === 'cr') {
+                if (period === 86400) {
+                    formatValue = moment(value)
+                        .subtract(utcDiffHours, 'hours')
+                        .format('MMM DD YYYY');
+                } else {
+                    formatValue = moment(value).format('MMM DD HH:mm');
+                }
             }
-        }
 
-        if (type === 'cr') {
-            if (period === 86400) {
-                formatValue = moment(value)
-                    .subtract(utcDiffHours, 'hours')
-                    .format('MMM DD YYYY');
-            } else {
-                formatValue = moment(value).format('MMM DD HH:mm');
-            }
-        }
+            return formatValue;
+        },
+        [period, utcDiffHours],
+    );
 
-        return formatValue;
-    };
+    const drawXaxis = useCallback(
+        (
+            context: CanvasRenderingContext2D,
+            xScale: d3.ScaleLinear<number, number>,
+            Y: number,
+        ) => {
+            if (scaleData) {
+                const _width = mobileView ? 25 : 65; // magic number of pixels to blur surrounding price
+                const tickSize = 6;
 
-    const drawXaxis = (
-        context: CanvasRenderingContext2D,
-        xScale: d3.ScaleLinear<number, number>,
-        Y: number,
-    ) => {
-        if (scaleData) {
-            const _width = mobileView ? 25 : 65; // magic number of pixels to blur surrounding price
-            const tickSize = 6;
+                const toolbar = document.getElementById('toolbar_container');
 
-            const toolbar = document.getElementById('toolbar_container');
+                const column = toolbar ? toolbar.getClientRects()[0].width : 9;
 
-            const column = toolbar ? toolbar.getClientRects()[0].width : 9;
+                const timeOfEndCandleLocation = timeOfEndCandle
+                    ? xScale(timeOfEndCandle)
+                    : undefined;
+                const firstCrDateLocation = lastCrDate
+                    ? xScale(lastCrDate)
+                    : undefined;
+                scaleData.xScaleTime.domain(xScale.domain());
 
-            const timeOfEndCandleLocation = timeOfEndCandle
-                ? xScale(timeOfEndCandle)
-                : undefined;
-            const firstCrDateLocation = lastCrDate
-                ? xScale(lastCrDate)
-                : undefined;
-            scaleData.xScaleTime.domain(xScale.domain());
+                const canvas = d3
+                    .select(d3Xaxis.current)
+                    .select('canvas')
+                    .node() as HTMLCanvasElement;
 
-            const canvas = d3
-                .select(d3Xaxis.current)
-                .select('canvas')
-                .node() as HTMLCanvasElement;
+                if (canvas !== null) {
+                    const rectCanvas = canvas.getBoundingClientRect();
 
-            if (canvas !== null) {
-                const rectCanvas = canvas.getBoundingClientRect();
+                    const width = rectCanvas.width;
+                    const height = rectCanvas.height;
 
-                const width = rectCanvas.width;
-                const height = rectCanvas.height;
+                    const factor = width / (width < 500 ? 75 : 100);
 
-                const factor = width / (width < 500 ? 75 : 100);
+                    const ticks = scaleData?.xScaleTime.ticks(factor);
 
-                const ticks = scaleData?.xScaleTime.ticks(factor);
+                    const data = correctStyleForData(
+                        scaleData?.xScale.domain()[0],
+                        scaleData?.xScale.domain()[1],
+                        ticks,
+                    );
 
-                const data = correctStyleForData(
-                    scaleData?.xScale.domain()[0],
-                    scaleData?.xScale.domain()[1],
-                    ticks,
-                );
+                    const filteredData = data.reduce(
+                        (acc: xAxisTick[], d: xAxisTick) => {
+                            const sameTime = acc.find((d1: xAxisTick) => {
+                                return d1.date.getTime() === d.date.getTime();
+                            });
+                            if (!sameTime) {
+                                acc.push(d);
+                            }
+                            return acc;
+                        },
+                        [],
+                    );
 
-                const filteredData = data.reduce(
-                    (acc: xAxisTick[], d: xAxisTick) => {
-                        const sameTime = acc.find((d1: xAxisTick) => {
-                            return d1.date.getTime() === d.date.getTime();
-                        });
-                        if (!sameTime) {
-                            acc.push(d);
-                        }
-                        return acc;
-                    },
-                    [],
-                );
+                    filteredData.forEach((d: xAxisTick) => {
+                        if (d.date instanceof Date) {
+                            context.textAlign = 'center';
+                            context.textBaseline = 'top';
+                            context.fillStyle = 'rgba(189,189,189,0.8)';
+                            context.font = '50 11.425px Lexend Deca';
+                            context.filter = ' blur(0px)';
 
-                filteredData.forEach((d: xAxisTick) => {
-                    if (d.date instanceof Date) {
-                        context.textAlign = 'center';
-                        context.textBaseline = 'top';
-                        context.fillStyle = 'rgba(189,189,189,0.8)';
-                        context.font = '50 11.425px Lexend Deca';
-                        context.filter = ' blur(0px)';
+                            const formatValue = formatDateTicks(d.date, 'tick');
 
-                        const formatValue = formatDateTicks(d.date, 'tick');
+                            if (
+                                crosshairActive !== 'none' &&
+                                xScale(d.date) >
+                                    xScale(crosshairData[0].x) - _width &&
+                                xScale(d.date) <
+                                    xScale(crosshairData[0].x) + _width &&
+                                d.date !== crosshairData[0].x
+                            ) {
+                                context.filter = ' blur(7px)';
+                            }
 
-                        if (
-                            crosshairActive !== 'none' &&
-                            xScale(d.date) >
-                                xScale(crosshairData[0].x) - _width &&
-                            xScale(d.date) <
-                                xScale(crosshairData[0].x) + _width &&
-                            d.date !== crosshairData[0].x
-                        ) {
-                            context.filter = ' blur(7px)';
-                        }
+                            if (d.style) {
+                                context.font = '900 12px Lexend Deca';
+                            }
 
-                        if (d.style) {
-                            context.font = '900 12px Lexend Deca';
-                        }
+                            context.beginPath();
 
-                        context.beginPath();
+                            if (
+                                d.date.getTime() !== lastCrDate &&
+                                !(
+                                    (firstCrDateLocation &&
+                                        xScale(d.date) >
+                                            firstCrDateLocation - 65 / 2 &&
+                                        xScale(d.date) <
+                                            firstCrDateLocation + 65 / 2) ||
+                                    (timeOfEndCandleLocation &&
+                                        xScale(d.date) >
+                                            timeOfEndCandleLocation -
+                                                _width / 2 &&
+                                        xScale(d.date) <
+                                            timeOfEndCandleLocation +
+                                                _width / 2)
+                                )
+                            ) {
+                                if (formatValue) {
+                                    const indexValue = filteredData.findIndex(
+                                        (d1: xAxisTick) => d1.date === d.date,
+                                    );
+                                    if (!d.style) {
+                                        const maxIndex =
+                                            indexValue ===
+                                            filteredData.length - 1
+                                                ? indexValue
+                                                : indexValue + 1;
+                                        const minIndex =
+                                            indexValue === 0
+                                                ? indexValue
+                                                : indexValue - 1;
+                                        const lastData = filteredData[maxIndex];
+                                        const beforeData =
+                                            filteredData[minIndex];
 
-                        if (
-                            d.date.getTime() !== lastCrDate &&
-                            !(
-                                (firstCrDateLocation &&
-                                    xScale(d.date) >
-                                        firstCrDateLocation - 65 / 2 &&
-                                    xScale(d.date) <
-                                        firstCrDateLocation + 65 / 2) ||
-                                (timeOfEndCandleLocation &&
-                                    xScale(d.date) >
-                                        timeOfEndCandleLocation - _width / 2 &&
-                                    xScale(d.date) <
-                                        timeOfEndCandleLocation + _width / 2)
-                            )
-                        ) {
-                            if (formatValue) {
-                                const indexValue = filteredData.findIndex(
-                                    (d1: xAxisTick) => d1.date === d.date,
-                                );
-                                if (!d.style) {
-                                    const maxIndex =
-                                        indexValue === filteredData.length - 1
-                                            ? indexValue
-                                            : indexValue + 1;
-                                    const minIndex =
-                                        indexValue === 0
-                                            ? indexValue
-                                            : indexValue - 1;
-                                    const lastData = filteredData[maxIndex];
-                                    const beforeData = filteredData[minIndex];
-
-                                    if (
-                                        beforeData.style ||
-                                        (lastData.style &&
-                                            xScale(d.date.getTime()))
-                                    ) {
                                         if (
-                                            Math.abs(
-                                                xScale(
-                                                    beforeData.date.getTime(),
-                                                ) - xScale(d.date.getTime()),
-                                            ) > _width &&
-                                            Math.abs(
-                                                xScale(
-                                                    lastData.date.getTime(),
-                                                ) - xScale(d.date.getTime()),
-                                            ) > _width
+                                            beforeData.style ||
+                                            (lastData.style &&
+                                                xScale(d.date.getTime()))
                                         ) {
+                                            if (
+                                                Math.abs(
+                                                    xScale(
+                                                        beforeData.date.getTime(),
+                                                    ) -
+                                                        xScale(
+                                                            d.date.getTime(),
+                                                        ),
+                                                ) > _width &&
+                                                Math.abs(
+                                                    xScale(
+                                                        lastData.date.getTime(),
+                                                    ) -
+                                                        xScale(
+                                                            d.date.getTime(),
+                                                        ),
+                                                ) > _width
+                                            ) {
+                                                context.fillText(
+                                                    formatValue,
+                                                    xScale(d.date.getTime()) +
+                                                        column,
+                                                    Y + tickSize,
+                                                );
+                                            }
+                                        } else {
                                             context.fillText(
                                                 formatValue,
                                                 xScale(d.date.getTime()) +
@@ -282,136 +310,143 @@ function XAxisCanvas(props: xAxisIF) {
                                             Y + tickSize,
                                         );
                                     }
-                                } else {
-                                    context.fillText(
-                                        formatValue,
-                                        xScale(d.date.getTime()) + column,
-                                        Y + tickSize,
-                                    );
                                 }
                             }
+                            context.restore();
                         }
-                        context.restore();
-                    }
-                });
+                    });
 
-                const dateCrosshair = formatDateTicks(crosshairData[0].x, 'cr');
-                context.filter = ' blur(0px)';
-
-                context.font = '800 13px Lexend Deca';
-
-                context.beginPath();
-
-                if (dateCrosshair && crosshairActive !== 'none') {
-                    context.fillText(
-                        dateCrosshair,
-                        xScale(crosshairData[0].x) + column,
-                        Y + tickSize,
+                    const dateCrosshair = formatDateTicks(
+                        crosshairData[0].x,
+                        'cr',
                     );
-                }
-
-                if (
-                    firstCrDateLocation &&
-                    xScale(crosshairData[0].x) >
-                        firstCrDateLocation - (_width - 15) &&
-                    xScale(crosshairData[0].x) <
-                        firstCrDateLocation + (_width - 15) &&
-                    crosshairActive !== 'none'
-                ) {
-                    context.filter = ' blur(7px)';
-                }
-
-                if (firstCrDateLocation) {
-                    context.fillText(
-                        '🐊',
-                        firstCrDateLocation + column,
-                        Y + tickSize,
-                    );
-                }
-
-                if (timeOfEndCandle && timeOfEndCandleLocation) {
                     context.filter = ' blur(0px)';
 
+                    context.font = '800 13px Lexend Deca';
+
+                    context.beginPath();
+
+                    if (dateCrosshair && crosshairActive !== 'none') {
+                        context.fillText(
+                            dateCrosshair,
+                            xScale(crosshairData[0].x) + column,
+                            Y + tickSize,
+                        );
+                    }
+
                     if (
+                        firstCrDateLocation &&
                         xScale(crosshairData[0].x) >
-                            timeOfEndCandleLocation - (_width - 15) &&
+                            firstCrDateLocation - (_width - 15) &&
                         xScale(crosshairData[0].x) <
-                            timeOfEndCandleLocation + (_width - 15) &&
+                            firstCrDateLocation + (_width - 15) &&
                         crosshairActive !== 'none'
                     ) {
                         context.filter = ' blur(7px)';
                     }
-                    context.fillText(
-                        '🥚',
-                        timeOfEndCandleLocation + column,
-                        Y + tickSize,
-                    );
-                }
 
-                if (selectedDrawnShape) {
-                    context.filter = ' blur(0px)';
+                    if (firstCrDateLocation) {
+                        context.fillText(
+                            '🐊',
+                            firstCrDateLocation + column,
+                            Y + tickSize,
+                        );
+                    }
 
-                    const shapeData = selectedDrawnShape.data;
+                    if (timeOfEndCandle && timeOfEndCandleLocation) {
+                        context.filter = ' blur(0px)';
 
-                    const rectWidth =
-                        xScale(shapeData.data[1].x) -
-                        xScale(shapeData.data[0].x);
-
-                    context.fillStyle = '#7674ff3f';
-                    context.fillRect(
-                        xScale(shapeData.data[0].x) + column,
-                        height * 0.175,
-                        rectWidth,
-                        height * 0.65,
-                    );
-
-                    shapeData.data.forEach((data) => {
-                        const shapePoint = xScale(data.x);
-                        const point = formatDateTicks(data.x, 'cr');
-
-                        if (point) {
-                            if (
-                                xScale(crosshairData[0].x) >
-                                    shapePoint - (_width - 15) &&
-                                xScale(crosshairData[0].x) <
-                                    shapePoint + (_width - 15) &&
-                                crosshairActive !== 'none'
-                            ) {
-                                context.filter = ' blur(7px)';
-                                context.fillText(
-                                    point,
-                                    shapePoint + column,
-                                    height * 0.5375,
-                                );
-                            } else {
-                                const textWidth =
-                                    context.measureText(point).width + 10;
-
-                                context.fillStyle = '#5553be';
-                                context.fillRect(
-                                    shapePoint + column - textWidth / 2,
-                                    height * 0.175,
-                                    textWidth,
-                                    height * 0.65,
-                                );
-                                context.fillStyle = 'rgb(214, 214, 214)';
-                                context.font = '800 13px Lexend Deca';
-                                context.textAlign = 'center';
-                                context.textBaseline = 'middle';
-                                context.fillText(
-                                    point,
-                                    shapePoint + column,
-                                    height * 0.5375,
-                                );
-                            }
+                        if (
+                            xScale(crosshairData[0].x) >
+                                timeOfEndCandleLocation - (_width - 15) &&
+                            xScale(crosshairData[0].x) <
+                                timeOfEndCandleLocation + (_width - 15) &&
+                            crosshairActive !== 'none'
+                        ) {
+                            context.filter = ' blur(7px)';
                         }
-                    });
-                }
+                        context.fillText(
+                            '🥚',
+                            timeOfEndCandleLocation + column,
+                            Y + tickSize,
+                        );
+                    }
 
-                context.restore();
+                    if (selectedDrawnShape) {
+                        context.filter = ' blur(0px)';
+
+                        const shapeData = selectedDrawnShape.data;
+
+                        const rectWidth =
+                            xScale(shapeData.data[1].x) -
+                            xScale(shapeData.data[0].x);
+
+                        context.fillStyle = '#7674ff3f';
+                        context.fillRect(
+                            xScale(shapeData.data[0].x) + column,
+                            height * 0.175,
+                            rectWidth,
+                            height * 0.65,
+                        );
+
+                        shapeData.data.forEach((data) => {
+                            const shapePoint = xScale(data.x);
+                            const point = formatDateTicks(data.x, 'cr');
+
+                            if (point) {
+                                if (
+                                    xScale(crosshairData[0].x) >
+                                        shapePoint - (_width - 15) &&
+                                    xScale(crosshairData[0].x) <
+                                        shapePoint + (_width - 15) &&
+                                    crosshairActive !== 'none'
+                                ) {
+                                    context.filter = ' blur(7px)';
+                                    context.fillText(
+                                        point,
+                                        shapePoint + column,
+                                        height * 0.5375,
+                                    );
+                                } else {
+                                    const textWidth =
+                                        context.measureText(point).width + 10;
+
+                                    context.fillStyle = '#5553be';
+                                    context.fillRect(
+                                        shapePoint + column - textWidth / 2,
+                                        height * 0.175,
+                                        textWidth,
+                                        height * 0.65,
+                                    );
+                                    context.fillStyle = 'rgb(214, 214, 214)';
+                                    context.font = '800 13px Lexend Deca';
+                                    context.textAlign = 'center';
+                                    context.textBaseline = 'middle';
+                                    context.fillText(
+                                        point,
+                                        shapePoint + column,
+                                        height * 0.5375,
+                                    );
+                                }
+                            }
+                        });
+                    }
+
+                    context.restore();
+                }
             }
-        }
-    };
+        },
+        [
+            crosshairActive,
+            crosshairData,
+            formatDateTicks,
+            lastCrDate,
+            mobileView,
+            scaleData,
+            selectedDrawnShape,
+            timeOfEndCandle,
+        ],
+    );
 
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -434,12 +469,14 @@ function XAxisCanvas(props: xAxisIF) {
     }, [
         location.pathname,
         isLineDrag,
-        unparsedCandleData?.length,
+        unparsedCandleData.length,
         advancedMode,
         lastCrDate,
         xAxisActiveTooltip,
         timeOfEndCandle,
         isCrDataIndActive,
+        scaleData,
+        setIsCrDataIndActive,
     ]);
 
     // Axis's
@@ -462,14 +499,15 @@ function XAxisCanvas(props: xAxisIF) {
         }
     }, [
         timeOfEndCandle,
-        diffHashSig(crosshairData),
         isLineDrag,
         reset,
         location,
         crosshairActive,
-        xAxis === undefined,
         isToolbarOpen,
         selectedDrawnShape,
+        scaleData,
+        xAxis,
+        drawXaxis,
     ]);
 
     useEffect(() => {
@@ -498,14 +536,20 @@ function XAxisCanvas(props: xAxisIF) {
                 setCrosshairActive('none');
             }
         });
-    }, [lastCrDate, timeOfEndCandle]);
+    }, [
+        lastCrDate,
+        scaleData,
+        setCrosshairActive,
+        setXaxisActiveTooltip,
+        timeOfEndCandle,
+    ]);
 
     // mouseleave
     useEffect(() => {
         d3.select(d3Xaxis.current).on('mouseleave', () => {
             mouseLeaveCanvas();
         });
-    }, []);
+    }, [mouseLeaveCanvas]);
 
     useEffect(() => {
         if (!isChartZoom) {
@@ -562,10 +606,14 @@ function XAxisCanvas(props: xAxisIF) {
             });
         }
     }, [
-        diffHashSigScaleData(scaleData),
         firstCandleData,
         lastCandleData,
         isChartZoom,
+        scaleData,
+        changeScale,
+        render,
+        zoomBase,
+        showLatestActive,
     ]);
 
     useEffect(() => {
@@ -576,7 +624,7 @@ function XAxisCanvas(props: xAxisIF) {
 
             renderCanvasArray([d3Xaxis]);
         }
-    }, [xAxisZoom]);
+    }, [xAxis, xAxisZoom]);
 
     return (
         <d3fc-canvas

@@ -94,7 +94,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
                 setUsdValueForDom(undefined);
             }
         });
-    }, [crocEnv, chainId, pricedToken, tokenInput]);
+    }, [crocEnv, chainId, pricedToken, tokenInput, cachedFetchTokenPrice]);
 
     const toDecimal = (val: string) =>
         isTokenEth ? parseFloat(val).toFixed(18) : parseFloat(val).toString();

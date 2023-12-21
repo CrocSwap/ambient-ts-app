@@ -1,4 +1,9 @@
-import { MouseEventHandler, useEffect, KeyboardEventHandler } from 'react';
+import {
+    MouseEventHandler,
+    useEffect,
+    KeyboardEventHandler,
+    useCallback,
+} from 'react';
 import { ToggleComponent } from './Form.styles';
 interface TogglePropsIF {
     isOn: boolean;
@@ -18,18 +23,21 @@ interface TogglePropsIF {
 export default function Toggle(props: TogglePropsIF) {
     const { isOn, handleToggle, id, disabled } = props;
 
-    const enterFunction = (event: KeyboardEvent) => {
-        if (event.key === 'Enter') {
-            handleToggle;
-        }
-    };
+    const enterFunction = useCallback(
+        (event: KeyboardEvent) => {
+            if (event.key === 'Enter') {
+                handleToggle;
+            }
+        },
+        [handleToggle],
+    );
 
     useEffect(() => {
         document.addEventListener('keydown', enterFunction, false);
         return () => {
             document.removeEventListener('keydown', enterFunction, false);
         };
-    }, []);
+    }, [enterFunction]);
 
     return (
         <ToggleComponent

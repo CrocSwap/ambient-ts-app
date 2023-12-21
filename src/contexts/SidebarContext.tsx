@@ -6,6 +6,7 @@ import {
     useMemo,
     useContext,
     useState,
+    useCallback,
 } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
@@ -72,7 +73,7 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
 
     const showSidebarByDefault = useMediaQuery('(min-width: 1850px)');
 
-    function toggleSidebarBasedOnRoute() {
+    const toggleSidebarBasedOnRoute = useCallback(() => {
         if (sidebar.getStoredStatus() === 'open') {
             sidebar.open(true);
         } else if (
@@ -86,14 +87,11 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
         } else {
             sidebar.close();
         }
-    }
+    }, [currentLocation, showSidebarByDefault, sidebar, smallScreen]);
+
     useEffect(() => {
         toggleSidebarBasedOnRoute();
-    }, [
-        location.pathname.includes('/trade'),
-        location.pathname.includes('/explore'),
-        showSidebarByDefault,
-    ]);
+    }, [showSidebarByDefault, toggleSidebarBasedOnRoute]);
 
     useEffect(() => {
         if (lastReceiptHash) {
@@ -107,7 +105,7 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
                 isLastReceiptSuccess ? 'info' : 'warning',
             );
         }
-    }, [lastReceiptHash]);
+    }, [isLastReceiptSuccess, lastReceipt, lastReceiptHash, openSnackbar]);
 
     return (
         <SidebarContext.Provider value={sidebarState}>

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';

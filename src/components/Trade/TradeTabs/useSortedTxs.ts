@@ -1,6 +1,11 @@
-import { Dispatch, SetStateAction, useMemo, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useCallback,
+    useMemo,
+    useState,
+} from 'react';
 import { TransactionIF } from '../../../ambient-utils/types';
-import { diffHashSig } from '../../../ambient-utils/dataLayer';
 import { BigNumber } from 'ethers/lib/ethers';
 
 export type TxSortType =
@@ -75,44 +80,41 @@ export const useSortedTxs = (
     const [reverseSort, setReverseSort] = useState<boolean>(false);
 
     // router to pass data through the appropriate sort function
-    const sortData = (data: TransactionIF[]): TransactionIF[] => {
-        // variable to hold output
-        let sortedData: TransactionIF[];
-        // router to apply a specific sort function
-        switch (sortBy) {
-            case 'wallet':
-            case 'walletid':
-                sortedData = sortByWallet(data);
-                break;
-            case 'pool':
-                sortedData = sortByPool(data);
-                break;
-            case 'price':
-                sortedData = sortByPrice(data);
-                break;
-            case 'value':
-                sortedData = sortByValue(data);
-                break;
-            case 'time':
-                sortedData = sortByUpdateTime(data);
-                break;
-            default:
-                return sortByUpdateTime(data);
-        }
-        // return reversed data if user wants data reversed
-        return reverseSort ? [...sortedData].reverse() : sortedData;
-    };
-
-    // Generates a fingerprint from the positions objects. Used for comparison
-    // in below React hook
-    const ordersHashSum = useMemo<string>(() => {
-        return diffHashSig(transactions);
-    }, [transactions]);
+    const sortData = useCallback(
+        (data: TransactionIF[]): TransactionIF[] => {
+            // variable to hold output
+            let sortedData: TransactionIF[];
+            // router to apply a specific sort function
+            switch (sortBy) {
+                case 'wallet':
+                case 'walletid':
+                    sortedData = sortByWallet(data);
+                    break;
+                case 'pool':
+                    sortedData = sortByPool(data);
+                    break;
+                case 'price':
+                    sortedData = sortByPrice(data);
+                    break;
+                case 'value':
+                    sortedData = sortByValue(data);
+                    break;
+                case 'time':
+                    sortedData = sortByUpdateTime(data);
+                    break;
+                default:
+                    return sortByUpdateTime(data);
+            }
+            // return reversed data if user wants data reversed
+            return reverseSort ? [...sortedData].reverse() : sortedData;
+        },
+        [reverseSort, sortBy],
+    );
 
     // array of positions sorted by the relevant column
     const sortedTransactions = useMemo<TransactionIF[]>(() => {
         return sortData(transactions);
-    }, [sortBy, reverseSort, ordersHashSum]);
+    }, [sortData, transactions]);
 
     return [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions];
 };

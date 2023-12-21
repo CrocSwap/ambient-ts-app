@@ -5,6 +5,7 @@ import {
     memo,
     Dispatch,
     SetStateAction,
+    useCallback,
 } from 'react';
 import {
     PositionIF,
@@ -131,14 +132,15 @@ function RangesRow(props: propsIF) {
     };
     useOnClickOutside(activePositionRef, clickOutsideHandler);
 
-    function scrollToDiv() {
+    const scrollToDiv = useCallback(() => {
         const element = document.getElementById(positionDomId);
         element?.scrollIntoView({
             behavior: 'smooth',
             block: 'end',
             inline: 'nearest',
         });
-    }
+    }, [positionDomId]);
+
     const [_, copy] = useCopyToClipboard();
 
     function handleWalletCopy() {
@@ -153,7 +155,7 @@ function RangesRow(props: propsIF) {
 
     useEffect(() => {
         position.positionId === currentPositionActive ? scrollToDiv() : null;
-    }, [currentPositionActive]);
+    }, [currentPositionActive, position.positionId, scrollToDiv]);
 
     const usernameColor: 'text1' | 'accent1' | 'accent2' =
         isOwnerActiveAccount && showAllData

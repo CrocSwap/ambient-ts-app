@@ -1,4 +1,11 @@
-import { Dispatch, SetStateAction, useContext, useEffect, memo } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    memo,
+    useCallback,
+} from 'react';
 import {
     getFormattedNumber,
     calculateSecondaryDepositQty,
@@ -88,48 +95,75 @@ function RangeTokenInput(props: propsIF) {
 
     const { tokenA, tokenB, isTokenAPrimary, setIsTokenAPrimary } =
         useContext(TradeDataContext);
+
+    const setTokenQtyValue = useCallback(
+        (inputValue: string, primaryToken: 'A' | 'B') => {
+            if (poolPriceNonDisplay === undefined) return;
+
+            const qtyToken = calculateSecondaryDepositQty(
+                poolPriceNonDisplay,
+                tokenA.decimals,
+                tokenB.decimals,
+                inputValue,
+                primaryToken === 'A',
+                isTokenABase,
+                isAmbient,
+                depositSkew,
+            );
+
+            const truncatedTokenQty = qtyToken
+                ? getFormattedNumber({
+                      value: qtyToken,
+                      isInput: true,
+                      zeroDisplay: '0',
+                      nullDisplay: '',
+                  })
+                : '';
+
+            if (primaryToken === 'A') {
+                setTokenAInputQty(inputValue);
+                setTokenBInputQty(truncatedTokenQty);
+            } else {
+                setTokenAInputQty(truncatedTokenQty);
+                setTokenBInputQty(inputValue);
+            }
+        },
+        [
+            depositSkew,
+            isAmbient,
+            isTokenABase,
+            poolPriceNonDisplay,
+            setTokenAInputQty,
+            setTokenBInputQty,
+            tokenA.decimals,
+            tokenB.decimals,
+        ],
+    );
+
+    const updateTokenQty = useCallback(() => {
+        if (!isOutOfRange) {
+            isTokenAPrimaryRange
+                ? setTokenQtyValue(tokenAInputQty, 'A')
+                : setTokenQtyValue(tokenBInputQty, 'B');
+        }
+    }, [
+        isOutOfRange,
+        isTokenAPrimaryRange,
+        setTokenQtyValue,
+        tokenAInputQty,
+        tokenBInputQty,
+    ]);
+
     useEffect(() => {
         if (poolPriceNonDisplay) {
             updateTokenQty();
         }
-    }, [poolPriceNonDisplay, depositSkew, tokenA.address]);
+    }, [poolPriceNonDisplay, depositSkew, tokenA.address, updateTokenQty]);
 
     const resetTokenQuantities = () => {
         setTokenAInputQty('');
         setTokenBInputQty('');
         setPrimaryQuantityRange('');
-    };
-
-    const setTokenQtyValue = (inputValue: string, primaryToken: 'A' | 'B') => {
-        if (poolPriceNonDisplay === undefined) return;
-
-        const qtyToken = calculateSecondaryDepositQty(
-            poolPriceNonDisplay,
-            tokenA.decimals,
-            tokenB.decimals,
-            inputValue,
-            primaryToken === 'A',
-            isTokenABase,
-            isAmbient,
-            depositSkew,
-        );
-
-        const truncatedTokenQty = qtyToken
-            ? getFormattedNumber({
-                  value: qtyToken,
-                  isInput: true,
-                  zeroDisplay: '0',
-                  nullDisplay: '',
-              })
-            : '';
-
-        if (primaryToken === 'A') {
-            setTokenAInputQty(inputValue);
-            setTokenBInputQty(truncatedTokenQty);
-        } else {
-            setTokenAInputQty(truncatedTokenQty);
-            setTokenBInputQty(inputValue);
-        }
     };
 
     const reverseTokensLocal = reverseTokens
@@ -165,14 +199,6 @@ function RangeTokenInput(props: propsIF) {
         setIsTokenAPrimaryRange(false);
         setPrimaryQuantityRange(inputStr);
         setTokenQtyValue(value, 'B');
-    };
-
-    const updateTokenQty = () => {
-        if (!isOutOfRange) {
-            isTokenAPrimaryRange
-                ? setTokenQtyValue(tokenAInputQty, 'A')
-                : setTokenQtyValue(tokenBInputQty, 'B');
-        }
     };
 
     const disabledContent = (

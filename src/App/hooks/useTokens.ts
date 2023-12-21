@@ -105,7 +105,7 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
                     deepCopyToken(tkn, tkn.fromList ?? tokenListURIs.ambient),
                 );
         }
-    }, [tokenMap.size]);
+    }, [chainId, tokenMap]);
 
     // fn to make a deep copy of a token data object
     // without this we overrwrite token data in local storage in post-processing
@@ -130,7 +130,7 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
                     tkn.listedBy?.includes(tokenListURIs.ambient)
                 );
             }),
-        [chainId, tokenUniv.length],
+        [chainId, tokenUniv],
     );
 
     // Load token lists from local storage for fast load, but asynchronously
@@ -189,7 +189,7 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
         (addr: string): boolean => {
             return tokenMap.has(addr.toLowerCase());
         },
-        [chainId, tokenMap],
+        [tokenMap],
     );
 
     const ackToken = useCallback(
@@ -216,12 +216,12 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
                 JSON.stringify(newAckList),
             );
         },
-        [chainId, tokenUniv],
+        [ackTokens],
     );
 
     const getTokenByAddress = useCallback(
         (addr: string): TokenIF | undefined => tokenMap.get(addr.toLowerCase()),
-        [chainId, tokenUniv],
+        [tokenMap],
     );
 
     const getTokensFromList = useCallback(
@@ -230,7 +230,7 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
                 tkn.listedBy?.includes(uri),
             );
         },
-        [chainId, tokenUniv],
+        [tokenUniv],
     );
 
     // fn to return all tokens where name or symbol matches search input
@@ -275,7 +275,7 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
             // return requested results
             return exact ? searchExact() : searchPartial();
         },
-        [chainId, tokenUniv],
+        [tokenUniv],
     );
 
     return useMemo(
@@ -288,6 +288,14 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
             getTokensFromList: getTokensFromList,
             getTokensByNameOrSymbol: getTokensByNameOrSymbol,
         }),
-        [tokenUniv, chainId],
+        [
+            ackToken,
+            defaultTokensInUniv,
+            getTokenByAddress,
+            getTokensByNameOrSymbol,
+            getTokensFromList,
+            tokenUniv,
+            verifyToken,
+        ],
     );
 };

@@ -2,7 +2,14 @@ import styles from './RangeActionModal.module.css';
 import RemoveRangeWidth from './RemoveRangeWidth/RemoveRangeWidth';
 import RangeActionTokenHeader from './RangeActionTokenHeader/RangeActionTokenHeader';
 import RemoveRangeInfo from './RangeActionInfo/RemoveRangeInfo';
-import { memo, useContext, useEffect, useMemo, useState } from 'react';
+import {
+    memo,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 
 import {
     PositionIF,
@@ -137,7 +144,11 @@ function RangeActionModal(props: propsIF) {
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+    }, [
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
+        averageGasUnitsForRemovalTxInGasDrops,
+    ]);
 
     const [currentLiquidity, setCurrentLiquidity] = useState<
         BigNumber | undefined
@@ -148,7 +159,8 @@ function RangeActionModal(props: propsIF) {
         [currentLiquidity, removalPercentage],
     );
 
-    const updateLiq = async () => {
+    // move all instances of updateLiq into ambient utils
+    const updateLiq = useCallback(async () => {
         try {
             if (!crocEnv || !position) return;
             const pool = crocEnv.pool(position.base, position.quote);
@@ -162,13 +174,13 @@ function RangeActionModal(props: propsIF) {
         } catch (error) {
             console.error(error);
         }
-    };
+    }, [crocEnv, position, isAmbient]);
 
     useEffect(() => {
         if (crocEnv && position) {
             updateLiq();
         }
-    }, [crocEnv, lastBlockNumber, position?.positionId]);
+    }, [crocEnv, lastBlockNumber, position, updateLiq]);
 
     useEffect(() => {
         if (
@@ -239,7 +251,19 @@ function RangeActionModal(props: propsIF) {
                     .catch((error) => console.error({ error }));
             })();
         }
-    }, [lastBlockNumber]);
+    }, [
+        cachedEnsResolve,
+        cachedFetchTokenPrice,
+        cachedQuerySpotPrice,
+        cachedTokenDetails,
+        chainId,
+        crocEnv,
+        lastBlockNumber,
+        position,
+        positionStatsCacheEndpoint,
+        provider,
+        tokens.tokenUniv,
+    ]);
 
     const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
     const [quoteTokenBalance, setQuoteTokenBalance] = useState<string>('');
@@ -305,10 +329,12 @@ function RangeActionModal(props: propsIF) {
         })();
     }, [
         crocEnv,
-        position.user,
-        position.base,
-        position.quote,
+        position,
         lastBlockNumber,
+        baseTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenBalance,
+        quoteTokenDexBalance,
     ]);
 
     const [showSettings, setShowSettings] = useState(false);
@@ -329,7 +355,7 @@ function RangeActionModal(props: propsIF) {
         if (!showConfirmation) {
             resetConfirmation();
         }
-    }, [txErrorCode]);
+    }, [showConfirmation, txErrorCode]);
 
     const closeModal = () => {
         resetConfirmation();

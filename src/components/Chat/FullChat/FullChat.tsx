@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import styles from './FullChat.module.css';
 import {
     useState,
@@ -59,7 +60,7 @@ export default function FullChat(props: FullChatPropsIF) {
 
     useEffect(() => {
         setIsChatOpen(true);
-    }, []);
+    }, [setIsChatOpen]);
 
     const currencies: string[] | null =
         params && !params.includes('global') ? params.split('&') : null;
@@ -177,7 +178,9 @@ export default function FullChat(props: FullChatPropsIF) {
     }, [
         reconstructedReadableRoom,
         reSwappedReconstructedReadableRoom,
-        rooms.length === 0,
+        roomArray,
+        props,
+        currencies,
     ]);
 
     // eslint-disable-next-line
@@ -320,7 +323,7 @@ export default function FullChat(props: FullChatPropsIF) {
         });
         const middleIndex = Math.ceil(props.favoritePoolsArray.length / 2);
         props.favoritePoolsArray.splice(0, middleIndex);
-    }, [favePools, rooms.length === 0]);
+    }, [favePools, roomArray, rooms]);
 
     function handleGlobalClick() {
         props.setRoom('Global');

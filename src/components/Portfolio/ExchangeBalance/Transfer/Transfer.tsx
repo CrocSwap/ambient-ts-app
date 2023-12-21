@@ -135,9 +135,10 @@ export default function Transfer(props: propsIF) {
 
     const [isTransferPending, setIsTransferPending] = useState(false);
 
+    // TODO: why is this useEffect needed?
     useEffect(() => {
         setIsTransferPending(false);
-    }, [JSON.stringify(selectedToken)]);
+    }, [selectedToken]);
 
     useEffect(() => {
         if (isTransferPending) {
@@ -181,6 +182,7 @@ export default function Transfer(props: propsIF) {
         isTransferQtyValid,
         selectedToken.symbol,
         isResolvedAddressValid,
+        transferQtyNonDisplayNum,
     ]);
 
     const transfer = async (transferQty: string) => {

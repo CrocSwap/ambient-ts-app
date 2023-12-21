@@ -1,6 +1,13 @@
 // START: Import Local Files
 import styles from './RangePriceInfo.module.css';
-import { memo, useContext, useEffect, useMemo, useState } from 'react';
+import {
+    memo,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import {
     isStableToken,
@@ -102,17 +109,17 @@ function RangePriceInfo(props: propsIF) {
 
     const isStableTokenA = useMemo(
         () => isStableToken(tokenAAddress),
-        [tokenAAddress, chainId],
+        [tokenAAddress],
     );
 
     const isStableTokenB = useMemo(
         () => isStableToken(tokenBAddress),
-        [tokenBAddress, chainId],
+        [tokenBAddress],
     );
 
     const isEitherTokenStable = isStableTokenA || isStableTokenB;
 
-    const updateMainnetPricesAsync = async () => {
+    const updateMainnetPricesAsync = useCallback(async () => {
         if (!crocEnv) return;
         const tokenAPrice = await cachedFetchTokenPrice(
             tokenAAddress,
@@ -128,13 +135,13 @@ function RangePriceInfo(props: propsIF) {
 
         setTokenAPrice(tokenAPrice?.usdPrice);
         setTokenBPrice(tokenBPrice?.usdPrice);
-    };
+    }, [cachedFetchTokenPrice, chainId, crocEnv, tokenAAddress, tokenBAddress]);
 
     useEffect(() => {
         setUserFlippedMaxMinDisplay(false);
 
         updateMainnetPricesAsync();
-    }, [crocEnv, tokenAAddress + tokenBAddress, isDenomTokenA]);
+    }, [crocEnv, isDenomTokenA, updateMainnetPricesAsync]);
 
     useEffect(() => {
         if (!pinnedMinPrice || !pinnedMaxPrice) return;

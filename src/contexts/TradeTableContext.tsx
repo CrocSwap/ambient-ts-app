@@ -1,10 +1,16 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, {
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
 import { useLocation } from 'react-router-dom';
 import { CandleContext } from './CandleContext';
 import { ChartContext } from './ChartContext';
-import { useSimulatedIsPoolInitialized } from '../App/hooks/useSimulatedIsPoolInitialized';
 import { UserDataContext } from './UserDataContext';
 import { DataLoadingContext } from './DataLoadingContext';
+import { PoolContext } from './PoolContext';
 
 // 54 is the height of the trade table header
 export const TRADE_TABLE_HEADER_HEIGHT = 54;
@@ -41,8 +47,7 @@ export const TradeTableContextProvider = (props: {
 }) => {
     const { isCandleSelected, isCandleDataNull } = useContext(CandleContext);
     const { setChartHeight, chartHeights } = useContext(ChartContext);
-
-    const isPoolInitialized = useSimulatedIsPoolInitialized();
+    const isPoolInitialized = useContext(PoolContext);
 
     const { pathname: currentLocation } = useLocation();
 
@@ -68,12 +73,17 @@ export const TradeTableContextProvider = (props: {
         useContext(DataLoadingContext);
 
     useEffect(() => {
+        console.log('tradetablecontext 0');
         if (!isUserConnected) {
             resetPoolDataLoadingStatus();
             resetConnectedUserDataLoadingStatus();
             setShowAllData(true);
         }
-    }, [isUserConnected]);
+    }, [
+        isUserConnected,
+        resetConnectedUserDataLoadingStatus,
+        resetPoolDataLoadingStatus,
+    ]);
 
     const tradeTableContext = {
         showAllData,
@@ -145,7 +155,7 @@ export const TradeTableContextProvider = (props: {
         }
     }
 
-    function toggleTradeTabBasedOnRoute() {
+    const toggleTradeTabBasedOnRoute = useCallback(() => {
         if (!isCandleSelected) {
             setOutsideControl(true);
             if (currentLocation.includes('/market')) {
@@ -160,32 +170,50 @@ export const TradeTableContextProvider = (props: {
                 setSelectedOutsideTab(2);
             }
         }
-    }
+    }, [currentLocation, isCandleSelected]);
 
     useEffect(() => {
+        console.log('tradetablecontext 1');
         if (
             !currentTxActiveInTransactions &&
             !currentPositionActive &&
             location.pathname.includes('/trade')
         )
             toggleTradeTabBasedOnRoute();
-    }, [location.pathname]);
+    }, [
+        currentPositionActive,
+        currentTxActiveInTransactions,
+        toggleTradeTabBasedOnRoute,
+    ]);
 
-    const resetTable = () => {
+    const resetTable = useCallback(() => {
         if (
             chartHeights.saved > chartHeights.min &&
             chartHeights.saved < chartHeights.max
         ) {
             setChartHeight(chartHeights.saved);
         }
-    };
+    }, [
+        chartHeights.max,
+        chartHeights.min,
+        chartHeights.saved,
+        setChartHeight,
+    ]);
+
     useEffect(() => {
+        console.log('tradetablecontext 2');
         if (isCandleDataNull && isPoolInitialized) {
             setChartHeight(chartHeights.min);
         } else {
             resetTable();
         }
-    }, [isCandleDataNull, isPoolInitialized]);
+    }, [
+        chartHeights.min,
+        isCandleDataNull,
+        isPoolInitialized,
+        resetTable,
+        setChartHeight,
+    ]);
     return (
         <TradeTableContext.Provider value={tradeTableContext}>
             {props.children}

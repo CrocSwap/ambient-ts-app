@@ -15,7 +15,7 @@ export const ExchangeBalanceDropdown = () => {
         if (fullLayoutActive && !tokenModalOpen && escapePressed) {
             setFullLayoutActive(false);
         }
-    }, [escapePressed]);
+    }, [escapePressed, fullLayoutActive, tokenModalOpen]);
 
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
 

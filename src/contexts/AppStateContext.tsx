@@ -142,7 +142,7 @@ export const AppStateContextProvider = (props: {
             }, CACHE_UPDATE_FREQ_IN_MS);
             return () => clearInterval(interval);
         }
-    }, [isChatEnabled, CHAT_ENABLED]);
+    }, [isChatEnabled, getStatus]);
 
     return (
         <AppStateContext.Provider value={appStateContext}>

@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useMemo } from 'react';
+import React, {
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+} from 'react';
 import {
     dexBalanceMethodsIF,
     useExchangePrefs,
@@ -7,7 +13,6 @@ import { favePoolsMethodsIF, useFavePools } from '../App/hooks/useFavePools';
 import { skipConfirmIF, useSkipConfirm } from '../App/hooks/useSkipConfirm';
 import { SlippageMethodsIF, useSlippage } from '../App/hooks/useSlippage';
 import { IS_LOCAL_ENV, slippage } from '../ambient-utils/constants';
-import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
 import { TradeDataContext } from './TradeDataContext';
 import { getMoneynessRankByAddr } from '../ambient-utils/dataLayer';
@@ -34,9 +39,6 @@ export const UserPreferenceContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const {
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
-    const {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
     } = useContext(TradeTokenContext);
@@ -44,7 +46,11 @@ export const UserPreferenceContextProvider = (props: {
     const { tokenA, tokenB, setDenomInBase, isDenomBase, didUserFlipDenom } =
         useContext(TradeDataContext);
 
-    const userPreferencesProps = {
+    // Memoize the object being passed to context. This assumes that all of the individual top-level values
+    // in the userPreferencesProps object are themselves correctly memo-ized at the object level. E.g. the
+    // value from `useSlippage()` or `useSkipConfirm()` should be a new object reference if and only if their
+    // content needs to be updated
+    const userPreferences = {
         favePools: useFavePools(),
         swapSlippage: useSlippage('swap', slippage.swap),
         mintSlippage: useSlippage('mint', slippage.mint),
@@ -58,15 +64,6 @@ export const UserPreferenceContextProvider = (props: {
         bypassConfirmRepo: useSkipConfirm('repo'),
     };
 
-    // Memoize the object being passed to context. This assumes that all of the individual top-level values
-    // in the userPreferencesProps object are themselves correctly memo-ized at the object level. E.g. the
-    // value from `useSlippage()` or `useSkipConfirm()` should be a new object reference if and only if their
-    // content needs to be updated
-    const userPreferences = useMemo(
-        () => userPreferencesProps,
-        [...Object.values(userPreferencesProps)],
-    );
-
     const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(() => {
         if (baseTokenAddress && quoteTokenAddress) {
             return (
@@ -76,9 +73,9 @@ export const UserPreferenceContextProvider = (props: {
             );
         }
         return false;
-    }, [baseTokenAddress, quoteTokenAddress, chainId]);
+    }, [baseTokenAddress, quoteTokenAddress]);
 
-    function updateDenomIsInBase() {
+    const updateDenomIsInBase = useCallback(() => {
         // we need to know if the denom token is base or quote
         // currently the denom token is the cheaper one by default
         // ergo we need to know if the cheaper token is base or quote
@@ -92,7 +89,8 @@ export const UserPreferenceContextProvider = (props: {
             : !didUserFlipDenom;
 
         return _isDenomInBase;
-    }
+    }, [didUserFlipDenom, isBaseTokenMoneynessGreaterOrEqual]);
+
     useEffect(() => {
         const _isDenomBase = updateDenomIsInBase();
         if (_isDenomBase !== undefined) {
@@ -108,6 +106,9 @@ export const UserPreferenceContextProvider = (props: {
         tokenB.address,
         tokenB.chainId,
         isBaseTokenMoneynessGreaterOrEqual,
+        updateDenomIsInBase,
+        isDenomBase,
+        setDenomInBase,
     ]);
     /* ------------------------------------------ END USER PREFERENCES CONTEXT ------------------------------------------ */
 

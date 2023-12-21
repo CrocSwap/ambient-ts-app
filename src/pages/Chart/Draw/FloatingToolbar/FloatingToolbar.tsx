@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, {
+    useCallback,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import {
     FloatingButtonDiv,
     FloatingOptions,
@@ -65,11 +71,28 @@ function FloatingToolbar(props: FloatingToolbarProps) {
 
     const isDeletePressed = useKeyPress('Delete');
 
+    const deleteDrawnShape = useCallback(() => {
+        if (selectedDrawnShape?.data) {
+            deleteItem(selectedDrawnShape?.data);
+            setDrawnShapeHistory((item: drawDataHistory[]) => {
+                return item.filter(
+                    (i) => i.time !== selectedDrawnShape?.data.time,
+                );
+            });
+            setSelectedDrawnShape(undefined);
+        }
+    }, [
+        deleteItem,
+        selectedDrawnShape?.data,
+        setDrawnShapeHistory,
+        setSelectedDrawnShape,
+    ]);
+
     useEffect(() => {
         if (isDeletePressed && selectedDrawnShape) {
             deleteDrawnShape();
         }
-    }, [isDeletePressed]);
+    }, [deleteDrawnShape, isDeletePressed, selectedDrawnShape]);
 
     useEffect(() => {
         if (selectedDrawnShape === undefined) {
@@ -137,18 +160,6 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 return item;
             });
             setIsShapeEdited(true);
-        }
-    };
-
-    const deleteDrawnShape = () => {
-        if (selectedDrawnShape?.data) {
-            deleteItem(selectedDrawnShape?.data);
-            setDrawnShapeHistory((item: drawDataHistory[]) => {
-                return item.filter(
-                    (i) => i.time !== selectedDrawnShape?.data.time,
-                );
-            });
-            setSelectedDrawnShape(undefined);
         }
     };
 
@@ -310,11 +321,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                     (floatingDiv.getBoundingClientRect().height + 10),
             );
         }
-    }, [
-        floatingDivRef.current === null,
-        mainCanvasBoundingClientRect,
-        fullScreenChart,
-    ]);
+    }, [mainCanvasBoundingClientRect, fullScreenChart, isDragging]);
 
     return (
         <FloatingDivContainer

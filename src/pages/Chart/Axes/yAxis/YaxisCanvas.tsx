@@ -5,6 +5,7 @@ import {
     MouseEvent,
     memo,
     useContext,
+    useCallback,
 } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
@@ -15,11 +16,7 @@ import {
 } from '../../../../utils/numbers';
 import { createRectLabel } from './YaxisUtils';
 import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
-import {
-    diffHashSig,
-    diffHashSigScaleData,
-    getFormattedNumber,
-} from '../../../../ambient-utils/dataLayer';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import {
     crosshair,
     fillLiqAdvanced,
@@ -138,7 +135,7 @@ function YAxisCanvas(props: yAxisIF) {
         }
     }, [scaleData, location]);
 
-    function changeyAxisWidth() {
+    const changeyAxisWidth = useCallback(() => {
         let yTickValueLength =
             formatPoolPriceAxis(scaleData?.yScale.ticks()[0]).length - 1;
         let result = false;
@@ -184,9 +181,9 @@ function YAxisCanvas(props: yAxisIF) {
             }
         }
         if (yTickValueLength <= 4) setYaxisWidth('5rem');
-    }
+    }, [scaleData?.yScale, setYaxisWidth]);
 
-    const sameLocationRange = () => {
+    const sameLocationRange = useCallback(() => {
         if (scaleData) {
             const low = ranges.filter(
                 (target: lineValue) => target.name === 'Min',
@@ -232,9 +229,9 @@ function YAxisCanvas(props: yAxisIF) {
             isSameLocationMax: false,
             sameLocationDataMax: 0,
         };
-    };
+    }, [ranges, scaleData]);
 
-    const sameLocationLimit = () => {
+    const sameLocationLimit = useCallback(() => {
         if (scaleData) {
             const resultData =
                 scaleData?.yScale(limit) - scaleData?.yScale(market);
@@ -251,402 +248,469 @@ function YAxisCanvas(props: yAxisIF) {
             isSameLocation: false,
             sameLocationData: 0,
         };
-    };
+    }, [limit, market, scaleData]);
 
-    const drawYaxis = (
-        context: CanvasRenderingContext2D,
-        yScale: d3.ScaleLinear<number, number>,
-        X: number,
-    ) => {
-        yAxisLabels.length = 0;
-        const low = ranges.filter(
-            (target: lineValue) => target.name === 'Min',
-        )[0].value;
-        const high = ranges.filter(
-            (target: lineValue) => target.name === 'Max',
-        )[0].value;
+    const addYaxisLabel = useCallback(
+        (y: number) => {
+            const rect = {
+                x: 0,
+                y: y - 10,
+                width: 70,
+                height: 20,
+            };
+            yAxisLabels?.push(rect);
+        },
+        [yAxisLabels],
+    );
 
-        const canvas = d3
-            .select(d3Yaxis.current)
-            .select('canvas')
-            .node() as HTMLCanvasElement;
+    const drawYaxis = useCallback(
+        (
+            context: CanvasRenderingContext2D,
+            yScale: d3.ScaleLinear<number, number>,
+            X: number,
+        ) => {
+            yAxisLabels.length = 0;
+            const low = ranges.filter(
+                (target: lineValue) => target.name === 'Min',
+            )[0].value;
+            const high = ranges.filter(
+                (target: lineValue) => target.name === 'Max',
+            )[0].value;
 
-        if (canvas !== null) {
-            const height = canvas.height;
-            const width = canvas.width;
+            const canvas = d3
+                .select(d3Yaxis.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
 
-            const factor = height < 500 ? 5 : height.toString().length * 2;
+            if (canvas !== null) {
+                const height = canvas.height;
+                const width = canvas.width;
 
-            context.stroke();
-            context.textAlign = 'center';
-            context.textBaseline = 'middle';
-            context.fillStyle = 'rgba(189,189,189,0.8)';
-            context.font = '12.425px Lexend Deca';
+                const factor = height < 500 ? 5 : height.toString().length * 2;
 
-            const yScaleTicks = yScale.ticks(factor);
+                context.stroke();
+                context.textAlign = 'center';
+                context.textBaseline = 'middle';
+                context.fillStyle = 'rgba(189,189,189,0.8)';
+                context.font = '12.425px Lexend Deca';
 
-            const switchFormatter =
-                yScaleTicks.find((element: number) => {
-                    return element > 99999;
-                }) !== undefined;
+                const yScaleTicks = yScale.ticks(factor);
 
-            const formatTicks = switchFormatter
-                ? formatPoolPriceAxis
-                : formatAmountChartData;
+                const switchFormatter =
+                    yScaleTicks.find((element: number) => {
+                        return element > 99999;
+                    }) !== undefined;
 
-            yScaleTicks.forEach((d: number) => {
-                const digit = d.toString().split('.')[1]?.length;
+                const formatTicks = switchFormatter
+                    ? formatPoolPriceAxis
+                    : formatAmountChartData;
 
-                const isScientific = d.toString().includes('e');
+                yScaleTicks.forEach((d: number) => {
+                    const digit = d.toString().split('.')[1]?.length;
 
-                if (isScientific) {
-                    const splitNumber = d.toString().split('e');
-                    const subString =
-                        Math.abs(Number(splitNumber[1])) -
-                        (splitNumber.includes('.') ? 2 : 1);
+                    const isScientific = d.toString().includes('e');
 
-                    const scientificValue = getFormattedNumber({
-                        value: d,
-                        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
-                    });
-
-                    const textScientificArray = scientificValue.split('0.0');
-                    const textScientific = textScientificArray[1].slice(1, 4);
-
-                    const textHeight =
-                        context.measureText('0.0').actualBoundingBoxAscent +
-                        context.measureText('0.0').actualBoundingBoxDescent;
-
-                    context.beginPath();
-                    context.fillText(
-                        '0.0',
-                        X -
-                            context.measureText('0.0').width / 2 -
-                            context.measureText(subString.toString()).width / 2,
-                        yScale(d),
-                    );
-                    context.fillText(
-                        subString.toString(),
-                        X,
-                        yScale(d) + textHeight / 3,
-                    );
-
-                    context.fillText(
-                        textScientific,
-                        X +
-                            context.measureText(textScientific).width / 2 +
-                            context.measureText(subString.toString()).width / 2,
-                        yScale(d),
-                    );
-                } else {
-                    context.beginPath();
-                    context.fillText(
-                        formatTicks(d, digit ? digit : 2),
-                        X,
-                        yScale(d),
-                    );
-                }
-            });
-
-            if (market) {
-                const isScientificMarketTick = market.toString().includes('e');
-
-                let marketSubString = undefined;
-
-                let marketTick = getFormattedNumber({
-                    value: market,
-                    abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
-                }).replace(',', '');
-                if (isScientificMarketTick) {
-                    const splitNumber = market.toString().split('e');
-                    marketSubString =
-                        Math.abs(Number(splitNumber[1])) -
-                        (splitNumber.includes('.') ? 2 : 1);
-
-                    const textScientificArray = marketTick.split('0.0');
-                    marketTick = textScientificArray[1].slice(1, 4);
-                }
-
-                createRectLabel(
-                    context,
-                    yScale(market),
-                    X,
-                    'white',
-                    'black',
-                    marketTick,
-                    undefined,
-                    yAxisCanvasWidth,
-                    marketSubString,
-                );
-            }
-
-            if (
-                location.pathname.includes('pool') ||
-                location.pathname.includes('reposition')
-            ) {
-                const {
-                    isSameLocationMin: isSameLocationMin,
-                    sameLocationDataMin: sameLocationDataMin,
-                    isSameLocationMax: isSameLocationMax,
-                    sameLocationDataMax: sameLocationDataMax,
-                } = sameLocationRange();
-
-                const passValue = liquidityData
-                    ? liqMode === 'curve'
-                        ? liqTransitionPointforCurve
-                        : liqTransitionPointforDepth
-                    : poolPriceDisplay;
-
-                if (simpleRangeWidth !== 100 || advancedMode) {
-                    const isScientificlowTick = low.toString().includes('e');
-
-                    let lowTick = getFormattedNumber({
-                        value: low,
-                        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
-                    }).replace(',', '');
-                    let lowSubString = undefined;
-
-                    if (isScientificlowTick) {
-                        const splitNumber = low.toString().split('e');
-                        lowSubString =
+                    if (isScientific) {
+                        const splitNumber = d.toString().split('e');
+                        const subString =
                             Math.abs(Number(splitNumber[1])) -
                             (splitNumber.includes('.') ? 2 : 1);
 
                         const scientificValue = getFormattedNumber({
-                            value: low,
+                            value: d,
                             abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
                         });
 
                         const textScientificArray =
                             scientificValue.split('0.0');
-                        lowTick = textScientificArray[1].slice(1, 4);
+                        const textScientific = textScientificArray[1].slice(
+                            1,
+                            4,
+                        );
+
+                        const textHeight =
+                            context.measureText('0.0').actualBoundingBoxAscent +
+                            context.measureText('0.0').actualBoundingBoxDescent;
+
+                        context.beginPath();
+                        context.fillText(
+                            '0.0',
+                            X -
+                                context.measureText('0.0').width / 2 -
+                                context.measureText(subString.toString())
+                                    .width /
+                                    2,
+                            yScale(d),
+                        );
+                        context.fillText(
+                            subString.toString(),
+                            X,
+                            yScale(d) + textHeight / 3,
+                        );
+
+                        context.fillText(
+                            textScientific,
+                            X +
+                                context.measureText(textScientific).width / 2 +
+                                context.measureText(subString.toString())
+                                    .width /
+                                    2,
+                            yScale(d),
+                        );
+                    } else {
+                        context.beginPath();
+                        context.fillText(
+                            formatTicks(d, digit ? digit : 2),
+                            X,
+                            yScale(d),
+                        );
                     }
+                });
 
-                    createRectLabel(
-                        context,
-                        isSameLocationMin ? sameLocationDataMin : yScale(low),
-                        X,
-                        low > passValue ? lineSellColor : lineBuyColor,
-                        low > passValue ? 'white' : 'black',
-                        lowTick,
-                        undefined,
-                        yAxisCanvasWidth,
-                        lowSubString,
-                    );
-                    addYaxisLabel(
-                        isSameLocationMin ? sameLocationDataMin : yScale(low),
-                    );
-
-                    const isScientificHighTick = high.toString().includes('e');
-
-                    let highTick = getFormattedNumber({
-                        value: high,
-                        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
-                    }).replace(',', '');
-
-                    let highSubString = undefined;
-
-                    if (isScientificHighTick) {
-                        const splitNumber = high.toString().split('e');
-
-                        highSubString =
-                            Math.abs(Number(splitNumber[1])) -
-                            (splitNumber.includes('.') ? 2 : 1);
-
-                        const scientificValue = getFormattedNumber({
-                            value: high,
-                            abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
-                        });
-
-                        const textScientificArray =
-                            scientificValue.split('0.0');
-                        highTick = textScientificArray[1].slice(1, 4);
-                    }
-
-                    createRectLabel(
-                        context,
-                        isSameLocationMax ? sameLocationDataMax : yScale(high),
-                        X,
-                        high > passValue ? lineSellColor : lineBuyColor,
-                        high > passValue ? 'white' : 'black',
-                        highTick,
-                        undefined,
-                        yAxisCanvasWidth,
-                        highSubString,
-                    );
-                    addYaxisLabel(
-                        isSameLocationMax ? sameLocationDataMax : yScale(high),
-                    );
-                }
-            }
-
-            if (location.pathname.includes('/limit')) {
-                const { isSameLocation, sameLocationData } =
-                    sameLocationLimit();
-
-                let limitTick = getFormattedNumber({
-                    value: limit,
-                    abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
-                }).replace(',', '');
-
-                const isScientificLimitTick = limitTick
-                    .toString()
-                    .includes('e');
-
-                let limitSubString = undefined;
-
-                if (isScientificLimitTick) {
-                    const splitNumber = limit.toString().split('e');
-
-                    limitSubString =
-                        Math.abs(Number(splitNumber[1])) -
-                        (splitNumber.includes('.') ? 2 : 1);
-
-                    const scientificValue = getFormattedNumber({
-                        value: limit,
-                        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
-                    });
-
-                    const textScientificArray = scientificValue.split('0.0');
-                    limitTick = textScientificArray[1].slice(1, 4);
-                }
-
-                if (checkLimitOrder) {
-                    createRectLabel(
-                        context,
-                        isSameLocation ? sameLocationData : yScale(limit),
-                        X,
-                        sellOrderStyle === 'order_sell'
-                            ? lineSellColor
-                            : lineBuyColor,
-                        sellOrderStyle === 'order_sell' ? 'white' : 'black',
-                        limitTick,
-                        undefined,
-                        yAxisCanvasWidth,
-                        limitSubString,
-                    );
-                } else {
-                    createRectLabel(
-                        context,
-                        isSameLocation ? sameLocationData : yScale(limit),
-                        X,
-                        '#7772FE',
-                        'white',
-                        limitTick,
-                        undefined,
-                        yAxisCanvasWidth,
-                        limitSubString,
-                    );
-                }
-                addYaxisLabel(
-                    isSameLocation ? sameLocationData : yScale(limit),
-                );
-            }
-
-            if (selectedDrawnShape) {
-                const shapeData = selectedDrawnShape.data;
-
-                shapeData.data.forEach((data) => {
-                    const isScientificShapeTick = data.y
+                if (market) {
+                    const isScientificMarketTick = market
                         .toString()
                         .includes('e');
 
-                    let shapePointSubString = undefined;
-                    const shapePoint =
-                        data.denomInBase === denomInBase
-                            ? Number(data.y.toString())
-                            : 1 / Number(data.y.toString());
+                    let marketSubString = undefined;
 
-                    let shapePointTick = getFormattedNumber({
-                        value: shapePoint,
+                    let marketTick = getFormattedNumber({
+                        value: market,
                         abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
                     }).replace(',', '');
-                    if (isScientificShapeTick) {
-                        const splitNumber = data.y.toString().split('e');
-
-                        shapePointSubString =
+                    if (isScientificMarketTick) {
+                        const splitNumber = market.toString().split('e');
+                        marketSubString =
                             Math.abs(Number(splitNumber[1])) -
                             (splitNumber.includes('.') ? 2 : 1);
 
-                        const textScientificArray = shapePointTick.split('0.0');
-                        shapePointTick = textScientificArray[1].slice(1, 4);
+                        const textScientificArray = marketTick.split('0.0');
+                        marketTick = textScientificArray[1].slice(1, 4);
                     }
-
-                    const secondPointInDenom =
-                        shapeData.data[1].denomInBase === denomInBase
-                            ? shapeData.data[1].y
-                            : 1 / shapeData.data[1].y;
-                    const firstPointInDenom =
-                        shapeData.data[0].denomInBase === denomInBase
-                            ? shapeData.data[0].y
-                            : 1 / shapeData.data[0].y;
-
-                    const rectHeight =
-                        yScale(secondPointInDenom) - yScale(firstPointInDenom);
-
-                    context.fillStyle = '#7674ff1e';
-                    context.fillRect(
-                        0,
-                        yScale(firstPointInDenom),
-                        width,
-                        rectHeight,
-                    );
 
                     createRectLabel(
                         context,
-                        yScale(shapePoint),
+                        yScale(market),
                         X,
-                        '#5553be',
                         'white',
-                        shapePointTick,
+                        'black',
+                        marketTick,
                         undefined,
                         yAxisCanvasWidth,
-                        shapePointSubString,
+                        marketSubString,
                     );
-                });
-            }
-
-            if (crosshairActive === 'chart') {
-                const isScientificCrTick = crosshairData[0].y
-                    .toString()
-                    .includes('e');
-
-                let crSubString = undefined;
-                const crosshairY = Number(crosshairData[0].y.toString());
-
-                let crTick = getFormattedNumber({
-                    value: crosshairY,
-                    abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
-                }).replace(',', '');
-                if (isScientificCrTick) {
-                    const splitNumber = crosshairData[0].y
-                        .toString()
-                        .split('e');
-
-                    crSubString =
-                        Math.abs(Number(splitNumber[1])) -
-                        (splitNumber.includes('.') ? 2 : 1);
-
-                    const textScientificArray = crTick.split('0.0');
-                    crTick = textScientificArray[1].slice(1, 4);
                 }
 
-                createRectLabel(
-                    context,
-                    yScale(crosshairY),
-                    X,
-                    '#242F3F',
-                    'white',
-                    crTick,
-                    undefined,
-                    yAxisCanvasWidth,
-                    crSubString,
-                );
-            }
+                if (
+                    location.pathname.includes('pool') ||
+                    location.pathname.includes('reposition')
+                ) {
+                    const {
+                        isSameLocationMin: isSameLocationMin,
+                        sameLocationDataMin: sameLocationDataMin,
+                        isSameLocationMax: isSameLocationMax,
+                        sameLocationDataMax: sameLocationDataMax,
+                    } = sameLocationRange();
 
-            changeyAxisWidth();
-        }
-    };
+                    const passValue = liquidityData
+                        ? liqMode === 'curve'
+                            ? liqTransitionPointforCurve
+                            : liqTransitionPointforDepth
+                        : poolPriceDisplay;
+
+                    if (simpleRangeWidth !== 100 || advancedMode) {
+                        const isScientificlowTick = low
+                            .toString()
+                            .includes('e');
+
+                        let lowTick = getFormattedNumber({
+                            value: low,
+                            abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                        }).replace(',', '');
+                        let lowSubString = undefined;
+
+                        if (isScientificlowTick) {
+                            const splitNumber = low.toString().split('e');
+                            lowSubString =
+                                Math.abs(Number(splitNumber[1])) -
+                                (splitNumber.includes('.') ? 2 : 1);
+
+                            const scientificValue = getFormattedNumber({
+                                value: low,
+                                abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                            });
+
+                            const textScientificArray =
+                                scientificValue.split('0.0');
+                            lowTick = textScientificArray[1].slice(1, 4);
+                        }
+
+                        createRectLabel(
+                            context,
+                            isSameLocationMin
+                                ? sameLocationDataMin
+                                : yScale(low),
+                            X,
+                            low > passValue ? lineSellColor : lineBuyColor,
+                            low > passValue ? 'white' : 'black',
+                            lowTick,
+                            undefined,
+                            yAxisCanvasWidth,
+                            lowSubString,
+                        );
+                        addYaxisLabel(
+                            isSameLocationMin
+                                ? sameLocationDataMin
+                                : yScale(low),
+                        );
+
+                        const isScientificHighTick = high
+                            .toString()
+                            .includes('e');
+
+                        let highTick = getFormattedNumber({
+                            value: high,
+                            abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                        }).replace(',', '');
+
+                        let highSubString = undefined;
+
+                        if (isScientificHighTick) {
+                            const splitNumber = high.toString().split('e');
+
+                            highSubString =
+                                Math.abs(Number(splitNumber[1])) -
+                                (splitNumber.includes('.') ? 2 : 1);
+
+                            const scientificValue = getFormattedNumber({
+                                value: high,
+                                abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                            });
+
+                            const textScientificArray =
+                                scientificValue.split('0.0');
+                            highTick = textScientificArray[1].slice(1, 4);
+                        }
+
+                        createRectLabel(
+                            context,
+                            isSameLocationMax
+                                ? sameLocationDataMax
+                                : yScale(high),
+                            X,
+                            high > passValue ? lineSellColor : lineBuyColor,
+                            high > passValue ? 'white' : 'black',
+                            highTick,
+                            undefined,
+                            yAxisCanvasWidth,
+                            highSubString,
+                        );
+                        addYaxisLabel(
+                            isSameLocationMax
+                                ? sameLocationDataMax
+                                : yScale(high),
+                        );
+                    }
+                }
+
+                if (location.pathname.includes('/limit')) {
+                    const { isSameLocation, sameLocationData } =
+                        sameLocationLimit();
+
+                    let limitTick = getFormattedNumber({
+                        value: limit,
+                        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                    }).replace(',', '');
+
+                    const isScientificLimitTick = limitTick
+                        .toString()
+                        .includes('e');
+
+                    let limitSubString = undefined;
+
+                    if (isScientificLimitTick) {
+                        const splitNumber = limit.toString().split('e');
+
+                        limitSubString =
+                            Math.abs(Number(splitNumber[1])) -
+                            (splitNumber.includes('.') ? 2 : 1);
+
+                        const scientificValue = getFormattedNumber({
+                            value: limit,
+                            abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                        });
+
+                        const textScientificArray =
+                            scientificValue.split('0.0');
+                        limitTick = textScientificArray[1].slice(1, 4);
+                    }
+
+                    if (checkLimitOrder) {
+                        createRectLabel(
+                            context,
+                            isSameLocation ? sameLocationData : yScale(limit),
+                            X,
+                            sellOrderStyle === 'order_sell'
+                                ? lineSellColor
+                                : lineBuyColor,
+                            sellOrderStyle === 'order_sell' ? 'white' : 'black',
+                            limitTick,
+                            undefined,
+                            yAxisCanvasWidth,
+                            limitSubString,
+                        );
+                    } else {
+                        createRectLabel(
+                            context,
+                            isSameLocation ? sameLocationData : yScale(limit),
+                            X,
+                            '#7772FE',
+                            'white',
+                            limitTick,
+                            undefined,
+                            yAxisCanvasWidth,
+                            limitSubString,
+                        );
+                    }
+                    addYaxisLabel(
+                        isSameLocation ? sameLocationData : yScale(limit),
+                    );
+                }
+
+                if (selectedDrawnShape) {
+                    const shapeData = selectedDrawnShape.data;
+
+                    shapeData.data.forEach((data) => {
+                        const isScientificShapeTick = data.y
+                            .toString()
+                            .includes('e');
+
+                        let shapePointSubString = undefined;
+                        const shapePoint =
+                            data.denomInBase === denomInBase
+                                ? Number(data.y.toString())
+                                : 1 / Number(data.y.toString());
+
+                        let shapePointTick = getFormattedNumber({
+                            value: shapePoint,
+                            abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                        }).replace(',', '');
+                        if (isScientificShapeTick) {
+                            const splitNumber = data.y.toString().split('e');
+
+                            shapePointSubString =
+                                Math.abs(Number(splitNumber[1])) -
+                                (splitNumber.includes('.') ? 2 : 1);
+
+                            const textScientificArray =
+                                shapePointTick.split('0.0');
+                            shapePointTick = textScientificArray[1].slice(1, 4);
+                        }
+
+                        const secondPointInDenom =
+                            shapeData.data[1].denomInBase === denomInBase
+                                ? shapeData.data[1].y
+                                : 1 / shapeData.data[1].y;
+                        const firstPointInDenom =
+                            shapeData.data[0].denomInBase === denomInBase
+                                ? shapeData.data[0].y
+                                : 1 / shapeData.data[0].y;
+
+                        const rectHeight =
+                            yScale(secondPointInDenom) -
+                            yScale(firstPointInDenom);
+
+                        context.fillStyle = '#7674ff1e';
+                        context.fillRect(
+                            0,
+                            yScale(firstPointInDenom),
+                            width,
+                            rectHeight,
+                        );
+
+                        createRectLabel(
+                            context,
+                            yScale(shapePoint),
+                            X,
+                            '#5553be',
+                            'white',
+                            shapePointTick,
+                            undefined,
+                            yAxisCanvasWidth,
+                            shapePointSubString,
+                        );
+                    });
+                }
+
+                if (crosshairActive === 'chart') {
+                    const isScientificCrTick = crosshairData[0].y
+                        .toString()
+                        .includes('e');
+
+                    let crSubString = undefined;
+                    const crosshairY = Number(crosshairData[0].y.toString());
+
+                    let crTick = getFormattedNumber({
+                        value: crosshairY,
+                        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                    }).replace(',', '');
+                    if (isScientificCrTick) {
+                        const splitNumber = crosshairData[0].y
+                            .toString()
+                            .split('e');
+
+                        crSubString =
+                            Math.abs(Number(splitNumber[1])) -
+                            (splitNumber.includes('.') ? 2 : 1);
+
+                        const textScientificArray = crTick.split('0.0');
+                        crTick = textScientificArray[1].slice(1, 4);
+                    }
+
+                    createRectLabel(
+                        context,
+                        yScale(crosshairY),
+                        X,
+                        '#242F3F',
+                        'white',
+                        crTick,
+                        undefined,
+                        yAxisCanvasWidth,
+                        crSubString,
+                    );
+                }
+
+                changeyAxisWidth();
+            }
+        },
+        [
+            addYaxisLabel,
+            advancedMode,
+            changeyAxisWidth,
+            checkLimitOrder,
+            crosshairActive,
+            crosshairData,
+            denomInBase,
+            limit,
+            lineBuyColor,
+            lineSellColor,
+            liqMode,
+            liqTransitionPointforCurve,
+            liqTransitionPointforDepth,
+            liquidityData,
+            location.pathname,
+            market,
+            poolPriceDisplay,
+            ranges,
+            sameLocationLimit,
+            sameLocationRange,
+            selectedDrawnShape,
+            sellOrderStyle,
+            simpleRangeWidth,
+            yAxisCanvasWidth,
+            yAxisLabels,
+        ],
+    );
 
     useEffect(() => {
         if (!isChartZoom) {
@@ -876,10 +940,16 @@ function YAxisCanvas(props: yAxisIF) {
             });
         }
     }, [
-        diffHashSigScaleData(scaleData, 'y'),
         liquidityData?.liqBidData,
         isChartZoom,
         isLineDrag,
+        scaleData,
+        advancedMode,
+        liquidityData,
+        setRescale,
+        setMarketLineValue,
+        render,
+        yAxisLabels,
     ]);
 
     useEffect(() => {
@@ -903,14 +973,7 @@ function YAxisCanvas(props: yAxisIF) {
             }
             renderCanvasArray([d3Yaxis]);
         }
-    }, [
-        location.pathname,
-        yAxisZoom,
-        dragLimit,
-        dragRange,
-        d3.select('#range-line-canvas')?.node(),
-        d3.select('#limit-line-canvas')?.node(),
-    ]);
+    }, [location.pathname, yAxisZoom, dragLimit, dragRange, yAxis, isLineDrag]);
 
     // Axis's
     useEffect(() => {
@@ -940,7 +1003,6 @@ function YAxisCanvas(props: yAxisIF) {
         }
     }, [
         market,
-        diffHashSig(crosshairData),
         limit,
         isLineDrag,
         ranges,
@@ -952,17 +1014,10 @@ function YAxisCanvas(props: yAxisIF) {
         location,
         crosshairActive,
         selectedDrawnShape,
+        scaleData,
+        yAxis,
+        drawYaxis,
     ]);
-
-    function addYaxisLabel(y: number) {
-        const rect = {
-            x: 0,
-            y: y - 10,
-            width: 70,
-            height: 20,
-        };
-        yAxisLabels?.push(rect);
-    }
 
     useEffect(() => {
         d3.select(d3Yaxis.current).on(
@@ -974,7 +1029,13 @@ function YAxisCanvas(props: yAxisIF) {
         d3.select(d3Yaxis.current).on('mouseover', () => {
             setCrosshairActive('none');
         });
-    }, [denomInBase, liqMode, location.pathname, advancedMode]);
+    }, [
+        denomInBase,
+        liqMode,
+        location.pathname,
+        advancedMode,
+        setCrosshairActive,
+    ]);
 
     return (
         <d3fc-canvas

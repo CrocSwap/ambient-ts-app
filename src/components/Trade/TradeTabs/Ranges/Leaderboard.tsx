@@ -44,7 +44,7 @@ function Leaderboard() {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [userAddress, showAllData, baseTokenAddress + quoteTokenAddress]);
+    }, [userAddress, showAllData, baseTokenAddress, quoteTokenAddress]);
 
     // Get current tranges
     const indexOfLastRanges = currentPage * rangesPerPage;

@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect } from 'react';
 import { fetchUserRecentChanges } from '../ambient-utils/api';
 import { getLimitOrderData, getPositionData } from '../ambient-utils/dataLayer';
-import useDebounce from '../App/hooks/useDebounce';
 import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../ambient-utils/constants';
 import {
     TokenIF,
@@ -219,14 +218,12 @@ export const GraphDataContextProvider = (props: {
     };
 
     useEffect(() => {
+        console.log('graphdatacontext 1');
         resetUserGraphData();
     }, [isUserConnected, userAddress]);
 
-    // Wait 2 seconds before refreshing to give cache server time to sync from
-    // last block
-    const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
-
     useEffect(() => {
+        console.log('graphdatacontext 2');
         // This useEffect controls a series of other dispatches that fetch data on update of the user object
         // user Postions, limit orders, and recent changes are all governed here
         if (
@@ -435,14 +432,23 @@ export const GraphDataContextProvider = (props: {
             }
         }
     }, [
-        isServerEnabled,
-        tokens.tokenUniv.length,
-        isUserConnected,
-        userAddress,
+        activeNetwork.graphCacheUrl,
+        cachedEnsResolve,
+        cachedFetchTokenPrice,
+        cachedQuerySpotPrice,
+        cachedTokenDetails,
         chainData.chainId,
-        lastBlockNumWait,
-        !!crocEnv,
-        !!provider,
+        crocEnv,
+        isServerEnabled,
+        isUserConnected,
+        lastBlockNumber,
+        provider,
+        setDataLoadingStatus,
+        tokens.defaultTokens,
+        tokens.tokenUniv,
+        userAddress,
+        userLimitOrderStatesCacheEndpoint,
+        userPositionsCacheEndpoint,
     ]);
 
     const graphDataContext: GraphDataContextIF = {

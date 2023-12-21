@@ -1,4 +1,5 @@
-import React, { useContext, useMemo, useState } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useContext, useMemo, useState } from 'react';
 import { IoIosCheckmarkCircle } from 'react-icons/io';
 import { Container, FlexContainer, Text } from '../../styled/Common';
 import styles from '../../components/Home/Landing/BackgroundImages.module.css';
@@ -198,12 +199,13 @@ export default function ExampleForm() {
             </FlexContainer>
         );
     }, [
-        inputValue,
         isOn,
-        baseCollateral,
-        quoteCollateral,
+        inputValue,
+        tokenA,
         isWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked,
+        baseCollateral,
+        quoteCollateral,
     ]);
 
     const RightSide = useMemo(() => {

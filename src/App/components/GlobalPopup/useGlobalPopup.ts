@@ -49,6 +49,6 @@ export const useGlobalPopup = (initialMode = false): globalPopupMethodsIF => {
             title,
             placement,
         }),
-        [isOpen, content, title, placement, initialMode],
+        [isOpen, content, title, placement],
     );
 };

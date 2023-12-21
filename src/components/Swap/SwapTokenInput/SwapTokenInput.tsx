@@ -5,8 +5,8 @@ import {
     useContext,
     useEffect,
     useState,
-    useMemo,
     memo,
+    useCallback,
 } from 'react';
 import { calcImpact } from '../../../App/functions/calcImpact';
 import useDebounce from '../../../App/hooks/useDebounce';
@@ -63,7 +63,7 @@ function SwapTokenInput(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
-    const { poolPriceDisplay, isPoolInitialized } = useContext(PoolContext);
+    const { isPoolInitialized } = useContext(PoolContext);
     const {
         tokenABalance,
         tokenBBalance,
@@ -99,115 +99,109 @@ function SwapTokenInput(props: propsIF) {
     // Let input rest 3/4 of a second before triggering an update
     const debouncedLastInput = useDebounce(lastInput, 750);
 
-    const reverseTokens = (skipQuantityReverse?: boolean): void => {
-        if (disableReverseTokens || !isPoolInitialized) return;
-        setDisableReverseTokens(true);
-
-        linkGenAny.navigate({
-            chain: chainId,
-            tokenA: tokenB.address,
-            tokenB: tokenA.address,
-        });
-
-        if (!skipQuantityReverse) {
-            !isTokenAPrimary
-                ? sellQtyString !== '' && parseFloat(sellQtyString) > 0
-                    ? setIsSellLoading(true)
-                    : null
-                : buyQtyString !== '' && parseFloat(buyQtyString) > 0
-                ? setIsBuyLoading(true)
-                : null;
-            if (isTokenAPrimary) {
-                setSellQtyString(primaryQuantity);
-            } else {
-                setBuyQtyString(primaryQuantity);
-            }
-        }
-        setIsTokenAPrimaryRange(!isTokenAPrimaryRange);
-
-        setLimitTick(undefined);
-    };
-
-    const handleBlockUpdate = () => {
-        if (contextMatchesParams) {
+    const reverseTokens = useCallback(
+        (skipQuantityReverse?: boolean): void => {
+            if (disableReverseTokens || !isPoolInitialized) return;
             setDisableReverseTokens(true);
-            isTokenAPrimary
-                ? handleTokenAChangeEvent()
-                : handleTokenBChangeEvent();
-        }
-    };
 
-    useEffect(() => {
-        handleBlockUpdate();
-    }, [lastBlockNumber, contextMatchesParams, isTokenAPrimary]);
+            linkGenAny.navigate({
+                chain: chainId,
+                tokenA: tokenB.address,
+                tokenB: tokenA.address,
+            });
 
-    useEffect(() => {
-        if (shouldSwapDirectionReverse) {
-            reverseTokens(false);
-            setShouldSwapDirectionReverse(false);
-        }
-    }, [shouldSwapDirectionReverse]);
+            if (!skipQuantityReverse) {
+                !isTokenAPrimary
+                    ? sellQtyString !== '' && parseFloat(sellQtyString) > 0
+                        ? setIsSellLoading(true)
+                        : null
+                    : buyQtyString !== '' && parseFloat(buyQtyString) > 0
+                    ? setIsBuyLoading(true)
+                    : null;
+                if (isTokenAPrimary) {
+                    setSellQtyString(primaryQuantity);
+                } else {
+                    setBuyQtyString(primaryQuantity);
+                }
+            }
+            setIsTokenAPrimaryRange(!isTokenAPrimaryRange);
 
-    useEffect(() => {
-        if (debouncedLastInput !== undefined) {
-            isTokenAPrimary
-                ? handleTokenAChangeEvent(debouncedLastInput)
-                : handleTokenBChangeEvent(debouncedLastInput);
-        }
-    }, [debouncedLastInput]);
-
-    async function refreshImpact(
-        input: string,
-        sellToken: boolean,
-    ): Promise<number | undefined> {
-        if (isNaN(parseFloat(input)) || parseFloat(input) === 0 || !crocEnv) {
-            setIsLiquidityInsufficient(false);
-            setPriceImpact(undefined);
-            return undefined;
-        }
-
-        const impact = await calcImpact(
-            sellToken,
-            crocEnv,
+            setLimitTick(undefined);
+        },
+        [
+            buyQtyString,
+            chainId,
+            disableReverseTokens,
+            isPoolInitialized,
+            isTokenAPrimary,
+            isTokenAPrimaryRange,
+            linkGenAny,
+            primaryQuantity,
+            sellQtyString,
+            setBuyQtyString,
+            setDisableReverseTokens,
+            setIsBuyLoading,
+            setIsSellLoading,
+            setIsTokenAPrimaryRange,
+            setLimitTick,
+            setSellQtyString,
             tokenA.address,
             tokenB.address,
-            slippageTolerancePercentage / 100,
-            input,
-        );
-        setPriceImpact(impact);
+        ],
+    );
 
-        isTokenAPrimary ? setIsBuyLoading(false) : setIsSellLoading(false);
+    const refreshImpact = useCallback(
+        async (
+            input: string,
+            sellToken: boolean,
+        ): Promise<number | undefined> => {
+            if (
+                isNaN(parseFloat(input)) ||
+                parseFloat(input) === 0 ||
+                !crocEnv
+            ) {
+                setIsLiquidityInsufficient(false);
+                setPriceImpact(undefined);
+                return undefined;
+            }
 
-        if (impact) {
-            setIsLiquidityInsufficient(false);
-            return parseFloat(sellToken ? impact.buyQty : impact.sellQty);
-        } else {
-            setIsLiquidityInsufficient(true);
-            setSwapAllowed(false);
-            return undefined;
-        }
-    }
+            const impact = await calcImpact(
+                sellToken,
+                crocEnv,
+                tokenA.address,
+                tokenB.address,
+                slippageTolerancePercentage / 100,
+                input,
+            );
+            setPriceImpact(impact);
 
-    const debouncedTokenAChangeEvent = (value: string) => {
-        setIsBuyLoading(true);
-        setSellQtyString(value);
-        setPrimaryQuantity(value);
-        setLastInput(value);
+            isTokenAPrimary ? setIsBuyLoading(false) : setIsSellLoading(false);
 
-        setIsTokenAPrimary(true);
-    };
+            if (impact) {
+                setIsLiquidityInsufficient(false);
+                return parseFloat(sellToken ? impact.buyQty : impact.sellQty);
+            } else {
+                setIsLiquidityInsufficient(true);
+                setSwapAllowed(false);
+                return undefined;
+            }
+        },
+        [
+            crocEnv,
+            isTokenAPrimary,
+            setIsBuyLoading,
+            setIsLiquidityInsufficient,
+            setIsSellLoading,
+            setPriceImpact,
+            setSwapAllowed,
+            slippageTolerancePercentage,
+            tokenA.address,
+            tokenB.address,
+        ],
+    );
 
-    const debouncedTokenBChangeEvent = (value: string) => {
-        setIsSellLoading(true);
-        setBuyQtyString(value);
-        setPrimaryQuantity(value);
-        setLastInput(value);
-
-        setIsTokenAPrimary(false);
-    };
-
-    const handleTokenAChangeEvent = useMemo(
-        () => async (value?: string) => {
+    const handleTokenAChangeEvent = useCallback(
+        async (value?: string) => {
             if (!crocEnv) return;
             setDisableReverseTokens(true);
 
@@ -233,19 +227,17 @@ function SwapTokenInput(props: propsIF) {
         },
         [
             crocEnv,
-            isPoolInitialized,
-            poolPriceDisplay,
-            tokenA.address,
-            tokenB.address,
-            slippageTolerancePercentage,
-            isTokenAPrimary,
-            sellQtyString,
-            buyQtyString,
+            setDisableReverseTokens,
+            setBuyQtyString,
+            setIsBuyLoading,
+            tokenA,
+            refreshImpact,
+            primaryQuantity,
         ],
     );
 
-    const handleTokenBChangeEvent = useMemo(
-        () => async (value?: string) => {
+    const handleTokenBChangeEvent = useCallback(
+        async (value?: string) => {
             if (!crocEnv) return;
             setDisableReverseTokens(true);
 
@@ -273,18 +265,82 @@ function SwapTokenInput(props: propsIF) {
         },
         [
             crocEnv,
-            poolPriceDisplay,
-            isPoolInitialized,
-            tokenA.address,
-            tokenB.address,
-            slippageTolerancePercentage,
-            isTokenAPrimary,
-            sellQtyString,
-            buyQtyString,
+            setDisableReverseTokens,
+            setSellQtyString,
+            setIsSellLoading,
+            tokenB,
+            refreshImpact,
+            primaryQuantity,
         ],
     );
 
-    const refreshTokenData = async () => {
+    const handleBlockUpdate = useCallback(() => {
+        if (contextMatchesParams) {
+            setDisableReverseTokens(true);
+            isTokenAPrimary
+                ? handleTokenAChangeEvent()
+                : handleTokenBChangeEvent();
+        }
+    }, [
+        contextMatchesParams,
+        handleTokenAChangeEvent,
+        handleTokenBChangeEvent,
+        isTokenAPrimary,
+        setDisableReverseTokens,
+    ]);
+
+    useEffect(() => {
+        handleBlockUpdate();
+    }, [
+        lastBlockNumber,
+        contextMatchesParams,
+        isTokenAPrimary,
+        handleBlockUpdate,
+    ]);
+
+    useEffect(() => {
+        if (shouldSwapDirectionReverse) {
+            reverseTokens(false);
+            setShouldSwapDirectionReverse(false);
+        }
+    }, [
+        reverseTokens,
+        setShouldSwapDirectionReverse,
+        shouldSwapDirectionReverse,
+    ]);
+
+    useEffect(() => {
+        if (debouncedLastInput !== undefined) {
+            isTokenAPrimary
+                ? handleTokenAChangeEvent(debouncedLastInput)
+                : handleTokenBChangeEvent(debouncedLastInput);
+        }
+    }, [
+        debouncedLastInput,
+        handleTokenAChangeEvent,
+        handleTokenBChangeEvent,
+        isTokenAPrimary,
+    ]);
+
+    const debouncedTokenAChangeEvent = (value: string) => {
+        setIsBuyLoading(true);
+        setSellQtyString(value);
+        setPrimaryQuantity(value);
+        setLastInput(value);
+
+        setIsTokenAPrimary(true);
+    };
+
+    const debouncedTokenBChangeEvent = (value: string) => {
+        setIsSellLoading(true);
+        setBuyQtyString(value);
+        setPrimaryQuantity(value);
+        setLastInput(value);
+
+        setIsTokenAPrimary(false);
+    };
+
+    const refreshTokenData = useCallback(async () => {
         if (isTokenAPrimary) {
             setIsBuyLoading(true);
             handleTokenAChangeEvent && (await handleTokenAChangeEvent());
@@ -294,12 +350,18 @@ function SwapTokenInput(props: propsIF) {
             handleTokenBChangeEvent && (await handleTokenBChangeEvent());
             setIsSellLoading(false);
         }
-    };
+    }, [
+        handleTokenAChangeEvent,
+        handleTokenBChangeEvent,
+        isTokenAPrimary,
+        setIsBuyLoading,
+        setIsSellLoading,
+    ]);
 
     // refresh token data when swap module initializes
     useEffect(() => {
         refreshTokenData();
-    }, []);
+    }, [refreshTokenData]);
 
     return (
         <FlexContainer flexDirection='column' gap={8}>

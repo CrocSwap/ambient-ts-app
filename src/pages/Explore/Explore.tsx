@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useCallback, useContext, useEffect } from 'react';
 import { FiRefreshCw } from 'react-icons/fi';
 import TopPools from '../../components/Global/Analytics/TopPools';
 import { ExploreContext } from '../../contexts/ExploreContext';
@@ -24,7 +24,7 @@ export default function Explore() {
     );
 
     // fn wrapper to get pools
-    const getPools = async (): Promise<void> => {
+    const getPools = useCallback(async (): Promise<void> => {
         // make sure crocEnv exists and pool metadata is present
         if (crocEnv && poolList.length) {
             // clear text in DOM for time since last update
@@ -34,13 +34,19 @@ export default function Explore() {
             // disable autopolling of infura
             pools.autopoll.disable();
         }
-    };
+    }, [chainData.chainId, crocEnv, poolList, pools, timeSince]);
 
     // get expanded pool metadata
     useEffect(() => {
         // prevent rapid-fire of requests to infura
         pools.autopoll.allowed && getPools();
-    }, [crocEnv, chainData.chainId, poolList.length]);
+    }, [
+        crocEnv,
+        chainData.chainId,
+        poolList.length,
+        pools.autopoll.allowed,
+        getPools,
+    ]);
 
     return (
         <Section>

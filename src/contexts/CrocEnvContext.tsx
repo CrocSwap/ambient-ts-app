@@ -2,6 +2,7 @@ import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import {
     ReactNode,
     createContext,
+    useCallback,
     useContext,
     useEffect,
     useState,
@@ -77,34 +78,37 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
-    function createDefaultUrlParams(chainId: string): UrlRoutesTemplate {
-        const [tokenA, tokenB]: [TokenIF, TokenIF] =
-            getDefaultPairForChain(chainId);
+    const createDefaultUrlParams = useCallback(
+        (chainId: string): UrlRoutesTemplate => {
+            const [tokenA, tokenB]: [TokenIF, TokenIF] =
+                getDefaultPairForChain(chainId);
 
-        // default URL params for swap and market modules
-        const swapParams: swapParamsIF = {
-            chain: chainId,
-            tokenA: tokenA.address,
-            tokenB: tokenB.address,
-        };
+            // default URL params for swap and market modules
+            const swapParams: swapParamsIF = {
+                chain: chainId,
+                tokenA: tokenA.address,
+                tokenB: tokenB.address,
+            };
 
-        // default URL params for the limit module
-        const limitParams: limitParamsIF = {
-            ...swapParams,
-        };
+            // default URL params for the limit module
+            const limitParams: limitParamsIF = {
+                ...swapParams,
+            };
 
-        // default URL params for the pool module
-        const poolParams: poolParamsIF = {
-            ...swapParams,
-        };
+            // default URL params for the pool module
+            const poolParams: poolParamsIF = {
+                ...swapParams,
+            };
 
-        return {
-            swap: linkGenSwap.getFullURL(swapParams),
-            market: linkGenMarket.getFullURL(swapParams),
-            limit: linkGenLimit.getFullURL(limitParams),
-            pool: linkGenPool.getFullURL(poolParams),
-        };
-    }
+            return {
+                swap: linkGenSwap.getFullURL(swapParams),
+                market: linkGenMarket.getFullURL(swapParams),
+                limit: linkGenLimit.getFullURL(limitParams),
+                pool: linkGenPool.getFullURL(poolParams),
+            };
+        },
+        [linkGenLimit, linkGenMarket, linkGenPool, linkGenSwap],
+    );
 
     const initUrl = createDefaultUrlParams(chainData.chainId);
     // why is this a `useState`? why not a `useRef` or a const?
@@ -116,54 +120,69 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
 
     useBlacklist(userAddress);
 
-    const setNewCrocEnv = async () => {
+    useEffect(() => {
         if (APP_ENVIRONMENT === 'local') {
             console.debug({ provider });
             console.debug({ signer });
             console.debug({ crocEnv });
             console.debug({ signerStatus });
         }
-        if (isError) {
-            console.error({ error });
-            setCrocEnv(undefined);
-        } else if (!provider && !signer) {
-            APP_ENVIRONMENT === 'local' &&
-                console.debug('setting crocEnv to undefined');
-            setCrocEnv(undefined);
-            return;
-        } else if (!signer && !!crocEnv) {
-            APP_ENVIRONMENT === 'local' && console.debug('keeping provider');
-            return;
-        } else if (provider && !crocEnv) {
-            const newCrocEnv = new CrocEnv(
-                provider,
-                signer ? signer : undefined,
-            );
-            setCrocEnv(newCrocEnv);
-        } else {
-            // If signer and provider are set to different chains (as can happen)
-            // after a network switch, it causes a lot of performance killing timeouts
-            // and errors
-            if (
-                (await signer?.getChainId()) ==
-                (await provider.getNetwork()).chainId
-            ) {
-                const newCrocEnv = new CrocEnv(
-                    provider,
-                    signer ? signer : undefined,
-                );
-                APP_ENVIRONMENT === 'local' && console.debug({ newCrocEnv });
-                setCrocEnv(newCrocEnv);
-            }
-        }
-    };
+    }, [crocEnv, provider, signer, signerStatus]);
+
+    const [chainIdFromSigner, setChainIdFromSigner] = useState<
+        number | undefined
+    >();
+    const [chainIdFromProvider, setChainIdFromProvider] = useState<
+        number | undefined
+    >();
+
     useEffect(() => {
-        setNewCrocEnv();
+        (async () => {
+            setChainIdFromSigner(await signer?.getChainId());
+        })();
+    }, [signer]);
+
+    useEffect(() => {
+        (async () => {
+            setChainIdFromProvider((await provider.getNetwork()).chainId);
+        })();
+    }, [provider]);
+
+    useEffect(() => {
+        setCrocEnv((currentCrocEnv) => {
+            if (isError) {
+                console.error({ error });
+                return undefined;
+            } else if (APP_ENVIRONMENT === 'local' && !provider && !signer) {
+                console.debug('setting crocEnv to undefined');
+                return undefined;
+            } else if (provider) {
+                if (!currentCrocEnv) {
+                    const newCrocEnv = new CrocEnv(
+                        provider,
+                        signer ? signer : undefined,
+                    );
+                    return newCrocEnv;
+                }
+            } else {
+                if (chainIdFromProvider === chainIdFromSigner) {
+                    const newCrocEnv = new CrocEnv(
+                        provider,
+                        signer ? signer : undefined,
+                    );
+                    APP_ENVIRONMENT === 'local' &&
+                        console.debug({ newCrocEnv });
+                    return newCrocEnv;
+                }
+            }
+        });
     }, [
-        crocEnv === undefined,
-        chainData.chainId,
+        chainIdFromProvider,
+        chainIdFromSigner,
+        error,
+        isError,
+        provider,
         signer,
-        activeNetwork.chainId,
     ]);
 
     useEffect(() => {
@@ -180,10 +199,11 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
                 setEthMainnetUsdPrice(usdPrice);
             })();
         }
-    }, [crocEnv, provider]);
+    }, [cachedFetchTokenPrice, crocEnv, provider]);
+
     useEffect(() => {
         setDefaultUrlParams(createDefaultUrlParams(chainData.chainId));
-    }, [chainData.chainId]);
+    }, [chainData.chainId, createDefaultUrlParams]);
 
     // data returned by this context
     const crocEnvContext = {

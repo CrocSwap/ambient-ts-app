@@ -119,6 +119,7 @@ export default function ExchangeBalance(props: propsIF) {
         userAddress,
         lastBlockNumber,
         recheckTokenBalances,
+        setTokenBalance,
     ]);
 
     useEffect(() => {

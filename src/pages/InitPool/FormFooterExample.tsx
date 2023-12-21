@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { FlexContainer, Text } from '../../styled/Common';

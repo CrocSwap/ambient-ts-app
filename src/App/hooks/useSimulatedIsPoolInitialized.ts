@@ -1,6 +1,7 @@
 import { useContext, useState, useEffect } from 'react';
 import { PoolContext } from '../../contexts/PoolContext';
 
+// TODO: we really shoudn't need something like this
 // Custom hook to simulate isPoolInitialized for the first 2 seconds
 export const useSimulatedIsPoolInitialized = () => {
     const poolContext = useContext(PoolContext);

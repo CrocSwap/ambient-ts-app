@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 // return interface for each instance of this hook
 export interface skipConfirmIF {
@@ -40,20 +40,23 @@ export const useSkipConfirm = (module: string): skipConfirmIF => {
     const [pref, setPref] = useState<boolean>(checkPref() ?? false);
 
     // fn to update tracked value and local storage in parallel
-    const updatePref = (newVal: boolean): void => {
-        // get a fresh copy of data Map from local storage
-        // this matters in case a separate instance has updated local storage
-        const prefs: Map<string, boolean> = getMapFromLocalStorage();
-        // update the relevant data in the Map
-        prefs.set(module, newVal);
-        // persist the updated Map with new data in local storage
-        localStorage.setItem(
-            localStorageKey,
-            JSON.stringify(Array.from(prefs)),
-        );
-        // update local state with the new value
-        setPref(newVal);
-    };
+    const updatePref = useCallback(
+        (newVal: boolean): void => {
+            // get a fresh copy of data Map from local storage
+            // this matters in case a separate instance has updated local storage
+            const prefs: Map<string, boolean> = getMapFromLocalStorage();
+            // update the relevant data in the Map
+            prefs.set(module, newVal);
+            // persist the updated Map with new data in local storage
+            localStorage.setItem(
+                localStorageKey,
+                JSON.stringify(Array.from(prefs)),
+            );
+            // update local state with the new value
+            setPref(newVal);
+        },
+        [module],
+    );
 
     // moduleFor ➔ which value is being reference, mainly for debugging
     // isEnabled ➔ the current persisted value held in local state
@@ -70,6 +73,6 @@ export const useSkipConfirm = (module: string): skipConfirmIF => {
             disable: () => updatePref(false),
             toggle: () => updatePref(!pref),
         }),
-        [module, pref],
+        [module, pref, updatePref],
     );
 };

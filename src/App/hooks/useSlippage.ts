@@ -70,7 +70,7 @@ export const useSlippage = (
             `slippage_${slippageType}`,
             JSON.stringify({ stable, volatile }),
         );
-    }, [stable, volatile]);
+    }, [slippageType, stable, volatile]);
 
     // return data object
     // stable ➡ number, active slippage value for stable pairs
@@ -85,6 +85,6 @@ export const useSlippage = (
             updateVolatile: setVolatile,
             presets: defaults.presets,
         }),
-        [stable, volatile],
+        [defaults.presets, stable, volatile],
     );
 };

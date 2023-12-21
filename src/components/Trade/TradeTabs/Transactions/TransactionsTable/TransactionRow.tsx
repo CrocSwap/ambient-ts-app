@@ -1,4 +1,4 @@
-import { memo, useContext, useEffect, useRef } from 'react';
+import { memo, useCallback, useContext, useEffect, useRef } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
@@ -79,14 +79,15 @@ function TransactionRow(props: propsIF) {
             ? 'accent1'
             : 'text1';
 
-    function scrollToDiv() {
+    // TODO: move into ambient-utils
+    const scrollToDiv = useCallback(() => {
         const element = document.getElementById(idForDOM);
         element?.scrollIntoView({
             behavior: 'smooth',
             block: 'end',
             inline: 'nearest',
         });
-    }
+    }, [idForDOM]);
 
     const activePositionRef = useRef(null);
 
@@ -97,7 +98,7 @@ function TransactionRow(props: propsIF) {
 
     useEffect(() => {
         tx.txId === currentTxActiveInTransactions ? scrollToDiv() : null;
-    }, [currentTxActiveInTransactions]);
+    }, [currentTxActiveInTransactions, scrollToDiv, tx.txId]);
 
     function handleOpenExplorer() {
         if (tx && blockExplorer) {

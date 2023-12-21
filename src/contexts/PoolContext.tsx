@@ -129,13 +129,13 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
             }
         })();
     }, [
-        lastBlockNumber == 0,
         baseTokenAddress,
         quoteTokenAddress,
         chainData.chainId,
         chainData.poolIndex,
-        !!crocEnv,
-        !!provider,
+        crocEnv,
+        provider,
+        lastBlockNumber,
     ]);
 
     return (

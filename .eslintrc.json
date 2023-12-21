@@ -33,7 +33,8 @@
                 "varsIgnorePattern": "^_",
                 "caughtErrorsIgnorePattern": "^_"
             }
-        ]
+        ],
+        "react-hooks/exhaustive-deps": "warn"
     },
     "settings": {
         "import/resolver": {

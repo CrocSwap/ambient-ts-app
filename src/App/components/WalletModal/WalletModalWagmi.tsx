@@ -50,7 +50,7 @@ export default function WalletModalWagmi() {
         if (!isModalOpen) {
             setPage(defaultState);
         }
-    }, [isModalOpen]);
+    }, [isModalOpen, defaultState]);
 
     const [pendingLoginDelayElapsed, setPendingLoginDelayElapsed] =
         useState(false);
@@ -76,124 +76,123 @@ export default function WalletModalWagmi() {
     // close the Connect Wallet modal only when authentication completes
     useEffect(() => {
         isUserConnected && pendingLoginDelayElapsed && closeModal();
-    }, [isUserConnected, pendingLoginDelayElapsed]);
+    }, [isUserConnected, pendingLoginDelayElapsed, closeModal]);
 
-    const learnAboutWalletsContent = (
-        <div className={styles.learn_container}>
-            <div>New to Ethereum?</div>
-            <a
-                href='https://ethereum.org/en/wallets/'
-                target='_blank'
-                rel='noreferrer'
-                aria-label='wallets'
-            >
-                Learn more about Wallets
-            </a>
-        </div>
-    );
-    const connectorsDisplay = (
-        <div className={styles.wall_buttons_container}>
-            {connectors.map((connector) => (
-                <WalletButton
-                    title={`${connector.name} ${
-                        !connector.ready ? ' (unavailable)' : ''
-                    }  ${
-                        connectIsLoading &&
-                        connector.id === pendingConnector?.id
-                            ? ' (connecting)'
-                            : ''
-                    }`}
-                    disabled={!connector.ready}
-                    key={connector.id + '|' + connector.name} // Join both to ensure uniqueness
-                    action={() => {
-                        connectUser({ connector });
-                        IS_LOCAL_ENV && console.debug({ connector });
-                        connector.name.toLowerCase() === 'metamask'
-                            ? (() => {
-                                  setPage('metamaskPending');
-                                  setPendingLoginDelayElapsed(false);
-                              })()
-                            : connector.name === 'Coinbase Wallet'
-                            ? setPage('coinbaseWalletPending')
-                            : setPage('metamaskPending');
-                    }}
-                    logo={
-                        connector.name.toLowerCase() === 'metamask'
-                            ? metamaskLogo
-                            : connector.name === 'Brave'
-                            ? braveLogo
-                            : connector.name.toLowerCase() === 'rabby'
-                            ? rabbyLogo
-                            : undefined
-                    }
-                />
-            ))}
-        </div>
-    );
-
-    const walletsPage = useMemo(
-        () => (
+    const walletsPage = useMemo(() => {
+        const learnAboutWalletsContent = (
+            <div className={styles.learn_container}>
+                <div>New to Ethereum?</div>
+                <a
+                    href='https://ethereum.org/en/wallets/'
+                    target='_blank'
+                    rel='noreferrer'
+                    aria-label='wallets'
+                >
+                    Learn more about Wallets
+                </a>
+            </div>
+        );
+        const connectorsDisplay = (
+            <div className={styles.wall_buttons_container}>
+                {connectors.map((connector) => (
+                    <WalletButton
+                        title={`${connector.name} ${
+                            !connector.ready ? ' (unavailable)' : ''
+                        }  ${
+                            connectIsLoading &&
+                            connector.id === pendingConnector?.id
+                                ? ' (connecting)'
+                                : ''
+                        }`}
+                        disabled={!connector.ready}
+                        key={connector.id + '|' + connector.name} // Join both to ensure uniqueness
+                        action={() => {
+                            connectUser({ connector });
+                            IS_LOCAL_ENV && console.debug({ connector });
+                            connector.name.toLowerCase() === 'metamask'
+                                ? (() => {
+                                      setPage('metamaskPending');
+                                      setPendingLoginDelayElapsed(false);
+                                  })()
+                                : connector.name === 'Coinbase Wallet'
+                                ? setPage('coinbaseWalletPending')
+                                : setPage('metamaskPending');
+                        }}
+                        logo={
+                            connector.name.toLowerCase() === 'metamask'
+                                ? metamaskLogo
+                                : connector.name === 'Brave'
+                                ? braveLogo
+                                : connector.name.toLowerCase() === 'rabby'
+                                ? rabbyLogo
+                                : undefined
+                        }
+                    />
+                ))}
+            </div>
+        );
+        return (
             <div className={styles.main_container}>
                 {connectorsDisplay}
                 {learnAboutWalletsContent}
             </div>
-        ),
-        [],
-    );
-
-    const metamaskPendingPage = (
-        <div className={styles.metamask_pending_container}>
-            <WaitingConfirmation
-                content={
-                    !delayForHelpTextElapsed ? (
-                        ''
-                    ) : (
-                        <div>Please check your wallet for notifications.</div>
-                    )
-                }
-            />
-        </div>
-    );
-
-    const coinbaseWalletPendingPage = (
-        <div className={styles.metamask_pending_container}>
-            <WaitingConfirmation
-                content={'Please complete authentication via WalletConnect'}
-            />
-        </div>
-    );
-
-    const metamaskErrorPage = (
-        <div className={styles.metamask_pending_container}>
-            <CircleLoaderFailed size='48' />
-            <p>The connection to your wallet was rejected. </p>
-            <Button
-                idForDOM='try_again_button_wallet_connection_error'
-                title='Try Again'
-                flat={true}
-                action={() => {
-                    setPage('wallets');
-                }}
-            />
-        </div>
-    );
-
-    const notAvailablePage = (
-        <div className={styles.metamask_pending_container}>
-            <CircleLoaderFailed size='48' />
-            <p>Ambient is not available in the United States.</p>
-            <Button
-                idForDOM='acknowledge_ambient_not_available_in_US_button'
-                title='Close'
-                flat={true}
-                action={() => {
-                    closeModal();
-                }}
-            />
-        </div>
-    );
+        );
+    }, [connectors, connectIsLoading, connectUser, setPage, pendingConnector]);
 
     const activeContent = useMemo(() => {
+        const metamaskPendingPage = (
+            <div className={styles.metamask_pending_container}>
+                <WaitingConfirmation
+                    content={
+                        !delayForHelpTextElapsed ? (
+                            ''
+                        ) : (
+                            <div>
+                                Please check your wallet for notifications.
+                            </div>
+                        )
+                    }
+                />
+            </div>
+        );
+
+        const coinbaseWalletPendingPage = (
+            <div className={styles.metamask_pending_container}>
+                <WaitingConfirmation
+                    content={'Please complete authentication via WalletConnect'}
+                />
+            </div>
+        );
+
+        const metamaskErrorPage = (
+            <div className={styles.metamask_pending_container}>
+                <CircleLoaderFailed size='48' />
+                <p>The connection to your wallet was rejected. </p>
+                <Button
+                    idForDOM='try_again_button_wallet_connection_error'
+                    title='Try Again'
+                    flat={true}
+                    action={() => {
+                        setPage('wallets');
+                    }}
+                />
+            </div>
+        );
+
+        const notAvailablePage = (
+            <div className={styles.metamask_pending_container}>
+                <CircleLoaderFailed size='48' />
+                <p>Ambient is not available in the United States.</p>
+                <Button
+                    idForDOM='acknowledge_ambient_not_available_in_US_button'
+                    title='Close'
+                    flat={true}
+                    action={() => {
+                        closeModal();
+                    }}
+                />
+            </div>
+        );
         switch (page) {
             case 'wallets':
                 return walletsPage;
@@ -205,11 +204,10 @@ export default function WalletModalWagmi() {
                 return coinbaseWalletPendingPage;
             case 'metamaskError':
                 return metamaskErrorPage;
-
             default:
                 walletsPage;
         }
-    }, [page, delayForHelpTextElapsed]);
+    }, [page, walletsPage, closeModal, delayForHelpTextElapsed]);
 
     const activeTitle = useMemo(() => {
         switch (page) {
@@ -249,7 +247,7 @@ export default function WalletModalWagmi() {
             default:
                 closeModal;
         }
-    }, [page]);
+    }, [page, closeModal]);
 
     const [recordAgreed, hasAgreedTerms, termUrls] = useTermsAgreed();
 

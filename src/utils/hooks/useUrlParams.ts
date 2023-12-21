@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo } from 'react';
+import { useCallback, useContext, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { fetchContractDetails } from '../../ambient-utils/api';
@@ -126,7 +126,7 @@ export const useUrlParams = (
                 validateAddress(val) || redirectUser();
             }
         }
-    }, [urlParamMap]);
+    }, [linkGenCurrent, requiredParams, urlParamMap]);
 
     // fn to update the current URL without a navigation event
     function updateURL(changes: updatesIF): void {
@@ -170,78 +170,90 @@ export const useUrlParams = (
 
     const tokensOnChain: TokenIF[] = tokens.tokenUniv;
 
+    const inflateProvider = useCallback(
+        (chainId: string) => {
+            if (!provider) {
+                const provider = useProvider({ chainId: parseInt(chainId) });
+                if (!provider) {
+                    console.warn(
+                        'Cannot set provider to lookup token address on chain',
+                        chainId,
+                    );
+                    return undefined;
+                }
+            }
+            return provider;
+        },
+        [provider],
+    );
+
     /* Given an address and chain ID retrieves full token context data from the useTokenMap
      * hook. */
-    async function getTokenByAddress(
-        addr: string,
-        chainId: string,
-    ): Promise<TokenIF | undefined> {
-        // Don't run until the token map has loaded. Otherwise, we may spuriously query a token
-        // on-chain that has mapped data
-        if (tokensOnChain.length === 0) {
-            return;
-        }
-        const lookup = tokens.getTokenByAddress(addr);
-        if (lookup) {
-            return lookup;
-        } else {
-            const provider = inflateProvider(chainId);
-            if (provider) {
-                return fetchContractDetails(provider, addr, chainId);
+    const getTokenByAddress = useCallback(
+        async (addr: string, chainId: string): Promise<TokenIF | undefined> => {
+            // Don't run until the token map has loaded. Otherwise, we may spuriously query a token
+            // on-chain that has mapped data
+            if (tokensOnChain.length === 0) {
+                return;
             }
-        }
-    }
-
-    function inflateProvider(chainId: string) {
-        if (!provider) {
-            provider = useProvider({ chainId: parseInt(chainId) });
-            if (!provider) {
-                console.warn(
-                    'Cannot set provider to lookup token address on chain',
-                    chainId,
-                );
-                return undefined;
+            const lookup = tokens.getTokenByAddress(addr);
+            if (lookup) {
+                return lookup;
+            } else {
+                const provider = inflateProvider(chainId);
+                if (provider) {
+                    return fetchContractDetails(provider, addr, chainId);
+                }
             }
-        }
-        return provider;
-    }
+        },
+        [inflateProvider, tokens, tokensOnChain.length],
+    );
 
-    function processOptParam(
-        paramName: validParamsType,
-        processFn: (val: string) => void,
-    ): void {
-        if (urlParamMap.has(paramName)) {
-            const paramVal = urlParamMap.get(paramName) as string;
-            processFn(paramVal);
-        }
-    }
-
-    async function resolveTokenData(
-        addrA: string,
-        addrB: string,
-        chainToUse: string,
-    ): Promise<[TokenIF, TokenIF] | undefined> {
-        const [tokenA, tokenB] = await Promise.all([
-            getTokenByAddress(addrA, chainToUse),
-            getTokenByAddress(addrB, chainToUse),
-        ]);
-
-        if (tokenA && tokenB) {
-            if (
-                tokenA.chainId == parseInt(chainToUse) &&
-                tokenB.chainId == parseInt(chainToUse)
-            ) {
-                return [tokenA, tokenB];
+    const processOptParam = useCallback(
+        (
+            paramName: validParamsType,
+            processFn: (val: string) => void,
+        ): void => {
+            if (urlParamMap.has(paramName)) {
+                const paramVal = urlParamMap.get(paramName) as string;
+                processFn(paramVal);
             }
-        }
-        return undefined;
-    }
+        },
+        [urlParamMap],
+    );
 
-    function processDefaultTokens(chainToUse: string) {
-        const [dfltA, dfltB] = getDefaultPairForChain(chainToUse);
-        setTokenA(dfltA);
-        setTokenB(dfltB);
-    }
+    const resolveTokenData = useCallback(
+        async (
+            addrA: string,
+            addrB: string,
+            chainToUse: string,
+        ): Promise<[TokenIF, TokenIF] | undefined> => {
+            const [tokenA, tokenB] = await Promise.all([
+                getTokenByAddress(addrA, chainToUse),
+                getTokenByAddress(addrB, chainToUse),
+            ]);
+
+            if (tokenA && tokenB) {
+                if (
+                    tokenA.chainId == parseInt(chainToUse) &&
+                    tokenB.chainId == parseInt(chainToUse)
+                ) {
+                    return [tokenA, tokenB];
+                }
+            }
+            return undefined;
+        },
+        [getTokenByAddress],
+    );
+
+    const processDefaultTokens = useCallback(
+        (chainToUse: string) => {
+            const [dfltA, dfltB] = getDefaultPairForChain(chainToUse);
+            setTokenA(dfltA);
+            setTokenB(dfltB);
+        },
+        [setTokenA, setTokenB],
+    );
 
     useEffect((): (() => void) => {
         let flag = true;
@@ -295,8 +307,16 @@ export const useUrlParams = (
             flag = false;
         };
     }, [
+        dfltChainId,
+        processDefaultTokens,
+        processOptParam,
+        resolveTokenData,
+        setLimitTick,
+        setTokenA,
+        setTokenB,
+        switchNetwork,
         tokensOnChain.length,
-        ...validParams.map((x: validParamsType) => urlParamMap.get(x)),
+        urlParamMap,
     ]);
 
     return {

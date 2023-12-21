@@ -14,7 +14,6 @@ import TimeFrame from './TradeChartsComponents/TimeFrame';
 import VolumeTVLFee from './TradeChartsComponents/VolumeTVLFee';
 import CurveDepth from './TradeChartsComponents/CurveDepth';
 import CurrentDataInfo from './TradeChartsComponents/CurrentDataInfo';
-import { useLocation } from 'react-router-dom';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { tradeChartTutorialSteps } from '../../../utils/tutorial/TradeChart';
 import { AppStateContext } from '../../../contexts/AppStateContext';
@@ -78,11 +77,6 @@ function TradeCharts(props: propsIF) {
         chartCanvasRef,
     } = useContext(ChartContext);
 
-    const { pathname } = useLocation();
-
-    const isMarketOrLimitModule =
-        pathname.includes('market') || pathname.includes('limit');
-
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
 
     // ---------------------TRADE DATA CALCULATIONS------------------------
@@ -121,13 +115,7 @@ function TradeCharts(props: propsIF) {
             showVolume,
             liqMode: chartSettings.poolOverlay.overlay,
         };
-    }, [
-        isMarketOrLimitModule,
-        chartSettings.poolOverlay,
-        showTvl,
-        showVolume,
-        showFeeRate,
-    ]);
+    }, [chartSettings.poolOverlay, showTvl, showVolume, showFeeRate]);
 
     // END OF CHART SETTINGS------------------------------------------------------------
 

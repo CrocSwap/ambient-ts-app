@@ -39,18 +39,21 @@ export default function Modal(props: ModalPropsIF) {
         onClose = () => null,
     } = props;
 
-    const escFunction = useCallback((event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
-            onClose();
-        }
-    }, []);
+    const escFunction = useCallback(
+        (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                onClose();
+            }
+        },
+        [onClose],
+    );
 
     useEffect(() => {
         document.addEventListener('keydown', escFunction, false);
         return () => {
             document.removeEventListener('keydown', escFunction, false);
         };
-    }, []);
+    }, [escFunction]);
 
     // jsx for the back element
     const backElement = (

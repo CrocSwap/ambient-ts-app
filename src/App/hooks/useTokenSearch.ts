@@ -11,7 +11,6 @@ export const useTokenSearch = (
     chainId: string,
     tokens: tokenMethodsIF,
     walletTokens: TokenIF[],
-    getRecentTokens: () => TokenIF[],
 ): [TokenIF[], string, Dispatch<SetStateAction<string>>, string, string] => {
     // TODO: debounce this input later
     // TODO: figure out if we need to update EVERYTHING to the debounced value
@@ -68,7 +67,7 @@ export const useTokenSearch = (
     // list of addresses of tokens in connected wallet
     const walletTknAddresses = useMemo<string[]>(
         () => walletTokens.map((wTkn: TokenIF) => wTkn.address.toLowerCase()),
-        [walletTokens.length],
+        [walletTokens],
     );
 
     // hook to update the value of outputTokens based on user input
@@ -210,10 +209,11 @@ export const useTokenSearch = (
         // will ignore changes that do not pass validation (eg adding whitespace)
     }, [
         chainId,
-        tokens.defaultTokens,
         walletTknAddresses,
-        getRecentTokens().length,
         validatedInput,
+        searchAs,
+        tokens,
+        walletTokens,
     ]);
 
     // outputTokens ➜ tokens to display in DOM

@@ -3,6 +3,7 @@
 import {
     Dispatch,
     SetStateAction,
+    useCallback,
     useContext,
     useEffect,
     useState,
@@ -53,10 +54,7 @@ export default function PositionBox(props: propsIF) {
     const [maxPrice, setMaxPrice] = useState<string | undefined>();
     const [apy, setApy] = useState<any | undefined>();
 
-    const posFingerprint = positionData.map((pos) => pos.positionId).join('|');
-    const txFingerprint = transactionsData.map((tx) => tx.txHash).join('|');
-
-    const updateIsPosition = () => {
+    const updateIsPosition = useCallback(() => {
         if (message && message.includes('0x')) {
             const hashMsg = message
                 .split(' ')
@@ -83,11 +81,11 @@ export default function PositionBox(props: propsIF) {
             setSPosition(undefined);
             props.setIsPosition(false);
         }
-    };
+    }, [message, positionData, props, transactionsData]);
 
     useEffect(() => {
         updateIsPosition();
-    }, [message, posFingerprint, txFingerprint]);
+    }, [updateIsPosition]);
 
     function financial(x: any) {
         return Number.parseFloat(x).toFixed(2);
@@ -163,7 +161,7 @@ export default function PositionBox(props: propsIF) {
                 }
             }
         }
-    }, [position]);
+    }, [isDenomBase, position]);
 
     function getPositionAdress() {
         if (position) {

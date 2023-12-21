@@ -50,7 +50,15 @@ export default function Home() {
                 setSearchParams('');
             }
         }
-    }, [switchNetwork]);
+    }, [
+        chainData.chainId,
+        chooseNetwork,
+        isUserConnected,
+        searchParams,
+        setSearchParams,
+        switchNetwork,
+    ]);
+
     if (showMobileVersion) return <MobileLandingSections />;
     return (
         <section data-testid={'home'}>

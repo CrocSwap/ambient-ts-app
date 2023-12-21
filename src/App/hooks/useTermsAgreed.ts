@@ -25,7 +25,7 @@ export const useTermsAgreed = (): [
 
     useEffect(() => {
         setAgreedVersion(localStorage.getItem('termsOfService'));
-    }, [localStorage.getItem('termsOfService')]);
+    }, []);
 
     const [hasAgreedTerms, setAgreedTerms] = useState(false);
 

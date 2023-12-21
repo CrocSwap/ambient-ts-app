@@ -47,6 +47,8 @@ export function useTokenPairAllowance(props: PoolPricingPropsIF) {
         props.lastBlockNumber,
         props.userAddress,
         recheckTokenAApproval,
+        tokenA.decimals,
+        tokenAAllowance,
     ]);
 
     // useEffect to check if user has approved CrocSwap to sell the token B
@@ -77,6 +79,8 @@ export function useTokenPairAllowance(props: PoolPricingPropsIF) {
         props.lastBlockNumber,
         props.userAddress,
         recheckTokenBApproval,
+        tokenB.decimals,
+        tokenBAllowance,
     ]);
 
     return {

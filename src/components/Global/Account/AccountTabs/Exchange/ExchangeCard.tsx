@@ -63,7 +63,13 @@ export default function ExchangeCard(props: propsIF) {
                 console.error(err);
             }
         })();
-    }, [crocEnv, token?.address, chainId]);
+    }, [
+        crocEnv,
+        chainId,
+        cachedFetchTokenPrice,
+        tokenFromMap?.symbol,
+        tokenFromMap?.address,
+    ]);
 
     const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 

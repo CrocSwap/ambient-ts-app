@@ -156,7 +156,15 @@ export const TradeTokenContextProvider = (props: {
             isTokenAEth,
             isTokenBEth,
         };
-    }, [isTokenABase, baseTokenBalance, quoteTokenBalance, tokenA, tokenB]);
+    }, [
+        isTokenABase,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
+        tokenA.address,
+        tokenB.address,
+    ]);
 
     const tradeTokenContext = {
         baseToken: {
@@ -293,6 +301,11 @@ export const TradeTokenContextProvider = (props: {
         lastBlockNumber,
         baseTokenDecimals,
         quoteTokenDecimals,
+        baseTokenBalance,
+        setTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenBalance,
+        quoteTokenDexBalance,
     ]);
 
     return (

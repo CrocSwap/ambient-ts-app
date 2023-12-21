@@ -22,7 +22,7 @@ const NotificationCenter = () => {
 
     const receivedReceiptHashes = useMemo(
         () => getReceiptTxHashes(sessionReceipts),
-        [JSON.stringify(sessionReceipts)],
+        [sessionReceipts],
     );
 
     const currentPendingTransactionsArray = pendingTransactions.filter(

@@ -11,9 +11,10 @@ export interface actionKeyIF {
 
 export function useUndoRedo(denomInBase: boolean) {
     const initialData = localStorage.getItem(CHART_ANNOTATIONS_LS_KEY);
-    const initialArray = initialData
-        ? JSON.parse(initialData)?.drawnShapes || []
-        : [];
+    const initialArray = useMemo(
+        () => (initialData ? JSON.parse(initialData)?.drawnShapes || [] : []),
+        [initialData],
+    );
 
     const [drawnShapeHistory, setDrawnShapeHistory] =
         useState<drawDataHistory[]>(initialArray);
@@ -52,7 +53,7 @@ export function useUndoRedo(denomInBase: boolean) {
         }
 
         return newActionKey;
-    }, [poolIndex, tokenA, tokenB]);
+    }, [drawActionStack, poolIndex, tokenA.address, tokenB.address]);
 
     useEffect(() => {
         initialArray.forEach((element: drawDataHistory) => {
@@ -101,7 +102,7 @@ export function useUndoRedo(denomInBase: boolean) {
                 }
             }
         });
-    }, [actionKey]);
+    }, [actionKey, denomInBase, drawActionStack, initialArray]);
 
     function deleteItem(item: drawDataHistory) {
         const actionList = drawActionStack.get(actionKey);

@@ -32,7 +32,7 @@ export function useFetchBatch<K extends keyof RequestResponseMap>(
                 setIsLoading(false);
             }
         })();
-    }, [JSON.stringify({ ...requestBody, ...options })]);
+    }, [data, options, requestBody]);
 
     return { data, isLoading, error };
 }

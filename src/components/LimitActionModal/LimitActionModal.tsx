@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers';
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useCallback } from 'react';
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
@@ -99,14 +99,14 @@ export default function LimitActionModal(props: propsIF) {
         if (!showConfirmation) {
             resetConfirmation();
         }
-    }, [txErrorCode]);
+    }, [showConfirmation]);
 
     const closeModal = () => {
         resetConfirmation();
         onClose();
     };
 
-    const updateLiq = async () => {
+    const updateLiq = useCallback(async () => {
         try {
             if (!crocEnv || !limitOrder) return;
             const pool = crocEnv.pool(limitOrder.base, limitOrder.quote);
@@ -123,13 +123,19 @@ export default function LimitActionModal(props: propsIF) {
         } catch (error) {
             console.error(error);
         }
-    };
+    }, [crocEnv, limitOrder]);
 
     useEffect(() => {
         if (crocEnv && limitOrder) {
             updateLiq();
         }
-    }, [crocEnv, lastBlockNumber, limitOrder?.limitOrderId]);
+    }, [
+        crocEnv,
+        lastBlockNumber,
+        limitOrder,
+        limitOrder.limitOrderId,
+        updateLiq,
+    ]);
 
     const averageGasUnitsForHarvestTxInGasDrops =
         type === 'Remove'
@@ -151,7 +157,11 @@ export default function LimitActionModal(props: propsIF) {
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+    }, [
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
+        averageGasUnitsForHarvestTxInGasDrops,
+    ]);
 
     const removeFn = async () => {
         if (!currentLiquidity) return;

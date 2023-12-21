@@ -213,7 +213,26 @@ function RangeDetailsModal(props: propsIF) {
                 })
                 .catch(console.error);
         }
-    }, [lastBlockNumber, !!crocEnv, !!provider, chainId]);
+    }, [
+        lastBlockNumber,
+        crocEnv,
+        provider,
+        chainId,
+        activeNetwork.graphCacheUrl,
+        position.positionType,
+        position.totalValueUSD,
+        user,
+        bidTick,
+        askTick,
+        baseTokenAddress,
+        quoteTokenAddress,
+        poolIndex,
+        tokens.tokenUniv,
+        cachedFetchTokenPrice,
+        cachedQuerySpotPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    ]);
 
     const shareComponent = (
         <div ref={detailsRef} className={styles.main_outer_container}>

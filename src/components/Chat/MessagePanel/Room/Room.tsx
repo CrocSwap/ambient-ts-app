@@ -123,6 +123,9 @@ export default function Room(props: propsIF) {
         quoteToken.symbol,
         props.selectedRoom,
         props.userCurrentPool,
+        props,
+        updateUser,
+        setShowCurrentPoolButton,
     ]);
 
     useEffect(() => {
@@ -206,7 +209,14 @@ export default function Room(props: propsIF) {
             const middleIndex = Math.ceil(favoritePoolsArray.length / 2);
             favoritePoolsArray.splice(0, middleIndex);
         }
-    }, [favePools, props.selectedRoom, rooms.length === 0]);
+    }, [
+        favePools,
+        favoritePoolsArray,
+        props.selectedRoom,
+        roomArray,
+        rooms,
+        setFavoritePoolsArray,
+    ]);
 
     const [isActive, setIsActive] = useState(false);
 

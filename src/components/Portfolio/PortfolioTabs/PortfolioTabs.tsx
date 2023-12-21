@@ -3,6 +3,7 @@ import {
     useEffect,
     useState,
     useContext,
+    useCallback,
 } from 'react';
 // START: Import JSX Functional Components
 import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
@@ -102,77 +103,31 @@ export default function PortfolioTabs(props: propsIF) {
         ? GCGO_OVERRIDE_URL + '/user_limit_orders?'
         : activeNetwork.graphCacheUrl + '/user_limit_orders?';
 
-    const getLookupUserPositions = async (accountToSearch: string) =>
-        fetch(
-            userPositionsCacheEndpoint +
-                new URLSearchParams({
-                    user: accountToSearch,
-                    chainId: chainId,
-                    ensResolution: 'true',
-                    annotate: 'true',
-                    omitEmpty: 'true',
-                    omitKnockout: 'true',
-                    addValue: 'true',
-                }),
-        )
-            .then((response) => response?.json())
-            .then((json) => {
-                const userPositions = json?.data;
-                // temporarily skip ENS fetch
-                const skipENSFetch = true;
-                if (userPositions && crocEnv && provider) {
-                    Promise.all(
-                        userPositions.map((position: PositionServerIF) => {
-                            return getPositionData(
-                                position,
-                                tokens.tokenUniv,
-                                crocEnv,
-                                provider,
-                                chainId,
-                                lastBlockNumber,
-                                cachedFetchTokenPrice,
-                                cachedQuerySpotPrice,
-                                cachedTokenDetails,
-                                cachedEnsResolve,
-                                skipENSFetch,
-                            );
-                        }),
-                    ).then((updatedPositions) => {
-                        setLookupAccountPositionData(
-                            updatedPositions.filter((p) => p.positionLiq > 0),
-                        );
-                    });
-                }
-                IS_LOCAL_ENV && console.debug('dispatch');
-            })
-            .finally(() => {
-                setDataLoadingStatus({
-                    datasetName: 'isLookupUserRangeDataLoading',
-                    loadingStatus: false,
-                });
-            });
-
-    const getLookupUserLimitOrders = async (accountToSearch: string) =>
-        fetch(
-            userLimitOrdersCacheEndpoint +
-                new URLSearchParams({
-                    user: accountToSearch,
-                    chainId: chainId,
-                    ensResolution: 'true',
-                    omitEmpty: 'true',
-                }),
-        )
-            .then((response) => response?.json())
-            .then((json) => {
-                // temporarily skip ENS fetch
-                const skipENSFetch = true;
-                const userLimitOrderStates = json?.data;
-                if (userLimitOrderStates && crocEnv && provider) {
-                    Promise.all(
-                        userLimitOrderStates.map(
-                            (limitOrder: LimitOrderServerIF) => {
-                                return getLimitOrderData(
-                                    limitOrder,
+    // TODO: move into ambient-utils
+    const getLookupUserPositions = useCallback(
+        async (accountToSearch: string) => {
+            fetch(
+                userPositionsCacheEndpoint +
+                    new URLSearchParams({
+                        user: accountToSearch,
+                        chainId: chainId,
+                        ensResolution: 'true',
+                        annotate: 'true',
+                        omitEmpty: 'true',
+                        omitKnockout: 'true',
+                        addValue: 'true',
+                    }),
+            )
+                .then((response) => response?.json())
+                .then((json) => {
+                    const userPositions = json?.data;
+                    // temporarily skip ENS fetch
+                    const skipENSFetch = true;
+                    if (userPositions && crocEnv && provider) {
+                        Promise.all(
+                            userPositions.map((position: PositionServerIF) => {
+                                return getPositionData(
+                                    position,
                                     tokens.tokenUniv,
                                     crocEnv,
                                     provider,
@@ -184,54 +139,156 @@ export default function PortfolioTabs(props: propsIF) {
                                     cachedEnsResolve,
                                     skipENSFetch,
                                 );
-                            },
-                        ),
-                    ).then((updatedLimitOrderStates) => {
-                        setLookupAccountLimitOrderData(updatedLimitOrderStates);
+                            }),
+                        ).then((updatedPositions) => {
+                            setLookupAccountPositionData(
+                                updatedPositions.filter(
+                                    (p) => p.positionLiq > 0,
+                                ),
+                            );
+                        });
+                    }
+                    IS_LOCAL_ENV && console.debug('dispatch');
+                })
+                .finally(() => {
+                    setDataLoadingStatus({
+                        datasetName: 'isLookupUserRangeDataLoading',
+                        loadingStatus: false,
                     });
-                }
-            })
-            .finally(() => {
-                setDataLoadingStatus({
-                    datasetName: 'isLookupUserOrderDataLoading',
-                    loadingStatus: false,
                 });
-            });
+        },
+        [
+            cachedEnsResolve,
+            cachedFetchTokenPrice,
+            cachedQuerySpotPrice,
+            cachedTokenDetails,
+            chainId,
+            crocEnv,
+            lastBlockNumber,
+            provider,
+            setDataLoadingStatus,
+            tokens.tokenUniv,
+            userPositionsCacheEndpoint,
+        ],
+    );
 
-    const getLookupUserTransactions = async (accountToSearch: string) => {
-        if (crocEnv && provider) {
-            fetchUserRecentChanges({
-                tokenList: tokens.tokenUniv,
-                user: accountToSearch,
-                chainId: chainId,
-                annotate: true,
-                addValue: true,
-                simpleCalc: true,
-                annotateMEV: false,
-                ensResolution: true,
-                n: 100, // fetch last 100 changes,
-                crocEnv: crocEnv,
-                graphCacheUrl: activeNetwork.graphCacheUrl,
-                provider,
-                lastBlockNumber: lastBlockNumber,
-                cachedFetchTokenPrice: cachedFetchTokenPrice,
-                cachedQuerySpotPrice: cachedQuerySpotPrice,
-                cachedTokenDetails: cachedTokenDetails,
-                cachedEnsResolve: cachedEnsResolve,
-            })
-                .then((updatedTransactions) => {
-                    if (updatedTransactions) {
-                        setLookupAccountTransactionData(updatedTransactions);
+    // TODO: move into ambient-utils
+    const getLookupUserLimitOrders = useCallback(
+        async (accountToSearch: string) => {
+            fetch(
+                userLimitOrdersCacheEndpoint +
+                    new URLSearchParams({
+                        user: accountToSearch,
+                        chainId: chainId,
+                        ensResolution: 'true',
+                        omitEmpty: 'true',
+                    }),
+            )
+                .then((response) => response?.json())
+                .then((json) => {
+                    // temporarily skip ENS fetch
+                    const skipENSFetch = true;
+                    const userLimitOrderStates = json?.data;
+                    if (userLimitOrderStates && crocEnv && provider) {
+                        Promise.all(
+                            userLimitOrderStates.map(
+                                (limitOrder: LimitOrderServerIF) => {
+                                    return getLimitOrderData(
+                                        limitOrder,
+                                        tokens.tokenUniv,
+                                        crocEnv,
+                                        provider,
+                                        chainId,
+                                        lastBlockNumber,
+                                        cachedFetchTokenPrice,
+                                        cachedQuerySpotPrice,
+                                        cachedTokenDetails,
+                                        cachedEnsResolve,
+                                        skipENSFetch,
+                                    );
+                                },
+                            ),
+                        ).then((updatedLimitOrderStates) => {
+                            setLookupAccountLimitOrderData(
+                                updatedLimitOrderStates,
+                            );
+                        });
                     }
                 })
                 .finally(() => {
                     setDataLoadingStatus({
-                        datasetName: 'isLookupUserTxDataLoading',
+                        datasetName: 'isLookupUserOrderDataLoading',
                         loadingStatus: false,
                     });
                 });
-        }
-    };
+        },
+        [
+            cachedEnsResolve,
+            cachedFetchTokenPrice,
+            cachedQuerySpotPrice,
+            cachedTokenDetails,
+            chainId,
+            crocEnv,
+            lastBlockNumber,
+            provider,
+            setDataLoadingStatus,
+            tokens.tokenUniv,
+            userLimitOrdersCacheEndpoint,
+        ],
+    );
+
+    // TODO: move into ambient-utils
+    const getLookupUserTransactions = useCallback(
+        async (accountToSearch: string) => {
+            if (crocEnv && provider) {
+                fetchUserRecentChanges({
+                    tokenList: tokens.tokenUniv,
+                    user: accountToSearch,
+                    chainId: chainId,
+                    annotate: true,
+                    addValue: true,
+                    simpleCalc: true,
+                    annotateMEV: false,
+                    ensResolution: true,
+                    n: 100, // fetch last 100 changes,
+                    crocEnv: crocEnv,
+                    graphCacheUrl: activeNetwork.graphCacheUrl,
+                    provider,
+                    lastBlockNumber: lastBlockNumber,
+                    cachedFetchTokenPrice: cachedFetchTokenPrice,
+                    cachedQuerySpotPrice: cachedQuerySpotPrice,
+                    cachedTokenDetails: cachedTokenDetails,
+                    cachedEnsResolve: cachedEnsResolve,
+                })
+                    .then((updatedTransactions) => {
+                        if (updatedTransactions) {
+                            setLookupAccountTransactionData(
+                                updatedTransactions,
+                            );
+                        }
+                    })
+                    .finally(() => {
+                        setDataLoadingStatus({
+                            datasetName: 'isLookupUserTxDataLoading',
+                            loadingStatus: false,
+                        });
+                    });
+            }
+        },
+        [
+            activeNetwork.graphCacheUrl,
+            cachedEnsResolve,
+            cachedFetchTokenPrice,
+            cachedQuerySpotPrice,
+            cachedTokenDetails,
+            chainId,
+            crocEnv,
+            lastBlockNumber,
+            provider,
+            setDataLoadingStatus,
+            tokens.tokenUniv,
+        ],
+    );
 
     useEffect(() => {
         (async () => {
@@ -257,9 +314,11 @@ export default function PortfolioTabs(props: propsIF) {
         resolvedAddress,
         connectedAccountActive,
         lastBlockNumber,
-        !!tokens.tokenUniv,
-        !!crocEnv,
-        !!provider,
+        tokens.tokenUniv,
+        crocEnv,
+        getLookupUserTransactions,
+        getLookupUserLimitOrders,
+        getLookupUserPositions,
     ]);
 
     const activeAccountPositionData = connectedAccountActive

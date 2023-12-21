@@ -32,6 +32,7 @@ export const TokenBalanceContextProvider = (props: {
         setTokenBalances(undefined);
     };
     useEffect(() => {
+        console.log('tokenbalancecontext 1');
         resetTokenBalances();
     }, [isUserConnected, userAddress]);
 

@@ -154,6 +154,10 @@ export const useTokenBalancesAndAllowances = (
         baseToken.address,
         quoteToken.address,
         lastBlockNumber,
+        baseTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenBalance,
+        quoteTokenDexBalance,
     ]);
 
     return {

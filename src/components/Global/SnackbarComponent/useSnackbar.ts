@@ -40,6 +40,6 @@ export const useSnackbar = (initialMode = false) => {
             content,
             severity,
         }),
-        [isOpen, content, severity, initialMode],
+        [isOpen, content, severity],
     );
 };

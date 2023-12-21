@@ -64,7 +64,14 @@ export default function WalletCard(props: propsIF) {
                 console.error(err);
             }
         })();
-    }, [crocEnv, tokenMapKey]);
+    }, [
+        cachedFetchTokenPrice,
+        chainId,
+        crocEnv,
+        tokenFromMap?.address,
+        tokenFromMap?.symbol,
+        tokenMapKey,
+    ]);
 
     const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 

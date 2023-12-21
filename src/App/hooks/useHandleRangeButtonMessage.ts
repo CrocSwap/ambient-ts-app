@@ -12,6 +12,7 @@ export function useHandleRangeButtonMessage(
     isPoolInitialized: boolean,
     tokenQtyCoveredByWalletBalance: number,
     amountToReduceNativeTokenQty: number,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     isMintLiqEnabled = true,
     isInitPage = false,
 ) {
@@ -74,15 +75,17 @@ export function useHandleRangeButtonMessage(
             rangeButtonErrorMessage,
         };
     }, [
-        isMintLiqEnabled,
-        tokenAmount,
-        tokenQtyCoveredByWalletBalance,
-        amountToReduceNativeTokenQty,
+        token.address,
+        token.symbol,
+        isPoolInitialized,
+        isInitPage,
         tokenBalance,
-        tokenDexBalance,
+        tokenAmount,
         isTokenInputDisabled,
         isWithdrawTokenFromDexChecked,
-        isPoolInitialized,
+        tokenDexBalance,
+        tokenQtyCoveredByWalletBalance,
+        amountToReduceNativeTokenQty,
     ]);
 
     return {
