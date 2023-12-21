@@ -3,12 +3,12 @@ import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { Chip } from '../../../../Form/Chip';
 import { FiExternalLink } from 'react-icons/fi';
-import { getPinnedPriceValuesFromTicks } from '../../../../../pages/Trade/Range/rangeFunctions';
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import {
     getFormattedNumber,
     trimString,
     getUnicodeCharacter,
+    getPinnedPriceValuesFromTicks,
 } from '../../../../../ambient-utils/dataLayer';
 import {
     RowItem,
