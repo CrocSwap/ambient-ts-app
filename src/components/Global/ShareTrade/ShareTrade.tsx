@@ -38,7 +38,7 @@ function SocialLink(props: SocialLinkPropsIF) {
     );
 }
 
-export default function ShareModal() {
+export default function ShareTrade() {
     const location = useLocation();
     // const currentUrl = location.href
     const currentPathname = location.pathname;

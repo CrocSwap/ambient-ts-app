@@ -16,7 +16,7 @@ import Button from '../../Form/Button';
 
 import TradeLinks from './TradeLinks';
 import MultiContentComponent from '../../Global/MultiStepTransaction/MultiContentComponent';
-import ShareModal from '../../Global/ShareModal/ShareModal';
+import ShareTrade from '../../Global/ShareTrade/ShareTrade';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
@@ -308,7 +308,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     const shareContent = (
         <ContentContainer {...contentContainerProps}>
             {header}
-            <ShareModal />
+            <ShareTrade />
         </ContentContainer>
     );
 
