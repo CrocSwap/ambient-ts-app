@@ -30,6 +30,14 @@ interface propsIF {
     isTokenABase: boolean;
     isPositionInRange: boolean;
     onClose: () => void;
+    activeStep: number;
+    setActiveStep: React.Dispatch<React.SetStateAction<number>>;
+    steps: {
+        label: string;
+    }[];
+    handleSetActiveContent: (newActiveContent: string) => void;
+    showStepperComponent: boolean;
+    setShowStepperComponent: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function ConfirmRepositionModal(props: propsIF) {
@@ -52,6 +60,12 @@ export default function ConfirmRepositionModal(props: propsIF) {
         isTokenABase,
         isPositionInRange,
         onClose,
+        activeStep,
+        setActiveStep,
+        steps,
+        handleSetActiveContent,
+        showStepperComponent,
+        setShowStepperComponent,
     } = props;
 
     const { tokenA, tokenB, isDenomBase } = useContext(TradeDataContext);
@@ -172,8 +186,6 @@ export default function ConfirmRepositionModal(props: propsIF) {
         </>
     );
 
-    // to shut tradeconfirmation up, needs to be moved to the reposition file(see swap, limit, range)
-    const [showStepperComponent, setShowStepperComponent] = useState(false);
     return (
         <TradeConfirmationSkeleton
             type='Reposition'
@@ -194,6 +206,10 @@ export default function ConfirmRepositionModal(props: propsIF) {
             resetConfirmation={resetConfirmation}
             poolTokenDisplay={poolTokenDisplay}
             onClose={onClose}
+            activeStep={activeStep}
+            setActiveStep={setActiveStep}
+            steps={steps}
+            handleSetActiveContent={handleSetActiveContent}
             showStepperComponent={showStepperComponent}
             setShowStepperComponent={setShowStepperComponent}
         />

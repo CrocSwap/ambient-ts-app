@@ -53,7 +53,10 @@ export default function TransactionException(props: propsIF) {
                         We apologize for this inconvenience.
                     </p>
                     <DividerDark />
-                    <p>{formattedErrorMessage}</p>
+                    <p>
+                        {formattedErrorMessage !== undefined &&
+                            formattedErrorMessage}
+                    </p>
                     <DividerDark />
                     <p>
                         Please check your wallet for notifications or try again.
