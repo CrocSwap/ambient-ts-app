@@ -4,11 +4,11 @@ import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { Chip } from '../../../../Form/Chip';
 import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
 import { FiExternalLink } from 'react-icons/fi';
-import { getPinnedPriceValuesFromTicks } from '../../../../../pages/Trade/Range/rangeFunctions';
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 import {
     trimString,
     getUnicodeCharacter,
+    getPinnedPriceValuesFromTicks,
 } from '../../../../../ambient-utils/dataLayer';
 import {
     RangeRow,

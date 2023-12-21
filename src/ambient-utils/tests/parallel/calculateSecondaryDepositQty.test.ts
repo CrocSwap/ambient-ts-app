@@ -1,4 +1,4 @@
-import { calculateSecondaryDepositQty } from '../dataLayer/functions/calculateSecondaryDepositQty';
+import { calculateSecondaryDepositQty } from '../../dataLayer/functions/calculateSecondaryDepositQty';
 
 const WBTC_DECIMALS = 8;
 const USDC_DECIMALS = 6;
