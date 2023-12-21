@@ -291,7 +291,7 @@ export async function useBatchSystemIrresponsibly() {
     if (testCount != 0) return;
 
     AnalyticsBatchRequestManager.sendFrequency = 10000; // We allow batches every 10 seconds. This is a LITTLE slow. It can be changed dynamically anytime.
-    // Meaning, if the network gets congested, this number can be randomly set, and it will govern all batch network behaviour -- period.
+    // Meaning, if the network gets congested, this number can be randomly set, and it will govern all batch network behavior -- period.
     console.log('useBatchSystemIrresponsibly running... ');
     testCount = 1;
     const sleep = (ms: number) =>

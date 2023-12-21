@@ -107,6 +107,10 @@ export default function TransactionSubmitted(props: PropsIF) {
                     ? `Reposition ${
                           isConfirmed ? 'Confirmed' : 'Successfully Submitted'
                       }`
+                    : type === 'Harvest'
+                    ? `Harvest ${
+                          isConfirmed ? 'Confirmed' : 'Successfully Submitted'
+                      }`
                     : type === 'Reset'
                     ? `Reset ${
                           isConfirmed ? 'Confirmed' : 'Successfully Submitted'

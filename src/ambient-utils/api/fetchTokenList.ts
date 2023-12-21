@@ -7,7 +7,7 @@ import { TokenListIF } from '../types/token/TokenListIF';
 
 // fn to fetch a token list asynchronously... this function creates and
 // ... returns a promise but allows the parent file to determine how to
-// ... best resolve it (mutliple fetches may be dispatched in parallel)
+// ... best resolve it (multiple fetches may be dispatched in parallel)
 export default function fetchTokenList(
     // uri for the fetch request
     uri: string,
