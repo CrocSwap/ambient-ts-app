@@ -8,9 +8,9 @@ import React, {
 import { useLocation } from 'react-router-dom';
 import { CandleContext } from './CandleContext';
 import { ChartContext } from './ChartContext';
-import { useSimulatedIsPoolInitialized } from '../App/hooks/useSimulatedIsPoolInitialized';
 import { UserDataContext } from './UserDataContext';
 import { DataLoadingContext } from './DataLoadingContext';
+import { PoolContext } from './PoolContext';
 
 // 54 is the height of the trade table header
 export const TRADE_TABLE_HEADER_HEIGHT = 54;
@@ -47,8 +47,7 @@ export const TradeTableContextProvider = (props: {
 }) => {
     const { isCandleSelected, isCandleDataNull } = useContext(CandleContext);
     const { setChartHeight, chartHeights } = useContext(ChartContext);
-
-    const isPoolInitialized = useSimulatedIsPoolInitialized();
+    const isPoolInitialized = useContext(PoolContext);
 
     const { pathname: currentLocation } = useLocation();
 
@@ -74,6 +73,7 @@ export const TradeTableContextProvider = (props: {
         useContext(DataLoadingContext);
 
     useEffect(() => {
+        console.log('tradetablecontext 0');
         if (!isUserConnected) {
             resetPoolDataLoadingStatus();
             resetConnectedUserDataLoadingStatus();
@@ -173,6 +173,7 @@ export const TradeTableContextProvider = (props: {
     }, [currentLocation, isCandleSelected]);
 
     useEffect(() => {
+        console.log('tradetablecontext 1');
         if (
             !currentTxActiveInTransactions &&
             !currentPositionActive &&
@@ -200,6 +201,7 @@ export const TradeTableContextProvider = (props: {
     ]);
 
     useEffect(() => {
+        console.log('tradetablecontext 2');
         if (isCandleDataNull && isPoolInitialized) {
             setChartHeight(chartHeights.min);
         } else {

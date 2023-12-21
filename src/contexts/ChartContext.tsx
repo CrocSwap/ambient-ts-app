@@ -60,19 +60,22 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
 
     // the max size is based on the max height, and is subtracting the minimum size of table and the padding around the drag bar
     useEffect(() => {
+        console.log('chartcontext 1');
         const updateDimension = () => {
-            setChartHeights({
-                ...chartHeights,
-                min: CHART_MIN_HEIGHT,
-                max: CHART_MAX_HEIGHT,
-                default: CHART_DEFAULT_HEIGHT,
+            setChartHeights((chartHeights) => {
+                return {
+                    ...chartHeights,
+                    min: CHART_MIN_HEIGHT,
+                    max: CHART_MAX_HEIGHT,
+                    default: CHART_DEFAULT_HEIGHT,
+                };
             });
         };
         window.addEventListener('resize', updateDimension);
         return () => {
             window.removeEventListener('resize', updateDimension);
         };
-    }, [chartHeights, CHART_MAX_HEIGHT, CHART_DEFAULT_HEIGHT]);
+    }, [CHART_MAX_HEIGHT, CHART_DEFAULT_HEIGHT]);
 
     const { pathname: currentLocation } = useLocation();
     const canvasRef = useRef(null);
@@ -122,6 +125,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     };
 
     useEffect(() => {
+        console.log('chartcontext 2');
         if (!currentLocation.startsWith('/trade')) {
             setFullScreenChart(false);
         }

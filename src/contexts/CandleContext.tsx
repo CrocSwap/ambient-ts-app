@@ -182,15 +182,21 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     );
 
     useEffect(() => {
+        console.log('candledatacontext 1');
         setCandleData(undefined);
     }, [baseTokenAddress, quoteTokenAddress, candleTimeLocal]);
 
     useEffect(() => {
+        console.log('candledatacontext 2');
         isChartEnabled && isUserOnline && fetchCandles();
-        if (isManualCandleFetchRequested)
-            setIsManualCandleFetchRequested(false);
+        setIsManualCandleFetchRequested((isManualCandleFetchRequested) => {
+            if (isManualCandleFetchRequested) {
+                return false;
+            } else {
+                return isManualCandleFetchRequested;
+            }
+        });
     }, [
-        isManualCandleFetchRequested,
         isChartEnabled,
         isUserOnline,
         candleScale.isFetchForTimeframe,
@@ -198,6 +204,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     ]);
 
     useEffect(() => {
+        console.log('candledatacontext 3');
         if (isChartEnabled && isUserOnline && candleScale.isShowLatestCandle) {
             const interval = setInterval(() => {
                 fetchCandles(true);
@@ -328,6 +335,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     );
 
     useEffect(() => {
+        console.log('candledatacontext 4');
         if (!numDurationsNeeded) return;
         if (numDurationsNeeded > 0 && numDurationsNeeded < 3000) {
             fetchCandlesByNumDurations(numDurationsNeeded);
@@ -335,6 +343,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     }, [numDurationsNeeded, isZoomRequestCanceled, fetchCandlesByNumDurations]);
 
     useEffect(() => {
+        console.log('candledatacontext 5');
         if (abortController && isZoomRequestCanceled) {
             abortController.abort();
         }

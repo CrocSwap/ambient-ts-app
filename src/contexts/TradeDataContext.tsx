@@ -96,6 +96,7 @@ export const TradeDataContextProvider = (props: {
     // rather than a context?
     const { chainData } = useAppChain();
     useEffect(() => {
+        console.log('trade data context 1');
         if (tokenA.chainId !== parseInt(chainData.chainId)) {
             const [_tokenA, _tokenB] = getDefaultPairForChain(
                 chainData.chainId,

@@ -218,10 +218,12 @@ export const GraphDataContextProvider = (props: {
     };
 
     useEffect(() => {
+        console.log('graphdatacontext 1');
         resetUserGraphData();
     }, [isUserConnected, userAddress]);
 
     useEffect(() => {
+        console.log('graphdatacontext 2');
         // This useEffect controls a series of other dispatches that fetch data on update of the user object
         // user Postions, limit orders, and recent changes are all governed here
         if (

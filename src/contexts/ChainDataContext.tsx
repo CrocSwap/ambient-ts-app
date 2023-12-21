@@ -92,6 +92,7 @@ export const ChainDataContextProvider = (props: {
 
     const BLOCK_NUM_POLL_MS = 2000;
     useEffect(() => {
+        console.log('chaindatacontext 1');
         (async () => {
             await pollBlockNum();
             // Don't use polling, useWebSocket (below)
@@ -105,7 +106,7 @@ export const ChainDataContextProvider = (props: {
             }, BLOCK_NUM_POLL_MS);
             return () => clearInterval(interval);
         })();
-    }, [chainData.nodeUrl, BLOCK_NUM_POLL_MS, pollBlockNum, chainData.wsUrl]);
+    }, [chainData.wsUrl, pollBlockNum]);
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
     const { sendMessage: sendBlockHeaderSub, lastMessage: lastNewHeadMessage } =
@@ -125,6 +126,7 @@ export const ChainDataContextProvider = (props: {
             shouldReconnect: () => SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
         });
     useEffect(() => {
+        console.log('chaindatacontext 2');
         if (lastNewHeadMessage && lastNewHeadMessage.data) {
             if (!isJsonString(lastNewHeadMessage.data)) return;
             const lastMessageData = JSON.parse(lastNewHeadMessage.data);
@@ -152,6 +154,7 @@ export const ChainDataContextProvider = (props: {
     }, [chainData.chainId, gasPriceInGwei, provider]);
 
     useEffect(() => {
+        console.log('chaindatacontext 3');
         fetchGasPrice();
     }, [fetchGasPrice, lastBlockNumber]);
 
@@ -159,6 +162,7 @@ export const ChainDataContextProvider = (props: {
     const everyFiveMinutes = Math.floor(Date.now() / 300000);
 
     useEffect(() => {
+        console.log('chaindatacontext 4');
         (async () => {
             IS_LOCAL_ENV &&
                 console.debug('fetching native token and erc20 token balances');
