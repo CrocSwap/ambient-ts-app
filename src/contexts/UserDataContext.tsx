@@ -2,12 +2,15 @@ import React, { Dispatch, SetStateAction, createContext } from 'react';
 import { useAccount, useConnect, useDisconnect, useEnsName } from 'wagmi';
 import { ConnectArgs, Connector } from '@wagmi/core';
 import { checkBlacklist } from '../ambient-utils/constants';
+import { UserXpIF } from '../ambient-utils/types';
+import { fetchUserXpData } from '../ambient-utils/api';
 
 interface UserDataContextIF {
     isUserConnected: boolean | undefined;
     userAddress: `0x${string}` | undefined;
     disconnectUser: () => void;
     connectUser: (args?: Partial<ConnectArgs> | undefined) => void;
+    connectedUserXp: ConnectedUserXpDataIF;
     connectError: Error | null;
     connectIsLoading: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -19,6 +22,12 @@ interface UserDataContextIF {
     resolvedAddressFromContext: string;
     setResolvedAddressInContext: Dispatch<SetStateAction<string>>;
 }
+
+interface ConnectedUserXpDataIF {
+    dataReceived: boolean;
+    data: UserXpIF | undefined;
+}
+
 export const UserDataContext = createContext<UserDataContextIF>(
     {} as UserDataContextIF,
 );
@@ -49,11 +58,29 @@ export const UserDataContextProvider = (props: {
     });
     const { data: ensName } = useEnsName({ address: userAddress });
 
+    const [connectedUserXp, setConnectedUserXp] =
+        React.useState<ConnectedUserXpDataIF>({
+            dataReceived: false,
+            data: undefined,
+        });
+
+    React.useEffect(() => {
+        if (userAddress) {
+            fetchUserXpData({ user: userAddress }).then((data) => {
+                setConnectedUserXp({
+                    dataReceived: true,
+                    data: data,
+                });
+            });
+        }
+    }, [userAddress]);
+
     const userDataContext: UserDataContextIF = {
         isUserConnected,
         userAddress,
         disconnectUser,
         ensName,
+        connectedUserXp,
         connectUser,
         connectors,
         connectError,

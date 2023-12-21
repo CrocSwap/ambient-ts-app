@@ -2,7 +2,7 @@ import { FlexContainer, Text } from '../../../styled/Common';
 import styles from './LevelsCard.module.css';
 import { LuCopy, LuExternalLink, LuShare2 } from 'react-icons/lu';
 import LevelLine from '../LevelLine/LevelLine';
-import { useContext, useMemo } from 'react';
+import { useContext, useMemo, useEffect } from 'react';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { trimString } from '../../../ambient-utils/dataLayer';
 import { useParams } from 'react-router-dom';
@@ -24,7 +24,8 @@ interface LevelsCardPropsIF {
 
 export default function LevelsCard(props: LevelsCardPropsIF) {
     const { levelOnly, resolvedAddress } = props;
-    const { userAddress, ensName } = useContext(UserDataContext);
+    const { userAddress, ensName, connectedUserXp } =
+        useContext(UserDataContext);
     const { address: addressFromParams } = useParams();
     const [_, copy] = useCopyToClipboard();
     const {
@@ -33,6 +34,12 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
     const {
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
+
+    useEffect(() => {
+        if (connectedUserXp?.data) {
+            console.log({ connectedUserXp });
+        }
+    }, []);
 
     const connectedAccountActive = useMemo(
         () =>
