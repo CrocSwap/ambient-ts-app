@@ -128,10 +128,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         if (isFirstFetch) {
             const controller = new AbortController();
             setAbortController(controller);
-
-            return () => {
-                controller.abort();
-            };
+            setIsZoomRequestCanceled({ value: false });
         }
         setIsFirstFetch(true);
     }, [isFirstFetch]);
@@ -297,8 +294,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                         candles: candleData.candles.concat(newCandles),
                     });
                     setCandleData(newSeries);
-                } else {
-                    setIsZoomRequestCanceled({ value: false });
                 }
             })
             .catch((e) => {
