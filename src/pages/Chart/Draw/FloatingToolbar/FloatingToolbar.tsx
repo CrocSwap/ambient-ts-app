@@ -55,6 +55,7 @@ interface FloatingToolbarProps {
         item: drawDataHistory,
         isNewShape: boolean,
         type: string,
+        updatedData: drawDataHistory | undefined,
     ) => void;
 }
 
@@ -169,14 +170,34 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                     (i) => i.time === selectedDrawnShape?.data.time,
                 );
 
-                line && (item[changedItemIndex].line.color = colorRgbaCode);
-                border && (item[changedItemIndex].border.color = colorRgbaCode);
-                background &&
-                    (item[changedItemIndex].background.color = colorRgbaCode);
+                const oldData = structuredClone(item[changedItemIndex]);
 
-                saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
+                const oldLineColor = item[changedItemIndex].line.color;
+                const oldBorderColor = item[changedItemIndex].border.color;
+                const oldBackgroundColor =
+                    item[changedItemIndex].background.color;
 
-                addDrawActionStack(item[changedItemIndex], false, 'update');
+                if (
+                    (line && oldLineColor !== colorRgbaCode) ||
+                    (border && oldBorderColor !== colorRgbaCode) ||
+                    (background && oldBackgroundColor !== colorRgbaCode)
+                ) {
+                    line && (item[changedItemIndex].line.color = colorRgbaCode);
+                    border &&
+                        (item[changedItemIndex].border.color = colorRgbaCode);
+                    background &&
+                        (item[changedItemIndex].background.color =
+                            colorRgbaCode);
+
+                    saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
+
+                    addDrawActionStack(
+                        oldData,
+                        false,
+                        'update',
+                        item[changedItemIndex],
+                    );
+                }
 
                 return item;
             });
@@ -191,12 +212,28 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                     (i) => i.time === selectedDrawnShape?.data.time,
                 );
 
-                line && (item[changedItemIndex].line.lineWidth = value);
-                border && (item[changedItemIndex].border.lineWidth = value);
+                const oldData = structuredClone(item[changedItemIndex]);
 
-                saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
+                const oldLineSize = item[changedItemIndex].line.lineWidth;
+                const oldBorderSize = item[changedItemIndex].border.lineWidth;
 
-                addDrawActionStack(item[changedItemIndex], false, 'update');
+                if (
+                    (line && oldLineSize !== value) ||
+                    (border && oldBorderSize !== value)
+                ) {
+                    line && (item[changedItemIndex].line.lineWidth = value);
+                    border && (item[changedItemIndex].border.lineWidth = value);
+
+                    saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
+
+                    addDrawActionStack(
+                        oldData,
+                        false,
+                        'update',
+                        item[changedItemIndex],
+                    );
+                }
+
                 return item;
             });
             setIsShapeEdited(true);
@@ -210,6 +247,8 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                     (i) => i.time === selectedDrawnShape?.data.time,
                 );
 
+                const oldData = structuredClone(item[changedItemIndex]);
+
                 type === 'line' && (item[changedItemIndex].line.active = value);
                 type === 'border' &&
                     (item[changedItemIndex].border.active = value);
@@ -222,7 +261,12 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 type === 'reverse' && (item[changedItemIndex].reverse = value);
 
                 saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
-                addDrawActionStack(item[changedItemIndex], false, 'update');
+                addDrawActionStack(
+                    oldData,
+                    false,
+                    'update',
+                    item[changedItemIndex],
+                );
                 return item;
             });
             setIsShapeEdited(true);
@@ -240,10 +284,27 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                     (i) => i.time === selectedDrawnShape?.data.time,
                 );
 
-                line && (item[changedItemIndex].line.dash = array);
-                border && (item[changedItemIndex].border.dash = array);
-                saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
-                addDrawActionStack(item[changedItemIndex], false, 'update');
+                const oldData = structuredClone(item[changedItemIndex]);
+
+                const oldLineDashArray = item[changedItemIndex].line.dash;
+                const oldBorderDashArray = item[changedItemIndex].border.dash;
+
+                if (
+                    (line && oldLineDashArray !== array) ||
+                    (border && oldBorderDashArray !== array)
+                ) {
+                    line && (item[changedItemIndex].line.dash = array);
+                    border && (item[changedItemIndex].border.dash = array);
+
+                    saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
+                    addDrawActionStack(
+                        oldData,
+                        false,
+                        'update',
+                        item[changedItemIndex],
+                    );
+                }
+
                 return item;
             });
             setIsShapeEdited(true);
@@ -261,11 +322,29 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                     (i) => i.time === selectedDrawnShape?.data.time,
                 );
 
-                placement && (item[changedItemIndex].labelPlacement = value);
-                alignment && (item[changedItemIndex].labelAlignment = value);
-                saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
+                const oldData = structuredClone(item[changedItemIndex]);
 
-                addDrawActionStack(item[changedItemIndex], false, 'update');
+                const oldPlacement = item[changedItemIndex].labelPlacement;
+                const oldAlignment = item[changedItemIndex].labelAlignment;
+
+                if (
+                    (placement && oldPlacement !== value) ||
+                    (alignment && oldAlignment !== value)
+                ) {
+                    placement &&
+                        (item[changedItemIndex].labelPlacement = value);
+                    alignment &&
+                        (item[changedItemIndex].labelAlignment = value);
+                    saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
+
+                    addDrawActionStack(
+                        oldData,
+                        false,
+                        'update',
+                        item[changedItemIndex],
+                    );
+                }
+
                 return item;
             });
             setIsShapeEdited(true);
@@ -506,6 +585,8 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 (i) => i.time === selectedDrawnShape?.data.time,
             );
 
+            const oldData = structuredClone(item[changedItemIndex]);
+
             if (
                 item[changedItemIndex].type === 'Brush' ||
                 item[changedItemIndex].type === 'Ray'
@@ -560,7 +641,12 @@ function FloatingToolbar(props: FloatingToolbarProps) {
 
             saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
 
-            addDrawActionStack(item[changedItemIndex], false, 'update');
+            addDrawActionStack(
+                oldData,
+                false,
+                'update',
+                item[changedItemIndex],
+            );
 
             return item;
         });
