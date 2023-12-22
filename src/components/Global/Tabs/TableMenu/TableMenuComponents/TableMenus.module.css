@@ -125,7 +125,7 @@
 .disabled_button{
     opacity: 0.5;
     pointer-events: none;
-    cursor:progress;
+    cursor:not-allowed;
 
     &:hover {
         border: 1px solid var(--text2);

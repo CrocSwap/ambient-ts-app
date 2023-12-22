@@ -78,6 +78,14 @@ export default function ConfirmRepositionModal(props: propsIF) {
         setIsDenomBaseocalToRepositionConfirm,
     ] = useState(isDenomBase);
 
+    const minPrice = isDenomBase
+        ? pinnedMinPriceDisplayTruncatedInBase
+        : pinnedMinPriceDisplayTruncatedInQuote;
+
+    const maxPrice = isDenomBase
+        ? pinnedMaxPriceDisplayTruncatedInBase
+        : pinnedMaxPriceDisplayTruncatedInQuote;
+
     const tokenAmountDisplay = (
         <section className={styles.fee_tier_display}>
             <div className={styles.fee_tier_container}>
@@ -189,8 +197,8 @@ export default function ConfirmRepositionModal(props: propsIF) {
     return (
         <TradeConfirmationSkeleton
             type='Reposition'
-            tokenA={{ token: tokenA }}
-            tokenB={{ token: tokenB }}
+            tokenA={{ token: tokenA, quantity: newBaseQtyDisplay }}
+            tokenB={{ token: tokenB, quantity: newQuoteQtyDisplay }}
             transactionHash={newRepositionTransactionHash}
             txErrorCode={txErrorCode}
             txErrorMessage={txErrorMessage}
@@ -202,6 +210,8 @@ export default function ConfirmRepositionModal(props: propsIF) {
                         : 'Send Reposition'
                     : 'Repositioning'
             }
+            minPrice={minPrice}
+            maxPrice={maxPrice}
             initiate={onSend}
             resetConfirmation={resetConfirmation}
             poolTokenDisplay={poolTokenDisplay}

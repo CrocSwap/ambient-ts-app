@@ -142,6 +142,7 @@ function RangesMenu(props: propsIF) {
     const repositionButton = (
         <DefaultTooltip
             title={isConfirmationActive ? 'Transaction in progress' : ''}
+            style={{ cursor: isConfirmationActive ? 'not-allowed' : 'default' }}
         >
             <Link
                 id={`reposition_button_${position.positionId}`}

@@ -22,6 +22,42 @@ interface StepperComponentProps {
     completedDisplay?: React.ReactNode;
     errorDisplay?: React.ReactNode;
 }
+const CustomConnector = styled(StepConnector)`
+    &.${stepConnectorClasses.alternativeLabel} {
+    }
+
+    &.${stepConnectorClasses.active} .${stepConnectorClasses.line} {
+        border-color: #7371fc;
+    }
+
+    &.${stepConnectorClasses.completed} .${stepConnectorClasses.line} {
+        border-color: #7371fc;
+    }
+    .${stepConnectorClasses.line} {
+        border-color: #61646f;
+
+        border-width: 2px;
+    }
+`;
+
+const CircularBorder = styled.div`
+    width: 24px;
+    height: 24px;
+    border: 2px solid #61646f;
+    border-radius: 50%;
+`;
+
+const CircularBorderWithExclamation = styled.div`
+    width: 24px;
+    height: 24px;
+    border: 2px solid red;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--header2-size);
+    color: #f6385b;
+`;
 
 const StepperComponent: React.FC<StepperComponentProps> = ({
     steps,
@@ -37,42 +73,6 @@ const StepperComponent: React.FC<StepperComponentProps> = ({
     const handleReset = () => {
         setActiveStep && setActiveStep(0);
     };
-    const CustomConnector = styled(StepConnector)`
-        &.${stepConnectorClasses.alternativeLabel} {
-        }
-
-        &.${stepConnectorClasses.active} .${stepConnectorClasses.line} {
-            border-color: #7371fc;
-        }
-
-        &.${stepConnectorClasses.completed} .${stepConnectorClasses.line} {
-            border-color: #7371fc;
-        }
-        .${stepConnectorClasses.line} {
-            border-color: #61646f;
-
-            border-width: 2px;
-        }
-    `;
-
-    const CircularBorder = styled.div`
-        width: 24px;
-        height: 24px;
-        border: 2px solid #61646f;
-        border-radius: 50%;
-    `;
-
-    const CircularBorderWithExclamation = styled.div`
-        width: 24px;
-        height: 24px;
-        border: 2px solid red;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: var(--header2-size);
-        color: #f6385b;
-    `;
 
     if (orientation === 'horizontal')
         return <FlexContainer>In progress</FlexContainer>;

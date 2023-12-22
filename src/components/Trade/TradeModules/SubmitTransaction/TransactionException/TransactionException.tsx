@@ -23,8 +23,9 @@ export default function TransactionException(props: propsIF) {
         ? tokenA.symbol
         : tokenB.symbol;
 
-    const formattedErrorMessage =
-        'Error Message: ' + txErrorMessage?.replace('err: ', '');
+    const formattedErrorMessage = txErrorMessage
+        ? 'Error Message: ' + txErrorMessage?.replace('err: ', '')
+        : '';
 
     return (
         <div className={styles.removal_pending}>
@@ -53,10 +54,7 @@ export default function TransactionException(props: propsIF) {
                         We apologize for this inconvenience.
                     </p>
                     <DividerDark />
-                    <p>
-                        {formattedErrorMessage !== undefined &&
-                            formattedErrorMessage}
-                    </p>
+                    <p>{formattedErrorMessage}</p>
                     <DividerDark />
                     <p>
                         Please check your wallet for notifications or try again.

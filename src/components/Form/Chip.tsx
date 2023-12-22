@@ -41,7 +41,7 @@ export const Chip = styled.button<PropsIF>`
 
     border: 1px solid var(--dark3);
     border-radius: 50px;
-    cursor: ${({ disabled }) => (disabled ? 'wait' : 'pointer')};
+    cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
 
     ${({ variant, disabled }) => {
         switch (variant) {

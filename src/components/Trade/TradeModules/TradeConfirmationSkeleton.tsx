@@ -226,7 +226,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
     );
 
     const tokensDisplay =
-        type === 'Range' ? (
+        type === 'Range' || type === 'Reposition' ? (
             rangeTokensDisplay
         ) : (
             <FlexContainer gap={8} alignItems='center' flexDirection='column'>
