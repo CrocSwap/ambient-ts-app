@@ -250,15 +250,14 @@ export default function DragCanvas(props: DragCanvasProps) {
             (item) => item.time === hoveredDrawnShape?.data.time,
         );
 
+        const { valueX, valueY } = getXandYvalueOfDrawnShape(offsetX, offsetY);
+
         const previosData = drawnShapeHistory[index].data;
 
         if (drawnShapeHistory[index].type === 'Ray') {
             previosData.forEach((data) => {
-                data.x = scaleData.xScale.invert(offsetX);
-                data.y =
-                    data.denomInBase === denomInBase
-                        ? scaleData.yScale.invert(offsetY)
-                        : 1 / scaleData.yScale.invert(offsetY);
+                data.x = valueX;
+                data.y = data.denomInBase === denomInBase ? valueY : 1 / valueY;
             });
         } else {
             const lastDataIndex = previosData.findIndex(
@@ -272,23 +271,19 @@ export default function DragCanvas(props: DragCanvasProps) {
             );
 
             if (lastDataIndex !== -1) {
-                const { valueX, valueY } = getXandYvalueOfDrawnShape(
-                    offsetX,
-                    offsetY,
-                );
                 if (hoveredDrawnShape && hoveredDrawnShape.selectedCircle) {
                     hoveredDrawnShape.selectedCircle.x = valueX;
                     hoveredDrawnShape.selectedCircle.y = valueY;
                 }
 
-                const neyYData =
+                const newYData =
                     previosData[lastDataIndex].denomInBase === denomInBase
                         ? valueY
                         : 1 / valueY;
 
-                if (neyYData > 0) {
+                if (newYData > 0) {
                     previosData[lastDataIndex].x = valueX;
-                    previosData[lastDataIndex].y = neyYData;
+                    previosData[lastDataIndex].y = newYData;
                 }
             }
         }
