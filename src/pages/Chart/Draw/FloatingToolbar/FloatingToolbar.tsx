@@ -579,6 +579,45 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         },
     ];
 
+    function checkIsDefault(item: drawDataHistory, defaultValues: any) {
+        let isLineDefault = false;
+        let isBorderDefault = false;
+        let isBackgroundDefault = false;
+
+        if (
+            item.line.active === defaultValues.line.active &&
+            item.line.color === defaultValues.line.color &&
+            item.line.dash.every((value) => item.line.dash.includes(value)) &&
+            item.line.lineWidth === defaultValues.line.lineWidth
+        ) {
+            isLineDefault = true;
+        }
+
+        if (
+            item.border.active === defaultValues.border.active &&
+            item.border.color === defaultValues.border.color &&
+            item.border.dash.every((value) =>
+                item.border.dash.includes(value),
+            ) &&
+            item.border.lineWidth === defaultValues.border.lineWidth
+        ) {
+            isBorderDefault = true;
+        }
+
+        if (
+            item.background.active === defaultValues.background.active &&
+            item.background.color === defaultValues.background.color &&
+            item.background.dash.every((value) =>
+                item.background.dash.includes(value),
+            ) &&
+            item.background.lineWidth === defaultValues.background.lineWidth
+        ) {
+            isBackgroundDefault = true;
+        }
+
+        return isLineDefault && isBorderDefault && isBackgroundDefault;
+    }
+
     function setDefaultOptions() {
         setDrawnShapeHistory((item: drawDataHistory[]) => {
             const changedItemIndex = item.findIndex(
@@ -587,66 +626,135 @@ function FloatingToolbar(props: FloatingToolbarProps) {
 
             const oldData = structuredClone(item[changedItemIndex]);
 
+            let isDefault = true;
+
             if (
                 item[changedItemIndex].type === 'Brush' ||
                 item[changedItemIndex].type === 'Ray'
             ) {
-                item[changedItemIndex] = {
-                    ...item[changedItemIndex],
-                    line: defaultLineDrawnShapeEditAttributes.line,
-                    border: defaultLineDrawnShapeEditAttributes.border,
-                    background: defaultLineDrawnShapeEditAttributes.background,
-                };
+                if (
+                    !checkIsDefault(
+                        item[changedItemIndex],
+                        defaultLineDrawnShapeEditAttributes,
+                    )
+                ) {
+                    item[changedItemIndex] = {
+                        ...item[changedItemIndex],
+                        line: structuredClone(
+                            defaultLineDrawnShapeEditAttributes.line,
+                        ),
+                        border: structuredClone(
+                            defaultLineDrawnShapeEditAttributes.border,
+                        ),
+                        background: structuredClone(
+                            defaultLineDrawnShapeEditAttributes.background,
+                        ),
+                    };
+
+                    isDefault = false;
+                }
             }
 
             if (item[changedItemIndex].type === 'Rect') {
-                item[changedItemIndex] = {
-                    ...item[changedItemIndex],
-                    line: defaultRectDrawnShapeEditAttributes.line,
-                    border: defaultRectDrawnShapeEditAttributes.border,
-                    background: defaultRectDrawnShapeEditAttributes.background,
-                };
+                if (
+                    !checkIsDefault(
+                        item[changedItemIndex],
+                        defaultRectDrawnShapeEditAttributes,
+                    )
+                ) {
+                    item[changedItemIndex] = {
+                        ...item[changedItemIndex],
+                        line: structuredClone(
+                            defaultRectDrawnShapeEditAttributes.line,
+                        ),
+                        border: structuredClone(
+                            defaultRectDrawnShapeEditAttributes.border,
+                        ),
+                        background: structuredClone(
+                            defaultRectDrawnShapeEditAttributes.background,
+                        ),
+                    };
+
+                    isDefault = false;
+                }
             }
 
             if (item[changedItemIndex].type === 'DPRange') {
-                item[changedItemIndex] = {
-                    ...item[changedItemIndex],
-                    line: defaultDpRangeDrawnShapeEditAttributes.line,
-                    border: defaultDpRangeDrawnShapeEditAttributes.border,
-                    background:
-                        defaultDpRangeDrawnShapeEditAttributes.background,
-                };
+                if (
+                    !checkIsDefault(
+                        item[changedItemIndex],
+                        defaultDpRangeDrawnShapeEditAttributes,
+                    )
+                ) {
+                    item[changedItemIndex] = {
+                        ...item[changedItemIndex],
+                        line: structuredClone(
+                            defaultDpRangeDrawnShapeEditAttributes.line,
+                        ),
+                        border: structuredClone(
+                            defaultDpRangeDrawnShapeEditAttributes.border,
+                        ),
+                        background: structuredClone(
+                            defaultDpRangeDrawnShapeEditAttributes.background,
+                        ),
+                    };
+
+                    isDefault = false;
+                }
             }
 
             if (item[changedItemIndex].type === 'FibRetracement') {
-                item[changedItemIndex] = {
-                    ...item[changedItemIndex],
-                    line: defaultFibonacciDrawnShapeEditAttributes.line,
-                    border: defaultFibonacciDrawnShapeEditAttributes.border,
-                    background:
-                        defaultFibonacciDrawnShapeEditAttributes.background,
-                    extraData:
-                        defaultFibonacciDrawnShapeEditAttributes.extraData,
-                    extendLeft:
-                        defaultFibonacciDrawnShapeEditAttributes.extendLeft,
-                    extendRight:
-                        defaultFibonacciDrawnShapeEditAttributes.extendRight,
-                    labelPlacement:
-                        defaultFibonacciDrawnShapeEditAttributes.labelPlacement,
-                    labelAlignment:
-                        defaultFibonacciDrawnShapeEditAttributes.labelAlignment,
-                    reverse: defaultFibonacciDrawnShapeEditAttributes.reverse,
-                };
+                if (
+                    !checkIsDefault(
+                        item[changedItemIndex],
+                        defaultFibonacciDrawnShapeEditAttributes,
+                    )
+                ) {
+                    item[changedItemIndex] = {
+                        ...item[changedItemIndex],
+                        line: structuredClone(
+                            defaultFibonacciDrawnShapeEditAttributes.line,
+                        ),
+                        border: structuredClone(
+                            defaultFibonacciDrawnShapeEditAttributes.border,
+                        ),
+                        background: structuredClone(
+                            defaultFibonacciDrawnShapeEditAttributes.background,
+                        ),
+                        extraData: structuredClone(
+                            defaultFibonacciDrawnShapeEditAttributes.extraData,
+                        ),
+                        extendLeft: structuredClone(
+                            defaultFibonacciDrawnShapeEditAttributes.extendLeft,
+                        ),
+                        extendRight: structuredClone(
+                            defaultFibonacciDrawnShapeEditAttributes.extendRight,
+                        ),
+                        labelPlacement: structuredClone(
+                            defaultFibonacciDrawnShapeEditAttributes.labelPlacement,
+                        ),
+                        labelAlignment: structuredClone(
+                            defaultFibonacciDrawnShapeEditAttributes.labelAlignment,
+                        ),
+                        reverse: structuredClone(
+                            defaultFibonacciDrawnShapeEditAttributes.reverse,
+                        ),
+                    };
+
+                    isDefault = false;
+                }
             }
 
-            saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
+            if (!isDefault) {
+                saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
 
-            addDrawActionStack(
-                oldData,
-                false,
-                'update',
-                item[changedItemIndex],
-            );
+                addDrawActionStack(
+                    oldData,
+                    false,
+                    'update',
+                    item[changedItemIndex],
+                );
+            }
 
             return item;
         });
