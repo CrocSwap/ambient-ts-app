@@ -71,6 +71,7 @@ interface FloatingToolbarSettingsProps {
         item: drawDataHistory,
         isNewShape: boolean,
         type: string,
+        updatedData: drawDataHistory | undefined,
     ) => void;
     colorPicker: { lineColor: string; borderColor: string; background: string };
 }
@@ -195,12 +196,24 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                     (i) => i.time === selectedDrawnShape?.data.time,
                 );
 
-                item[changedItemIndex].extraData[selectedFibLevel].color =
-                    colorRgbaCode;
+                const oldData = structuredClone(item[changedItemIndex]);
 
-                saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
+                const oldColor =
+                    item[changedItemIndex].extraData[selectedFibLevel].color;
 
-                addDrawActionStack(item[changedItemIndex], false, 'update');
+                if (oldColor !== colorRgbaCode) {
+                    item[changedItemIndex].extraData[selectedFibLevel].color =
+                        colorRgbaCode;
+
+                    saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
+
+                    addDrawActionStack(
+                        oldData,
+                        false,
+                        'update',
+                        item[changedItemIndex],
+                    );
+                }
 
                 return item;
             });
