@@ -28,20 +28,20 @@ const OptionColor = styled.div<{
         backgroundColor ? backgroundColor : '#242f3f'};
 
     filter: ${({ disabled }) =>
-        disabled ? 'brightness(0.8)' : 'brightness(1)'};
+        disabled ? 'brightness(0.6)' : 'brightness(1)'};
 
     align-items: center;
     justify-content: center;
 
     cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
 
-    box-shadow: 1px 1px 2px 1px
+    box-shadow: 0.5px 0.5px 1.5px 0.5px
         ${({ disabled }) =>
-            disabled ? 'rgba(0, 0, 0, 0.1)' : 'rgba(0, 0, 0, 0.8)'};
+            disabled ? 'rgba(0, 0, 0, 0)' : 'rgba(0, 0, 0, 0.6)'};
 
     border-radius: 1.5px;
 
-    border-width: 1.5px;
+    border-width: 0.5px;
     border-style: solid;
     border-color: #434c58;
 
