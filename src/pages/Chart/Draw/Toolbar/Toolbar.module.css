@@ -6,7 +6,6 @@
     transition: all 600ms ease-in-out;
     position: absolute;
     z-index: 1;
-   
 }
 
 .scrollableDiv {
@@ -19,9 +18,8 @@
 }
 
 .scrollableDiv::-webkit-scrollbar {
-    width: 0; 
+    width: 0;
     display: none;
-
 }
 
 .scrollableDiv::-webkit-scrollbar-thumb {
@@ -218,4 +216,56 @@
 .undo_redo_button_passive img {
     filter: invert(39%) sepia(27%) saturate(240%) hue-rotate(171deg)
         brightness(50%) contrast(82%);
+}
+
+.description_tooltip_container {
+    position: absolute;
+    z-index: 99;
+}
+
+.description_tooltip {
+    position: absolute;
+
+    display: flex;
+
+    z-index: 99;
+
+    background: var(--dark3);
+
+    box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.8);
+
+    border-radius: 4px;
+
+    height: 22px;
+    width: 125px;
+
+    left: 24px;
+    top: -17px;
+
+    padding: 2px;
+
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+
+    pointer-events: none;
+}
+
+.description_tooltip label {
+    font-size: 12px;
+    color: white;
+
+    padding: 0;
+}
+
+.tooltip_arrow {
+    position: absolute;
+
+    top: 50%;
+    right: 100%;
+
+    margin-top: -7px;
+    border-width: 7px;
+    border-style: solid;
+    border-color: transparent var(--dark3) transparent transparent;
 }

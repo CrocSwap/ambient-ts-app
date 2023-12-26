@@ -49,6 +49,7 @@ interface IconList {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     icon: any;
     label: string;
+    description: string;
 }
 
 interface undoRedoButtonList {
@@ -84,6 +85,11 @@ function Toolbar(props: ToolbarProps) {
 
     const [isHoveredUp, setIsHoveredUp] = useState(false);
     const [isHoveredDown, setIsHoveredDown] = useState(false);
+
+    const [hoveredTool, setHoveredTool] = useState<string | undefined>(
+        undefined,
+    );
+
     const handleMouseMove = () => {
         const scrollContainer = scrollContainerRef.current;
 
@@ -115,10 +121,12 @@ function Toolbar(props: ToolbarProps) {
         {
             icon: drawCross,
             label: 'Cross',
+            description: 'Crosshair',
         },
         {
             icon: drawLine,
             label: 'Brush',
+            description: 'Trend Line',
         },
         // {
         //     icon: drawAngle,
@@ -127,18 +135,22 @@ function Toolbar(props: ToolbarProps) {
         {
             icon: horizontalRay,
             label: 'Ray',
+            description: 'Horizontal Ray',
         },
         {
             icon: drawRect,
             label: 'Rect',
+            description: 'Rectangle',
         },
         {
             icon: fibRetracement,
             label: 'FibRetracement',
+            description: 'Fib Retracement',
         },
         {
             icon: dprange,
             label: 'DPRange',
+            description: 'Date & Price Range',
         },
         // Add more icons here
     ];
@@ -147,6 +159,7 @@ function Toolbar(props: ToolbarProps) {
         {
             icon: magnet,
             label: 'magnet',
+            description: 'Weak Magnet',
         },
     ];
 
@@ -286,6 +299,14 @@ function Toolbar(props: ToolbarProps) {
                                         onClick={() =>
                                             handleDrawModeChange(item)
                                         }
+                                        onMouseEnter={() =>
+                                            setHoveredTool(
+                                                () => item.description,
+                                            )
+                                        }
+                                        onMouseLeave={() =>
+                                            setHoveredTool(() => undefined)
+                                        }
                                     >
                                         <img
                                             className={
@@ -297,6 +318,28 @@ function Toolbar(props: ToolbarProps) {
                                             alt=''
                                         />
                                     </div>
+
+                                    {hoveredTool &&
+                                        hoveredTool === item.description && (
+                                            <div
+                                                className={
+                                                    styles.description_tooltip_container
+                                                }
+                                            >
+                                                <div
+                                                    className={
+                                                        styles.description_tooltip
+                                                    }
+                                                >
+                                                    <div
+                                                        className={
+                                                            styles.tooltip_arrow
+                                                        }
+                                                    ></div>
+                                                    <label>{hoveredTool}</label>
+                                                </div>
+                                            </div>
+                                        )}
                                 </div>
                             ))}
 
@@ -311,9 +354,39 @@ function Toolbar(props: ToolbarProps) {
                                         onClick={() =>
                                             handleActivateIndicator(item)
                                         }
+                                        onMouseEnter={() =>
+                                            setHoveredTool(
+                                                () => item.description,
+                                            )
+                                        }
+                                        onMouseLeave={() =>
+                                            setHoveredTool(() => undefined)
+                                        }
                                     >
                                         <img src={item.icon} alt='' />
                                     </div>
+
+                                    {hoveredTool &&
+                                        hoveredTool === item.description && (
+                                            <div
+                                                className={
+                                                    styles.description_tooltip_container
+                                                }
+                                            >
+                                                <div
+                                                    className={
+                                                        styles.description_tooltip
+                                                    }
+                                                >
+                                                    <div
+                                                        className={
+                                                            styles.tooltip_arrow
+                                                        }
+                                                    ></div>
+                                                    <label>{hoveredTool}</label>
+                                                </div>
+                                            </div>
+                                        )}
                                 </div>
                             ))}
 
