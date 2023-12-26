@@ -70,13 +70,6 @@ export default function ConfirmLimitModal(props: propsIF) {
         value: displayPoolPriceWithDenom,
     });
 
-    const localeSellString = getFormattedNumber({
-        value: parseFloat(tokenAInputQty),
-    });
-    const localeBuyString = getFormattedNumber({
-        value: parseFloat(tokenBInputQty),
-    });
-
     const startPriceString = getFormattedNumber({
         value: startDisplayPrice,
     });
@@ -154,7 +147,7 @@ export default function ConfirmLimitModal(props: propsIF) {
             statusText={
                 !showConfirmation
                     ? 'Submit Limit Order'
-                    : `Submitting Limit Order to Swap ${localeSellString} ${tokenA.symbol} for ${localeBuyString} ${tokenB.symbol}`
+                    : `Submitting Limit Order to Swap ${tokenAInputQty} ${tokenA.symbol} for ${tokenBInputQty} ${tokenB.symbol}`
             }
             poolPrice={displayPoolPriceWithDenom.toFixed(2)}
             fillEnd={endPriceString}

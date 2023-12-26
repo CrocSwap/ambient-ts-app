@@ -73,16 +73,6 @@ export default function ConfirmSwapModal(props: propsIF) {
 
     const [isDenomBaseLocal, setIsDenomBaseLocal] = useState(isDenomBase);
 
-    const localeSellString = getFormattedNumber({
-        value: parseFloat(sellQtyString),
-        abbrevThreshold: 1000000000,
-    });
-
-    const localeBuyString = getFormattedNumber({
-        value: parseFloat(buyQtyString),
-        abbrevThreshold: 1000000000,
-    });
-
     const [baselineBlockNumber, setBaselineBlockNumber] =
         useState<number>(lastBlockNumber);
 
@@ -186,7 +176,7 @@ export default function ConfirmSwapModal(props: propsIF) {
                         Expected Output
                     </Text>
                     <Text fontSize='body' color='text2'>
-                        {localeBuyString} {buyTokenData.symbol}
+                        {buyQtyString} {buyTokenData.symbol}
                     </Text>
                 </FlexContainer>
             ) : (
@@ -198,7 +188,7 @@ export default function ConfirmSwapModal(props: propsIF) {
                         Expected Input
                     </Text>
                     <Text fontSize='body' color='text2'>
-                        {localeSellString} {sellTokenData.symbol}
+                        {sellQtyString} {sellTokenData.symbol}
                     </Text>
                 </FlexContainer>
             )}
@@ -248,7 +238,7 @@ export default function ConfirmSwapModal(props: propsIF) {
             statusText={
                 !showConfirmation
                     ? 'Submit Swap'
-                    : `Swapping ${localeSellString} ${sellTokenData.symbol} for ${localeBuyString} ${buyTokenData.symbol}`
+                    : `Swapping ${sellQtyString} ${sellTokenData.symbol} for ${buyQtyString} ${buyTokenData.symbol}`
             }
             initiate={initiateSwapMethod}
             resetConfirmation={resetConfirmation}

@@ -7,10 +7,7 @@ import Button from '../../Form/Button';
 // START: Import Other Local Files
 import { TokenIF } from '../../../ambient-utils/types';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
-import {
-    getFormattedNumber,
-    uriToHttp,
-} from '../../../ambient-utils/dataLayer';
+import { uriToHttp } from '../../../ambient-utils/dataLayer';
 import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import SubmitTransaction from './SubmitTransaction/SubmitTransaction';
@@ -92,16 +89,6 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
     const [skipFutureConfirmation, setSkipFutureConfirmation] =
         useState<boolean>(false);
 
-    const formattedTokenAQuantity = getFormattedNumber({
-        value: tokenAQuantity ? parseFloat(tokenAQuantity) : undefined,
-        abbrevThreshold: 1000000000,
-    });
-
-    const formattedTokenBQuantity = getFormattedNumber({
-        value: tokenBQuantity ? parseFloat(tokenBQuantity) : undefined,
-        abbrevThreshold: 1000000000,
-    });
-
     const svgArrow = (
         <svg
             xmlns='http://www.w3.org/2000/svg'
@@ -121,7 +108,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         <>
             <ConfirmationQuantityContainer>
                 <Text fontSize='header2' color='text1'>
-                    {formattedTokenAQuantity}
+                    {tokenAQuantity}
                 </Text>
                 <FlexContainer
                     alignItems='center'
@@ -150,7 +137,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
             </FlexContainer>
             <ConfirmationQuantityContainer>
                 <Text fontSize='header2' color='text1'>
-                    {formattedTokenBQuantity}
+                    {tokenBQuantity}
                 </Text>
                 <FlexContainer
                     alignItems='center'
@@ -199,7 +186,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                     size='s'
                 />
                 <Text fontSize='body' color='text2' align='center'>
-                    {formattedTokenAQuantity} {tokenA.symbol}
+                    {tokenAQuantity} {tokenA.symbol}
                 </Text>
                 <FiPlus />
 
@@ -210,7 +197,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                     size='s'
                 />
                 <Text fontSize='body' color='text2' align='center'>
-                    {formattedTokenBQuantity} {tokenB.symbol}
+                    {tokenBQuantity} {tokenB.symbol}
                 </Text>
             </FlexContainer>
             <FlexContainer gap={8} alignItems='center'>
@@ -240,7 +227,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                         size='s'
                     />
                     <Text fontSize='body' color='text2' align='center'>
-                        {formattedTokenAQuantity} {tokenA.symbol}
+                        {tokenAQuantity} {tokenA.symbol}
                     </Text>
                     →
                     <TokenIcon
@@ -250,7 +237,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                         size='s'
                     />
                     <Text fontSize='body' color='text2' align='center'>
-                        {formattedTokenBQuantity} {tokenB.symbol}
+                        {tokenBQuantity} {tokenB.symbol}
                     </Text>
                 </FlexContainer>
                 {fillEnd && (
