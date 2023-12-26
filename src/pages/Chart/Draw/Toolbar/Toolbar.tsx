@@ -159,7 +159,7 @@ function Toolbar(props: ToolbarProps) {
         {
             icon: magnet,
             label: 'magnet',
-            description: 'Weak Magnet',
+            description: 'Magnet Mode',
         },
     ];
 
