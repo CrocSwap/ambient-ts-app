@@ -89,7 +89,18 @@ body {
     /* padding: 0 1rem; */
 }
 
+<<<<<<< HEAD
 
+=======
+footer {
+    /* To make page 100vh, turn off the footer position sticky and turn on absolute then style the footer based on route. */
+    /* position: absolute;
+  position: sticky;
+  right: 0;
+ bottom: 0; */
+    margin-top: auto;
+}
+>>>>>>> 79eec44aa6bae5fb2135e4bf6f87a8c0beb5c7cb
 
 .swap-body {
     height: calc(100vh - (var(--footer-height) + 2rem));

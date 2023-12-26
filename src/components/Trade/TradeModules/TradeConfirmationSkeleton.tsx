@@ -50,6 +50,7 @@ interface propsIF {
     minPrice?: string;
     maxPrice?: string;
     fillEnd?: string;
+    priceImpactWarning?: JSX.Element | undefined;
 }
 
 export default function TradeConfirmationSkeleton(props: propsIF) {
@@ -78,6 +79,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         minPrice,
         maxPrice,
         fillEnd,
+        // priceImpactWarning,
     } = props;
 
     const {

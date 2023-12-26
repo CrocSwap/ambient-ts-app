@@ -26,15 +26,13 @@ import {
     diffHashSig,
     isStablePair,
     truncateDecimals,
-} from '../../../ambient-utils/dataLayer';
-import { PositionIF } from '../../../ambient-utils/types';
-import { rangeTutorialSteps } from '../../../utils/tutorial/Range';
-import {
     getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
     roundDownTick,
     roundUpTick,
-} from './rangeFunctions';
+} from '../../../ambient-utils/dataLayer';
+import { PositionIF } from '../../../ambient-utils/types';
+import { rangeTutorialSteps } from '../../../utils/tutorial/Range';
 
 import { useApprove } from '../../../App/functions/approve';
 import { useHandleRangeButtonMessage } from '../../../App/hooks/useHandleRangeButtonMessage';

@@ -74,5 +74,13 @@
             "Hyperlink",
             { "name": "Link", "linkAttribute": "to" }
         ]
-    }
+    },
+    "overrides": [
+        {
+            "files": ["*.test.ts"],
+            "rules": {
+                "@typescript-eslint/no-empty-function": "off"
+            }
+        }
+    ]
 }
