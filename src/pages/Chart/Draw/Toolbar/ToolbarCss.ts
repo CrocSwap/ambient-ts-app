@@ -42,6 +42,15 @@ const ScrollableDiv = styled.div<{ height: string }>`
     overflow-x: hidden;
 
     height: ${({ height }) => height};
+
+    &::-webkit-scrollbar {
+        width: 0;
+        display: none;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: transparent;
+    }
 `;
 
 const IconCard = styled.div`
