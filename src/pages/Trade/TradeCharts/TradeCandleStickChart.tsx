@@ -707,8 +707,13 @@ function TradeCandleStickChart(props: propsIF) {
 
                     const fethcingCandles =
                         domainRight > Date.now() ? Date.now() : domainRight;
+                    const nowDate = Date.now();
 
-                    scaleData.xScale.domain([domainLeft, domainRight]);
+                    const snapDiff = nowDate % (period * 1000);
+                    const snappedTime = nowDate + (period * 1000 - snapDiff);
+
+                    const isShowLatestCandle =
+                        domainLeft < snappedTime && snappedTime < domainRight;
 
                     const minDate = 1657868400; // 15 July 2022
 
@@ -717,8 +722,11 @@ function TradeCandleStickChart(props: propsIF) {
                     if (
                         firstTime > minDate &&
                         fethcingCandles > domainLeft &&
-                        isChangeScaleChart
+                        isChangeScaleChart &&
+                        !isShowLatestCandle
                     ) {
+                        scaleData.xScale.domain([domainLeft, domainRight]);
+
                         let nCandles = Math.floor(
                             (fethcingCandles - domainLeft) / (period * 1000),
                         );
