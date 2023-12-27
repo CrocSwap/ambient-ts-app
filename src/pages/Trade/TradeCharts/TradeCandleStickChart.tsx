@@ -10,7 +10,6 @@ import {
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
 
-import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
@@ -18,6 +17,7 @@ import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 import {
     diffHashSig,
     diffHashSigLiquidity,
+    getPinnedPriceValuesFromTicks,
 } from '../../../ambient-utils/dataLayer';
 import { CandleContext } from '../../../contexts/CandleContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -74,8 +74,13 @@ function TradeCandleStickChart(props: propsIF) {
         updateURL,
     } = props;
 
-    const { candleData, isFetchingCandle, isCandleDataNull, setCandleScale } =
-        useContext(CandleContext);
+    const {
+        candleData,
+        isFetchingCandle,
+        isCandleDataNull,
+        setCandleScale,
+        candleScale,
+    } = useContext(CandleContext);
     const { chartSettings, isChangeScaleChart } = useContext(ChartContext);
     const { chainData } = useContext(CrocEnvContext);
     const { poolPriceDisplay: poolPriceWithoutDenom, isPoolInitialized } =
@@ -673,79 +678,110 @@ function TradeCandleStickChart(props: propsIF) {
                 prevFirsCandle &&
                 firtCandleTimeState
             ) {
-                const domain = scaleData.xScale.domain();
+                const isShowLatestCandle = candleScale?.isShowLatestCandle;
+                // If the last candle is displayed, chart scale according to default values when switch timeframe
+                if (isShowLatestCandle) {
+                    resetChart();
+                } else {
+                    const domain = scaleData.xScale.domain();
 
-                const diffDomain = Math.abs(domain[1] - domain[0]);
-                const factorDomain = diffDomain / (prevPeriod * 1000);
+                    const diffDomain = Math.abs(domain[1] - domain[0]);
+                    const factorDomain = diffDomain / (prevPeriod * 1000);
 
-                const domainCenter =
-                    Math.max(domain[1], domain[0]) - diffDomain / 2;
+                    const domainCenter =
+                        Math.max(domain[1], domain[0]) - diffDomain / 2;
 
-                const newDiffDomain = period * 1000 * factorDomain;
+                    const newDiffDomain = period * 1000 * factorDomain;
 
-                const d1 = domainCenter + newDiffDomain / 2;
-                const d0 = domainCenter - newDiffDomain / 2;
+                    const d1 = domainCenter + newDiffDomain / 2;
+                    const d0 = domainCenter - newDiffDomain / 2;
 
-                const domainRight =
-                    domain[1] < Date.now()
-                        ? d1
-                        : Date.now() + (newDiffDomain / 10) * 3;
-                const domainLeft =
-                    domain[1] < Date.now()
-                        ? d0
-                        : Date.now() - (newDiffDomain / 10) * 7;
+                    const domainRight =
+                        domain[1] < Date.now()
+                            ? d1
+                            : Date.now() + (newDiffDomain / 10) * 3;
+                    const domainLeft =
+                        domain[1] < Date.now()
+                            ? d0
+                            : Date.now() - (newDiffDomain / 10) * 7;
 
-                const fethcingCandles =
-                    domainRight > Date.now() ? Date.now() : domainRight;
+                    const fethcingCandles =
+                        domainRight > Date.now() ? Date.now() : domainRight;
+                    const nowDate = Date.now();
 
-                scaleData.xScale.domain([domainLeft, domainRight]);
+                    const snapDiff = nowDate % (period * 1000);
+                    const snappedTime = nowDate + (period * 1000 - snapDiff);
 
-                const minDate = 1657868400; // 15 July 2022
+                    const isShowLatestCandle =
+                        domainLeft < snappedTime && snappedTime < domainRight;
 
-                let firstTime = Math.floor(fethcingCandles / 1000);
+                    const minDate = 1657868400; // 15 July 2022
 
-                if (
-                    firstTime > minDate &&
-                    fethcingCandles > domainLeft &&
-                    isChangeScaleChart
-                ) {
-                    let nCandles = Math.floor(
-                        (fethcingCandles - domainLeft) / (period * 1000),
-                    );
+                    let firstTime = Math.floor(fethcingCandles / 1000);
 
-                    if (nCandles < 139) {
-                        const nDiffFirstTime = Math.floor(
-                            (Date.now() - firstTime * 1000) / (period * 1000),
+                    if (
+                        firstTime > minDate &&
+                        fethcingCandles > domainLeft &&
+                        isChangeScaleChart &&
+                        !isShowLatestCandle
+                    ) {
+                        scaleData.xScale.domain([domainLeft, domainRight]);
+
+                        let nCandles = Math.floor(
+                            (fethcingCandles - domainLeft) / (period * 1000),
                         );
 
-                        const tempFirstTime =
-                            firstTime + period * nDiffFirstTime;
-                        if (nDiffFirstTime < 139 && nCandles > 5) {
-                            firstTime = tempFirstTime;
-                            nCandles = nCandles + (nDiffFirstTime + 100);
-                        } else {
-                            firstTime = firstTime + period * 100;
-                            nCandles = 200;
-                        }
-                    }
+                        if (nCandles < 139) {
+                            const nDiffFirstTime = Math.floor(
+                                (Date.now() - firstTime * 1000) /
+                                    (period * 1000),
+                            );
 
-                    setCandleScale((prev: CandleScaleIF) => {
-                        return {
-                            isFetchForTimeframe: !prev.isFetchForTimeframe,
-                            lastCandleDate: firstTime,
-                            nCandles: nCandles,
-                            isShowLatestCandle: false,
-                        };
-                    });
-                } else {
-                    // resets the graph if the calculated domain is less than the value with min time
-                    resetChart();
+                            const tempFirstTime =
+                                firstTime + period * nDiffFirstTime;
+                            if (nDiffFirstTime < 139 && nCandles > 5) {
+                                firstTime = tempFirstTime;
+                                nCandles = nCandles + (nDiffFirstTime + 100);
+                            } else {
+                                firstTime = firstTime + period * 100;
+                                nCandles =
+                                    Math.floor(
+                                        Math.abs(
+                                            firstTime - domainLeft / 1000,
+                                        ) / period,
+                                    ) + 10;
+                            }
+                        }
+
+                        setCandleScale((prev: CandleScaleIF) => {
+                            return {
+                                isFetchForTimeframe: !prev.isFetchForTimeframe,
+                                lastCandleDate: firstTime,
+                                nCandles: nCandles,
+                                isShowLatestCandle: false,
+                            };
+                        });
+                    } else {
+                        // resets the graph if the calculated domain is less than the value with min time
+                        resetChart();
+                    }
                 }
             }
             setPrevFirsCandle(() => firtCandleTimeState);
             setPrevPeriod(() => period);
         }
     }, [period, diffHashSig(unparsedCandleData)]);
+
+    // If the last candle is displayed, chart scale according to default values when switch pool
+    useEffect(() => {
+        if (candleScale.isShowLatestCandle) {
+            const timer = setTimeout(() => {
+                resetChart();
+            }, 300);
+
+            return () => clearTimeout(timer);
+        }
+    }, [tokenPair]);
 
     const resetChart = () => {
         if (scaleData && unparsedCandleData) {

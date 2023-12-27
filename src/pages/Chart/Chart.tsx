@@ -21,11 +21,6 @@ import {
     tickToPrice,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
-import {
-    getPinnedPriceValuesFromDisplayPrices,
-    getPinnedPriceValuesFromTicks,
-    getPinnedTickFromDisplayPrice,
-} from '../Trade/Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import useHandleSwipeBack from '../../utils/hooks/useHandleSwipeBack';
 import { candleTimeIF } from '../../App/hooks/useChartSettings';
@@ -34,6 +29,9 @@ import {
     diffHashSig,
     diffHashSigChart,
     diffHashSigScaleData,
+    getPinnedPriceValuesFromDisplayPrices,
+    getPinnedPriceValuesFromTicks,
+    getPinnedTickFromDisplayPrice,
 } from '../../ambient-utils/dataLayer';
 import { CandleContext } from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
@@ -376,7 +374,18 @@ export default function Chart(props: propsIF) {
                 ...item,
                 isFakeData: false,
             }));
-        if (poolPriceWithoutDenom && data && data.length > 0) {
+
+        const nowDate = Date.now();
+
+        const snapDiff = nowDate % (period * 1000);
+        const snappedTime = nowDate + (period * 1000 - snapDiff);
+
+        if (
+            poolPriceWithoutDenom &&
+            data &&
+            data.length > 0 &&
+            data[0].time + period === snappedTime / 1000
+        ) {
             const closePriceWithDenom =
                 data[0].invPriceCloseExclMEVDecimalCorrected;
             const poolPriceWithDenom = 1 / poolPriceWithoutDenom;
@@ -478,6 +487,10 @@ export default function Chart(props: propsIF) {
     });
 
     const toolbarWidth = isToolbarOpen ? 40 : 10;
+
+    const [prevlastCandleTime, setPrevLastCandleTime] = useState<number>(
+        lastCandleData.time,
+    );
     const [lastCandleDataCenterX, setLastCandleDataCenterX] = useState(0);
     const [lastCandleDataCenterY, setLastCandleDataCenterY] = useState(0);
 
@@ -779,9 +792,14 @@ export default function Chart(props: propsIF) {
 
             domainMax = domainMax < minDate ? minDate : domainMax;
 
+            const nowDate = Date.now();
+
+            const snapDiff = nowDate % (period * 1000);
+            const snappedTime = nowDate + (period * 1000 - snapDiff);
+
             const isShowLatestCandle =
-                xDomain[0] < lastCandleData?.time * 1000 &&
-                lastCandleData?.time * 1000 < xDomain[1];
+                xDomain[0] < snappedTime * 1000 &&
+                snappedTime * 1000 < xDomain[1];
 
             setCandleScale((prev: CandleScaleIF) => {
                 return {
@@ -792,12 +810,7 @@ export default function Chart(props: propsIF) {
                 };
             });
         }
-    }, [
-        diffHashSigScaleData(scaleData, 'x'),
-        lastCandleData,
-        period,
-        isChartZoom,
-    ]);
+    }, [diffHashSigScaleData(scaleData, 'x'), period, isChartZoom]);
 
     useEffect(() => {
         if (isChartZoom) {
@@ -2224,6 +2237,8 @@ export default function Chart(props: propsIF) {
             const centerX = snappedTime;
             const diff =
                 (localInitialDisplayCandleCount * period * 1000) / xAxisBuffer;
+
+            setPrevLastCandleTime(snappedTime / 1000);
 
             scaleData?.xScale.domain([
                 centerX - diff * xAxisBuffer,
@@ -4669,7 +4684,7 @@ export default function Chart(props: propsIF) {
             }
         });
 
-        const minHeight = avaregeHeight / unparsedCandleData.length;
+        const minHeight = avaregeHeight / visibleCandleData.length;
 
         longestValue = longestValue / 2;
 
@@ -4774,7 +4789,7 @@ export default function Chart(props: propsIF) {
             props.setCurrentVolumeData(nearest?.volumeUSD);
         } else if (selectedDate) {
             props.setCurrentVolumeData(
-                unparsedCandleData.find(
+                visibleCandleData.find(
                     (item: CandleDataIF) => item.time * 1000 === selectedDate,
                 )?.volumeUSD,
             );
@@ -4850,7 +4865,7 @@ export default function Chart(props: propsIF) {
             if (selectedDate === undefined || selectedDate !== _selectedDate) {
                 props.setCurrentData(nearest);
 
-                const volumeData = unparsedCandleData.find(
+                const volumeData = visibleCandleData.find(
                     (item: CandleDataIF) => item.time * 1000 === _selectedDate,
                 ) as CandleDataIF;
 
@@ -5007,7 +5022,7 @@ export default function Chart(props: propsIF) {
     // Candle transactions
     useEffect(() => {
         if (selectedDate !== undefined) {
-            const candle = unparsedCandleData.find(
+            const candle = visibleCandleData.find(
                 (candle: CandleDataIF) => candle.time * 1000 === selectedDate,
             );
 
@@ -5017,7 +5032,7 @@ export default function Chart(props: propsIF) {
         } else {
             props.changeState(false, undefined);
         }
-    }, [selectedDate, unparsedCandleData]);
+    }, [selectedDate, visibleCandleData]);
 
     const onBlurRange = (
         range: lineValue[],
@@ -5273,6 +5288,8 @@ export default function Chart(props: propsIF) {
                             selectedDate={selectedDate}
                             showLatest={showLatest}
                             setBandwidth={setBandwidth}
+                            prevlastCandleTime={prevlastCandleTime}
+                            setPrevLastCandleTime={setPrevLastCandleTime}
                         />
 
                         <VolumeBarCanvas

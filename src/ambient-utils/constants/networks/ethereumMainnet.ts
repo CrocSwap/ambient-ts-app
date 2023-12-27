@@ -11,9 +11,15 @@ import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 import { GCGO_ETHEREUM_URL } from '../gcgo';
 
+const PROVIDER_KEY =
+    process.env.NODE_ENV === 'test'
+        ? process.env.PROVIDER_KEY
+        : process.env.REACT_APP_INFURA_KEY;
+
 export const ethereumMainnet: NetworkIF = {
     chainId: '0x1',
     graphCacheUrl: GCGO_ETHEREUM_URL,
+    evmRpcUrl: 'https://mainnet.infura.io/v3/' + PROVIDER_KEY,
     wagmiChain,
     shouldPollBlock: false,
     marketData: '0x1',
