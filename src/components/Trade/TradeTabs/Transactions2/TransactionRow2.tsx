@@ -71,8 +71,8 @@ export default function TransactionRow2(props: propsIF) {
                     />
                 );
             } else if (elemMeta[0] === 'txSide') {
-                console.log('rendering this one!')
-                elemForDOM === <TxSide tx={tx} isAccountPage={isAccountPage} width={elemMeta[1]} />;
+                console.log('rendering this one!');
+                elemForDOM = <TxSide tx={tx} isAccountPage={isAccountPage} width={elemMeta[1]} />;
             } else if (elemMeta[0] === 'txValue') {
                 elemForDOM = <TxValue width={elemMeta[1]} tx={tx} />;
             } else if (elemMeta[0] === 'overflowBtn') {

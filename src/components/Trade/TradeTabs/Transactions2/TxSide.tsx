@@ -12,6 +12,7 @@ interface propsIF {
 
 export default function TxSide(props: propsIF) {
     const { tx, isAccountPage, width } = props;
+    console.log(tx);
 
     // whether denomination is displayed in terms of base token
     const { isDenomBase } = useContext(TradeDataContext);
@@ -24,6 +25,7 @@ export default function TxSide(props: propsIF) {
     const isBuy: boolean = tx.isBuy === true || tx.isBid === true;
 
     // side of transaction
+    // we really should find a better way to write this logic
     const sideType: 'remove'|'harvest'|'add'|'buy'|'sell'|'claim' =
         tx.entityType === 'liqchange'
             ? tx.changeType === 'burn'
@@ -73,6 +75,17 @@ export default function TxSide(props: propsIF) {
         ? baseChar
         : quoteChar;
 
+    // display text string for the DOM
+    let displayText: string = sideType;
+    // add a currency charachter to the display string if relevant
+    if (
+        tx.entityType === 'liqchange' ||
+        tx.changeType === 'burn' ||
+        tx.changeType === 'recover'
+    ) {
+        displayText += ` ${sideCharacter}`;
+    }
+
     return (
         <RowItem
             type={sideType}
@@ -81,11 +94,7 @@ export default function TxSide(props: propsIF) {
             tabIndex={0}
             width={width}
         >
-            {tx.entityType === 'liqchange' ||
-            tx.changeType === 'burn' ||
-            tx.changeType === 'recover'
-                ? `${sideType}`
-                : `${sideType} ${sideCharacter}`}
+            {displayText}
         </RowItem>
     );
 };
