@@ -26,6 +26,7 @@ export default function Level(props: LevelPropsIF) {
         isLevelOnly,
     } = props;
     const { userAddress, connectedUserXp } = useContext(UserDataContext);
+    const { address: addressFromParams } = useParams();
 
     const ensNameToDisplay = ensNameAvailable
         ? ensName
@@ -41,17 +42,19 @@ export default function Level(props: LevelPropsIF) {
         ? resolvedAddress.toLowerCase()
         : userAddress?.toLowerCase() ?? '';
 
+    console.log({ jazziconsSeed });
+    console.log({ addressToDisplay });
+
     const myJazzicon = (
         <Jazzicon diameter={50} seed={jsNumberForAddress(jazziconsSeed)} />
     );
 
+    const isUserPage = addressFromParams === ensNameToDisplay;
     const jazziconsToDisplay =
-        (resolvedAddress || connectedAccountActive) && myJazzicon
+        resolvedAddress || connectedAccountActive || (isUserPage && myJazzicon)
             ? myJazzicon
             : null;
-
-    const { address: addressFromParams } = useParams();
-    const isUserPage = addressFromParams === ensNameToDisplay;
+    console.log({ jazziconsToDisplay, connectedAccountActive });
 
     const xpData =
         isUserPage ||
