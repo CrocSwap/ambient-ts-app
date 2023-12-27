@@ -12,7 +12,6 @@ interface propsIF {
 
 export default function TxSide(props: propsIF) {
     const { tx, isAccountPage, width } = props;
-    console.log(tx);
 
     // whether denomination is displayed in terms of base token
     const { isDenomBase } = useContext(TradeDataContext);

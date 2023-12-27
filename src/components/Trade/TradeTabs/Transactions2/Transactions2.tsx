@@ -151,7 +151,7 @@ export default function Transactions2(props: propsIF) {
             )),
         [columnsToRender.current.length, openMenuRow, transactionsData.length],
     );
-    console.log(columnsToRender.current);
+
     return (
         <ol className={styles.tx_ol} ref={containerRef}>
             {transactionRows}
