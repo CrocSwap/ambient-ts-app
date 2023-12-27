@@ -425,3 +425,15 @@ export const getInitialDisplayCandleCount = (mobileView: boolean) => {
 
     return initialDisplayCandleCount;
 };
+
+export const findSnapTime = (timeSeconds: number, period: number) => {
+    const snapDiff = timeSeconds % (period * 1000);
+
+    const snappedTime =
+        timeSeconds -
+        (snapDiff > period * 1000 - snapDiff
+            ? -1 * (period * 1000 - snapDiff)
+            : snapDiff);
+
+    return snappedTime;
+};
