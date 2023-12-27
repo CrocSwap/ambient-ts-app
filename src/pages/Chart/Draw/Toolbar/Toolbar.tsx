@@ -1,5 +1,4 @@
 import React, { MutableRefObject, useContext, useRef, useState } from 'react';
-import styles from './Toolbar.module.css';
 import drawLine from '../../../../assets/images/icons/draw/draw_line.svg';
 import drawCross from '../../../../assets/images/icons/draw/draw_cross.svg';
 import drawRect from '../../../../assets/images/icons/draw/rect.svg';
@@ -20,6 +19,23 @@ import { ArrowContainer } from '../../../../styled/Components/Chart';
 import { useMediaQuery } from '@material-ui/core';
 import { actionKeyIF, actionStackIF } from '../../ChartUtils/useUndoRedo';
 import { xAxisHeightPixel } from '../../ChartUtils/chartConstants';
+import HoveredTooltip from './HoveredTooltip';
+import {
+    ArrowContainerContainer,
+    ArrowRight,
+    Divider,
+    DividerButton,
+    DividerContainer,
+    DrawlistContainer,
+    IconActive,
+    IconActiveContainer,
+    IconCard,
+    IconFillContainer,
+    ScrollableDiv,
+    ToolbarContainer,
+    UndoButtonSvg,
+    UndoRedoButtonActive,
+} from './ToolbarCss';
 
 interface ToolbarProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -221,36 +237,32 @@ function Toolbar(props: ToolbarProps) {
     };
 
     const upScroll = (
-        <div
-            className={styles.arrowContainer_container}
-            style={{
-                width: toolbarRef.current
-                    ? `${toolbarRef.current.clientWidth + 7}px`
-                    : 'auto',
-
-                left: -8,
-            }}
+        <ArrowContainerContainer
             onClick={() => handleScroll('up')}
+            width={
+                toolbarRef.current
+                    ? `${toolbarRef.current.clientWidth + 7}px`
+                    : 'auto'
+            }
         >
             <ArrowContainer degree={315} style={{ marginBottom: '1px' }} />
-        </div>
+        </ArrowContainerContainer>
     );
 
     const downScroll = (
-        <div
-            className={styles.arrowContainer_container}
+        <ArrowContainerContainer
+            onClick={() => handleScroll('down')}
+            width={
+                toolbarRef.current
+                    ? `${toolbarRef.current.clientWidth + 7}px`
+                    : 'auto'
+            }
             style={{
                 top: d3ContainerHeight - xAxisHeightPixel + 'px',
-                position: 'absolute',
-                width: toolbarRef.current
-                    ? `${toolbarRef.current.clientWidth + 7}px`
-                    : 'auto',
-                left: -8,
             }}
-            onClick={() => handleScroll('down')}
         >
             <ArrowContainer degree={135} style={{ marginTop: '3px' }} />
-        </div>
+        </ArrowContainerContainer>
     );
 
     const handleDeleteAll = () => {
@@ -260,42 +272,25 @@ function Toolbar(props: ToolbarProps) {
     };
 
     return (
-        <div
-            className={` ${
-                isToolbarOpen ? styles.toolbar_container_active : ''
-            } ${styles.toolbar_container} `}
+        <ToolbarContainer
+            isActive={isToolbarOpen}
             id='toolbar_container'
             ref={toolbarRef}
-            style={{
-                backgroundColor: mobileView ? 'var(--dark1)' : 'var(--dark2)',
-            }}
+            backgroundColor={mobileView ? 'var(--dark1)' : 'var(--dark2)'}
             onMouseLeave={handleMouseLeave}
             onMouseMove={handleMouseMove}
         >
-            <div
-                className={` ${
-                    isToolbarOpen ? styles.drawlist_container_active : ''
-                } ${styles.drawlist_container} `}
-            >
-                <div
-                    className={styles.scrollableDiv}
+            <DrawlistContainer isActive={isToolbarOpen}>
+                <ScrollableDiv
                     ref={scrollContainerRef}
-                    style={{
-                        height:
-                            d3ContainerHeight - (xAxisHeightPixel - 2) + 'px',
-                    }}
+                    height={d3ContainerHeight - (xAxisHeightPixel - 2) + 'px'}
                 >
                     {isHoveredUp && upScroll}
                     {isToolbarOpen && (
                         <>
                             {drawIconList.map((item, index) => (
-                                <div key={index} className={styles.icon_card}>
-                                    <div
-                                        className={
-                                            activeDrawingType === 'Cross'
-                                                ? styles.icon_active_container
-                                                : styles.icon_inactive_container
-                                        }
+                                <IconCard key={index}>
+                                    <IconActiveContainer
                                         onClick={() =>
                                             handleDrawModeChange(item)
                                         }
@@ -308,49 +303,28 @@ function Toolbar(props: ToolbarProps) {
                                             setHoveredTool(() => undefined)
                                         }
                                     >
-                                        <img
-                                            className={
+                                        <IconActive
+                                            isActive={
                                                 activeDrawingType === item.label
-                                                    ? styles.icon_active
-                                                    : styles.icon_inactive
                                             }
                                             src={item.icon}
                                             alt=''
                                         />
-                                    </div>
+                                    </IconActiveContainer>
 
                                     {hoveredTool &&
                                         hoveredTool === item.description && (
-                                            <div
-                                                className={
-                                                    styles.description_tooltip_container
-                                                }
-                                            >
-                                                <div
-                                                    className={
-                                                        styles.description_tooltip
-                                                    }
-                                                >
-                                                    <div
-                                                        className={
-                                                            styles.tooltip_arrow
-                                                        }
-                                                    ></div>
-                                                    <label>{hoveredTool}</label>
-                                                </div>
-                                            </div>
+                                            <HoveredTooltip
+                                                hoveredTool={hoveredTool}
+                                            ></HoveredTooltip>
                                         )}
-                                </div>
+                                </IconCard>
                             ))}
 
                             {indicatorIconList.map((item, index) => (
-                                <div key={index} className={styles.icon_card}>
-                                    <div
-                                        className={
-                                            isMagnetActive.value
-                                                ? styles.icon_fill_container
-                                                : styles.icon_inactive_container
-                                        }
+                                <IconCard key={index}>
+                                    <IconFillContainer
+                                        isActive={isMagnetActive.value}
                                         onClick={() =>
                                             handleActivateIndicator(item)
                                         }
@@ -363,48 +337,31 @@ function Toolbar(props: ToolbarProps) {
                                             setHoveredTool(() => undefined)
                                         }
                                     >
-                                        <img src={item.icon} alt='' />
-                                    </div>
+                                        <IconActive
+                                            isActive={false}
+                                            src={item.icon}
+                                            alt=''
+                                        />
+                                    </IconFillContainer>
 
                                     {hoveredTool &&
                                         hoveredTool === item.description && (
-                                            <div
-                                                className={
-                                                    styles.description_tooltip_container
-                                                }
-                                            >
-                                                <div
-                                                    className={
-                                                        styles.description_tooltip
-                                                    }
-                                                >
-                                                    <div
-                                                        className={
-                                                            styles.tooltip_arrow
-                                                        }
-                                                    ></div>
-                                                    <label>{hoveredTool}</label>
-                                                </div>
-                                            </div>
+                                            <HoveredTooltip
+                                                hoveredTool={hoveredTool}
+                                            ></HoveredTooltip>
                                         )}
-                                </div>
+                                </IconCard>
                             ))}
 
                             {undoRedoButtons.map((item, index) => (
-                                <div key={index} className={styles.icon_card}>
-                                    <div
-                                        style={{
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                        }}
-                                        className={
+                                <IconCard key={index}>
+                                    <UndoRedoButtonActive
+                                        isActive={
                                             item.stack.has(actionKey) &&
                                             Number(
                                                 item.stack.get(actionKey)
                                                     ?.length,
                                             ) > 0
-                                                ? styles.undo_redo_button_active
-                                                : styles.undo_redo_button_passive
                                         }
                                         onClick={() => {
                                             if (
@@ -421,45 +378,44 @@ function Toolbar(props: ToolbarProps) {
                                             }
                                         }}
                                     >
-                                        <img src={item.icon} alt='' />
-                                    </div>
-                                </div>
+                                        <UndoButtonSvg
+                                            isActive={
+                                                item.stack.has(actionKey) &&
+                                                Number(
+                                                    item.stack.get(actionKey)
+                                                        ?.length,
+                                                ) > 0
+                                            }
+                                            src={item.icon}
+                                            alt=''
+                                        />
+                                    </UndoRedoButtonActive>
+                                </IconCard>
                             ))}
 
-                            <div className={styles.icon_card}>
-                                <div
-                                    className={
-                                        activeDrawingType === 'Cross'
-                                            ? styles.icon_active_container
-                                            : styles.icon_inactive_container
-                                    }
+                            <IconCard>
+                                <IconActiveContainer
                                     onClick={() => handleDeleteAll()}
                                 >
                                     <img src={trashIcon} alt='' />
-                                </div>
-                            </div>
+                                </IconActiveContainer>
+                            </IconCard>
                         </>
                     )}
-                </div>
-            </div>
+                </ScrollableDiv>
+            </DrawlistContainer>
             {isHoveredDown && downScroll}
 
-            <div className={styles.divider_container}>
-                <div className={styles.divider}></div>
-                <div
-                    className={` ${
-                        isToolbarOpen ? styles.divider_button : ''
-                    } ${styles.close_divider_button} `}
+            <DividerContainer>
+                <Divider />
+                <DividerButton
+                    isActive={isToolbarOpen}
                     onClick={() => setIsToolbarOpen((prev: boolean) => !prev)}
                 >
-                    <span
-                        className={` ${
-                            isToolbarOpen ? styles.arrow_left : ''
-                        } ${styles.arrow_right} `}
-                    ></span>
-                </div>
-            </div>
-        </div>
+                    <ArrowRight isActive={isToolbarOpen}></ArrowRight>
+                </DividerButton>
+            </DividerContainer>
+        </ToolbarContainer>
     );
 }
 
