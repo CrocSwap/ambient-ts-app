@@ -126,7 +126,11 @@ export default function OrdersMenu(props: propsIF) {
         ) : null;
     const copyButton = limitOrder ? (
         <DefaultTooltip
-            title={isConfirmationActive ? 'Transaction in progress' : ''}
+            title={
+                isConfirmationActive
+                    ? 'Disabled during transaction confirmation'
+                    : ''
+            }
         >
             <Chip
                 disabled={isConfirmationActive}

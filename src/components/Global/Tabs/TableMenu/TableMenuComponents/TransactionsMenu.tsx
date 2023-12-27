@@ -202,7 +202,11 @@ export default function TransactionsMenu(props: propsIF) {
 
     const copyButton = (
         <DefaultTooltip
-            title={isConfirmationActive ? 'Transaction in progress' : ''}
+            title={
+                isConfirmationActive
+                    ? 'Disabled during transaction confirmation'
+                    : ''
+            }
         >
             <Chip
                 disabled={disableReverseTokens || isConfirmationActive}

@@ -141,7 +141,11 @@ function RangesMenu(props: propsIF) {
 
     const repositionButton = (
         <DefaultTooltip
-            title={isConfirmationActive ? 'Transaction in progress' : ''}
+            title={
+                isConfirmationActive
+                    ? 'Disabled during transaction confirmation'
+                    : ''
+            }
             style={{ cursor: isConfirmationActive ? 'not-allowed' : 'default' }}
         >
             <Link
@@ -187,7 +191,11 @@ function RangesMenu(props: propsIF) {
 
     const copyButton = position ? (
         <DefaultTooltip
-            title={isConfirmationActive ? 'Transaction in progress' : ''}
+            title={
+                isConfirmationActive
+                    ? 'Disabled during transaction confirmation'
+                    : ''
+            }
         >
             <Chip
                 disabled={isConfirmationActive}
@@ -220,7 +228,11 @@ function RangesMenu(props: propsIF) {
 
     const addButton = (
         <DefaultTooltip
-            title={isConfirmationActive ? 'Transaction in progress' : ''}
+            title={
+                isConfirmationActive
+                    ? 'Disabled during transaction confirmation'
+                    : ''
+            }
         >
             <Chip
                 disabled={isConfirmationActive}
