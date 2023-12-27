@@ -579,7 +579,11 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         },
     ];
 
-    function checkIsDefault(item: drawDataHistory, defaultValues: any) {
+    function checkIsDefault(
+        item: drawDataHistory,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        defaultValues: { line: any; border: any; background: any },
+    ) {
         let isLineDefault = false;
         let isBorderDefault = false;
         let isBackgroundDefault = false;
