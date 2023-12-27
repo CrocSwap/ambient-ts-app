@@ -233,6 +233,8 @@ export default function Chart(props: propsIF) {
     const [isChartZoom, setIsChartZoom] = useState(false);
 
     const [chartHeights, setChartHeights] = useState(0);
+    const [chartWidth, setChartWidth] = useState(0);
+
     const { isUserConnected } = useContext(UserDataContext);
 
     const { isTokenAPrimaryRange, advancedMode } = useContext(RangeContext);
@@ -284,6 +286,14 @@ export default function Chart(props: propsIF) {
 
     const [isShowLastCandleTooltip, setIsShowLastCandleTooltip] =
         useState(false);
+
+    const [isShowLimitOrPoolLinesTooltip, setIsShowLimitOrPoolLinesTooltip] =
+        useState(false);
+
+    const [
+        limitOrPoolLinesTooltipPosition,
+        setLimitOrPoolLinesTooltipPosition,
+    ] = useState(0);
     const [ranges, setRanges] = useState<lineValue[]>([
         {
             name: 'Min',
@@ -595,6 +605,17 @@ export default function Chart(props: propsIF) {
                 rangeHighLineValue,
                 scaleData,
             );
+
+            if (checkLowLine) {
+                setLimitOrPoolLinesTooltipPosition(
+                    scaleData.yScale(rangeLowLineValue),
+                );
+            }
+            if (checkHighLine) {
+                setLimitOrPoolLinesTooltipPosition(
+                    scaleData.yScale(rangeHighLineValue),
+                );
+            }
             return checkLowLine || checkHighLine;
         }
 
@@ -618,7 +639,7 @@ export default function Chart(props: propsIF) {
         ) {
             const offsetY =
                 chartMousemoveEvent.clientY - mainCanvasBoundingClientRect?.top;
-
+            setLimitOrPoolLinesTooltipPosition(scaleData.yScale(limit));
             return isMouseNearLine(offsetY, limit, scaleData);
         }
         return false;
@@ -674,6 +695,12 @@ export default function Chart(props: propsIF) {
         isOnCandleOrVolumeMouseLocation,
         isConfirmationActive,
     ]);
+
+    useEffect(() => {
+        setIsShowLimitOrPoolLinesTooltip(
+            isConfirmationActive && (canUserDragRange || canUserDragLimit),
+        );
+    }, [isConfirmationActive && (canUserDragRange || canUserDragLimit)]);
 
     useEffect(() => {
         if (isChartZoom && chartZoomEvent !== 'wheel') {
@@ -1035,6 +1062,31 @@ export default function Chart(props: propsIF) {
                                 mousePlacement < maxRangeValue + lineBuffer &&
                                 mousePlacement > maxRangeValue - lineBuffer;
 
+                            if (isOnLimit) {
+                                setLimitOrPoolLinesTooltipPosition(
+                                    scaleData.yScale(limit),
+                                );
+                            }
+
+                            if (isOnRangeMin) {
+                                setLimitOrPoolLinesTooltipPosition(
+                                    scaleData.yScale(minRangeValue),
+                                );
+                            }
+                            if (isOnRangeMax) {
+                                setLimitOrPoolLinesTooltipPosition(
+                                    scaleData.yScale(maxRangeValue),
+                                );
+                            }
+
+                            setIsShowLimitOrPoolLinesTooltip(
+                                isConfirmationActive &&
+                                    (isOnLimit || isOnRangeMin || isOnRangeMax),
+                            );
+
+                            setTimeout(() => {
+                                setIsShowLimitOrPoolLinesTooltip(false);
+                            }, 1500);
                             return !isOnLimit && !isOnRangeMin && !isOnRangeMax;
                         } else {
                             return !canUserDragRange && !canUserDragLimit;
@@ -1064,6 +1116,7 @@ export default function Chart(props: propsIF) {
         period,
         advancedMode,
         isChartZoom,
+        isConfirmationActive,
     ]);
 
     useEffect(() => {
@@ -2501,7 +2554,8 @@ export default function Chart(props: propsIF) {
                 setMainCanvasBoundingClientRect(canvas.getBoundingClientRect());
 
                 const height = result[0].contentRect.height;
-
+                const width = result[0].contentRect.width;
+                setChartWidth(width);
                 setChartHeights(height);
                 render();
             });
@@ -4582,6 +4636,28 @@ export default function Chart(props: propsIF) {
                         <div>
                             Click any other price candle or volume bar to view
                             transactions
+                        </div>
+                    </div>
+                </CSSTransition>
+            )}
+
+            {scaleData && mainCanvasBoundingClientRect && (
+                <CSSTransition
+                    in={isShowLimitOrPoolLinesTooltip}
+                    timeout={500}
+                    classNames='chartLinesTooltip'
+                    unmountOnExit
+                >
+                    <div
+                        className='chartLinesTooltipDiv'
+                        style={{
+                            fontSize: mobileView ? '10px' : '12px',
+                            top: limitOrPoolLinesTooltipPosition - 35 + 'px',
+                            left: chartWidth / (mobileView ? 6 : 2),
+                        }}
+                    >
+                        <div>
+                            Drag is temporarily unavailable during confirmation
                         </div>
                     </div>
                 </CSSTransition>
