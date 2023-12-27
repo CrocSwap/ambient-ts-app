@@ -10,9 +10,6 @@ import {
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
 
-// import candleStikPlaceholder from '../../../assets/images/charts/candlestick.png';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
@@ -20,16 +17,16 @@ import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 import {
     diffHashSig,
     diffHashSigLiquidity,
+    getPinnedPriceValuesFromTicks,
 } from '../../../ambient-utils/dataLayer';
 import { CandleContext } from '../../../contexts/CandleContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ChartContext } from '../../../contexts/ChartContext';
-import { candleScale } from '../../../utils/state/tradeDataSlice';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import Spinner from '../../../components/Global/Spinner/Spinner';
 import { LiquidityDataLocal } from './TradeCharts';
-import { CandleDataIF } from '../../../ambient-utils/types';
+import { CandleDataIF, CandleScaleIF } from '../../../ambient-utils/types';
 import {
     chartItemStates,
     liquidityChartData,
@@ -108,8 +105,9 @@ function TradeCandleStickChart(props: propsIF) {
     const [liqBoundary, setLiqBoundary] = useState<number | undefined>(
         undefined,
     );
-    const tradeData = useAppSelector((state) => state.tradeData);
-    const { tokenA, tokenB, isDenomBase } = useContext(TradeDataContext);
+
+    const { tokenA, tokenB, isDenomBase, poolPriceNonDisplay } =
+        useContext(TradeDataContext);
 
     const { liquidityData: unparsedLiquidityData } =
         useContext(GraphDataContext);
@@ -133,7 +131,6 @@ function TradeCandleStickChart(props: propsIF) {
         }),
         [tokenB.address, tokenB.chainId, tokenA.address, tokenA.chainId],
     );
-    const { poolPriceNonDisplay } = tradeData;
 
     // TODO: could probably be determined from the isTokenABase in context?
     const isTokenABase = tokenPair?.dataTokenA.address === baseTokenAddress;
@@ -724,7 +721,7 @@ function TradeCandleStickChart(props: propsIF) {
                         }
                     }
 
-                    setCandleScale((prev: candleScale) => {
+                    setCandleScale((prev: CandleScaleIF) => {
                         return {
                             isFetchForTimeframe: !prev.isFetchForTimeframe,
                             lastCandleDate: firstTime,
@@ -758,7 +755,7 @@ function TradeCandleStickChart(props: propsIF) {
 
         scaleData?.xScale.domain([minDomain, maxDomain]);
 
-        setCandleScale((prev: candleScale) => {
+        setCandleScale((prev: CandleScaleIF) => {
             return {
                 isFetchForTimeframe: !prev.isFetchForTimeframe,
                 lastCandleDate: undefined,

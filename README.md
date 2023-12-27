@@ -57,13 +57,22 @@ Please see the docs for our coding style guide: https://github.com/CrocSwap/ambi
 # Version Notes
 Release notes for app versions.
 
-Quick Links: [1.6](#version-16) (Current) | [1.5](#version-15)
+Quick Links: [1.7](#version-17) (Current) | [1.6](#version-16) | [1.5](#version-15)
+
+### version 1.7
+Summary:
+* Added automatic gas cost estimate updates and estimate displays in the trade modules on Scroll
+* Fixed value calculations for non-default (ETH/USDC) tokens
+* Fixed display of ENS name resolutions in trade tables
+* Fixed missing chart in transaction details on mobile devices
+
+Code changes are viewable on GitHub [Link](https://github.com/CrocSwap/ambient-ts-app/pull/3269)
 
 ### version 1.6
 Summary:
 * Added the ability to switch to the Scroll network and a test network (Görli) using the network selector in the page header
 * Added an external link to [Canto](https://beta.canto.io/lp) in the network selector
-* Updated the pool initialization form to enable additionally minting an initial liquidity position
+* Updated the pool initialization form to enable additionally minting of an initial liquidity position
 * Fixed a bug preventing approvals of certain tokens (thanks [busimus](https://github.com/busimus)!)
 * Added the ability to annotate the price charts with trend lines and horizontal rays
 * Added USD $ value estimation calculations to the token selectors in the swap/limit/pool modules based on CoinGecko
@@ -90,6 +99,7 @@ Code changes are viewable on GitHub [Link](https://github.com/CrocSwap/ambient-t
 ### People
 
 * [Doug Colkitt](mailto:doug@crocodilelabs.io "email Doug") is the Founder & CEO of Crocodile Labs
+* [Ben Wolski](mailto:ben@crocodilelabs.io "email Ben") manages the CI/CD pipeline and production releases
 * [Vee](mailto:vee@crocodilelabs.io "email Vee") is our Community Manager and handles external communications
 * [Emily](mailto:emily@crocodilelabs.io "email Emily") is the primary caretaker of this document
 

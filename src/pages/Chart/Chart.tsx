@@ -10,21 +10,17 @@ import {
     MouseEvent,
 } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import {
-    setLimitTick,
-    candleScale,
-    candleDomain,
-} from '../../utils/state/tradeDataSlice';
 
 import { PoolContext } from '../../contexts/PoolContext';
 import './Chart.css';
-import { pinTickLower, pinTickUpper, tickToPrice } from '@crocswap-libs/sdk';
 import {
-    getPinnedPriceValuesFromDisplayPrices,
-    getPinnedPriceValuesFromTicks,
-    getPinnedTickFromDisplayPrice,
-} from '../Trade/Range/rangeFunctions';
+    MAX_TICK,
+    MIN_TICK,
+    pinTickLower,
+    pinTickUpper,
+    tickToPrice,
+    toDisplayPrice,
+} from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import useHandleSwipeBack from '../../utils/hooks/useHandleSwipeBack';
 import { candleTimeIF } from '../../App/hooks/useChartSettings';
@@ -33,6 +29,9 @@ import {
     diffHashSig,
     diffHashSigChart,
     diffHashSigScaleData,
+    getPinnedPriceValuesFromDisplayPrices,
+    getPinnedPriceValuesFromTicks,
+    getPinnedTickFromDisplayPrice,
 } from '../../ambient-utils/dataLayer';
 import { CandleContext } from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
@@ -41,6 +40,8 @@ import { RangeContext } from '../../contexts/RangeContext';
 import {
     CandleDataIF,
     CandlesByPoolAndDurationIF,
+    CandleDomainIF,
+    CandleScaleIF,
 } from '../../ambient-utils/types';
 import CandleChart from './Candle/CandleChart';
 import LiquidityChart from './Liquidity/LiquidityChart';
@@ -196,10 +197,11 @@ export default function Chart(props: propsIF) {
 
     const [isDragActive, setIsDragActive] = useState(false);
 
-    const [localCandleDomains, setLocalCandleDomains] = useState<candleDomain>({
-        lastCandleDate: undefined,
-        domainBoundry: undefined,
-    });
+    const [localCandleDomains, setLocalCandleDomains] =
+        useState<CandleDomainIF>({
+            lastCandleDate: undefined,
+            domainBoundry: undefined,
+        });
 
     const {
         minRangePrice: minPrice,
@@ -212,7 +214,6 @@ export default function Chart(props: propsIF) {
         simpleRangeWidth: rangeSimpleRangeWidth,
         setSimpleRangeWidth: setRangeSimpleRangeWidth,
     } = useContext(RangeContext);
-    // const { handlePulseAnimation } = useContext(TradeTableContext);
 
     const currentPool = useContext(TradeDataContext);
 
@@ -223,6 +224,8 @@ export default function Chart(props: propsIF) {
         isTokenABase: isBid,
         isTokenAPrimary,
         setIsTokenAPrimary,
+        limitTick,
+        setLimitTick,
     } = currentPool;
 
     const [isChartZoom, setIsChartZoom] = useState(false);
@@ -230,7 +233,6 @@ export default function Chart(props: propsIF) {
     const [chartHeights, setChartHeights] = useState(0);
     const { isUserConnected } = useContext(UserDataContext);
 
-    const tradeData = useAppSelector((state) => state.tradeData);
     const { isTokenAPrimaryRange, advancedMode } = useContext(RangeContext);
 
     const [minTickForLimit, setMinTickForLimit] = useState<number>(0);
@@ -267,8 +269,6 @@ export default function Chart(props: propsIF) {
     const d3CanvasMarketLine = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasMain = useRef<HTMLDivElement | null>(null);
     const d3CanvasCrIndicator = useRef<HTMLInputElement | null>(null);
-
-    const dispatch = useAppDispatch();
 
     const location = useLocation();
 
@@ -477,7 +477,7 @@ export default function Chart(props: propsIF) {
     const [marketLine, setMarketLine] = useState<any>();
 
     // NoGoZone
-    const [noGoZoneBoudnaries, setNoGoZoneBoudnaries] = useState([[0, 0]]);
+    const [noGoZoneBoundaries, setNoGoZoneBoundaries] = useState([[0, 0]]);
 
     const [mainZoom, setMainZoom] =
         useState<d3.ZoomBehavior<Element, unknown>>();
@@ -731,7 +731,7 @@ export default function Chart(props: propsIF) {
                 xDomain[0] < lastCandleData?.time * 1000 &&
                 lastCandleData?.time * 1000 < xDomain[1];
 
-            setCandleScale((prev: candleScale) => {
+            setCandleScale((prev: CandleScaleIF) => {
                 return {
                     isFetchForTimeframe: prev.isFetchForTimeframe,
                     lastCandleDate: Math.floor(domainMax / 1000),
@@ -1142,8 +1142,8 @@ export default function Chart(props: propsIF) {
     }, [poolPriceWithoutDenom, denomInBase]);
     // set default limit tick
     useEffect(() => {
-        if (tradeData.limitTick && Math.abs(tradeData.limitTick) === Infinity)
-            dispatch(setLimitTick(undefined));
+        if (limitTick && Math.abs(limitTick) === Infinity)
+            setLimitTick(undefined);
     }, []);
 
     // calculate range value for denom
@@ -1293,8 +1293,8 @@ export default function Chart(props: propsIF) {
      * @returns {Object} An object containing 'noGoZoneMin' and 'noGoZoneMax'.
      */
     const getNoZoneData = () => {
-        const noGoZoneMin = noGoZoneBoudnaries[0][0];
-        const noGoZoneMax = noGoZoneBoudnaries[0][1];
+        const noGoZoneMin = noGoZoneBoundaries[0][0];
+        const noGoZoneMax = noGoZoneBoundaries[0][1];
         return { noGoZoneMin: noGoZoneMin, noGoZoneMax: noGoZoneMax };
     };
 
@@ -1358,15 +1358,22 @@ export default function Chart(props: propsIF) {
     function setLimitForNoGoZone(newLimitValue: number) {
         const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
 
-        const diffNoGoZoneMin = Math.abs(newLimitValue - noGoZoneMin);
-        const diffNoGoZoneMax = Math.abs(newLimitValue - noGoZoneMax);
-        if (newLimitValue >= noGoZoneMin && newLimitValue <= noGoZoneMax) {
-            if (diffNoGoZoneMin > diffNoGoZoneMax) {
-                newLimitValue = noGoZoneMax;
-            } else {
-                newLimitValue = noGoZoneMin;
+        if (newLimitValue > noGoZoneMin && newLimitValue < noGoZoneMax) {
+            if (newLimitValue > noGoZoneMin) {
+                if (newLimitValue < limit) {
+                    newLimitValue = noGoZoneMax;
+                } else {
+                    newLimitValue = noGoZoneMin;
+                }
+            } else if (newLimitValue < noGoZoneMax) {
+                if (newLimitValue > limit) {
+                    newLimitValue = noGoZoneMin;
+                } else {
+                    newLimitValue = noGoZoneMax;
+                }
             }
         }
+
         return newLimitValue;
     }
 
@@ -1422,8 +1429,8 @@ export default function Chart(props: propsIF) {
                     // Update newLimitValue if it's outside the No-Go Zone
                     if (
                         !(
-                            newLimitValue >= noGoZoneMin &&
-                            newLimitValue <= noGoZoneMax
+                            newLimitValue > noGoZoneMin &&
+                            newLimitValue < noGoZoneMax
                         )
                     ) {
                         setLimit(() => {
@@ -3090,17 +3097,83 @@ export default function Chart(props: propsIF) {
         renderCanvasArray([d3CanvasMarketLine]);
     }, [market, marketLine]);
 
-    function noGoZone(poolPrice: number) {
-        setLimitTickNearNoGoZone(poolPrice * 0.99, poolPrice * 1.01);
-        return [[poolPrice * 0.99, poolPrice * 1.01]];
+    const pinTickToTickLower = (poolPriceTick: number, gridSize: number) => {
+        const tickGrid = Math.floor(poolPriceTick / gridSize) * gridSize;
+        const horizon = Math.floor(MIN_TICK / gridSize) * gridSize;
+
+        const lowTickNoGoZone = Math.max(tickGrid, horizon);
+
+        return lowTickNoGoZone;
+    };
+    const pinTickToTickUpper = (poolPriceTick: number, gridSize: number) => {
+        const tickGrid = Math.ceil(poolPriceTick / gridSize) * gridSize;
+        const horizon = Math.ceil(MAX_TICK / gridSize) * gridSize;
+
+        const highTickNoGoZone = Math.min(tickGrid, horizon);
+
+        return highTickNoGoZone;
+    };
+    function noGoZone(
+        poolPriceTick: number,
+        baseTokenDecimals: number,
+        quoteTokenDecimals: number,
+        gridSize: number,
+    ) {
+        const lowTickNoGoZone =
+            pinTickToTickLower(poolPriceTick, gridSize) - gridSize;
+        const highTickNoGoZone =
+            pinTickToTickUpper(poolPriceTick, gridSize) + gridSize;
+        const lowTickNonDisplayPrice = tickToPrice(lowTickNoGoZone);
+        const highTickNonDisplayPrice = tickToPrice(highTickNoGoZone);
+        const lowTickDisplayPrice = isDenomBase
+            ? toDisplayPrice(
+                  highTickNonDisplayPrice,
+                  baseTokenDecimals,
+                  quoteTokenDecimals,
+                  isDenomBase,
+              )
+            : toDisplayPrice(
+                  lowTickNonDisplayPrice,
+                  baseTokenDecimals,
+                  quoteTokenDecimals,
+                  isDenomBase,
+              );
+        const highTickDisplayPrice = isDenomBase
+            ? toDisplayPrice(
+                  lowTickNonDisplayPrice,
+                  baseTokenDecimals,
+                  quoteTokenDecimals,
+                  isDenomBase,
+              )
+            : toDisplayPrice(
+                  highTickNonDisplayPrice,
+                  baseTokenDecimals,
+                  quoteTokenDecimals,
+                  isDenomBase,
+              );
+
+        setLimitTickNearNoGoZone(lowTickDisplayPrice, highTickDisplayPrice);
+        return [[lowTickDisplayPrice, highTickDisplayPrice]];
     }
 
     useEffect(() => {
-        const noGoZoneBoudnaries = noGoZone(poolPriceDisplay);
-        setNoGoZoneBoudnaries(() => {
-            return noGoZoneBoudnaries;
+        const noGoZoneBoundaries = noGoZone(
+            currentPoolPriceTick,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+            lookupChain(chainId).gridSize,
+        );
+
+        setNoGoZoneBoundaries(() => {
+            return noGoZoneBoundaries;
         });
-    }, [poolPriceDisplay]);
+    }, [
+        currentPoolPriceTick,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+        lookupChain(chainId).gridSize,
+        isDenomBase,
+    ]);
 
     function changeScale() {
         if (poolPriceDisplay && scaleData && rescale) {
@@ -3270,7 +3343,7 @@ export default function Chart(props: propsIF) {
         location.pathname,
         period,
         diffHashSigChart(unparsedCandleData),
-        noGoZoneBoudnaries,
+        noGoZoneBoundaries,
         maxTickForLimit,
         minTickForLimit,
         prevPeriod === period,
@@ -3414,8 +3487,8 @@ export default function Chart(props: propsIF) {
 
                     if (
                         !(
-                            newLimitValue >= noGoZoneMin &&
-                            newLimitValue <= noGoZoneMax
+                            newLimitValue > noGoZoneMin &&
+                            newLimitValue < noGoZoneMax
                         )
                     ) {
                         onBlurLimitRate(limit, newLimitValue);
@@ -4117,7 +4190,7 @@ export default function Chart(props: propsIF) {
                 ? pinTickLower(limit, chainData.gridSize)
                 : pinTickUpper(limit, chainData.gridSize);
 
-            dispatch(setLimitTick(pinnedTick));
+            setLimitTick(pinnedTick);
 
             // if user moves limit price to other side of the current price
             // ... then redirect to new URL params (to reverse the token

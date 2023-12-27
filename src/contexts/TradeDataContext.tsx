@@ -2,7 +2,7 @@ import React, { createContext, useEffect, useMemo } from 'react';
 import { TokenIF } from '../ambient-utils/types';
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { getDefaultChainId } from '../ambient-utils/dataLayer';
-import { getDefaultPairForChain } from '../ambient-utils/constants';
+import { getDefaultPairForChain, goerliETH } from '../ambient-utils/constants';
 import { useAppChain } from '../App/hooks/useAppChain';
 
 export interface TradeDataContextIF {
@@ -15,6 +15,12 @@ export interface TradeDataContextIF {
     didUserFlipDenom: boolean;
     isTokenAPrimary: boolean;
     disableReverseTokens: boolean;
+    soloToken: TokenIF;
+    shouldSwapDirectionReverse: boolean;
+    primaryQuantity: string;
+    limitTick: number | undefined;
+    poolPriceNonDisplay: number;
+    slippageTolerance: number;
 
     setTokenA: React.Dispatch<React.SetStateAction<TokenIF>>;
     setTokenB: React.Dispatch<React.SetStateAction<TokenIF>>;
@@ -23,6 +29,14 @@ export interface TradeDataContextIF {
     setDisableReverseTokens: React.Dispatch<React.SetStateAction<boolean>>;
     setDidUserFlipDenom: React.Dispatch<React.SetStateAction<boolean>>;
     toggleDidUserFlipDenom: () => void;
+    setSoloToken: React.Dispatch<React.SetStateAction<TokenIF>>;
+    setShouldSwapDirectionReverse: React.Dispatch<
+        React.SetStateAction<boolean>
+    >;
+    setPrimaryQuantity: React.Dispatch<React.SetStateAction<string>>;
+    setLimitTick: React.Dispatch<React.SetStateAction<number | undefined>>;
+    setPoolPriceNonDisplay: React.Dispatch<React.SetStateAction<number>>;
+    setSlippageTolerance: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export const TradeDataContext = createContext<TradeDataContextIF>(
@@ -91,6 +105,17 @@ export const TradeDataContextProvider = (props: {
         }
     }, [chainData.chainId]);
 
+    const [soloToken, setSoloToken] = React.useState(goerliETH);
+
+    const [shouldSwapDirectionReverse, setShouldSwapDirectionReverse] =
+        React.useState(false);
+    const [primaryQuantity, setPrimaryQuantity] = React.useState('');
+    const [limitTick, setLimitTick] = React.useState<number | undefined>(
+        undefined,
+    );
+    const [poolPriceNonDisplay, setPoolPriceNonDisplay] = React.useState(0);
+    const [slippageTolerance, setSlippageTolerance] = React.useState(0.5);
+
     const tradeDataContext = {
         tokenA,
         tokenB,
@@ -101,6 +126,12 @@ export const TradeDataContextProvider = (props: {
         isTokenAPrimary,
         disableReverseTokens,
         didUserFlipDenom,
+        soloToken,
+        shouldSwapDirectionReverse,
+        primaryQuantity,
+        limitTick,
+        poolPriceNonDisplay,
+        slippageTolerance,
         setTokenA,
         setTokenB,
         setDenomInBase,
@@ -108,6 +139,12 @@ export const TradeDataContextProvider = (props: {
         setDisableReverseTokens,
         setDidUserFlipDenom,
         toggleDidUserFlipDenom,
+        setSoloToken,
+        setShouldSwapDirectionReverse,
+        setPrimaryQuantity,
+        setLimitTick,
+        setPoolPriceNonDisplay,
+        setSlippageTolerance,
     };
 
     return (

@@ -18,6 +18,7 @@ import {
     setCanvasResolution,
 } from '../../../../pages/Chart/ChartUtils/chartUtils';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { useMediaQuery } from '@material-ui/core';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -44,8 +45,6 @@ export default function TransactionDetailsGraph(
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
             ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
             : true;
-
-    // const tradeData = useAppSelector((state) => state.tradeData);
 
     const baseTokenAddress = tx.base;
     const quoteTokenAddress = tx.quote;
@@ -98,6 +97,7 @@ export default function TransactionDetailsGraph(
     const [isDataLoading, setIsDataLoading] = useState(false);
     const [isDataTakingTooLongToFetch, setIsDataTakingTooLongToFetch] =
         useState(false);
+    const mobileView = useMediaQuery('(min-width: 800px)');
 
     useEffect(() => {
         let timeoutId: NodeJS.Timeout;
@@ -584,7 +584,10 @@ export default function TransactionDetailsGraph(
             context.textBaseline = 'top';
             context.fillStyle = 'rgba(189,189,189,0.6)';
             context.font = '10px Lexend Deca';
-            const tickTempValues = scaleData.xScale.ticks(7);
+
+            const factor = mobileView ? 7 : 5;
+
+            const tickTempValues = scaleData.xScale.ticks(factor);
 
             tickTempValues.map((tick: any) => {
                 if (
@@ -664,8 +667,10 @@ export default function TransactionDetailsGraph(
         if (canvas !== null) {
             const height = canvas.height;
 
-            const factor = height < 500 ? 6 : height.toString().length * 2;
-
+            let factor = height < 500 ? 6 : height.toString().length * 2;
+            if (!mobileView) {
+                factor = 5;
+            }
             context.stroke();
             context.textAlign = 'center';
             context.textBaseline = 'middle';
@@ -1050,6 +1055,7 @@ export default function TransactionDetailsGraph(
             style={{
                 height: '100%',
                 width: '100%',
+                padding: '3px',
             }}
         >
             <div
@@ -1069,7 +1075,7 @@ export default function TransactionDetailsGraph(
                 <d3fc-canvas
                     className='y-axis'
                     ref={d3Yaxis}
-                    style={{ width: '10%' }}
+                    style={{ width: mobileView ? '10%' : '15%' }}
                 ></d3fc-canvas>
             </div>
             <d3fc-canvas

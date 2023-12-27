@@ -29,15 +29,8 @@ import {
     isTransactionFailedError,
     isTransactionReplacedError,
 } from '../../../../utils/TransactionError';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../../ambient-utils/types';
-import {
-    addPendingTx,
-    addReceipt,
-    addTransactionByType,
-    removePendingTx,
-    updateTransactionHash,
-} from '../../../../utils/state/receiptDataSlice';
+
 import Toggle from '../../../Form/Toggle';
 import CurrencySelector from '../../../Form/CurrencySelector';
 import TransferAddressInput from '../Transfer/TransferAddressInput';
@@ -48,6 +41,7 @@ import {
     GAS_DROPS_ESTIMATE_WITHDRAWAL_NATIVE,
     GAS_DROPS_ESTIMATE_WITHDRAWAL_ERC20,
 } from '../../../../ambient-utils/constants/';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -76,7 +70,13 @@ export default function Withdraw(props: propsIF) {
 
     const { userAddress } = useContext(UserDataContext);
 
-    const dispatch = useAppDispatch();
+    const {
+        addPendingTx,
+        addReceipt,
+        addTransactionByType,
+        removePendingTx,
+        updateTransactionHash,
+    } = useContext(ReceiptContext);
 
     const selectedTokenDecimals = selectedToken.decimals;
 
@@ -204,15 +204,13 @@ export default function Withdraw(props: propsIF) {
                         .token(selectedToken.address)
                         .withdraw(depositQtyDisplay, userAddress);
                 }
-                dispatch(addPendingTx(tx?.hash));
+                addPendingTx(tx?.hash);
                 if (tx?.hash)
-                    dispatch(
-                        addTransactionByType({
-                            txHash: tx.hash,
-                            txType: 'Withdraw',
-                            txDescription: `Withdrawal of ${selectedToken.symbol}`,
-                        }),
-                    );
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txType: 'Withdraw',
+                        txDescription: `Withdrawal of ${selectedToken.symbol}`,
+                    });
 
                 let receipt;
                 try {
@@ -224,16 +222,14 @@ export default function Withdraw(props: propsIF) {
                     // in their client, but we now have the updated info
                     if (isTransactionReplacedError(error)) {
                         IS_LOCAL_ENV && console.debug('repriced');
-                        dispatch(removePendingTx(error.hash));
+                        removePendingTx(error.hash);
 
                         const newTransactionHash = error.replacement.hash;
-                        dispatch(addPendingTx(newTransactionHash));
+                        addPendingTx(newTransactionHash);
 
-                        dispatch(
-                            updateTransactionHash({
-                                oldHash: error.hash,
-                                newHash: error.replacement.hash,
-                            }),
+                        updateTransactionHash(
+                            error.hash,
+                            error.replacement.hash,
                         );
                         IS_LOCAL_ENV && console.debug({ newTransactionHash });
                         receipt = error.receipt;
@@ -244,8 +240,8 @@ export default function Withdraw(props: propsIF) {
                 }
 
                 if (receipt) {
-                    dispatch(addReceipt(JSON.stringify(receipt)));
-                    dispatch(removePendingTx(receipt.transactionHash));
+                    addReceipt(JSON.stringify(receipt));
+                    removePendingTx(receipt.transactionHash);
                     resetWithdrawQty();
                 }
             } catch (error) {
