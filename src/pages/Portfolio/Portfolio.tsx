@@ -14,7 +14,7 @@ import { fetchEnsAddress } from '../../ambient-utils/api';
 import { Navigate, useParams } from 'react-router-dom';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { diffHashSig } from '../../ambient-utils/dataLayer';
+import { diffHashSig, trimString } from '../../ambient-utils/dataLayer';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { TokenContext } from '../../contexts/TokenContext';
@@ -27,10 +27,20 @@ import {
 } from '../../styled/Components/Portfolio';
 import { FlexContainer, Text } from '../../styled/Common';
 import { UserDataContext } from '../../contexts/UserDataContext';
+import Level from '../Level/Level';
 
-function Portfolio() {
-    const { userAddress, setResolvedAddressInContext, ensName } =
-        useContext(UserDataContext);
+interface PortfolioPropsIF {
+    isLevelsPage?: boolean;
+}
+
+function Portfolio(props: PortfolioPropsIF) {
+    const {
+        userAddress,
+        setResolvedAddressInContext,
+        ensName,
+        setSecondaryEnsInContext,
+    } = useContext(UserDataContext);
+    const { isLevelsPage } = props;
 
     const isUserConnected = useSimulatedIsUserConnected();
 
@@ -104,14 +114,21 @@ function Portfolio() {
                 try {
                     const ensName = await fetchEnsAddress(addressFromParams);
 
-                    if (ensName) setSecondaryEnsName(ensName);
-                    else setSecondaryEnsName('');
+                    if (ensName) {
+                        setSecondaryEnsName(ensName);
+                        setSecondaryEnsInContext(ensName);
+                    } else {
+                        setSecondaryEnsName('');
+                        setSecondaryEnsInContext('');
+                    }
                 } catch (error) {
                     setSecondaryEnsName('');
+                    setSecondaryEnsInContext('');
                     console.error({ error });
                 }
             } else if (addressFromParams && isAddressEns) {
                 setSecondaryEnsName(addressFromParams);
+                setSecondaryEnsInContext(addressFromParams);
             }
         })();
     }, [addressFromParams, isAddressEns]);
@@ -270,6 +287,20 @@ function Portfolio() {
         connectedAccountActive: connectedAccountActive,
     };
 
+    const levelsProps = {
+        ensName: connectedAccountActive
+            ? ensName ?? ''
+            : secondaryEnsName
+            ? secondaryEnsName
+            : '',
+        resolvedAddress: resolvedAddress ?? '',
+        ensNameAvailable: ensName !== '',
+        truncatedAccountAddress: connectedAccountActive
+            ? trimString(userAddress ?? '', 6, 6, '…')
+            : trimString(resolvedAddress ?? '', 6, 6, '…'),
+        connectedAccountActive: connectedAccountActive,
+    };
+
     const profileSettingsProps = {
         showProfileSettings: showProfileSettings,
         setShowProfileSettings: setShowProfileSettings,
@@ -306,6 +337,7 @@ function Portfolio() {
     );
 
     if (showActiveMobileComponent) return mobilePortfolio;
+    if (isLevelsPage) return <Level {...levelsProps} />;
 
     return (
         <PortfolioContainer

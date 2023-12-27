@@ -34,7 +34,7 @@ export default function Account(props: propsIF) {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
 
-    const { isUserConnected } = useContext(UserDataContext);
+    const { isUserConnected, connectedUserXp } = useContext(UserDataContext);
 
     const [_, copy] = useCopyToClipboard();
 
@@ -117,7 +117,7 @@ export default function Account(props: propsIF) {
                 onClick={() => setShowLevelDropdown(!showLevelDropdown)}
                 aria-label={ariaLabel}
             >
-                16
+                {connectedUserXp?.data?.currentLevel}
             </LevelButton>
             {showLevelDropdown ? (
                 <LevelDropdown
@@ -125,6 +125,7 @@ export default function Account(props: propsIF) {
                     accountAddress={props.accountAddress}
                     handleCopyAddress={handleCopyAddress}
                     accountAddressFull={props.accountAddressFull}
+                    connectedUserXp={connectedUserXp}
                 />
             ) : null}
         </section>

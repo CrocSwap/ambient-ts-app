@@ -46,7 +46,6 @@ import Explore from '../pages/Explore/Explore';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
 import ExampleForm from '../pages/InitPool/FormExample';
-import Level from '../pages/Level/Level';
 
 /** ***** React Function *******/
 export default function App() {
@@ -245,12 +244,18 @@ export default function App() {
                         />
                         <Route path='initpool/:params' element={<InitPool />} />
                         <Route path='account' element={<Portfolio />} />
-                        <Route path='account/xp' element={<Level />} />
+                        <Route
+                            path='account/xp'
+                            element={<Portfolio isLevelsPage />}
+                        />
                         <Route
                             path='account/:address'
                             element={<Portfolio />}
                         />
-                        <Route path='account/:address/xp' element={<Level />} />
+                        <Route
+                            path='account/:address/xp'
+                            element={<Portfolio isLevelsPage />}
+                        />
                         <Route
                             path='swap'
                             element={
@@ -271,7 +276,10 @@ export default function App() {
                             />
                         )}
                         <Route path='/:address' element={<Portfolio />} />
-                        <Route path='/:address/xp' element={<Level />} />
+                        <Route
+                            path='/:address/xp'
+                            element={<Portfolio isLevelsPage />}
+                        />
                         <Route path='/404' element={<NotFound />} />
                         <Route
                             path='*'

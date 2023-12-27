@@ -21,13 +21,46 @@ interface UserDataContextIF {
     ensName: string | null | undefined;
     resolvedAddressFromContext: string;
     setResolvedAddressInContext: Dispatch<SetStateAction<string>>;
+    secondaryEnsFromContext: string;
+    setSecondaryEnsInContext: Dispatch<SetStateAction<string>>;
 }
 
-interface ConnectedUserXpDataIF {
+export interface ConnectedUserXpDataIF {
     dataReceived: boolean;
     data: UserXpIF | undefined;
 }
 
+export const TempNonUserXp = {
+    dataReceived: true,
+    data: {
+        userAddress: '0x50F09108b78290422e3cdB3153207e664e09f960',
+        leaderboardRank: 1,
+        currentLevel: 0,
+        recentPoints: 0,
+        totalPoints: 0,
+        pointsRemainingToNextLevel: 0,
+        pointsHistory: [
+            {
+                addedPoints: 0,
+                cumulativePoints: 0,
+                level: 0,
+                snapshotUnixTime: 0,
+            },
+            {
+                addedPoints: 0,
+                cumulativePoints: 0,
+                level: 0,
+                snapshotUnixTime: 0,
+            },
+            {
+                addedPoints: 0,
+                cumulativePoints: 0,
+                level: 0,
+                snapshotUnixTime: 0,
+            },
+        ],
+    },
+};
 export const UserDataContext = createContext<UserDataContextIF>(
     {} as UserDataContextIF,
 );
@@ -36,6 +69,8 @@ export const UserDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const [resolvedAddressFromContext, setResolvedAddressInContext] =
+        React.useState<string>('');
+    const [secondaryEnsFromContext, setSecondaryEnsInContext] =
         React.useState<string>('');
 
     const { address: userAddress, isConnected: isUserConnected } = useAccount();
@@ -88,7 +123,10 @@ export const UserDataContextProvider = (props: {
         pendingConnector,
         resolvedAddressFromContext,
         setResolvedAddressInContext,
+        secondaryEnsFromContext,
+        setSecondaryEnsInContext,
     };
+    console.log({ resolvedAddressFromContext });
 
     return (
         <UserDataContext.Provider value={userDataContext}>

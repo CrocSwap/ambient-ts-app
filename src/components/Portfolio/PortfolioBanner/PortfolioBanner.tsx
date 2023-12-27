@@ -11,9 +11,12 @@ import {
     PortfolioBannerRectangleContainer,
 } from '../../../styled/Components/Portfolio';
 import accountImage from '../../../assets/images/backgrounds/account_image.svg';
-import { UserDataContext } from '../../../contexts/UserDataContext';
+import {
+    TempNonUserXp,
+    UserDataContext,
+} from '../../../contexts/UserDataContext';
 import { useContext } from 'react';
-import LevelsCard from '../../Global/LevelsCard/LevelsCard';
+import UserLevelDisplay from '../../Global/LevelsCard/UserLevelDisplay';
 interface propsIF {
     ensName: string;
     resolvedAddress: string;
@@ -22,7 +25,12 @@ interface propsIF {
 
 export default function PortfolioBanner(props: propsIF) {
     const { ensName, resolvedAddress, connectedAccountActive } = props;
-    const { userAddress } = useContext(UserDataContext);
+    const { userAddress, connectedUserXp } = useContext(UserDataContext);
+
+    const xpData =
+        connectedAccountActive || location.pathname === '/account/xp'
+            ? connectedUserXp
+            : TempNonUserXp;
 
     const ensNameAvailable = ensName !== '';
 
@@ -55,7 +63,10 @@ export default function PortfolioBanner(props: propsIF) {
                 jazziconsToDisplay={jazziconsToDisplay}
             />
             <PortfolioBannerLevelContainer>
-                <LevelsCard levelOnly />
+                <UserLevelDisplay
+                    currentLevel={xpData?.data?.currentLevel}
+                    totalPoints={xpData?.data?.totalPoints}
+                />
             </PortfolioBannerLevelContainer>
         </PortfolioBannerRectangleContainer>
     );

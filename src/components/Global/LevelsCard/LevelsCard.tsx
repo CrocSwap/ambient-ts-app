@@ -2,31 +2,44 @@ import { FlexContainer, Text } from '../../../styled/Common';
 import styles from './LevelsCard.module.css';
 import { LuCopy, LuExternalLink, LuShare2 } from 'react-icons/lu';
 import LevelLine from '../LevelLine/LevelLine';
-import { useContext, useMemo, useEffect } from 'react';
+import { useContext } from 'react';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { trimString } from '../../../ambient-utils/dataLayer';
-import { useParams } from 'react-router-dom';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-
-const pointsData = [
-    { date: '18/09/23', points: 1600 },
-    { date: '11/09/23', points: 800 },
-    { date: '04/09/23', points: 1200 },
-];
 
 interface LevelsCardPropsIF {
-    levelOnly?: boolean;
     resolvedAddress?: string;
+
+    currentLevel: number | undefined;
+    totalPoints: number | undefined;
+    totalPointsCurrentWeek: number;
+    progressPercentage: number;
+    pointsData: {
+        date: string;
+        points: number;
+    }[];
+    jazziconsToDisplay: JSX.Element | null;
+    ensNameToDisplay: string;
+    addressToDisplay: string | undefined;
+    pointsRemainingToNextLevel: number | undefined;
 }
 
 export default function LevelsCard(props: LevelsCardPropsIF) {
-    const { levelOnly, resolvedAddress } = props;
-    const { userAddress, ensName, connectedUserXp } =
-        useContext(UserDataContext);
-    const { address: addressFromParams } = useParams();
+    const {
+        currentLevel,
+        totalPoints,
+        totalPointsCurrentWeek,
+        progressPercentage,
+        pointsData,
+        jazziconsToDisplay,
+        ensNameToDisplay,
+        addressToDisplay,
+        pointsRemainingToNextLevel,
+        resolvedAddress,
+    } = props;
+    const { userAddress } = useContext(UserDataContext);
     const [_, copy] = useCopyToClipboard();
     const {
         snackbar: { open: openSnackbar },
@@ -35,24 +48,6 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
 
-    useEffect(() => {
-        if (connectedUserXp?.data) {
-            console.log({ connectedUserXp });
-        }
-    }, []);
-
-    const connectedAccountActive = useMemo(
-        () =>
-            userAddress
-                ? addressFromParams
-                    ? resolvedAddress?.toLowerCase() ===
-                      userAddress.toLowerCase()
-                        ? true
-                        : false
-                    : true
-                : false,
-        [addressFromParams, resolvedAddress, userAddress],
-    );
     function handleOpenExplorer(address: string) {
         if (address && blockExplorer) {
             const explorerUrl = `${blockExplorer}address/${address}`;
@@ -67,26 +62,13 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
         openSnackbar(`${copiedData} copied`, 'info');
     }
 
-    const jazziconsSeed = resolvedAddress
-        ? resolvedAddress.toLowerCase()
-        : userAddress?.toLowerCase() ?? '';
-
-    const myJazzicon = (
-        <Jazzicon diameter={50} seed={jsNumberForAddress(jazziconsSeed)} />
-    );
-
-    const jazziconsToDisplay =
-        (resolvedAddress || connectedAccountActive) && myJazzicon
-            ? myJazzicon
-            : null;
-
     const header = (
         <FlexContainer flexDirection='row' gap={16} alignItems='center'>
             <div className={styles.user_image}>{jazziconsToDisplay}</div>
             <FlexContainer flexDirection='column'>
                 <FlexContainer flexDirection='row' gap={16}>
                     <Text fontSize='header2' color='text1'>
-                        {ensName ? ensName : userAddress ? userAddress : ''}
+                        {ensNameToDisplay}
                     </Text>
                     <LuExternalLink
                         size={18}
@@ -104,7 +86,7 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
                         Metamask
                     </Text>
                     <Text fontSize='body' color='text2'>
-                        {trimString(userAddress ?? '', 6, 4, '…')}
+                        {trimString(addressToDisplay ?? '', 6, 4, '…')}
                     </Text>
                 </FlexContainer>
             </FlexContainer>
@@ -135,64 +117,33 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
         </div>
     );
 
-    const levelDisplay = (
-        <div className={styles.level_only_container}>
-            <div className={styles.level_border}>
-                <div className={styles.level_border_content}>16</div>
-            </div>
-
-            <FlexContainer
-                flexDirection='column'
-                justifyContent='space-between'
-                height='100%'
-            >
-                <FlexContainer
-                    flexDirection='row'
-                    width='100%'
-                    justifyContent='space-between'
-                >
-                    <Text fontSize='header1' color='text1'>
-                        Level 16{' '}
-                    </Text>
-                    <Text fontSize='header1' color='text2'>
-                        XP: 16, 425{' '}
-                    </Text>
-                </FlexContainer>
-
-                <LevelLine percentage={20} width='250px' />
-            </FlexContainer>
-        </div>
-    );
-
-    if (levelOnly) return levelDisplay;
-
     return (
         <div className={styles.main_container}>
             {header}
             <Text fontSize='header1' color='text1' padding='8px 32px'>
-                Level 16
+                {`Level ${currentLevel}`}
             </Text>
-            <LevelLine percentage={20} width='250px' />
+            <LevelLine percentage={progressPercentage} width='250px' />
 
             <div className={styles.point_display_container}>
                 <Text fontSize='body' color='text2'>
                     Points this Week
                 </Text>
                 <Text fontSize='header1' color='text1'>
-                    1,600
+                    {totalPointsCurrentWeek}
                 </Text>
             </div>
 
             <div className={styles.point_display_container}>
                 <Text fontSize='body' color='text2'>
-                    Points this Week
+                    Total points
                 </Text>
                 <Text fontSize='header1' color='text1'>
-                    1,600
+                    {totalPoints}
                 </Text>
             </div>
             <Text fontSize='header2' color='accent1'>
-                1,098 points till next level!
+                {`${pointsRemainingToNextLevel} points till next level!`}
             </Text>
             <span className={styles.divider} />
 
