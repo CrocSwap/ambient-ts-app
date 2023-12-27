@@ -12,7 +12,7 @@ const Tooltip = styled.div`
 
     z-index: 99;
 
-    background: var(--dark3);
+    background: #202a38;
 
     box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.8);
 
@@ -21,7 +21,7 @@ const Tooltip = styled.div`
     height: 22px;
     width: 125px;
 
-    left: 24px;
+    left: 20px;
     top: -17px;
 
     padding: 2px;
@@ -39,10 +39,16 @@ const TooltipArrow = styled.div`
     top: 50%;
     right: 100%;
 
-    margin-top: -7px;
-    border-width: 7px;
+    margin-top: -6px;
+    border-width: 6px;
     border-style: solid;
-    border-color: transparent var(--dark3) transparent transparent;
+    border-color: transparent #202a38 transparent transparent;
 `;
 
-export { TooltipContainer, Tooltip, TooltipArrow };
+const TooltipLabel = styled.label`
+    color: white;
+
+    padding: 0px;
+`;
+
+export { TooltipContainer, Tooltip, TooltipArrow, TooltipLabel };

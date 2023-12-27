@@ -1,4 +1,9 @@
-import { TooltipContainer, TooltipArrow, Tooltip } from './HoveredTooltipCss';
+import {
+    TooltipContainer,
+    TooltipArrow,
+    Tooltip,
+    TooltipLabel,
+} from './HoveredTooltipCss';
 
 function HoveredTooltip(props: { hoveredTool: string }) {
     const { hoveredTool } = props;
@@ -7,7 +12,7 @@ function HoveredTooltip(props: { hoveredTool: string }) {
         <TooltipContainer>
             <Tooltip>
                 <TooltipArrow></TooltipArrow>
-                <label>{hoveredTool}</label>
+                <TooltipLabel>{hoveredTool}</TooltipLabel>
             </Tooltip>
         </TooltipContainer>
     );
