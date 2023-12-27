@@ -150,6 +150,12 @@
     transition: var(--transition);
 }
 
+.other_room_icon{
+    margin-right: .5rem;
+    margin-left: .5rem;
+    opacity: .5;
+}
+
 /* .chat_scrollable{
     padding: 1rem;
     overflow-y: scroll;
@@ -238,7 +244,20 @@
     }
 }
 
-
+@keyframes yellowFlash{
+    0% , 100%{
+        box-shadow: 0px 0px 28px #f3bc4144;
+        border: 1px solid #f3bc4188;
+        color: #f3bc41cc;
+        background: transparent;
+    }
+    50%{
+        box-shadow: 0px 0px 28px #f3bc4188;
+        border: 1px solid #f3bc41aa;
+        color: white;
+        background: #f3bc41cc;
+    }
+}
 
 .verify_button{
     transition: all .2s ease-in-out;

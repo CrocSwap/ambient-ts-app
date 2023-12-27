@@ -761,6 +761,8 @@ function SentMessagePanel(props: SentMessageProps) {
             ${showAvatar ? styles.thread_top_msg : ''} 
 
             ${props.message.isDeleted ? styles.deleted_msg : ''}
+
+            ${props.room == 'Admins' ? styles.admin_room_msg : ''}
             `}
             // style={messageStyle()}
             data-ment-index={props.mentionIndex}

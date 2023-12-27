@@ -416,7 +416,13 @@ export default function Room(props: propsIF) {
     }
 
     const smallScrenView = useMediaQuery('(max-width: 968px)');
-
+    console.log(roomArray);
+    console.log(roomArray);
+    console.log(roomArray);
+    console.log(roomArray);
+    console.log(roomArray);
+    console.log(roomArray);
+    console.log(roomArray);
     return (
         <div className={styles.dropdown}>
             <div

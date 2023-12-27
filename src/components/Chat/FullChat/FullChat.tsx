@@ -5,6 +5,8 @@ import {
     SetStateAction,
     useEffect,
     useContext,
+    memo,
+    useRef,
 } from 'react';
 import { FiAtSign, FiSettings } from 'react-icons/fi';
 import {
@@ -15,6 +17,7 @@ import { MdOutlineChat } from 'react-icons/md';
 import {
     AiOutlineCheck,
     AiOutlineClose,
+    AiOutlineGlobal,
     AiOutlineSound,
     AiOutlineUser,
 } from 'react-icons/ai';
@@ -27,6 +30,8 @@ import { defaultTokens } from '../../../ambient-utils/constants';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { uriToHttp } from '../../../ambient-utils/dataLayer';
+import ChatToaster from '../ChatToaster/ChatToaster';
+import ChatConfirmationPanel from '../ChatConfirmationPanel/ChatConfirmationPanel';
 
 interface FullChatPropsIF {
     messageList: JSX.Element;
@@ -46,6 +51,20 @@ interface FullChatPropsIF {
     isModerator: boolean;
     isVerified: boolean;
     verifyWallet: (val: number, date: Date, e: any) => void;
+    toastrActive: boolean;
+    toastrActivator: Dispatch<SetStateAction<boolean>>;
+    toastrText: string;
+    toastrType?: 'success' | 'error' | 'warning' | 'info';
+    showVerifyOldMessagesPanel: boolean;
+    getConfirmationPanelContent: () => string;
+    activateToastr: (
+        text: string,
+        type: 'success' | 'error' | 'warning' | 'info',
+    ) => void;
+    updateUnverifiedMessages: (startDate: Date, endDate?: Date) => void;
+    verifyOldMessagesStartDate: Date;
+    confirmationPanelContent: number;
+    setShowVerifyOldMessagesPanel: Dispatch<SetStateAction<boolean>>;
 }
 
 interface ChannelDisplayPropsIF {
@@ -54,7 +73,7 @@ interface ChannelDisplayPropsIF {
     favoritePools: PoolIF[];
     favePools: favePoolsMethodsIF;
 }
-export default function FullChat(props: FullChatPropsIF) {
+function FullChat(props: FullChatPropsIF) {
     const { setIsChatOpen } = props;
     const { params } = useParams();
     const { topPools: rooms } = useContext(CrocEnvContext);
@@ -69,6 +88,8 @@ export default function FullChat(props: FullChatPropsIF) {
     useEffect(() => {
         setIsChatOpen(true);
     }, []);
+
+    const verifyBtnRef = useRef<HTMLDivElement>(null);
 
     const currencies: string[] | null =
         params && !params.includes('global') ? params.split('&') : null;
@@ -435,6 +456,94 @@ export default function FullChat(props: FullChatPropsIF) {
         );
     }
 
+    const otherRooms = [
+        {
+            id: 100,
+            name: 'Global',
+            value: 'Global',
+        },
+        {
+            id: 101,
+            name: 'Admins',
+            value: 'Admins',
+        },
+    ];
+
+    const renderOtherRooms = () => {
+        const roomsToAdd = otherRooms.filter((room) => {
+            return (
+                room.name !== readableRoomName &&
+                !(room.name == 'Admins' && !props.isModerator)
+            );
+        });
+
+        const renderRoomIcon = (name: string) => {
+            switch (name.toLowerCase()) {
+                case 'global':
+                    return (
+                        <AiOutlineGlobal
+                            size={20}
+                            color='var(--text-highlight)'
+                        />
+                    );
+                case 'admins':
+                    return (
+                        <AiOutlineUser
+                            size={20}
+                            color='var(--text-highlight)'
+                        />
+                    );
+            }
+        };
+
+        return (
+            <>
+                {roomsToAdd.map((e) => {
+                    return (
+                        <div
+                            key={e.id}
+                            className={`${styles.pool_display}`}
+                            // eslint-disable-next-line
+                            onClick={(event: any) => {
+                                console.log('other room clicked');
+
+                                props.setRoom(e.name);
+
+                                setReadableName(e.name);
+                                // setReadableRoom(e);
+
+                                props.setIsCurrentPool(false);
+                                props.setShowCurrentPoolButton(true);
+
+                                if (
+                                    roomArray.some(
+                                        ({ name }) => name === readableRoomName,
+                                    )
+                                ) {
+                                    setIsRoomInRoomArray(true);
+                                } else {
+                                    setIsRoomInRoomArray(false);
+                                }
+                                setShowChannelsDropdown(!showChannelsDropdown);
+                            }}
+                        >
+                            <div
+                                className={
+                                    styles.token_logos +
+                                    ' ' +
+                                    styles.other_room_icon
+                                }
+                            >
+                                {renderRoomIcon(e.name)}
+                            </div>
+                            <span>{e.name}</span>
+                        </div>
+                    );
+                })}
+            </>
+        );
+    };
+
     const sidebarExpandOrCollapseIcon = (
         <div onClick={() => setIsChatSidebarOpen(!isChatSidebarOpen)}>
             {isChatSidebarOpen ? (
@@ -553,6 +662,7 @@ export default function FullChat(props: FullChatPropsIF) {
                             favePools={favePools}
                         />
                     ))}
+                    {renderOtherRooms()}
                 </div>
             )}
         </div>
@@ -696,6 +806,50 @@ export default function FullChat(props: FullChatPropsIF) {
                 {channelsDropdown}
                 {chatContainer}
             </section>
+            <ChatToaster
+                isActive={props.toastrActive}
+                activator={props.toastrActivator}
+                text={props.toastrText}
+                type={props.toastrType}
+            />
+            <ChatConfirmationPanel
+                isActive={props.showVerifyOldMessagesPanel && props.isChatOpen}
+                title='Verify Old Messages'
+                content={props.getConfirmationPanelContent()}
+                cancelListener={() => {
+                    props.setShowVerifyOldMessagesPanel(false);
+                }}
+                confirmListener={async () => {
+                    if (!props.isVerified) {
+                        verifyBtnRef.current?.classList.add(styles.flashed);
+                        setTimeout(() => {
+                            verifyBtnRef.current?.classList.remove(
+                                styles.flashed,
+                            );
+                        }, 1500);
+                        return props.activateToastr(
+                            'Please verify your wallet to verify old messages.',
+                            'warning',
+                        );
+                    }
+                    await props.updateUnverifiedMessages(
+                        props.verifyOldMessagesStartDate,
+                        props.confirmationPanelContent == 2
+                            ? new Date(
+                                  props.verifyOldMessagesStartDate.getTime() +
+                                      1000 * 60,
+                              )
+                            : undefined,
+                    );
+                    props.activateToastr(
+                        'Old messages verified successfully',
+                        'success',
+                    );
+                    props.setShowVerifyOldMessagesPanel(false);
+                }}
+            />
         </div>
     );
 }
+
+export default memo(FullChat);

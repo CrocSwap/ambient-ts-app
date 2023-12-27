@@ -802,10 +802,15 @@
 }
 
 .message_block_wrapper{
-    width: 80%;
+    width: 95%;
     height: 80%;
     margin-left: 10px;
     font-size: 12px;
+}
+
+.admin_room_msg .message_block_wrapper{
+
+    width: 80%;
 }
 
 .without_avatar{
@@ -849,4 +854,12 @@
 
 .vrf_msg_dbg{
     /* color: green; */
+}
+
+@media only screen and (max-width: 600px){
+
+    .roomInfo {
+        left: auto;
+            right: 4.4rem;
+    }
 }

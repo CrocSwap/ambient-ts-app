@@ -547,6 +547,7 @@ function ChatPanel(props: propsIF) {
         startDate: Date,
         endDate?: Date,
     ) => {
+        console.log('HANDLE CONFIRMATION DIALOG');
         setConfirmationPanelContent(confirmationType);
         setVerifyOldMessagesStartDate(startDate);
         setShowVerifyOldMessagesPanel(true);
@@ -934,28 +935,43 @@ function ChatPanel(props: propsIF) {
     const contentHeight = isChatOpen ? '479px' : '30px';
     if (props.appPage)
         return (
-            <FullChat
-                messageList={messageList}
-                setIsChatOpen={setIsChatOpen}
-                chatNotification={chatNotification}
-                messageInput={messageInput}
-                userName={
-                    ens === null || ens === ''
-                        ? trimString(userAddress as string, 6, 0, '…')
-                        : (ens as string)
-                }
-                setRoom={setRoom}
-                setIsCurrentPool={setIsCurrentPool}
-                showCurrentPoolButton={showCurrentPoolButton}
-                setShowCurrentPoolButton={setShowCurrentPoolButton}
-                userCurrentPool={userCurrentPool}
-                favoritePools={favoritePools}
-                setFavoritePools={setFavoritePools}
-                isChatOpen={isChatOpen}
-                isVerified={isVerified}
-                isModerator={isModerator}
-                verifyWallet={verifyWallet}
-            />
+            <>
+                <FullChat
+                    messageList={messageList}
+                    setIsChatOpen={setIsChatOpen}
+                    chatNotification={chatNotification}
+                    messageInput={messageInput}
+                    userName={
+                        ens === null || ens === ''
+                            ? trimString(userAddress as string, 6, 0, '…')
+                            : (ens as string)
+                    }
+                    setRoom={setRoom}
+                    setIsCurrentPool={setIsCurrentPool}
+                    showCurrentPoolButton={showCurrentPoolButton}
+                    setShowCurrentPoolButton={setShowCurrentPoolButton}
+                    userCurrentPool={userCurrentPool}
+                    favoritePools={favoritePools}
+                    setFavoritePools={setFavoritePools}
+                    isChatOpen={isChatOpen}
+                    isVerified={isVerified}
+                    isModerator={isModerator}
+                    verifyWallet={verifyWallet}
+                    toastrActive={toastrActive}
+                    toastrActivator={setToastrActive}
+                    toastrText={toastrText}
+                    toastrType={toastrType}
+                    showVerifyOldMessagesPanel={showVerifyOldMessagesPanel}
+                    getConfirmationPanelContent={getConfirmationPanelContent}
+                    activateToastr={activateToastr}
+                    updateUnverifiedMessages={updateUnverifiedMessages}
+                    verifyOldMessagesStartDate={verifyOldMessagesStartDate}
+                    confirmationPanelContent={confirmationPanelContent}
+                    setShowVerifyOldMessagesPanel={
+                        setShowVerifyOldMessagesPanel
+                    }
+                />
+            </>
         );
 
     return (
