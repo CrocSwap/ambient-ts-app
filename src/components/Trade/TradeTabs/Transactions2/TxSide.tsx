@@ -24,9 +24,11 @@ export default function TxSide(props: propsIF) {
     // needed for control flow below
     const isBuy: boolean = tx.isBuy === true || tx.isBid === true;
 
+    type sideType = 'remove'|'harvest'|'add'|'buy'|'sell'|'claim';
+
     // side of transaction
     // we really should find a better way to write this logic
-    const sideType: 'remove'|'harvest'|'add'|'buy'|'sell'|'claim' =
+    const side: sideType =
         tx.entityType === 'liqchange'
             ? tx.changeType === 'burn'
                 ? 'remove'
@@ -76,7 +78,7 @@ export default function TxSide(props: propsIF) {
         : quoteChar;
 
     // display text string for the DOM
-    let displayText: string = sideType;
+    let displayText: string = side;
     // add a currency charachter to the display string if relevant
     if (
         tx.entityType === 'liqchange' ||
@@ -88,7 +90,7 @@ export default function TxSide(props: propsIF) {
 
     return (
         <RowItem
-            type={sideType}
+            type={side}
             justifyContent='center'
             data-label='side'
             tabIndex={0}
