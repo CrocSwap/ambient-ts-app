@@ -25,6 +25,7 @@ export * from './memoizePromiseFn';
 export * from './openInNewTab';
 export * from './printDomToImage';
 export * from './querySpotPrice';
+export * from './rangeFunctions';
 export * from './removeLeadingZeros';
 export * from './removeWrappedNative';
 export * from './sortTokens';

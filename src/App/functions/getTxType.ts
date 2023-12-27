@@ -5,7 +5,7 @@ export const getTxType = (entityType: EntityType): string => {
     // declare an output variable
     let output: string;
 
-    // template for console warning if input is not a recognized value
+    // template for console warning if the input is not a recognized value
     const errorMessage = `Did not recognize value of arg <<entityType>> in function getTxType(). Received value <<${entityType}>> of type <<${typeof entityType}>>. Recognized values  are type <<string>> and include <<'swap'>>, <<'limitOrder'>>, and <<liqchange>>. Function will return value <<'Unknown'>> of type <<string>>. Please refer to file getTxType.ts for troubleshooting.`;
 
     // logic router to produce a human-readable value for DOM based on input

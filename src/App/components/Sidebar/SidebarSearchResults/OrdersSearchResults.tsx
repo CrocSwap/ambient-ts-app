@@ -75,7 +75,7 @@ export default function OrdersSearchResults(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const {
-        setCurrentPositionActive,
+        setCurrentLimitOrderActive,
         setShowAllData,
         setOutsideControl,
         setSelectedOutsideTab,
@@ -87,7 +87,7 @@ export default function OrdersSearchResults(props: propsIF) {
     const handleClick = (limitOrder: LimitOrderIF): void => {
         setOutsideControl(true);
         setSelectedOutsideTab(1);
-        setCurrentPositionActive(limitOrder.limitOrderId);
+        setCurrentLimitOrderActive(limitOrder.limitOrderId);
         setShowAllData(false);
         const { base, quote, isBid, bidTick, askTick } = limitOrder;
         // URL params for link to limit page
