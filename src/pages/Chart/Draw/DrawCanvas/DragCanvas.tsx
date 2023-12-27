@@ -3,6 +3,7 @@ import * as d3 from 'd3';
 import {
     CandleDataChart,
     drawDataHistory,
+    findSnapTime,
     lineData,
     scaleData,
     selectedDrawnData,
@@ -170,11 +171,18 @@ export default function DragCanvas(props: DragCanvasProps) {
 
         let valueX = nearest.time * 1000;
         const valueXLocation = scaleData.xScale(nearest.time * 1000);
+        const sensitiveDistance =
+            scaleData.xScale(nearest.time * 1000 + nearest.period * 1000) -
+            scaleData.xScale(nearest.time * 1000);
+        const snappedTime = findSnapTime(
+            scaleData?.xScale.invert(offsetX),
+            nearest.period,
+        );
         if (
-            Math.abs(valueXLocation - offsetX) > 60 &&
+            Math.abs(valueXLocation - offsetX) > sensitiveDistance &&
             nearest === visibleCandleData[0]
         ) {
-            valueX = scaleData?.xScale.invert(offsetX);
+            valueX = snappedTime;
             valueY = scaleData?.yScale.invert(offsetY);
         }
 
