@@ -235,6 +235,8 @@ export default function Chart(props: propsIF) {
     const [isChartZoom, setIsChartZoom] = useState(false);
 
     const [chartHeights, setChartHeights] = useState(0);
+    const [chartWidth, setChartWidth] = useState(0);
+
     const { isUserConnected } = useContext(UserDataContext);
 
     const { isTokenAPrimaryRange, advancedMode } = useContext(RangeContext);
@@ -1086,7 +1088,7 @@ export default function Chart(props: propsIF) {
 
                             setTimeout(() => {
                                 setIsShowLimitOrPoolLinesTooltip(false);
-                            }, 1000);
+                            }, 1500);
                             return !isOnLimit && !isOnRangeMin && !isOnRangeMax;
                         } else {
                             return !canUserDragRange && !canUserDragLimit;
@@ -2554,7 +2556,8 @@ export default function Chart(props: propsIF) {
                 setMainCanvasBoundingClientRect(canvas.getBoundingClientRect());
 
                 const height = result[0].contentRect.height;
-
+                const width = result[0].contentRect.width;
+                setChartWidth(width);
                 setChartHeights(height);
                 render();
             });
@@ -4644,7 +4647,7 @@ export default function Chart(props: propsIF) {
                 <CSSTransition
                     in={isShowLimitOrPoolLinesTooltip}
                     timeout={500}
-                    classNames='chartLinesTooltipDiv'
+                    classNames='chartLinesTooltip'
                     unmountOnExit
                 >
                     <div
@@ -4652,13 +4655,11 @@ export default function Chart(props: propsIF) {
                         style={{
                             fontSize: mobileView ? '10px' : '12px',
                             top: limitOrPoolLinesTooltipPosition - 35 + 'px',
-                            left:
-                                mainCanvasBoundingClientRect?.width /
-                                (mobileView ? 6 : 2),
+                            left: chartWidth / (mobileView ? 6 : 2),
                         }}
                     >
                         <div>
-                            Drag is temporarily unavailable during comfirmation.
+                            Drag is temporarily unavailable during confirmation
                         </div>
                     </div>
                 </CSSTransition>
