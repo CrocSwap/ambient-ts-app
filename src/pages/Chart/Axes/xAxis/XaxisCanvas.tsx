@@ -198,8 +198,8 @@ function XAxisCanvas(props: xAxisIF) {
                     if (d.date instanceof Date) {
                         context.textAlign = 'center';
                         context.textBaseline = 'top';
-                        context.fillStyle = 'rgba(189,189,189,0.8)';
-                        context.font = '50 11.425px Lexend Deca';
+                        context.fillStyle = 'rgba(240, 240, 248, 0.8)';
+                        context.font = '50 11.5px Lexend Deca';
                         context.filter = ' blur(0px)';
 
                         const formatValue = formatDateTicks(d.date, 'tick');
