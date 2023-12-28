@@ -841,13 +841,16 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                                     : undefined
                                                             }
                                                             key={index}
-                                                            onClick={() =>
+                                                            onClick={(
+                                                                event: MouseEvent<HTMLElement>,
+                                                            ) => {
+                                                                event.stopPropagation();
                                                                 handleEditLabel(
                                                                     item.value,
                                                                     isLabelPlacementOptionTabActive,
                                                                     isLabelAlignmentOptionTabActive,
-                                                                )
-                                                            }
+                                                                );
+                                                            }}
                                                         >
                                                             {item.name}
                                                         </ListItem>

@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 const TooltipContainer = styled.div`
     position: absolute;
-    z-index: 99;
+    z-index: 999;
 `;
 
 const Tooltip = styled.div`
