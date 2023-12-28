@@ -39,7 +39,6 @@ import {
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
-import { useModal } from '../../../components/Global/Modal/useModal';
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import RangeWidth from '../../../components/Form/RangeWidth/RangeWidth';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
@@ -92,7 +91,6 @@ function Reposition() {
         setAdvancedMode,
     } = useContext(RangeContext);
     // eslint-disable-next-line
-    const [isOpen, openModal, closeModal] = useModal();
 
     const [newRepositionTransactionHash, setNewRepositionTransactionHash] =
         useState('');
@@ -213,7 +211,6 @@ function Reposition() {
 
     const handleModalClose = () => {
         resetConfirmation();
-        closeModal();
     };
 
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(10);
@@ -684,7 +681,7 @@ function Reposition() {
                 module='Reposition'
                 slippage={repoSlippage}
                 bypassConfirm={bypassConfirmRepo}
-                onClose={closeModal}
+                onClose={() => setActiveContent('main')}
             />
         </RepositionSkeleton>
     );
