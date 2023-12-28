@@ -1,0 +1,9 @@
+.header_row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.col_header {
+    font-size: 10px;
+}

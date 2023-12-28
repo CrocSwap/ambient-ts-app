@@ -4,29 +4,78 @@ import TransactionRow2 from './TransactionRow2';
 import { CandleDataIF, TransactionIF } from '../../../../ambient-utils/types';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
+import TxHeader from './TxHeader';
 
 // columns to display in table and px width to alot for each
-const columnsAndSizes = {
-    timeStamp: 80,
-    txId: 140,
-    txWallet: 140,
-    txValue: 140,
-    txSide: 40,
-    overflowBtn: 60,
-    editBtn: 60,
-    harvestBtn: 60,
-    addBtn: 60,
-    leafBtn: 60,
-    removeBtn: 60,
-    shareBtn: 60,
-    exportBtn: 60,
-    walletBtn: 60,
-    copyBtn: 60,
-    downloadBtn: 60,
+const columnMetaInfo = {
+    timeStamp: {
+        width: 80,
+        readable: 'Timestamp'
+    },
+    txId: {
+        width: 140,
+        readable: 'ID'
+    },
+    txWallet: {
+        width: 140,
+        readable: 'Wallet'
+    },
+    txValue: {
+        width: 140,
+        readable: 'Value'
+    },
+    txSide: {
+        width: 100,
+        readable: 'Side'
+    },
+    overflowBtn: {
+        width: 60,
+        readable: ''
+    },
+    editBtn: {
+        width: 60,
+        readable: ''
+    },
+    harvestBtn: {
+        width: 60,
+        readable: ''
+    },
+    addBtn: {
+        width: 60,
+        readable: ''
+    },
+    leafBtn: {
+        width: 60,
+        readable: ''
+    },
+    removeBtn: {
+        width: 60,
+        readable: ''
+    },
+    shareBtn: {
+        width: 60,
+        readable: ''
+    },
+    exportBtn: {
+        width: 60,
+        readable: ''
+    },
+    walletBtn: {
+        width: 60,
+        readable: ''
+    },
+    copyBtn: {
+        width: 60,
+        readable: ''
+    },
+    downloadBtn: {
+        width: 60,
+        readable: ''
+    },
 };
 
 // string-union type of all keys in the `columnsAndSizes` object
-export type columnSlugsType = keyof typeof columnsAndSizes;
+export type columnSlugsType = keyof typeof columnMetaInfo;
 
 interface propsIF {
     isAccountPage: boolean;
@@ -61,7 +110,7 @@ export default function Transactions2(props: propsIF) {
     // list of columns to display in the DOM as determined by priority and space available
     // this is recalculated every time the elem changes width, but later memoization prevents
     // ... unnecessary re-renders from happening
-    const columnsToRender = useRef<[columnSlugsType, number][]>([]);
+    const columnsToRender = useRef<[columnSlugsType, number, string][]>([]);
 
     // array to define column priority in the DOM, columns listed last will be removed from the
     // ... DOM first when space is limited
@@ -94,7 +143,7 @@ export default function Transactions2(props: propsIF) {
                 // get the pixel width of the container in the DOM
                 const containerWidth = containerRef.current.clientWidth;
                 // array to hold the list of columns we'll actually render
-                const columnList: [columnSlugsType, number][] = [];
+                const columnList: [columnSlugsType, number, string][] = [];
                 // this value tracks how much width (pixels) is required by the columns in the
                 // ... DOM, updated each time we iteratively add one
                 let totalWidthNeeded = 0;
@@ -103,11 +152,12 @@ export default function Transactions2(props: propsIF) {
                     // get the name of the next column in the priority list
                     const columnId: columnSlugsType = priority[i];
                     // determine how much width (pixels) the column needs
-                    const columnSize: number = columnsAndSizes[columnId];
+                    const columnSize: number = columnMetaInfo[columnId].width;
+                    const columnTitle: string = columnMetaInfo[columnId].readable
                     // if the column fits in the DOM, add it to the list of columns to render
                     if (totalWidthNeeded + columnSize <= containerWidth) {
                         // push name of column into the output array
-                        columnList.push([columnId, columnSize]);
+                        columnList.push([columnId, columnSize, columnTitle]);
                         // update the running total of column sizes needed
                         totalWidthNeeded += columnSize;
                     }
@@ -130,12 +180,12 @@ export default function Transactions2(props: propsIF) {
 
     const [openMenuRow, setOpenMenuRow] = useState<string | null>(null);
 
-    const handleMenuToggle = (rowId: string) => {
+    const handleMenuToggle = (rowId: string): void => {
         setOpenMenuRow((prevRowId) => (prevRowId === rowId ? null : rowId));
     };
+
     // array of row elements to render in the DOM, the base underlying data used for generation
     // ... is updated frequently but this memoization on recalculates if other items change
-
     const transactionRows = useMemo<JSX.Element[]>(
         () =>
             transactionsData.map((tx: TransactionIF) => (
@@ -154,6 +204,7 @@ export default function Transactions2(props: propsIF) {
 
     return (
         <ol className={styles.tx_ol} ref={containerRef}>
+            <TxHeader activeColumns={columnsToRender.current} />
             {transactionRows}
         </ol>
     );
