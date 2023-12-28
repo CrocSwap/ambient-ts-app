@@ -11,6 +11,7 @@ import {
     drawDataHistory,
     drawnShapeEditAttributes,
     findSnapTime,
+    formatTimeDifference,
     lineData,
     renderCanvasArray,
     scaleData,
@@ -40,6 +41,7 @@ import {
     fibDefaultLevels,
 } from '../../ChartUtils/drawConstants';
 import { CandleDataIF } from '../../../../ambient-utils/types';
+import { formatDollarAmountAxis } from '../../../../utils/numbers';
 
 interface DrawCanvasProps {
     scaleData: scaleData;
@@ -74,6 +76,8 @@ interface DrawCanvasProps {
     render: any;
     isMagnetActive: { value: boolean };
     drawSettings: any;
+    quoteTokenDecimals: number;
+    baseTokenDecimals: number;
 }
 
 function DrawCanvas(props: DrawCanvasProps) {
@@ -100,6 +104,9 @@ function DrawCanvas(props: DrawCanvasProps) {
         render,
         isMagnetActive,
         drawSettings,
+        quoteTokenDecimals,
+        baseTokenDecimals,
+        period,
     } = props;
 
     const {
@@ -767,6 +774,135 @@ function DrawCanvas(props: DrawCanvasProps) {
                             scaleData.xScale(lineData[0].x) -
                                 scaleData.xScale(lineData[1].x),
                         );
+
+                        const firstPointYAxisData =
+                            lineData[0].denomInBase === denomInBase
+                                ? lineData[0].y
+                                : 1 / lineData[0].y;
+                        const secondPointYAxisData =
+                            lineData[1].denomInBase === denomInBase
+                                ? lineData[1].y
+                                : 1 / lineData[1].y;
+
+                        const filtered = visibleCandleData.filter(
+                            (data: CandleDataIF) =>
+                                data.time * 1000 >=
+                                    Math.min(lineData[0].x, lineData[1].x) &&
+                                data.time * 1000 <=
+                                    Math.max(lineData[0].x, lineData[1].x),
+                        );
+
+                        const totalVolumeCovered = filtered.reduce(
+                            (sum, obj) => sum + obj.volumeUSD,
+                            0,
+                        );
+
+                        const lengthAsBars = Math.abs(
+                            lineData[0].x - lineData[1].x,
+                        );
+                        const lengthAsDate =
+                            (lineData[0].x > lineData[1].x ? '-' : '') +
+                            formatTimeDifference(
+                                new Date(
+                                    Math.min(lineData[1].x, lineData[0].x),
+                                ),
+                                new Date(
+                                    Math.max(lineData[1].x, lineData[0].x),
+                                ),
+                            );
+
+                        const heightAsPrice =
+                            secondPointYAxisData - firstPointYAxisData;
+
+                        const heightAsPercentage = (
+                            (Number(heightAsPrice) /
+                                Math.min(
+                                    firstPointYAxisData,
+                                    secondPointYAxisData,
+                                )) *
+                            100
+                        ).toFixed(2);
+
+                        const infoLabelHeight = 66;
+                        const infoLabelWidth = 150;
+
+                        const infoLabelXAxisData =
+                            Math.min(lineData[0].x, lineData[1].x) +
+                            Math.abs(lineData[0].x - lineData[1].x) / 2;
+
+                        const infoLabelYAxisData =
+                            scaleData.yScale(secondPointYAxisData) +
+                            (secondPointYAxisData > firstPointYAxisData
+                                ? -(infoLabelHeight + 15)
+                                : 15);
+
+                        if (ctx) {
+                            ctx.beginPath();
+                            ctx.fillStyle = 'rgb(34,44,58)';
+                            ctx.fillRect(
+                                scaleData.xScale(infoLabelXAxisData) -
+                                    infoLabelWidth / 2,
+                                infoLabelYAxisData,
+                                infoLabelWidth,
+                                infoLabelHeight,
+                            );
+                            ctx.fillStyle = 'rgba(210,210,210,1)';
+                            ctx.font = '12.425px Lexend Deca';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+
+                            const maxPrice =
+                                secondPointYAxisData *
+                                Math.pow(
+                                    10,
+                                    baseTokenDecimals - quoteTokenDecimals,
+                                );
+
+                            const minPrice =
+                                firstPointYAxisData *
+                                Math.pow(
+                                    10,
+                                    baseTokenDecimals - quoteTokenDecimals,
+                                );
+
+                            const dpRangeTickPrice =
+                                maxPrice && minPrice
+                                    ? Math.floor(
+                                          Math.log(maxPrice) / Math.log(1.0001),
+                                      ) -
+                                      Math.floor(
+                                          Math.log(minPrice) / Math.log(1.0001),
+                                      )
+                                    : 0;
+
+                            ctx.fillText(
+                                heightAsPrice.toFixed(2) +
+                                    ' ' +
+                                    ' (' +
+                                    heightAsPercentage.toString() +
+                                    '%)  ' +
+                                    dpRangeTickPrice,
+                                scaleData.xScale(infoLabelXAxisData),
+                                infoLabelYAxisData + 16,
+                            );
+                            ctx.fillText(
+                                (lengthAsBars / (1000 * period))
+                                    .toFixed(0)
+                                    .toString() +
+                                    ' bars,  ' +
+                                    lengthAsDate,
+                                scaleData.xScale(infoLabelXAxisData),
+                                infoLabelYAxisData + 33,
+                            );
+                            ctx.fillText(
+                                'Vol ' +
+                                    formatDollarAmountAxis(
+                                        totalVolumeCovered,
+                                    ).replace('$', ''),
+                                scaleData.xScale(infoLabelXAxisData),
+                                infoLabelYAxisData + 50,
+                            );
+                        }
 
                         if (height > 70 && width > 70) {
                             const arrowArray = createArrowPointsOfDPRangeLine(

@@ -5386,6 +5386,8 @@ export default function Chart(props: propsIF) {
                                 firstCandleData={firstCandleData}
                                 isMagnetActive={isMagnetActive}
                                 drawSettings={drawSettings}
+                                quoteTokenDecimals={quoteTokenDecimals}
+                                baseTokenDecimals={baseTokenDecimals}
                             />
                         )}
 
