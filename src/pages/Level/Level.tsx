@@ -6,6 +6,7 @@ import { useContext } from 'react';
 import LevelDisplay from '../../components/Global/LevelsCard/UserLevelDisplay';
 import Jazzicon from 'react-jazzicon/dist/Jazzicon';
 import { jsNumberForAddress } from 'react-jazzicon';
+import RankTable from './RankTable/RankTable';
 
 interface LevelPropsIF {
     ensName: string;
@@ -14,6 +15,7 @@ interface LevelPropsIF {
     ensNameAvailable: boolean;
     truncatedAccountAddress: string;
     isLevelOnly?: boolean;
+    isDisplayRank?: boolean;
 }
 export default function Level(props: LevelPropsIF) {
     const {
@@ -23,6 +25,7 @@ export default function Level(props: LevelPropsIF) {
         ensNameAvailable,
         truncatedAccountAddress,
         isLevelOnly,
+        isDisplayRank,
     } = props;
     const { userAddress, connectedUserXp } = useContext(UserDataContext);
 
@@ -112,6 +115,14 @@ export default function Level(props: LevelPropsIF) {
                 totalPoints={totalPoints}
             />
         );
+
+    if (isDisplayRank) {
+        return (
+            <div className={styles.level_page_container}>
+                <RankTable />
+            </div>
+        );
+    }
 
     return (
         <div className={styles.level_page_container}>

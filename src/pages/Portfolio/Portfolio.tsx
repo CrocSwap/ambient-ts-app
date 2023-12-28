@@ -31,6 +31,7 @@ import Level from '../Level/Level';
 
 interface PortfolioPropsIF {
     isLevelsPage?: boolean;
+    isRanksPage?: boolean;
 }
 
 function Portfolio(props: PortfolioPropsIF) {
@@ -40,7 +41,7 @@ function Portfolio(props: PortfolioPropsIF) {
         ensName,
         setSecondaryEnsInContext,
     } = useContext(UserDataContext);
-    const { isLevelsPage } = props;
+    const { isLevelsPage, isRanksPage } = props;
 
     const isUserConnected = useSimulatedIsUserConnected();
 
@@ -299,6 +300,7 @@ function Portfolio(props: PortfolioPropsIF) {
             ? trimString(userAddress ?? '', 6, 6, '…')
             : trimString(resolvedAddress ?? '', 6, 6, '…'),
         connectedAccountActive: connectedAccountActive,
+        isDisplayRank: isRanksPage,
     };
 
     const profileSettingsProps = {

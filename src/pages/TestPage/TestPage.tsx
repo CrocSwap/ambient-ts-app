@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FlexContainer } from '../../styled/Common';
 import StepperComponent from '../../components/Global/MultiStepTransaction/StepperComponent';
+import RankTable from '../Level/RankTable/RankTable';
 
 export default function TestPage() {
     const [activeStep, setActiveStep] = useState(0);
@@ -56,20 +57,23 @@ export default function TestPage() {
     // ENd of for demonstration--------------------
 
     return (
-        <FlexContainer flexDirection='row' justifyContent='space-around'>
-            {questionContent}
+        // <FlexContainer flexDirection='row' justifyContent='space-around'>
+        //     {questionContent}
 
-            <StepperComponent
-                orientation='vertical'
-                steps={[
-                    { label: 'Question 1' },
-                    { label: 'Question 2' },
-                    { label: 'Question 3' },
-                ]}
-                activeStep={activeStep}
-                setActiveStep={setActiveStep}
-                isError={isError}
-            />
-        </FlexContainer>
+        //     <StepperComponent
+        //         orientation='vertical'
+        //         steps={[
+        //             { label: 'Question 1' },
+        //             { label: 'Question 2' },
+        //             { label: 'Question 3' },
+        //         ]}
+        //         activeStep={activeStep}
+        //         setActiveStep={setActiveStep}
+        //         isError={isError}
+        //     />
+        // </FlexContainer>
+        <>
+            <RankTable />
+        </>
     );
 }

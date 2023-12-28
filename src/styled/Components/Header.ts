@@ -323,6 +323,27 @@ export const LevelWrapper = styled(FlexContainer)`
     height: 136px;
     gap: 8px;
 `;
+export const AccountDropdownWrapper = styled(FlexContainer)`
+    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: 0px 45px 30px rgba(0, 0, 0, 0.5);
+    background: var(--dark2);
+    position: absolute;
+    top: 30px;
+    width: 147px;
+    right: 0px;
+    z-index: 9999;
+    padding: 8px 1rem;
+
+    opacity: 1;
+    bottom: 85px;
+    pointer-events: auto;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    height: 136px;
+    gap: 8px;
+`;
 
 // Account
 
