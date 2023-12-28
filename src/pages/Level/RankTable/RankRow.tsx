@@ -6,7 +6,7 @@ interface PropsIF {
     data: {
         rank: number;
         wallet: string;
-        points: string;
+        points: number;
     };
 }
 export default function RankRow(props: PropsIF) {
