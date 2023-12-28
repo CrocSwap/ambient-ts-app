@@ -8,7 +8,8 @@ const ToolbarContainer = styled.div<{
         if (isActive) {
             return `
             width: 38px;
-        
+            margin-left:38px;
+            margin-top:130px;
             &::-webkit-scrollbar {
                 width: 0;
                 display: none;

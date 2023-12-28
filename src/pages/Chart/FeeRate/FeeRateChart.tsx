@@ -390,8 +390,7 @@ function FeeRateChart(props: FreeRateData) {
             data-testid={'chart'}
             style={{
                 gridTemplateColumns:
-                    (isToolbarOpen ? 38 : 9) +
-                    'px auto 1fr auto minmax(1em, max-content)',
+                    9 + 'px auto 1fr auto minmax(1em, max-content)',
             }}
         >
             <d3fc-canvas
@@ -408,7 +407,7 @@ function FeeRateChart(props: FreeRateData) {
 
             <label
                 style={{
-                    paddingLeft: '5px',
+                    paddingLeft: isToolbarOpen ? '38px' : '9px',
                     gridColumnStart: '3',
                     gridColumnEnd: '3',
                 }}

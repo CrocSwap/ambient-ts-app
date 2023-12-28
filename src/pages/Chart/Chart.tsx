@@ -5277,11 +5277,10 @@ export default function Chart(props: propsIF) {
                         id='chart_grid'
                         style={{
                             gridTemplateColumns:
-                                (isToolbarOpen ? 38 : 9) +
-                                'px auto 1fr auto minmax(1em, max-content)',
+                                9 + 'px auto 1fr auto minmax(1em, max-content)',
                         }}
                     >
-                        <Toolbar
+                        {/* <Toolbar
                             toolbarRef={toolbarRef}
                             activeDrawingType={activeDrawingType}
                             setActiveDrawingType={setActiveDrawingType}
@@ -5298,7 +5297,7 @@ export default function Chart(props: propsIF) {
                             drawActionStack={drawActionStack}
                             actionKey={actionKey}
                             setSelectedDrawnShape={setSelectedDrawnShape}
-                        />
+                        /> */}
 
                         <CandleChart
                             chartItemStates={props.chartItemStates}

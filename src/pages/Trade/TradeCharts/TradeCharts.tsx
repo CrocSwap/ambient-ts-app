@@ -6,6 +6,7 @@ import {
     useContext,
     memo,
     useMemo,
+    useRef,
 } from 'react';
 
 // START: Import Local Files
@@ -27,6 +28,12 @@ import { updatesIF } from '../../../utils/hooks/useUrlParams';
 import { FlexContainer } from '../../../styled/Common';
 import { MainContainer } from '../../../styled/Components/Chart';
 import { TutorialButton } from '../../../styled/Components/Tutorial';
+import Toolbar from '../../Chart/Draw/Toolbar/Toolbar';
+import { LS_KEY_CHART_ANNOTATIONS } from '../../Chart/ChartUtils/chartConstants';
+import { useUndoRedo } from '../../Chart/ChartUtils/useUndoRedo';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
+import { selectedDrawnData } from '../../Chart/ChartUtils/chartUtils';
 
 // interface for React functional component props
 interface propsIF {
@@ -181,74 +188,76 @@ function TradeCharts(props: propsIF) {
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
     return (
-        <MainContainer
-            flexDirection='column'
-            fullHeight
-            fullWidth
-            style={{
-                padding: isChartFullScreen ? '1rem' : '0',
-                background: isChartFullScreen ? 'var(--dark2)' : '',
-            }}
-            ref={chartCanvasRef}
-        >
-            <div>
-                {isTutorialActive && (
-                    <FlexContainer
-                        fullWidth
-                        justifyContent='flex-end'
-                        alignItems='flex-end'
-                        padding='0 8px'
-                    >
-                        <TutorialButton
-                            onClick={() => setIsTutorialEnabled(true)}
+        <>
+            <MainContainer
+                flexDirection='column'
+                fullHeight
+                fullWidth
+                style={{
+                    padding: isChartFullScreen ? '1rem' : '0',
+                    background: isChartFullScreen ? 'var(--dark2)' : '',
+                }}
+                ref={chartCanvasRef}
+            >
+                <div>
+                    {isTutorialActive && (
+                        <FlexContainer
+                            fullWidth
+                            justifyContent='flex-end'
+                            alignItems='flex-end'
+                            padding='0 8px'
                         >
-                            Tutorial Mode
-                        </TutorialButton>
-                    </FlexContainer>
-                )}
-                {isChartFullScreen && <TradeChartsHeader />}
-                {timeFrameContent}
+                            <TutorialButton
+                                onClick={() => setIsTutorialEnabled(true)}
+                            >
+                                Tutorial Mode
+                            </TutorialButton>
+                        </FlexContainer>
+                    )}
+                    {isChartFullScreen && <TradeChartsHeader />}
+                    {timeFrameContent}
 
-                <CurrentDataInfo
-                    showTooltip={showTooltip}
-                    currentData={currentData}
-                    currentVolumeData={currentVolumeData}
-                    showLatest={showLatest}
-                    setLatest={setLatest}
-                    setReset={setReset}
-                    setRescale={setRescale}
-                    rescale={rescale}
-                    reset={reset}
+                    <CurrentDataInfo
+                        showTooltip={showTooltip}
+                        currentData={currentData}
+                        currentVolumeData={currentVolumeData}
+                        showLatest={showLatest}
+                        setLatest={setLatest}
+                        setReset={setReset}
+                        setRescale={setRescale}
+                        rescale={rescale}
+                        reset={reset}
+                    />
+                </div>
+                <div style={{ width: '100%', height: '100%' }}>
+                    <TradeCandleStickChart
+                        changeState={props.changeState}
+                        chartItemStates={chartItemStates}
+                        setCurrentData={setCurrentData}
+                        setCurrentVolumeData={setCurrentVolumeData}
+                        selectedDate={selectedDate}
+                        setSelectedDate={setSelectedDate}
+                        rescale={rescale}
+                        setRescale={setRescale}
+                        latest={latest}
+                        setLatest={setLatest}
+                        reset={reset}
+                        setReset={setReset}
+                        showLatest={showLatest}
+                        setShowLatest={setShowLatest}
+                        setShowTooltip={setShowTooltip}
+                        isLoading={props.isChartLoading}
+                        setIsLoading={props.setIsChartLoading}
+                        updateURL={updateURL}
+                    />
+                </div>
+                <TutorialOverlay
+                    isTutorialEnabled={isTutorialEnabled}
+                    setIsTutorialEnabled={setIsTutorialEnabled}
+                    steps={tradeChartTutorialSteps}
                 />
-            </div>
-            <div style={{ width: '100%', height: '100%' }}>
-                <TradeCandleStickChart
-                    changeState={props.changeState}
-                    chartItemStates={chartItemStates}
-                    setCurrentData={setCurrentData}
-                    setCurrentVolumeData={setCurrentVolumeData}
-                    selectedDate={selectedDate}
-                    setSelectedDate={setSelectedDate}
-                    rescale={rescale}
-                    setRescale={setRescale}
-                    latest={latest}
-                    setLatest={setLatest}
-                    reset={reset}
-                    setReset={setReset}
-                    showLatest={showLatest}
-                    setShowLatest={setShowLatest}
-                    setShowTooltip={setShowTooltip}
-                    isLoading={props.isChartLoading}
-                    setIsLoading={props.setIsChartLoading}
-                    updateURL={updateURL}
-                />
-            </div>
-            <TutorialOverlay
-                isTutorialEnabled={isTutorialEnabled}
-                setIsTutorialEnabled={setIsTutorialEnabled}
-                steps={tradeChartTutorialSteps}
-            />
-        </MainContainer>
+            </MainContainer>
+        </>
     );
 }
 
