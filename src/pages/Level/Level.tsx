@@ -6,7 +6,6 @@ import { useContext } from 'react';
 import LevelDisplay from '../../components/Global/LevelsCard/UserLevelDisplay';
 import Jazzicon from 'react-jazzicon/dist/Jazzicon';
 import { jsNumberForAddress } from 'react-jazzicon';
-import { useParams } from 'react-router-dom';
 
 interface LevelPropsIF {
     ensName: string;
@@ -26,7 +25,6 @@ export default function Level(props: LevelPropsIF) {
         isLevelOnly,
     } = props;
     const { userAddress, connectedUserXp } = useContext(UserDataContext);
-    const { address: addressFromParams } = useParams();
 
     const ensNameToDisplay = ensNameAvailable
         ? ensName
@@ -42,14 +40,12 @@ export default function Level(props: LevelPropsIF) {
         ? resolvedAddress.toLowerCase()
         : userAddress?.toLowerCase() ?? '';
 
-    console.log({ jazziconsSeed });
-    console.log({ addressToDisplay });
-
     const myJazzicon = (
         <Jazzicon diameter={50} seed={jsNumberForAddress(jazziconsSeed)} />
     );
 
-    const isUserPage = addressFromParams === ensNameToDisplay;
+    const isUserPage = userAddress === resolvedAddress;
+
     const jazziconsToDisplay =
         resolvedAddress || connectedAccountActive || (isUserPage && myJazzicon)
             ? myJazzicon
