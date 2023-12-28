@@ -4656,9 +4656,7 @@ export default function Chart(props: propsIF) {
                             left: chartWidth / (mobileView ? 6 : 2),
                         }}
                     >
-                        <div>
-                            Drag is temporarily unavailable during confirmation
-                        </div>
+                        <div>Disabled during transaction confirmation</div>
                     </div>
                 </CSSTransition>
             )}
