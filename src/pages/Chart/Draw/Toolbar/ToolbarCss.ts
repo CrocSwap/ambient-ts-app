@@ -193,7 +193,7 @@ const DividerButton = styled.div<{ isActive: boolean }>`
     cursor: pointer;
     display: grid;
     align-items: center;
-    z-index: 999;
+    z-index: 99;
     background: ${({ isActive }) =>
         isActive ? 'var(--dark1)' : 'var(--accent1)}'};
 `;

@@ -74,6 +74,7 @@ interface undoRedoButtonList {
     label: string;
     operation: () => void;
     stack: Map<actionKeyIF, Array<actionStackIF>>;
+    description: string;
 }
 
 function Toolbar(props: ToolbarProps) {
@@ -183,12 +184,14 @@ function Toolbar(props: ToolbarProps) {
         {
             icon: undoIcon,
             label: 'undo',
+            description: 'Undo Last Change',
             operation: undo,
             stack: drawActionStack,
         },
         {
             icon: redoIcon,
             label: 'redo',
+            description: 'Redo Last Change',
             operation: redo,
             stack: undoStack,
         },
@@ -377,6 +380,14 @@ function Toolbar(props: ToolbarProps) {
                                                 item.operation();
                                             }
                                         }}
+                                        onMouseEnter={() =>
+                                            setHoveredTool(
+                                                () => item.description,
+                                            )
+                                        }
+                                        onMouseLeave={() =>
+                                            setHoveredTool(() => undefined)
+                                        }
                                     >
                                         <UndoButtonSvg
                                             isActive={
@@ -390,15 +401,35 @@ function Toolbar(props: ToolbarProps) {
                                             alt=''
                                         />
                                     </UndoRedoButtonActive>
+
+                                    {hoveredTool &&
+                                        hoveredTool === item.description && (
+                                            <HoveredTooltip
+                                                hoveredTool={hoveredTool}
+                                            ></HoveredTooltip>
+                                        )}
                                 </IconCard>
                             ))}
 
                             <IconCard>
                                 <IconActiveContainer
                                     onClick={() => handleDeleteAll()}
+                                    onMouseEnter={() =>
+                                        setHoveredTool(() => 'Delete All')
+                                    }
+                                    onMouseLeave={() =>
+                                        setHoveredTool(() => undefined)
+                                    }
                                 >
                                     <img src={trashIcon} alt='' />
                                 </IconActiveContainer>
+
+                                {hoveredTool &&
+                                    hoveredTool === 'Delete All' && (
+                                        <HoveredTooltip
+                                            hoveredTool={hoveredTool}
+                                        ></HoveredTooltip>
+                                    )}
                             </IconCard>
                         </>
                     )}
