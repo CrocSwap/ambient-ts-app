@@ -64,7 +64,7 @@ export default function Level(props: LevelPropsIF) {
 
     const pointsData =
         xpData?.data?.pointsHistory?.map((entry) => ({
-            date: moment.unix(entry.snapshotUnixTime).format('DD/MM/YY'),
+            date: moment.unix(entry.snapshotUnixTime).format('l'),
             points: entry.addedPoints,
         })) || [];
 
