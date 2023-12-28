@@ -1,3 +1,10 @@
+export interface xpSnapshot {
+    addedPoints: number;
+    cumulativePoints: number;
+    level: number;
+    snapshotUnixTime: number;
+}
+
 export interface UserXpIF {
     userAddress: string;
     leaderboardRank: number;
@@ -5,24 +12,5 @@ export interface UserXpIF {
     recentPoints: number;
     totalPoints: number;
     pointsRemainingToNextLevel: number;
-    pointsHistory: [
-        {
-            addedPoints: number;
-            cumulativePoints: number;
-            level: number;
-            snapshotUnixTime: number;
-        },
-        {
-            addedPoints: number;
-            cumulativePoints: number;
-            level: number;
-            snapshotUnixTime: number;
-        },
-        {
-            addedPoints: number;
-            cumulativePoints: number;
-            level: number;
-            snapshotUnixTime: number;
-        },
-    ];
+    pointsHistory: Array<xpSnapshot>;
 }
