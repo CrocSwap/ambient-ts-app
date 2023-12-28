@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useContext, memo } from 'react';
+import { MutableRefObject, useEffect, useState, useContext, memo } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { useLocation } from 'react-router-dom';
@@ -49,6 +49,9 @@ interface xAxisIF {
     isChartZoom: boolean;
     isToolbarOpen: boolean;
     selectedDrawnShape: selectedDrawnData | undefined;
+    toolbarWidth: number;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    d3Xaxis: MutableRefObject<any>;
 }
 
 function XAxisCanvas(props: xAxisIF) {
@@ -76,9 +79,10 @@ function XAxisCanvas(props: xAxisIF) {
         isChartZoom,
         isToolbarOpen,
         selectedDrawnShape,
+        toolbarWidth,
+        d3Xaxis,
     } = props;
 
-    const d3Xaxis = useRef<HTMLInputElement | null>(null);
     const { timeOfEndCandle } = useContext(CandleContext);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [xAxis, setXaxis] = useState<any>();
@@ -478,19 +482,20 @@ function XAxisCanvas(props: xAxisIF) {
         d3.select(d3Xaxis.current).on('mousemove', (event: MouseEvent) => {
             d3.select(d3Xaxis.current).style('cursor', 'col-resize');
             if (scaleData) {
+                const mouseLocation = event.offsetX - toolbarWidth;
+
                 const isEgg =
                     timeOfEndCandle &&
-                    event.offsetX > scaleData?.xScale(timeOfEndCandle) - 15 &&
-                    event.offsetX < scaleData?.xScale(timeOfEndCandle) + 15;
+                    mouseLocation > scaleData?.xScale(timeOfEndCandle) - 15 &&
+                    mouseLocation < scaleData?.xScale(timeOfEndCandle) + 15;
 
                 const isCroc =
                     lastCrDate &&
-                    event.offsetX > scaleData?.xScale(lastCrDate) - 15 &&
-                    event.offsetX < scaleData?.xScale(lastCrDate) + 15;
+                    mouseLocation > scaleData?.xScale(lastCrDate) - 15 &&
+                    mouseLocation < scaleData?.xScale(lastCrDate) + 15;
 
                 if (isEgg || isCroc) {
                     d3.select(d3Xaxis.current).style('cursor', 'default');
-
                     setXaxisActiveTooltip(isCroc ? 'croc' : 'egg');
                 } else {
                     setXaxisActiveTooltip('');
@@ -499,7 +504,7 @@ function XAxisCanvas(props: xAxisIF) {
                 setCrosshairActive('none');
             }
         });
-    }, [lastCrDate, timeOfEndCandle]);
+    }, [lastCrDate, timeOfEndCandle, toolbarWidth]);
 
     // mouseleave
     useEffect(() => {

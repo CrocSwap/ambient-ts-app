@@ -111,6 +111,7 @@ import {
     defaultCandleBandwith,
     mainCanvasElementId,
     xAxisBuffer,
+    xAxisHeightPixel,
 } from './ChartUtils/chartConstants';
 
 interface propsIF {
@@ -297,6 +298,8 @@ export default function Chart(props: propsIF) {
 
     const d3Container = useRef<HTMLDivElement | null>(null);
     const toolbarRef = useRef<HTMLDivElement | null>(null);
+    const d3XaxisRef = useRef<HTMLInputElement | null>(null);
+
     const d3CanvasCrosshair = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasMarketLine = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasMain = useRef<HTMLDivElement | null>(null);
@@ -2593,6 +2596,7 @@ export default function Chart(props: propsIF) {
                     .select(d3Container.current)
                     .append('div')
                     .attr('class', 'xAxisTooltip')
+                    .style('z-index', '2')
                     .style('visibility', 'hidden');
 
                 setXaxisTooltip(() => {
@@ -4966,7 +4970,14 @@ export default function Chart(props: propsIF) {
                 relocateTooltip(xAxisTooltip, lastCrDate);
             }
         }
-    }, [xAxisActiveTooltip, xAxisTooltip, isCrDataIndActive, lastCrDate]);
+    }, [
+        xAxisActiveTooltip,
+        xAxisTooltip,
+        isCrDataIndActive,
+        lastCrDate,
+        mainCanvasBoundingClientRect,
+        xAxisHeightPixel,
+    ]);
 
     useEffect(() => {
         if (xAxisTooltip && scaleData && xAxisActiveTooltip === 'egg') {
@@ -4981,20 +4992,31 @@ export default function Chart(props: propsIF) {
                 relocateTooltip(xAxisTooltip, timeOfEndCandle);
             }
         }
-    }, [xAxisTooltip, xAxisActiveTooltip, timeOfEndCandle]);
+    }, [
+        xAxisTooltip,
+        xAxisActiveTooltip,
+        timeOfEndCandle,
+        mainCanvasBoundingClientRect,
+        xAxisHeightPixel,
+    ]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const relocateTooltip = (tooltip: any, data: number) => {
         if (tooltip && scaleData) {
             const width = tooltip.style('width').split('p')[0] / 2;
-            const d3ContainerCanvas = d3
-                .select(d3Container.current)
-                .node() as HTMLDivElement;
 
-            const rectContainer = d3ContainerCanvas.getBoundingClientRect();
+            const xAxisNode = d3.select(d3XaxisRef.current).node();
+            const xAxisTop = xAxisNode?.getBoundingClientRect().top;
             tooltip
-                .style('top', rectContainer.height + 'px')
-                .style('left', scaleData.xScale(data) - width + 'px');
+                .style(
+                    'top',
+                    (xAxisTop && mainCanvasBoundingClientRect
+                        ? xAxisTop - mainCanvasBoundingClientRect.top
+                        : 0) -
+                        xAxisHeightPixel +
+                        'px',
+                )
+                .style('left', scaleData.xScale(data) - width / 1.5 + 'px');
         }
     };
     useEffect(() => {
@@ -5364,6 +5386,8 @@ export default function Chart(props: propsIF) {
                                 firstCandleData={firstCandleData}
                                 isMagnetActive={isMagnetActive}
                                 drawSettings={drawSettings}
+                                quoteTokenDecimals={quoteTokenDecimals}
+                                baseTokenDecimals={baseTokenDecimals}
                             />
                         )}
 
@@ -5486,6 +5510,8 @@ export default function Chart(props: propsIF) {
                             isChartZoom={isChartZoom}
                             isToolbarOpen={isToolbarOpen}
                             selectedDrawnShape={selectedDrawnShape}
+                            toolbarWidth={toolbarWidth}
+                            d3Xaxis={d3XaxisRef}
                         />
                     </div>
                 </div>
