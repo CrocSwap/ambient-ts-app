@@ -1,8 +1,5 @@
 import { Link } from 'react-router-dom';
-import {
-    AccountDropdownWrapper,
-    NavigationLink,
-} from '../../../../styled/Components/Header';
+import { AccountDropdownWrapper } from '../../../../styled/Components/Header';
 import { Text } from '../../../../styled/Common';
 
 export default function AccountLinkDropdown() {

@@ -1,6 +1,4 @@
-import { RiWallet3Line } from 'react-icons/ri';
 import Divider from '../../../components/Global/Divider/Divider';
-import { FlexContainer } from '../../../styled/Common';
 import RankHeader from './RankHeader';
 import RankRow from './RankRow';
 import styles from './RankTable.module.css';
