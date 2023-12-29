@@ -9,67 +9,71 @@ import TxHeader from './TxHeader';
 // columns to display in table and px width to alot for each
 const columnMetaInfo = {
     timeStamp: {
-        width: 80,
+        width: 60,
         readable: 'Timestamp'
     },
     txId: {
-        width: 140,
+        width: 120,
         readable: 'ID'
     },
     txWallet: {
-        width: 140,
+        width: 120,
         readable: 'Wallet'
     },
     txValue: {
-        width: 140,
+        width: 100,
         readable: 'Value'
     },
     txSide: {
-        width: 100,
+        width: 80,
         readable: 'Side'
     },
+    txType: {
+        width: 80,
+        readable: 'Type'
+    },
     overflowBtn: {
-        width: 60,
+        width: 30,
         readable: ''
     },
     editBtn: {
-        width: 60,
+        width: 30,
         readable: ''
     },
     harvestBtn: {
-        width: 60,
+        width: 30,
         readable: ''
     },
     addBtn: {
-        width: 60,
+        width: 30,
         readable: ''
     },
     leafBtn: {
-        width: 60,
+        width: 30,
         readable: ''
     },
     removeBtn: {
-        width: 60,
+        width: 30,
         readable: ''
     },
     shareBtn: {
-        width: 60,
+        width: 30,
         readable: ''
     },
     exportBtn: {
-        width: 60,
+        width: 30,
         readable: ''
     },
     walletBtn: {
-        width: 60,
+        width: 30,
         readable: ''
     },
     copyBtn: {
-        width: 60,
+        width: 30,
         readable: ''
     },
     downloadBtn: {
-        width: 60,
+        width: 30,
         readable: ''
     },
 };
@@ -119,6 +123,7 @@ export default function Transactions2(props: propsIF) {
         'txId',
         'txWallet',
         'txSide',
+        'txType',
         'txValue',
         'overflowBtn',
         'editBtn',
@@ -204,7 +209,7 @@ export default function Transactions2(props: propsIF) {
 
     return (
         <ol className={styles.tx_ol} ref={containerRef}>
-            <TxHeader activeColumns={columnsToRender.current} />
+            {false && <TxHeader activeColumns={columnsToRender.current} />}
             {transactionRows}
         </ol>
     );

@@ -12,6 +12,7 @@ import { TransactionIF } from '../../../../ambient-utils/types';
 import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 import TxSide from './TxSide';
 import { actionButtons, actionButtonsMenu, infoCells } from './data';
+import TxType from './TxType';
 
 export type btnIconNameType =
     | 'overflowBtn'
@@ -75,6 +76,8 @@ export default function TransactionRow2(props: propsIF) {
                 elemForDOM = <TxSide tx={tx} isAccountPage={isAccountPage} width={elemMeta[1]} />;
             } else if (elemMeta[0] === 'txValue') {
                 elemForDOM = <TxValue width={elemMeta[1]} tx={tx} />;
+            } else if (elemMeta[0] === 'txType') {
+                elemForDOM = <TxType tx={tx} isAccountPage={isAccountPage} width={elemMeta[1]} />;
             } else if (elemMeta[0] === 'overflowBtn') {
                 elemForDOM = (
                     <TxButton
