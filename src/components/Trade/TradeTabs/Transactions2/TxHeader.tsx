@@ -1,5 +1,4 @@
 import { columnSlugsType } from './Transactions2';
-import { infoCells } from './data';
 import styles from './TxHeader.module.css';
 
 interface propsIF {
@@ -8,12 +7,6 @@ interface propsIF {
 
 export default function TxHeader(props: propsIF) {
     const { activeColumns } = props;
-
-    const headers = activeColumns.filter(
-        (col) => infoCells.includes(col[0])
-    );
-
-    console.log(headers);
 
     return (
         <header className={styles.header_row}>

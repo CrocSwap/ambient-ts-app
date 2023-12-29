@@ -1,9 +1,13 @@
 .header_row {
-    display: flex;
-    flex-direction: row;
+    display: inline-flex;
+    flex-flow: row nowrap;
     justify-content: space-between;
+    width: auto;
 }
 
 .col_header {
-    font-size: 10px;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    position: relative;
 }
