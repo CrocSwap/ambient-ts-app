@@ -250,7 +250,7 @@ function SentMessagePanel(props: SentMessageProps) {
     }, [props.previousMessage, props.message]);
 
     useEffect(() => {
-        if ('repliedMessage' in props.message) {
+        if (props.message.repliedMessage) {
             getReplyMessageInfo(props.message.repliedMessage as string);
         }
     }, [props.message]);
@@ -588,14 +588,13 @@ function SentMessagePanel(props: SentMessageProps) {
         <Jazzicon diameter={25} seed={jsNumberForAddress(jazziconsSeed)} />
     );
 
-    const repliedJazzicon =
-        'repliedMessage' in props.message ? (
-            <Jazzicon
-                svgStyles={{ marginBottom: '8px' }}
-                diameter={10}
-                seed={jsNumberForAddress(repliedMessageWalletID.toLowerCase())}
-            />
-        ) : undefined;
+    const repliedJazzicon = props.message.repliedMessage ? (
+        <Jazzicon
+            svgStyles={{ marginBottom: '8px' }}
+            diameter={10}
+            seed={jsNumberForAddress(repliedMessageWalletID.toLowerCase())}
+        />
+    ) : undefined;
 
     // function blockUser(userId: string) {
 
@@ -740,7 +739,7 @@ function SentMessagePanel(props: SentMessageProps) {
                 flipRead ? styles.flip_read : ''
             } 
             ${
-                'repliedMessage' in props.message
+                props.message.repliedMessage
                     ? styles.replied_message_container
                     : ' '
             }
@@ -857,7 +856,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                         }}
                                     />
                                 ))} */}
-                            {'repliedMessage' in props.message && (
+                            {props.message.repliedMessage && (
                                 <IoReturnUpForwardSharp
                                     className={
                                         styles.replied_message_arrow +
@@ -867,7 +866,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                 />
                             )}
 
-                            {'repliedMessage' in props.message ? (
+                            {props.message.repliedMessage ? (
                                 <div className={styles.replied_box}>
                                     <ReplyMessage
                                         message={repliedMessageText}

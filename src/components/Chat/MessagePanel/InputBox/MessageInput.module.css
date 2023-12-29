@@ -258,6 +258,7 @@
     color: var(--accent1);
     opacity: 1;
     /* animation: opaToggle 2s ease-in-out infinite; */
+
 }
 
 @keyframes opaToggle{
@@ -276,7 +277,35 @@
         width: 100vw;
             border-radius: 0;
             bottom: 0;
-            padding: 1.2rem;
+            padding: 1.6rem;
             margin-bottom: 0;
     }
+
+    .send_message_button{
+        box-shadow: 0px 0px 20px 0px rgba(115,113,252,1);
+        background: var(--accent1);
+        padding: .2rem;
+        border-radius: .4rem;
+        margin-left: .5rem;
+        margin-top: -0.2rem;
+    }
+    .send_message_button svg{
+        width: 1.4rem;
+        height: 1.4rem;
+        display: block;
+        margin: 0 auto;
+    }
+    
+    .send_message_button svg path{
+        stroke: white;
+        stroke-opacity: 1;
+    }
+    .send_message_button .svgButton {
+        color: white !important;
+    }
+    .not_LoggedIn_svgButton, .svgButton{
+        width: 1.2rem;
+        height: 1.2rem;
+    }
+
 }
