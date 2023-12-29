@@ -69,7 +69,6 @@ export default function TxType(props: propsIF) {
             ? 'sell'
             : 'buy';
 
-
     return (
         <RowItem
             justifyContent='center'

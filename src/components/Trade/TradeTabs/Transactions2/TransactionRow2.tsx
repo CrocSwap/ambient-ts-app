@@ -13,6 +13,7 @@ import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 import TxSide from './TxSide';
 import { actionButtons, actionButtonsMenu, infoCells } from './data';
 import TxType from './TxType';
+import TxPrice from './TxPrice';
 
 export type btnIconNameType =
     | 'overflowBtn'
@@ -72,6 +73,8 @@ export default function TransactionRow2(props: propsIF) {
                         width={elemMeta[1]}
                     />
                 );
+            } else if (elemMeta[0] === 'txPrice') {
+                elemForDOM = <TxPrice tx={tx} isAccountPage={isAccountPage} />;
             } else if (elemMeta[0] === 'txSide') {
                 elemForDOM = <TxSide tx={tx} isAccountPage={isAccountPage} width={elemMeta[1]} />;
             } else if (elemMeta[0] === 'txValue') {

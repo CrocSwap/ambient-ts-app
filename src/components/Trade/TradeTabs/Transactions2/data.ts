@@ -5,6 +5,7 @@ export const infoCells: columnSlugsType[] = [
     'timeStamp',
     'txId',
     'txWallet',
+    'txPrice',
     'txType',
     'txSide',
     'txValue',

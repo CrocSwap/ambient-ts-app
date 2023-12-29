@@ -20,6 +20,10 @@ const columnMetaInfo = {
         width: 120,
         readable: 'Wallet'
     },
+    txPrice: {
+        width: 100,
+        readable: 'Price'
+    },
     txValue: {
         width: 100,
         readable: 'Value'
@@ -120,6 +124,7 @@ export default function Transactions2(props: propsIF) {
     // ... DOM first when space is limited
     const priority: columnSlugsType[] = [
         'timeStamp',
+        'txPrice',
         'txId',
         'txWallet',
         'txSide',
