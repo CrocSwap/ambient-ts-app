@@ -1,4 +1,4 @@
-import React, { MouseEvent, useState } from 'react';
+import React, { MouseEvent, useEffect, useState } from 'react';
 import {
     drawDataHistory,
     saveShapeAttiributesToLocalStorage,
@@ -74,6 +74,9 @@ interface FloatingToolbarSettingsProps {
         updatedData: drawDataHistory | undefined,
     ) => void;
     colorPicker: { lineColor: string; borderColor: string; background: string };
+    isNearestWindow: boolean;
+    floatingToolbarHeight: number;
+    settingsDivHeight: number;
 }
 
 function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
@@ -90,6 +93,9 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
         addDrawActionStack,
         handleEditLabel,
         colorPicker,
+        isNearestWindow,
+        floatingToolbarHeight,
+        settingsDivHeight,
     } = props;
 
     // disabled options
@@ -133,6 +139,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
 
     const [selectedFibLevel, setSelectedFibLevel] = useState(Number);
 
+    const [checkNearestWindow, setCheckNearestWindow] = useState(false);
     const closeAllOptions = (
         exclude: string,
         value: number | undefined = undefined,
@@ -169,6 +176,19 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
             setSelectedFibLevel(() => value);
         }
     };
+
+    useEffect(() => {
+        if (Math.abs(floatingToolbarHeight - settingsDivHeight) < 70) {
+            setCheckNearestWindow(true);
+        } else {
+            setCheckNearestWindow(false);
+        }
+    }, [
+        isLabelPlacementOptionTabActive,
+        isLabelAlignmentOptionTabActive,
+        floatingToolbarHeight,
+        settingsDivHeight,
+    ]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleEditFibColor = (color: any, type: string) => {
@@ -256,6 +276,16 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
         <>
             <FloatingToolbarSettingsContainer
                 onClick={() => closeAllOptions('none')}
+                style={
+                    isNearestWindow
+                        ? {
+                              position: 'fixed',
+                              width: 'auto',
+                              minWidth: '280px',
+                              bottom: floatingToolbarHeight + 4 + 'px',
+                          }
+                        : {}
+                }
             >
                 {selectedDrawnShape && (
                     <LineContainer>
@@ -776,7 +806,15 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                         {selectedDrawnShape.data.labelPlacement}
                                     </DropDownHeader>
                                     {isLabelPlacementOptionTabActive && (
-                                        <DropDownListContainer>
+                                        <DropDownListContainer
+                                            style={{
+                                                bottom:
+                                                    isNearestWindow ||
+                                                    checkNearestWindow
+                                                        ? '40px'
+                                                        : '',
+                                            }}
+                                        >
                                             <DropDownList>
                                                 {placementOptions.map(
                                                     (item, index) => (
@@ -827,7 +865,15 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                         {selectedDrawnShape.data.labelAlignment}
                                     </DropDownHeader>
                                     {isLabelAlignmentOptionTabActive && (
-                                        <DropDownListContainer>
+                                        <DropDownListContainer
+                                            style={{
+                                                bottom:
+                                                    isNearestWindow ||
+                                                    checkNearestWindow
+                                                        ? '40px'
+                                                        : '',
+                                            }}
+                                        >
                                             <DropDownList>
                                                 {alignmentOptions.map(
                                                     (item, index) => (
@@ -869,16 +915,24 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                 isBorderColorPickerTabActive ||
                 isBackgroundColorPickerTabActive) && (
                 <ColorPickerTab
-                    style={{
-                        position: 'absolute',
-                        top:
-                            (isLineColorPickerTabActive
-                                ? 60
-                                : isBorderColorPickerTabActive
-                                ? 90
-                                : 120) + 'px',
-                        left: '85px',
-                    }}
+                    style={
+                        isNearestWindow
+                            ? {
+                                  bottom: '70px',
+                                  position: 'absolute',
+                                  zIndex: 99,
+                              }
+                            : {
+                                  position: 'absolute',
+                                  top:
+                                      (isLineColorPickerTabActive
+                                          ? 60
+                                          : isBorderColorPickerTabActive
+                                          ? 90
+                                          : 120) + 'px',
+                                  left: '85px',
+                              }
+                    }
                 >
                     <SketchPicker
                         color={
@@ -904,12 +958,23 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
             {selectedDrawnShape &&
                 (isLineSizeOptionTabActive || isBorderSizeOptionTabActive) && (
                     <OptionsTab
-                        style={{
-                            marginLeft: '70px',
-                            position: 'absolute',
-                            top: (isLineSizeOptionTabActive ? 65 : 95) + 'px',
-                            left: '80px',
-                        }}
+                        style={
+                            isNearestWindow
+                                ? {
+                                      bottom: '70px',
+                                      position: 'absolute',
+                                      left: '100px',
+                                  }
+                                : {
+                                      marginLeft: '70px',
+                                      position: 'absolute',
+                                      top:
+                                          (isLineSizeOptionTabActive
+                                              ? 65
+                                              : 95) + 'px',
+                                      left: '80px',
+                                  }
+                        }
                     >
                         {sizeOptions.map((item, index) => (
                             <OptionsTabSize
@@ -941,12 +1006,23 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                 (isLineStyleOptionTabActive ||
                     isBorderStyleOptionTabActive) && (
                     <OptionsTab
-                        style={{
-                            marginLeft: '70px',
-                            position: 'absolute',
-                            top: (isLineStyleOptionTabActive ? 65 : 95) + 'px',
-                            left: '130px',
-                        }}
+                        style={
+                            isNearestWindow
+                                ? {
+                                      bottom: '70px',
+                                      position: 'absolute',
+                                      left: '140px',
+                                  }
+                                : {
+                                      marginLeft: '70px',
+                                      position: 'absolute',
+                                      top:
+                                          (isLineStyleOptionTabActive
+                                              ? 65
+                                              : 95) + 'px',
+                                      left: '130px',
+                                  }
+                        }
                     >
                         {styleOptions.map((item, index) => (
                             <OptionsTabStyle
