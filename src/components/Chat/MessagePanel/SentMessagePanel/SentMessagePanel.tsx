@@ -729,6 +729,27 @@ function SentMessagePanel(props: SentMessageProps) {
         }
     }
 
+    function goToProfilePage() {
+        if (
+            location.pathname !==
+            `/${
+                props.message.ensName === 'defaultValue'
+                    ? props.message.walletID
+                    : props.message.ensName
+            }`
+        ) {
+            navigate(
+                `/${
+                    props.isCurrentUser
+                        ? 'account'
+                        : !hasEns()
+                        ? props.message.walletID
+                        : props.message.ensName
+                }`,
+            );
+        }
+    }
+
     return (
         <div
             className={`${styles.msg_bubble_container} ${
@@ -906,7 +927,10 @@ function SentMessagePanel(props: SentMessageProps) {
                                 }
                             >
                                 {showAvatar && (
-                                    <div className={styles.avatar_jazzicons}>
+                                    <div
+                                        className={styles.avatar_jazzicons}
+                                        onClick={goToProfilePage}
+                                    >
                                         {myJazzicon}
                                     </div>
                                 )}
@@ -944,32 +968,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                             className={
                                                 styles.name_default_label
                                             }
-                                            onClick={() => {
-                                                if (
-                                                    location.pathname !==
-                                                    `/${
-                                                        props.message
-                                                            .ensName ===
-                                                        'defaultValue'
-                                                            ? props.message
-                                                                  .walletID
-                                                            : props.message
-                                                                  .ensName
-                                                    }`
-                                                ) {
-                                                    navigate(
-                                                        `/${
-                                                            props.isCurrentUser
-                                                                ? 'account'
-                                                                : !hasEns()
-                                                                ? props.message
-                                                                      .walletID
-                                                                : props.message
-                                                                      .ensName
-                                                        }`,
-                                                    );
-                                                }
-                                            }}
+                                            onClick={goToProfilePage}
                                         >
                                             {showName && getShownName()}
                                         </span>

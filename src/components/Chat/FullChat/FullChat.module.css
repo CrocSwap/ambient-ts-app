@@ -315,6 +315,7 @@
     .main_container {
         padding: 0;
         position: relative;
+        overflow: hidden;
     }
 
     .right_container {
