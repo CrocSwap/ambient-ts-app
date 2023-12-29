@@ -643,7 +643,7 @@ function FullChat(props: FullChatPropsIF) {
                 className={styles.active_channel_dropdown}
                 onClick={() => setShowChannelsDropdown(!showChannelsDropdown)}
             >
-                {readableRoomName}__
+                {readableRoomName}
             </button>
             {showChannelsDropdown && (
                 <div
@@ -673,6 +673,7 @@ function FullChat(props: FullChatPropsIF) {
             {/* {props.isChatOpen && (
                 )} */}
             <div
+                ref={verifyBtnRef}
                 className={`${styles.verify_button} ${
                     props.isVerified ? styles.verified : ''
                 } `}

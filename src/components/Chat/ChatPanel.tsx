@@ -582,7 +582,23 @@ function ChatPanel(props: propsIF) {
             })
             // eslint-disable-next-line
             .then((signedMessage: any) => {
+                console.log(verifyOldMessagesStartDate);
+                console.log(verifyOldMessagesStartDate);
+                console.log(verifyOldMessagesStartDate);
+                console.log(verifyOldMessagesStartDate);
+                console.log(verifyOldMessagesStartDate);
+                console.log(verifyOldMessagesStartDate);
                 verifyUser(signedMessage, verifyDate);
+                if (verifyOldMessagesStartDate) {
+                    console.log('oldmessages will be verified');
+                    setTimeout(() => {
+                        setShowVerifyOldMessagesPanel(false);
+                        updateUnverifiedMessages(
+                            verifyOldMessagesStartDate,
+                            new Date(),
+                        );
+                    }, 1000);
+                }
                 setLS(LS_USER_VERIFY_TOKEN, signedMessage, userAddress);
                 setTimeout(() => {
                     updateUserCache();
@@ -610,7 +626,7 @@ function ChatPanel(props: propsIF) {
                     } `}
                     onClick={(e) => verifyWallet(0, new Date(), e)}
                 >
-                    {isModerator && isVerified && (
+                    {isModerator && isVerified && userAddress && (
                         <AiOutlineUser
                             className={
                                 styles.verify_button_icon +
@@ -621,7 +637,7 @@ function ChatPanel(props: propsIF) {
                             size={14}
                         ></AiOutlineUser>
                     )}
-                    {isVerified ? (
+                    {isVerified && userAddress ? (
                         <>
                             <AiOutlineCheck
                                 className={styles.verify_button_icon}
@@ -1107,6 +1123,7 @@ function ChatPanel(props: propsIF) {
                 confirmListener={async () => {
                     if (!isVerified) {
                         verifyBtnRef.current?.classList.add(styles.flashed);
+                        verifyUser('', new Date());
                         setTimeout(() => {
                             verifyBtnRef.current?.classList.remove(
                                 styles.flashed,

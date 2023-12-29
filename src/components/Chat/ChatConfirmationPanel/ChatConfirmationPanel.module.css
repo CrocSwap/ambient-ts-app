@@ -80,3 +80,25 @@
     border-color: #9d9cff;
 }
 
+
+@media only screen and (max-width: 600px){
+    .confirmation_wrapper{
+        width: 96%;
+        left: 2%;
+    }
+
+    .btn_wrapper{
+        font-size: .82rem;
+        padding: .4rem;
+    }
+
+    .content_text{
+        font-size: .86rem;
+    }
+
+    
+.confirmation_wrapper.active{
+    
+    transform: translateY(-2rem);
+}
+}
