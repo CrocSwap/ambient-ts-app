@@ -333,11 +333,6 @@
    
 }
 
-.replied_box{
-    position: absolute;
-    top: -0.5rem;
-    left: 1.5rem;
-}
 
 .message_item {
     cursor: default;
@@ -411,7 +406,7 @@
 
 .replied_message_container{
     /* background: red; */
-    padding-top: 1rem;
+    padding-top: 1.2rem;
 }
 
 
@@ -701,6 +696,8 @@
     transform: translateY(-.5rem);
 }
 
+
+
   .roomInfo {
     position:absolute;
     left: 13rem; 
@@ -790,11 +787,11 @@
 
 .reader_mentioned{
       box-shadow: 0px 0px 2px var(--accent1);
-    background: #7371fc26;
+    /* background: #7371fc26; */
 }
 .reader_mentioned:hover{
       box-shadow: 0px 0px 2px var(--accent1);
-    background: #7371fc26;
+    /* background: #7371fc26; */
 }
 
 .reader_mentioned .options_button {
@@ -855,6 +852,76 @@
 .vrf_msg_dbg{
     /* color: green; */
 }
+
+
+.replied_box{
+    position: absolute;
+    top: -0.5rem;
+    left: 2rem;
+    border-radius: 0.4rem;
+    padding: 0.1rem 0.8rem;
+    background: rgba(0,0,0, 0.2);
+    /* border: 1px solid rgba(255,255,255, .1); */
+    font-size: .63rem;
+}
+
+.replied_message_arrow{
+    position: absolute;
+    top: -0.3rem;
+    left: 0.6rem;
+    /* transform: scaleY(-1); */
+}
+
+.replied_message_arrow.has_avatar{
+    position: absolute;
+    top: -0.3rem;
+    left: 0.6rem;
+    transform: scaleY(1);
+}
+
+.has_day_separator .replied_message_arrow{
+    top: -0.7rem;
+}
+
+
+.has_day_separator .replied_message_arrow.has_avatar{
+    top: .7em;
+
+}
+
+
+.has_day_separator.thread_top_msg .replied_box{
+    top: 1rem;
+}
+.has_day_separator.thread_top_msg .msg_bubble_front{
+    padding-top: .8rem;
+}
+
+.replied_message_container .day_separator{
+    margin-top: -1rem;
+}
+
+.thread_top_msg.replied_message_container .sent_message_body{
+    padding-top: .7rem
+}
+
+
+.has_day_separator.thread_top_msg.replied_message_container .sent_message_body{
+    margin-top: 1.2rem;
+}
+
+.has_day_separator.thread_top_msg.replied_message_container .msg_bubble_front{
+    padding-top: 2rem;
+}
+.has_day_separator.thread_top_msg.replied_message_container .day_separator{
+    margin-top: -2rem;
+}
+
+
+
+/* .replied_msg_wrapper{
+    background: red;
+} */
 
 @media only screen and (max-width: 600px){
 

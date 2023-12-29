@@ -62,7 +62,7 @@ export default function ReplyMessage(props: propsIF) {
                 </div>
             </motion.div>
         </div>
-    ) : props.message !== undefined ? (
+    ) : props.message ? (
         <motion.div>
             <div className={styles.replied_message_box}>
                 <div className={styles.avatar_jazzicons}>
@@ -91,6 +91,10 @@ export default function ReplyMessage(props: propsIF) {
             </div>
         </motion.div>
     ) : (
-        <></>
+        <>
+            <span className={styles.deleted_msg_text}>
+                This message has been deleted
+            </span>
+        </>
     );
 }

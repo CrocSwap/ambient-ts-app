@@ -747,7 +747,8 @@ function SentMessagePanel(props: SentMessageProps) {
 
             ${hasSeparator ? styles.has_separator : ''}
             ${
-                props.message.mentionedWalletID === props.address
+                props.message.mentionedWalletID === props.address &&
+                props.address
                     ? styles.reader_mentioned
                     : ''
             }
@@ -825,13 +826,19 @@ function SentMessagePanel(props: SentMessageProps) {
                             {daySeparator === '' ? (
                                 ''
                             ) : daySeparator !== '' ? (
-                                <p className={styles.separator}>
+                                <p
+                                    className={
+                                        styles.separator +
+                                        ' ' +
+                                        styles.day_separator
+                                    }
+                                >
                                     {daySeparator}
                                 </p>
                             ) : (
                                 ''
                             )}
-                            {'repliedMessage' in props.message &&
+                            {/* {'repliedMessage' in props.message &&
                                 (showAvatar ? (
                                     <IoReturnUpForwardSharp
                                         style={{
@@ -849,7 +856,16 @@ function SentMessagePanel(props: SentMessageProps) {
                                             transform: 'scaleY(-1)',
                                         }}
                                     />
-                                ))}
+                                ))} */}
+                            {'repliedMessage' in props.message && (
+                                <IoReturnUpForwardSharp
+                                    className={
+                                        styles.replied_message_arrow +
+                                        ' ' +
+                                        (showAvatar ? styles.has_avatar : ' ')
+                                    }
+                                />
+                            )}
 
                             {'repliedMessage' in props.message ? (
                                 <div className={styles.replied_box}>
