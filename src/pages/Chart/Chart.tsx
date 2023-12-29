@@ -5054,6 +5054,7 @@ export default function Chart(props: propsIF) {
         } else {
             props.changeState(false, undefined);
         }
+        render();
     }, [selectedDate, visibleCandleData]);
 
     const onBlurRange = (
