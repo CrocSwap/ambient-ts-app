@@ -14,6 +14,7 @@ import TxSide from './TxSide';
 import { actionButtons, actionButtonsMenu, infoCells } from './data';
 import TxType from './TxType';
 import TxPrice from './TxPrice';
+import TxToken from './TxToken';
 
 export type btnIconNameType =
     | 'overflowBtn'
@@ -81,6 +82,10 @@ export default function TransactionRow2(props: propsIF) {
                 elemForDOM = <TxValue width={elemMeta[1]} tx={tx} />;
             } else if (elemMeta[0] === 'txType') {
                 elemForDOM = <TxType tx={tx} isAccountPage={isAccountPage} width={elemMeta[1]} />;
+            } else if (elemMeta[0] === 'txBase') {
+                elemForDOM = <TxToken tx={tx} width={elemMeta[1]} isAccountPage={isAccountPage} isBase={true} />;
+            } else if (elemMeta[0] === 'txQuote') {
+                elemForDOM = <TxToken tx={tx} width={elemMeta[1]} isAccountPage={isAccountPage} isBase={false} />
             } else if (elemMeta[0] === 'overflowBtn') {
                 elemForDOM = (
                     <TxButton

@@ -36,6 +36,14 @@ const columnMetaInfo = {
         width: 80,
         readable: 'Type'
     },
+    txBase: {
+        width: 100,
+        readable: '',
+    },
+    txQuote: {
+        width: 100,
+        readable: ''
+    },
     overflowBtn: {
         width: 30,
         readable: ''
@@ -130,6 +138,8 @@ export default function Transactions2(props: propsIF) {
         'txSide',
         'txType',
         'txValue',
+        'txBase',
+        'txQuote',
         'overflowBtn',
         'editBtn',
         'harvestBtn',

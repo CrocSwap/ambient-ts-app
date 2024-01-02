@@ -9,6 +9,8 @@ export const infoCells: columnSlugsType[] = [
     'txType',
     'txSide',
     'txValue',
+    'txBase',
+    'txQuote',
 ];
 
 // left-to-right DOM sequence for action buttons
