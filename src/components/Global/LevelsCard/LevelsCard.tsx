@@ -66,7 +66,7 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
     const header = (
         <FlexContainer flexDirection='row' gap={16} alignItems='center'>
             <Link
-                to={`/${ensNameToDisplay ?? addressToDisplay}`}
+                to={`${ensNameToDisplay ?? addressToDisplay}`}
                 className={styles.user_image}
             >
                 {jazziconsToDisplay}
