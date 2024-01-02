@@ -66,3 +66,20 @@
     height: 1rem;
     fill: white;
 }
+
+.horizontal_menu_wrapper{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: .5rem;
+    border-radius: .2rem;
+    background-color: var(--accent1);
+    margin: .2rem 0;
+    cursor: pointer;
+    transition: all .2s ease-in-out;
+}
+
+.horizontal_menu_node{
+    flex:  1 1 ;
+}

@@ -56,11 +56,11 @@ export default function Menu(props: propsIF) {
         },
 
         //  CHAT_FEATURES_WBO - Feature: Like & Dislike
-        // {
-        //     label: 'Details',
-        //     icon: <FiArrowLeft size={10} />,
-        //     listener: () => props.setFlipped(true),
-        // },
+        {
+            label: 'Details',
+            icon: <FiArrowLeft size={10} />,
+            listener: () => props.setFlipped(true),
+        },
     ];
 
     const filteredOptions =
@@ -72,6 +72,57 @@ export default function Menu(props: propsIF) {
     return (
         <>
             {filteredOptions.length > 0 && (
+                <div
+                    className={`${styles.horizontal_menu_wrapper}
+            `}
+                    onMouseOver={() => {
+                        props.setIsMoreButtonPressed(true);
+                    }}
+                    onMouseEnter={() => {
+                        props.setIsMoreButtonPressed(true);
+                    }}
+                    onMouseLeave={() => {
+                        props.setIsMoreButtonPressed(false);
+                    }}
+                >
+                    {filteredOptions.map((option, index) => {
+                        return (
+                            <>
+                                <div
+                                    className={styles.horizontal_menu_node}
+                                    onClick={() => {
+                                        if (option.listener) option.listener();
+                                    }}
+                                    style={{
+                                        animationDelay: `${
+                                            (options.length - index - 1) * 0.1
+                                        }s`,
+                                    }}
+                                >
+                                    <div className={styles.dropdown_node_icon}>
+                                        {option.icon}
+                                    </div>
+                                    <div className={styles.dropdown_node_label}>
+                                        {option.label}
+                                    </div>
+                                </div>
+                            </>
+                        );
+                    })}
+
+                    {/*             
+                <BsFillReplyFill size={10} />
+                <BsEmojiSmileUpsideDown size={10} />
+                <FiDelete
+                    size={10}
+                    color='red'
+                    onClick={() => {
+                        closePanel();
+                    }}
+                /> */}
+                </div>
+            )}
+            {/* {filteredOptions.length > 0 && (
                 <div
                     className={`${styles.dropdown_item}
             ${props.riseToBottom ? styles.rise_to_bottom : ''}
@@ -111,18 +162,7 @@ export default function Menu(props: propsIF) {
                         );
                     })}
 
-                    {/*             
-                <BsFillReplyFill size={10} />
-                <BsEmojiSmileUpsideDown size={10} />
-                <FiDelete
-                    size={10}
-                    color='red'
-                    onClick={() => {
-                        closePanel();
-                    }}
-                /> */}
-                </div>
-            )}
+                </div> */}
         </>
     );
 }

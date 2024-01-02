@@ -100,3 +100,37 @@
     font-size: 10px;
     line-height: 10px;
 }
+
+@keyframes riseWidth{
+    0%{
+        max-width: 0rem;
+        opacity: 0;
+    }
+    100%{
+        max-width: 100rem;
+        opacity: 1;
+    }
+
+}
+
+.sub_options_node{
+    /* animation: riseWidth .4s ease-in-out forwards; */
+}
+
+.sub_options_node_active, .sub_options_node_active svg {
+    max-width: 100rem;
+    width: auto;
+    opacity: 1;
+}
+
+@media only screen and (max-width: 600px){
+    .dropdown_item {
+        gap: .6rem;
+    }
+
+    
+.hover_style{
+ padding: .25rem;
+ border-radius: 1rem;
+}
+}

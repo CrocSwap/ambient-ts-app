@@ -101,6 +101,9 @@ function SentMessagePanel(props: SentMessageProps) {
     const [repliedMessageDate, setRepliedMessageDate] = useState<string>('');
     const [repliedMessageWalletID, setRepliedMessageWalletID] =
         useState<string>('');
+    const [timestampForChildRefresh, setTimestampForChildRefresh] = useState(
+        new Date().getTime(),
+    );
 
     const likeCount = props.message.likes ? props.message.likes.length : 0;
     const dislikeCount = props.message.dislikes
@@ -787,8 +790,10 @@ function SentMessagePanel(props: SentMessageProps) {
             `}
             // style={messageStyle()}
             data-ment-index={props.mentionIndex}
-            onMouseLeave={() => {
-                setIsMoreButtonPressed(false);
+            onMouseEnter={() => {
+                // setIsMoreButtonPressed(false);
+                setTimestampForChildRefresh(new Date().getTime());
+                console.log('on mouse enter');
             }}
         >
             {!props.message.isDeleted || props.isModerator ? (
@@ -822,12 +827,6 @@ function SentMessagePanel(props: SentMessageProps) {
                                         setReplyMessageContent={
                                             props.setReplyMessageContent
                                         }
-                                        isMoreButtonPressed={
-                                            isMoreButtonPressed
-                                        }
-                                        setIsMoreButtonPressed={
-                                            setIsMoreButtonPressed
-                                        }
                                         addReactionListener={
                                             props.addReactionListener
                                         }
@@ -837,7 +836,15 @@ function SentMessagePanel(props: SentMessageProps) {
                                             props.message.sender ===
                                             props.currentUser
                                         }
+                                        setFlipped={(val) => {
+                                            setFlipped(true);
+                                            setFlipRead(true);
+                                        }}
                                         isUserVerified={props.isUserVerified}
+                                        tsForRefresh={timestampForChildRefresh}
+                                        deleteMessageFromList={
+                                            deleteMsgFromList
+                                        }
                                     />
                                 </div>
                             )}
