@@ -53,7 +53,6 @@ export default function Level(props: LevelPropsIF) {
         resolvedAddress || connectedAccountActive || (isUserPage && myJazzicon)
             ? myJazzicon
             : null;
-    console.log({ jazziconsToDisplay, connectedAccountActive });
 
     const xpData =
         isUserPage ||
@@ -108,11 +107,13 @@ export default function Level(props: LevelPropsIF) {
         resolvedAddress,
         pointsRemainingToNextLevel: xpData?.data?.pointsRemainingToNextLevel,
     };
+
     if (isLevelOnly)
         return (
             <LevelDisplay
                 currentLevel={currentLevel}
                 totalPoints={totalPoints}
+                user={ensName ?? addressToDisplay}
             />
         );
 

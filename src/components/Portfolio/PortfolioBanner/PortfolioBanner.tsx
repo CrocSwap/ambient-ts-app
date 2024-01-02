@@ -51,6 +51,8 @@ export default function PortfolioBanner(props: propsIF) {
             ? myJazzicon
             : null;
 
+    const userLink = ensName ?? userAddress;
+
     return (
         <PortfolioBannerRectangleContainer
             style={{ backgroundImage: `url(${accountImage})` }}
@@ -66,6 +68,7 @@ export default function PortfolioBanner(props: propsIF) {
                 <UserLevelDisplay
                     currentLevel={xpData?.data?.currentLevel}
                     totalPoints={xpData?.data?.totalPoints}
+                    user={userLink}
                 />
             </PortfolioBannerLevelContainer>
         </PortfolioBannerRectangleContainer>

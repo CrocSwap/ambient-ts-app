@@ -12,6 +12,7 @@ import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { getChainExplorer } from '../../../../ambient-utils/dataLayer';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { useContext } from 'react';
+import { Link } from 'react-router-dom';
 interface LevelDropdownPropsIF {
     ensName: string;
     accountAddress: string;
@@ -27,16 +28,20 @@ export default function UserProfileCard(props: LevelDropdownPropsIF) {
     } = useContext(CrocEnvContext);
     const blockExplorer = getChainExplorer(chainId);
 
+    const userLink = ensName !== '' ? ensName : accountAddress;
+
     return (
         <NameDisplayContainer gap={4} alignItems='center'>
-            <Jazzicon
-                diameter={50}
-                seed={jsNumberForAddress(accountAddressFull.toLowerCase())}
-            />
+            <Link to={`/account/${userLink}`}>
+                <Jazzicon
+                    diameter={50}
+                    seed={jsNumberForAddress(accountAddressFull.toLowerCase())}
+                />
+            </Link>
 
             <FlexContainer alignItems='center' flexDirection='column'>
                 <NameDisplay gap={16} alignItems='center'>
-                    <h2>{ensName !== '' ? ensName : accountAddress}</h2>
+                    <h2>{userLink}</h2>
                     <IconWithTooltip
                         title={`${'View wallet address on block explorer'}`}
                         placement='right'

@@ -12,7 +12,8 @@ interface LevelDropdownPropsIF {
 }
 
 export default function LevelDropdown(props: LevelDropdownPropsIF) {
-    const { ensName, handleCopyAddress, connectedUserXp } = props;
+    const { ensName, handleCopyAddress, connectedUserXp, accountAddressFull } =
+        props;
 
     return (
         <LevelWrapper>
@@ -25,6 +26,7 @@ export default function LevelDropdown(props: LevelDropdownPropsIF) {
             <UserLevelDisplay
                 currentLevel={connectedUserXp?.data?.currentLevel}
                 totalPoints={connectedUserXp?.data?.totalPoints}
+                user={ensName ?? accountAddressFull}
             />
         </LevelWrapper>
     );

@@ -108,7 +108,12 @@ export default function Account(props: propsIF) {
     );
     const levelDisplay = (
         <section
-            style={{ position: 'relative', fontSize: '16px' }}
+            style={{
+                position: 'relative',
+                fontSize: '16px',
+                display: 'flex',
+                alignItems: 'center',
+            }}
             ref={levelDropdownItemRef}
             aria-label={mainAriaLabel}
         >

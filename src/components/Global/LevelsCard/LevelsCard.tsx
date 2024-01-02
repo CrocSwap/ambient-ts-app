@@ -8,6 +8,7 @@ import { trimString } from '../../../ambient-utils/dataLayer';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { Link } from 'react-router-dom';
 
 interface LevelsCardPropsIF {
     resolvedAddress?: string;
@@ -64,12 +65,20 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
 
     const header = (
         <FlexContainer flexDirection='row' gap={16} alignItems='center'>
-            <div className={styles.user_image}>{jazziconsToDisplay}</div>
+            <Link
+                to={`/${ensNameToDisplay ?? addressToDisplay}`}
+                className={styles.user_image}
+            >
+                {jazziconsToDisplay}
+            </Link>
             <FlexContainer flexDirection='column'>
                 <FlexContainer flexDirection='row' gap={16}>
-                    <Text fontSize='header2' color='text1'>
-                        {ensNameToDisplay}
-                    </Text>
+                    <Link to={`/${ensNameToDisplay ?? addressToDisplay}`}>
+                        <Text fontSize='header2' color='text1'>
+                            {ensNameToDisplay}
+                        </Text>
+                    </Link>
+
                     <LuExternalLink
                         size={18}
                         onClick={(e) => {

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { FlexContainer, Text } from '../../../styled/Common';
 import LevelLine from '../LevelLine/LevelLine';
 import styles from './LevelsCard.module.css';
@@ -6,12 +7,15 @@ interface Props {
     // xpData: ConnectedUserXpDataIF
     currentLevel: number | string | undefined;
     totalPoints: number | string | undefined;
+    user: string;
 }
 export default function UserLevelDisplay(props: Props) {
-    const { currentLevel, totalPoints } = props;
+    const { currentLevel, totalPoints, user } = props;
+
+    const linkToNavigateTo = `/account/${user}/xp`;
 
     return (
-        <div className={styles.level_only_container}>
+        <Link to={linkToNavigateTo} className={styles.level_only_container}>
             <div className={styles.level_border}>
                 <div className={styles.level_border_content}>
                     {currentLevel}
@@ -38,6 +42,6 @@ export default function UserLevelDisplay(props: Props) {
 
                 <LevelLine percentage={20} width='250px' />
             </FlexContainer>
-        </div>
+        </Link>
     );
 }
