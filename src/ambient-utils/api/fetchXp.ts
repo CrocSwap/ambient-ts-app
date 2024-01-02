@@ -27,11 +27,23 @@ export const fetchUserXpData = async (args: argsIF) => {
             user.toLowerCase() ===
             '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc'.toLowerCase()
                 ? 4
-                : 3,
-        recentPoints: 1800,
-        totalPoints: 3000,
-        pointsRemainingToNextLevel: 1000,
+                : 5,
+        recentPoints: 1100,
+        totalPoints: 5600,
+        pointsRemainingToNextLevel: 400,
         pointsHistory: [
+            {
+                addedPoints: 1100,
+                cumulativePoints: 5600,
+                level: 5,
+                snapshotUnixTime: 1703721600,
+            },
+            {
+                addedPoints: 1500,
+                cumulativePoints: 4500,
+                level: 5,
+                snapshotUnixTime: 1703116800,
+            },
             {
                 addedPoints: 1800,
                 cumulativePoints: 3000,

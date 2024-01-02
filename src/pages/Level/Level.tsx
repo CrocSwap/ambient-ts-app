@@ -73,22 +73,26 @@ export default function Level(props: LevelPropsIF) {
     const totalPoints = xpData?.data?.totalPoints;
 
     // ------TOTAL POINTS THIS WEEEK-----
-    const now = new Date();
-    const startOfWeek = new Date(now);
-    startOfWeek.setHours(0, 0, 0, 0);
-    startOfWeek.setDate(now.getDate() - now.getDay());
+    // const now = new Date();
+    // const endOfWeek = new Date(now);
+    // const startOfWeek = new Date(endOfWeek);
+    // // startOfWeek.setHours(0, 0, 0, 0);
+    // // startOfWeek.setDate(now.getDate() - now.getDay());
 
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(endOfWeek.getDate() + 7);
+    // startOfWeek.setDate(endOfWeek.getDate() - 7);
 
-    const totalPointsCurrentWeek =
-        xpData?.data?.pointsHistory
-            ?.filter(
-                (entry) =>
-                    entry.snapshotUnixTime >= startOfWeek.getTime() / 1000 &&
-                    entry.snapshotUnixTime < endOfWeek.getTime() / 1000,
-            )
-            ?.reduce((acc, entry) => acc + entry.addedPoints, 0) || 0;
+    // console.log({ startOfWeek, endOfWeek });
+
+    // const totalPointsCurrentWeek =
+    //     xpData?.data?.pointsHistory
+    //         ?.filter(
+    //             (entry) =>
+    //                 entry.snapshotUnixTime >= startOfWeek.getTime() / 1000 &&
+    //                 entry.snapshotUnixTime < endOfWeek.getTime() / 1000,
+    //         )
+    //         ?.reduce((acc, entry) => acc + entry.addedPoints, 0) || 0;
+
+    const totalPointsCurrentWeek = xpData?.data?.recentPoints ?? undefined;
 
     // ---------------------------------
     const progressPercentage =

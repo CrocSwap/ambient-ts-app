@@ -15,7 +15,7 @@ interface LevelsCardPropsIF {
 
     currentLevel: number | undefined;
     totalPoints: number | undefined;
-    totalPointsCurrentWeek: number;
+    totalPointsCurrentWeek: number | undefined;
     progressPercentage: number;
     pointsData: {
         date: string;
