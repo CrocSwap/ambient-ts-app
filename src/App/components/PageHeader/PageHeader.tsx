@@ -330,6 +330,9 @@ const PageHeader = function () {
                                         onMouseEnter={() =>
                                             setShowAccountDropdown(true)
                                         }
+                                        onMouseLeave={() =>
+                                            setShowAccountDropdown(false)
+                                        }
                                     >
                                         <span>{link.title}</span>
                                         {isUnderlined(
