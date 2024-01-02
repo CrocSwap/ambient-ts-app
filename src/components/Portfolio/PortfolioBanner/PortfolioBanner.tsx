@@ -12,8 +12,8 @@ import {
 } from '../../../styled/Components/Portfolio';
 import accountImage from '../../../assets/images/backgrounds/account_image.svg';
 import {
-    TempNonUserXp,
     UserDataContext,
+    UserXpDataIF,
 } from '../../../contexts/UserDataContext';
 import { useContext } from 'react';
 import UserLevelDisplay from '../../Global/LevelsCard/UserLevelDisplay';
@@ -21,16 +21,18 @@ interface propsIF {
     ensName: string;
     resolvedAddress: string;
     connectedAccountActive: boolean;
+    resolvedUserXp: UserXpDataIF;
 }
 
 export default function PortfolioBanner(props: propsIF) {
-    const { ensName, resolvedAddress, connectedAccountActive } = props;
+    const { ensName, resolvedAddress, connectedAccountActive, resolvedUserXp } =
+        props;
     const { userAddress, connectedUserXp } = useContext(UserDataContext);
 
     const xpData =
         connectedAccountActive || location.pathname === '/account/xp'
             ? connectedUserXp
-            : TempNonUserXp;
+            : resolvedUserXp;
 
     const ensNameAvailable = ensName !== '';
 

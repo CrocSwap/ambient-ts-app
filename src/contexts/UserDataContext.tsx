@@ -10,7 +10,7 @@ interface UserDataContextIF {
     userAddress: `0x${string}` | undefined;
     disconnectUser: () => void;
     connectUser: (args?: Partial<ConnectArgs> | undefined) => void;
-    connectedUserXp: ConnectedUserXpDataIF;
+    connectedUserXp: UserXpDataIF;
     connectError: Error | null;
     connectIsLoading: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -25,42 +25,11 @@ interface UserDataContextIF {
     setSecondaryEnsInContext: Dispatch<SetStateAction<string>>;
 }
 
-export interface ConnectedUserXpDataIF {
+export interface UserXpDataIF {
     dataReceived: boolean;
     data: UserXpIF | undefined;
 }
 
-export const TempNonUserXp = {
-    dataReceived: true,
-    data: {
-        userAddress: '0x50F09108b78290422e3cdB3153207e664e09f960',
-        leaderboardRank: 1,
-        currentLevel: 0,
-        recentPoints: 0,
-        totalPoints: 0,
-        pointsRemainingToNextLevel: 0,
-        pointsHistory: [
-            {
-                addedPoints: 0,
-                cumulativePoints: 0,
-                level: 0,
-                snapshotUnixTime: 0,
-            },
-            {
-                addedPoints: 0,
-                cumulativePoints: 0,
-                level: 0,
-                snapshotUnixTime: 0,
-            },
-            {
-                addedPoints: 0,
-                cumulativePoints: 0,
-                level: 0,
-                snapshotUnixTime: 0,
-            },
-        ],
-    },
-};
 export const UserDataContext = createContext<UserDataContextIF>(
     {} as UserDataContextIF,
 );
@@ -93,11 +62,10 @@ export const UserDataContextProvider = (props: {
     });
     const { data: ensName } = useEnsName({ address: userAddress });
 
-    const [connectedUserXp, setConnectedUserXp] =
-        React.useState<ConnectedUserXpDataIF>({
-            dataReceived: false,
-            data: undefined,
-        });
+    const [connectedUserXp, setConnectedUserXp] = React.useState<UserXpDataIF>({
+        dataReceived: false,
+        data: undefined,
+    });
 
     React.useEffect(() => {
         if (userAddress) {
@@ -126,7 +94,6 @@ export const UserDataContextProvider = (props: {
         secondaryEnsFromContext,
         setSecondaryEnsInContext,
     };
-    console.log({ resolvedAddressFromContext });
 
     return (
         <UserDataContext.Provider value={userDataContext}>

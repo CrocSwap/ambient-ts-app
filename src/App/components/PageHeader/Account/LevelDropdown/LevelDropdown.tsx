@@ -1,14 +1,14 @@
 import { LevelWrapper } from '../../../../../styled/Components/Header';
 
 import UserProfileCard from '../UserProfileCard';
-import { ConnectedUserXpDataIF } from '../../../../../contexts/UserDataContext';
+import { UserXpDataIF } from '../../../../../contexts/UserDataContext';
 import UserLevelDisplay from '../../../../../components/Global/LevelsCard/UserLevelDisplay';
 interface LevelDropdownPropsIF {
     ensName: string;
     accountAddress: string;
     handleCopyAddress: () => void;
     accountAddressFull: string;
-    connectedUserXp?: ConnectedUserXpDataIF;
+    connectedUserXp?: UserXpDataIF;
 }
 
 export default function LevelDropdown(props: LevelDropdownPropsIF) {

@@ -1,7 +1,7 @@
 import moment from 'moment';
 import LevelsCard from '../../components/Global/LevelsCard/LevelsCard';
 import styles from './Level.module.css';
-import { TempNonUserXp, UserDataContext } from '../../contexts/UserDataContext';
+import { UserDataContext, UserXpDataIF } from '../../contexts/UserDataContext';
 import { useContext } from 'react';
 import LevelDisplay from '../../components/Global/LevelsCard/UserLevelDisplay';
 import Jazzicon from 'react-jazzicon/dist/Jazzicon';
@@ -16,6 +16,7 @@ interface LevelPropsIF {
     truncatedAccountAddress: string;
     isLevelOnly?: boolean;
     isDisplayRank?: boolean;
+    resolvedUserXp?: UserXpDataIF;
 }
 export default function Level(props: LevelPropsIF) {
     const {
@@ -26,6 +27,7 @@ export default function Level(props: LevelPropsIF) {
         truncatedAccountAddress,
         isLevelOnly,
         isDisplayRank,
+        resolvedUserXp,
     } = props;
     const { userAddress, connectedUserXp } = useContext(UserDataContext);
 
@@ -59,7 +61,7 @@ export default function Level(props: LevelPropsIF) {
         connectedAccountActive ||
         location.pathname === '/account/xp'
             ? connectedUserXp
-            : TempNonUserXp;
+            : resolvedUserXp;
 
     const pointsData =
         xpData?.data?.pointsHistory?.map((entry) => ({

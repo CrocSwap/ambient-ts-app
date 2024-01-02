@@ -130,7 +130,7 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
         <div className={styles.main_container}>
             {header}
             <Text fontSize='header1' color='text1' padding='8px 32px'>
-                {`Level ${currentLevel}`}
+                {`Level ${currentLevel !== undefined ? currentLevel : '...'}`}
             </Text>
             <LevelLine percentage={progressPercentage} width='250px' />
 
@@ -139,7 +139,9 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
                     Points this Week
                 </Text>
                 <Text fontSize='header1' color='text1'>
-                    {totalPointsCurrentWeek}
+                    {totalPointsCurrentWeek !== undefined
+                        ? totalPointsCurrentWeek
+                        : '...'}
                 </Text>
             </div>
 
@@ -148,11 +150,15 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
                     Total points
                 </Text>
                 <Text fontSize='header1' color='text1'>
-                    {totalPoints}
+                    {totalPoints !== undefined ? totalPoints : '...'}
                 </Text>
             </div>
             <Text fontSize='header2' color='accent1'>
-                {`${pointsRemainingToNextLevel} points till next level!`}
+                {`${
+                    pointsRemainingToNextLevel !== undefined
+                        ? pointsRemainingToNextLevel
+                        : '...'
+                } points till next level!`}
             </Text>
             <span className={styles.divider} />
 

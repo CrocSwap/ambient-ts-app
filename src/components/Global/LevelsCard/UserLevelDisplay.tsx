@@ -4,7 +4,7 @@ import LevelLine from '../LevelLine/LevelLine';
 import styles from './LevelsCard.module.css';
 
 interface Props {
-    // xpData: ConnectedUserXpDataIF
+    // xpData: UserXpDataIF
     currentLevel: number | string | undefined;
     totalPoints: number | string | undefined;
     user: string;
@@ -33,10 +33,14 @@ export default function UserLevelDisplay(props: Props) {
                     justifyContent='space-between'
                 >
                     <Text fontSize='header1' color='text1'>
-                        {`Level ${currentLevel}`}
+                        {`Level ${
+                            currentLevel !== undefined ? currentLevel : '...'
+                        }`}
                     </Text>
                     <Text fontSize='header1' color='text2'>
-                        {`XP : ${totalPoints}`}
+                        {`XP: ${
+                            totalPoints !== undefined ? totalPoints : '...'
+                        }`}
                     </Text>
                 </FlexContainer>
 

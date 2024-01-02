@@ -10,7 +10,7 @@ import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileS
 
 // START: Import Other Local Files
 import { TokenIF } from '../../ambient-utils/types';
-import { fetchEnsAddress } from '../../ambient-utils/api';
+import { fetchEnsAddress, fetchUserXpData } from '../../ambient-utils/api';
 import { Navigate, useParams } from 'react-router-dom';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
@@ -26,7 +26,7 @@ import {
     PortfolioTabsContainer,
 } from '../../styled/Components/Portfolio';
 import { FlexContainer, Text } from '../../styled/Common';
-import { UserDataContext } from '../../contexts/UserDataContext';
+import { UserDataContext, UserXpDataIF } from '../../contexts/UserDataContext';
 import Level from '../Level/Level';
 
 interface PortfolioPropsIF {
@@ -133,6 +133,25 @@ function Portfolio(props: PortfolioPropsIF) {
             }
         })();
     }, [addressFromParams, isAddressEns]);
+
+    const [resolvedUserXp, setResolvedUserXp] = useState<UserXpDataIF>({
+        dataReceived: false,
+        data: undefined,
+    });
+
+    // fetch xp data for resolved address if not connected user account
+    useEffect(() => {
+        if (!connectedAccountActive && resolvedAddress) {
+            fetchUserXpData({ user: resolvedAddress }).then(
+                (resolvedUserXp) => {
+                    setResolvedUserXp({
+                        dataReceived: true,
+                        data: resolvedUserXp,
+                    });
+                },
+            );
+        }
+    }, [connectedAccountActive, resolvedAddress]);
 
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
     const exchangeBalanceComponent = (
@@ -286,6 +305,7 @@ function Portfolio(props: PortfolioPropsIF) {
         resolvedAddress: resolvedAddress ?? '',
         setShowProfileSettings: setShowProfileSettings,
         connectedAccountActive: connectedAccountActive,
+        resolvedUserXp: resolvedUserXp,
     };
 
     const levelsProps = {
@@ -301,6 +321,7 @@ function Portfolio(props: PortfolioPropsIF) {
             : trimString(resolvedAddress ?? '', 6, 6, '…'),
         connectedAccountActive: connectedAccountActive,
         isDisplayRank: isRanksPage,
+        resolvedUserXp,
     };
 
     const profileSettingsProps = {

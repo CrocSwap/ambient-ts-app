@@ -23,7 +23,11 @@ export const fetchUserXpData = async (args: argsIF) => {
     const userXp: UserXpIF = {
         userAddress: user,
         leaderboardRank: 1,
-        currentLevel: 4,
+        currentLevel:
+            user.toLowerCase() ===
+            '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc'.toLowerCase()
+                ? 4
+                : 3,
         recentPoints: 1800,
         totalPoints: 3000,
         pointsRemainingToNextLevel: 1000,
