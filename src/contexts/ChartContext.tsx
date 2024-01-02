@@ -82,7 +82,9 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     const chartCanvasRef = useRef(null);
 
     const [fullScreenChart, setFullScreenChart] = useState(false);
+
     const setChartHeight = (val: number) => {
+        console.log('setting chart height');
         if (val > CHART_MIN_HEIGHT && val < CHART_MAX_HEIGHT) {
             localStorage.setItem('savedChartHeight', val.toString());
         }

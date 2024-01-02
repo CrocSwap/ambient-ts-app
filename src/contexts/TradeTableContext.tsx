@@ -47,7 +47,10 @@ export const TradeTableContextProvider = (props: {
 }) => {
     const { isCandleSelected, isCandleDataNull } = useContext(CandleContext);
     const { setChartHeight, chartHeights } = useContext(ChartContext);
-    const isPoolInitialized = useContext(PoolContext);
+    const { isPoolInitialized } = useContext(PoolContext);
+    const { isUserConnected } = useContext(UserDataContext);
+    const { resetPoolDataLoadingStatus, resetConnectedUserDataLoadingStatus } =
+        useContext(DataLoadingContext);
 
     const { pathname: currentLocation } = useLocation();
 
@@ -67,10 +70,6 @@ export const TradeTableContextProvider = (props: {
     const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
     const [outsideControl, setOutsideControl] = useState(false);
     const [activeMobileComponent, setActiveMobileComponent] = useState('trade');
-
-    const { isUserConnected } = useContext(UserDataContext);
-    const { resetPoolDataLoadingStatus, resetConnectedUserDataLoadingStatus } =
-        useContext(DataLoadingContext);
 
     useEffect(() => {
         console.log('tradetablecontext 0');
@@ -186,34 +185,28 @@ export const TradeTableContextProvider = (props: {
         toggleTradeTabBasedOnRoute,
     ]);
 
-    const resetTable = useCallback(() => {
-        if (
-            chartHeights.saved > chartHeights.min &&
-            chartHeights.saved < chartHeights.max
-        ) {
-            setChartHeight(chartHeights.saved);
+    useEffect(() => {
+        console.log('tradetablecontext 2');
+        console.log({ isCandleDataNull, isPoolInitialized });
+        if (isCandleDataNull && isPoolInitialized) {
+            setChartHeight(chartHeights.min);
+        } else {
+            if (
+                chartHeights.saved > chartHeights.min &&
+                chartHeights.saved < chartHeights.max
+            ) {
+                setChartHeight(chartHeights.saved);
+            }
         }
     }, [
         chartHeights.max,
         chartHeights.min,
         chartHeights.saved,
+        isCandleDataNull,
+        isPoolInitialized,
         setChartHeight,
     ]);
 
-    useEffect(() => {
-        console.log('tradetablecontext 2');
-        if (isCandleDataNull && isPoolInitialized) {
-            setChartHeight(chartHeights.min);
-        } else {
-            resetTable();
-        }
-    }, [
-        chartHeights.min,
-        isCandleDataNull,
-        isPoolInitialized,
-        resetTable,
-        setChartHeight,
-    ]);
     return (
         <TradeTableContext.Provider value={tradeTableContext}>
             {props.children}
