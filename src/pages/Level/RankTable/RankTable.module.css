@@ -95,12 +95,12 @@ cursor: pointer;
 .menu_button:hover{
     color: var(--accent1)
 }
-.row_container{
-    grid-template-columns: 30px 1fr 1fr auto;
+.row_container, .row_container_header{
+    grid-template-columns: auto 1fr 1fr 50px auto;
 }
 @media only screen and (min-width: 450px)  {
     .row_container, .row_container_header{
-        grid-template-columns: 50px 150px 150px auto;
+        grid-template-columns: 50px 130px 130px 50px auto;
     }
 
     .main_table{
@@ -114,6 +114,6 @@ cursor: pointer;
 }
 
 .row_container, .row_container_header{
-    grid-template-columns: 50px 270.5px 270.5px auto;
+    grid-template-columns: 50px 250px 250px 50px auto;
 }
 }
