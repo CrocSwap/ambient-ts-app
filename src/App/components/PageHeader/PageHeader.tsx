@@ -4,7 +4,6 @@ import React, {
     memo,
     useContext,
     useCallback,
-    useRef,
 } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AnimateSharedLayout } from 'framer-motion';
@@ -54,8 +53,6 @@ import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
-import AccountLinkDropdown from './Account/AccountLinkDropdown';
 
 const PageHeader = function () {
     const {
@@ -299,11 +296,6 @@ const PageHeader = function () {
         );
     }
 
-    const [showAccountDropdown, setShowAccountDropdown] = useState(false);
-    const accountMenuDropdownRef = useRef<HTMLDivElement>(null);
-    const clickOutsideAccountHandler = () => setShowAccountDropdown(false);
-    useOnClickOutside(accountMenuDropdownRef, clickOutsideAccountHandler);
-
     const routeDisplay = (
         <AnimateSharedLayout>
             <PrimaryNavigation
@@ -312,66 +304,27 @@ const PageHeader = function () {
             >
                 {linkData.map((link, idx) =>
                     link.shouldDisplay ? (
-                        <div
-                            key={idx}
-                            style={{ position: 'relative' }}
-                            ref={accountMenuDropdownRef}
-                        >
-                            {link.title === 'Account' ? (
-                                <>
-                                    <NavigationLink
-                                        tabIndex={0}
-                                        className={isActive(
-                                            link.destination,
-                                            location.pathname,
-                                        )}
-                                        to={link.destination}
-                                        key={idx}
-                                        onMouseEnter={() =>
-                                            setShowAccountDropdown(true)
-                                        }
-                                        onMouseLeave={() =>
-                                            setShowAccountDropdown(false)
-                                        }
-                                    >
-                                        <span>{link.title}</span>
-                                        {isUnderlined(
-                                            link.destination,
-                                            location.pathname,
-                                        ) && (
-                                            <UnderlinedMotionDiv layoutId='underline' />
-                                        )}
-                                    </NavigationLink>
-                                    {showAccountDropdown && (
-                                        <AccountLinkDropdown />
-                                    )}
-                                </>
-                            ) : (
-                                <NavigationLink
-                                    tabIndex={0}
-                                    className={isActive(
-                                        link.destination,
-                                        location.pathname,
-                                    )}
-                                    to={link.destination}
-                                    key={idx}
-                                >
-                                    {link.title}
-                                    {isUnderlined(
-                                        link.destination,
-                                        location.pathname,
-                                    ) && (
-                                        <UnderlinedMotionDiv layoutId='underline' />
-                                    )}
-                                </NavigationLink>
+                        <NavigationLink
+                            tabIndex={0}
+                            className={isActive(
+                                link.destination,
+                                location.pathname,
                             )}
-                        </div>
+                            to={link.destination}
+                            key={idx}
+                        >
+                            {link.title}
+
+                            {isUnderlined(
+                                link.destination,
+                                location.pathname,
+                            ) && <UnderlinedMotionDiv layoutId='underline' />}
+                        </NavigationLink>
                     ) : null,
                 )}
             </PrimaryNavigation>
         </AnimateSharedLayout>
     );
-
     // ----------------------------END OF NAVIGATION FUNCTIONALITY-------------------------------------
     const [show, handleShow] = useState(false);
 

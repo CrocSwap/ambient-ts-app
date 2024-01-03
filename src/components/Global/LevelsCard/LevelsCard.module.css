@@ -83,6 +83,13 @@ padding: 1px;
 align-items: center;
     }
 
+    .link{
+
+         font-size: var(--body-size);
+         line-height: var(--body-lh);
+         color: var(--accent5);
+         text-decoration: underline;
+    }
 @media (min-width: 768px) {
     
     .main_container{
