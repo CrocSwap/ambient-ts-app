@@ -9,6 +9,7 @@ import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { Link } from 'react-router-dom';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface LevelsCardPropsIF {
     resolvedAddress?: string;
@@ -62,6 +63,7 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
 
         openSnackbar(`${copiedData} copied`, 'info');
     }
+    const desktopScreen = useMediaQuery('(min-width: 500px)');
 
     const header = (
         <FlexContainer flexDirection='row' gap={16} alignItems='center'>
@@ -111,11 +113,14 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
                     key={data?.date + data?.points}
                     gap={32}
                 >
-                    <Text fontSize='header2' color='text1'>
+                    <Text
+                        fontSize={desktopScreen ? 'header2' : 'body'}
+                        color='text1'
+                    >
                         {data?.date}
                     </Text>
                     <Text
-                        fontSize='header2'
+                        fontSize={desktopScreen ? 'header2' : 'body'}
                         color='text1'
                         style={{ textAlign: 'end' }}
                     >
@@ -138,7 +143,10 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
                 <Text fontSize='body' color='text2'>
                     Points this Week
                 </Text>
-                <Text fontSize='header1' color='text1'>
+                <Text
+                    fontSize={desktopScreen ? 'header1' : 'header2'}
+                    color='text1'
+                >
                     {totalPointsCurrentWeek !== undefined
                         ? totalPointsCurrentWeek.toLocaleString('en-US', {
                               minimumFractionDigits: 0,
@@ -152,7 +160,10 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
                 <Text fontSize='body' color='text2'>
                     Total points
                 </Text>
-                <Text fontSize='header1' color='text1'>
+                <Text
+                    fontSize={desktopScreen ? 'header1' : 'header2'}
+                    color='text1'
+                >
                     {totalPoints !== undefined
                         ? totalPoints.toLocaleString('en-US', {
                               minimumFractionDigits: 0,
@@ -161,7 +172,7 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
                         : '...'}
                 </Text>
             </div>
-            <Text fontSize='header2' color='accent1'>
+            <Text fontSize={desktopScreen ? 'header2' : 'body'} color='accent1'>
                 {`${
                     pointsRemainingToNextLevel !== undefined
                         ? pointsRemainingToNextLevel.toLocaleString('en-US', {
@@ -173,7 +184,7 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
             </Text>
             <span className={styles.divider} />
 
-            <Text fontSize='header2' color='text1'>
+            <Text fontSize={desktopScreen ? 'header2' : 'body'} color='text1'>
                 Points History
             </Text>
 
