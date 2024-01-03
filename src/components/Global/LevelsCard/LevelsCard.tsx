@@ -168,7 +168,7 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
 
             {pointsHistoryDisplay}
 
-            <Link to='/account/ranks' className={styles.link}>
+            <Link to='/account/leaderboard' className={styles.link}>
                 View Leaderboard
             </Link>
         </div>

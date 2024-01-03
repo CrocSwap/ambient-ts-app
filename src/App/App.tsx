@@ -245,7 +245,7 @@ export default function App() {
                         <Route path='initpool/:params' element={<InitPool />} />
                         <Route path='account' element={<Portfolio />} />
                         <Route
-                            path='account/ranks'
+                            path='account/leaderboard'
                             element={<Portfolio isLevelsPage isRanksPage />}
                         />
                         <Route

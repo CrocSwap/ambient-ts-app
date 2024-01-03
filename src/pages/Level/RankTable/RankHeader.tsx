@@ -3,7 +3,7 @@ import styles from './RankTable.module.css';
 
 export default function RankHeader() {
     return (
-        <div className={styles.row_container} style={{ height: '16px' }}>
+        <div className={styles.row_container_header} style={{ height: '16px' }}>
             <Text fontSize='body' color='text2'>
                 {' '}
                 Rank

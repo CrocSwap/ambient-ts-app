@@ -4,13 +4,14 @@ import Stats from '../../components/Home/Stats/AmbientStats';
 import TopPools from '../../components/Home/TopPools/TopPools';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import MobileLandingSections from '../../components/Home/Landing/MobileLandingSections';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useSwitchNetwork } from 'wagmi';
 import { supportedNetworks } from '../../ambient-utils/constants';
 import { useAppChain } from '../../App/hooks/useAppChain';
 import { useContext, useEffect } from 'react';
 import { lookupChainId } from '../../ambient-utils/dataLayer';
 import { UserDataContext } from '../../contexts/UserDataContext';
+import { FlexContainer, Text } from '../../styled/Common';
 
 export default function Home() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
@@ -59,6 +60,18 @@ export default function Home() {
                     <Hero />
                 </div>
             )}
+            <FlexContainer justifyContent='center' alignItems='center' gap={8}>
+                <Text fontSize='body'>Points system is now live </Text>
+                <Link to='/account/leaderboard'>
+                    <Text
+                        fontSize='body'
+                        color='accent1'
+                        style={{ textDecoration: 'underline' }}
+                    >
+                        View Leaderboard
+                    </Text>
+                </Link>
+            </FlexContainer>
             <div>
                 <TopPools />
                 <Stats />
