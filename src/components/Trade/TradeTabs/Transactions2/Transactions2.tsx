@@ -1,4 +1,11 @@
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import {
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import styles from './Transactions2.module.css';
 import TransactionRow2 from './TransactionRow2';
 import { CandleDataIF, TransactionIF } from '../../../../ambient-utils/types';
@@ -10,71 +17,71 @@ import TxHeader from './TxHeader';
 const columnMetaInfo = {
     timeStamp: {
         width: 60,
-        readable: 'Timestamp'
+        readable: 'Timestamp',
     },
     txId: {
         width: 120,
-        readable: 'ID'
+        readable: 'ID',
     },
     txWallet: {
         width: 120,
-        readable: 'Wallet'
+        readable: 'Wallet',
     },
     txValue: {
         width: 100,
-        readable: 'Value'
+        readable: 'Value',
     },
     txSide: {
         width: 80,
-        readable: 'Side'
+        readable: 'Side',
     },
     txType: {
         width: 80,
-        readable: 'Type'
+        readable: 'Type',
     },
     overflowBtn: {
         width: 30,
-        readable: ''
+        readable: '',
     },
     editBtn: {
         width: 30,
-        readable: ''
+        readable: '',
     },
     harvestBtn: {
         width: 30,
-        readable: ''
+        readable: '',
     },
     addBtn: {
         width: 30,
-        readable: ''
+        readable: '',
     },
     leafBtn: {
         width: 30,
-        readable: ''
+        readable: '',
     },
     removeBtn: {
         width: 30,
-        readable: ''
+        readable: '',
     },
     shareBtn: {
         width: 30,
-        readable: ''
+        readable: '',
     },
     exportBtn: {
         width: 30,
-        readable: ''
+        readable: '',
     },
     walletBtn: {
         width: 30,
-        readable: ''
+        readable: '',
     },
     copyBtn: {
         width: 30,
-        readable: ''
+        readable: '',
     },
     downloadBtn: {
         width: 30,
-        readable: ''
+        readable: '',
     },
 };
 
@@ -87,8 +94,7 @@ interface propsIF {
 }
 
 export default function Transactions2(props: propsIF) {
-    const { isAccountPage, candleData } = props;
-    false && candleData;
+    const { isAccountPage } = props;
 
     // active token pair
     const { baseToken, quoteToken } = useContext(TradeDataContext);
@@ -96,15 +102,39 @@ export default function Transactions2(props: propsIF) {
     // tx data which will be used to render line items
     const { changesByPool } = useContext(GraphDataContext);
 
-    const transactionsData = useMemo<TransactionIF[]>(() => {
-        const output: TransactionIF[] = changesByPool.changes.filter(
-            (tx: TransactionIF) =>
-                tx.base.toLowerCase() === baseToken.address.toLowerCase() &&
-                tx.quote.toLowerCase() === quoteToken.address.toLowerCase() &&
-                tx.changeType !== 'fill' &&
-                tx.changeType !== 'cross',
-        );
-        return output;
+    const [transactionsData, setTransactionsData] = useState<TransactionIF[]>(
+        [],
+    );
+
+    const [isLoading, setIsLoading] = useState(false);
+
+    const prevOutput = useRef<TransactionIF[]>([]);
+
+    useEffect(() => {
+        if (changesByPool.dataReceived) {
+            setIsLoading(true);
+            console.log(changesByPool.changes.length);
+            console.log({ changesByPool });
+
+            if (
+                !transactionsData.length ||
+                (prevOutput.current.length &&
+                    prevOutput.current[0].txHash !== transactionsData[0].txHash)
+            ) {
+                const output = changesByPool.changes.filter(
+                    (tx: TransactionIF) =>
+                        tx.base.toLowerCase() ===
+                            baseToken.address.toLowerCase() &&
+                        tx.quote.toLowerCase() ===
+                            quoteToken.address.toLowerCase() &&
+                        tx.changeType !== 'fill' &&
+                        tx.changeType !== 'cross',
+                );
+                prevOutput.current = output;
+                setTransactionsData(prevOutput.current);
+            }
+            setIsLoading(false);
+        }
     }, [changesByPool]);
 
     // ref holding the container in which we render the table, this gatekeeps code to render the
@@ -118,60 +148,62 @@ export default function Transactions2(props: propsIF) {
 
     // array to define column priority in the DOM, columns listed last will be removed from the
     // ... DOM first when space is limited
-    const priority: columnSlugsType[] = [
-        'timeStamp',
-        'txId',
-        'txWallet',
-        'txSide',
-        'txType',
-        'txValue',
-        'overflowBtn',
-        'editBtn',
-        'harvestBtn',
-        'addBtn',
-        'leafBtn',
-        'removeBtn',
-        'shareBtn',
-        'exportBtn',
-        'walletBtn',
-        'copyBtn',
-        'downloadBtn',
-    ];
+    const priority: columnSlugsType[] = useMemo(
+        () => [
+            'timeStamp',
+            'txId',
+            'txWallet',
+            'txSide',
+            'txType',
+            'txValue',
+            'overflowBtn',
+            'editBtn',
+            'harvestBtn',
+            'addBtn',
+            'leafBtn',
+            'removeBtn',
+            'shareBtn',
+            'exportBtn',
+            'walletBtn',
+            'copyBtn',
+            'downloadBtn',
+        ],
+        [],
+    );
+
+    const adjustColumnization = useCallback(() => {
+        // make sure the container in which we'll render the table exists
+        if (containerRef.current) {
+            // get the pixel width of the container in the DOM
+            const containerWidth = containerRef.current.clientWidth;
+            // array to hold the list of columns we'll actually render
+            const columnList: [columnSlugsType, number, string][] = [];
+            // this value tracks how much width (pixels) is required by the columns in the
+            // ... DOM, updated each time we iteratively add one
+            let totalWidthNeeded = 0;
+            // loop to add as many columns into the table as will fit per the priority array
+            for (let i = 0; i < priority.length; i++) {
+                // get the name of the next column in the priority list
+                const columnId: columnSlugsType = priority[i];
+                // determine how much width (pixels) the column needs
+                const columnSize: number = columnMetaInfo[columnId].width;
+                const columnTitle: string = columnMetaInfo[columnId].readable;
+                // if the column fits in the DOM, add it to the list of columns to render
+                if (totalWidthNeeded + columnSize <= containerWidth) {
+                    // push name of column into the output array
+                    columnList.push([columnId, columnSize, columnTitle]);
+                    // update the running total of column sizes needed
+                    totalWidthNeeded += columnSize;
+                }
+            }
+            // send the output column list to local state, table will render responsively
+            columnsToRender.current = columnList;
+        }
+    }, [containerRef.current, priority, columnMetaInfo]);
 
     // add an observer to watch for element to be re-sized
     // later this should go to the parent so every table tab has it available
     useEffect(() => {
-        // fn to log the width of the element in the DOM (number of pixels)
-        function adjustColumnization() {
-            // make sure the container in which we'll render the table exists
-            if (containerRef.current) {
-                // get the pixel width of the container in the DOM
-                const containerWidth = containerRef.current.clientWidth;
-                // array to hold the list of columns we'll actually render
-                const columnList: [columnSlugsType, number, string][] = [];
-                // this value tracks how much width (pixels) is required by the columns in the
-                // ... DOM, updated each time we iteratively add one
-                let totalWidthNeeded = 0;
-                // loop to add as many columns into the table as will fit per the priority array
-                for (let i = 0; i < priority.length; i++) {
-                    // get the name of the next column in the priority list
-                    const columnId: columnSlugsType = priority[i];
-                    // determine how much width (pixels) the column needs
-                    const columnSize: number = columnMetaInfo[columnId].width;
-                    const columnTitle: string = columnMetaInfo[columnId].readable
-                    // if the column fits in the DOM, add it to the list of columns to render
-                    if (totalWidthNeeded + columnSize <= containerWidth) {
-                        // push name of column into the output array
-                        columnList.push([columnId, columnSize, columnTitle]);
-                        // update the running total of column sizes needed
-                        totalWidthNeeded += columnSize;
-                    }
-                }
-                // send the output column list to local state, table will render responsively
-                columnsToRender.current = columnList;
-            }
-        }
-
         // create an observer holding the width-logging function
         const resizeObserver: ResizeObserver = new ResizeObserver(
             adjustColumnization,
@@ -189,28 +221,31 @@ export default function Transactions2(props: propsIF) {
         setOpenMenuRow((prevRowId) => (prevRowId === rowId ? null : rowId));
     };
 
-    // array of row elements to render in the DOM, the base underlying data used for generation
-    // ... is updated frequently but this memoization on recalculates if other items change
-    const transactionRows = useMemo<JSX.Element[]>(
-        () =>
-            transactionsData.map((tx: TransactionIF) => (
-                <TransactionRow2
-                    key={JSON.stringify(tx)}
-                    tx={tx}
-                    columnsToShow={columnsToRender.current}
-                    isAccountPage={isAccountPage}
-                    isMenuOpen={openMenuRow === JSON.stringify(tx)}
-                    onMenuToggle={() => handleMenuToggle(JSON.stringify(tx))}
-                    hideMenu={() => handleMenuToggle('')}
-                />
-            )),
-        [columnsToRender.current.length, openMenuRow, transactionsData.length],
-    );
+    useEffect(() => {
+        console.log('tx2 is re-rendering');
+        console.log({ transactionsData });
+    }, [transactionsData]);
 
     return (
         <ol className={styles.tx_ol} ref={containerRef}>
-            {false && <TxHeader activeColumns={columnsToRender.current} />}
-            {transactionRows}
+            {<TxHeader activeColumns={columnsToRender.current} />}
+            {!isLoading && columnsToRender.current.length ? (
+                transactionsData.map((tx: TransactionIF, index: number) => (
+                    <TransactionRow2
+                        key={`${tx.txHash}--${index}`}
+                        tx={tx}
+                        columnsToShow={columnsToRender.current}
+                        isAccountPage={isAccountPage}
+                        isMenuOpen={!!openMenuRow === true}
+                        onMenuToggle={() =>
+                            handleMenuToggle(JSON.stringify(tx))
+                        }
+                        hideMenu={() => handleMenuToggle('')}
+                    />
+                ))
+            ) : (
+                <p>Loading...</p>
+            )}
         </ol>
     );
 }

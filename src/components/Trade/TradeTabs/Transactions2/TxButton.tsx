@@ -8,6 +8,7 @@ import { FaPlus, FaTimes } from 'react-icons/fa';
 import { PiArrowFatLineDownBold } from 'react-icons/pi';
 import { btnIconNameType } from './TransactionRow2';
 import { TransactionIF } from '../../../../ambient-utils/types';
+import { memo } from 'react';
 
 interface propsIF {
     width: number;
@@ -17,7 +18,7 @@ interface propsIF {
     tx: TransactionIF;
 }
 
-export default function TxButton(props: propsIF) {
+function TxButton(props: propsIF) {
     const { width, iconName, hide, onMenuToggle } = props;
 
     const handleButtonClick = () => {
@@ -74,3 +75,5 @@ export default function TxButton(props: propsIF) {
         </div>
     );
 }
+
+export default memo(TxButton);

@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { memo, useContext } from 'react';
 import { getMoneynessRank } from '../../../../ambient-utils/dataLayer';
 import { TransactionIF } from '../../../../ambient-utils/types';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
@@ -10,7 +10,7 @@ interface propsIF {
     isAccountPage: boolean;
 }
 
-export default function TxType(props: propsIF) {
+function TxType(props: propsIF) {
     const { tx, width, isAccountPage } = props;
 
     // whether denomination is displayed in terms of base token
@@ -24,17 +24,23 @@ export default function TxType(props: propsIF) {
     const isBuy: boolean = tx.isBuy === true || tx.isBid === true;
 
     // readable output for DOM
-    const txTypeReadable: 'market'|'limit'|'range' =
-    tx.entityType === 'liqchange'
-        ? tx.changeType === 'mint'
-            ? 'range'
-            : 'range'
-        : tx.entityType === 'limitOrder'
-        ? 'limit'
-        : 'market';
+    const txTypeReadable: 'market' | 'limit' | 'range' =
+        tx.entityType === 'liqchange'
+            ? tx.changeType === 'mint'
+                ? 'range'
+                : 'range'
+            : tx.entityType === 'limitOrder'
+            ? 'limit'
+            : 'market';
 
     // readable data for CSS control flow (color)
-    const sideTypeReadable: 'add' | 'claim' | 'harvest' | 'remove' | 'buy' | 'sell' =
+    const sideTypeReadable:
+        | 'add'
+        | 'claim'
+        | 'harvest'
+        | 'remove'
+        | 'buy'
+        | 'sell' =
         tx.entityType === 'liqchange'
             ? tx.changeType === 'burn'
                 ? 'remove'
@@ -69,7 +75,6 @@ export default function TxType(props: propsIF) {
             ? 'sell'
             : 'buy';
 
-
     return (
         <RowItem
             justifyContent='center'
@@ -82,3 +87,5 @@ export default function TxType(props: propsIF) {
         </RowItem>
     );
 }
+
+export default memo(TxType);

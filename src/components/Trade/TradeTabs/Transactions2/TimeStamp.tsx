@@ -5,13 +5,14 @@ import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { Text } from '../../../../styled/Common';
 import { getElapsedTime } from '../../../../ambient-utils/dataLayer';
 import { TransactionServerIF } from '../../../../ambient-utils/types';
+import { memo } from 'react';
 
 interface propsIF {
     tx: TransactionServerIF;
     width: number;
 }
 
-export default function TimeStamp(props: propsIF) {
+function TimeStamp(props: propsIF) {
     const { tx, width } = props;
     return (
         <RowItem gap={4} width={width}>
@@ -39,9 +40,13 @@ export default function TimeStamp(props: propsIF) {
                 leaveDelay={0}
             >
                 <Text style={{ textTransform: 'lowercase' }} tabIndex={0}>
-                    {getElapsedTime(moment(Date.now()).diff(tx.txTime * 1000, 'seconds'))}
+                    {getElapsedTime(
+                        moment(Date.now()).diff(tx.txTime * 1000, 'seconds'),
+                    )}
                 </Text>
             </TextOnlyTooltip>
         </RowItem>
     );
 }
+
+export default memo(TimeStamp);

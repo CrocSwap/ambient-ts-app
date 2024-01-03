@@ -2,7 +2,7 @@ import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { RowItem } from '../../../../styled/Components/TransactionTable';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
-import { useContext } from 'react';
+import { memo, useContext } from 'react';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
@@ -14,11 +14,15 @@ interface propsIF {
     width: number;
 }
 
-export default function TxId(props: propsIF) {
+function TxId(props: propsIF) {
     const { tx, width } = props;
 
-    const { chainData: { blockExplorer } } = useContext(CrocEnvContext);
-    const { snackbar: { open: openSnackbar } } = useContext(AppStateContext);
+    const {
+        chainData: { blockExplorer },
+    } = useContext(CrocEnvContext);
+    const {
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
 
     const [_, copy] = useCopyToClipboard();
 
@@ -70,3 +74,5 @@ export default function TxId(props: propsIF) {
         </RowItem>
     );
 }
+
+export default memo(TxId);

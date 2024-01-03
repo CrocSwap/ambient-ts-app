@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import { TransactionIF } from '../../../../ambient-utils/types';
 import { RowItem } from '../../../../styled/Components/TransactionTable';
@@ -7,7 +8,7 @@ interface propsIF {
     tx: TransactionIF;
 }
 
-export default function TxValue(props: propsIF) {
+function TxValue(props: propsIF) {
     const { width, tx } = props;
     return (
         <RowItem
@@ -16,7 +17,12 @@ export default function TxValue(props: propsIF) {
             tabIndex={0}
             width={width}
         >
-            {getFormattedNumber({ value: Math.abs(tx.totalValueUSD), isUSD: true })}
+            {getFormattedNumber({
+                value: Math.abs(tx.totalValueUSD),
+                isUSD: true,
+            })}
         </RowItem>
     );
 }
+
+export default memo(TxValue);

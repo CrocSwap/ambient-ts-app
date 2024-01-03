@@ -1,5 +1,8 @@
-import { useContext } from 'react';
-import { getMoneynessRank, getUnicodeCharacter } from '../../../../ambient-utils/dataLayer';
+import { useContext, memo } from 'react';
+import {
+    getMoneynessRank,
+    getUnicodeCharacter,
+} from '../../../../ambient-utils/dataLayer';
 import { TransactionIF } from '../../../../ambient-utils/types';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { RowItem } from '../../../../styled/Components/TransactionTable';
@@ -8,9 +11,9 @@ interface propsIF {
     tx: TransactionIF;
     isAccountPage: boolean;
     width: number;
-};
+}
 
-export default function TxSide(props: propsIF) {
+function TxSide(props: propsIF) {
     const { tx, isAccountPage, width } = props;
 
     // whether denomination is displayed in terms of base token
@@ -23,7 +26,7 @@ export default function TxSide(props: propsIF) {
     // needed for control flow below
     const isBuy: boolean = tx.isBuy === true || tx.isBid === true;
 
-    type sideType = 'remove'|'harvest'|'add'|'buy'|'sell'|'claim';
+    type sideType = 'remove' | 'harvest' | 'add' | 'buy' | 'sell' | 'claim';
 
     // side of transaction
     // we really should find a better way to write this logic
@@ -62,7 +65,6 @@ export default function TxSide(props: propsIF) {
             ? 'sell'
             : 'buy';
 
-
     // first character of base and quote token symbols (capitalized)
     const baseChar: string = getUnicodeCharacter(tx.baseSymbol) ?? '';
     const quoteChar: string = getUnicodeCharacter(tx.quoteSymbol) ?? '';
@@ -98,4 +100,6 @@ export default function TxSide(props: propsIF) {
             {displayText}
         </RowItem>
     );
-};
+}
+
+export default memo(TxSide);

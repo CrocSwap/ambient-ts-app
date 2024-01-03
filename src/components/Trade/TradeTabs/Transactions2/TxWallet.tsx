@@ -1,4 +1,4 @@
-import { MouseEvent, useContext } from 'react';
+import { MouseEvent, memo, useContext } from 'react';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { RowItem } from '../../../../styled/Components/TransactionTable';
@@ -15,18 +15,20 @@ interface propsIF {
     width: number;
 }
 
-export default function TxWallet(props: propsIF) {
+function TxWallet(props: propsIF) {
     const { isOwnerActiveAccount, ownerId, isAccountPage, width } = props;
 
     // context data
-    const { snackbar: { open: openSnackbar } } = useContext(AppStateContext);
+    const {
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
     const { showAllData } = useContext(TradeTableContext);
 
     // custom hooks
     const [_, copy] = useCopyToClipboard();
 
     // TODO:    get Ben to help me turn this back on
-    const ensName: string|null = null;
+    const ensName: string | null = null;
 
     // username display output for the DOM
     let usernameForDOM: string;
@@ -34,11 +36,11 @@ export default function TxWallet(props: propsIF) {
         usernameForDOM = 'You';
     }
     // else if (ensName) {
-        // usernameForDOM = ensName.length > 16 ? trimString(ensName, 11, 3, '…') : ensName;
+    // usernameForDOM = ensName.length > 16 ? trimString(ensName, 11, 3, '…') : ensName;
     // }
     else {
         usernameForDOM = trimString(ownerId, 6, 4, '…');
-    };
+    }
 
     // color for username in DOM
     let usernameColor: 'text1' | 'accent1' | 'accent2';
@@ -48,7 +50,7 @@ export default function TxWallet(props: propsIF) {
         usernameColor = 'accent1';
     } else {
         usernameColor = 'text1';
-    };
+    }
 
     // fn to handle a click on the wallet value in the DOM
     function handleWalletClick(): void {
@@ -56,7 +58,7 @@ export default function TxWallet(props: propsIF) {
             const accountUrl = `/${isOwnerActiveAccount ? 'account' : ownerId}`;
             window.open(accountUrl, '_blank');
         }
-    };
+    }
 
     // fn to handle a click on the wallet value in the DOM
     function handleWalletCopy(): void {
@@ -139,3 +141,5 @@ export default function TxWallet(props: propsIF) {
     // return proper JSX element based on whether user owns the tx
     return isOwnerActiveAccount ? walletWithTooltip : walletNoTooltip;
 }
+
+export default memo(TxWallet);
