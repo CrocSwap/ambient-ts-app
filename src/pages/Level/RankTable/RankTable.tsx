@@ -12,7 +12,11 @@ export default function RankTable() {
         xpLeadersData?.data?.map((entry) => ({
             rank: entry.leaderboardRank,
             wallet: trimString(entry.userAddress ?? '', 6, 6, '…'),
-            points: entry.totalPoints,
+            points: entry.totalPoints.toLocaleString('en-US', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+            }),
+            currentLevel: entry.currentLevel,
         })) || [];
 
     return (

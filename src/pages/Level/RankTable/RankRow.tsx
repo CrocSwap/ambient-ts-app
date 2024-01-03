@@ -6,7 +6,8 @@ interface PropsIF {
     data: {
         rank: number;
         wallet: string;
-        points: number;
+        points: string;
+        currentLevel: number;
     };
 }
 export default function RankRow(props: PropsIF) {
@@ -43,6 +44,10 @@ export default function RankRow(props: PropsIF) {
             <Text fontSize='body' color='accent5' fontWeight='400'>
                 {' '}
                 {data.points}
+            </Text>
+            <Text fontSize='body' color='accent5' fontWeight='400'>
+                {' '}
+                {data.currentLevel}
             </Text>
 
             {menu}

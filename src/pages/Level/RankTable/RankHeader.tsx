@@ -16,6 +16,10 @@ export default function RankHeader() {
                 {' '}
                 Points
             </Text>
+            <Text fontSize='body' color='text2'>
+                {' '}
+                Level
+            </Text>
             <span />
         </div>
     );

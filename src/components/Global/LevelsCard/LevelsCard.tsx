@@ -19,7 +19,7 @@ interface LevelsCardPropsIF {
     progressPercentage: number;
     pointsData: {
         date: string;
-        points: number;
+        points: string;
     }[];
     jazziconsToDisplay: JSX.Element | null;
     ensNameToDisplay: string;
@@ -140,7 +140,10 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
                 </Text>
                 <Text fontSize='header1' color='text1'>
                     {totalPointsCurrentWeek !== undefined
-                        ? totalPointsCurrentWeek
+                        ? totalPointsCurrentWeek.toLocaleString('en-US', {
+                              minimumFractionDigits: 0,
+                              maximumFractionDigits: 0,
+                          })
                         : '...'}
                 </Text>
             </div>
@@ -150,13 +153,21 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
                     Total points
                 </Text>
                 <Text fontSize='header1' color='text1'>
-                    {totalPoints !== undefined ? totalPoints : '...'}
+                    {totalPoints !== undefined
+                        ? totalPoints.toLocaleString('en-US', {
+                              minimumFractionDigits: 0,
+                              maximumFractionDigits: 0,
+                          })
+                        : '...'}
                 </Text>
             </div>
             <Text fontSize='header2' color='accent1'>
                 {`${
                     pointsRemainingToNextLevel !== undefined
-                        ? pointsRemainingToNextLevel
+                        ? pointsRemainingToNextLevel.toLocaleString('en-US', {
+                              minimumFractionDigits: 0,
+                              maximumFractionDigits: 0,
+                          })
                         : '...'
                 } points till next level!`}
             </Text>

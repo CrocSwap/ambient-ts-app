@@ -12,6 +12,13 @@ interface Props {
 export default function UserLevelDisplay(props: Props) {
     const { currentLevel, totalPoints, user } = props;
 
+    const totalPointsString = totalPoints
+        ? totalPoints.toLocaleString('en-US', {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+          })
+        : '...';
+
     const linkToNavigateTo = `/account/${user}/xp`;
 
     return (
@@ -38,9 +45,7 @@ export default function UserLevelDisplay(props: Props) {
                         }`}
                     </Text>
                     <Text fontSize='header1' color='text2'>
-                        {`XP: ${
-                            totalPoints !== undefined ? totalPoints : '...'
-                        }`}
+                        {`XP: ${totalPointsString}`}
                     </Text>
                 </FlexContainer>
 

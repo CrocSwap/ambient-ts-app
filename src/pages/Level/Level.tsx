@@ -91,7 +91,10 @@ export default function Level(props: LevelPropsIF) {
                     : 'Pending...';
             return {
                 date: elapsedTimeString,
-                points: entry.cumulativePoints,
+                points: entry.cumulativePoints.toLocaleString('en-US', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                }),
             };
         }) || [];
 
