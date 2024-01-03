@@ -1,11 +1,13 @@
 import { RiWallet3Line } from 'react-icons/ri';
 import { FlexContainer, Text } from '../../../styled/Common';
 import styles from './RankTable.module.css';
+import { useNavigate } from 'react-router-dom';
 
 interface PropsIF {
     data: {
         rank: number;
-        wallet: string;
+        walletDisplay: string;
+        userAddress: string;
         points: string;
         currentLevel: number;
     };
@@ -13,14 +15,26 @@ interface PropsIF {
 export default function RankRow(props: PropsIF) {
     const { data } = props;
 
+    const navigate = useNavigate();
+
+    function handleWalletLinkClick() {
+        navigate(`/account/${data.userAddress}`);
+    }
+
+    function goToLevelsPage(): void {
+        navigate(`/account/${data.userAddress}/xp`);
+    }
+
     const menu = (
         <FlexContainer
             gap={4}
             padding='0 8px'
             style={{ borderLeft: '1px solid var(--dark3)' }}
         >
-            <div className={styles.menu_button}>XP</div>
-            <div className={styles.menu_button}>
+            <div className={styles.menu_button} onClick={goToLevelsPage}>
+                XP
+            </div>
+            <div className={styles.menu_button} onClick={handleWalletLinkClick}>
                 <RiWallet3Line size={16} />
             </div>
         </FlexContainer>
@@ -39,7 +53,7 @@ export default function RankRow(props: PropsIF) {
                 style={{ fontFamily: 'monospace' }}
             >
                 {' '}
-                {data.wallet}
+                {data.walletDisplay}
             </Text>
             <Text fontSize='body' color='accent5' fontWeight='400'>
                 {' '}
