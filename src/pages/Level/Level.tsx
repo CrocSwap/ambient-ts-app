@@ -1,4 +1,3 @@
-import moment from 'moment';
 import LevelsCard from '../../components/Global/LevelsCard/LevelsCard';
 import styles from './Level.module.css';
 import { UserDataContext, UserXpDataIF } from '../../contexts/UserDataContext';
@@ -64,10 +63,37 @@ export default function Level(props: LevelPropsIF) {
             : resolvedUserXp;
 
     const pointsData =
-        xpData?.data?.pointsHistory?.map((entry) => ({
-            date: moment.unix(entry.snapshotUnixTime).format('l'),
-            points: entry.addedPoints,
-        })) || [];
+        xpData?.data?.pointsHistory?.map((entry) => {
+            const elapsedTimeInSecondsNum = entry.snapshotUnixTime
+                ? Date.now() / 1000 - entry.snapshotUnixTime
+                : undefined;
+            const elapsedTimeString =
+                elapsedTimeInSecondsNum !== undefined
+                    ? elapsedTimeInSecondsNum < 60
+                        ? '< 1 minute ago'
+                        : elapsedTimeInSecondsNum < 120
+                        ? '1 minute ago'
+                        : elapsedTimeInSecondsNum < 3600
+                        ? `${Math.floor(
+                              elapsedTimeInSecondsNum / 60,
+                          )} minutes ago `
+                        : elapsedTimeInSecondsNum < 7200
+                        ? '1 hour ago'
+                        : elapsedTimeInSecondsNum < 86400
+                        ? `${Math.floor(
+                              elapsedTimeInSecondsNum / 3600,
+                          )} hours ago `
+                        : elapsedTimeInSecondsNum < 172800
+                        ? '1 day ago'
+                        : `${Math.floor(
+                              elapsedTimeInSecondsNum / 86400,
+                          )} days ago `
+                    : 'Pending...';
+            return {
+                date: elapsedTimeString,
+                points: entry.cumulativePoints,
+            };
+        }) || [];
 
     const currentLevel = xpData?.data?.currentLevel;
     const totalPoints = xpData?.data?.totalPoints;
