@@ -10,7 +10,7 @@ const Tooltip = styled.div`
 
     display: flex;
 
-    z-index: 99;
+    z-index: 999;
 
     background: #202a38;
 
@@ -21,8 +21,8 @@ const Tooltip = styled.div`
     height: 22px;
     width: 125px;
 
-    left: 20px;
-    top: -17px;
+    left: 35px;
+    top: 0px;
 
     padding: 2px;
 
