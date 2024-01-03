@@ -11,7 +11,8 @@ export default function RankTable() {
     const formattedData =
         xpLeadersData?.data?.map((entry) => ({
             rank: entry.leaderboardRank,
-            wallet: trimString(entry.userAddress ?? '', 6, 6, '…'),
+            walletDisplay: trimString(entry.userAddress ?? '', 6, 6, '…'),
+            userAddress: entry.userAddress,
             points: entry.totalPoints.toLocaleString('en-US', {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0,
