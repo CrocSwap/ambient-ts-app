@@ -19,6 +19,7 @@ border-radius: 4px;
     
 }
 
+
 .row_container:hover, .row_container_header:hover{
     background-color: var(--dark3);
 }
@@ -31,10 +32,12 @@ border-radius: 4px;
     text-align: center;
     
 }
-
-.row_container span:last-child, .row_container_header span:last-child{
-    text-align: end;
+.row_container span:nth-child(4),
+.row_container_header span:nth-child(4){
+text-align: center;
 }
+
+
 
 .main_table_content{
     overflow-y: scroll;
@@ -45,6 +48,7 @@ border-radius: 4px;
     gap: 8px;
 
 }
+
 
 .row_container:nth-child(1) {
     background: linear-gradient(
@@ -95,8 +99,18 @@ cursor: pointer;
 .menu_button:hover{
     color: var(--accent1)
 }
+.row_container span:nth-child(3), .row_container_header span:nth-child(3){
+display: none;
+}
+
 .row_container, .row_container_header{
-    grid-template-columns: auto 1fr 1fr 50px auto;
+    grid-template-columns: 50px 120px 120px 50px 0.5fr;
+  
+    grid-template-columns: 50px 100 100px 50px 100px;
+}
+.row_container span{
+    text-wrap: wrap;
+    word-wrap: break-word;
 }
 @media only screen and (min-width: 450px)  {
     .row_container, .row_container_header{
@@ -106,6 +120,11 @@ cursor: pointer;
     .main_table{
         width: 450px;
     }
+    .row_container span:nth-child(3), .row_container_header span:nth-child(3){
+        display: flex;
+        text-align: center;
+        }
+        
 }
 @media only screen and (min-width: 590px) {
 .main_table{
@@ -115,5 +134,6 @@ cursor: pointer;
 
 .row_container, .row_container_header{
     grid-template-columns: 50px 250px 250px 50px auto;
+   
 }
 }
