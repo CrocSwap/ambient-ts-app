@@ -32,6 +32,7 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { uriToHttp } from '../../../ambient-utils/dataLayer';
 import ChatToaster from '../ChatToaster/ChatToaster';
 import ChatConfirmationPanel from '../ChatConfirmationPanel/ChatConfirmationPanel';
+import Picker from 'emoji-picker-react';
 
 interface FullChatPropsIF {
     messageList: JSX.Element;
@@ -65,6 +66,9 @@ interface FullChatPropsIF {
     verifyOldMessagesStartDate: Date;
     confirmationPanelContent: number;
     setShowVerifyOldMessagesPanel: Dispatch<SetStateAction<boolean>>;
+    showPicker: boolean;
+    addReactionEmojiPickListener: (event: any, data: any) => void;
+    setShowPicker: Dispatch<SetStateAction<boolean>>;
 }
 
 interface ChannelDisplayPropsIF {
@@ -849,6 +853,27 @@ function FullChat(props: FullChatPropsIF) {
                     props.setShowVerifyOldMessagesPanel(false);
                 }}
             />
+            {props.isChatOpen && props.showPicker && (
+                <div
+                    id='chatReactionWrapper'
+                    className={styles.reaction_picker_wrapper}
+                >
+                    <div
+                        className={styles.reaction_picker_close}
+                        onClick={() => {
+                            props.setShowPicker(false);
+                        }}
+                    >
+                        {' '}
+                        X{' '}
+                    </div>
+                    <Picker
+                        onEmojiClick={props.addReactionEmojiPickListener}
+                        pickerStyle={{ width: '100%' }}
+                        disableSkinTonePicker={true}
+                    />
+                </div>
+            )}
         </div>
     );
 }

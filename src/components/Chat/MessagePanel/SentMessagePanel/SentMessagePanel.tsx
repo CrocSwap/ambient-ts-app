@@ -793,7 +793,6 @@ function SentMessagePanel(props: SentMessageProps) {
             onMouseEnter={() => {
                 // setIsMoreButtonPressed(false);
                 setTimestampForChildRefresh(new Date().getTime());
-                console.log('on mouse enter');
             }}
         >
             {!props.message.isDeleted || props.isModerator ? (
@@ -805,49 +804,37 @@ function SentMessagePanel(props: SentMessageProps) {
                                 setFlipped(true);
                             }}
                         ></div> */}
-                        {props.address &&
-                            (props.isCurrentUser || props.isModerator) && // TODO WBO : this control will be removed when other features enabled
-                            props.isUserVerified &&
-                            !props.message.isDeleted && (
-                                <div
-                                    ref={optionsButtonRef}
-                                    className={styles.options_button}
-                                >
-                                    <Options
-                                        setIsReplyButtonPressed={
-                                            props.setIsReplyButtonPressed
-                                        }
-                                        message={props.message}
-                                        isReplyButtonPressed={
-                                            props.isReplyButtonPressed
-                                        }
-                                        replyMessageContent={
-                                            props.replyMessageContent
-                                        }
-                                        setReplyMessageContent={
-                                            props.setReplyMessageContent
-                                        }
-                                        addReactionListener={
-                                            props.addReactionListener
-                                        }
-                                        tooltipTop={shouldOptionsRiseToBottom()}
-                                        isModerator={props.isModerator}
-                                        isUsersMessage={
-                                            props.message.sender ===
-                                            props.currentUser
-                                        }
-                                        setFlipped={(val) => {
-                                            setFlipped(true);
-                                            setFlipRead(true);
-                                        }}
-                                        isUserVerified={props.isUserVerified}
-                                        tsForRefresh={timestampForChildRefresh}
-                                        deleteMessageFromList={
-                                            deleteMsgFromList
-                                        }
-                                    />
-                                </div>
-                            )}
+                        <div
+                            ref={optionsButtonRef}
+                            className={styles.options_button}
+                        >
+                            <Options
+                                setIsReplyButtonPressed={
+                                    props.setIsReplyButtonPressed
+                                }
+                                message={props.message}
+                                isReplyButtonPressed={
+                                    props.isReplyButtonPressed
+                                }
+                                replyMessageContent={props.replyMessageContent}
+                                setReplyMessageContent={
+                                    props.setReplyMessageContent
+                                }
+                                addReactionListener={props.addReactionListener}
+                                tooltipTop={shouldOptionsRiseToBottom()}
+                                isModerator={props.isModerator}
+                                isUsersMessage={
+                                    props.message.sender === props.currentUser
+                                }
+                                setFlipped={(val) => {
+                                    setFlipped(true);
+                                    setFlipRead(true);
+                                }}
+                                isUserVerified={props.isUserVerified}
+                                tsForRefresh={timestampForChildRefresh}
+                                deleteMessageFromList={deleteMsgFromList}
+                            />
+                        </div>
 
                         <div>
                             {daySeparator === '' ? (

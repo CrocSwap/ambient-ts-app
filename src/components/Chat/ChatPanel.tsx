@@ -986,6 +986,9 @@ function ChatPanel(props: propsIF) {
                     setShowVerifyOldMessagesPanel={
                         setShowVerifyOldMessagesPanel
                     }
+                    showPicker={showPicker}
+                    setShowPicker={setShowPicker}
+                    addReactionEmojiPickListener={addReactionEmojiPickListener}
                 />
             </>
         );

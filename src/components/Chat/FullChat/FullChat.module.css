@@ -310,6 +310,15 @@
     margin-top: .1rem;
 }
 
+@keyframes emojiPickerAnim{
+    0%{
+        transform: scale(0);
+    }
+    100%{
+        transform: scale(1);
+    }
+}
+
 
 @media only screen and (max-width: 600px){
     .main_container {
@@ -329,6 +338,15 @@
     z-index: 10;
     margin-top: .6rem;
 }
+
+.reaction_picker_wrapper{
+    position: fixed;
+    bottom: 7rem;
+    left:  1rem;
+    animation: emojiPickerAnim .2s ease-in-out forwards;
 }
+
+}
+
 
 
