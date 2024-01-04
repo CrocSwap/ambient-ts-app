@@ -10,6 +10,7 @@ margin: 0 auto;
 
 /* blur/card */
 backdrop-filter: blur(10px);
+border-radius: 4px;
 }
 
 .user_image{
@@ -36,6 +37,7 @@ max-width: 100%;
     height: auto;
     justify-content: center;
     align-items: center;
+    border-radius: 4px;
 }
 
 .divider{
@@ -50,16 +52,13 @@ max-width: 100%;
     flex-direction: column;
     gap:16px;
     border: 1px solid var(--dark3);
-    border-radius: 8px;
+    border-radius: 4px;
 width: 100%;
     height: 101px;
     overflow-y: scroll;
 
 }
 
-.point_history_container::-webkit-scrollbar {
-    display: none;
-  }
 
  
 

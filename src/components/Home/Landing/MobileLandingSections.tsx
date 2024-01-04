@@ -57,7 +57,7 @@ export default function MobileLandingSections() {
                     gap={8}
                 >
                     <Text fontSize='body'>Points system is now live </Text>
-                    <Link to='/account/leaderboard'>
+                    <Link to='/xp-leaderboard'>
                         <Text
                             fontSize='body'
                             color='accent1'
