@@ -139,6 +139,7 @@ const PageHeader = function () {
     const quoteAddressInRtk = quoteToken.address;
 
     useEffect(() => {
+        console.log('page header 1');
         if (baseAddressInRtk && quoteAddressInRtk && crocEnv) {
             const promise = crocEnv
                 .pool(baseToken.address, quoteToken.address)

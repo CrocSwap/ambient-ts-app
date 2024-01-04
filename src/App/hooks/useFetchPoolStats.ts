@@ -58,6 +58,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
 
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
+        console.log('use fetch pool stats 1');
         if (isServerEnabled && crocEnv && lastBlockNumber !== 0) {
             (async () => {
                 const spotPrice = await cachedQuerySpotPrice(
@@ -106,8 +107,13 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         chainId,
         crocEnv,
         lastBlockNumber,
-        pool,
         cachedQuerySpotPrice,
+        pool.base.address,
+        pool.base.decimals,
+        pool.base.symbol,
+        pool.quote.address,
+        pool.quote.decimals,
+        pool.quote.symbol,
     ]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>(undefined);
@@ -140,24 +146,6 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         pool?.base.address,
         pool?.quote.address,
     );
-
-    // Reset pool metric states that require asynchronous updates when pool changes
-    const resetPoolStats = () => {
-        setPoolVolume(undefined);
-        setPoolTvl(undefined);
-        setPoolFeesTotal(undefined);
-        setPoolApy(undefined);
-        setQuoteTvlDecimal(undefined);
-        setBaseTvlDecimal(undefined);
-        setQuoteTvlUsd(undefined);
-        setBaseTvlUsd(undefined);
-        setPoolPriceChangePercent(undefined);
-        setIsPoolPriceChangePositive(true);
-    };
-
-    useEffect(() => {
-        resetPoolStats();
-    }, [pool]);
 
     const fetchPoolStats = useCallback(() => {
         (async () => {
@@ -311,13 +299,14 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
     });
 
     useEffect(() => {
+        console.log('use fetch pool stats 3');
         if (isServerEnabled) fetchPoolStats();
     }, [
         isServerEnabled,
-        shouldInvertDisplay,
         lastBlockNumber,
         crocEnv,
         poolIndex,
+        shouldInvertDisplay,
         fetchPoolStats,
     ]);
 

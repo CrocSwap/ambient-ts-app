@@ -278,7 +278,7 @@ export const useSidebarSearch = (
         }
         // send txs filtered by search input to local state (to be returned from this file)
         setOutputTxs(filteredTxs);
-    }, [SEARCH_EXACT, searchAs, txList, txList.length, validatedInput]);
+    }, [SEARCH_EXACT, searchAs, txList, validatedInput]);
 
     // array of range positions to output from the hook
     const [outputLimits, setOutputLimits] = useState<LimitOrderIF[]>([]);
@@ -324,13 +324,7 @@ export const useSidebarSearch = (
         }
         // send txs filtered by search input to local state (to be returned from this file)
         setOutputLimits(filteredLimits);
-    }, [
-        SEARCH_EXACT,
-        limitOrderList,
-        limitOrderList.length,
-        searchAs,
-        validatedInput,
-    ]);
+    }, [SEARCH_EXACT, limitOrderList, searchAs, validatedInput]);
 
     return {
         rawInput,

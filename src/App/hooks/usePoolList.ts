@@ -50,7 +50,7 @@ export const usePoolList = (
             })
             .then((pools) => setPoolList(pools))
             .catch((err) => console.error(err));
-    }, [crocEnv, getTokenByAddress, graphCacheUrl, tokenUniv, verify]);
+    }, [crocEnv, getTokenByAddress, graphCacheUrl, verify, tokenUniv]);
 
     return poolList;
 };

@@ -110,6 +110,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     const { crocEnv } = useContext(CrocEnvContext);
 
     useEffect(() => {
+        console.log('wallet dropdown 1');
         if (!crocEnv) return;
         Promise.resolve(
             cachedFetchTokenPrice(ZERO_ADDRESS, chainId, crocEnv),

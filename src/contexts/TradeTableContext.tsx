@@ -187,25 +187,11 @@ export const TradeTableContextProvider = (props: {
 
     useEffect(() => {
         console.log('tradetablecontext 2');
-        console.log({ isCandleDataNull, isPoolInitialized });
         if (isCandleDataNull && isPoolInitialized) {
+            console.log('setting chart height from trade table context');
             setChartHeight(chartHeights.min);
-        } else {
-            if (
-                chartHeights.saved > chartHeights.min &&
-                chartHeights.saved < chartHeights.max
-            ) {
-                setChartHeight(chartHeights.saved);
-            }
         }
-    }, [
-        chartHeights.max,
-        chartHeights.min,
-        chartHeights.saved,
-        isCandleDataNull,
-        isPoolInitialized,
-        setChartHeight,
-    ]);
+    }, [chartHeights.min, isCandleDataNull, isPoolInitialized, setChartHeight]);
 
     return (
         <TradeTableContext.Provider value={tradeTableContext}>

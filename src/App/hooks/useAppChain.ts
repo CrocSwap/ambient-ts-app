@@ -159,6 +159,7 @@ export const useAppChain = (): {
     // logic to update `activeNetwork` when the connected wallet changes networks
     // this doesn't kick in if the user does not have a connected wallet
     useEffect(() => {
+        console.log('app chain use effect 1 - does it run?');
         // see if there is a connected wallet with a valid network
         if (chainInWalletValidated.current) {
             // find network metaData for validated wallet

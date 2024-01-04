@@ -12,10 +12,10 @@ export const ExchangeBalanceDropdown = () => {
     const escapePressed = useKeyPress('Escape');
 
     useEffect(() => {
-        if (fullLayoutActive && !tokenModalOpen && escapePressed) {
+        if (!tokenModalOpen && escapePressed) {
             setFullLayoutActive(false);
         }
-    }, [escapePressed, fullLayoutActive, tokenModalOpen]);
+    }, [escapePressed, tokenModalOpen]);
 
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
 

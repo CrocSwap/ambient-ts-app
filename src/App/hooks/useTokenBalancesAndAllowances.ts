@@ -89,6 +89,7 @@ export const useTokenBalancesAndAllowances = (
 
     // useEffect to update selected token balances
     useEffect(() => {
+        console.log('use token balances and allowances 1');
         (async () => {
             if (
                 crocEnv &&

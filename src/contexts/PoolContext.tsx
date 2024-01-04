@@ -109,6 +109,7 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
 
     // Asynchronously query the APY and volatility estimates from the backend
     useEffect(() => {
+        console.log('pool context 1');
         (async () => {
             if (
                 crocEnv &&
@@ -117,7 +118,7 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
                 quoteTokenAddress &&
                 lastBlockNumber > 0
             ) {
-                const annualizedGrowth = estimateFrom24HrAmbientApr(
+                const annualizedGrowth = await estimateFrom24HrAmbientApr(
                     baseTokenAddress,
                     quoteTokenAddress,
                     crocEnv,
@@ -125,7 +126,7 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
                     lastBlockNumber,
                 );
 
-                setAmbientApy(await annualizedGrowth);
+                setAmbientApy(annualizedGrowth);
             }
         })();
     }, [

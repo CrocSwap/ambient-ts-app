@@ -199,6 +199,7 @@ export const TradeTokenContextProvider = (props: {
 
     // useEffect to update selected token balances
     useEffect(() => {
+        console.log('trade token context 1');
         (async () => {
             if (
                 crocEnv &&
