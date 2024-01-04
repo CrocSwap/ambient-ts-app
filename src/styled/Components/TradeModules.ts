@@ -355,6 +355,13 @@ export const ConfirmationQuantityContainer = styled.div`
     background: var(--dark2);
     padding: 0 2rem;
     border-radius: var(--border-radius);
+
+    & > span {
+        overflow-x: scroll;
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
 `;
 
 export const SubmitTransactionButton = styled.button`
