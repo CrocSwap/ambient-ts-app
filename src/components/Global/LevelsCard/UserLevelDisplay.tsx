@@ -33,6 +33,7 @@ export default function UserLevelDisplay(props: Props) {
                 flexDirection='column'
                 justifyContent='space-between'
                 height='100%'
+                gap={8}
             >
                 <FlexContainer
                     flexDirection='row'
@@ -44,7 +45,11 @@ export default function UserLevelDisplay(props: Props) {
                             currentLevel !== undefined ? currentLevel : '...'
                         }`}
                     </Text>
-                    <Text fontSize='header1' color='text2'>
+                    <Text
+                        fontSize='header1'
+                        color='text2'
+                        style={{ textAlign: 'end', wordWrap: 'break-word' }}
+                    >
                         {`XP: ${totalPointsString}`}
                     </Text>
                 </FlexContainer>

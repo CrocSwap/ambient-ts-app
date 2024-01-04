@@ -308,7 +308,7 @@ export const LevelWrapper = styled(FlexContainer)`
     background: var(--dark2);
     position: absolute;
     top: 50px;
-    width: 347px;
+    width: auto;
     right: 15px;
     z-index: 9999;
     padding: 8px 1rem;
@@ -320,7 +320,7 @@ export const LevelWrapper = styled(FlexContainer)`
 
     display: flex;
     flex-direction: column;
-    height: 136px;
+    height: 150px;
     gap: 8px;
 `;
 export const AccountDropdownWrapper = styled(FlexContainer)`

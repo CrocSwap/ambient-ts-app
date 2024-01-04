@@ -22,6 +22,7 @@ import {
     MobileCard,
 } from '../../../styled/Components/Home';
 import { FlexContainer, Text } from '../../../styled/Common';
+import { Link } from 'react-router-dom';
 
 export default function MobileLandingSections() {
     const [isIPhone, setIsIPhone] = useState(false);
@@ -50,6 +51,22 @@ export default function MobileLandingSections() {
                 >
                     <img src={logoText} alt='ambient' />
                 </MobileMainLogo>
+                <FlexContainer
+                    justifyContent='center'
+                    alignItems='center'
+                    gap={8}
+                >
+                    <Text fontSize='body'>Points system is now live </Text>
+                    <Link to='/account/leaderboard'>
+                        <Text
+                            fontSize='body'
+                            color='accent1'
+                            style={{ textDecoration: 'underline' }}
+                        >
+                            View Leaderboard
+                        </Text>
+                    </Link>
+                </FlexContainer>
                 <div style={{ padding: '20px' }}>
                     <TopPools noTitle gap='8px' />
                 </div>

@@ -61,10 +61,10 @@ export default function Home() {
                 </div>
             )}
             <FlexContainer justifyContent='center' alignItems='center' gap={8}>
-                <Text fontSize='body'>Points system is now live </Text>
+                <Text fontSize='header2'>Points system is now live </Text>
                 <Link to='/account/leaderboard'>
                     <Text
-                        fontSize='body'
+                        fontSize='header2'
                         color='accent1'
                         style={{ textDecoration: 'underline' }}
                     >
