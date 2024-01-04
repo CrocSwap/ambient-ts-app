@@ -87,13 +87,17 @@
         left: 2%;
     }
 
+    .title_text{
+        font-size: .76rem;
+    }
+
     .btn_wrapper{
-        font-size: .82rem;
+        font-size: .72rem;
         padding: .4rem;
     }
 
     .content_text{
-        font-size: .86rem;
+        font-size: .76rem;
     }
 
     

@@ -808,32 +808,39 @@ function SentMessagePanel(props: SentMessageProps) {
                             ref={optionsButtonRef}
                             className={styles.options_button}
                         >
-                            <Options
-                                setIsReplyButtonPressed={
-                                    props.setIsReplyButtonPressed
-                                }
-                                message={props.message}
-                                isReplyButtonPressed={
-                                    props.isReplyButtonPressed
-                                }
-                                replyMessageContent={props.replyMessageContent}
-                                setReplyMessageContent={
-                                    props.setReplyMessageContent
-                                }
-                                addReactionListener={props.addReactionListener}
-                                tooltipTop={shouldOptionsRiseToBottom()}
-                                isModerator={props.isModerator}
-                                isUsersMessage={
-                                    props.message.sender === props.currentUser
-                                }
-                                setFlipped={(val) => {
-                                    setFlipped(true);
-                                    setFlipRead(true);
-                                }}
-                                isUserVerified={props.isUserVerified}
-                                tsForRefresh={timestampForChildRefresh}
-                                deleteMessageFromList={deleteMsgFromList}
-                            />
+                            {props.address && (
+                                <Options
+                                    setIsReplyButtonPressed={
+                                        props.setIsReplyButtonPressed
+                                    }
+                                    message={props.message}
+                                    isReplyButtonPressed={
+                                        props.isReplyButtonPressed
+                                    }
+                                    replyMessageContent={
+                                        props.replyMessageContent
+                                    }
+                                    setReplyMessageContent={
+                                        props.setReplyMessageContent
+                                    }
+                                    addReactionListener={
+                                        props.addReactionListener
+                                    }
+                                    tooltipTop={shouldOptionsRiseToBottom()}
+                                    isModerator={props.isModerator}
+                                    isUsersMessage={
+                                        props.message.sender ===
+                                        props.currentUser
+                                    }
+                                    setFlipped={(val) => {
+                                        setFlipped(true);
+                                        setFlipRead(true);
+                                    }}
+                                    isUserVerified={props.isUserVerified}
+                                    tsForRefresh={timestampForChildRefresh}
+                                    deleteMessageFromList={deleteMsgFromList}
+                                />
+                            )}
                         </div>
 
                         <div>

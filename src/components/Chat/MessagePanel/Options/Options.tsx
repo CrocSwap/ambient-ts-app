@@ -179,16 +179,15 @@ export default function Options(props: propsIF) {
                     {/* CHAT_FEATURES_WBO - Feature: Reply */}
                     {/* {ReplyWithTooltip} */}
                     {/* CHAT_FEATURES_WBO - Feature: Add Reaction */}
-                    {showDetailsGroup &&
-                    ((props.isUsersMessage && props.isUserVerified) ||
-                        (props.isModerator && props.isUserVerified)) ? (
+                    {(props.isUsersMessage && props.isUserVerified) ||
+                    (props.isModerator && props.isUserVerified) ? (
                         deleteMessage
                     ) : (
                         <></>
                     )}
-                    {showDetailsGroup && <>{flipCard}</>}
+                    {/* {flipCard} */}
                     {addReactionWithTooltip}
-                    {optionsWithTooltip}
+                    {/* {optionsWithTooltip} */}
                 </div>
             </div>
         </>
