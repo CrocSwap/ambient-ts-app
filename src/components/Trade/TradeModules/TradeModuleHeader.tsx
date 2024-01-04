@@ -74,12 +74,9 @@ function TradeModuleHeader(props: propsIF) {
     };
 
     const handleGoBack = () => {
-        if (showStepperComponent) {
-            handleSetActiveContent('confirmation');
-        } else {
-            handleSetActiveContent('main');
-            deactivateConfirmation();
-        }
+        handleSetActiveContent('main');
+        deactivateConfirmation();
+
         handleReset();
         setShowStepperComponent(false);
     };

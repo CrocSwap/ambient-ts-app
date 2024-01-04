@@ -69,12 +69,10 @@ function RepositionHeader(props: RepositionHeaderPropsIF) {
             resetTxHash();
             setCurrentRangeInReposition('');
         }
-        if (showStepperComponent) {
-            handleSetActiveContent('confirmation');
-        } else {
-            handleSetActiveContent('main');
-            deactivateConfirmation();
-        }
+
+        handleSetActiveContent('main');
+        deactivateConfirmation();
+
         handleReset();
         setShowStepperComponent(false);
     };
