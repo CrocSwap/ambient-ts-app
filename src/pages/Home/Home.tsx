@@ -11,7 +11,8 @@ import { useAppChain } from '../../App/hooks/useAppChain';
 import { useContext, useEffect } from 'react';
 import { lookupChainId } from '../../ambient-utils/dataLayer';
 import { UserDataContext } from '../../contexts/UserDataContext';
-import { FlexContainer, Text } from '../../styled/Common';
+import { Text } from '../../styled/Common';
+import styled from 'styled-components';
 
 export default function Home() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
@@ -52,6 +53,25 @@ export default function Home() {
             }
         }
     }, [switchNetwork]);
+
+    const PointSystemContainer = styled.section`
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: auto;
+        width: auto;
+        background: var(--dark2);
+        border-radius: 4px;
+        gap: 1rem;
+
+        @media (min-width: 720px) {
+            height: 127px;
+            width: 842px;
+        }
+    `;
+
     if (showMobileVersion) return <MobileLandingSections />;
     return (
         <section data-testid={'home'}>
@@ -60,18 +80,19 @@ export default function Home() {
                     <Hero />
                 </div>
             )}
-            <FlexContainer justifyContent='center' alignItems='center' gap={8}>
-                <Text fontSize='header2'>Points system is now live </Text>
-                <Link to='/account/leaderboard'>
+            <PointSystemContainer>
+                <Text fontSize='header1'>Points system is now live </Text>
+
+                <Link to='/xp-leaderboard'>
                     <Text
                         fontSize='header2'
                         color='accent1'
                         style={{ textDecoration: 'underline' }}
                     >
-                        View Leaderboard
+                        View your current XP here
                     </Text>
                 </Link>
-            </FlexContainer>
+            </PointSystemContainer>
             <div>
                 <TopPools />
                 <Stats />

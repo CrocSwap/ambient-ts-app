@@ -104,7 +104,6 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
             <LuShare2 size={24} />
         </FlexContainer>
     );
-    const isTotalPointsLong = totalPoints && totalPoints.toString().length > 6;
 
     const pointsHistoryDisplay = (
         <div className={styles.point_history_container}>

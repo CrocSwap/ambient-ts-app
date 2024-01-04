@@ -6,6 +6,7 @@ import LevelDisplay from '../../components/Global/LevelsCard/UserLevelDisplay';
 import Jazzicon from 'react-jazzicon/dist/Jazzicon';
 import { jsNumberForAddress } from 'react-jazzicon';
 import RankTable from './RankTable/RankTable';
+import { FlexContainer, Text } from '../../styled/Common';
 
 interface LevelPropsIF {
     ensName: string;
@@ -155,7 +156,17 @@ export default function Level(props: LevelPropsIF) {
     if (isDisplayRank) {
         return (
             <div className={styles.level_page_container}>
-                <RankTable />
+                <FlexContainer
+                    flexDirection='column'
+                    margin='2rem auto'
+                    style={{ height: '100%', gap: '1rem' }}
+                >
+                    <Text fontSize='header1' color='white' align='start'>
+                        Leaderboard
+                    </Text>
+
+                    <RankTable />
+                </FlexContainer>
             </div>
         );
     }
