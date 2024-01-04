@@ -5,7 +5,6 @@ import { TradeModuleHeaderContainer } from '../../../styled/Components/TradeModu
 import { useRepoExitPath } from '../../../components/Trade/Reposition/RepositionHeader/useRepoExitPath';
 import { useNavigate } from 'react-router-dom';
 import { trimString } from '../../../ambient-utils/dataLayer';
-import settingsIcon from '../../../assets/images/icons/settings.svg';
 import styles from './Reposition.module.css';
 import { BiArrowBack } from 'react-icons/bi';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
@@ -44,7 +43,6 @@ function RepositionHeader(props: RepositionHeaderPropsIF) {
         handleSetActiveContent,
         handleReset,
         setShowStepperComponent,
-        showStepperComponent,
     } = props;
 
     const {
@@ -99,16 +97,8 @@ function RepositionHeader(props: RepositionHeaderPropsIF) {
                         ? 'Pool Settings'
                         : `Reposition: ${trimString(positionHash, 5, 4, '…')}`}
                 </p>
-                {activeContent === 'settings' ? (
-                    <div />
-                ) : (
-                    <img
-                        className={styles.settings_icon}
-                        src={settingsIcon}
-                        alt='settings'
-                        onClick={() => handleSetActiveContent('settings')}
-                    />
-                )}
+
+                <div />
             </TradeModuleHeaderContainer>
         </>
     );

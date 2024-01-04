@@ -31,7 +31,6 @@ function TradeModuleHeader(props: propsIF) {
         handleSetActiveContent,
         handleReset,
         setShowStepperComponent,
-        showStepperComponent,
     } = props;
 
     const {
