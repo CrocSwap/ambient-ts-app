@@ -3161,6 +3161,39 @@ export default function Chart(props: propsIF) {
                                                 ? -(infoLabelHeight + 15)
                                                 : 15);
 
+                                        const dpRangeLabelYPlacement =
+                                            scaleData.yScale(
+                                                firstPointYAxisData,
+                                            ) < 0
+                                                ? infoLabelYAxisData
+                                                : scaleData.yScale(
+                                                      firstPointYAxisData,
+                                                  ) < 463
+                                                ? infoLabelYAxisData +
+                                                      infoLabelHeight >
+                                                  canvas.height
+                                                    ? canvas.height -
+                                                      infoLabelHeight -
+                                                      5
+                                                    : Math.max(
+                                                          infoLabelYAxisData,
+                                                          5,
+                                                      )
+                                                : infoLabelYAxisData;
+
+                                        if (height > 70) {
+                                            const arrowArray =
+                                                createArrowPointsOfDPRangeLine(
+                                                    item.data,
+                                                    scaleData,
+                                                    denomInBase,
+                                                );
+
+                                            arrowArray.forEach((arrow) => {
+                                                lineSeries(arrow);
+                                            });
+                                        }
+
                                         if (ctx) {
                                             ctx.beginPath();
                                             ctx.fillStyle = 'rgb(34,44,58)';
@@ -3169,7 +3202,7 @@ export default function Chart(props: propsIF) {
                                                     infoLabelXAxisData,
                                                 ) -
                                                     infoLabelWidth / 2,
-                                                infoLabelYAxisData,
+                                                dpRangeLabelYPlacement,
                                                 infoLabelWidth,
                                                 infoLabelHeight,
                                             );
@@ -3217,7 +3250,7 @@ export default function Chart(props: propsIF) {
                                                 scaleData.xScale(
                                                     infoLabelXAxisData,
                                                 ),
-                                                infoLabelYAxisData + 16,
+                                                dpRangeLabelYPlacement + 16,
                                             );
                                             ctx.fillText(
                                                 (lengthAsBars / (1000 * period))
@@ -3228,7 +3261,7 @@ export default function Chart(props: propsIF) {
                                                 scaleData.xScale(
                                                     infoLabelXAxisData,
                                                 ),
-                                                infoLabelYAxisData + 33,
+                                                dpRangeLabelYPlacement + 33,
                                             );
                                             ctx.fillText(
                                                 'Vol ' +
@@ -3238,21 +3271,8 @@ export default function Chart(props: propsIF) {
                                                 scaleData.xScale(
                                                     infoLabelXAxisData,
                                                 ),
-                                                infoLabelYAxisData + 50,
+                                                dpRangeLabelYPlacement + 50,
                                             );
-                                        }
-
-                                        if (height > 70) {
-                                            const arrowArray =
-                                                createArrowPointsOfDPRangeLine(
-                                                    item.data,
-                                                    scaleData,
-                                                    denomInBase,
-                                                );
-
-                                            arrowArray.forEach((arrow) => {
-                                                lineSeries(arrow);
-                                            });
                                         }
                                     }
 

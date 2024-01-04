@@ -41,6 +41,9 @@ const ScrollableDiv = styled.div<{ height: string }>`
     overflow-y: auto;
     overflow-x: hidden;
 
+    margin-right: -150px;
+    padding-right: 150px;
+
     height: ${({ height }) => height};
 
     &::-webkit-scrollbar {
@@ -54,6 +57,10 @@ const ScrollableDiv = styled.div<{ height: string }>`
 `;
 
 const IconCard = styled.div`
+    position: relative;
+
+    overflow: visible;
+
     flex-direction: row-reverse;
     display: flex;
     justify-content: center;

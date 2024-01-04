@@ -198,6 +198,8 @@ const StyledLabel = styled.div`
 `;
 
 const DropDownContainer = styled.div`
+    position: relative;
+
     align-items: center;
     justify-content: center;
 
@@ -207,6 +209,8 @@ const DropDownContainer = styled.div`
 const DropDownHeader = styled.div`
     padding: 4px;
     box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.7);
+
+    display: flex;
 
     border-radius: 3px;
 
@@ -259,6 +263,11 @@ const ListItem = styled.ul<{
 
     background: ${({ backgroundColor }) =>
         backgroundColor ? backgroundColor : 'transparent'};
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
 
     &:hover {
         background: #434c58;

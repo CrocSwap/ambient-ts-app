@@ -827,6 +827,9 @@ function FloatingToolbar(props: FloatingToolbarProps) {
 
         let offsetX = 0;
         let offsetY = 0;
+
+        setFloatingToolbarHeight(window.innerHeight - 100);
+
         if (floatingDiv) {
             const floatingDivDrag = d3
                 .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
