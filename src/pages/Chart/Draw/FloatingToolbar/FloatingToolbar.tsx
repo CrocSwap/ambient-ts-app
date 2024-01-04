@@ -1028,6 +1028,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                     setDrawnShapeHistory={setDrawnShapeHistory}
                     addDrawActionStack={addDrawActionStack}
                     colorPicker={colorPicker}
+                    divTop={divTop}
                 />
             )}
         </FloatingDivContainer>

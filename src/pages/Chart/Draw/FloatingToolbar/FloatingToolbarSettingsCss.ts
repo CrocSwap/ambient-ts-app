@@ -198,6 +198,8 @@ const StyledLabel = styled.div`
 `;
 
 const DropDownContainer = styled.div`
+    position: relative;
+
     align-items: center;
     justify-content: center;
 
@@ -228,7 +230,9 @@ const DropDownHeader = styled.div`
     }
 `;
 
-const DropDownListContainer = styled.div`
+const DropDownListContainer = styled.div<{ placement: number }>`
+    top: ${({ placement }) => placement + 'px'};
+
     position: absolute;
     &:first-child {
         padding-top: 5px;

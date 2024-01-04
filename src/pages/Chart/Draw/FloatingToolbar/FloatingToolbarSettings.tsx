@@ -74,6 +74,7 @@ interface FloatingToolbarSettingsProps {
         updatedData: drawDataHistory | undefined,
     ) => void;
     colorPicker: { lineColor: string; borderColor: string; background: string };
+    divTop: number;
 }
 
 function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
@@ -90,6 +91,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
         addDrawActionStack,
         handleEditLabel,
         colorPicker,
+        divTop,
     } = props;
 
     // disabled options
@@ -776,7 +778,9 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                         {selectedDrawnShape.data.labelPlacement}
                                     </DropDownHeader>
                                     {isLabelPlacementOptionTabActive && (
-                                        <DropDownListContainer>
+                                        <DropDownListContainer
+                                            placement={divTop > 100 ? -92 : 30}
+                                        >
                                             <DropDownList>
                                                 {placementOptions.map(
                                                     (item, index) => (
@@ -827,7 +831,9 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                         {selectedDrawnShape.data.labelAlignment}
                                     </DropDownHeader>
                                     {isLabelAlignmentOptionTabActive && (
-                                        <DropDownListContainer>
+                                        <DropDownListContainer
+                                            placement={divTop > 100 ? -92 : 30}
+                                        >
                                             <DropDownList>
                                                 {alignmentOptions.map(
                                                     (item, index) => (
