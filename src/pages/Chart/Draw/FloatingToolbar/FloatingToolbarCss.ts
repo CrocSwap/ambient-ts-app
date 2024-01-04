@@ -1,9 +1,8 @@
 import styled from 'styled-components';
 
 const FloatingDivContainer = styled.div`
-    height: 30px;
+    height: auto;
 
-    display: flex;
     flex-direction: column;
     align-items: start;
 

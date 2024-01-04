@@ -98,6 +98,9 @@ function FloatingToolbar(props: FloatingToolbarProps) {
 
     const [isSettingsTabActive, setIsSettingsTabActive] = useState(false);
 
+    const [isNearestWindow, setIsNearestWindow] = useState(false);
+    const [floatingToolbarHeight, setFloatingToolbarHeight] = useState(0);
+    const [settingsDivHeight, setSettingsDivHeight] = useState(0);
     const isDeletePressed = useKeyPress('Delete');
 
     useEffect(() => {
@@ -204,6 +207,35 @@ function FloatingToolbar(props: FloatingToolbarProps) {
             setIsShapeEdited(true);
         }
     };
+
+    useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const canvasDiv = d3.select('#floatingDivContainer') as any;
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const resizeObserver = new ResizeObserver((result: any) => {
+            const height = result[0].contentRect.height;
+
+            console.log({ height });
+
+            height && height !== 30 && setSettingsDivHeight(height);
+        });
+
+        resizeObserver.observe(canvasDiv.node());
+
+        return () => resizeObserver.unobserve(canvasDiv.node());
+    }, []);
+
+    useEffect(() => {
+        const screenHeight = window.innerHeight;
+        const diffBottom = Math.abs(divTop - screenHeight);
+
+        if (diffBottom < 100 || diffBottom + 60 < settingsDivHeight) {
+            setIsNearestWindow(true);
+        } else {
+            setIsNearestWindow(false);
+        }
+    }, [settingsDivHeight, divTop]);
 
     const handleEditSize = (value: number, line: boolean, border = false) => {
         if (selectedDrawnShape?.data) {
@@ -765,10 +797,18 @@ function FloatingToolbar(props: FloatingToolbarProps) {
     }
     const layoutTab = (
         <OptionsTab
-            style={{
-                marginLeft: '40px',
-                width: '85%',
-            }}
+            style={
+                isNearestWindow
+                    ? {
+                          position: 'fixed',
+                          width: 'auto',
+                          bottom: floatingToolbarHeight + 'px',
+                      }
+                    : {
+                          marginLeft: '40px',
+                          width: '85%',
+                      }
+            }
         >
             <OptionsTabSize
                 backgroundColor={undefined}
@@ -836,6 +876,8 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                             Math.min(screenHeight - divHeight, divTop),
                         );
 
+                        setFloatingToolbarHeight(screenHeight - divTop);
+
                         setDivLeft(divLeft);
                         setDivTop(divTop);
                     }
@@ -876,6 +918,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
 
     return (
         <FloatingDivContainer
+            id='floatingDivContainer'
             style={{
                 left: divLeft + 'px',
                 top: divTop + 'px',
@@ -918,7 +961,16 @@ function FloatingToolbar(props: FloatingToolbarProps) {
             {(isLineColorPickerTabActive ||
                 isBorderColorPickerTabActive ||
                 isBackgroundColorPickerTabActive) && (
-                <ColorPickerTab>
+                <ColorPickerTab
+                    style={
+                        isNearestWindow
+                            ? {
+                                  position: 'fixed',
+                                  bottom: floatingToolbarHeight + 'px',
+                              }
+                            : {}
+                    }
+                >
                     <SketchPicker
                         color={
                             isLineColorPickerTabActive
@@ -942,9 +994,18 @@ function FloatingToolbar(props: FloatingToolbarProps) {
 
             {isSizeOptionTabActive && selectedDrawnShape && (
                 <OptionsTab
-                    style={{
-                        marginLeft: '70px',
-                    }}
+                    style={
+                        isNearestWindow
+                            ? {
+                                  position: 'fixed',
+                                  bottom: floatingToolbarHeight + 'px',
+                                  marginLeft: '90px',
+                                  width: 'auto',
+                              }
+                            : {
+                                  marginLeft: '70px',
+                              }
+                    }
                 >
                     {sizeOptions.map((item, index) => (
                         <OptionsTabSize
@@ -979,9 +1040,18 @@ function FloatingToolbar(props: FloatingToolbarProps) {
 
             {isStyleOptionTabActive && selectedDrawnShape && (
                 <OptionsTab
-                    style={{
-                        marginLeft: '70px',
-                    }}
+                    style={
+                        isNearestWindow
+                            ? {
+                                  position: 'fixed',
+                                  bottom: floatingToolbarHeight + 'px',
+                                  marginLeft: '100px',
+                                  width: 'auto',
+                              }
+                            : {
+                                  marginLeft: '70px',
+                              }
+                    }
                 >
                     {styleOptions.map((item, index) => (
                         <OptionsTabStyle
@@ -1028,6 +1098,9 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                     setDrawnShapeHistory={setDrawnShapeHistory}
                     addDrawActionStack={addDrawActionStack}
                     colorPicker={colorPicker}
+                    isNearestWindow={isNearestWindow}
+                    floatingToolbarHeight={floatingToolbarHeight}
+                    settingsDivHeight={settingsDivHeight}
                 />
             )}
         </FloatingDivContainer>
