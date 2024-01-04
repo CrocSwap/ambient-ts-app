@@ -906,6 +906,10 @@
 }
 
 
+.has_day_separator.thread_top_msg .options_button{
+    transform: translateY(0rem);
+}
+
 .has_day_separator.thread_top_msg.replied_message_container .sent_message_body{
     margin-top: 1.2rem;
 }

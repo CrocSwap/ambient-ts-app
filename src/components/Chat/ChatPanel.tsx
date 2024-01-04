@@ -200,7 +200,13 @@ function ChatPanel(props: propsIF) {
     }
 
     function closeOnEscapeKeyDown(e: KeyboardEvent) {
-        if (e.code === 'Escape') setIsChatOpen(false);
+        if (e.code === 'Escape') {
+            if (showPicker) {
+                setShowPicker(false);
+                return;
+            }
+            setIsChatOpen(false);
+        }
     }
 
     function openChatPanel(e: KeyboardEvent) {
@@ -986,6 +992,9 @@ function ChatPanel(props: propsIF) {
                     setShowVerifyOldMessagesPanel={
                         setShowVerifyOldMessagesPanel
                     }
+                    showPicker={showPicker}
+                    setShowPicker={setShowPicker}
+                    addReactionEmojiPickListener={addReactionEmojiPickListener}
                 />
             </>
         );

@@ -390,6 +390,9 @@ const useChatSocket = (
             socketRef.current.on('message-deleted-listener', (data: any) => {
                 updateMessages(data);
             });
+            socketRef.current.on('message-updated-listener', (data: any) => {
+                updateMessages(data);
+            });
         }
     }, [messages]);
 

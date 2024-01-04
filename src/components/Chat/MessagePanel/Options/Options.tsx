@@ -23,7 +23,6 @@ interface propsIF {
 export default function Options(props: propsIF) {
     const [showDetailsGroup, setShowDetailsGroup] = useState(false);
 
-    console.log(props.tsForRefresh);
     function setReplyMessage() {
         props.setIsReplyButtonPressed(!props.isReplyButtonPressed);
         props.setReplyMessageContent(props.message);
@@ -45,7 +44,6 @@ export default function Options(props: propsIF) {
     const dropdownRef = useRef<HTMLDivElement>(null);
     // Add an event listener to handle clicks outside the dropdown
 
-    console.log('showDetailsGroup', showDetailsGroup);
     const options = (
         <SlOptions
             size={14}
@@ -174,27 +172,24 @@ export default function Options(props: propsIF) {
             {options}
         </p>
     );
-    return !(props.isUsersMessage && props.isUserVerified) &&
-        !(props.isModerator && props.isUserVerified) ? (
+    return (
         <>
-            {/* CHAT_FEATURES_WBO - Feature : Add Reaction | Reply */}
-            {/* This conditional rendering will be removed after opening other features. */}
-        </>
-    ) : (
-        <div key={props.tsForRefresh}>
-            <div className={styles.dropdown_item}>
-                {/* CHAT_FEATURES_WBO - Feature: Reply */}
-                {/* {ReplyWithTooltip} */}
-                {/* CHAT_FEATURES_WBO - Feature: Add Reaction */}
-                {showDetailsGroup && (
-                    <>
-                        {deleteMessage}
-                        {flipCard}
-                    </>
-                )}
-                {addReactionWithTooltip}
-                {optionsWithTooltip}
+            <div key={props.tsForRefresh}>
+                <div className={styles.dropdown_item}>
+                    {/* CHAT_FEATURES_WBO - Feature: Reply */}
+                    {/* {ReplyWithTooltip} */}
+                    {/* CHAT_FEATURES_WBO - Feature: Add Reaction */}
+                    {(props.isUsersMessage && props.isUserVerified) ||
+                    (props.isModerator && props.isUserVerified) ? (
+                        deleteMessage
+                    ) : (
+                        <></>
+                    )}
+                    {/* {flipCard} */}
+                    {addReactionWithTooltip}
+                    {/* {optionsWithTooltip} */}
+                </div>
             </div>
-        </div>
+        </>
     );
 }
