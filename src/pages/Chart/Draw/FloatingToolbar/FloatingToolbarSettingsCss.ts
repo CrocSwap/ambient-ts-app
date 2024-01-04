@@ -230,9 +230,7 @@ const DropDownHeader = styled.div`
     }
 `;
 
-const DropDownListContainer = styled.div<{ placement: number }>`
-    top: ${({ placement }) => placement + 'px'};
-
+const DropDownListContainer = styled.div`
     position: absolute;
     &:first-child {
         padding-top: 5px;

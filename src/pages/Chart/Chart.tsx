@@ -5074,6 +5074,7 @@ export default function Chart(props: propsIF) {
         } else {
             props.changeState(false, undefined);
         }
+        render();
     }, [selectedDate, visibleCandleData]);
 
     const onBlurRange = (
@@ -5565,8 +5566,8 @@ export default function Chart(props: propsIF) {
                         }}
                     >
                         <div>
-                            A placeholder candle to align the latest candle
-                            close price with the current pool price{' '}
+                            A placeholder candle to align the latest close price
+                            with the current pool price{' '}
                         </div>
                         <Divider />
                         <div>
