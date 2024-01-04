@@ -178,6 +178,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
     };
 
     useEffect(() => {
+        console.log(floatingToolbarHeight - settingsDivHeight);
         if (Math.abs(floatingToolbarHeight - settingsDivHeight) < 90) {
             setCheckNearestWindow(true);
         } else {
