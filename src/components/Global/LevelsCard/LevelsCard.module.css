@@ -6,6 +6,7 @@ justify-content: center;
 align-items: center;
 gap: 16px;
 background:  rgba(23, 29, 39, 0.30);
+margin: 0 auto;
 
 /* blur/card */
 backdrop-filter: blur(10px);
@@ -47,11 +48,10 @@ max-width: 100%;
     padding: 8px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     gap:16px;
     border: 1px solid var(--dark3);
     border-radius: 8px;
-
+width: 100%;
     height: 101px;
     overflow-y: scroll;
 
@@ -105,6 +105,8 @@ align-items: center;
     .main_container{
 width: 325px;
 height: 546px;
+margin: auto;
+
     }
     .point_display_container {
        height: 65px;

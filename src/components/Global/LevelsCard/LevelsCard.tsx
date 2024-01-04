@@ -104,6 +104,7 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
             <LuShare2 size={24} />
         </FlexContainer>
     );
+    const isTotalPointsLong = totalPoints && totalPoints.toString().length > 6;
 
     const pointsHistoryDisplay = (
         <div className={styles.point_history_container}>
@@ -114,13 +115,21 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
                     gap={32}
                 >
                     <Text
-                        fontSize={desktopScreen ? 'header2' : 'body'}
+                        fontSize={
+                            !desktopScreen || data.points.length > 6
+                                ? 'body'
+                                : 'header2'
+                        }
                         color='text1'
                     >
                         {data?.date}
                     </Text>
                     <Text
-                        fontSize={desktopScreen ? 'header2' : 'body'}
+                        fontSize={
+                            !desktopScreen || data.points.length > 6
+                                ? 'body'
+                                : 'header2'
+                        }
                         color='text1'
                         style={{ textAlign: 'end' }}
                     >
