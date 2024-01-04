@@ -13,7 +13,7 @@ interface Props {
 export default function UserLevelDisplay(props: Props) {
     const { currentLevel, totalPoints, user } = props;
 
-    const isTotalPointsLong = totalPoints.toString().length > 6;
+    const isTotalPointsLong = totalPoints && totalPoints.toString().length > 6;
 
     const totalPointsString = totalPoints
         ? totalPoints.toLocaleString('en-US', {

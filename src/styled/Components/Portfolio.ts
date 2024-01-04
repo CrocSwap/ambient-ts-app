@@ -182,7 +182,7 @@ export const PortfolioBannerLevelContainer = styled.div`
     border-radius: 8px;
     backdrop-filter: 10px;
     padding: 4px 8px;
-    height: 58px;
+    height: auto;
 `;
 
 export const PortfolioContainer = styled(FlexContainer)`
