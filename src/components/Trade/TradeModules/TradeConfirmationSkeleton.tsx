@@ -17,6 +17,7 @@ import {
     ConfirmationQuantityContainer,
 } from '../../../styled/Components/TradeModules';
 import { FiPlus } from 'react-icons/fi';
+import { AiOutlineDash } from 'react-icons/ai';
 
 interface propsIF {
     type: 'Swap' | 'Limit' | 'Range' | 'Reposition';
@@ -205,7 +206,8 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                     {' '}
                     {minPrice}
                 </Text>
-                →
+                <AiOutlineDash />
+
                 <Text fontSize='body' color='text2' align='center'>
                     {' '}
                     {maxPrice}
@@ -229,7 +231,8 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                     <Text fontSize='body' color='text2' align='center'>
                         {tokenAQuantity} {tokenA.symbol}
                     </Text>
-                    →
+                    <AiOutlineDash />
+
                     <TokenIcon
                         token={tokenB}
                         src={uriToHttp(tokenB.logoURI)}
