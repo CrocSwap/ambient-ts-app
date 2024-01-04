@@ -10,8 +10,8 @@ import {
 import { createCircle } from '../ChartUtils/circle';
 import { createLinearLineSeries } from '../Draw/DrawCanvas/LinearLineSeries';
 import * as d3 from 'd3';
-import { diffHashSig } from '../../../utils/functions/diffHashSig';
 import { createBandArea } from '../Draw/DrawCanvas/BandArea';
+import { diffHashSig } from '../../../ambient-utils/dataLayer';
 
 interface OrderHistoryCanvasProps {
     scaleData: scaleData;

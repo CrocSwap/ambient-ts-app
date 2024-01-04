@@ -2,7 +2,7 @@ import styles from './VolumeTVLFee.module.css';
 import { Dispatch, SetStateAction, useState, useRef, memo } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
-import { LS_KEY_ORDER_HISTORY_SETTINGS } from '../../../../constants';
+import { LS_KEY_ORDER_HISTORY_SETTINGS } from '../../../../ambient-utils/constants';
 
 interface OrderHistortyDisplayPropsIF {
     setShowSwap: Dispatch<SetStateAction<boolean>>;
