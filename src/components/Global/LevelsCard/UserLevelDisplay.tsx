@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { FlexContainer, Text } from '../../../styled/Common';
 import LevelLine from '../LevelLine/LevelLine';
 import styles from './LevelsCard.module.css';
+import { AlignItems } from '../../../styled/Common/Types';
 
 interface Props {
     // xpData: UserXpDataIF
@@ -11,6 +12,8 @@ interface Props {
 }
 export default function UserLevelDisplay(props: Props) {
     const { currentLevel, totalPoints, user } = props;
+
+    const isTotalPointsLong = totalPoints.toString().length > 6;
 
     const totalPointsString = totalPoints
         ? totalPoints.toLocaleString('en-US', {
@@ -36,17 +39,25 @@ export default function UserLevelDisplay(props: Props) {
                 gap={8}
             >
                 <FlexContainer
-                    flexDirection='row'
+                    flexDirection={isTotalPointsLong ? 'column' : 'row'}
                     width='100%'
                     justifyContent='space-between'
+                    alignItems={
+                        isTotalPointsLong
+                            ? ('start' as AlignItems)
+                            : ('center' as AlignItems)
+                    }
                 >
-                    <Text fontSize='header1' color='text1'>
+                    <Text
+                        fontSize={isTotalPointsLong ? 'header2' : 'header1'}
+                        color='text1'
+                    >
                         {`Level ${
                             currentLevel !== undefined ? currentLevel : '...'
                         }`}
                     </Text>
                     <Text
-                        fontSize='header1'
+                        fontSize={isTotalPointsLong ? 'header2' : 'header1'}
                         color='text2'
                         style={{ textAlign: 'end', wordWrap: 'break-word' }}
                     >
