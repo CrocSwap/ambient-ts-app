@@ -5374,10 +5374,10 @@ export default function Chart(props: propsIF) {
     const orderData = [
         {
             tsId: '123',
-            tsEnd: new Date(1695722406),
-            tsStart: new Date(1695654300),
+            tsEnd: new Date(1703668928),
+            tsStart: new Date(1703668928),
             orderPrice: 1646,
-            orderPriceCompleted: 1646.94,
+            orderPriceCompleted: 2233.94,
             orderType: 'swap',
             orderDirection: 'orderSell',
             orderStatus: 'completed',
@@ -5389,10 +5389,10 @@ export default function Chart(props: propsIF) {
         },
         {
             tsId: '183',
-            tsEnd: new Date(1695794672),
-            tsStart: new Date(1695784872),
+            tsEnd: new Date(1704360128),
+            tsStart: new Date(1704360128),
             orderPrice: 1644,
-            orderPriceCompleted: 1644.84,
+            orderPriceCompleted: 2300.84,
             orderType: 'swap',
             orderDirection: 'orderSell',
             orderStatus: 'completed',
@@ -5403,9 +5403,24 @@ export default function Chart(props: propsIF) {
             tokenBAmount: 22300,
         },
         {
+            tsId: '183',
+            tsEnd: new Date(1699954214),
+            tsStart: new Date(1699954214),
+            orderPrice: 1644,
+            orderPriceCompleted: 2041.84,
+            orderType: 'swap',
+            orderDirection: 'orderBuy',
+            orderStatus: 'completed',
+            orderDolarAmount: 10300,
+            tokenA: 'ETH',
+            tokenAAmount: 1.36,
+            tokenB: 'USDT',
+            tokenBAmount: 22300,
+        },
+        {
             tsId: '143',
-            tsEnd: new Date(1695842406),
-            tsStart: new Date(1695774300),
+            tsEnd: new Date(1703323328),
+            tsStart: new Date(1703323328),
             orderPrice: 1646,
             orderPriceCompleted: 1646,
             orderType: 'history',
@@ -5448,15 +5463,6 @@ export default function Chart(props: propsIF) {
             tokenBAmount: 4300,
         },
     ];
-
-    useEffect(() => {
-        if (hoveredOrderHistory && scaleData)
-            console.log(
-                scaleData?.xScale(
-                    new Date(hoveredOrderHistory?.tsEnd.getTime() * 1000),
-                ) + 30,
-            );
-    }, [hoveredOrderHistory]);
 
     return (
         <div

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import {
     bandLineData,
     lineData,
@@ -12,6 +12,15 @@ import { createLinearLineSeries } from '../Draw/DrawCanvas/LinearLineSeries';
 import * as d3 from 'd3';
 import { createBandArea } from '../Draw/DrawCanvas/BandArea';
 import { diffHashSig } from '../../../ambient-utils/dataLayer';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { fetchUserRecentChanges } from '../../../ambient-utils/api';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import useDebounce from '../../../App/hooks/useDebounce';
 
 interface OrderHistoryCanvasProps {
     scaleData: scaleData;
@@ -66,6 +75,66 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
         return newXScale;
     }
 
+    const { isUserConnected, userAddress } = useContext(UserDataContext);
+
+    const {
+        server: { isEnabled: isServerEnabled },
+    } = useContext(AppStateContext);
+
+    const {
+        crocEnv,
+        activeNetwork,
+        provider,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+
+    const { tokens } = useContext(TokenContext);
+
+    const { lastBlockNumber } = useContext(ChainDataContext);
+
+    const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
+
+    const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
+
+    useEffect(() => {
+        if (userAddress && isServerEnabled && crocEnv && provider) {
+            try {
+                fetchUserRecentChanges({
+                    tokenList: tokens.tokenUniv,
+                    user: userAddress,
+                    chainId: chainId,
+                    annotate: true,
+                    addValue: true,
+                    simpleCalc: true,
+                    annotateMEV: false,
+                    ensResolution: true,
+                    n: 100, // fetch last 100 changes,
+                    crocEnv,
+                    graphCacheUrl: activeNetwork.graphCacheUrl,
+                    provider,
+                    lastBlockNumber,
+                    cachedFetchTokenPrice: cachedFetchTokenPrice,
+                    cachedQuerySpotPrice: cachedQuerySpotPrice,
+                    cachedTokenDetails: cachedTokenDetails,
+                    cachedEnsResolve: cachedEnsResolve,
+                })
+                    .then((updatedTransactions) => {
+                        if (updatedTransactions) {
+                            console.log(updatedTransactions);
+                        }
+                    })
+                    .catch(console.error);
+            } catch (error) {
+                console.error;
+            }
+        }
+    }, [isServerEnabled, userAddress, lastBlockNumWait, !!crocEnv, !!provider]);
+
     useEffect(() => {
         const domainRight = d3.max(orderData, (data) => {
             data.orderType === 'swap';
@@ -99,7 +168,8 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                     1,
                     denomInBase,
                     false,
-                    true,
+                    false,
+                    order.orderDirection,
                 );
 
                 circleSerieArray.push(circleSerie);
@@ -193,7 +263,6 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                             hoveredOrderHistory.tsStart.getTime() *
                                             1000,
                                         y: hoveredOrderHistory.orderPrice,
-                                        ctx: undefined,
                                         denomInBase: denomInBase,
                                     },
                                     {
@@ -201,7 +270,6 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                             hoveredOrderHistory.tsEnd.getTime() *
                                             1000,
                                         y: hoveredOrderHistory.orderPrice,
-                                        ctx: undefined,
                                         denomInBase: denomInBase,
                                     },
                                 ],
@@ -211,7 +279,6 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                             hoveredOrderHistory.tsStart.getTime() *
                                             1000,
                                         y: hoveredOrderHistory.orderPriceCompleted,
-                                        ctx: undefined,
                                         denomInBase: denomInBase,
                                     },
                                     {
@@ -219,7 +286,6 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                             hoveredOrderHistory.tsEnd.getTime() *
                                             1000,
                                         y: hoveredOrderHistory.orderPriceCompleted,
-                                        ctx: undefined,
                                         denomInBase: denomInBase,
                                     },
                                 ],
@@ -304,13 +370,11 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                             lineData.push({
                                 x: order.tsStart.getTime() * 1000,
                                 y: order.orderPrice,
-                                ctx: undefined,
                                 denomInBase: denomInBase,
                             });
                             lineData.push({
                                 x: order.tsEnd.getTime() * 1000,
                                 y: order.orderPrice,
-                                ctx: undefined,
                                 denomInBase: denomInBase,
                             });
 
@@ -337,7 +401,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                         }
                     });
                 })
-                .on('measure', (event: CustomEvent) => {
+                .on('measure', () => {
                     lineSeries.context(ctx);
                     liquidityLineSeries.context(ctx);
                     if (circleSeries !== undefined && circleSeries.length > 0) {
