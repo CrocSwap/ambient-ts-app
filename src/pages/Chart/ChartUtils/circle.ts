@@ -9,6 +9,10 @@ const circleStrokeColor = '#7371fc';
 const circleFillColor = '#8A8AFF';
 const selectedCircleFillColor = 'wheat';
 
+const circleOrderStrokeColor = '#8A8AFF';
+const circleOrderFillColor = 'rgba(115, 113, 252, 0.3)';
+const howeredCircleFillColor = 'wheat';
+
 export function createCircle(
     xScale: any,
     yScale: any,
@@ -17,6 +21,7 @@ export function createCircle(
     denomInBase: boolean,
     isSelected = false,
     isTransparent = false,
+    isOrder = false,
 ) {
     return d3fc
         .seriesCanvasPoint()
@@ -29,11 +34,17 @@ export function createCircle(
         .size(size)
         .type(d3.symbolCircle)
         .decorate((context: any) => {
-            context.strokeStyle = circleStrokeColor;
+            context.strokeStyle = isOrder
+                ? circleOrderStrokeColor
+                : circleStrokeColor;
             context.fillStyle = isTransparent
                 ? 'transparent'
                 : isSelected
-                ? selectedCircleFillColor
+                ? isOrder
+                    ? howeredCircleFillColor
+                    : selectedCircleFillColor
+                : isOrder
+                ? circleOrderFillColor
                 : circleFillColor;
             context.lineWidth = lineWidth;
         });
