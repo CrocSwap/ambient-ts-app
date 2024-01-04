@@ -216,8 +216,6 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         const resizeObserver = new ResizeObserver((result: any) => {
             const height = result[0].contentRect.height;
 
-            console.log({ height });
-
             height && height !== 30 && setSettingsDivHeight(height);
         });
 
