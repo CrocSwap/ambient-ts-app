@@ -108,8 +108,6 @@ export default function Transactions2(props: propsIF) {
     const { changesByPool } = useContext(GraphDataContext);
 
     const transactionsData = useMemo<TransactionIF[]>(() => {
-        console.log('Re-running transactionsData');
-
         const output: TransactionIF[] = changesByPool.changes.filter(
             (tx: TransactionIF) =>
                 tx.base.toLowerCase() === baseToken.address.toLowerCase() &&
@@ -154,7 +152,25 @@ export default function Transactions2(props: propsIF) {
     ];
     const [containerWidth, setContainerWidth] = useState(1000);
 
-    // Calculate columns to render
+    // STEP 1: What is our target width, and how do we monitor it?
+    useEffect(() => {
+        const adjustColumnization = () => {
+            if (containerRef.current) {
+                setContainerWidth(containerRef.current.clientWidth);
+            }
+        };
+
+        const resizeObserver = new ResizeObserver(adjustColumnization);
+        if (containerRef.current) {
+            resizeObserver.observe(containerRef.current);
+        }
+
+        return () => {
+            resizeObserver.disconnect();
+        };
+    }, []);
+
+    // STEP 2: Given our target width, what columns do we want to show?
     const columnsToRender = useMemo(() => {
         const columnList: [columnSlugsType, number, string][] = [];
         let totalWidthNeeded = 0;
@@ -171,94 +187,7 @@ export default function Transactions2(props: propsIF) {
         }
 
         return columnList;
-    }, [containerWidth]); // Dependency array includes containerWidth
-
-    // Resize observer to update containerWidth state
-    useEffect(() => {
-        const adjustColumnization = () => {
-            if (containerRef.current) {
-                console.log(
-                    'SETTING TARGET WIDTH' +
-                        containerRef.current.clientWidth.toString(),
-                );
-                setContainerWidth(containerRef.current.clientWidth);
-            }
-        };
-
-        const resizeObserver = new ResizeObserver(adjustColumnization);
-        if (containerRef.current) {
-            resizeObserver.observe(containerRef.current);
-        }
-
-        return () => {
-            resizeObserver.disconnect();
-        };
-    }, []);
-
-    /*
-     Old Render Method:
-    const columnsToRender = useRef<[columnSlugsType, number, string][]>([]);
-    useEffect(() => {
-        console.log('RE-RENDER HAPPENING');
-        if (isRendering==true)
-        {
-            console.log('RE-RENDER Skip');
-            return;
-        }
-        isRendering = true;
-        console.time('2Tracking-table');
-        console.time('3Tracking-table');
-        // fn to log the width of the element in the DOM (number of pixels)
-        function adjustColumnization() {
-            // make sure the container in which we'll render the table exists
-            if (containerRef.current) {
-                // get the pixel width of the container in the DOM
-                const containerWidth = containerRef.current.clientWidth;
-                // array to hold the list of columns we'll actually render
-                const columnList: [columnSlugsType, number, string][] = [];
-                // this value tracks how much width (pixels) is required by the columns in the
-                // ... DOM, updated each time we iteratively add one
-                let totalWidthNeeded = 0;
-                // loop to add as many columns into the table as will fit per the priority array
-                for (let i = 0; i < priority.length; i++) {
-                    // get the name of the next column in the priority list
-                    const columnId: columnSlugsType = priority[i];
-                    // determine how much width (pixels) the column needs
-                    const columnSize: number = columnMetaInfo[columnId].width;
-                    const columnTitle: string = columnMetaInfo[columnId].readable
-                    // if the column fits in the DOM, add it to the list of columns to render
-                    if (totalWidthNeeded + columnSize <= containerWidth) {
-                        // push name of column into the output array
-                        columnList.push([columnId, columnSize, columnTitle]);
-                        // update the running total of column sizes needed
-                        totalWidthNeeded += columnSize;
-                    }
-                }
-                // send the output column list to local state, table will render responsively
-                columnsToRender.current = columnList;
-            }
-        }
-
-        // create an observer holding the width-logging function
-        const resizeObserver: ResizeObserver = new ResizeObserver(
-            adjustColumnization,
-        );
-        containerRef.current && resizeObserver.observe(containerRef.current);
-        // cleanup the observer from the DOM when component dismounts
-        console.timeEnd('2Tracking-table');
-        isRendering = false;
-        console.log('RE-RENDER FINISH ');
-        return () => {
-            console.time('4Tracking-table');
-            console.log('RE-RENDER FINISH1');
-            resizeObserver.disconnect();
-            console.timeEnd('4Tracking-table');
-            console.timeEnd('3Tracking-table');
-            console.log('RE-RENDER FINISH2');
-        };
-        
-        
-    }, []); */
+    }, [containerWidth]);
 
     const [openMenuRow, setOpenMenuRow] = useState<string | null>(null);
 
@@ -269,7 +198,8 @@ export default function Transactions2(props: propsIF) {
     // array of row elements to render in the DOM, the base underlying data used for generation
     // ... is updated frequently but this memoization on recalculates if other items change
 
-    const getHash = (tx: TransactionIF) => {
+    const getFashHash = (tx: TransactionIF) => {
+        // Slightly faster than JSON.stringify
         let theId = '';
         if (tx.txId) theId = theId + tx.txId.toString();
         else theId = theId + 'null_id';
@@ -284,14 +214,11 @@ export default function Transactions2(props: propsIF) {
         return theId;
     };
 
+    // STEP 3: Given our columns, create a new transactions grid.
     const transactionRows = useMemo<JSX.Element[]>(
         () =>
             transactionsData.map((tx: TransactionIF) => {
-                console.log('Re-running memo');
-                console.log(
-                    'Re-running memo' + transactionsData.length.toString(),
-                );
-                const txString = getHash(tx);
+                const txString = getFashHash(tx);
                 return (
                     <TransactionRow2
                         key={txString}
@@ -306,34 +233,10 @@ export default function Transactions2(props: propsIF) {
             }),
         [transactionsData.length, columnsToRender.length],
     );
-
-    /*
-    const transactionRows = transactionsData.map((tx: TransactionIF) => {
-            console.log('Re-running without memo 2');
-            const txString = getHash(tx); 
-            return (
-                <TransactionRow2
-                    key={txString}
-                    tx={tx}
-                    columnsToShow={columnsToRender}
-                    isAccountPage={isAccountPage}
-                    isMenuOpen={openMenuRow === txString}
-                    onMenuToggle={() => handleMenuToggle(txString)}
-                    hideMenu={() => handleMenuToggle('')}
-                />
-            );
-        });*/
-
-    console.log('I should render here 2');
-    console.log(transactionsData.length);
-    console.log(transactionRows.length);
-    console.log({ columnsToRender });
-
     return (
         <ol className={styles.tx_ol} ref={containerRef}>
             {<TxHeader activeColumns={columnsToRender} />}
             {transactionRows}
         </ol>
     );
-    /* {transactionRows} />} */
 }
