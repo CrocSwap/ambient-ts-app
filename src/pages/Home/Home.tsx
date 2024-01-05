@@ -83,15 +83,17 @@ export default function Home() {
             <PointSystemContainer>
                 <Text fontSize='header1'>Points system is now live </Text>
 
-                <Link to='/xp-leaderboard'>
-                    <Text
-                        fontSize='header2'
-                        color='accent1'
-                        style={{ textDecoration: 'underline' }}
-                    >
-                        View your current XP here
-                    </Text>
-                </Link>
+                {isUserConnected && (
+                    <Link to='/account/xp'>
+                        <Text
+                            fontSize='header2'
+                            color='accent1'
+                            style={{ textDecoration: 'underline' }}
+                        >
+                            View your current XP here
+                        </Text>
+                    </Link>
+                )}
             </PointSystemContainer>
             <div>
                 <TopPools />
