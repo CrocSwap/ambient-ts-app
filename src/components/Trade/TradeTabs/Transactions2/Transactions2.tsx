@@ -150,7 +150,11 @@ export default function Transactions2(props: propsIF) {
         'copyBtn',
         'downloadBtn',
     ];
-    const [containerWidth, setContainerWidth] = useState(1000);
+    const containerWidthRef = useRef(1000);
+    const getContainerWidth = () => containerWidthRef.current;
+    const setContainerWidth = (newWidth: number) => {
+        containerWidthRef.current = newWidth;
+    };
 
     // STEP 1: What is our target width, and how do we monitor it?
     useEffect(() => {
@@ -180,14 +184,14 @@ export default function Transactions2(props: propsIF) {
             const columnSize: number = columnMetaInfo[columnId].width;
             const columnTitle: string = columnMetaInfo[columnId].readable;
 
-            if (totalWidthNeeded + columnSize <= containerWidth) {
+            if (totalWidthNeeded + columnSize <= getContainerWidth()) {
                 columnList.push([columnId, columnSize, columnTitle]);
                 totalWidthNeeded += columnSize;
             }
         }
 
         return columnList;
-    }, [containerWidth]);
+    }, [getContainerWidth()]);
 
     const [openMenuRow, setOpenMenuRow] = useState<string | null>(null);
 
@@ -198,7 +202,7 @@ export default function Transactions2(props: propsIF) {
     // array of row elements to render in the DOM, the base underlying data used for generation
     // ... is updated frequently but this memoization on recalculates if other items change
 
-    const getFastHash = (tx: TransactionIF) => {
+    const getFastHash = (tx: TransactionIF): string => {
         // Slightly faster than JSON.stringify
         let theId = '';
         if (tx.txId) theId = theId + tx.txId.toString();
