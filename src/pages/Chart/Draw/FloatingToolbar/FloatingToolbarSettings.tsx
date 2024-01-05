@@ -143,6 +143,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
     ] = useState(false);
 
     const [selectedFibLevel, setSelectedFibLevel] = useState(Number);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [fibBackgroundAlfaValue, setFibBackgroundAlfaValue] = useState<any>(
         'rgba(47, 90, 181, 0.3)',
     );
@@ -282,6 +283,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
         },
     ];
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleEditFibBackgroundColor = (color: any) => {
         const alfaValue = color.rgb.a;
 
@@ -304,8 +306,6 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
             const changedItemIndex = item.findIndex(
                 (i) => i.time === selectedDrawnShape?.data.time,
             );
-
-            const oldData = structuredClone(item[changedItemIndex]);
 
             item[changedItemIndex].extraData.forEach((data) => {
                 const levelColor = d3.color(data.color);
