@@ -116,7 +116,7 @@ export default function Transactions2(props: propsIF) {
                 tx.changeType !== 'cross',
         );
         return output;
-    }, [changesByPool]); //
+    }, [changesByPool]);
 
     // ref holding the container in which we render the table, this gatekeeps code to render the
     // ... table until the container renders and tells us how much width (pixels) is available
@@ -198,7 +198,7 @@ export default function Transactions2(props: propsIF) {
     // array of row elements to render in the DOM, the base underlying data used for generation
     // ... is updated frequently but this memoization on recalculates if other items change
 
-    const getFashHash = (tx: TransactionIF) => {
+    const getFastHash = (tx: TransactionIF) => {
         // Slightly faster than JSON.stringify
         let theId = '';
         if (tx.txId) theId = theId + tx.txId.toString();
@@ -218,7 +218,7 @@ export default function Transactions2(props: propsIF) {
     const transactionRows = useMemo<JSX.Element[]>(
         () =>
             transactionsData.map((tx: TransactionIF) => {
-                const txString = getFashHash(tx);
+                const txString = getFastHash(tx);
                 return (
                     <TransactionRow2
                         key={txString}
