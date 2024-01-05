@@ -1,5 +1,9 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
-import { BsEmojiSmileUpsideDown, BsFillReplyFill } from 'react-icons/bs';
+import {
+    BsEmojiSmile,
+    BsEmojiSmileUpsideDown,
+    BsFillReplyFill,
+} from 'react-icons/bs';
 import { SlOptions } from 'react-icons/sl';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { Message } from '../../Model/MessageModel';
@@ -54,7 +58,7 @@ export default function Options(props: propsIF) {
     );
 
     const addReaction = (
-        <BsEmojiSmileUpsideDown
+        <BsEmojiSmile
             onClick={() => props.addReactionListener(props.message)}
             size={14}
         />

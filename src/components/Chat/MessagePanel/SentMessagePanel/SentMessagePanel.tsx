@@ -651,7 +651,13 @@ function SentMessagePanel(props: SentMessageProps) {
             props.message.reactions[reaction].map((user: string) => {
                 const userObj = props.userMap?.get(user);
                 if (userObj) {
-                    ret.push(getUserLabelForReactions(userObj));
+                    if (userObj._id == props.currentUser) {
+                        const temp = ret[1];
+                        ret[1] = 'You';
+                        ret.push(temp);
+                    } else {
+                        ret.push(getUserLabelForReactions(userObj));
+                    }
                 }
             });
         }
@@ -663,6 +669,7 @@ function SentMessagePanel(props: SentMessageProps) {
             ret.push('...');
             ret.push(moreCount.toString() + ' more');
         }
+
         return ret;
     }
 
@@ -993,9 +1000,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                                     <DefaultTooltip
                                                         interactive
                                                         title={
-                                                            props.isUserVerified
-                                                                ? 'Update verification date'
-                                                                : 'Verify wallet since this message'
+                                                            'Verify this message'
                                                         }
                                                         placement={'left'}
                                                         arrow
@@ -1127,6 +1132,12 @@ function SentMessagePanel(props: SentMessageProps) {
                                                                                 <div
                                                                                     key={
                                                                                         e
+                                                                                    }
+                                                                                    className={
+                                                                                        e ==
+                                                                                        'You'
+                                                                                            ? styles.user_reaction_label
+                                                                                            : ''
                                                                                     }
                                                                                 >
                                                                                     {

@@ -89,7 +89,7 @@
 }
 
 .dropdown_btn {
-    padding: 2px 4px;
+    padding: 4px 4px;
     box-shadow: 3px 3px 10px 6px rgba(0, 0, 0, 0.06);
     font-weight: 300;
     color: var(--text1);

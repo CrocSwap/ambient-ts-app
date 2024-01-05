@@ -766,8 +766,13 @@
 }
 
 .user_reacted{
-    background: #5f5eff66;
-    box-shadow: 0px 0px 4px 3px #4a47ff;
+    /* background: #5f5eff66;
+    box-shadow: 0px 0px 4px 3px #4a47ff; */
+}
+
+.user_reaction_label{
+    color: #817eff;
+    font-weight: bold;
 }
 
 
@@ -948,4 +953,5 @@
  border-width: .15rem;
 
     }
+
 }
