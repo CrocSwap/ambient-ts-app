@@ -1,4 +1,4 @@
-import { chromium, Page, BrowserContext, Browser } from 'playwright';
+import { chromium, Page, BrowserContext } from 'playwright';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
 import fs from 'fs';
@@ -40,14 +40,19 @@ export async function fillmmask(selector: string, page: Page, value: string) {
     return fill('[data-testid="' + selector + '"]', page, value);
 }
 export async function waiter(delay: number) {
-    return new Promise((resolve, reject) => {
-        setTimeout(
-            async () => {
-                resolve(3);
-            },
-            delay ? delay * 1000 : 5000,
-        );
-    });
+    return new Promise(
+        (
+            resolve,
+            // reject
+        ) => {
+            setTimeout(
+                async () => {
+                    resolve(3);
+                },
+                delay ? delay * 1000 : 5000,
+            );
+        },
+    );
 }
 
 export async function prepareBrowser() {
