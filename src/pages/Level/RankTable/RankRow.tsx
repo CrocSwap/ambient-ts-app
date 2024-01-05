@@ -2,6 +2,7 @@ import { RiWallet3Line } from 'react-icons/ri';
 import { FlexContainer, Text } from '../../../styled/Common';
 import styles from './RankTable.module.css';
 import { useNavigate } from 'react-router-dom';
+import { useFetchBatch } from '../../../App/hooks/useFetchBatch';
 
 interface PropsIF {
     data: {
@@ -23,6 +24,15 @@ export default function RankRow(props: PropsIF) {
 
     function goToLevelsPage(): void {
         navigate(`/account/${data.userAddress}/xp`);
+    }
+
+    /* eslint-disable-next-line camelcase */
+    const body = { config_path: 'ens_address', address: data.userAddress };
+    const { data: fetcBatchData, error } = useFetchBatch<'ens_address'>(body);
+
+    let ensAddress = null;
+    if (fetcBatchData && !error) {
+        ensAddress = fetcBatchData.ens_address;
     }
 
     const menu = (
@@ -52,15 +62,12 @@ export default function RankRow(props: PropsIF) {
                 fontWeight='400'
                 style={{ fontFamily: 'monospace' }}
             >
-                {' '}
-                {data.walletDisplay}
+                {ensAddress || data.walletDisplay}
             </Text>
             <Text fontSize='body' color='accent5' fontWeight='400'>
-                {' '}
                 {data.points}
             </Text>
             <Text fontSize='body' color='accent5' fontWeight='400'>
-                {' '}
                 {data.currentLevel}
             </Text>
 
