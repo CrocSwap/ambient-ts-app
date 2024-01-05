@@ -14,7 +14,7 @@ const Tooltip = styled.div`
 
     background: #202a38;
 
-    box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.8);
+    box-shadow: 0.5px 0.5px 1px 0.5px rgba(0, 0, 0, 0.5);
 
     border-radius: 4px;
 

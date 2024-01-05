@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import * as d3 from 'd3';
 
 const FloatingToolbarSettingsContainer = styled.div`
     background: #242f3f;
@@ -9,6 +10,8 @@ const FloatingToolbarSettingsContainer = styled.div`
     padding: 4px;
 
     width: 100%;
+
+    min-width: 310px;
 `;
 
 const OptionColorContainer = styled.div`
@@ -23,27 +26,32 @@ const OptionColorContainer = styled.div`
 const OptionColor = styled.div<{
     backgroundColor: string | undefined;
     disabled: boolean;
+    isFibColor?: boolean;
 }>`
-    background: ${({ backgroundColor }) =>
-        backgroundColor ? backgroundColor : '#242f3f'};
+    ${({ backgroundColor, isFibColor, disabled }) => {
+        if (backgroundColor) {
+            const fibLevelColor = d3.color(backgroundColor);
 
-    filter: ${({ disabled }) =>
-        disabled ? 'brightness(0.6)' : 'brightness(1)'};
+            if (fibLevelColor && isFibColor) {
+                fibLevelColor.opacity = disabled ? 0.4 : 1.2;
+                return 'background: ' + fibLevelColor.toString() + ';';
+            } else {
+                return 'background: ' + backgroundColor + ';';
+            }
+        }
+    }}
 
     align-items: center;
     justify-content: center;
 
     cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
 
-    box-shadow: 0.5px 0.5px 1.5px 0.5px
-        ${({ disabled }) =>
-            disabled ? 'rgba(0, 0, 0, 0)' : 'rgba(0, 0, 0, 0.6)'};
-
     border-radius: 1.5px;
 
     border-width: 0.5px;
     border-style: solid;
-    border-color: #434c58;
+    border-color: ${({ disabled }) =>
+        disabled ? 'rgba(121, 133, 148, 0.2)' : 'rgba(121, 133, 148, 0.7)'};
 
     height: 20px;
     width: 20px;
@@ -58,18 +66,14 @@ const OptionStyleContainer = styled.div<{
     align-items: center;
     justify-content: center;
 
-    box-shadow: 1px 1px 2px 1px
-        ${({ disabled }) =>
-            disabled ? 'rgba(0, 0, 0, 0.1)' : 'rgba(0, 0, 0, 0.8)'};
-
     cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
 
-    border-radius: 1.5px;
+    border-radius: 2px;
 
     border-width: 1.5px;
     border-style: solid;
     border-color: ${({ disabled }) =>
-        disabled ? 'rgba(67, 76, 88, 0.7)' : '#949ead'};
+        disabled ? 'rgba(121, 133, 148, 0.7)' : 'rgba(121, 133, 148, 1)'};
 
     height: 20px;
     width: 32px;
@@ -208,25 +212,30 @@ const DropDownContainer = styled.div`
 
 const DropDownHeader = styled.div`
     padding: 4px;
-    box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.7);
+
+    grid-template-columns: repeat(2, 1fr);
+    justify-content: space-around;
 
     display: flex;
 
     border-radius: 3px;
+
+    border-width: 1.5px;
+    border-style: solid;
+    border-color: rgba(121, 133, 148, 0.7);
 
     font-size: 13px;
     color: rgba(204, 204, 204);
     background: #2f3d52;
 
     align-items: center;
-    justify-content: center;
 
     cursor: pointer;
 
-    width: 65px;
+    width: 75px;
 
     &:hover {
-        background: var(--dark4);
+        border-color: rgba(121, 133, 148, 1);
     }
 `;
 
@@ -241,7 +250,7 @@ const DropDownList = styled.ul`
     padding: 0;
     margin: 0;
 
-    width: 65px;
+    width: 75px;
 
     background: var(--dark3);
 
@@ -301,9 +310,6 @@ const StyledCheckbox = styled.div<{
     border-radius: 2px;
     transition: all 50ms;
 
-    box-shadow: 0 1px 2px 1px
-        ${({ disabled }) => (disabled ? 'transparent' : 'rgba(0, 0, 0, 0.7)')};
-
     ${Icon} {
         visibility: ${({ checked }) => (checked ? 'visible' : 'hidden')};
     }
@@ -324,6 +330,56 @@ const LineWidthOptions = styled.div<{
             backgroundColor ? backgroundColor : '#8b98a5'};
     height: 0;
     width: 20px;
+`;
+
+const LabelSettingsContainer = styled.div`
+    background: #242f3f;
+    align-items: center;
+
+    padding: 0 5px 0 0;
+    gap: 5px;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr 0.5fr;
+`;
+
+const LabelSettingsArrow = styled.span<{ isActive: boolean }>`
+    ${({ isActive }) => {
+        if (isActive) {
+            return `
+                margin-top: 2.5px;
+                transform: rotate(315deg);
+            `;
+        } else {
+            return `
+            margin-top: -2.5px;
+            transform: rotate(135deg);
+            `;
+        }
+    }}
+
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-top: 1px solid #dbdbdb;
+    border-right: 1px solid #dbdbdb;
+    transition: all 600ms;
+`;
+
+const SliderContainer = styled.div`
+    position: relative;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 110px;
+    height: 12px;
+
+    border-radius: 2px;
+
+    border: 1px solid rgba(47, 90, 181, 0.5);
+
+    margin: 0 auto;
 `;
 
 export {
@@ -352,4 +408,7 @@ export {
     CheckboxContainer,
     Icon,
     LineWidthOptions,
+    LabelSettingsContainer,
+    LabelSettingsArrow,
+    SliderContainer,
 };

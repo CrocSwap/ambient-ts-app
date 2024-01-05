@@ -3474,7 +3474,10 @@ export default function Chart(props: propsIF) {
                                         const color = d3.color(bandData.color);
 
                                         if (color) {
-                                            color.opacity = 0.3;
+                                            color.opacity =
+                                                color.opacity === 1
+                                                    ? 0.3
+                                                    : color.opacity;
 
                                             bandArea.decorate(
                                                 (
