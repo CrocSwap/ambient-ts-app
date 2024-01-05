@@ -284,6 +284,8 @@ export const RowItem = styled(FlexContainer)<{
                 : ''
         };
     `}
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
 `;
 
 export const ViewMoreButton = styled.button`
