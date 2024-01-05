@@ -10,22 +10,18 @@ export default function TxHeader(props: propsIF) {
 
     return (
         <header className={styles.header_row}>
-            {
-                activeColumns.map(
-                    (header) => {
-                        const width: number = header[1];
-                        const readable: string = header[2];
-                        return (
-                            <div
-                                key={JSON.stringify(header)}
-                                style={{ width: width }}
-                            >
-                                {readable}
-                            </div>
-                        );
-                    }
-                )
-            }
+            {activeColumns.map((header) => {
+                // const width: number = header[1];
+                const readable: string = header[2];
+                return (
+                    <div
+                        key={JSON.stringify(header)}
+                        // style={{ width: width }}
+                    >
+                        {readable}
+                    </div>
+                );
+            })}
         </header>
     );
 }
