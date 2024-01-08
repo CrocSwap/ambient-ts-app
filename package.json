@@ -61,7 +61,8 @@
         "lint:fix": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\"",
         "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
         "pre-commit": "yarn lint:fix && yarn format && yarn test:nowatch",
-        "prepare": "husky install"
+        "prepare": "husky install",
+        "publish-ambient-utils": "node scripts/publish-ambient-utils.js"
     },
     "lint-staged": {
         "*.{js,jsx,ts,tsx}": [

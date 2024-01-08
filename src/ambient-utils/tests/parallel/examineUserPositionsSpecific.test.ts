@@ -1,7 +1,7 @@
 import { fetchRecords } from '../../api/fetchUserPositions';
-import { querySpotPrice } from '../../dataLayer';
+import { memoizeQuerySpotPrice } from '../../dataLayer';
 import {
-    fetchTokenPrice,
+    memoizeTokenPrice,
     fetchContractDetails,
     fetchEnsAddress,
 } from '../../api';
@@ -28,8 +28,8 @@ const fetchDataForChain = async (
         crocEnv: sess.crocEnv,
 
         // Decoration Data Related:
-        cachedFetchTokenPrice: fetchTokenPrice,
-        cachedQuerySpotPrice: querySpotPrice,
+        cachedFetchTokenPrice: memoizeTokenPrice(),
+        cachedQuerySpotPrice: memoizeQuerySpotPrice(),
         cachedTokenDetails: fetchContractDetails,
         cachedEnsResolve: fetchEnsAddress,
     });
