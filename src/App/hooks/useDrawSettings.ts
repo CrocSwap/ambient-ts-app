@@ -19,6 +19,7 @@ export const useDrawSettings = () => {
                 let shouldDefault = false;
 
                 parseStoredData.defaultSettings.FibRetracement.extraData.forEach(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     (element: any) => {
                         if (
                             Object.prototype.hasOwnProperty.call(

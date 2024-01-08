@@ -44,7 +44,6 @@ import Divider from '../../../../components/Global/Divider/Divider';
 import lineOptionSvg from '../../../../assets/images/icons/draw/lineOptions/line.svg';
 import dashOptionSvg from '../../../../assets/images/icons/draw/lineOptions/dash.svg';
 import dottedOptionSvg from '../../../../assets/images/icons/draw/lineOptions/dotted.svg';
-import * as d3 from 'd3';
 
 interface FloatingToolbarSettingsProps {
     selectedDrawnShape: selectedDrawnData | undefined;
