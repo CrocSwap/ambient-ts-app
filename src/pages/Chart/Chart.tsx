@@ -65,6 +65,7 @@ import {
     crosshair,
     drawDataHistory,
     fillLiqAdvanced,
+    findSnapTime,
     formatTimeDifference,
     getInitialDisplayCandleCount,
     getXandYLocationForChart,
@@ -2151,19 +2152,6 @@ export default function Chart(props: propsIF) {
     ]);
 
     useEffect(() => {
-        setBandwidth(defaultCandleBandwith);
-
-        if (reset) {
-            const candleDomain = {
-                lastCandleDate: new Date().getTime(),
-                domainBoundry: lastCandleData?.time * 1000 - period * 1000,
-            };
-
-            setCandleDomains(candleDomain);
-        }
-    }, [reset]);
-
-    useEffect(() => {
         if (mainZoom && d3CanvasMain.current) {
             d3.select<Element, unknown>(d3CanvasMain.current)
                 .call(mainZoom)
@@ -2250,9 +2238,29 @@ export default function Chart(props: propsIF) {
         }
     }
 
+    function fetchCandleForResetOrLatest() {
+        if (reset && scaleData) {
+            const nowDate = Date.now();
+            const lastCandleDataTime =
+                lastCandleData?.time * 1000 - period * 1000;
+            const minDomain = Math.floor(scaleData?.xScale.domain()[0]);
+
+            const candleDomain = {
+                lastCandleDate: nowDate,
+                domainBoundry:
+                    lastCandleDataTime > minDomain
+                        ? minDomain
+                        : lastCandleDataTime,
+            };
+
+            setCandleDomains(candleDomain);
+        }
+    }
     function resetFunc() {
         if (scaleData) {
+            setBandwidth(defaultCandleBandwith);
             setXScaleDefault();
+            fetchCandleForResetOrLatest();
             setIsChangeScaleChart(false);
             changeScale();
         }
@@ -2281,6 +2289,7 @@ export default function Chart(props: propsIF) {
             if (rescale) {
                 resetFunc();
             } else {
+                fetchCandleForResetOrLatest();
                 const latestCandleIndex = d3.maxIndex(
                     unparsedCandleData,
                     (d) => d.time,
@@ -2289,8 +2298,7 @@ export default function Chart(props: propsIF) {
                     scaleData?.xScale.domain()[1] -
                     scaleData?.xScale.domain()[0];
 
-                const centerX =
-                    unparsedCandleData[latestCandleIndex].time * 1000;
+                const centerX = findSnapTime(Date.now(), period);
 
                 const diffY =
                     scaleData?.yScale.domain()[1] -
