@@ -3471,23 +3471,14 @@ export default function Chart(props: propsIF) {
                                         );
 
                                     bandAreaData.forEach((bandData) => {
-                                        const color = d3.color(bandData.color);
-
-                                        if (color) {
-                                            color.opacity =
-                                                color.opacity === 1
-                                                    ? 0.3
-                                                    : color.opacity;
-
-                                            bandArea.decorate(
-                                                (
-                                                    context: CanvasRenderingContext2D,
-                                                ) => {
-                                                    context.fillStyle =
-                                                        color.toString();
-                                                },
-                                            );
-                                        }
+                                        bandArea.decorate(
+                                            (
+                                                context: CanvasRenderingContext2D,
+                                            ) => {
+                                                context.fillStyle =
+                                                    bandData.areaColor.toString();
+                                            },
+                                        );
 
                                         bandArea([bandData]);
                                     });
@@ -3584,15 +3575,9 @@ export default function Chart(props: propsIF) {
                                             (
                                                 context: CanvasRenderingContext2D,
                                             ) => {
-                                                const color = d3.color(
-                                                    lineData[0].color,
-                                                );
+                                                context.strokeStyle =
+                                                    lineData[0].lineColor;
 
-                                                if (color) {
-                                                    color.opacity = 1;
-                                                    context.strokeStyle =
-                                                        color.toString();
-                                                }
                                                 context.lineWidth = 1.5;
                                             },
                                         );
@@ -3601,13 +3586,7 @@ export default function Chart(props: propsIF) {
 
                                         ctx?.restore();
 
-                                        const textColor = d3.color(
-                                            lineData[0].color,
-                                        );
-
-                                        if (textColor) {
-                                            textColor.opacity = 1;
-                                        }
+                                        const textColor = lineData[0].lineColor;
 
                                         let alignment;
                                         const textBaseline =
@@ -3639,10 +3618,8 @@ export default function Chart(props: propsIF) {
                                         }
 
                                         if (ctx) {
-                                            ctx.fillStyle = textColor
-                                                ? textColor.toString()
-                                                : lineData[0].color;
-                                            ctx.font = '12px Lexend Deca';
+                                            (ctx.fillStyle = textColor),
+                                                (ctx.font = '12px Lexend Deca');
                                             ctx.textAlign =
                                                 alignment as CanvasTextAlign;
                                             ctx.textBaseline = textBaseline;

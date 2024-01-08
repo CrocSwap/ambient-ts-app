@@ -4,6 +4,7 @@ import {
     defaultLineDrawnShapeEditAttributes,
     defaultRectDrawnShapeEditAttributes,
     defaultDpRangeDrawnShapeEditAttributes,
+    fibDefaultLevels,
 } from '../../pages/Chart/ChartUtils/drawConstants';
 import { diffHashSig } from '../../ambient-utils/dataLayer';
 import { LS_KEY_CHART_ANNOTATIONS } from '../../pages/Chart/ChartUtils/chartConstants';
@@ -11,9 +12,31 @@ import { LS_KEY_CHART_ANNOTATIONS } from '../../pages/Chart/ChartUtils/chartCons
 export const useDrawSettings = () => {
     function getLineOptions(itemType: string) {
         const storedData = localStorage.getItem(LS_KEY_CHART_ANNOTATIONS);
+
         if (storedData) {
             const parseStoredData = JSON.parse(storedData);
             if (parseStoredData.defaultSettings) {
+                let shouldDefault = false;
+
+                parseStoredData.defaultSettings.FibRetracement.extraData.forEach(
+                    (element: any) => {
+                        if (
+                            Object.prototype.hasOwnProperty.call(
+                                element,
+                                'color',
+                            )
+                        ) {
+                            shouldDefault = true;
+                        }
+                    },
+                );
+
+                parseStoredData.defaultSettings.FibRetracement.extraData =
+                    shouldDefault
+                        ? structuredClone(fibDefaultLevels)
+                        : parseStoredData.defaultSettings.FibRetracement
+                              .extraData;
+
                 const options = parseStoredData.defaultSettings[itemType];
                 return options;
             }

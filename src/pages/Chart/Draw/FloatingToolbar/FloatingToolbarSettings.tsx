@@ -216,18 +216,32 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                     ? rgbaValues[3].toString()
                     : color.rgb.a;
 
-            const colorRgbaCode =
-                alfaValue === 0
-                    ? 'transparent'
-                    : 'rgba(' +
-                      color.rgb.r +
-                      ',' +
-                      color.rgb.g +
-                      ',' +
-                      color.rgb.b +
-                      ',' +
-                      alfaValue +
-                      ')';
+            const colorCodeLine =
+                'rgba(' +
+                color.rgb.r +
+                ',' +
+                color.rgb.g +
+                ',' +
+                color.rgb.b +
+                ',' +
+                alfaValue +
+                ')';
+
+            const rgbaAreaValues =
+                selectedDrawnShape.data.extraData[0].areaColor.match(
+                    /\d+(\.\d+)?/g,
+                );
+
+            const colorCodeArea =
+                'rgba(' +
+                color.rgb.r +
+                ',' +
+                color.rgb.g +
+                ',' +
+                color.rgb.b +
+                ',' +
+                rgbaAreaValues[3].toString() +
+                ')';
 
             setDrawnShapeHistory((item: drawDataHistory[]) => {
                 const changedItemIndex = item.findIndex(
@@ -237,11 +251,16 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                 const oldData = structuredClone(item[changedItemIndex]);
 
                 const oldColor =
-                    item[changedItemIndex].extraData[selectedFibLevel].color;
+                    item[changedItemIndex].extraData[selectedFibLevel]
+                        .lineColor;
 
-                if (oldColor !== colorRgbaCode) {
-                    item[changedItemIndex].extraData[selectedFibLevel].color =
-                        colorRgbaCode;
+                if (oldColor !== colorCodeLine) {
+                    item[changedItemIndex].extraData[
+                        selectedFibLevel
+                    ].lineColor = colorCodeLine;
+                    item[changedItemIndex].extraData[
+                        selectedFibLevel
+                    ].areaColor = colorCodeArea;
 
                     saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
 
@@ -295,17 +314,15 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
         const alfaValue = color.rgb.a;
 
         const colorRgbaCode =
-            alfaValue === 0
-                ? 'transparent'
-                : 'rgba(' +
-                  color.rgb.r +
-                  ',' +
-                  color.rgb.g +
-                  ',' +
-                  color.rgb.b +
-                  ',' +
-                  alfaValue +
-                  ')';
+            'rgba(' +
+            color.rgb.r +
+            ',' +
+            color.rgb.g +
+            ',' +
+            color.rgb.b +
+            ',' +
+            alfaValue +
+            ')';
 
         setFibBackgroundAlfaValue(colorRgbaCode);
 
@@ -321,13 +338,20 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
             }
 
             item[changedItemIndex].extraData.forEach((data) => {
-                const levelColor = d3.color(data.color);
+                const rgbaAreaValues = data.areaColor.match(/\d+(\.\d+)?/g);
 
-                if (levelColor) {
-                    levelColor.opacity = alfaValue;
+                const areaRgbaCode =
+                    'rgba(' +
+                    rgbaAreaValues[0] +
+                    ',' +
+                    rgbaAreaValues[1] +
+                    ',' +
+                    rgbaAreaValues[2] +
+                    ',' +
+                    alfaValue +
+                    ')';
 
-                    data.color = levelColor?.toString();
-                }
+                data.areaColor = areaRgbaCode?.toString();
             });
 
             return item;
@@ -737,7 +761,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
 
                                         <OptionColorContainer>
                                             <OptionColor
-                                                backgroundColor={item.color}
+                                                backgroundColor={item.lineColor}
                                                 disabled={!item.active}
                                                 isFibColor={true}
                                                 style={{
@@ -785,7 +809,8 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                                           ?.data
                                                                           .extraData[
                                                                           selectedFibLevel
-                                                                      ].color
+                                                                      ]
+                                                                          .lineColor
                                                                     : colorPicker.background
                                                             }
                                                             width={'170px'}
