@@ -287,6 +287,7 @@ function Toolbar(props: ToolbarProps) {
                 <ScrollableDiv
                     ref={scrollContainerRef}
                     height={d3ContainerHeight - (xAxisHeightPixel - 2) + 'px'}
+                    isHover={hoveredTool !== undefined}
                 >
                     {isHoveredUp && upScroll}
                     {isToolbarOpen && (

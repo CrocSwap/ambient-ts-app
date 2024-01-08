@@ -37,13 +37,18 @@ const ToolbarContainer = styled.div<{
     z-index: 1;
 `;
 
-const ScrollableDiv = styled.div<{ height: string }>`
+const ScrollableDiv = styled.div<{ height: string; isHover: boolean }>`
     overflow-y: auto;
     overflow-x: hidden;
 
-    margin-right: -150px;
-    padding-right: 150px;
-
+    ${({ isHover }) => {
+        if (isHover) {
+            return `
+            margin-right: -150px;
+            padding-right: 150px;
+    `;
+        }
+    }}
     height: ${({ height }) => height};
 
     &::-webkit-scrollbar {
