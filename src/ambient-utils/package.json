@@ -5,32 +5,13 @@
     "dependencies": {
         "@covalenthq/client-sdk": "^0.2.6",
         "@crocswap-libs/sdk": "^0.2.79",
+        "d3": "^7.4.4",
         "ethers": "^5.6.5",
         "modern-screenshot": "^4.4.25",
-        "moment": "^2.29.4",
         "numbro": "^2.3.6",
         "wagmi": "^0.12.12"
     },
     "scripts": {
         "build": "tsc"
-    },
-    "devDependencies": {
-        "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-        "@types/adm-zip": "^0.5.4",
-        "@types/d3": "^7.1.0",
-        "@types/jest": "^29.2.5",
-        "@typescript-eslint/eslint-plugin": "^5.22.0",
-        "@typescript-eslint/parser": "^5.22.0",
-        "adm-zip": "^0.5.10",
-        "eslint-config-prettier": "^8.5.0",
-        "eslint-import-resolver-typescript": "^2.7.1",
-        "eslint-plugin-import": "^2.26.0",
-        "eslint-plugin-prettier": "^4.0.0",
-        "eslint-plugin-react": "^7.29.4",
-        "eslint-plugin-react-hooks": "^4.5.0",
-        "husky": "^8.0.0",
-        "lint-staged": "^12.4.1",
-        "prettier": "^2.6.2",
-        "typescript": "^4.4.2"
     }
 }
