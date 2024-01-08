@@ -1,6 +1,7 @@
 import React, { MouseEvent, useEffect, useState } from 'react';
 import {
     drawDataHistory,
+    renderChart,
     saveShapeAttiributesToLocalStorage,
     selectedDrawnData,
 } from '../../ChartUtils/chartUtils';
@@ -81,6 +82,7 @@ interface FloatingToolbarSettingsProps {
     isNearestWindow: boolean;
     floatingToolbarHeight: number;
     settingsDivHeight: number;
+    drawnShapeHistory: drawDataHistory[];
 }
 
 function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
@@ -100,6 +102,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
         isNearestWindow,
         floatingToolbarHeight,
         settingsDivHeight,
+        drawnShapeHistory,
     } = props;
 
     // disabled options
@@ -147,6 +150,10 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
     const [fibBackgroundAlfaValue, setFibBackgroundAlfaValue] = useState<any>(
         'rgba(47, 90, 181, 0.3)',
     );
+
+    const [fibDataToUpdate, setFibDataToUpdate] = useState<drawDataHistory>();
+    const [shouldUpdateFibData, setShouldUpdateFibData] =
+        useState<boolean>(false);
 
     const [checkNearestWindow, setCheckNearestWindow] = useState(false);
     const closeAllOptions = (
@@ -307,6 +314,12 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                 (i) => i.time === selectedDrawnShape?.data.time,
             );
 
+            const oldData = structuredClone(item[changedItemIndex]);
+
+            if (fibDataToUpdate === undefined) {
+                setFibDataToUpdate(() => oldData);
+            }
+
             item[changedItemIndex].extraData.forEach((data) => {
                 const levelColor = d3.color(data.color);
 
@@ -317,20 +330,43 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                 }
             });
 
-            // saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
-
-            // addDrawActionStack(
-            //     oldData,
-            //     false,
-            //     'update',
-            //     item[changedItemIndex],
-            // );
-
             return item;
         });
 
         setIsShapeEdited(true);
+
+        renderChart();
     };
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (fibDataToUpdate) {
+                setShouldUpdateFibData(true);
+            }
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [fibBackgroundAlfaValue]);
+
+    useEffect(() => {
+        if (fibDataToUpdate && shouldUpdateFibData) {
+            const changedItemIndex = drawnShapeHistory.findIndex(
+                (i) => i.time === selectedDrawnShape?.data.time,
+            );
+
+            saveShapeAttiributesToLocalStorage(
+                drawnShapeHistory[changedItemIndex],
+            );
+
+            addDrawActionStack(
+                fibDataToUpdate,
+                false,
+                'update',
+                drawnShapeHistory[changedItemIndex],
+            );
+
+            setShouldUpdateFibData(false);
+        }
+    }, [fibBackgroundAlfaValue, fibDataToUpdate, shouldUpdateFibData]);
 
     const inputStyles = {
         picker: {

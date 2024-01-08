@@ -437,3 +437,9 @@ export const findSnapTime = (timeSeconds: number, period: number) => {
 
     return snappedTime;
 };
+
+export const renderChart = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const nd = d3.select('#d3fc_group').node() as any;
+    if (nd) nd.requestRedraw();
+};

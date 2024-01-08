@@ -5550,6 +5550,7 @@ export default function Chart(props: propsIF) {
                     deleteItem={deleteItem}
                     setIsShapeEdited={setIsShapeEdited}
                     addDrawActionStack={addDrawActionStack}
+                    drawnShapeHistory={drawnShapeHistory}
                 />
             )}
 

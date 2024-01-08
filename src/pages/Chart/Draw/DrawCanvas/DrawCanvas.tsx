@@ -1000,7 +1000,8 @@ function DrawCanvas(props: DrawCanvasProps) {
                         const color = d3.color(bandData.color);
 
                         if (color) {
-                            color.opacity = 0.3;
+                            color.opacity =
+                                color.opacity === 1 ? 0.3 : color.opacity;
 
                             bandArea.decorate(
                                 (context: CanvasRenderingContext2D) => {
@@ -1089,8 +1090,8 @@ function DrawCanvas(props: DrawCanvasProps) {
                             alignment = 'left';
                         }
 
-                        if (ctx) {
-                            ctx.fillStyle = lineData[0].color;
+                        if (ctx && textColor) {
+                            ctx.fillStyle = textColor?.toString();
                             ctx.font = '12px Lexend Deca';
                             ctx.textAlign = alignment as CanvasTextAlign;
                             ctx.textBaseline =
