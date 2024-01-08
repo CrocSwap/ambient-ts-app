@@ -57,6 +57,7 @@ interface FloatingToolbarProps {
         type: string,
         updatedData: drawDataHistory | undefined,
     ) => void;
+    drawnShapeHistory: drawDataHistory[];
 }
 
 function FloatingToolbar(props: FloatingToolbarProps) {
@@ -69,6 +70,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         deleteItem,
         setIsShapeEdited,
         addDrawActionStack,
+        drawnShapeHistory,
     } = props;
 
     const floatingDivRef = useRef<HTMLDivElement>(null);
@@ -1102,6 +1104,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                     isNearestWindow={isNearestWindow}
                     floatingToolbarHeight={floatingToolbarHeight}
                     settingsDivHeight={settingsDivHeight}
+                    drawnShapeHistory={drawnShapeHistory}
                 />
             )}
         </FloatingDivContainer>

@@ -208,6 +208,8 @@ const DropDownContainer = styled.div`
     justify-content: center;
 
     margin: 0 auto;
+
+    z-index: 99;
 `;
 
 const DropDownHeader = styled.div`

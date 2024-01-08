@@ -1,6 +1,7 @@
 import React, { MouseEvent, useEffect, useState } from 'react';
 import {
     drawDataHistory,
+    renderChart,
     saveShapeAttiributesToLocalStorage,
     selectedDrawnData,
 } from '../../ChartUtils/chartUtils';
@@ -43,7 +44,6 @@ import Divider from '../../../../components/Global/Divider/Divider';
 import lineOptionSvg from '../../../../assets/images/icons/draw/lineOptions/line.svg';
 import dashOptionSvg from '../../../../assets/images/icons/draw/lineOptions/dash.svg';
 import dottedOptionSvg from '../../../../assets/images/icons/draw/lineOptions/dotted.svg';
-import * as d3 from 'd3';
 
 interface FloatingToolbarSettingsProps {
     selectedDrawnShape: selectedDrawnData | undefined;
@@ -81,6 +81,7 @@ interface FloatingToolbarSettingsProps {
     isNearestWindow: boolean;
     floatingToolbarHeight: number;
     settingsDivHeight: number;
+    drawnShapeHistory: drawDataHistory[];
 }
 
 function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
@@ -100,6 +101,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
         isNearestWindow,
         floatingToolbarHeight,
         settingsDivHeight,
+        drawnShapeHistory,
     } = props;
 
     // disabled options
@@ -147,6 +149,10 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
     const [fibBackgroundAlfaValue, setFibBackgroundAlfaValue] = useState<any>(
         'rgba(47, 90, 181, 0.3)',
     );
+
+    const [fibDataToUpdate, setFibDataToUpdate] = useState<drawDataHistory>();
+    const [shouldUpdateFibData, setShouldUpdateFibData] =
+        useState<boolean>(false);
 
     const [checkNearestWindow, setCheckNearestWindow] = useState(false);
     const closeAllOptions = (
@@ -209,18 +215,32 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                     ? rgbaValues[3].toString()
                     : color.rgb.a;
 
-            const colorRgbaCode =
-                alfaValue === 0
-                    ? 'transparent'
-                    : 'rgba(' +
-                      color.rgb.r +
-                      ',' +
-                      color.rgb.g +
-                      ',' +
-                      color.rgb.b +
-                      ',' +
-                      alfaValue +
-                      ')';
+            const colorCodeLine =
+                'rgba(' +
+                color.rgb.r +
+                ',' +
+                color.rgb.g +
+                ',' +
+                color.rgb.b +
+                ',' +
+                alfaValue +
+                ')';
+
+            const rgbaAreaValues =
+                selectedDrawnShape.data.extraData[0].areaColor.match(
+                    /\d+(\.\d+)?/g,
+                );
+
+            const colorCodeArea =
+                'rgba(' +
+                color.rgb.r +
+                ',' +
+                color.rgb.g +
+                ',' +
+                color.rgb.b +
+                ',' +
+                rgbaAreaValues[3].toString() +
+                ')';
 
             setDrawnShapeHistory((item: drawDataHistory[]) => {
                 const changedItemIndex = item.findIndex(
@@ -230,11 +250,16 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                 const oldData = structuredClone(item[changedItemIndex]);
 
                 const oldColor =
-                    item[changedItemIndex].extraData[selectedFibLevel].color;
+                    item[changedItemIndex].extraData[selectedFibLevel]
+                        .lineColor;
 
-                if (oldColor !== colorRgbaCode) {
-                    item[changedItemIndex].extraData[selectedFibLevel].color =
-                        colorRgbaCode;
+                if (oldColor !== colorCodeLine) {
+                    item[changedItemIndex].extraData[
+                        selectedFibLevel
+                    ].lineColor = colorCodeLine;
+                    item[changedItemIndex].extraData[
+                        selectedFibLevel
+                    ].areaColor = colorCodeArea;
 
                     saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
 
@@ -288,17 +313,15 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
         const alfaValue = color.rgb.a;
 
         const colorRgbaCode =
-            alfaValue === 0
-                ? 'transparent'
-                : 'rgba(' +
-                  color.rgb.r +
-                  ',' +
-                  color.rgb.g +
-                  ',' +
-                  color.rgb.b +
-                  ',' +
-                  alfaValue +
-                  ')';
+            'rgba(' +
+            color.rgb.r +
+            ',' +
+            color.rgb.g +
+            ',' +
+            color.rgb.b +
+            ',' +
+            alfaValue +
+            ')';
 
         setFibBackgroundAlfaValue(colorRgbaCode);
 
@@ -307,30 +330,66 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                 (i) => i.time === selectedDrawnShape?.data.time,
             );
 
+            const oldData = structuredClone(item[changedItemIndex]);
+
+            if (fibDataToUpdate === undefined) {
+                setFibDataToUpdate(() => oldData);
+            }
+
             item[changedItemIndex].extraData.forEach((data) => {
-                const levelColor = d3.color(data.color);
+                const rgbaAreaValues = data.areaColor.match(/\d+(\.\d+)?/g);
 
-                if (levelColor) {
-                    levelColor.opacity = alfaValue;
+                const areaRgbaCode =
+                    'rgba(' +
+                    rgbaAreaValues[0] +
+                    ',' +
+                    rgbaAreaValues[1] +
+                    ',' +
+                    rgbaAreaValues[2] +
+                    ',' +
+                    alfaValue +
+                    ')';
 
-                    data.color = levelColor?.toString();
-                }
+                data.areaColor = areaRgbaCode?.toString();
             });
-
-            // saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
-
-            // addDrawActionStack(
-            //     oldData,
-            //     false,
-            //     'update',
-            //     item[changedItemIndex],
-            // );
 
             return item;
         });
 
         setIsShapeEdited(true);
+
+        renderChart();
     };
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (fibDataToUpdate) {
+                setShouldUpdateFibData(true);
+            }
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [fibBackgroundAlfaValue]);
+
+    useEffect(() => {
+        if (fibDataToUpdate && shouldUpdateFibData) {
+            const changedItemIndex = drawnShapeHistory.findIndex(
+                (i) => i.time === selectedDrawnShape?.data.time,
+            );
+
+            saveShapeAttiributesToLocalStorage(
+                drawnShapeHistory[changedItemIndex],
+            );
+
+            addDrawActionStack(
+                fibDataToUpdate,
+                false,
+                'update',
+                drawnShapeHistory[changedItemIndex],
+            );
+
+            setShouldUpdateFibData(false);
+        }
+    }, [fibBackgroundAlfaValue, fibDataToUpdate, shouldUpdateFibData]);
 
     const inputStyles = {
         picker: {
@@ -701,7 +760,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
 
                                         <OptionColorContainer>
                                             <OptionColor
-                                                backgroundColor={item.color}
+                                                backgroundColor={item.lineColor}
                                                 disabled={!item.active}
                                                 isFibColor={true}
                                                 style={{
@@ -749,7 +808,8 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                                           ?.data
                                                                           .extraData[
                                                                           selectedFibLevel
-                                                                      ].color
+                                                                      ]
+                                                                          .lineColor
                                                                     : colorPicker.background
                                                             }
                                                             width={'170px'}
