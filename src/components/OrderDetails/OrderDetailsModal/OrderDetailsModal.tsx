@@ -17,7 +17,6 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import {
     getLimitOrderData,
     getFormattedNumber,
-    printDomToImage,
 } from '../../../ambient-utils/dataLayer';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TokenContext } from '../../../contexts/TokenContext';
@@ -26,6 +25,7 @@ import modalBackground from '../../../assets/images/backgrounds/background.png';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import Modal from '../../Global/Modal/Modal';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import { printDomToImage } from '../../../utils/printDomToImage';
 
 interface propsIF {
     limitOrder: LimitOrderIF;

@@ -23,7 +23,6 @@ export * from './isJsonString';
 export * from './lookupChainId';
 export * from './memoizePromiseFn';
 export * from './openInNewTab';
-export * from './printDomToImage';
 export * from './querySpotPrice';
 export * from './rangeFunctions';
 export * from './removeLeadingZeros';

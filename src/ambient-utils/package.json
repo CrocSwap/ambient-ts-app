@@ -7,7 +7,6 @@
         "@crocswap-libs/sdk": "^0.2.79",
         "d3": "^7.4.4",
         "ethers": "^5.6.5",
-        "modern-screenshot": "^4.4.25",
         "numbro": "^2.3.6",
         "wagmi": "^0.12.12"
     },

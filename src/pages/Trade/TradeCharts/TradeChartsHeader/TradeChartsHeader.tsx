@@ -4,13 +4,13 @@ import { FiCopy } from 'react-icons/fi';
 import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
-import { printDomToImage } from '../../../../ambient-utils/dataLayer';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import TradeChartsTokenInfo from '../TradeChartsComponents/TradeChartsTokenInfo';
 import { CandleContext } from '../../../../contexts/CandleContext';
 import { useSimulatedIsPoolInitialized } from '../../../../App/hooks/useSimulatedIsPoolInitialized';
 import { FlexContainer } from '../../../../styled/Common';
 import { HeaderButtons } from '../../../../styled/Components/Chart';
+import { printDomToImage } from '../../../../utils/printDomToImage';
 
 export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     const {
