@@ -743,7 +743,14 @@ function TradeCandleStickChart(props: propsIF) {
                                 firstTime = tempFirstTime;
                                 nCandles = nCandles + (nDiffFirstTime + 100);
                             } else {
+                                const nowDateSeconds = Math.floor(
+                                    nowDate / 1000,
+                                );
                                 firstTime = firstTime + period * 100;
+
+                                if (firstTime > nowDateSeconds) {
+                                    firstTime = nowDateSeconds;
+                                }
                                 nCandles =
                                     Math.floor(
                                         Math.abs(
