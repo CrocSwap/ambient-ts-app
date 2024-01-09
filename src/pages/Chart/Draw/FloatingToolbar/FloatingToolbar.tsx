@@ -195,7 +195,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                             colorRgbaCode);
 
                     saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
-
+                    selectedDrawnShape.data = item[changedItemIndex];
                     addDrawActionStack(
                         oldData,
                         false,
@@ -257,7 +257,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                     border && (item[changedItemIndex].border.lineWidth = value);
 
                     saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
-
+                    selectedDrawnShape.data = item[changedItemIndex];
                     addDrawActionStack(
                         oldData,
                         false,
@@ -293,6 +293,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 type === 'reverse' && (item[changedItemIndex].reverse = value);
 
                 saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
+                selectedDrawnShape.data = item[changedItemIndex];
                 addDrawActionStack(
                     oldData,
                     false,
@@ -329,6 +330,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                     border && (item[changedItemIndex].border.dash = array);
 
                     saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
+                    selectedDrawnShape.data = item[changedItemIndex];
                     addDrawActionStack(
                         oldData,
                         false,
@@ -368,7 +370,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                     alignment &&
                         (item[changedItemIndex].labelAlignment = value);
                     saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
-
+                    selectedDrawnShape.data = item[changedItemIndex];
                     addDrawActionStack(
                         oldData,
                         false,
@@ -783,7 +785,9 @@ function FloatingToolbar(props: FloatingToolbarProps) {
 
             if (!isDefault) {
                 saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
-
+                if (selectedDrawnShape) {
+                    selectedDrawnShape.data = item[changedItemIndex];
+                }
                 addDrawActionStack(
                     oldData,
                     false,
