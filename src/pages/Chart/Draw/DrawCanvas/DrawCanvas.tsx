@@ -904,17 +904,16 @@ function DrawCanvas(props: DrawCanvasProps) {
                             );
                         }
 
-                        if (height > 70 && width > 70) {
-                            const arrowArray = createArrowPointsOfDPRangeLine(
-                                lineData,
-                                scaleData,
-                                denomInBase,
-                            );
+                        const arrowArray = createArrowPointsOfDPRangeLine(
+                            lineData,
+                            scaleData,
+                            denomInBase,
+                            height > 30 && width > 30 ? 10 : 5,
+                        );
 
-                            arrowArray.forEach((arrow) => {
-                                lineSeries(arrow);
-                            });
-                        }
+                        arrowArray.forEach((arrow) => {
+                            lineSeries(arrow);
+                        });
                     }
                 })
                 .on('measure', (event: CustomEvent) => {
