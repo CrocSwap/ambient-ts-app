@@ -78,6 +78,7 @@ interface DrawCanvasProps {
     drawSettings: any;
     quoteTokenDecimals: number;
     baseTokenDecimals: number;
+    setIsUpdatingShape: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function DrawCanvas(props: DrawCanvasProps) {
@@ -107,6 +108,7 @@ function DrawCanvas(props: DrawCanvasProps) {
         quoteTokenDecimals,
         baseTokenDecimals,
         period,
+        setIsUpdatingShape,
     } = props;
 
     const {
@@ -355,6 +357,7 @@ function DrawCanvas(props: DrawCanvasProps) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         function startDrawing(mouseX: number, mouseY: number) {
             isDrawing = true;
+            setIsUpdatingShape(true);
             const offsetY = mouseY - canvasRect?.top;
             const offsetX = mouseX - canvasRect?.left;
 
@@ -419,6 +422,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                     };
 
                     isDrawing = false;
+                    setIsUpdatingShape(false);
 
                     setActiveDrawingType('Cross');
 
