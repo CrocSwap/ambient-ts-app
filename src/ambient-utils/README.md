@@ -18,7 +18,7 @@ or
 npm install @crocswap-libs/ambient-utils
 ```
 
-### Configure
+### Configure*
 
 ```
 // App.tsx
@@ -28,12 +28,14 @@ import { initPackage } from '@crocswap-libs/ambient-utils';
 function App() {
   useEffect(() => {
     initPackage({
-      INFURA_API_KEY: 'your_infura_api_key',     // REQUIRED
+      INFURA_API_KEY: 'your_infura_api_key',        // REQUIRED
       ETHERSCAN_API_KEY: 'your_etherscan_api_key',  // REQUIRED
     });
   }, []);
 }
 ```
+
+<b>*Disclaimer: The above step can be skipped at the cost of certain functionality such as fetching gas prices on Ethereum, price impact queries, etc. aka anything that relies on the above API keys being disabled.</b>
 
 ### Example
 
