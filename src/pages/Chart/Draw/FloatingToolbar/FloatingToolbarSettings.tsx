@@ -36,7 +36,7 @@ import {
     SliderContainer,
     AlphaSlider,
 } from './FloatingToolbarSettingsCss';
-import { AlphaPicker, SketchPicker } from 'react-color';
+import { SketchPicker } from 'react-color';
 import {
     OptionsTab,
     OptionsTabSize,

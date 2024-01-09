@@ -5256,6 +5256,7 @@ export default function Chart(props: propsIF) {
         poolPriceDisplay,
         isChartZoom,
         selectedDrawnShape,
+        isUpdatingShape,
     };
 
     return (
@@ -5513,6 +5514,7 @@ export default function Chart(props: propsIF) {
                             selectedDrawnShape={selectedDrawnShape}
                             toolbarWidth={toolbarWidth}
                             d3Xaxis={d3XaxisRef}
+                            isUpdatingShape={isUpdatingShape}
                         />
                     </div>
                 </div>
