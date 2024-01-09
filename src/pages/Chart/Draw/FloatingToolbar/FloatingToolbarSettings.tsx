@@ -267,7 +267,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                     ].areaColor = colorCodeArea;
 
                     saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
-
+                    selectedDrawnShape.data = item[changedItemIndex];
                     addDrawActionStack(
                         oldData,
                         false,
