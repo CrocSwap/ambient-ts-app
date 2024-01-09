@@ -23,6 +23,7 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import TransactionSettings from '../../Global/TransactionSettings/TransactionSettings';
 import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
+import { RangeContext } from '../../../contexts/RangeContext';
 type ModuleDimensions = {
     [key: string]: { height: string; width: string };
 };
@@ -88,6 +89,8 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     const { tokenA, tokenB, limitTick, deactivateConfirmation } =
         useContext(TradeDataContext);
 
+    const { advancedMode } = useContext(RangeContext);
+
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
     // values if either token needs to be confirmed before transacting
@@ -125,6 +128,14 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     const mediumScreen = useMediaQuery('(max-width: 680px)');
     const swapPageContainerHeight = showExtraInfo ? '590px' : '460px';
 
+    const rangeHeight = !advancedMode
+        ? showExtraInfo
+            ? '730px'
+            : '660px'
+        : showExtraInfo
+        ? '630px'
+        : '560px';
+
     const moduleDimensions: ModuleDimensions = {
         Swap: {
             height: mediumScreen ? 'auto' : showExtraInfo ? '600px' : '500px',
@@ -135,7 +146,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
             width: 'auto',
         },
         Range: {
-            height: mediumScreen ? 'auto' : showExtraInfo ? '730px' : '660px',
+            height: mediumScreen ? 'auto' : rangeHeight,
             width: 'auto',
         },
     };
