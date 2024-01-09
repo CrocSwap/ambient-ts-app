@@ -1,4 +1,5 @@
 import React, { MouseEvent, useEffect, useState } from 'react';
+import * as d3 from 'd3';
 import {
     drawDataHistory,
     renderChart,
@@ -33,8 +34,9 @@ import {
     LabelSettingsContainer,
     LabelSettingsArrow,
     SliderContainer,
+    AlphaSlider,
 } from './FloatingToolbarSettingsCss';
-import { AlphaPicker, SketchPicker } from 'react-color';
+import { SketchPicker } from 'react-color';
 import {
     OptionsTab,
     OptionsTabSize,
@@ -146,8 +148,8 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
 
     const [selectedFibLevel, setSelectedFibLevel] = useState(Number);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [fibBackgroundAlfaValue, setFibBackgroundAlfaValue] = useState<any>(
-        'rgba(47, 90, 181, 0.3)',
+    const [fibBackgroundAlphaValue, setFibBackgroundAlphaValue] = useState<any>(
+        d3.color(selectedDrawnShape?.data.extraData[0].areaColor)?.opacity,
     );
 
     const [fibDataToUpdate, setFibDataToUpdate] = useState<drawDataHistory>();
@@ -210,7 +212,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
         if (selectedDrawnShape?.data) {
             const rgbaValues = colorPicker.background.match(/\d+(\.\d+)?/g);
 
-            const alfaValue =
+            const alphaValue =
                 type === 'background' && color.source === 'hex' && rgbaValues
                     ? rgbaValues[3].toString()
                     : color.rgb.a;
@@ -223,7 +225,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                 ',' +
                 color.rgb.b +
                 ',' +
-                alfaValue +
+                alphaValue +
                 ')';
 
             const rgbaAreaValues =
@@ -309,21 +311,10 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
     ];
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleEditFibBackgroundColor = (color: any) => {
-        const alfaValue = color.rgb.a;
+    const handleEditFibBackgroundColor = (alphaValue: string) => {
+        const alphaColorValue = Number(alphaValue) / 100;
 
-        const colorRgbaCode =
-            'rgba(' +
-            color.rgb.r +
-            ',' +
-            color.rgb.g +
-            ',' +
-            color.rgb.b +
-            ',' +
-            alfaValue +
-            ')';
-
-        setFibBackgroundAlfaValue(colorRgbaCode);
+        setFibBackgroundAlphaValue(alphaColorValue);
 
         setDrawnShapeHistory((item: drawDataHistory[]) => {
             const changedItemIndex = item.findIndex(
@@ -347,7 +338,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                     ',' +
                     rgbaAreaValues[2] +
                     ',' +
-                    alfaValue +
+                    alphaColorValue +
                     ')';
 
                 data.areaColor = areaRgbaCode?.toString();
@@ -368,7 +359,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
             }
         }, 500);
         return () => clearTimeout(timer);
-    }, [fibBackgroundAlfaValue]);
+    }, [fibBackgroundAlphaValue]);
 
     useEffect(() => {
         if (fibDataToUpdate && shouldUpdateFibData) {
@@ -389,15 +380,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
 
             setShouldUpdateFibData(false);
         }
-    }, [fibBackgroundAlfaValue, fibDataToUpdate, shouldUpdateFibData]);
-
-    const inputStyles = {
-        picker: {
-            width: '10px',
-            height: '10px',
-        },
-        alpha: {},
-    };
+    }, [fibBackgroundAlphaValue, fibDataToUpdate, shouldUpdateFibData]);
 
     return (
         <>
@@ -1085,16 +1068,20 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                             </div>
 
                             <SliderContainer>
-                                <AlphaPicker
-                                    color={fibBackgroundAlfaValue}
-                                    onChange={(item, event) => {
+                                <AlphaSlider
+                                    type='range'
+                                    min='0'
+                                    max='100'
+                                    onChange={(
+                                        event: React.ChangeEvent<HTMLInputElement>,
+                                    ) => {
                                         event.stopPropagation();
-                                        handleEditFibBackgroundColor(item);
+                                        handleEditFibBackgroundColor(
+                                            event.target.value,
+                                        );
                                     }}
-                                    width={'110px'}
-                                    height={'12px'}
-                                    styles={{ inputStyles }}
-                                ></AlphaPicker>
+                                    value={fibBackgroundAlphaValue * 100}
+                                />
                             </SliderContainer>
                         </LabelSettingsContainer>
                     )}

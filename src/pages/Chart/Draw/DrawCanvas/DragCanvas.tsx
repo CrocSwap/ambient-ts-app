@@ -497,6 +497,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                                 hoveredDrawnShape.data.type === 'Ray')
                         ) {
                             if (!hoveredDrawnShape.selectedCircle) {
+                                setIsUpdatingShape(true);
                                 dragLine(movemementX, movemementY);
                             } else {
                                 setIsUpdatingShape(true);
@@ -510,6 +511,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                                 hoveredDrawnShape.data.type === 'DPRange')
                         ) {
                             if (!hoveredDrawnShape.selectedCircle) {
+                                setIsUpdatingShape(true);
                                 dragLine(movemementX, movemementY);
                             } else {
                                 setIsUpdatingShape(true);
