@@ -304,8 +304,8 @@ const StyledCheckbox = styled.div<{
     checked: boolean | undefined;
     disabled: boolean | undefined;
 }>`
-    width: 17px;
-    height: 17px;
+    width: 16px;
+    height: 16px;
     background: ${({ checked, disabled }) =>
         checked ? (disabled ? '#434c58' : '#2196F3') : '#f0f0f8'};
 
@@ -362,7 +362,7 @@ const LabelSettingsArrow = styled.span<{ isActive: boolean }>`
 
     display: inline-block;
     width: 5px;
-    height: 5px;
+    height: 6px;
     border-top: 1px solid #dbdbdb;
     border-right: 1px solid #dbdbdb;
     transition: all 600ms;
@@ -371,17 +371,158 @@ const LabelSettingsArrow = styled.span<{ isActive: boolean }>`
 const SliderContainer = styled.div`
     position: relative;
 
+    display: flex;
+
     align-items: center;
     justify-content: center;
 
     width: 110px;
     height: 12px;
 
-    border-radius: 2px;
-
-    border: 1px solid rgba(47, 90, 181, 0.5);
-
     margin: 0 auto;
+`;
+
+const AlphaSlider = styled.input`
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 110px;
+    background-color: transparent;
+
+    &:focus-visible {
+        outline-color: #f8b195;
+    }
+
+    &::-webkit-slider-runnable-track {
+        -webkit-appearance: none;
+        appearance: none;
+        height: 6px;
+        background: #f67280;
+
+        background: -webkit-linear-gradient(
+            left,
+            rgba(60, 79, 94, 0.5) 0%,
+            rgba(118, 116, 255, 1) 100%
+        );
+
+        background: linear-gradient(
+            to right,
+            rgba(60, 79, 94, 0.5) 0%,
+            rgba(118, 116, 255, 1) 100%
+        );
+
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#f67280", endColorstr="#355c7d", GradientType=1);
+    }
+
+    &::-moz-range-track {
+        -moz-appearance: none;
+        appearance: none;
+        height: 6px;
+        background: #f67280;
+
+        background: -webkit-linear-gradient(
+            left,
+            rgba(60, 79, 94, 0.5) 0%,
+            rgba(118, 116, 255, 1) 100%
+        );
+
+        background: linear-gradient(
+            to right,
+            rgba(60, 79, 94, 0.5) 0%,
+            rgba(118, 116, 255, 1) 100%
+        );
+
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#f67280", endColorstr="#355c7d", GradientType=1);
+    }
+
+    &::-ms-track {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        height: 6px;
+        background: #f67280;
+
+        background: -webkit-linear-gradient(
+            left,
+            rgba(60, 79, 94, 0.5) 0%,
+            rgba(118, 116, 255, 1) 100%
+        );
+
+        background: linear-gradient(
+            to right,
+            rgba(60, 79, 94, 0.5) 0%,
+            rgba(118, 116, 255, 1) 100%
+        );
+
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#f67280", endColorstr="#355c7d", GradientType=1);
+    }
+
+    &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+
+        border-radius: 50%;
+        height: 16px;
+        width: 16px;
+
+        position: relative;
+        bottom: 5px;
+
+        background: #efedf2;
+
+        background-size: 50%;
+        box-shadow: 0px 3px 5px 0px rgba(0, 0, 0, 0.4);
+        cursor: pointer;
+    }
+
+    &::-webkit-slider-thumb:active {
+        cursor: grabbing;
+    }
+
+    &::-moz-range-thumb {
+        -moz-appearance: none;
+        appearance: none;
+
+        border-radius: 50%;
+        height: 16px;
+        width: 16px;
+
+        position: relative;
+        bottom: 6px;
+
+        background: #efedf2;
+
+        background-size: 50%;
+        box-shadow: 0px 3px 5px 0px rgba(0, 0, 0, 0.4);
+        cursor: pointer;
+    }
+
+    &::-moz-range-thumb:active {
+        cursor: grabbing;
+    }
+
+    &::-ms-thumb {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+
+        border-radius: 50%;
+        height: 16px;
+        width: 16px;
+
+        position: relative;
+        bottom: 6px;
+
+        background: #efedf2;
+
+        background-size: 50%;
+        box-shadow: 0px 3px 5px 0px rgba(0, 0, 0, 0.4);
+        cursor: pointer;
+    }
+
+    &:::-ms-thumb:active {
+        cursor: grabbing;
+    }
 `;
 
 export {
@@ -413,4 +554,5 @@ export {
     LabelSettingsContainer,
     LabelSettingsArrow,
     SliderContainer,
+    AlphaSlider,
 };
