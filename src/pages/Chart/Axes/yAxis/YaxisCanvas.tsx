@@ -15,11 +15,7 @@ import {
 } from '../../../../utils/numbers';
 import { createRectLabel } from './YaxisUtils';
 import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
-import {
-    diffHashSig,
-    diffHashSigScaleData,
-    getFormattedNumber,
-} from '../../../../ambient-utils/dataLayer';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import {
     crosshair,
     fillLiqAdvanced,
@@ -33,6 +29,10 @@ import {
     standardDeviation,
 } from '../../ChartUtils/chartUtils';
 import { RangeContext } from '../../../../contexts/RangeContext';
+import {
+    diffHashSig,
+    diffHashSigScaleData,
+} from '../../../../utils/diffHashSig';
 
 interface yAxisIF {
     scaleData: scaleData | undefined;

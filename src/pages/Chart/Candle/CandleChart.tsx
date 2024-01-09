@@ -7,11 +7,11 @@ import {
     setCanvasResolution,
 } from '../ChartUtils/chartUtils';
 import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
-import { diffHashSigScaleData } from '../../../ambient-utils/dataLayer';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { CandleDataIF } from '../../../ambient-utils/types';
 import { ChartContext } from '../../../contexts/ChartContext';
+import { diffHashSigScaleData } from '../../../utils/diffHashSig';
 
 interface candlePropsIF {
     chartItemStates: chartItemStates;

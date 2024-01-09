@@ -3,10 +3,6 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { useLocation } from 'react-router-dom';
 import {
-    diffHashSig,
-    diffHashSigScaleData,
-} from '../../../../ambient-utils/dataLayer';
-import {
     crosshair,
     renderCanvasArray,
     scaleData,
@@ -19,6 +15,10 @@ import moment from 'moment';
 import { CandleDataIF } from '../../../../ambient-utils/types';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { RangeContext } from '../../../../contexts/RangeContext';
+import {
+    diffHashSig,
+    diffHashSigScaleData,
+} from '../../../../utils/diffHashSig';
 interface xAxisIF {
     scaleData: scaleData | undefined;
     lastCrDate: number | undefined;

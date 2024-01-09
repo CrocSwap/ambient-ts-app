@@ -3,7 +3,6 @@ export * from './calculateSecondaryDepositQty';
 export * from './chainNumToString';
 export * from './chains';
 export * from './defaultTopPools';
-export * from './diffHashSig';
 export * from './getElapsedTime';
 export * from './getFormattedNumber';
 export * from './getLimitOrderData';

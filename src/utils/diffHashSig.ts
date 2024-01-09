@@ -4,9 +4,9 @@ import {
     LimitOrderIF,
     PositionIF,
     TransactionIF,
-    ScaleDataIF,
     CandlesByPoolAndDurationIF,
-} from '../../types';
+} from '../ambient-utils/types';
+import { ScaleDataIF } from '../types/ScaleDataIF';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function diffHashSig(x: any): string {
