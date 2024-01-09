@@ -65,6 +65,7 @@ import {
     crosshair,
     drawDataHistory,
     fillLiqAdvanced,
+    findSnapTime,
     formatTimeDifference,
     getInitialDisplayCandleCount,
     getXandYLocationForChart,
@@ -2184,19 +2185,6 @@ export default function Chart(props: propsIF) {
     ]);
 
     useEffect(() => {
-        setBandwidth(defaultCandleBandwith);
-
-        if (reset) {
-            const candleDomain = {
-                lastCandleDate: new Date().getTime(),
-                domainBoundry: lastCandleData?.time * 1000 - period * 1000,
-            };
-
-            setCandleDomains(candleDomain);
-        }
-    }, [reset]);
-
-    useEffect(() => {
         if (mainZoom && d3CanvasMain.current) {
             d3.select<Element, unknown>(d3CanvasMain.current)
                 .call(mainZoom)
@@ -2283,9 +2271,29 @@ export default function Chart(props: propsIF) {
         }
     }
 
+    function fetchCandleForResetOrLatest() {
+        if (reset && scaleData) {
+            const nowDate = Date.now();
+            const lastCandleDataTime =
+                lastCandleData?.time * 1000 - period * 1000;
+            const minDomain = Math.floor(scaleData?.xScale.domain()[0]);
+
+            const candleDomain = {
+                lastCandleDate: nowDate,
+                domainBoundry:
+                    lastCandleDataTime > minDomain
+                        ? minDomain
+                        : lastCandleDataTime,
+            };
+
+            setCandleDomains(candleDomain);
+        }
+    }
     function resetFunc() {
         if (scaleData) {
+            setBandwidth(defaultCandleBandwith);
             setXScaleDefault();
+            fetchCandleForResetOrLatest();
             setIsChangeScaleChart(false);
             changeScale();
         }
@@ -2314,6 +2322,7 @@ export default function Chart(props: propsIF) {
             if (rescale) {
                 resetFunc();
             } else {
+                fetchCandleForResetOrLatest();
                 const latestCandleIndex = d3.maxIndex(
                     unparsedCandleData,
                     (d) => d.time,
@@ -2322,8 +2331,7 @@ export default function Chart(props: propsIF) {
                     scaleData?.xScale.domain()[1] -
                     scaleData?.xScale.domain()[0];
 
-                const centerX =
-                    unparsedCandleData[latestCandleIndex].time * 1000;
+                const centerX = findSnapTime(Date.now(), period);
 
                 const diffY =
                     scaleData?.yScale.domain()[1] -
@@ -3130,12 +3138,13 @@ export default function Chart(props: propsIF) {
                                                     secondPointYAxisData,
                                                 ),
                                         );
-                                        // const width = Math.abs(
-                                        //     scaleData.xScale(item.data[0].x) -
-                                        //         scaleData.xScale(
-                                        //             item.data[1].x,
-                                        //         ),
-                                        // );
+
+                                        const width = Math.abs(
+                                            scaleData.xScale(item.data[0].x) -
+                                                scaleData.xScale(
+                                                    item.data[1].x,
+                                                ),
+                                        );
 
                                         const lengthAsBars = Math.abs(
                                             item.data[0].x - item.data[1].x,
@@ -3214,18 +3223,19 @@ export default function Chart(props: propsIF) {
                                                       )
                                                 : infoLabelYAxisData;
 
-                                        if (height > 70) {
-                                            const arrowArray =
-                                                createArrowPointsOfDPRangeLine(
-                                                    item.data,
-                                                    scaleData,
-                                                    denomInBase,
-                                                );
+                                        const arrowArray =
+                                            createArrowPointsOfDPRangeLine(
+                                                item.data,
+                                                scaleData,
+                                                denomInBase,
+                                                height > 30 && width > 30
+                                                    ? 10
+                                                    : 5,
+                                            );
 
-                                            arrowArray.forEach((arrow) => {
-                                                lineSeries(arrow);
-                                            });
-                                        }
+                                        arrowArray.forEach((arrow) => {
+                                            lineSeries(arrow);
+                                        });
 
                                         if (ctx) {
                                             ctx.beginPath();
@@ -3504,20 +3514,14 @@ export default function Chart(props: propsIF) {
                                         );
 
                                     bandAreaData.forEach((bandData) => {
-                                        const color = d3.color(bandData.color);
-
-                                        if (color) {
-                                            color.opacity = 0.3;
-
-                                            bandArea.decorate(
-                                                (
-                                                    context: CanvasRenderingContext2D,
-                                                ) => {
-                                                    context.fillStyle =
-                                                        color.toString();
-                                                },
-                                            );
-                                        }
+                                        bandArea.decorate(
+                                            (
+                                                context: CanvasRenderingContext2D,
+                                            ) => {
+                                                context.fillStyle =
+                                                    bandData.areaColor.toString();
+                                            },
+                                        );
 
                                         bandArea([bandData]);
                                     });
@@ -3614,15 +3618,9 @@ export default function Chart(props: propsIF) {
                                             (
                                                 context: CanvasRenderingContext2D,
                                             ) => {
-                                                const color = d3.color(
-                                                    lineData[0].color,
-                                                );
+                                                context.strokeStyle =
+                                                    lineData[0].lineColor;
 
-                                                if (color) {
-                                                    color.opacity = 1;
-                                                    context.strokeStyle =
-                                                        color.toString();
-                                                }
                                                 context.lineWidth = 1.5;
                                             },
                                         );
@@ -3631,13 +3629,7 @@ export default function Chart(props: propsIF) {
 
                                         ctx?.restore();
 
-                                        const textColor = d3.color(
-                                            lineData[0].color,
-                                        );
-
-                                        if (textColor) {
-                                            textColor.opacity = 1;
-                                        }
+                                        const textColor = lineData[0].lineColor;
 
                                         let alignment;
                                         const textBaseline =
@@ -3669,10 +3661,8 @@ export default function Chart(props: propsIF) {
                                         }
 
                                         if (ctx) {
-                                            ctx.fillStyle = textColor
-                                                ? textColor.toString()
-                                                : lineData[0].color;
-                                            ctx.font = '12px Lexend Deca';
+                                            (ctx.fillStyle = textColor),
+                                                (ctx.font = '12px Lexend Deca');
                                             ctx.textAlign =
                                                 alignment as CanvasTextAlign;
                                             ctx.textBaseline = textBaseline;
@@ -5370,6 +5360,7 @@ export default function Chart(props: propsIF) {
         poolPriceDisplay,
         isChartZoom,
         selectedDrawnShape,
+        isUpdatingShape,
     };
     const orderData = [
         {
@@ -5736,6 +5727,7 @@ export default function Chart(props: propsIF) {
                             selectedDrawnShape={selectedDrawnShape}
                             toolbarWidth={toolbarWidth}
                             d3Xaxis={d3XaxisRef}
+                            isUpdatingShape={isUpdatingShape}
                         />
                     </div>
                 </div>
@@ -5750,6 +5742,7 @@ export default function Chart(props: propsIF) {
                     deleteItem={deleteItem}
                     setIsShapeEdited={setIsShapeEdited}
                     addDrawActionStack={addDrawActionStack}
+                    drawnShapeHistory={drawnShapeHistory}
                 />
             )}
 

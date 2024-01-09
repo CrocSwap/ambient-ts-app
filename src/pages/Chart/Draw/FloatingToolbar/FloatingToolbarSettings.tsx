@@ -1,6 +1,8 @@
 import React, { MouseEvent, useEffect, useState } from 'react';
+import * as d3 from 'd3';
 import {
     drawDataHistory,
+    renderChart,
     saveShapeAttiributesToLocalStorage,
     selectedDrawnData,
 } from '../../ChartUtils/chartUtils';
@@ -29,6 +31,10 @@ import {
     StyledCheckbox,
     Icon,
     LineWidthOptions,
+    LabelSettingsContainer,
+    LabelSettingsArrow,
+    SliderContainer,
+    AlphaSlider,
 } from './FloatingToolbarSettingsCss';
 import { SketchPicker } from 'react-color';
 import {
@@ -77,6 +83,7 @@ interface FloatingToolbarSettingsProps {
     isNearestWindow: boolean;
     floatingToolbarHeight: number;
     settingsDivHeight: number;
+    drawnShapeHistory: drawDataHistory[];
 }
 
 function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
@@ -96,6 +103,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
         isNearestWindow,
         floatingToolbarHeight,
         settingsDivHeight,
+        drawnShapeHistory,
     } = props;
 
     // disabled options
@@ -104,6 +112,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
 
     // special options
     const borderOptions = ['Rect', 'DPRange'];
+    const excludeLineOptions = ['Rect'];
     const backgroundOptions = ['Rect', 'DPRange'];
 
     const [isLineStyleOptionTabActive, setIsLineStyleOptionTabActive] =
@@ -138,6 +147,14 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
     ] = useState(false);
 
     const [selectedFibLevel, setSelectedFibLevel] = useState(Number);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [fibBackgroundAlphaValue, setFibBackgroundAlphaValue] = useState<any>(
+        d3.color(selectedDrawnShape?.data.extraData[0].areaColor)?.opacity,
+    );
+
+    const [fibDataToUpdate, setFibDataToUpdate] = useState<drawDataHistory>();
+    const [shouldUpdateFibData, setShouldUpdateFibData] =
+        useState<boolean>(false);
 
     const [checkNearestWindow, setCheckNearestWindow] = useState(false);
     const closeAllOptions = (
@@ -195,12 +212,12 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
         if (selectedDrawnShape?.data) {
             const rgbaValues = colorPicker.background.match(/\d+(\.\d+)?/g);
 
-            const alfaValue =
+            const alphaValue =
                 type === 'background' && color.source === 'hex' && rgbaValues
                     ? rgbaValues[3].toString()
                     : color.rgb.a;
 
-            const colorRgbaCode =
+            const colorCodeLine =
                 'rgba(' +
                 color.rgb.r +
                 ',' +
@@ -208,7 +225,23 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                 ',' +
                 color.rgb.b +
                 ',' +
-                alfaValue +
+                alphaValue +
+                ')';
+
+            const rgbaAreaValues =
+                selectedDrawnShape.data.extraData[0].areaColor.match(
+                    /\d+(\.\d+)?/g,
+                );
+
+            const colorCodeArea =
+                'rgba(' +
+                color.rgb.r +
+                ',' +
+                color.rgb.g +
+                ',' +
+                color.rgb.b +
+                ',' +
+                rgbaAreaValues[3].toString() +
                 ')';
 
             setDrawnShapeHistory((item: drawDataHistory[]) => {
@@ -219,11 +252,16 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                 const oldData = structuredClone(item[changedItemIndex]);
 
                 const oldColor =
-                    item[changedItemIndex].extraData[selectedFibLevel].color;
+                    item[changedItemIndex].extraData[selectedFibLevel]
+                        .lineColor;
 
-                if (oldColor !== colorRgbaCode) {
-                    item[changedItemIndex].extraData[selectedFibLevel].color =
-                        colorRgbaCode;
+                if (oldColor !== colorCodeLine) {
+                    item[changedItemIndex].extraData[
+                        selectedFibLevel
+                    ].lineColor = colorCodeLine;
+                    item[changedItemIndex].extraData[
+                        selectedFibLevel
+                    ].areaColor = colorCodeArea;
 
                     saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
 
@@ -272,6 +310,78 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
         },
     ];
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleEditFibBackgroundColor = (alphaValue: string) => {
+        const alphaColorValue = Number(alphaValue) / 100;
+
+        setFibBackgroundAlphaValue(alphaColorValue);
+
+        setDrawnShapeHistory((item: drawDataHistory[]) => {
+            const changedItemIndex = item.findIndex(
+                (i) => i.time === selectedDrawnShape?.data.time,
+            );
+
+            const oldData = structuredClone(item[changedItemIndex]);
+
+            if (fibDataToUpdate === undefined) {
+                setFibDataToUpdate(() => oldData);
+            }
+
+            item[changedItemIndex].extraData.forEach((data) => {
+                const rgbaAreaValues = data.areaColor.match(/\d+(\.\d+)?/g);
+
+                const areaRgbaCode =
+                    'rgba(' +
+                    rgbaAreaValues[0] +
+                    ',' +
+                    rgbaAreaValues[1] +
+                    ',' +
+                    rgbaAreaValues[2] +
+                    ',' +
+                    alphaColorValue +
+                    ')';
+
+                data.areaColor = areaRgbaCode?.toString();
+            });
+
+            return item;
+        });
+
+        setIsShapeEdited(true);
+
+        renderChart();
+    };
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (fibDataToUpdate) {
+                setShouldUpdateFibData(true);
+            }
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [fibBackgroundAlphaValue]);
+
+    useEffect(() => {
+        if (fibDataToUpdate && shouldUpdateFibData) {
+            const changedItemIndex = drawnShapeHistory.findIndex(
+                (i) => i.time === selectedDrawnShape?.data.time,
+            );
+
+            saveShapeAttiributesToLocalStorage(
+                drawnShapeHistory[changedItemIndex],
+            );
+
+            addDrawActionStack(
+                fibDataToUpdate,
+                false,
+                'update',
+                drawnShapeHistory[changedItemIndex],
+            );
+
+            setShouldUpdateFibData(false);
+        }
+    }, [fibBackgroundAlphaValue, fibDataToUpdate, shouldUpdateFibData]);
+
     return (
         <>
             <FloatingToolbarSettingsContainer
@@ -289,41 +399,66 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
             >
                 {selectedDrawnShape && (
                     <LineContainer>
-                        <LineSettings>
-                            <LineSettingsLeft>
-                                <CheckboxContainer
-                                    onClick={() => {
-                                        !lineOptionDisabled.includes(
-                                            selectedDrawnShape?.data.type,
-                                        ) &&
-                                            handleEditLines(
-                                                !selectedDrawnShape.data.line
-                                                    .active,
-                                                'line',
-                                            );
-                                    }}
-                                >
-                                    <StyledCheckbox
-                                        checked={
-                                            selectedDrawnShape.data.line.active
-                                        }
-                                        disabled={lineOptionDisabled.includes(
-                                            selectedDrawnShape?.data.type,
-                                        )}
+                        {!excludeLineOptions.includes(
+                            selectedDrawnShape?.data.type,
+                        ) && (
+                            <LineSettings>
+                                <LineSettingsLeft>
+                                    <CheckboxContainer
+                                        onClick={() => {
+                                            !lineOptionDisabled.includes(
+                                                selectedDrawnShape?.data.type,
+                                            ) &&
+                                                handleEditLines(
+                                                    !selectedDrawnShape.data
+                                                        .line.active,
+                                                    'line',
+                                                );
+                                        }}
                                     >
-                                        <Icon viewBox='0 0 24 24'>
-                                            <polyline points='20 6 9 17 4 12' />
-                                        </Icon>
-                                    </StyledCheckbox>
-                                </CheckboxContainer>
+                                        <StyledCheckbox
+                                            checked={
+                                                selectedDrawnShape.data.line
+                                                    .active
+                                            }
+                                            disabled={lineOptionDisabled.includes(
+                                                selectedDrawnShape?.data.type,
+                                            )}
+                                        >
+                                            <Icon viewBox='0 0 24 24'>
+                                                <polyline points='20 6 9 17 4 12' />
+                                            </Icon>
+                                        </StyledCheckbox>
+                                    </CheckboxContainer>
 
-                                <StyledLabel>Line</StyledLabel>
-                            </LineSettingsLeft>
+                                    <StyledLabel>Line</StyledLabel>
+                                </LineSettingsLeft>
 
-                            <LineSettingsRight>
-                                <OptionColorContainer>
-                                    <OptionColor
-                                        backgroundColor={selectedDrawnShape?.data.line.color.toString()}
+                                <LineSettingsRight>
+                                    <OptionColorContainer>
+                                        <OptionColor
+                                            backgroundColor={selectedDrawnShape?.data.line.color.toString()}
+                                            disabled={
+                                                !selectedDrawnShape?.data.line
+                                                    .active
+                                            }
+                                            style={{
+                                                pointerEvents:
+                                                    selectedDrawnShape?.data
+                                                        .line.active
+                                                        ? 'auto'
+                                                        : 'none',
+                                            }}
+                                            onClick={(
+                                                event: MouseEvent<HTMLElement>,
+                                            ) => {
+                                                event.stopPropagation();
+                                                closeAllOptions('line');
+                                            }}
+                                        ></OptionColor>
+                                    </OptionColorContainer>
+
+                                    <OptionStyleContainer
                                         disabled={
                                             !selectedDrawnShape?.data.line
                                                 .active
@@ -335,75 +470,59 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                 : 'none',
                                         }}
                                         onClick={(
-                                            event: MouseEvent<HTMLElement>,
+                                            event: MouseEvent<HTMLDivElement>,
                                         ) => {
                                             event.stopPropagation();
-                                            closeAllOptions('line');
+                                            closeAllOptions('lineSize');
                                         }}
-                                    ></OptionColor>
-                                </OptionColorContainer>
+                                    >
+                                        <LineWidthOptions
+                                            backgroundColor={'#cfd7e3'}
+                                            style={{
+                                                borderTopWidth:
+                                                    selectedDrawnShape?.data
+                                                        .line.lineWidth + 'px',
+                                            }}
+                                        ></LineWidthOptions>
+                                    </OptionStyleContainer>
 
-                                <OptionStyleContainer
-                                    disabled={
-                                        !selectedDrawnShape?.data.line.active
-                                    }
-                                    style={{
-                                        pointerEvents: selectedDrawnShape?.data
-                                            .line.active
-                                            ? 'auto'
-                                            : 'none',
-                                    }}
-                                    onClick={(
-                                        event: MouseEvent<HTMLDivElement>,
-                                    ) => {
-                                        event.stopPropagation();
-                                        closeAllOptions('lineSize');
-                                    }}
-                                >
-                                    <LineWidthOptions
-                                        backgroundColor={'#cfd7e3'}
-                                        style={{
-                                            borderTopWidth:
-                                                selectedDrawnShape?.data.line
-                                                    .lineWidth + 'px',
-                                        }}
-                                    ></LineWidthOptions>
-                                </OptionStyleContainer>
-
-                                <OptionStyleContainer
-                                    disabled={
-                                        !selectedDrawnShape?.data.line.active
-                                    }
-                                    style={{
-                                        pointerEvents: selectedDrawnShape?.data
-                                            .line.active
-                                            ? 'auto'
-                                            : 'none',
-                                    }}
-                                    onClick={(
-                                        event: MouseEvent<HTMLDivElement>,
-                                    ) => {
-                                        event.stopPropagation();
-                                        closeAllOptions('lineStyle');
-                                    }}
-                                >
-                                    <img
-                                        src={
-                                            selectedDrawnShape &&
-                                            (0 ===
-                                            selectedDrawnShape.data.line.dash[0]
-                                                ? lineOptionSvg
-                                                : 5 ===
-                                                  selectedDrawnShape.data.line
-                                                      .dash[0]
-                                                ? dashOptionSvg
-                                                : dottedOptionSvg)
+                                    <OptionStyleContainer
+                                        disabled={
+                                            !selectedDrawnShape?.data.line
+                                                .active
                                         }
-                                        alt=''
-                                    />
-                                </OptionStyleContainer>
-                            </LineSettingsRight>
-                        </LineSettings>
+                                        style={{
+                                            pointerEvents: selectedDrawnShape
+                                                ?.data.line.active
+                                                ? 'auto'
+                                                : 'none',
+                                        }}
+                                        onClick={(
+                                            event: MouseEvent<HTMLDivElement>,
+                                        ) => {
+                                            event.stopPropagation();
+                                            closeAllOptions('lineStyle');
+                                        }}
+                                    >
+                                        <img
+                                            src={
+                                                selectedDrawnShape &&
+                                                (0 ===
+                                                selectedDrawnShape.data.line
+                                                    .dash[0]
+                                                    ? lineOptionSvg
+                                                    : 5 ===
+                                                      selectedDrawnShape.data
+                                                          .line.dash[0]
+                                                    ? dashOptionSvg
+                                                    : dottedOptionSvg)
+                                            }
+                                            alt=''
+                                        />
+                                    </OptionStyleContainer>
+                                </LineSettingsRight>
+                            </LineSettings>
+                        )}
 
                         {borderOptions.includes(
                             selectedDrawnShape?.data.type,
@@ -624,8 +743,9 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
 
                                         <OptionColorContainer>
                                             <OptionColor
-                                                backgroundColor={item.color}
+                                                backgroundColor={item.lineColor}
                                                 disabled={!item.active}
+                                                isFibColor={true}
                                                 style={{
                                                     pointerEvents: item.active
                                                         ? 'auto'
@@ -671,16 +791,21 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                                           ?.data
                                                                           .extraData[
                                                                           selectedFibLevel
-                                                                      ].color
+                                                                      ]
+                                                                          .lineColor
                                                                     : colorPicker.background
                                                             }
                                                             width={'170px'}
-                                                            onChange={(item) =>
+                                                            onChange={(
+                                                                item,
+                                                                event,
+                                                            ) => {
+                                                                event.stopPropagation();
                                                                 handleEditFibColor(
                                                                     item,
                                                                     'fib',
-                                                                )
-                                                            }
+                                                                );
+                                                            }}
                                                         />
                                                     </ColorPickerTab>
                                                 )}
@@ -777,137 +902,188 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
 
                 {selectedDrawnShape &&
                     selectedDrawnShape.data.type === 'FibRetracement' && (
-                        <FibLineSettings style={{ paddingBottom: '5px' }}>
+                        <LabelSettingsContainer
+                            style={{ paddingBottom: '5px' }}
+                        >
                             <div
                                 style={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'center',
+                                    paddingLeft: '8px',
+                                    // justifyContent: 'center',
                                 }}
                             >
                                 <StyledLabel>Labels</StyledLabel>
                             </div>
 
-                            <LineSettingsLeft>
-                                <DropDownContainer>
-                                    <DropDownHeader
-                                        onClick={(
-                                            event: MouseEvent<HTMLElement>,
-                                        ) => {
-                                            event.stopPropagation();
-                                            setisLabelAlignmentOptionTabActive(
-                                                false,
-                                            );
-                                            setisLabelPlacementOptionTabActive(
-                                                (prev) => !prev,
-                                            );
-                                        }}
-                                    >
+                            <DropDownContainer>
+                                <DropDownHeader
+                                    onClick={(
+                                        event: MouseEvent<HTMLElement>,
+                                    ) => {
+                                        event.stopPropagation();
+                                        setisLabelAlignmentOptionTabActive(
+                                            false,
+                                        );
+                                        setisLabelPlacementOptionTabActive(
+                                            (prev) => !prev,
+                                        );
+                                    }}
+                                >
+                                    <div>
                                         {selectedDrawnShape.data.labelPlacement}
-                                    </DropDownHeader>
-                                    {isLabelPlacementOptionTabActive && (
-                                        <DropDownListContainer
-                                            style={{
-                                                bottom:
-                                                    isNearestWindow ||
-                                                    checkNearestWindow
-                                                        ? '30px'
-                                                        : '',
-                                            }}
-                                        >
-                                            <DropDownList>
-                                                {placementOptions.map(
-                                                    (item, index) => (
-                                                        <ListItem
-                                                            backgroundColor={
-                                                                item.value ===
-                                                                selectedDrawnShape
-                                                                    .data
-                                                                    .labelPlacement
-                                                                    ? '#434c58'
-                                                                    : undefined
-                                                            }
-                                                            key={index}
-                                                            onClick={(
-                                                                event: MouseEvent<HTMLElement>,
-                                                            ) => {
-                                                                event.stopPropagation();
-                                                                handleEditLabel(
-                                                                    item.value,
-                                                                    isLabelPlacementOptionTabActive,
-                                                                    isLabelAlignmentOptionTabActive,
-                                                                );
-                                                            }}
-                                                        >
-                                                            {item.name}
-                                                        </ListItem>
-                                                    ),
-                                                )}
-                                            </DropDownList>
-                                        </DropDownListContainer>
-                                    )}
-                                </DropDownContainer>
+                                    </div>
+                                    <LabelSettingsArrow
+                                        isActive={
+                                            isLabelPlacementOptionTabActive
+                                        }
+                                    ></LabelSettingsArrow>
+                                </DropDownHeader>
 
-                                <DropDownContainer>
-                                    <DropDownHeader
-                                        onClick={(
-                                            event: MouseEvent<HTMLElement>,
-                                        ) => {
-                                            event.stopPropagation();
-                                            setisLabelPlacementOptionTabActive(
-                                                false,
-                                            );
-                                            setisLabelAlignmentOptionTabActive(
-                                                (prev) => !prev,
-                                            );
+                                {isLabelPlacementOptionTabActive && (
+                                    <DropDownListContainer
+                                        style={{
+                                            bottom:
+                                                isNearestWindow ||
+                                                checkNearestWindow
+                                                    ? '30px'
+                                                    : '',
                                         }}
                                     >
+                                        <DropDownList>
+                                            {placementOptions.map(
+                                                (item, index) => (
+                                                    <ListItem
+                                                        backgroundColor={
+                                                            item.value ===
+                                                            selectedDrawnShape
+                                                                .data
+                                                                .labelPlacement
+                                                                ? '#434c58'
+                                                                : undefined
+                                                        }
+                                                        key={index}
+                                                        onClick={(
+                                                            event: MouseEvent<HTMLElement>,
+                                                        ) => {
+                                                            event.stopPropagation();
+                                                            handleEditLabel(
+                                                                item.value,
+                                                                isLabelPlacementOptionTabActive,
+                                                                isLabelAlignmentOptionTabActive,
+                                                            );
+                                                        }}
+                                                    >
+                                                        {item.name}
+                                                    </ListItem>
+                                                ),
+                                            )}
+                                        </DropDownList>
+                                    </DropDownListContainer>
+                                )}
+                            </DropDownContainer>
+
+                            <DropDownContainer>
+                                <DropDownHeader
+                                    onClick={(
+                                        event: MouseEvent<HTMLElement>,
+                                    ) => {
+                                        event.stopPropagation();
+                                        setisLabelPlacementOptionTabActive(
+                                            false,
+                                        );
+                                        setisLabelAlignmentOptionTabActive(
+                                            (prev) => !prev,
+                                        );
+                                    }}
+                                >
+                                    <div>
                                         {selectedDrawnShape.data.labelAlignment}
-                                    </DropDownHeader>
-                                    {isLabelAlignmentOptionTabActive && (
-                                        <DropDownListContainer
-                                            style={{
-                                                bottom:
-                                                    isNearestWindow ||
-                                                    checkNearestWindow
-                                                        ? '30px'
-                                                        : '',
-                                            }}
-                                        >
-                                            <DropDownList>
-                                                {alignmentOptions.map(
-                                                    (item, index) => (
-                                                        <ListItem
-                                                            backgroundColor={
-                                                                item.value ===
-                                                                selectedDrawnShape
-                                                                    .data
-                                                                    .labelAlignment
-                                                                    ? '#434c58'
-                                                                    : undefined
-                                                            }
-                                                            key={index}
-                                                            onClick={(
-                                                                event: MouseEvent<HTMLElement>,
-                                                            ) => {
-                                                                event.stopPropagation();
-                                                                handleEditLabel(
-                                                                    item.value,
-                                                                    isLabelPlacementOptionTabActive,
-                                                                    isLabelAlignmentOptionTabActive,
-                                                                );
-                                                            }}
-                                                        >
-                                                            {item.name}
-                                                        </ListItem>
-                                                    ),
-                                                )}
-                                            </DropDownList>
-                                        </DropDownListContainer>
-                                    )}
-                                </DropDownContainer>
-                            </LineSettingsLeft>
-                        </FibLineSettings>
+                                    </div>
+                                    <LabelSettingsArrow
+                                        isActive={
+                                            isLabelAlignmentOptionTabActive
+                                        }
+                                    ></LabelSettingsArrow>
+                                </DropDownHeader>
+                                {isLabelAlignmentOptionTabActive && (
+                                    <DropDownListContainer
+                                        style={{
+                                            bottom:
+                                                isNearestWindow ||
+                                                checkNearestWindow
+                                                    ? '30px'
+                                                    : '',
+                                        }}
+                                    >
+                                        <DropDownList>
+                                            {alignmentOptions.map(
+                                                (item, index) => (
+                                                    <ListItem
+                                                        backgroundColor={
+                                                            item.value ===
+                                                            selectedDrawnShape
+                                                                .data
+                                                                .labelAlignment
+                                                                ? '#434c58'
+                                                                : undefined
+                                                        }
+                                                        key={index}
+                                                        onClick={(
+                                                            event: MouseEvent<HTMLElement>,
+                                                        ) => {
+                                                            event.stopPropagation();
+                                                            handleEditLabel(
+                                                                item.value,
+                                                                isLabelPlacementOptionTabActive,
+                                                                isLabelAlignmentOptionTabActive,
+                                                            );
+                                                        }}
+                                                    >
+                                                        {item.name}
+                                                    </ListItem>
+                                                ),
+                                            )}
+                                        </DropDownList>
+                                    </DropDownListContainer>
+                                )}
+                            </DropDownContainer>
+                        </LabelSettingsContainer>
+                    )}
+
+                {selectedDrawnShape &&
+                    selectedDrawnShape.data.type === 'FibRetracement' && (
+                        <LabelSettingsContainer
+                            style={{ padding: '5px 0 5px 0' }}
+                        >
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    paddingLeft: '8px',
+                                    // justifyContent: 'center',
+                                }}
+                            >
+                                <StyledLabel>Background</StyledLabel>
+                            </div>
+
+                            <SliderContainer>
+                                <AlphaSlider
+                                    type='range'
+                                    min='0'
+                                    max='100'
+                                    onChange={(
+                                        event: React.ChangeEvent<HTMLInputElement>,
+                                    ) => {
+                                        event.stopPropagation();
+                                        handleEditFibBackgroundColor(
+                                            event.target.value,
+                                        );
+                                    }}
+                                    value={fibBackgroundAlphaValue * 100}
+                                />
+                            </SliderContainer>
+                        </LabelSettingsContainer>
                     )}
             </FloatingToolbarSettingsContainer>
 
@@ -943,14 +1119,17 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                 : colorPicker.background
                         }
                         width={'170px'}
-                        onChange={(item) =>
-                            handleEditColor(
-                                item,
-                                isLineColorPickerTabActive,
-                                isBorderColorPickerTabActive,
-                                isBackgroundColorPickerTabActive,
-                            )
-                        }
+                        onChange={(item, event) => {
+                            event.stopPropagation();
+                            {
+                                handleEditColor(
+                                    item,
+                                    isLineColorPickerTabActive,
+                                    isBorderColorPickerTabActive,
+                                    isBackgroundColorPickerTabActive,
+                                );
+                            }
+                        }}
                     />
                 </ColorPickerTab>
             )}

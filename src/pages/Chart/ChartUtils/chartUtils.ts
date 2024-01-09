@@ -297,7 +297,8 @@ export function calculateFibRetracement(
             x: number;
             y: number;
             denomInBase: boolean;
-            color: string;
+            lineColor: string;
+            areaColor: string;
             level: number;
         }[]
     > = [];
@@ -311,7 +312,8 @@ export function calculateFibRetracement(
                         pointLevel +
                         diff * level.level * (retracementIsUp ? 1 : -1),
                     denomInBase: lineData[0].denomInBase,
-                    color: level.color,
+                    lineColor: level.lineColor,
+                    areaColor: level.areaColor,
                     level: level.level,
                 },
                 {
@@ -320,7 +322,8 @@ export function calculateFibRetracement(
                         pointLevel +
                         diff * level.level * (retracementIsUp ? 1 : -1),
                     denomInBase: lineData[0].denomInBase,
-                    color: level.color,
+                    lineColor: level.lineColor,
+                    areaColor: level.areaColor,
                     level: level.level,
                 },
             ]);
@@ -350,7 +353,8 @@ export function calculateFibRetracementBandAreas(
         fromValue: number;
         toValue: number;
         denomInBase: boolean;
-        color: string;
+        lineColor: string;
+        areaColor: string;
     }> = [];
 
     const activeFibLevels = fibLevels.filter((level) => level.active);
@@ -366,7 +370,8 @@ export function calculateFibRetracementBandAreas(
                         pointLevel +
                         diff * curr.level * (retracementIsUp ? 1 : -1),
                     denomInBase: lineData[0].denomInBase,
-                    color: curr.color,
+                    lineColor: curr.lineColor,
+                    areaColor: curr.areaColor,
                 });
             }
 
@@ -455,4 +460,10 @@ export const findSnapTime = (timeSeconds: number, period: number) => {
             : snapDiff);
 
     return snappedTime;
+};
+
+export const renderChart = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const nd = d3.select('#d3fc_group').node() as any;
+    if (nd) nd.requestRedraw();
 };

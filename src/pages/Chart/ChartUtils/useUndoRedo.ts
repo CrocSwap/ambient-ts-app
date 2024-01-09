@@ -54,7 +54,15 @@ export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             initialArray.forEach((element: any) => {
                 if (
-                    Object.prototype.hasOwnProperty.call(element, 'lineWidth')
+                    Object.prototype.hasOwnProperty.call(
+                        element,
+                        'lineWidth',
+                    ) ||
+                    (element.type === 'FibRetracement' &&
+                        Object.prototype.hasOwnProperty.call(
+                            element.extraData[0],
+                            'color',
+                        ))
                 ) {
                     const newElement: drawDataHistory = {
                         data: element.data,

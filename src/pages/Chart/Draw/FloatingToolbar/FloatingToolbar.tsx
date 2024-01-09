@@ -57,6 +57,7 @@ interface FloatingToolbarProps {
         type: string,
         updatedData: drawDataHistory | undefined,
     ) => void;
+    drawnShapeHistory: drawDataHistory[];
 }
 
 function FloatingToolbar(props: FloatingToolbarProps) {
@@ -69,6 +70,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         deleteItem,
         setIsShapeEdited,
         addDrawActionStack,
+        drawnShapeHistory,
     } = props;
 
     const floatingDivRef = useRef<HTMLDivElement>(null);
@@ -215,8 +217,6 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const resizeObserver = new ResizeObserver((result: any) => {
             const height = result[0].contentRect.height;
-
-            console.log({ height });
 
             height && height !== 30 && setSettingsDivHeight(height);
         });
@@ -1104,6 +1104,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                     isNearestWindow={isNearestWindow}
                     floatingToolbarHeight={floatingToolbarHeight}
                     settingsDivHeight={settingsDivHeight}
+                    drawnShapeHistory={drawnShapeHistory}
                 />
             )}
         </FloatingDivContainer>
