@@ -5400,6 +5400,7 @@ export default function Chart(props: propsIF) {
                                 drawSettings={drawSettings}
                                 quoteTokenDecimals={quoteTokenDecimals}
                                 baseTokenDecimals={baseTokenDecimals}
+                                setIsUpdatingShape={setIsUpdatingShape}
                             />
                         )}
 

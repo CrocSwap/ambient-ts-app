@@ -46,6 +46,7 @@ import Divider from '../../../../components/Global/Divider/Divider';
 import lineOptionSvg from '../../../../assets/images/icons/draw/lineOptions/line.svg';
 import dashOptionSvg from '../../../../assets/images/icons/draw/lineOptions/dash.svg';
 import dottedOptionSvg from '../../../../assets/images/icons/draw/lineOptions/dotted.svg';
+import { fibDefaultLevels } from '../../ChartUtils/drawConstants';
 
 interface FloatingToolbarSettingsProps {
     selectedDrawnShape: selectedDrawnData | undefined;
@@ -149,7 +150,9 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
     const [selectedFibLevel, setSelectedFibLevel] = useState(Number);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [fibBackgroundAlphaValue, setFibBackgroundAlphaValue] = useState<any>(
-        d3.color(selectedDrawnShape?.data.extraData[0].areaColor)?.opacity,
+        selectedDrawnShape && selectedDrawnShape?.data.type === 'FibRetracement'
+            ? d3.color(selectedDrawnShape?.data.extraData[0].areaColor)?.opacity
+            : d3.color(fibDefaultLevels[0].areaColor)?.opacity,
     );
 
     const [fibDataToUpdate, setFibDataToUpdate] = useState<drawDataHistory>();
