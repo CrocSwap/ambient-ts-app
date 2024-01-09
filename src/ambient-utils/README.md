@@ -1,44 +1,62 @@
 # 🛠🐊🛠 The data layer/utilities of the Ambient Frontend.
 
-## Link
+## Links
 
-### https://www.npmjs.com/package/@crocswap-libs/ambient-utils
+### 1. https://github.com/CrocSwap/ambient-ts-app/tree/develop/src/ambient-utils
 
-## Publishing
+### 2. https://www.npmjs.com/package/@crocswap-libs/ambient-utils
 
-### Prerequisites
+## Usage
 
-1. Ensure you're logged in to the `@crocswap-libs` npm account.
+### Install
+```
+yarn install @crocswap-libs/ambient-utils
+```
+or
 
 ```
-$ npm login
-Username: (your username)
-Password: (your password)
-Email: (your email address)
+npm install @crocswap-libs/ambient-utils
 ```
 
-2. Ensure `ambient-utils/package.json` contains all dependencies used within the folder to work independently.
+### Configure
 
-3. Ensure the versions of all dependencies listed in `ambient-utils/package.json` match the ones in the frontend's `package.json`.
-
-4. Ensure you have permissions to run the publishing file `scripts/publish-ambient-utils.js`. 
-```
-$ chmod +x scripts/publish-ambient-utils.js
 ```
 
-### Steps
+```
 
-1. Make the appropriate changes to `ambient-utils/package.json` including versioning, packages, licensing.
+### Example
 
-2. Publish the package by running `yarn publish-ambient-utils`. This will compile and publish ambient-utils. NOTE: By default, this will do a dry-run. Pass in the `--publish` flag to actually run the publishing script.
+By default, everything is exported from the root directory (all constants, functions, types, etc.)
 
-## FAQ
+#### Constants
+```
+import { blacklist } from '@crocswap-libs/ambient-utils';
 
-#### 1. When using `ambient-utils` within the frontend, will separate dependencies need to be installed for it during development?
-No. Separate dependencies will only get installed if `yarn install` or `npm install` is explicitly run in the `ambient-utils` directory. There is no need to do this as ambient-utils relies on using the packages specified in the root `package.json` and installed in the root `node_modules` directory as part of the frontend app.
+...
 
-#### 2. Will `ambient-utils/package.json` require manual maintainance?
-Yes. Any change in dependencies and versioning will have to be manually kept in-sync from the frontend's `package.json` to `ambient-utils/package.json`. There are ways to automate this and may be worth considering in the future i.e. yarn worksapces, git submodules, etc.
+if (blacklist.contains(user.address)) disconnect();
+```
 
-#### 3. Will I need to import ambient-utils as a local package to use it in development?
-No. The `ambient-utils` directory will be treated as just another folder in the frontend app. However, if a published version exists, you technically are able to install and use `@crcoswap-libs/ambient-utils` as a npm package and get access to the same exports.
+#### Functions
+```
+// fetch ens addresses
+import { fetchBatch } from '@crocswap-libs/ambient-utils';
+
+...
+
+const ensAddress = fetchBatch<'ens_address'>({config_path: 'ens_address', address: user.address});
+```
+
+#### Type Definitions
+
+```
+import { TokenIF } from '@crocswap-libs/ambient-utils';
+
+...
+
+const myToken: TokenIF = { ... };
+```
+
+## Support
+
+To submit any bugs, questions or request features, please see https://github.com/CrocSwap/ambient-ts-app
