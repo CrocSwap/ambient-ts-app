@@ -10,11 +10,19 @@ import {
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 import { GCGO_ETHEREUM_URL } from '../gcgo';
+import { AMBIENT_UTILS_OVERRIDES } from '../../initAmbientUtils';
 
 const PROVIDER_KEY =
     process.env.NODE_ENV === 'test'
         ? process.env.PROVIDER_KEY
+        : process.env.NODE_ENV === 'package'
+        ? AMBIENT_UTILS_OVERRIDES['INFURA_API_KEY']
         : process.env.REACT_APP_INFURA_KEY;
+
+const ETHERSCAN_API_KEY =
+    process.env.NODE_ENV === 'package'
+        ? AMBIENT_UTILS_OVERRIDES['ETHERSCAN_API_KEY']
+        : 'KNJM7A9ST1Q1EESYXPPQITIP7I8EFSY456';
 
 export const ethereumMainnet: NetworkIF = {
     chainId: '0x1',
@@ -32,7 +40,7 @@ export const ethereumMainnet: NetworkIF = {
     ],
     getGasPriceInGwei: async () => {
         const response = await fetch(
-            'https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=KNJM7A9ST1Q1EESYXPPQITIP7I8EFSY456',
+            `https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${ETHERSCAN_API_KEY}`,
         );
         const gasPrice = (await response.json()).result.ProposeGasPrice;
         return gasPrice ? parseInt(gasPrice) : undefined;

@@ -21,15 +21,28 @@ npm install @crocswap-libs/ambient-utils
 ### Configure
 
 ```
+// App.tsx
 
+import { initPackage } from '@crocswap-libs/ambient-utils';
+
+function App() {
+  useEffect(() => {
+    initPackage({
+      INFURA_API_KEY: 'your_infura_api_key',     // REQUIRED
+      ETHERSCAN_API_KEY: 'your_etherscan_api_key',  // REQUIRED
+    });
+  }, []);
+}
 ```
 
 ### Example
 
-By default, everything is exported from the root directory (all constants, functions, types, etc.)
+Once configured, by default, everything is exported from the root directory (all constants, functions, types, etc.)
 
 #### Constants
 ```
+// Wallet.tsx
+
 import { blacklist } from '@crocswap-libs/ambient-utils';
 
 ...
@@ -39,7 +52,8 @@ if (blacklist.contains(user.address)) disconnect();
 
 #### Functions
 ```
-// fetch ens addresses
+// Profile.tsx
+
 import { fetchBatch } from '@crocswap-libs/ambient-utils';
 
 ...
@@ -50,6 +64,8 @@ const ensAddress = fetchBatch<'ens_address'>({config_path: 'ens_address', addres
 #### Type Definitions
 
 ```
+// TokenSelector.tsx
+
 import { TokenIF } from '@crocswap-libs/ambient-utils';
 
 ...
@@ -59,4 +75,4 @@ const myToken: TokenIF = { ... };
 
 ## Support
 
-To submit any bugs, questions or request features, please see https://github.com/CrocSwap/ambient-ts-app
+To submit any bugs, questions or feature requests, please go to https://github.com/CrocSwap/ambient-ts-app
