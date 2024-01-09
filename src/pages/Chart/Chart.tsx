@@ -1127,7 +1127,7 @@ export default function Chart(props: propsIF) {
                                 scaleData?.yScale.invert(eventPoint);
 
                             const isHoverLiqidite = liqMaxActiveLiq
-                                ? eventPointX <= liqMaxActiveLiq
+                                ? liqMaxActiveLiq - eventPointX > 60
                                 : false;
 
                             const limitLineValue = limit;
@@ -2025,7 +2025,7 @@ export default function Chart(props: propsIF) {
             const eventPointX = event.targetTouches[0].clientX - leftPositin;
 
             const isHoverLiqidite = liqMaxActiveLiq
-                ? eventPointX <= liqMaxActiveLiq
+                ? liqMaxActiveLiq - eventPointX > 60
                 : false;
 
             return isHoverLiqidite;
@@ -5454,6 +5454,7 @@ export default function Chart(props: propsIF) {
                                 drawSettings={drawSettings}
                                 quoteTokenDecimals={quoteTokenDecimals}
                                 baseTokenDecimals={baseTokenDecimals}
+                                setIsUpdatingShape={setIsUpdatingShape}
                             />
                         )}
 
