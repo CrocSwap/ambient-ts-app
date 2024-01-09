@@ -19,8 +19,8 @@ import { fetchUserRecentChanges } from '../../../ambient-utils/api';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import useDebounce from '../../../App/hooks/useDebounce';
+import { TransactionIF } from '../../../ambient-utils/types';
 
 interface OrderHistoryCanvasProps {
     scaleData: scaleData;
@@ -31,6 +31,7 @@ interface OrderHistoryCanvasProps {
     showHistorical: boolean;
     hoveredOrderHistory: orderHistory | undefined;
     isHoveredOrderHistory: boolean;
+    drawSettings: any;
 }
 
 export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
@@ -43,6 +44,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
         showHistorical,
         hoveredOrderHistory,
         isHoveredOrderHistory,
+        drawSettings,
     } = props;
 
     const d3OrderCanvas = useRef<HTMLDivElement | null>(null);
@@ -55,16 +57,21 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
     const [circleSeriesHighlighted, setCircleSeriesHighlighted] =
         useState<any>();
 
+    const [userTransactionData, setUserTransactionData] =
+        useState<Array<TransactionIF>>();
+
     const lineSeries = createLinearLineSeries(
         scaleData?.xScale,
         scaleData?.yScale,
         denomInBase,
+        drawSettings['Brush'].line,
     );
 
     const liquidityLineSeries = createLinearLineSeries(
         scaleData?.xScale,
         scaleData?.yScale,
         denomInBase,
+        { color: 'rgba(95, 255, 242, 0.7)', lineWidth: 1.5, dash: [0, 0] },
     );
 
     function createScaleForBandArea(x: number, x2: number) {
@@ -75,7 +82,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
         return newXScale;
     }
 
-    const { isUserConnected, userAddress } = useContext(UserDataContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const {
         server: { isEnabled: isServerEnabled },
@@ -113,7 +120,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                     simpleCalc: true,
                     annotateMEV: false,
                     ensResolution: true,
-                    n: 100, // fetch last 100 changes,
+                    n: 10, // fetch last 100 changes,
                     crocEnv,
                     graphCacheUrl: activeNetwork.graphCacheUrl,
                     provider,
@@ -125,7 +132,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                 })
                     .then((updatedTransactions) => {
                         if (updatedTransactions) {
-                            console.log(updatedTransactions);
+                            setUserTransactionData(() => updatedTransactions);
                         }
                     })
                     .catch(console.error);
@@ -133,43 +140,46 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                 console.error;
             }
         }
-    }, [isServerEnabled, userAddress, lastBlockNumWait, !!crocEnv, !!provider]);
+    }, [isServerEnabled, userAddress, !!crocEnv, !!provider]);
 
     useEffect(() => {
-        const domainRight = d3.max(orderData, (data) => {
-            data.orderType === 'swap';
-            return data.orderDolarAmount;
-        });
-        const domainLeft = d3.min(orderData, (data) => {
-            data.orderType === 'swap';
-            return data.orderDolarAmount;
-        });
-
-        if (domainRight && domainLeft) {
-            const scale = d3
-                .scaleLinear()
-                .range([1000, 3000])
-                .domain([domainLeft, domainRight]);
-            setCircleScale(() => {
-                return scale;
+        if (userTransactionData) {
+            const domainRight = d3.max(userTransactionData, (data) => {
+                data.entityType === 'swap';
+                return data.totalValueUSD;
             });
+            const domainLeft = d3.min(userTransactionData, (data) => {
+                data.entityType === 'swap';
+                return data.totalValueUSD;
+            });
+
+            if (domainRight && domainLeft) {
+                const scale = d3
+                    .scaleLinear()
+                    .range([1000, 3000])
+                    .domain([domainLeft, domainRight]);
+
+                setCircleScale(() => {
+                    return scale;
+                });
+            }
         }
-    }, [orderData]);
+    }, [userTransactionData]);
 
     useEffect(() => {
-        if (orderData && circleScale) {
+        if (userTransactionData && circleScale) {
             const circleSerieArray: any[] = [];
 
-            orderData.forEach((order) => {
+            userTransactionData.forEach((order) => {
                 const circleSerie = createCircle(
                     scaleData?.xScale,
                     scaleData?.yScale,
-                    circleScale(order.orderDolarAmount),
+                    circleScale(order.totalValueUSD),
                     1,
                     denomInBase,
                     false,
                     false,
-                    order.orderDirection,
+                    order.isBuy,
                 );
 
                 circleSerieArray.push(circleSerie);
@@ -183,22 +193,22 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                 return circleSerieArray;
             });
         }
-    }, [orderData, circleScale]);
+    }, [userTransactionData, circleScale]);
 
     useEffect(() => {
-        if (orderData && scaleData) {
-            orderData.forEach((order) => {
-                if (order.orderType === 'liquidity') {
+        if (userTransactionData && scaleData) {
+            userTransactionData.forEach((order) => {
+                if (order.entityType === 'liqchange') {
                     const newBandScale = createScaleForBandArea(
-                        order?.tsStart.getTime() * 1000,
-                        order?.tsEnd.getTime() * 1000,
+                        order?.txTime * 1000,
+                        order?.txTime * 1000,
                     );
 
                     const bandArea = createBandArea(
                         newBandScale,
                         scaleData?.yScale,
                         denomInBase,
-                        'rgba(95, 255, 242, 0.15)',
+                        { background: { color: 'rgba(95, 255, 242, 0.15)' } },
                     );
 
                     setBandArea(() => {
@@ -207,7 +217,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                 }
             });
         }
-    }, [diffHashSig(orderData)]);
+    }, [diffHashSig(userTransactionData)]);
 
     useEffect(() => {
         if (
@@ -233,7 +243,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                 });
             }
         }
-    }, [diffHashSig(orderData), hoveredOrderHistory]);
+    }, [userTransactionData, hoveredOrderHistory]);
 
     useEffect(() => {
         const canvas = d3
@@ -242,7 +252,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
             .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
 
-        if (orderData && lineSeries && scaleData && bandArea) {
+        if (userTransactionData && lineSeries && scaleData && bandArea) {
             d3.select(d3OrderCanvas.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
@@ -325,17 +335,19 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                         }
                     }
 
-                    orderData.forEach((order, index) => {
+                    userTransactionData.forEach((order, index) => {
                         if (
                             showSwap &&
                             circleSeries &&
                             circleSeries.length > 0 &&
-                            order.orderType === 'swap'
+                            order.entityType === 'swap'
                         ) {
                             const circleData = [
                                 {
-                                    x: order.tsEnd.getTime() * 1000,
-                                    y: order.orderPriceCompleted,
+                                    x: order.txTime * 1000,
+                                    y: denomInBase
+                                        ? order.swapInvPriceDecimalCorrected
+                                        : order.swapPriceDecimalCorrected,
                                     denomInBase: denomInBase,
                                 },
                             ];
@@ -348,7 +360,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                 isHoveredOrderHistory &&
                                 circleSeriesHighlighted.length > 0 &&
                                 hoveredOrderHistory.orderType === 'swap' &&
-                                hoveredOrderHistory.tsId === order.tsId
+                                hoveredOrderHistory.tsId === order.txId
                             ) {
                                 const circleDataHg = [
                                     {
@@ -364,40 +376,86 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                             }
                         }
 
-                        if (showHistorical && order.orderType === 'history') {
-                            const lineData: lineData[] = [];
+                        // if (showHistorical && order.entityType === 'limitOrder') {
+                        //     const lineData: lineData[] = [];
 
-                            lineData.push({
-                                x: order.tsStart.getTime() * 1000,
-                                y: order.orderPrice,
-                                denomInBase: denomInBase,
-                            });
-                            lineData.push({
-                                x: order.tsEnd.getTime() * 1000,
-                                y: order.orderPrice,
-                                denomInBase: denomInBase,
-                            });
+                        //     lineData.push({
+                        //         x: order.txTime * 1000,
+                        //         y: denomInBase ? order.askTickInvPriceDecimalCorrected : order.askTickPriceDecimalCorrected,
+                        //         denomInBase: denomInBase,
+                        //     });
+                        //     lineData.push({
+                        //         x: (order.txTime + 3600 * 2) * 1000,
+                        //         y: denomInBase ? order.bidTickInvPriceDecimalCorrected : order.bidTickPriceDecimalCorrected,
+                        //         denomInBase: denomInBase,
+                        //     });
 
-                            lineSeries(lineData);
-                        }
+                        //     lineSeries(lineData);
+                        // }
 
-                        if (showLiquidity && order.orderType === 'liquidity') {
+                        if (showLiquidity && order.entityType === 'liqchange') {
                             const range = [
-                                scaleData?.xScale(
-                                    order?.tsStart.getTime() * 1000,
+                                scaleData?.xScale(order?.txTime * 1000),
+                                scaleData.xScale(
+                                    (order?.txTime + 3600 * 4) * 1000,
                                 ),
-                                scaleData.xScale(order?.tsEnd.getTime() * 1000),
                             ];
 
                             bandArea.xScale().range(range);
 
                             const bandData = {
-                                fromValue: order.orderPrice,
-                                toValue: order.orderPriceCompleted,
+                                fromValue: denomInBase
+                                    ? order.bidTickInvPriceDecimalCorrected
+                                    : order.bidTickPriceDecimalCorrected,
+                                toValue: denomInBase
+                                    ? order.askTickInvPriceDecimalCorrected
+                                    : order.askTickPriceDecimalCorrected,
                                 denomInBase: denomInBase,
                             } as bandLineData;
 
+                            lineSeries;
+
                             bandArea([bandData]);
+
+                            const lineData: lineData[][] = [];
+
+                            lineData.push([
+                                {
+                                    x: order.txTime * 1000,
+                                    y: denomInBase
+                                        ? order.askTickInvPriceDecimalCorrected
+                                        : order.askTickPriceDecimalCorrected,
+                                    denomInBase: denomInBase,
+                                },
+                                {
+                                    x: (order.txTime + 3600 * 4) * 1000,
+                                    y: denomInBase
+                                        ? order.askTickInvPriceDecimalCorrected
+                                        : order.askTickPriceDecimalCorrected,
+                                    denomInBase: denomInBase,
+                                },
+                            ]);
+
+                            lineData.push([
+                                {
+                                    x: order.txTime * 1000,
+                                    y: denomInBase
+                                        ? order.bidTickInvPriceDecimalCorrected
+                                        : order.bidTickPriceDecimalCorrected,
+                                    denomInBase: denomInBase,
+                                },
+                                {
+                                    x: (order.txTime + 3600 * 4) * 1000,
+                                    y: denomInBase
+                                        ? order.bidTickInvPriceDecimalCorrected
+                                        : order.bidTickPriceDecimalCorrected,
+                                    denomInBase: denomInBase,
+                                },
+                            ]);
+
+                            lineData.forEach((line) => {
+                                liquidityLineSeries(line);
+                            });
                         }
                     });
                 })

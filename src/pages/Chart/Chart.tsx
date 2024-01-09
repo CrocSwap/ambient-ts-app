@@ -361,8 +361,6 @@ export default function Chart(props: propsIF) {
     const [lineSeries, setLineSeries] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [annotationLineSeries, setAnnotationLineSeries] = useState<any>();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [dashedLineSeries, setDashedLineSeries] = useState<any>();
 
     const [selectedDrawnShape, setSelectedDrawnShape] = useState<
         selectedDrawnData | undefined
@@ -2790,145 +2788,6 @@ export default function Chart(props: propsIF) {
                                     );
 
                                     lineSeries(item?.data);
-
-                                    if (item.type === 'Angle') {
-                                        const opposite = Math.abs(
-                                            scaleData.yScale(item?.data[0].y) -
-                                                scaleData.yScale(
-                                                    item?.data[1].y,
-                                                ),
-                                        );
-                                        const side = Math.abs(
-                                            scaleData.xScale(item?.data[0].x) -
-                                                scaleData.xScale(
-                                                    item?.data[1].x,
-                                                ),
-                                        );
-
-                                        const distance = opposite / side;
-
-                                        const minAngleLineLength =
-                                            side / 4 > 80
-                                                ? Math.abs(
-                                                      item?.data[0].x -
-                                                          item?.data[1].x,
-                                                  ) / 4
-                                                : scaleData.xScale.invert(
-                                                      scaleData.xScale(
-                                                          item?.data[0].x,
-                                                      ) + 80,
-                                                  ) - item?.data[0].x;
-
-                                        const minAngleTextLength =
-                                            item?.data[0].x +
-                                            minAngleLineLength +
-                                            scaleData.xScale.invert(
-                                                scaleData.xScale(
-                                                    item?.data[0].x,
-                                                ) + 20,
-                                            ) -
-                                            item?.data[0].x;
-
-                                        const angleLineData = [
-                                            {
-                                                x: item?.data[0].x,
-                                                y: item?.data[0].y,
-                                                denomInBase:
-                                                    item?.data[0].denomInBase,
-                                            },
-                                            {
-                                                x:
-                                                    item?.data[0].x +
-                                                    minAngleLineLength,
-                                                y: item?.data[0].y,
-                                                denomInBase:
-                                                    item?.data[0].denomInBase,
-                                            },
-                                        ];
-
-                                        const angle =
-                                            Math.atan(distance) *
-                                            (180 / Math.PI);
-
-                                        const supplement =
-                                            item?.data[1].x > item?.data[0].x
-                                                ? -Math.atan(distance)
-                                                : Math.PI + Math.atan(distance);
-
-                                        const arcX =
-                                            item?.data[1].y > item?.data[0].y
-                                                ? supplement
-                                                : 0;
-                                        const arcY =
-                                            item?.data[1].y > item?.data[0].y
-                                                ? 0
-                                                : -supplement;
-
-                                        const radius =
-                                            scaleData.xScale(
-                                                item?.data[0].x +
-                                                    minAngleLineLength,
-                                            ) -
-                                            scaleData.xScale(item?.data[0].x);
-
-                                        if (ctx) {
-                                            ctx.setLineDash([5, 3]);
-                                            dashedLineSeries.decorate(
-                                                (
-                                                    context: CanvasRenderingContext2D,
-                                                ) => {
-                                                    context.strokeStyle =
-                                                        item.line.color;
-                                                    context.lineWidth = 1;
-                                                },
-                                            );
-                                            dashedLineSeries(angleLineData);
-
-                                            ctx.beginPath();
-                                            ctx.arc(
-                                                scaleData.xScale(
-                                                    item.data[0].x,
-                                                ),
-                                                scaleData.yScale(
-                                                    item.data[0].y,
-                                                ),
-                                                radius,
-                                                arcX,
-                                                arcY,
-                                            );
-                                            ctx.stroke();
-
-                                            ctx.textAlign = 'center';
-                                            ctx.textBaseline = 'middle';
-                                            ctx.fillStyle = 'white';
-                                            ctx.font = '50 12px Lexend Deca';
-
-                                            const angleDisplay =
-                                                item?.data[1].x >
-                                                item?.data[0].x
-                                                    ? angle
-                                                    : 180 - angle;
-
-                                            ctx.fillText(
-                                                (item?.data[1].y >
-                                                item?.data[0].y
-                                                    ? ''
-                                                    : '-') +
-                                                    angleDisplay
-                                                        .toFixed(0)
-                                                        .toString() +
-                                                    'º',
-                                                scaleData.xScale(
-                                                    minAngleTextLength,
-                                                ),
-                                                scaleData.yScale(
-                                                    item?.data[0].y,
-                                                ),
-                                            );
-
-                                            ctx.closePath();
-                                        }
-                                    }
                                 }
 
                                 if (
@@ -3822,7 +3681,6 @@ export default function Chart(props: propsIF) {
                     annotationLineSeries.context(ctx);
                     circleSeries.context(ctx);
                     selectedCircleSeries.context(ctx);
-                    dashedLineSeries.context(ctx);
                 });
 
             render();
@@ -5272,14 +5130,6 @@ export default function Chart(props: propsIF) {
             );
 
             setAnnotationLineSeries(() => annotationLineSeries);
-
-            const dashedLineSeries = createLinearLineSeries(
-                scaleData?.xScale,
-                scaleData?.yScale,
-                denomInBase,
-            );
-
-            setDashedLineSeries(() => dashedLineSeries);
         }
     }, [scaleData, denomInBase]);
 
@@ -5552,6 +5402,7 @@ export default function Chart(props: propsIF) {
                                     isHoveredOrderHistory={
                                         isHoveredOrderHistory
                                     }
+                                    drawSettings={drawSettings}
                                 />
                             )}
 

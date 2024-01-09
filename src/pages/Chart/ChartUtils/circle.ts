@@ -23,7 +23,7 @@ export function createCircle(
     denomInBase: boolean,
     isSelected = false,
     isTransparent = false,
-    isOrder = '',
+    isBuy: boolean | undefined = undefined,
 ) {
     return d3fc
         .seriesCanvasPoint()
@@ -37,8 +37,8 @@ export function createCircle(
         .type(d3.symbolCircle)
         .decorate((context: any) => {
             context.strokeStyle =
-                isOrder !== ''
-                    ? isOrder === 'orderBuy'
+                isBuy !== undefined
+                    ? isBuy
                         ? circleOrderBuyStrokeColor
                         : circleOrderSellStrokeColor
                     : circleStrokeColor;
@@ -47,8 +47,8 @@ export function createCircle(
                 ? 'transparent'
                 : isSelected
                 ? selectedCircleFillColor
-                : isOrder !== ''
-                ? isOrder === 'orderBuy'
+                : isBuy !== undefined
+                ? isBuy
                     ? circleOrderBuyFillColor
                     : circleOrderSellFillColor
                 : circleFillColor;
