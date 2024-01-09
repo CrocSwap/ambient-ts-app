@@ -3105,12 +3105,13 @@ export default function Chart(props: propsIF) {
                                                     secondPointYAxisData,
                                                 ),
                                         );
-                                        // const width = Math.abs(
-                                        //     scaleData.xScale(item.data[0].x) -
-                                        //         scaleData.xScale(
-                                        //             item.data[1].x,
-                                        //         ),
-                                        // );
+
+                                        const width = Math.abs(
+                                            scaleData.xScale(item.data[0].x) -
+                                                scaleData.xScale(
+                                                    item.data[1].x,
+                                                ),
+                                        );
 
                                         const lengthAsBars = Math.abs(
                                             item.data[0].x - item.data[1].x,
@@ -3189,18 +3190,19 @@ export default function Chart(props: propsIF) {
                                                       )
                                                 : infoLabelYAxisData;
 
-                                        if (height > 70) {
-                                            const arrowArray =
-                                                createArrowPointsOfDPRangeLine(
-                                                    item.data,
-                                                    scaleData,
-                                                    denomInBase,
-                                                );
+                                        const arrowArray =
+                                            createArrowPointsOfDPRangeLine(
+                                                item.data,
+                                                scaleData,
+                                                denomInBase,
+                                                height > 30 && width > 30
+                                                    ? 10
+                                                    : 5,
+                                            );
 
-                                            arrowArray.forEach((arrow) => {
-                                                lineSeries(arrow);
-                                            });
-                                        }
+                                        arrowArray.forEach((arrow) => {
+                                            lineSeries(arrow);
+                                        });
 
                                         if (ctx) {
                                             ctx.beginPath();
