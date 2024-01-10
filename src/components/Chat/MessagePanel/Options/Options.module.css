@@ -131,6 +131,9 @@
     
 .hover_style{
  padding: .25rem;
- border-radius: 1rem;
+ margin: .2rem;
+ border-radius: 4rem;
+ transform: scale(1.2);
+
 }
 }

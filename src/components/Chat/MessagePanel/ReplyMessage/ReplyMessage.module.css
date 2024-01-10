@@ -5,3 +5,20 @@
     /* color: var(--other-red); */
     opacity: .8;
 }
+
+.shown_name{
+    display: inline-block;
+    margin-left: .5rem;
+}
+
+.avatar_jazzicons{
+    display: inline-block;
+}
+
+.name{
+    color: var(--accent2);
+}
+
+.current_user_name{
+    color: var(--accent1);
+}

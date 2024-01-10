@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Dispatch, SetStateAction } from 'react';
 import { GrClose } from 'react-icons/gr';
 import styles from './ReplyMessage.module.css';
+import { Message } from '../../Model/MessageModel';
 interface propsIF {
     message: string | undefined;
     ensName: string | undefined;
@@ -11,6 +12,9 @@ interface propsIF {
     myJazzicon?: JSX.Element;
     walletID?: string | undefined;
     repliedMessageEnsName?: string;
+    currentUserId?: string;
+    messageObj?: Message;
+    getShownName: (message: Message) => string;
 }
 
 export default function ReplyMessage(props: propsIF) {
@@ -62,18 +66,23 @@ export default function ReplyMessage(props: propsIF) {
                 </div>
             </motion.div>
         </div>
-    ) : props.message ? (
+    ) : props.messageObj ? (
         <motion.div>
             <div className={styles.replied_message_box}>
                 <div className={styles.avatar_jazzicons}>
                     {props.myJazzicon}
                 </div>
 
+                <div
+                    className={`${styles.shown_name}  ${
+                        props.currentUserId == props.messageObj?.sender
+                            ? styles.current_user_name
+                            : styles.name
+                    }`}
+                >
+                    {props.getShownName(props.messageObj)}
+                </div>
                 <div className={styles.position_info}>
-                    {props.ensName === 'defaultValue'
-                        ? walletID
-                        : props.ensName}
-
                     {props.message === undefined || props.message === '' ? (
                         <GrClose
                             size={25}

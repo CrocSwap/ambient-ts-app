@@ -133,6 +133,9 @@ function SentMessagePanel(props: SentMessageProps) {
 
     const messageVoted = handleInitialLikeDislike();
 
+    const [processedReactions, setProcessedReactions] = useState<string[]>([]);
+    const [hasUserReacted, setHasUserReacted] = useState<boolean>(false);
+
     useEffect(() => {
         const previousMessageDate = new Date(props.previousMessage?.createdAt);
         const currentMessageDate = new Date(props.message?.createdAt);
@@ -256,7 +259,32 @@ function SentMessagePanel(props: SentMessageProps) {
         if (props.message.repliedMessage) {
             getReplyMessageInfo(props.message.repliedMessage as string);
         }
+        const processed = processReactionsV2();
+        let hasFound = false;
+        processed.map((e) => {
+            if (isUserIncluded(e)) {
+                setHasUserReacted(true);
+                hasFound = true;
+            }
+        });
+        if (!hasFound) {
+            setHasUserReacted(false);
+        }
     }, [props.message]);
+
+    useEffect(() => {
+        const processed = processReactionsV2();
+        let hasFound = false;
+        processed.map((e) => {
+            if (isUserIncluded(e)) {
+                setHasUserReacted(true);
+                hasFound = true;
+            }
+        });
+        if (!hasFound) {
+            setHasUserReacted(false);
+        }
+    }, []);
 
     const formatAMPM = (str: string) => {
         const date = new Date(str);
@@ -301,22 +329,22 @@ function SentMessagePanel(props: SentMessageProps) {
         }
     };
 
-    function hasEns() {
+    function hasEns(message: Message) {
         return !(
-            props.message.ensName === '' ||
-            props.message.ensName === 'defaultValue' ||
-            props.message.ensName === null ||
-            props.message.ensName === 'null' ||
-            props.message.ensName === undefined ||
-            props.message.ensName === 'undefined'
+            message.ensName === '' ||
+            message.ensName === 'defaultValue' ||
+            message.ensName === null ||
+            message.ensName === 'null' ||
+            message.ensName === undefined ||
+            message.ensName === 'undefined'
         );
     }
 
-    function getShownName() {
-        if (!hasEns()) {
-            return props.message.walletID.slice(0, 6) + '...';
+    function getShownName(message: Message) {
+        if (!hasEns(message)) {
+            return message.walletID.slice(0, 6) + '...';
         } else {
-            return props.message.ensName;
+            return message.ensName;
         }
     }
 
@@ -647,7 +675,10 @@ function SentMessagePanel(props: SentMessageProps) {
 
     function getReactionUsers(reaction: string) {
         const ret = [''];
-        if (props.message.reactions != undefined) {
+        if (
+            props.message.reactions != undefined &&
+            props.message.reactions[reaction]
+        ) {
             props.message.reactions[reaction].map((user: string) => {
                 const userObj = props.userMap?.get(user);
                 if (userObj) {
@@ -689,6 +720,32 @@ function SentMessagePanel(props: SentMessageProps) {
             ret.push(e.emoji);
         });
         return ret.slice(1, 4);
+    }
+
+    function processReactionsV2() {
+        if (props.message.reactions && Object.keys(props.message.reactions)) {
+            const emojiCounts = Object.keys(props.message.reactions).map(
+                (emoji) => ({
+                    emoji,
+                    count: props.message.reactions[emoji].length,
+                }),
+            );
+
+            emojiCounts.sort((a, b) => b.count - a.count);
+
+            const ret = [''];
+
+            emojiCounts.map((e) => {
+                ret.push(e.emoji);
+            });
+            // return ret.slice(1, 4);
+
+            const processedReactions = ret.slice(1, 4);
+            setProcessedReactions(processedReactions);
+            return processedReactions;
+        }
+
+        return [];
     }
 
     function isUserIncluded(reaction: string) {
@@ -752,7 +809,7 @@ function SentMessagePanel(props: SentMessageProps) {
                 `/${
                     props.isCurrentUser
                         ? 'account'
-                        : !hasEns()
+                        : !hasEns(props.message)
                         ? props.message.walletID
                         : props.message.ensName
                 }`,
@@ -914,6 +971,9 @@ function SentMessagePanel(props: SentMessageProps) {
                                         walletID={
                                             props.replyMessageContent?.walletID
                                         }
+                                        currentUserId={props.currentUser}
+                                        messageObj={props.replyMessageContent}
+                                        getShownName={getShownName}
                                     />
                                 </div>
                             ) : (
@@ -978,7 +1038,8 @@ function SentMessagePanel(props: SentMessageProps) {
                                             }
                                             onClick={goToProfilePage}
                                         >
-                                            {showName && getShownName()}
+                                            {showName &&
+                                                getShownName(props.message)}
                                         </span>
                                         {showAvatar &&
                                             props.message.isVerified && (
@@ -1041,7 +1102,9 @@ function SentMessagePanel(props: SentMessageProps) {
                                         isInput={false}
                                         isPosition={isPosition}
                                         setIsPosition={setIsPosition}
-                                        walletExplorer={getShownName()}
+                                        walletExplorer={getShownName(
+                                            props.message,
+                                        )}
                                         isCurrentUser={props.isCurrentUser}
                                         showAvatar={showAvatar}
                                     />
@@ -1108,12 +1171,20 @@ function SentMessagePanel(props: SentMessageProps) {
                             {props.message.reactions &&
                                 Object.keys(props.message.reactions).length >
                                     0 && (
-                                    <div className={styles.reactions_wrapper}>
+                                    <div
+                                        className={`${
+                                            styles.reactions_wrapper
+                                        } ${
+                                            hasUserReacted == true
+                                                ? styles.user_reacted
+                                                : ' '
+                                        }`}
+                                    >
                                         {
                                             // Object.keys(
                                             //     props.message.reactions,
                                             // )
-                                            processReactions().map(
+                                            processedReactions.map(
                                                 (reaction, index) => {
                                                     return (
                                                         <TextOnlyTooltip
@@ -1158,16 +1229,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                                                     reaction
                                                                 }
                                                                 className={`
-                                                            ${
-                                                                styles.reaction_node
-                                                            } 
-                                                            ${
-                                                                isUserIncluded(
-                                                                    reaction,
-                                                                )
-                                                                    ? styles.user_reacted
-                                                                    : ''
-                                                            } 
+                                                            ${styles.reaction_node} 
                                                         `}
                                                                 onClick={() => {
                                                                     if (
