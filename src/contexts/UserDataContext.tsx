@@ -1,7 +1,14 @@
-import React, { Dispatch, SetStateAction, createContext } from 'react';
+import React, {
+    Dispatch,
+    SetStateAction,
+    createContext,
+    useEffect,
+    useState,
+} from 'react';
 import { useAccount, useConnect, useDisconnect, useEnsName } from 'wagmi';
 import { ConnectArgs, Connector } from '@wagmi/core';
 import { checkBlacklist } from '../ambient-utils/constants';
+import { fetchEnsAddress } from '../ambient-utils/api';
 
 interface UserDataContextIF {
     isUserConnected: boolean | undefined;
@@ -47,7 +54,26 @@ export const UserDataContextProvider = (props: {
             if (isBlacklisted) disconnectUser();
         },
     });
-    const { data: ensName } = useEnsName({ address: userAddress });
+    const { data: ensNameFromWagmi } = useEnsName({ address: userAddress });
+
+    const [ensName, setEnsName] = useState('');
+    // check for ENS name account changes
+    useEffect(() => {
+        (async () => {
+            if (ensNameFromWagmi) {
+                setEnsName(ensNameFromWagmi);
+            } else if (userAddress) {
+                try {
+                    const ensResult = await fetchEnsAddress(userAddress);
+                    if (ensResult) setEnsName(ensResult);
+                    else setEnsName('');
+                } catch (error) {
+                    setEnsName('');
+                    console.error({ error });
+                }
+            }
+        })();
+    }, [ensNameFromWagmi, userAddress]);
 
     const userDataContext: UserDataContextIF = {
         isUserConnected,
