@@ -78,6 +78,7 @@ interface DrawCanvasProps {
     drawSettings: any;
     quoteTokenDecimals: number;
     baseTokenDecimals: number;
+    setIsUpdatingShape: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function DrawCanvas(props: DrawCanvasProps) {
@@ -107,6 +108,7 @@ function DrawCanvas(props: DrawCanvasProps) {
         quoteTokenDecimals,
         baseTokenDecimals,
         period,
+        setIsUpdatingShape,
     } = props;
 
     const {
@@ -355,6 +357,7 @@ function DrawCanvas(props: DrawCanvasProps) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         function startDrawing(mouseX: number, mouseY: number) {
             isDrawing = true;
+            setIsUpdatingShape(true);
             const offsetY = mouseY - canvasRect?.top;
             const offsetX = mouseX - canvasRect?.left;
 
@@ -419,6 +422,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                     };
 
                     isDrawing = false;
+                    setIsUpdatingShape(false);
 
                     setActiveDrawingType('Cross');
 
@@ -904,17 +908,16 @@ function DrawCanvas(props: DrawCanvasProps) {
                             );
                         }
 
-                        if (height > 70 && width > 70) {
-                            const arrowArray = createArrowPointsOfDPRangeLine(
-                                lineData,
-                                scaleData,
-                                denomInBase,
-                            );
+                        const arrowArray = createArrowPointsOfDPRangeLine(
+                            lineData,
+                            scaleData,
+                            denomInBase,
+                            height > 30 && width > 30 ? 10 : 5,
+                        );
 
-                            arrowArray.forEach((arrow) => {
-                                lineSeries(arrow);
-                            });
-                        }
+                        arrowArray.forEach((arrow) => {
+                            lineSeries(arrow);
+                        });
                     }
                 })
                 .on('measure', (event: CustomEvent) => {
@@ -997,21 +1000,15 @@ function DrawCanvas(props: DrawCanvasProps) {
                     );
 
                     bandAreaData.forEach((bandData) => {
-                        const color = d3.color(bandData.color);
-
-                        if (color) {
-                            color.opacity = 0.3;
-
-                            bandArea.decorate(
-                                (context: CanvasRenderingContext2D) => {
-                                    context.fillStyle = color.toString();
-                                },
-                            );
-                        }
+                        bandArea.decorate(
+                            (context: CanvasRenderingContext2D) => {
+                                context.fillStyle =
+                                    bandData.areaColor.toString();
+                            },
+                        );
 
                         bandArea([bandData]);
                     });
-
                     fibLineData.forEach((lineData) => {
                         const lineLabel =
                             lineData[0].level +
@@ -1051,12 +1048,8 @@ function DrawCanvas(props: DrawCanvasProps) {
 
                         annotationLineSeries.decorate(
                             (context: CanvasRenderingContext2D) => {
-                                const color = d3.color(lineData[0].color);
-                                context.strokeStyle = lineData[0].color;
-                                if (color) {
-                                    color.opacity = 1;
-                                    context.strokeStyle = color.toString();
-                                }
+                                context.strokeStyle =
+                                    lineData[0].lineColor.toString();
                                 context.lineWidth = 1.5;
                                 context.beginPath();
                                 context.setLineDash(drawnShapeDefaultDash);
@@ -1066,11 +1059,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                         annotationLineSeries(lineData);
                         ctx?.restore();
 
-                        const textColor = d3.color(lineData[0].color);
-
-                        if (textColor) {
-                            textColor.opacity = 1;
-                        }
+                        const textColor = lineData[0].lineColor;
 
                         let alignment;
 
@@ -1089,8 +1078,8 @@ function DrawCanvas(props: DrawCanvasProps) {
                             alignment = 'left';
                         }
 
-                        if (ctx) {
-                            ctx.fillStyle = lineData[0].color;
+                        if (ctx && textColor) {
+                            ctx.fillStyle = textColor?.toString();
                             ctx.font = '12px Lexend Deca';
                             ctx.textAlign = alignment as CanvasTextAlign;
                             ctx.textBaseline =

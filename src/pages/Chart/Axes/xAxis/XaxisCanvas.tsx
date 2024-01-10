@@ -52,6 +52,7 @@ interface xAxisIF {
     toolbarWidth: number;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     d3Xaxis: MutableRefObject<any>;
+    isUpdatingShape: boolean;
 }
 
 function XAxisCanvas(props: xAxisIF) {
@@ -81,6 +82,7 @@ function XAxisCanvas(props: xAxisIF) {
         selectedDrawnShape,
         toolbarWidth,
         d3Xaxis,
+        isUpdatingShape,
     } = props;
 
     const { timeOfEndCandle } = useContext(CandleContext);
@@ -307,7 +309,11 @@ function XAxisCanvas(props: xAxisIF) {
 
                 context.beginPath();
 
-                if (dateCrosshair && crosshairActive !== 'none') {
+                if (
+                    dateCrosshair &&
+                    crosshairActive !== 'none' &&
+                    !isUpdatingShape
+                ) {
                     context.fillText(
                         dateCrosshair,
                         xScale(crosshairData[0].x) + column,
@@ -362,7 +368,7 @@ function XAxisCanvas(props: xAxisIF) {
                         xScale(shapeData.data[1].x) -
                         xScale(shapeData.data[0].x);
 
-                    context.fillStyle = 'rgba(41, 98, 255, 0.15)';
+                    context.fillStyle = 'rgba(115, 113, 252, 0.1)';
                     context.fillRect(
                         xScale(shapeData.data[0].x) + column,
                         height * 0.175,
@@ -380,7 +386,8 @@ function XAxisCanvas(props: xAxisIF) {
                                     shapePoint - (_width - 15) &&
                                 xScale(crosshairData[0].x) <
                                     shapePoint + (_width - 15) &&
-                                crosshairActive !== 'none'
+                                crosshairActive !== 'none' &&
+                                !isUpdatingShape
                             ) {
                                 context.filter = ' blur(7px)';
                                 context.fillText(
@@ -392,7 +399,7 @@ function XAxisCanvas(props: xAxisIF) {
                                 const textWidth =
                                     context.measureText(point).width + 10;
 
-                                context.fillStyle = '#2962ff';
+                                context.fillStyle = 'rgba(115, 113, 252, 1)';
                                 context.fillRect(
                                     shapePoint + column - textWidth / 2,
                                     height * 0.175,

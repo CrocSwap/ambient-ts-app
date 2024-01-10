@@ -10,19 +10,19 @@ const Tooltip = styled.div`
 
     display: flex;
 
-    z-index: 99;
+    z-index: 999;
 
     background: #202a38;
 
-    box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.8);
+    box-shadow: 0.5px 0.5px 1px 0.5px rgba(0, 0, 0, 0.5);
 
     border-radius: 4px;
 
     height: 22px;
     width: 125px;
 
-    left: 20px;
-    top: -17px;
+    left: 35px;
+    top: 0px;
 
     padding: 2px;
 
