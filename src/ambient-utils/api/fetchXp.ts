@@ -39,8 +39,8 @@ function mapUserXpResponseToUserXp(userXp: any): UserXpIF {
     const currentLevel = xpToLevel(userXp.totalPoints);
     const pointsRemainingToNextLevel = pointsToNextLevel(userXp.totalPoints);
 
-    // eslint-disable-next-line
     const updatedPointsHistory = userXp.pointsHistory.map(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (historyItem: any) => ({
             ...historyItem,
             level: xpToLevel(historyItem.cumulativePoints),
