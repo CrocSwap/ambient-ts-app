@@ -136,7 +136,14 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
         <div className={styles.main_container}>
             {header}
             <Text fontSize='header1' color='text1' padding='8px 32px'>
-                {`Level ${currentLevel !== undefined ? currentLevel : '...'}`}
+                {`Level ${
+                    currentLevel !== undefined
+                        ? currentLevel.toLocaleString('en-US', {
+                              minimumFractionDigits: 0,
+                              maximumFractionDigits: 0,
+                          })
+                        : '...'
+                }`}
             </Text>
             <LevelLine percentage={progressPercentage} width='250px' />
 

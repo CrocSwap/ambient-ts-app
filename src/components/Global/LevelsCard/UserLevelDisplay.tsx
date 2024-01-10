@@ -74,7 +74,12 @@ export default function UserLevelDisplay(props: Props) {
                         color='text1'
                     >
                         {`Level ${
-                            currentLevel !== undefined ? currentLevel : '...'
+                            currentLevel !== undefined
+                                ? currentLevel.toLocaleString('en-US', {
+                                      minimumFractionDigits: 0,
+                                      maximumFractionDigits: 0,
+                                  })
+                                : '...'
                         }`}
                     </Text>
                     <Text
