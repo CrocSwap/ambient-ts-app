@@ -33,6 +33,28 @@ export const progressToNextLevel = (xp: number) => {
     return progressToNextLevel;
 };
 
+// TODO: update these types from any to expected response type, also remove eslint-disable(s) when in use
+// eslint-disable-next-line
+function mapUserXpResponseToUserXp(userXp: any): UserXpIF {
+    const currentLevel = xpToLevel(userXp.totalPoints);
+    const pointsRemainingToNextLevel = pointsToNextLevel(userXp.totalPoints);
+
+    const updatedPointsHistory = userXp.pointsHistory.map(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (historyItem: any) => ({
+            ...historyItem,
+            level: xpToLevel(historyItem.cumulativePoints),
+        }),
+    );
+
+    return {
+        ...userXp,
+        currentLevel,
+        pointsRemainingToNextLevel,
+        pointsHistory: updatedPointsHistory,
+    };
+}
+
 export const fetchUserXpData = async (args: argsIF) => {
     const { user } = args;
     console.log(`Fetching Xp for ${user}`);
@@ -46,7 +68,7 @@ export const fetchUserXpData = async (args: argsIF) => {
     //         }),
     // )
     //     .then((response) => response?.json())
-
+    //     .then((parsedResponse) => mapUserXpResponseToUserXp(parsedResponse))
     //     .catch(console.error);
 
     const userXp: UserXpIF = {
