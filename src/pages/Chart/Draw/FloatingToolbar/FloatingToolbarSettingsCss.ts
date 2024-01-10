@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import * as d3 from 'd3';
 
 const FloatingToolbarSettingsContainer = styled.div`
     background: #242f3f;
@@ -30,10 +29,19 @@ const OptionColor = styled.div<{
 }>`
     ${({ backgroundColor, isFibColor, disabled }) => {
         if (backgroundColor) {
-            const fibLevelColor = d3.color(backgroundColor);
+            const rgbaValues = backgroundColor.match(/\d+(\.\d+)?/g);
 
-            if (fibLevelColor && isFibColor) {
-                fibLevelColor.opacity = disabled ? 0.4 : 1.2;
+            if (rgbaValues && rgbaValues.length > 3 && isFibColor) {
+                const fibLevelColor =
+                    'rgba(' +
+                    rgbaValues[0] +
+                    ',' +
+                    rgbaValues[1] +
+                    ',' +
+                    rgbaValues[2] +
+                    ',' +
+                    (disabled ? 0.4 : 1.2) +
+                    ')';
                 return 'background: ' + fibLevelColor.toString() + ';';
             } else {
                 return 'background: ' + backgroundColor + ';';
