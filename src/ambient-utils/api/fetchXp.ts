@@ -4,6 +4,12 @@ interface argsIF {
     user: string;
 }
 
+// function to convert xp to levels
+export const xpToLevel = (xp: number) => {
+    const level = Math.floor((xp / 250) ** (2 / 3));
+    return level;
+};
+
 export const fetchUserXpData = async (args: argsIF) => {
     const { user } = args;
     console.log(`Fetching Xp for ${user}`);
@@ -23,11 +29,7 @@ export const fetchUserXpData = async (args: argsIF) => {
     const userXp: UserXpIF = {
         userAddress: user,
         leaderboardRank: 1,
-        currentLevel:
-            user.toLowerCase() ===
-            '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc'.toLowerCase()
-                ? 4
-                : 5,
+        currentLevel: xpToLevel(2000000005600),
         recentPoints: 2000000000000,
         totalPoints: 2000000005600,
         pointsRemainingToNextLevel: 400,
@@ -35,37 +37,37 @@ export const fetchUserXpData = async (args: argsIF) => {
             {
                 addedPoints: 2000000000000,
                 cumulativePoints: 2000000005600,
-                level: 5,
+                level: xpToLevel(2000000005600),
                 snapshotUnixTime: 1704326400,
             },
             {
                 addedPoints: 1100,
                 cumulativePoints: 5600,
-                level: 5,
+                level: xpToLevel(5600),
                 snapshotUnixTime: 1703721600,
             },
             {
                 addedPoints: 1500,
                 cumulativePoints: 4500,
-                level: 5,
+                level: xpToLevel(5600),
                 snapshotUnixTime: 1703116800,
             },
             {
                 addedPoints: 1800,
                 cumulativePoints: 3000,
-                level: 4,
+                level: xpToLevel(3000),
                 snapshotUnixTime: 1702512000,
             },
             {
                 addedPoints: 1000,
                 cumulativePoints: 1200,
-                level: 2,
+                level: xpToLevel(1200),
                 snapshotUnixTime: 1701907200,
             },
             {
                 addedPoints: 200,
                 cumulativePoints: 200,
-                level: 1,
+                level: xpToLevel(200),
                 snapshotUnixTime: 1701302400,
             },
         ],
@@ -89,7 +91,7 @@ export const fetchXpLeadersData = async () => {
         {
             userAddress: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
             leaderboardRank: 1,
-            currentLevel: 4,
+            currentLevel: xpToLevel(2000000005600),
             recentPoints: 2000000000000,
             totalPoints: 2000000005600,
             pointsRemainingToNextLevel: 1000,
@@ -97,19 +99,19 @@ export const fetchXpLeadersData = async () => {
                 {
                     addedPoints: 2000000000000,
                     cumulativePoints: 2000000005600,
-                    level: 5,
+                    level: xpToLevel(2000000005600),
                     snapshotUnixTime: 1704326400,
                 },
                 {
                     addedPoints: 1100,
                     cumulativePoints: 5600,
-                    level: 5,
+                    level: xpToLevel(5),
                     snapshotUnixTime: 1703721600,
                 },
                 {
                     addedPoints: 1800,
                     cumulativePoints: 3000,
-                    level: 4,
+                    level: xpToLevel(4),
                     snapshotUnixTime: 1702512000,
                 },
                 {
