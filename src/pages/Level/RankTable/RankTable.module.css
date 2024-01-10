@@ -106,17 +106,14 @@ display: none;
 }
 
 .row_container, .row_container_header{
-    grid-template-columns: 50px 120px 120px 50px 0.5fr;
+    grid-template-columns: 40px 120px 120px 60px 0.5fr;
   
   
 }
-.row_container span{
-    text-wrap: wrap;
-    word-wrap: break-word;
-}
+
 @media only screen and (min-width: 450px)  {
     .row_container, .row_container_header{
-        grid-template-columns: 50px 130px 130px 50px auto;
+        grid-template-columns: 40px 130px 130px 60px auto;
     }
 
     .main_table{
@@ -135,7 +132,7 @@ display: none;
 }
 
 .row_container, .row_container_header{
-    grid-template-columns: 50px 250px 250px 50px auto;
+    grid-template-columns: 40px 250px 250px 60px auto;
    
 }
 }
