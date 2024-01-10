@@ -3449,25 +3449,9 @@ export default function Chart(props: propsIF) {
                                               ),
                                     ];
 
-                                    annotationLineSeries.xScale().range(range);
-
                                     bandArea.xScale().range(range);
 
-                                    if (item.line.active) {
-                                        if (ctx)
-                                            ctx.setLineDash(item.line.dash);
-                                        lineSeries.decorate(
-                                            (
-                                                context: CanvasRenderingContext2D,
-                                            ) => {
-                                                context.strokeStyle =
-                                                    item.line.color;
-                                                context.lineWidth =
-                                                    item.line.lineWidth;
-                                            },
-                                        );
-                                        lineSeries(data);
-                                    }
+                                    annotationLineSeries.xScale().range(range);
 
                                     const fibLineData = calculateFibRetracement(
                                         data,
@@ -3492,6 +3476,22 @@ export default function Chart(props: propsIF) {
 
                                         bandArea([bandData]);
                                     });
+
+                                    if (item.line.active) {
+                                        if (ctx)
+                                            ctx.setLineDash(item.line.dash);
+                                        lineSeries.decorate(
+                                            (
+                                                context: CanvasRenderingContext2D,
+                                            ) => {
+                                                context.strokeStyle =
+                                                    item.line.color;
+                                                context.lineWidth =
+                                                    item.line.lineWidth;
+                                            },
+                                        );
+                                        lineSeries(data);
+                                    }
 
                                     if (ctx) ctx.setLineDash([0, 0]);
 

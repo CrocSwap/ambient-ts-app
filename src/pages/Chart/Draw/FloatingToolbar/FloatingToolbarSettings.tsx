@@ -408,7 +408,10 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                             <LineSettings>
                                 <LineSettingsLeft>
                                     <CheckboxContainer
-                                        onClick={() => {
+                                        onClick={(
+                                            e: MouseEvent<HTMLElement>,
+                                        ) => {
+                                            e.stopPropagation();
                                             !lineOptionDisabled.includes(
                                                 selectedDrawnShape?.data.type,
                                             ) &&
@@ -533,7 +536,10 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                             <LineSettings>
                                 <LineSettingsLeft>
                                     <CheckboxContainer
-                                        onClick={() => {
+                                        onClick={(
+                                            e: MouseEvent<HTMLElement>,
+                                        ) => {
+                                            e.stopPropagation();
                                             !borderOptionDisabled.includes(
                                                 selectedDrawnShape?.data.type,
                                             ) &&
@@ -658,7 +664,10 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                             <LineSettings>
                                 <LineSettingsLeft>
                                     <CheckboxContainer
-                                        onClick={() => {
+                                        onClick={(
+                                            e: MouseEvent<HTMLElement>,
+                                        ) => {
+                                            e.stopPropagation();
                                             handleEditLines(
                                                 !selectedDrawnShape?.data
                                                     .background.active,
@@ -721,7 +730,10 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                 (item, index) => (
                                     <FibLineOptions key={index}>
                                         <CheckboxContainer
-                                            onClick={() => {
+                                            onClick={(
+                                                e: MouseEvent<HTMLElement>,
+                                            ) => {
+                                                e.stopPropagation();
                                                 item.active = !item.active;
                                                 setIsShapeEdited(true);
                                                 saveShapeAttiributesToLocalStorage(
@@ -771,7 +783,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                         style={{
                                                             position:
                                                                 'absolute',
-                                                            zIndex: 99,
+                                                            zIndex: 199,
                                                             top:
                                                                 70 +
                                                                 Number(
@@ -786,6 +798,11 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                                     32 +
                                                                 'px',
                                                         }}
+                                                        onClick={(
+                                                            event: MouseEvent<HTMLElement>,
+                                                        ) =>
+                                                            event.stopPropagation()
+                                                        }
                                                     >
                                                         <SketchPicker
                                                             color={
@@ -829,7 +846,8 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                         <FibLineSettings style={{ paddingBottom: '10px' }}>
                             <ExtendSettings>
                                 <CheckboxContainer
-                                    onClick={() => {
+                                    onClick={(e: MouseEvent<HTMLElement>) => {
+                                        e.stopPropagation();
                                         handleEditLines(
                                             !selectedDrawnShape.data.extendLeft,
                                             'extendLeft',
@@ -851,7 +869,8 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                             </ExtendSettings>
                             <ExtendSettings>
                                 <CheckboxContainer
-                                    onClick={() => {
+                                    onClick={(e: MouseEvent<HTMLElement>) => {
+                                        e.stopPropagation();
                                         handleEditLines(
                                             !selectedDrawnShape.data
                                                 .extendRight,
@@ -880,7 +899,8 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                         <FibLineSettings style={{ paddingBottom: '10px' }}>
                             <ExtendSettings>
                                 <CheckboxContainer
-                                    onClick={() => {
+                                    onClick={(e: MouseEvent<HTMLElement>) => {
+                                        e.stopPropagation();
                                         handleEditLines(
                                             !selectedDrawnShape.data.reverse,
                                             'reverse',
@@ -1099,7 +1119,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                             ? {
                                   bottom: '70px',
                                   position: 'absolute',
-                                  zIndex: 99,
+                                  zIndex: 199,
                               }
                             : {
                                   position: 'absolute',
@@ -1111,6 +1131,9 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                           : 120) + 'px',
                                   left: '85px',
                               }
+                    }
+                    onClick={(event: MouseEvent<HTMLElement>) =>
+                        event.stopPropagation()
                     }
                 >
                     <SketchPicker
@@ -1170,13 +1193,14 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                         : undefined
                                 }
                                 key={index}
-                                onClick={() =>
+                                onClick={(e: MouseEvent<HTMLElement>) => {
+                                    e.stopPropagation();
                                     handleEditSize(
                                         item.value,
                                         isLineSizeOptionTabActive,
                                         isBorderSizeOptionTabActive,
-                                    )
-                                }
+                                    );
+                                }}
                             >
                                 {item.icon} {item.name}
                             </OptionsTabSize>
@@ -1218,13 +1242,14 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                         : undefined
                                 }
                                 key={index}
-                                onClick={() =>
+                                onClick={(e: MouseEvent<HTMLElement>) => {
+                                    e.stopPropagation();
                                     handleEditStyle(
                                         item.value,
                                         isLineStyleOptionTabActive,
                                         isBorderStyleOptionTabActive,
-                                    )
-                                }
+                                    );
+                                }}
                             >
                                 <img src={item.icon} alt='' /> {item.name}
                             </OptionsTabStyle>
