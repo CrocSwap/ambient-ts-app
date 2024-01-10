@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import * as d3 from 'd3';
 
 const FloatingToolbarSettingsContainer = styled.div`
     background: #242f3f;
