@@ -224,7 +224,7 @@ export default function Transactions2(props: propsIF) {
 
     return (
         <ol className={styles.tx_ol} ref={containerRef}>
-            {false && <TxHeader activeColumns={columnsToRender.current} />}
+            {true && <TxHeader activeColumns={columnsToRender.current} />}
             {transactionRows}
         </ol>
     );
