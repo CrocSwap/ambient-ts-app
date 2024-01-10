@@ -6,6 +6,7 @@ import { AlignItems } from '../../../styled/Common/Types';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { useContext } from 'react';
 import { progressToNextLevel } from '../../../ambient-utils/api';
+import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 
 interface Props {
     // xpData: UserXpDataIF
@@ -35,11 +36,19 @@ export default function UserLevelDisplay(props: Props) {
 
     const progressPercentage = progressToNextLevel(totalPoints ?? 0);
 
+    const formattedXpLevel = getFormattedNumber({
+        value: currentLevel,
+    });
+
     return (
         <Link to={linkToNavigateTo} className={styles.level_only_container}>
-            <div className={styles.level_border}>
+            <div
+                className={`${styles.level_border} ${
+                    formattedXpLevel.length > 3 ? styles.auto_width : ''
+                }`}
+            >
                 <div className={styles.level_border_content}>
-                    {currentLevel}
+                    {formattedXpLevel}
                 </div>
             </div>
 

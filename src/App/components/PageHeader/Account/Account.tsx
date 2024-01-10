@@ -9,7 +9,10 @@ import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 import WalletDropdown from './WalletDropdown/WalletDropdown';
 import useKeyPress from '../../../hooks/useKeyPress';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
-import { trimString } from '../../../../ambient-utils/dataLayer';
+import {
+    getFormattedNumber,
+    trimString,
+} from '../../../../ambient-utils/dataLayer';
 import { ExchangeBalanceDropdown } from '../ExchangeBalanceDropdown/ExchangeBalanceDropdown';
 import {
     LevelButton,
@@ -106,6 +109,10 @@ export default function Account(props: propsIF) {
             ) : null}
         </section>
     );
+
+    const formattedXpLevel = getFormattedNumber({
+        value: connectedUserXp?.data?.currentLevel,
+    });
     const levelDisplay = (
         <section
             style={{
@@ -121,8 +128,9 @@ export default function Account(props: propsIF) {
                 tabIndex={0}
                 onClick={() => setShowLevelDropdown(!showLevelDropdown)}
                 aria-label={ariaLabel}
+                large={formattedXpLevel.length > 3}
             >
-                {connectedUserXp?.data?.currentLevel}
+                {formattedXpLevel}
             </LevelButton>
             {showLevelDropdown ? (
                 <LevelDropdown
@@ -142,6 +150,7 @@ export default function Account(props: propsIF) {
             rounded
             gap={8}
             overflow='visible'
+            alignItems='center'
         >
             {isUserConnected && walletDisplay}
             {isUserConnected && levelDisplay}

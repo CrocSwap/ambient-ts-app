@@ -15,6 +15,10 @@ interface PrimaryHeaderProps {
     fixed: boolean;
 }
 
+interface LevelButtonProps {
+    large?: boolean;
+}
+
 // Define the styles for PrimaryHeader
 export const PrimaryHeader = styled.header<PrimaryHeaderProps>`
     width: 100%;
@@ -375,12 +379,12 @@ export const TitleGradientButton = styled.button`
     }
 `;
 
-export const LevelButton = styled.button`
+export const LevelButton = styled.button<LevelButtonProps>`
     outline: none;
     border: none;
     background: var(--accent1);
-    width: 24px;
-    height: 24px;
+    width: ${(props) => (props.large ? '40px' : '24px')};
+    height: ${(props) => (props.large ? '40px' : '24px')};
     border-radius: 50%;
     padding: 4px 3px 4px 4px;
     justify-content: center;
@@ -391,7 +395,6 @@ export const LevelButton = styled.button`
     line-height: var(--body-lh);
     color: var(--text1);
 `;
-
 export const WalletName = styled.p`
     min-width: 80px;
 
