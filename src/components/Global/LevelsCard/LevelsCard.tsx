@@ -95,7 +95,7 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
                 </FlexContainer>
                 <FlexContainer flexDirection='row' gap={16}>
                     <Text fontSize='body' color='text2'>
-                        Connected Wallet:
+                        Wallet Address:
                     </Text>
                     <Text fontSize='body' color='text2'>
                         {trimString(addressToDisplay ?? '', 6, 4, '…')}
