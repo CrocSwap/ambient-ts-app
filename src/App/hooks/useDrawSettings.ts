@@ -17,27 +17,27 @@ export const useDrawSettings = () => {
             const parseStoredData = JSON.parse(storedData);
             if (parseStoredData.defaultSettings) {
                 let shouldDefault = false;
+                if (parseStoredData.defaultSettings.FibRetracement) {
+                    parseStoredData.defaultSettings.FibRetracement.extraData.forEach(
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        (element: any) => {
+                            if (
+                                Object.prototype.hasOwnProperty.call(
+                                    element,
+                                    'color',
+                                )
+                            ) {
+                                shouldDefault = true;
+                            }
+                        },
+                    );
 
-                parseStoredData.defaultSettings.FibRetracement.extraData.forEach(
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    (element: any) => {
-                        if (
-                            Object.prototype.hasOwnProperty.call(
-                                element,
-                                'color',
-                            )
-                        ) {
-                            shouldDefault = true;
-                        }
-                    },
-                );
-
-                parseStoredData.defaultSettings.FibRetracement.extraData =
-                    shouldDefault
-                        ? structuredClone(fibDefaultLevels)
-                        : parseStoredData.defaultSettings.FibRetracement
-                              .extraData;
-
+                    parseStoredData.defaultSettings.FibRetracement.extraData =
+                        shouldDefault
+                            ? structuredClone(fibDefaultLevels)
+                            : parseStoredData.defaultSettings.FibRetracement
+                                  .extraData;
+                }
                 const options = parseStoredData.defaultSettings[itemType];
                 return options;
             }
