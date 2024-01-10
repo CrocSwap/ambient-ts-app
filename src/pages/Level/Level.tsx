@@ -7,6 +7,7 @@ import Jazzicon from 'react-jazzicon/dist/Jazzicon';
 import { jsNumberForAddress } from 'react-jazzicon';
 import RankTable from './RankTable/RankTable';
 import { FlexContainer, Text } from '../../styled/Common';
+import { progressToNextLevel } from '../../ambient-utils/api';
 
 interface LevelPropsIF {
     ensName: string;
@@ -125,11 +126,8 @@ export default function Level(props: LevelPropsIF) {
     const totalPointsCurrentWeek = xpData?.data?.recentPoints ?? undefined;
 
     // ---------------------------------
-    const progressPercentage =
-        (((xpData?.data?.totalPoints ?? 0) -
-            (xpData?.data?.pointsRemainingToNextLevel ?? 0)) /
-            (xpData?.data?.totalPoints ?? 1)) *
-        100;
+
+    const progressPercentage = progressToNextLevel(totalPoints ?? 0);
 
     const levelsCardProps = {
         currentLevel,

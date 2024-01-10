@@ -5,11 +5,12 @@ import styles from './LevelsCard.module.css';
 import { AlignItems } from '../../../styled/Common/Types';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { useContext } from 'react';
+import { progressToNextLevel } from '../../../ambient-utils/api';
 
 interface Props {
     // xpData: UserXpDataIF
-    currentLevel: number | string | undefined;
-    totalPoints: number | string | undefined;
+    currentLevel: number | undefined;
+    totalPoints: number | undefined;
     user: string;
 }
 export default function UserLevelDisplay(props: Props) {
@@ -31,6 +32,8 @@ export default function UserLevelDisplay(props: Props) {
         : resolvedAddressFromContext
         ? `/account/${resolvedAddressFromContext}/xp`
         : `/account/${userAddress}/xp`;
+
+    const progressPercentage = progressToNextLevel(totalPoints ?? 0);
 
     return (
         <Link to={linkToNavigateTo} className={styles.level_only_container}>
@@ -74,7 +77,7 @@ export default function UserLevelDisplay(props: Props) {
                     </Text>
                 </FlexContainer>
 
-                <LevelLine percentage={20} width='250px' />
+                <LevelLine percentage={progressPercentage} width='250px' />
             </FlexContainer>
         </Link>
     );
