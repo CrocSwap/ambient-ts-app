@@ -97,7 +97,6 @@ import {
 } from './Draw/DrawCanvas/BandArea';
 import { checkCricleLocation, createCircle } from './ChartUtils/circle';
 import DragCanvas from './Draw/DrawCanvas/DragCanvas';
-import Toolbar from './Draw/Toolbar/Toolbar';
 import FloatingToolbar from './Draw/FloatingToolbar/FloatingToolbar';
 import { updatesIF } from '../../utils/hooks/useUrlParams';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
@@ -201,19 +200,25 @@ export default function Chart(props: propsIF) {
         addDrawActionStack,
         drawActionStack,
         undoStack,
-        deleteAllShapes,
-        actionKey,
     } = props;
 
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
     const { chainData } = useContext(CrocEnvContext);
-    const { isMagnetActive, setIsChangeScaleChart } = useContext(ChartContext);
+    const {
+        isMagnetActive,
+        setIsChangeScaleChart,
+        isToolbarOpen,
+        toolbarRef,
+        activeDrawingType,
+        setActiveDrawingType,
+        selectedDrawnShape,
+        setSelectedDrawnShape,
+        setChartContainerHeight,
+    } = useContext(ChartContext);
 
-    const [isMagnetActiveLocal, setIsMagnetActiveLocal] = useState(
-        isMagnetActive.value,
-    );
+    const [isMagnetActiveLocal] = useState(isMagnetActive.value);
 
     const chainId = chainData.chainId;
     const { setCandleDomains, setCandleScale, timeOfEndCandle } =
@@ -277,7 +282,7 @@ export default function Chart(props: propsIF) {
     const side =
         (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'buy' : 'sell';
     const sellOrderStyle = side === 'sell' ? 'order_sell' : 'order_buy';
-    const [activeDrawingType, setActiveDrawingType] = useState('Cross');
+    // const [activeDrawingType, setActiveDrawingType] = useState('Cross');
 
     const [chartMousemoveEvent, setChartMousemoveEvent] = useState<
         MouseEvent<HTMLDivElement> | undefined
@@ -298,7 +303,7 @@ export default function Chart(props: propsIF) {
         : 0;
 
     const d3Container = useRef<HTMLDivElement | null>(null);
-    const toolbarRef = useRef<HTMLDivElement | null>(null);
+    // const toolbarRef = useRef<HTMLDivElement | null>(null);
     const d3XaxisRef = useRef<HTMLInputElement | null>(null);
 
     const d3CanvasCrosshair = useRef<HTMLCanvasElement | null>(null);
@@ -351,9 +356,9 @@ export default function Chart(props: propsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [dashedLineSeries, setDashedLineSeries] = useState<any>();
 
-    const [selectedDrawnShape, setSelectedDrawnShape] = useState<
-        selectedDrawnData | undefined
-    >(undefined);
+    // const [selectedDrawnShape, setSelectedDrawnShape] = useState<
+    //     selectedDrawnData | undefined
+    // >(undefined);
 
     const [hoveredDrawnShape, setHoveredDrawnShape] = useState<
         selectedDrawnData | undefined
@@ -362,14 +367,6 @@ export default function Chart(props: propsIF) {
     const mobileView = useMediaQuery('(max-width: 600px)');
 
     const drawSettings = useDrawSettings();
-
-    const initialData = localStorage.getItem(LS_KEY_CHART_ANNOTATIONS);
-
-    const initialIsToolbarOpen = initialData
-        ? JSON.parse(initialData).isOpenAnnotationPanel
-        : true;
-
-    const [isToolbarOpen, setIsToolbarOpen] = useState(initialIsToolbarOpen);
 
     const unparsedCandleData = useMemo(() => {
         const data = unparsedData.candles
@@ -2646,6 +2643,7 @@ export default function Chart(props: propsIF) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const resizeObserver = new ResizeObserver((result: any) => {
                 const height = result[0].contentRect.height;
+                setChartContainerHeight(height);
                 setD3ContainerHeight(height);
             });
 
@@ -5292,25 +5290,6 @@ export default function Chart(props: propsIF) {
                                 9 + 'px auto 1fr auto minmax(1em, max-content)',
                         }}
                     >
-                        {/* <Toolbar
-                            toolbarRef={toolbarRef}
-                            activeDrawingType={activeDrawingType}
-                            setActiveDrawingType={setActiveDrawingType}
-                            isToolbarOpen={isToolbarOpen}
-                            setIsToolbarOpen={setIsToolbarOpen}
-                            setDrawnShapeHistory={setDrawnShapeHistory}
-                            setIsMagnetActiveLocal={setIsMagnetActiveLocal}
-                            deleteAllShapes={deleteAllShapes}
-                            chartHeights={chartHeights}
-                            d3ContainerHeight={d3ContainerHeight}
-                            undo={undo}
-                            redo={redo}
-                            undoStack={undoStack}
-                            drawActionStack={drawActionStack}
-                            actionKey={actionKey}
-                            setSelectedDrawnShape={setSelectedDrawnShape}
-                        /> */}
-
                         <CandleChart
                             chartItemStates={props.chartItemStates}
                             data={visibleCandleData}

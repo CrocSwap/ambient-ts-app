@@ -6,7 +6,6 @@ import {
     useContext,
     memo,
     useMemo,
-    useRef,
 } from 'react';
 
 // START: Import Local Files
@@ -28,12 +27,6 @@ import { updatesIF } from '../../../utils/hooks/useUrlParams';
 import { FlexContainer } from '../../../styled/Common';
 import { MainContainer } from '../../../styled/Components/Chart';
 import { TutorialButton } from '../../../styled/Components/Tutorial';
-import Toolbar from '../../Chart/Draw/Toolbar/Toolbar';
-import { LS_KEY_CHART_ANNOTATIONS } from '../../Chart/ChartUtils/chartConstants';
-import { useUndoRedo } from '../../Chart/ChartUtils/useUndoRedo';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-import { selectedDrawnData } from '../../Chart/ChartUtils/chartUtils';
 
 // interface for React functional component props
 interface propsIF {

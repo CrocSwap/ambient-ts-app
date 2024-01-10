@@ -9,7 +9,6 @@ import {
     useCallback,
     memo,
     useRef,
-    useMemo,
 } from 'react';
 import { BsCaretDownFill } from 'react-icons/bs';
 
@@ -43,10 +42,6 @@ import ContentContainer from '../../components/Global/ContentContainer/ContentCo
 import { PoolContext } from '../../contexts/PoolContext';
 import { MdAutoGraph } from 'react-icons/md';
 import Toolbar from '../Chart/Draw/Toolbar/Toolbar';
-import { useUndoRedo } from '../Chart/ChartUtils/useUndoRedo';
-import { selectedDrawnData } from '../Chart/ChartUtils/chartUtils';
-import { TradeTokenContext } from '../../contexts/TradeTokenContext';
-import { LS_KEY_CHART_ANNOTATIONS } from '../Chart/ChartUtils/chartConstants';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -88,56 +83,6 @@ function Trade() {
     const tradeTableRef = useRef<HTMLDivElement>(null);
 
     const [hasInitialized, setHasInitialized] = useState(false);
-
-    const toolbarRef = useRef<HTMLDivElement | null>(null);
-    const [activeDrawingType, setActiveDrawingType] = useState('Cross');
-    const initialData = localStorage.getItem(LS_KEY_CHART_ANNOTATIONS);
-
-    const initialIsToolbarOpen = initialData
-        ? JSON.parse(initialData).isOpenAnnotationPanel
-        : true;
-
-    const [isToolbarOpen, setIsToolbarOpen] = useState(initialIsToolbarOpen);
-    const { tokenA, tokenB, poolPriceNonDisplay } =
-        useContext(TradeDataContext);
-    const {
-        baseToken: { address: baseTokenAddress },
-        quoteToken: { address: quoteTokenAddress },
-    } = useContext(TradeTokenContext);
-    const tokenPair = useMemo(
-        () => ({
-            dataTokenA: tokenA,
-            dataTokenB: tokenB,
-        }),
-        [tokenB.address, tokenB.chainId, tokenA.address, tokenA.chainId],
-    );
-
-    // TODO: could probably be determined from the isTokenABase in context?
-    const isTokenABase = tokenPair?.dataTokenA.address === baseTokenAddress;
-
-    const denominationsInBase = isDenomBase;
-
-    const { isMagnetActive, setIsChangeScaleChart } = useContext(ChartContext);
-
-    const [isMagnetActiveLocal, setIsMagnetActiveLocal] = useState(
-        isMagnetActive.value,
-    );
-    const {
-        undo,
-        redo,
-        drawnShapeHistory,
-        setDrawnShapeHistory,
-        deleteItem,
-        addDrawActionStack,
-        drawActionStack,
-        undoStack,
-        deleteAllShapes,
-        actionKey,
-    } = useUndoRedo(denominationsInBase, isTokenABase);
-
-    const [selectedDrawnShape, setSelectedDrawnShape] = useState<
-        selectedDrawnData | undefined
-    >(undefined);
 
     const changeState = useCallback(
         (isOpen: boolean | undefined, candleData: CandleDataIF | undefined) => {
@@ -424,24 +369,8 @@ function Trade() {
                     />
                 </FlexContainer>
             </MainSection>
-            <Toolbar
-                toolbarRef={toolbarRef}
-                activeDrawingType={activeDrawingType}
-                setActiveDrawingType={setActiveDrawingType}
-                isToolbarOpen={isToolbarOpen}
-                setIsToolbarOpen={setIsToolbarOpen}
-                setDrawnShapeHistory={setDrawnShapeHistory}
-                setIsMagnetActiveLocal={setIsMagnetActiveLocal}
-                deleteAllShapes={deleteAllShapes}
-                chartHeights={chartHeights.default}
-                d3ContainerHeight={chartHeights.default}
-                undo={undo}
-                redo={redo}
-                undoStack={undoStack}
-                drawActionStack={drawActionStack}
-                actionKey={actionKey}
-                setSelectedDrawnShape={setSelectedDrawnShape}
-            />{' '}
+
+            <Toolbar />
         </>
     );
 }
