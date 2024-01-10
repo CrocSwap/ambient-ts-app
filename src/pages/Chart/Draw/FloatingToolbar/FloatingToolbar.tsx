@@ -625,7 +625,9 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         if (
             item.line.active === defaultValues.line.active &&
             item.line.color === defaultValues.line.color &&
-            item.line.dash.every((value) => item.line.dash.includes(value)) &&
+            item.line.dash.every((value) =>
+                defaultValues.line.dash.includes(value),
+            ) &&
             item.line.lineWidth === defaultValues.line.lineWidth
         ) {
             isLineDefault = true;
@@ -635,7 +637,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
             item.border.active === defaultValues.border.active &&
             item.border.color === defaultValues.border.color &&
             item.border.dash.every((value) =>
-                item.border.dash.includes(value),
+                defaultValues.border.dash.includes(value),
             ) &&
             item.border.lineWidth === defaultValues.border.lineWidth
         ) {
@@ -646,7 +648,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
             item.background.active === defaultValues.background.active &&
             item.background.color === defaultValues.background.color &&
             item.background.dash.every((value) =>
-                item.background.dash.includes(value),
+                defaultValues.background.dash.includes(value),
             ) &&
             item.background.lineWidth === defaultValues.background.lineWidth
         ) {
