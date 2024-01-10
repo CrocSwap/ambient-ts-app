@@ -235,7 +235,6 @@ export const TokenAmount = styled(FlexContainer)`
 `;
 
 export const NameDisplayContainer = styled(FlexContainer)`
-    padding: 0 32px;
     margin: 0 auto;
     overflow: visible;
     .image {
@@ -309,6 +308,7 @@ export const LevelWrapper = styled(FlexContainer)`
     position: absolute;
     top: 50px;
     width: auto;
+    min-width: 350px;
     right: 15px;
     z-index: 9999;
     padding: 8px 1rem;

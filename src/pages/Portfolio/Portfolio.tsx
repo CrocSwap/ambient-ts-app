@@ -358,7 +358,6 @@ function Portfolio(props: PortfolioPropsIF) {
             {contentToRenderOnMobile}
         </FlexContainer>
     );
-
     if (showActiveMobileComponent && !isLevelsPage) return mobilePortfolio;
     if (isLevelsPage) return <Level {...levelsProps} />;
 

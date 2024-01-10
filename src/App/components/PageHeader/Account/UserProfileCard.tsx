@@ -13,11 +13,13 @@ import { getChainExplorer } from '../../../../ambient-utils/dataLayer';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 interface LevelDropdownPropsIF {
     ensName: string;
     accountAddress: string;
     handleCopyAddress: () => void;
     accountAddressFull: string;
+    padding?: string;
 }
 
 export default function UserProfileCard(props: LevelDropdownPropsIF) {
@@ -26,13 +28,16 @@ export default function UserProfileCard(props: LevelDropdownPropsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { userAddress, resolvedAddressFromContext } =
+        useContext(UserDataContext);
     const blockExplorer = getChainExplorer(chainId);
-
-    const userLink = ensName !== '' ? ensName : accountAddress;
+    const link = resolvedAddressFromContext
+        ? `/account/${resolvedAddressFromContext}`
+        : `/account/${userAddress}`;
 
     return (
         <NameDisplayContainer gap={4} alignItems='center'>
-            <Link to={`/account/${userLink}`}>
+            <Link to={link}>
                 <Jazzicon
                     diameter={50}
                     seed={jsNumberForAddress(accountAddressFull.toLowerCase())}
@@ -41,7 +46,8 @@ export default function UserProfileCard(props: LevelDropdownPropsIF) {
 
             <FlexContainer alignItems='center' flexDirection='column'>
                 <NameDisplay gap={16} alignItems='center'>
-                    <h2>{userLink}</h2>
+                    <h2>{ensName !== '' ? ensName : accountAddress}</h2>
+
                     <IconWithTooltip
                         title={`${'View wallet address on block explorer'}`}
                         placement='right'
@@ -69,7 +75,7 @@ export default function UserProfileCard(props: LevelDropdownPropsIF) {
                     </IconWithTooltip>
                 </NameDisplay>
                 <WalletDisplay gap={16} alignItems='center'>
-                    <p>Metamask</p>
+                    <p>Connected Wallet:</p>
                     <p>{props.accountAddress}</p>
                 </WalletDisplay>
             </FlexContainer>

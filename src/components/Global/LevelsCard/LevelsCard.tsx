@@ -26,6 +26,7 @@ interface LevelsCardPropsIF {
     ensNameToDisplay: string;
     addressToDisplay: string | undefined;
     pointsRemainingToNextLevel: number | undefined;
+    ensName: string;
 }
 
 export default function LevelsCard(props: LevelsCardPropsIF) {
@@ -40,6 +41,7 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
         addressToDisplay,
         pointsRemainingToNextLevel,
         resolvedAddress,
+        ensName,
     } = props;
     const { userAddress } = useContext(UserDataContext);
     const [_, copy] = useCopyToClipboard();
@@ -56,7 +58,6 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
             window.open(explorerUrl);
         }
     }
-
     function handleCopyAddress() {
         copy(resolvedAddress ? resolvedAddress : userAddress ?? '');
         const copiedData = resolvedAddress ? resolvedAddress : userAddress;
@@ -68,16 +69,16 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
     const header = (
         <FlexContainer flexDirection='row' gap={16} alignItems='center'>
             <Link
-                to={`${ensNameToDisplay ?? addressToDisplay}`}
+                to={`/${ensName ? ensName : resolvedAddress}`}
                 className={styles.user_image}
             >
                 {jazziconsToDisplay}
             </Link>
             <FlexContainer flexDirection='column'>
                 <FlexContainer flexDirection='row' gap={16}>
-                    <Link to={`/${ensNameToDisplay ?? addressToDisplay}`}>
+                    <Link to={`/${ensName ? ensName : resolvedAddress}`}>
                         <Text fontSize='header2' color='text1'>
-                            {ensNameToDisplay}
+                            {ensName ? ensName : ensNameToDisplay}
                         </Text>
                     </Link>
 
@@ -94,7 +95,7 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
                 </FlexContainer>
                 <FlexContainer flexDirection='row' gap={16}>
                     <Text fontSize='body' color='text2'>
-                        Metamask
+                        Connected Wallet:
                     </Text>
                     <Text fontSize='body' color='text2'>
                         {trimString(addressToDisplay ?? '', 6, 4, '…')}
@@ -114,21 +115,13 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
                     gap={32}
                 >
                     <Text
-                        fontSize={
-                            !desktopScreen || data.points.length > 6
-                                ? 'body'
-                                : 'header2'
-                        }
+                        fontSize={!desktopScreen ? 'body' : 'header2'}
                         color='text1'
                     >
                         {data?.date}
                     </Text>
                     <Text
-                        fontSize={
-                            !desktopScreen || data.points.length > 6
-                                ? 'body'
-                                : 'header2'
-                        }
+                        fontSize={!desktopScreen ? 'body' : 'header2'}
                         color='text1'
                         style={{ textAlign: 'end' }}
                     >

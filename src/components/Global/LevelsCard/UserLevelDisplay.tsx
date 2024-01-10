@@ -3,6 +3,8 @@ import { FlexContainer, Text } from '../../../styled/Common';
 import LevelLine from '../LevelLine/LevelLine';
 import styles from './LevelsCard.module.css';
 import { AlignItems } from '../../../styled/Common/Types';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { useContext } from 'react';
 
 interface Props {
     // xpData: UserXpDataIF
@@ -11,6 +13,8 @@ interface Props {
     user: string;
 }
 export default function UserLevelDisplay(props: Props) {
+    const { userAddress, resolvedAddressFromContext } =
+        useContext(UserDataContext);
     const { currentLevel, totalPoints, user } = props;
 
     const isTotalPointsLong = totalPoints && totalPoints.toString().length > 6;
@@ -22,7 +26,11 @@ export default function UserLevelDisplay(props: Props) {
           })
         : '...';
 
-    const linkToNavigateTo = `/account/${user}/xp`;
+    const linkToNavigateTo = user
+        ? `/account/${user}/xp`
+        : resolvedAddressFromContext
+        ? `/account/${resolvedAddressFromContext}/xp`
+        : `/account/${userAddress}/xp`;
 
     return (
         <Link to={linkToNavigateTo} className={styles.level_only_container}>
@@ -40,6 +48,7 @@ export default function UserLevelDisplay(props: Props) {
             >
                 <FlexContainer
                     flexDirection={isTotalPointsLong ? 'column' : 'row'}
+                    gap={8}
                     width='100%'
                     justifyContent='space-between'
                     alignItems={

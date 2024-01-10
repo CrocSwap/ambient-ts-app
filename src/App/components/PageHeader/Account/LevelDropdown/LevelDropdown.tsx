@@ -22,7 +22,9 @@ export default function LevelDropdown(props: LevelDropdownPropsIF) {
                 accountAddress={props.accountAddress}
                 handleCopyAddress={handleCopyAddress}
                 accountAddressFull={props.accountAddressFull}
+                padding='0 2rem'
             />
+
             <UserLevelDisplay
                 currentLevel={connectedUserXp?.data?.currentLevel}
                 totalPoints={connectedUserXp?.data?.totalPoints}

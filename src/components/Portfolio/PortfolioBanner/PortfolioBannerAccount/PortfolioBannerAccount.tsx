@@ -35,9 +35,7 @@ export default function PortfolioBannerAccount(
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
 
-    const ensNameToDisplay = ensNameAvailable
-        ? ensName
-        : truncatedAccountAddress;
+    const ensNameToDisplay = ensName !== '' ? ensName : truncatedAccountAddress;
 
     const addressToDisplay = resolvedAddress
         ? resolvedAddress

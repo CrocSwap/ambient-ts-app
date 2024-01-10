@@ -142,6 +142,7 @@ export default function Level(props: LevelPropsIF) {
         addressToDisplay,
         resolvedAddress,
         pointsRemainingToNextLevel: xpData?.data?.pointsRemainingToNextLevel,
+        ensName: ensName,
     };
 
     if (isLevelOnly)
