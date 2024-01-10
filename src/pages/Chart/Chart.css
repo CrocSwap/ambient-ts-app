@@ -242,22 +242,6 @@ label {
     font-size: var(--body-size);
 }
 
-.orderHistoryDiv {
-    position: absolute;
-    text-align: center;
-    cursor: pointer;
-    pointer-events: none;
-
-    background: rgba(36, 47, 63, 0.8);
-    padding: 3px 8px 3px 8px;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border-radius: 4px;
-    box-shadow: 0 8px 32px 0 var(--dark1);
-    min-width: 120px;
-    line-height: 1.3;
-}
-
 .orderHistoryTooltip-enter {
     opacity: 0;
     transform: translateX(100%);

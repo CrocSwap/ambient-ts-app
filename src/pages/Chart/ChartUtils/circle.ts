@@ -57,7 +57,7 @@ export function createCircle(
         });
 }
 
-export function checkCricleLocation(
+export function checkCircleLocation(
     element: drawDataHistory,
     mouseX: number,
     mouseY: number,

@@ -26,7 +26,11 @@ import { ChartContext } from '../../../contexts/ChartContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import Spinner from '../../../components/Global/Spinner/Spinner';
 import { LiquidityDataLocal } from './TradeCharts';
-import { CandleDataIF, CandleScaleIF } from '../../../ambient-utils/types';
+import {
+    CandleDataIF,
+    CandleScaleIF,
+    TransactionIF,
+} from '../../../ambient-utils/types';
 import {
     chartItemStates,
     getInitialDisplayCandleCount,
@@ -39,6 +43,13 @@ import { updatesIF } from '../../../utils/hooks/useUrlParams';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { xAxisBuffer } from '../../Chart/ChartUtils/chartConstants';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { fetchUserRecentChanges } from '../../../ambient-utils/api';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import useDebounce from '../../../App/hooks/useDebounce';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface propsIF {
@@ -163,6 +174,69 @@ function TradeCandleStickChart(props: propsIF) {
             : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
     const mobileView = useMediaQuery('(max-width: 600px)');
+
+    const [userTransactionData, setUserTransactionData] =
+        useState<Array<TransactionIF>>();
+
+    const { userAddress } = useContext(UserDataContext);
+
+    const {
+        server: { isEnabled: isServerEnabled },
+    } = useContext(AppStateContext);
+
+    const {
+        crocEnv,
+        activeNetwork,
+        provider,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+
+    const { tokens } = useContext(TokenContext);
+
+    const { lastBlockNumber } = useContext(ChainDataContext);
+
+    const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
+
+    const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
+
+    useEffect(() => {
+        if (userAddress && isServerEnabled && crocEnv && provider) {
+            try {
+                fetchUserRecentChanges({
+                    tokenList: tokens.tokenUniv,
+                    user: userAddress,
+                    chainId: chainId,
+                    annotate: true,
+                    addValue: true,
+                    simpleCalc: true,
+                    annotateMEV: false,
+                    ensResolution: true,
+                    n: 10, // fetch last 100 changes,
+                    crocEnv,
+                    graphCacheUrl: activeNetwork.graphCacheUrl,
+                    provider,
+                    lastBlockNumber,
+                    cachedFetchTokenPrice: cachedFetchTokenPrice,
+                    cachedQuerySpotPrice: cachedQuerySpotPrice,
+                    cachedTokenDetails: cachedTokenDetails,
+                    cachedEnsResolve: cachedEnsResolve,
+                })
+                    .then((updatedTransactions) => {
+                        if (updatedTransactions) {
+                            setUserTransactionData(() => updatedTransactions);
+                        }
+                    })
+                    .catch(console.error);
+            } catch (error) {
+                console.error;
+            }
+        }
+    }, [isServerEnabled, userAddress, !!crocEnv, !!provider]);
 
     useEffect(() => {
         setIsLoading(true);
@@ -903,6 +977,7 @@ function TradeCandleStickChart(props: propsIF) {
                         undoStack={undoStack}
                         deleteAllShapes={deleteAllShapes}
                         actionKey={actionKey}
+                        userTransactionData={userTransactionData}
                     />
                 ) : (
                     <Spinner size={100} bg='var(--dark2)' centered />

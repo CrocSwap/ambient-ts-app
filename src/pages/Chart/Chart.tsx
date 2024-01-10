@@ -42,6 +42,7 @@ import {
     CandlesByPoolAndDurationIF,
     CandleDomainIF,
     CandleScaleIF,
+    TransactionIF,
 } from '../../ambient-utils/types';
 import CandleChart from './Candle/CandleChart';
 import LiquidityChart from './Liquidity/LiquidityChart';
@@ -72,7 +73,6 @@ import {
     lineData,
     lineValue,
     liquidityChartData,
-    orderHistory,
     renderCanvasArray,
     renderSubchartCrCanvas,
     scaleData,
@@ -96,7 +96,7 @@ import {
     createPointsOfBandLine,
     createPointsOfDPRangeLine,
 } from './Draw/DrawCanvas/BandArea';
-import { checkCricleLocation, createCircle } from './ChartUtils/circle';
+import { checkCircleLocation, createCircle } from './ChartUtils/circle';
 import DragCanvas from './Draw/DrawCanvas/DragCanvas';
 import Toolbar from './Draw/Toolbar/Toolbar';
 import FloatingToolbar from './Draw/FloatingToolbar/FloatingToolbar';
@@ -105,10 +105,7 @@ import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { actionKeyIF, actionStackIF } from './ChartUtils/useUndoRedo';
-import {
-    formatAmountWithoutDigit,
-    formatDollarAmountAxis,
-} from '../../utils/numbers';
+import { formatDollarAmountAxis } from '../../utils/numbers';
 import { ChartContext } from '../../contexts/ChartContext';
 import { useDrawSettings } from '../../App/hooks/useDrawSettings';
 import {
@@ -119,6 +116,7 @@ import {
     xAxisHeightPixel,
 } from './ChartUtils/chartConstants';
 import OrderHistoryCanvas from './OrderHistoryCh/OrderHistoryCanvas';
+import OrderHistoryTooltip from './OrderHistoryCh/OrderHistoryTooltip';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -173,6 +171,7 @@ interface propsIF {
     undoStack: Map<actionKeyIF, Array<actionStackIF>>;
     deleteAllShapes: () => void;
     actionKey: actionKeyIF;
+    userTransactionData: Array<TransactionIF> | undefined;
 }
 
 export default function Chart(props: propsIF) {
@@ -208,6 +207,7 @@ export default function Chart(props: propsIF) {
         undoStack,
         deleteAllShapes,
         actionKey,
+        userTransactionData,
     } = props;
 
     const {
@@ -371,21 +371,7 @@ export default function Chart(props: propsIF) {
     >(undefined);
 
     const [hoveredOrderHistory, setHoveredOrderHistory] =
-        useState<orderHistory>({
-            tsId: '',
-            tsStart: new Date(),
-            tsEnd: new Date(),
-            orderPrice: 0,
-            orderPriceCompleted: 0,
-            orderType: '',
-            orderDirection: '',
-            orderStatus: '',
-            orderDolarAmount: 0,
-            tokenA: '',
-            tokenAAmount: 0,
-            tokenB: '',
-            tokenBAmount: 0,
-        });
+        useState<TransactionIF>();
 
     const [isHoveredOrderHistory, setIsHoveredOrderHistory] =
         useState<boolean>(false);
@@ -4400,6 +4386,34 @@ export default function Chart(props: propsIF) {
         return false;
     }
 
+    function checkSwapLoation(
+        element: lineData[],
+        mouseX: number,
+        mouseY: number,
+    ) {
+        if (scaleData) {
+            const startX = scaleData.xScale(element[0].x);
+            const startY = scaleData.yScale(element[0].y);
+
+            const circleDiameter = Math.sqrt(3000 / Math.PI);
+
+            let distance = false;
+
+            if (
+                startX < mouseX + circleDiameter &&
+                startY < mouseY + circleDiameter &&
+                startX > mouseX - circleDiameter &&
+                startY > mouseY - circleDiameter
+            ) {
+                distance = true;
+            }
+
+            return distance;
+        }
+
+        return false;
+    }
+
     const drawnShapesHoverStatus = (mouseX: number, mouseY: number) => {
         let resElement = undefined;
 
@@ -4534,7 +4548,7 @@ export default function Chart(props: propsIF) {
         });
 
         if (resElement && scaleData) {
-            const selectedCircle = checkCricleLocation(
+            const selectedCircle = checkCircleLocation(
                 resElement,
                 mouseX,
                 mouseY,
@@ -4555,30 +4569,39 @@ export default function Chart(props: propsIF) {
     };
 
     const orderHistoryHoverStatus = (mouseX: number, mouseY: number) => {
-        const resElement: any = undefined;
+        let resElement: any = undefined;
 
-        if (scaleData) {
-            orderData.forEach((element) => {
-                const lineLocation = [
-                    {
-                        x: element.tsStart.getTime() * 1000,
-                        y: element.orderPrice,
-                        ctx: undefined,
-                        denomInBase: denomInBase,
-                    },
-                    {
-                        x: element.tsEnd.getTime() * 1000,
-                        y: element.orderPriceCompleted,
-                        ctx: undefined,
-                        denomInBase: denomInBase,
-                    },
-                ];
+        if (scaleData && userTransactionData) {
+            userTransactionData.forEach((element) => {
+                // const lineLocation = [
+                //     {
+                //         x: element.txTime * 1000,
+                //         y: element.orderPrice,
+                //         ctx: undefined,
+                //         denomInBase: denomInBase,
+                //     },
+                //     {
+                //         x: element.tsEnd.getTime() * 1000,
+                //         y: element.orderPriceCompleted,
+                //         ctx: undefined,
+                //         denomInBase: denomInBase,
+                //     },
+                // ];
 
-                // if (element.orderType === 'swap') {
-                //     if (checkCircleLocation(lineLocation, mouseX, mouseY, denomInBase)) {
-                //         resElement = element;
-                //     }
-                // }
+                if (element.entityType === 'swap') {
+                    const swapOrderData = [
+                        {
+                            x: element.txTime * 1000,
+                            y: denomInBase
+                                ? element.swapInvPriceDecimalCorrected
+                                : element.swapPriceDecimalCorrected,
+                            denomInBase: denomInBase,
+                        },
+                    ];
+                    if (checkSwapLoation(swapOrderData, mouseX, mouseY)) {
+                        resElement = element;
+                    }
+                }
 
                 // if (element.orderType === 'history') {
                 //     if (checkLineLocation(lineLocation, mouseX, mouseY, denomInBase)) {
@@ -5212,98 +5235,6 @@ export default function Chart(props: propsIF) {
         selectedDrawnShape,
         isUpdatingShape,
     };
-    const orderData = [
-        {
-            tsId: '123',
-            tsEnd: new Date(1703668928),
-            tsStart: new Date(1703668928),
-            orderPrice: 1646,
-            orderPriceCompleted: 2233.94,
-            orderType: 'swap',
-            orderDirection: 'orderSell',
-            orderStatus: 'completed',
-            orderDolarAmount: 22300,
-            tokenA: 'ETH',
-            tokenAAmount: 1.36,
-            tokenB: 'USDT',
-            tokenBAmount: 22300,
-        },
-        {
-            tsId: '183',
-            tsEnd: new Date(1704360128),
-            tsStart: new Date(1704360128),
-            orderPrice: 1644,
-            orderPriceCompleted: 2300.84,
-            orderType: 'swap',
-            orderDirection: 'orderSell',
-            orderStatus: 'completed',
-            orderDolarAmount: 10300,
-            tokenA: 'ETH',
-            tokenAAmount: 1.36,
-            tokenB: 'USDT',
-            tokenBAmount: 22300,
-        },
-        {
-            tsId: '183',
-            tsEnd: new Date(1699954214),
-            tsStart: new Date(1699954214),
-            orderPrice: 1644,
-            orderPriceCompleted: 2041.84,
-            orderType: 'swap',
-            orderDirection: 'orderBuy',
-            orderStatus: 'completed',
-            orderDolarAmount: 10300,
-            tokenA: 'ETH',
-            tokenAAmount: 1.36,
-            tokenB: 'USDT',
-            tokenBAmount: 22300,
-        },
-        {
-            tsId: '143',
-            tsEnd: new Date(1703323328),
-            tsStart: new Date(1703323328),
-            orderPrice: 1646,
-            orderPriceCompleted: 1646,
-            orderType: 'history',
-            orderDirection: 'orderBuy',
-            orderStatus: 'pending',
-            orderDolarAmount: 18250,
-            tokenA: 'ETH',
-            tokenAAmount: 1.11,
-            tokenB: 'USDT',
-            tokenBAmount: 18250,
-        },
-        {
-            tsId: '129',
-            tsEnd: new Date(1695773406),
-            tsStart: new Date(1695694300),
-            orderPrice: 1645,
-            orderPriceCompleted: 1645.7,
-            orderType: 'liquidity',
-            orderDirection: 'range',
-            orderStatus: 'completed',
-            orderDolarAmount: 15230,
-            tokenA: 'ETH',
-            tokenAAmount: 3700,
-            tokenB: 'USDT',
-            tokenBAmount: 4300,
-        },
-        {
-            tsId: '229',
-            tsEnd: new Date(1695993406),
-            tsStart: new Date(1695900300),
-            orderPrice: 1644.79,
-            orderPriceCompleted: 1643.61,
-            orderType: 'liquidity',
-            orderDirection: 'range',
-            orderStatus: 'completed',
-            orderDolarAmount: 15230,
-            tokenA: 'ETH',
-            tokenAAmount: 3700,
-            tokenB: 'USDT',
-            tokenBAmount: 4300,
-        },
-    ];
 
     return (
         <div
@@ -5397,12 +5328,12 @@ export default function Chart(props: propsIF) {
                                     showSwap={showSwap}
                                     showLiquidity={showLiquidity}
                                     showHistorical={showHistorical}
-                                    orderData={orderData}
                                     hoveredOrderHistory={hoveredOrderHistory}
                                     isHoveredOrderHistory={
                                         isHoveredOrderHistory
                                     }
                                     drawSettings={drawSettings}
+                                    userTransactionData={userTransactionData}
                                 />
                             )}
 
@@ -5626,110 +5557,14 @@ export default function Chart(props: propsIF) {
                 </CSSTransition>
             )}
 
-            {scaleData && (
-                <CSSTransition
-                    in={isHoveredOrderHistory}
-                    timeout={500}
-                    classNames='orderHistoryTooltip'
-                    unmountOnExit
-                >
-                    <div
-                        className='orderHistoryDiv'
-                        style={{
-                            fontSize: '13px',
-                            top:
-                                hoveredOrderHistory.orderType === 'swap'
-                                    ? scaleData.yScale(
-                                          hoveredOrderHistory.orderPriceCompleted,
-                                      )
-                                    : scaleData.yScale(
-                                          Math.max(
-                                              hoveredOrderHistory.orderPriceCompleted,
-                                              hoveredOrderHistory.orderPrice,
-                                          ) -
-                                              Math.abs(
-                                                  hoveredOrderHistory.orderPriceCompleted -
-                                                      hoveredOrderHistory.orderPrice,
-                                              ) /
-                                                  2,
-                                      ),
-                            left:
-                                scaleData?.xScale(
-                                    hoveredOrderHistory?.tsEnd.getTime() * 1000,
-                                ) +
-                                bandwidth *
-                                    (hoveredOrderHistory.orderType === 'swap'
-                                        ? 15
-                                        : 2),
-                        }}
-                    >
-                        <div className='orderHistoryHeader'>
-                            <div
-                                style={{
-                                    color:
-                                        hoveredOrderHistory.orderType ===
-                                        'liquidity'
-                                            ? 'rgba(95, 255, 242, 0.7)'
-                                            : '#7371fc',
-                                }}
-                            >
-                                {hoveredOrderHistory.orderType === 'liquidity'
-                                    ? 'Range'
-                                    : (hoveredOrderHistory.orderDirection.includes(
-                                          'Buy',
-                                      )
-                                          ? 'Buy'
-                                          : 'Sell') + ': '}
-                            </div>
-                            {hoveredOrderHistory.orderType !== 'liquidity' && (
-                                <div>
-                                    {hoveredOrderHistory.tokenAAmount +
-                                        ' ' +
-                                        hoveredOrderHistory.tokenA}
-                                </div>
-                            )}{' '}
-                        </div>
-                        {hoveredOrderHistory.orderType === 'liquidity' && (
-                            <div
-                                style={{
-                                    color: '#f0f0f8',
-                                    fontSize: '16px',
-                                }}
-                            >
-                                {formatAmountWithoutDigit(
-                                    hoveredOrderHistory?.tokenAAmount,
-                                    0,
-                                ) +
-                                    ' - ' +
-                                    formatAmountWithoutDigit(
-                                        hoveredOrderHistory?.tokenBAmount,
-                                        0,
-                                    )}
-                            </div>
-                        )}{' '}
-                        <div>
-                            {hoveredOrderHistory.orderType === 'history' && (
-                                <div>
-                                    {hoveredOrderHistory?.orderStatus.includes(
-                                        'pending',
-                                    )
-                                        ? 'Pending...'
-                                        : hoveredOrderHistory.orderType}
-                                </div>
-                            )}
-                        </div>
-                        <div>
-                            {'$' +
-                                formatAmountWithoutDigit(
-                                    hoveredOrderHistory.orderDolarAmount,
-                                    0,
-                                )}
-                        </div>
-                        {!hoveredOrderHistory?.orderStatus.includes(
-                            'pending',
-                        ) && <div>0xAbCd...1425</div>}
-                    </div>
-                </CSSTransition>
+            {scaleData && hoveredOrderHistory && (
+                <OrderHistoryTooltip
+                    scaleData={scaleData}
+                    hoveredOrderHistory={hoveredOrderHistory}
+                    isHoveredOrderHistory={isHoveredOrderHistory}
+                    bandwidth={bandwidth}
+                    denomInBase={denomInBase}
+                />
             )}
         </div>
     );
