@@ -44,11 +44,14 @@ export default function UserLevelDisplay(props: Props) {
         <Link to={linkToNavigateTo} className={styles.level_only_container}>
             <div
                 className={`${styles.level_border} ${
-                    formattedXpLevel.length > 3 ? styles.auto_width : ''
+                    formattedXpLevel.length > 2 ? styles.auto_width : ''
                 }`}
             >
                 <div className={styles.level_border_content}>
-                    {formattedXpLevel}
+                    {currentLevel !== undefined &&
+                    currentLevel.toString().length > 2
+                        ? formattedXpLevel
+                        : currentLevel}
                 </div>
             </div>
 
