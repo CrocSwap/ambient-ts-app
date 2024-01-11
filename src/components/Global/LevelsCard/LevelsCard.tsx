@@ -1,6 +1,6 @@
 import { FlexContainer, Text } from '../../../styled/Common';
 import styles from './LevelsCard.module.css';
-import { LuCopy, LuExternalLink, LuShare2 } from 'react-icons/lu';
+import { LuCopy, LuExternalLink } from 'react-icons/lu';
 import LevelLine from '../LevelLine/LevelLine';
 import { useContext, useRef, useState } from 'react';
 import { UserDataContext } from '../../../contexts/UserDataContext';

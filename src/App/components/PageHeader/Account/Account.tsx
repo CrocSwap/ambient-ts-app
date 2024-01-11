@@ -110,7 +110,7 @@ export default function Account(props: propsIF) {
         </section>
     );
     const currentLevel = connectedUserXp?.data?.currentLevel;
-    console.log(currentLevel?.toString()?.length);
+
     const formattedXpLevel = getFormattedNumber({
         value: currentLevel,
         abbrevThreshold: 1000,
