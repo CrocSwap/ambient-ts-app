@@ -307,15 +307,16 @@ function Toolbar(props: ToolbarProps) {
                                 <IconCard key={index}>
                                     <IconActiveContainer
                                         onClick={() =>
+                                            !mobileView &&
                                             handleDrawModeChange(item)
                                         }
                                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                        onMouseEnter={(event: any) =>
+                                        onMouseEnter={(event: any) => {
                                             handleOnMouseEnter(
                                                 event,
                                                 item.description,
-                                            )
-                                        }
+                                            );
+                                        }}
                                         onMouseLeave={() =>
                                             setHoveredTool(() => undefined)
                                         }
@@ -346,15 +347,16 @@ function Toolbar(props: ToolbarProps) {
                                     <IconFillContainer
                                         isActive={isMagnetActive.value}
                                         onClick={() =>
+                                            !mobileView &&
                                             handleActivateIndicator(item)
                                         }
                                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                        onMouseEnter={(event: any) =>
+                                        onMouseEnter={(event: any) => {
                                             handleOnMouseEnter(
                                                 event,
                                                 item.description,
-                                            )
-                                        }
+                                            );
+                                        }}
                                         onMouseLeave={() =>
                                             setHoveredTool(() => undefined)
                                         }
@@ -389,17 +391,20 @@ function Toolbar(props: ToolbarProps) {
                                             ) > 0
                                         }
                                         onClick={() => {
-                                            if (
-                                                item.stack.has(actionKey) &&
-                                                Number(
-                                                    item.stack.get(actionKey)
-                                                        ?.length,
-                                                ) > 0
-                                            ) {
-                                                setSelectedDrawnShape(
-                                                    undefined,
-                                                );
-                                                item.operation();
+                                            if (!mobileView) {
+                                                if (
+                                                    item.stack.has(actionKey) &&
+                                                    Number(
+                                                        item.stack.get(
+                                                            actionKey,
+                                                        )?.length,
+                                                    ) > 0
+                                                ) {
+                                                    setSelectedDrawnShape(
+                                                        undefined,
+                                                    );
+                                                    item.operation();
+                                                }
                                             }
                                         }}
                                         onTouchStart={() => {
@@ -451,11 +456,13 @@ function Toolbar(props: ToolbarProps) {
 
                             <IconCard>
                                 <IconActiveContainer
-                                    onClick={() => handleDeleteAll()}
-                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                    onMouseEnter={(event: any) =>
-                                        handleOnMouseEnter(event, 'Delete All')
+                                    onClick={() =>
+                                        !mobileView && handleDeleteAll()
                                     }
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                    onMouseEnter={(event: any) => {
+                                        handleOnMouseEnter(event, 'Delete All');
+                                    }}
                                     onMouseLeave={() =>
                                         setHoveredTool(() => undefined)
                                     }
@@ -481,7 +488,10 @@ function Toolbar(props: ToolbarProps) {
                 <Divider />
                 <DividerButton
                     isActive={isToolbarOpen}
-                    onClick={() => setIsToolbarOpen((prev: boolean) => !prev)}
+                    onClick={() =>
+                        !mobileView &&
+                        setIsToolbarOpen((prev: boolean) => !prev)
+                    }
                     onTouchStart={() =>
                         setIsToolbarOpen((prev: boolean) => !prev)
                     }
