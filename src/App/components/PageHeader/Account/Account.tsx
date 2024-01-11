@@ -112,6 +112,10 @@ export default function Account(props: propsIF) {
     const currentLevel = connectedUserXp?.data?.currentLevel;
     const formattedXpLevel = getFormattedNumber({
         value: currentLevel,
+        abbrevThreshold: 1000,
+        minFracDigits: 0,
+        maxFracDigits: 0,
+        isLevel: true,
     });
     const levelDisplay = (
         <section

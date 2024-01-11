@@ -1,4 +1,17 @@
-export interface xpSnapshot {
+export interface XpSnapshotServerIF {
+    addedPoints: number;
+    cumulativePoints: number;
+    snapshotUnixTime: number;
+}
+
+export interface UserXpServerIF {
+    userAddress: string;
+    leaderboardRank: number;
+    recentPoints: number;
+    totalPoints: number;
+    pointsHistory: Array<XpSnapshotServerIF>;
+}
+export interface XpSnapshotIF {
     addedPoints: number;
     cumulativePoints: number;
     level: number;
@@ -12,5 +25,5 @@ export interface UserXpIF {
     recentPoints: number;
     totalPoints: number;
     pointsRemainingToNextLevel: number;
-    pointsHistory: Array<xpSnapshot>;
+    pointsHistory: Array<XpSnapshotIF>;
 }
