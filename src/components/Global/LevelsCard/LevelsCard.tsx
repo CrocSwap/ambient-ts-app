@@ -10,6 +10,7 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { Link } from 'react-router-dom';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { RiScreenshot2Fill } from 'react-icons/ri';
 
 interface LevelsCardPropsIF {
     resolvedAddress?: string;
@@ -73,6 +74,7 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
                 levelsCanvasRef.current,
                 '#171d27',
                 undefined,
+                560,
             );
             if (blob) {
                 copy(blob);
@@ -117,7 +119,7 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
                     </Text>
                 </FlexContainer>
             </FlexContainer>
-            <LuShare2 size={24} onClick={copyCardToClipboard} />
+            <RiScreenshot2Fill size={24} onClick={copyCardToClipboard} />
         </FlexContainer>
     );
 
