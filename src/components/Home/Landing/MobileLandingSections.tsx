@@ -56,7 +56,9 @@ export default function MobileLandingSections() {
                     alignItems='center'
                     gap={8}
                 >
-                    <Text fontSize='body'>Points system is now live </Text>
+                    <Text fontSize='body' style={{ marginTop: '2.5px' }}>
+                        Points system is now live{' '}
+                    </Text>
                     <Link to='/xp-leaderboard'>
                         <Text
                             fontSize='body'
