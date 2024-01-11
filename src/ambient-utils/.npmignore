@@ -1,0 +1,7 @@
+# list of files within ambient-utils that should not be included as part of the exported npm package
+
+# internal developer documentation
+PUBLISH.md
+
+# tests for publishers
+tests/
