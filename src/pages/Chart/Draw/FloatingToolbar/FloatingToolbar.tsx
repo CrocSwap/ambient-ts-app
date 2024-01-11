@@ -618,7 +618,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
     function checkIsDefault(
         item: drawDataHistory,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        defaultValues: { line: any; border: any; background: any },
+        defaultValues: any,
     ) {
         let isLineDefault = false;
         let isBorderDefault = false;
@@ -655,6 +655,19 @@ function FloatingToolbar(props: FloatingToolbarProps) {
             item.background.lineWidth === defaultValues.background.lineWidth
         ) {
             isBackgroundDefault = true;
+        }
+
+        if (item.type === 'FibRetracement') {
+            const isFibStylesDefault =
+                JSON.stringify(item.extraData) ===
+                JSON.stringify(defaultValues.extraData);
+
+            return (
+                isLineDefault &&
+                isBorderDefault &&
+                isBackgroundDefault &&
+                isFibStylesDefault
+            );
         }
 
         return isLineDefault && isBorderDefault && isBackgroundDefault;
