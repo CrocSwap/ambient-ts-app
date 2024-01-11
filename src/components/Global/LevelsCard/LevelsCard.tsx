@@ -2,7 +2,7 @@ import { FlexContainer, Text } from '../../../styled/Common';
 import styles from './LevelsCard.module.css';
 import { LuCopy, LuExternalLink, LuShare2 } from 'react-icons/lu';
 import LevelLine from '../LevelLine/LevelLine';
-import { useContext, useRef } from 'react';
+import { useContext, useRef, useState } from 'react';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { printDomToImage, trimString } from '../../../ambient-utils/dataLayer';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
@@ -68,8 +68,10 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
     const desktopScreen = useMediaQuery('(min-width: 500px)');
 
     const levelsCanvasRef = useRef(null);
+    const [hideLevelCardScroll, setHideLevelCardScroll] = useState(false);
     const copyCardToClipboard = async () => {
         if (levelsCanvasRef.current) {
+            setHideLevelCardScroll(true);
             const blob = await printDomToImage(
                 levelsCanvasRef.current,
                 '#171d27',
@@ -124,7 +126,11 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
     );
 
     const pointsHistoryDisplay = (
-        <div className={styles.point_history_container}>
+        <div
+            className={`${styles.point_history_container} ${
+                hideLevelCardScroll && styles.hide_scroll
+            }`}
+        >
             {pointsData.map((data) => (
                 <FlexContainer
                     justifyContent='space-between'

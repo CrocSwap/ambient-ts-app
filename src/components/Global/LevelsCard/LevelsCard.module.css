@@ -58,7 +58,9 @@ width: 100%;
     overflow-y: scroll;
 
 }
-
+.hide_scroll{
+    overflow-y: hidden;
+}
 
  
 
