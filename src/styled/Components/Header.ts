@@ -304,6 +304,11 @@ export const WalletWrapper = styled(FlexContainer)`
     opacity: 1;
     bottom: 85px;
     pointer-events: auto;
+
+    @media (max-width: 500px) {
+        width: 300px;
+        right: -50px;
+    }
 `;
 export const LevelWrapper = styled(FlexContainer)`
     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -327,6 +332,10 @@ export const LevelWrapper = styled(FlexContainer)`
     height: 150px;
     gap: 8px;
     border-radius: 4px;
+
+    @media (max-width: 500px) {
+        right: -70px;
+    }
 `;
 export const AccountDropdownWrapper = styled(FlexContainer)`
     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
