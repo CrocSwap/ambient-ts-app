@@ -5424,6 +5424,7 @@ export default function Chart(props: propsIF) {
                                 isChartZoom={isChartZoom}
                                 lastCandleData={lastCandleData}
                                 firstCandleData={firstCandleData}
+                                setIsDragActive={setIsDragActive}
                             />
                         )}
                         <YAxisCanvas {...yAxisCanvasProps} />
