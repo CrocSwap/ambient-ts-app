@@ -73,7 +73,6 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
                 levelsCanvasRef.current,
                 '#171d27',
                 undefined,
-                50,
             );
             if (blob) {
                 copy(blob);
