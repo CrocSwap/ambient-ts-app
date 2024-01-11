@@ -2,7 +2,7 @@ import { FlexContainer, Text } from '../../../styled/Common';
 import styles from './LevelsCard.module.css';
 import { LuCopy, LuExternalLink, LuShare2 } from 'react-icons/lu';
 import LevelLine from '../LevelLine/LevelLine';
-import { useContext } from 'react';
+import { useContext, useRef } from 'react';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { trimString } from '../../../ambient-utils/dataLayer';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
@@ -65,6 +65,13 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
         openSnackbar(`${copiedData} copied`, 'info');
     }
     const desktopScreen = useMediaQuery('(min-width: 500px)');
+
+    const levelsCanvasRef = useRef(null);
+    const copyCardToClipboard = async () => {
+        if (levelsCanvasRef.current) {
+            console.log('copied');
+        }
+    };
 
     const header = (
         <FlexContainer flexDirection='row' gap={16} alignItems='center'>
@@ -133,8 +140,9 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
     );
 
     return (
-        <div className={styles.main_container}>
+        <div className={styles.main_container} ref={levelsCanvasRef}>
             {header}
+            <button onClick={copyCardToClipboard}>Right here</button>
             <Text fontSize='header1' color='text1' padding='8px 32px'>
                 {`Level ${
                     currentLevel !== undefined
