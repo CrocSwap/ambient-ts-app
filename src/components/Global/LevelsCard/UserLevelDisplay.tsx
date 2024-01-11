@@ -38,6 +38,9 @@ export default function UserLevelDisplay(props: Props) {
 
     const formattedXpLevel = getFormattedNumber({
         value: currentLevel,
+        abbrevThreshold: 1000,
+        minFracDigits: 0,
+        maxFracDigits: 0,
         isLevel: true,
     });
 
