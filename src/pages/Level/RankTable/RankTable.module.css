@@ -13,7 +13,7 @@ margin: 0 auto;
 .row_container, .row_container_header{
     display: grid;
     padding: 0 8px;
-    cursor: pointer;
+   
     transition: all var(--animation-speed) ease-in-out;
     align-items: center;
     border-radius: 4px;
