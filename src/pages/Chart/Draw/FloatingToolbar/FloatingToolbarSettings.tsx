@@ -399,6 +399,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                           }
                         : {}
                 }
+                id='floatingToolbarOptionsId'
             >
                 {selectedDrawnShape && (
                     <LineContainer>

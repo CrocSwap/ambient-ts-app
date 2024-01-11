@@ -74,6 +74,8 @@ function FloatingToolbar(props: FloatingToolbarProps) {
     } = props;
 
     const floatingDivRef = useRef<HTMLDivElement>(null);
+
+    const floatingDivContainerRef = useRef<HTMLDivElement>(null);
     const { isFullScreen: fullScreenChart } = useContext(ChartContext);
     const [isDragging, setIsDragging] = useState(false);
     const [divLeft, setDivLeft] = useState(0);
@@ -827,6 +829,10 @@ function FloatingToolbar(props: FloatingToolbarProps) {
     );
 
     useEffect(() => {
+        const floatingDivContainer = d3
+            .select(floatingDivContainerRef.current)
+            .node() as HTMLDivElement;
+
         const floatingDiv = d3
             .select(floatingDivRef.current)
             .node() as HTMLDivElement;
@@ -834,9 +840,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         let offsetX = 0;
         let offsetY = 0;
 
-        setFloatingToolbarHeight(window.innerHeight - 100);
-
-        if (floatingDiv) {
+        if (floatingDiv && floatingDivContainer) {
             const floatingDivDrag = d3
                 .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
                 .on('start', function (event) {
@@ -873,17 +877,50 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                         const divHeight =
                             floatingDiv.getBoundingClientRect().height;
 
+                        const containerDivHeight =
+                            floatingDivContainer.getBoundingClientRect().height;
+
                         let divLeft = clientX - offsetX;
                         let divTop = clientY - offsetY;
 
-                        divLeft = Math.max(
-                            1,
-                            Math.min(screenWidth - divWidth, divLeft),
-                        );
-                        divTop = Math.max(
-                            1,
-                            Math.min(screenHeight - divHeight, divTop),
-                        );
+                        if (!isSettingsTabActive) {
+                            divLeft = Math.max(
+                                1,
+                                Math.min(screenWidth - divWidth, divLeft),
+                            );
+                            divTop = Math.max(
+                                1,
+                                Math.min(screenHeight - divHeight, divTop),
+                            );
+                        } else {
+                            const floatingToolbarOptionsHeight = (
+                                document.getElementById(
+                                    'floatingToolbarOptionsId',
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                ) as any
+                            )?.clientHeight;
+
+                            const checkDivHeight =
+                                containerDivHeight !== divHeight;
+                            const tempHeight = checkDivHeight
+                                ? divHeight + floatingToolbarOptionsHeight
+                                : divHeight;
+
+                            divLeft = Math.max(
+                                1,
+                                Math.min(screenWidth - divWidth, divLeft),
+                            );
+                            divTop = Math.max(
+                                1,
+                                Math.min(
+                                    screenHeight - tempHeight,
+                                    divTop < floatingToolbarOptionsHeight &&
+                                        !checkDivHeight
+                                        ? floatingToolbarOptionsHeight
+                                        : divTop,
+                                ),
+                            );
+                        }
 
                         setFloatingToolbarHeight(screenHeight - divTop);
 
@@ -898,7 +935,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 ).call(floatingDivDrag);
             }
         }
-    }, [floatingDivRef, selectedDrawnShape]);
+    }, [floatingDivRef, selectedDrawnShape, isSettingsTabActive]);
 
     useEffect(() => {
         if (floatingDivRef.current && !isDragging) {
@@ -936,6 +973,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                         ? 'visible'
                         : 'hidden',
             }}
+            ref={floatingDivContainerRef}
         >
             <FloatingDiv ref={floatingDivRef}>
                 <FloatingButtonDiv>
