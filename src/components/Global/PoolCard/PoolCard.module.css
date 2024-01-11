@@ -161,13 +161,6 @@
 
         background: var(--dark2);
     }
-    /* .pool_card{
-        padding: 0 1rem;
-    } */
-    .pool_card,
-    .main_container {
-        width: 100%;
-    }
 
     .pool_card:hover,
     .pool_card:focus-visible {
