@@ -660,7 +660,12 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         if (item.type === 'FibRetracement') {
             const isFibStylesDefault =
                 JSON.stringify(item.extraData) ===
-                JSON.stringify(defaultValues.extraData);
+                    JSON.stringify(defaultValues.extraData) &&
+                item.extendLeft === defaultValues.extendLeft &&
+                item.extendRight === defaultValues.extendRight &&
+                item.labelPlacement === defaultValues.labelPlacement &&
+                item.labelAlignment === defaultValues.labelAlignment &&
+                item.reverse === defaultValues.reverse;
 
             return (
                 isLineDefault &&
