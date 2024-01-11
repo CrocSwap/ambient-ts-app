@@ -274,6 +274,17 @@ function Toolbar(props: ToolbarProps) {
         deleteAllShapes();
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleOnMouseEnter = (event: any, description: string) => {
+        setHoveredTool(() => description);
+
+        if (mobileView) {
+            setTimeout(() => {
+                setHoveredTool(undefined);
+            }, 200);
+        }
+    };
+
     return (
         <ToolbarContainer
             isActive={isToolbarOpen}
@@ -298,13 +309,18 @@ function Toolbar(props: ToolbarProps) {
                                         onClick={() =>
                                             handleDrawModeChange(item)
                                         }
-                                        onMouseEnter={() =>
-                                            setHoveredTool(
-                                                () => item.description,
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                        onMouseEnter={(event: any) =>
+                                            handleOnMouseEnter(
+                                                event,
+                                                item.description,
                                             )
                                         }
                                         onMouseLeave={() =>
                                             setHoveredTool(() => undefined)
+                                        }
+                                        onTouchStart={() =>
+                                            handleDrawModeChange(item)
                                         }
                                     >
                                         <IconActive
@@ -332,13 +348,18 @@ function Toolbar(props: ToolbarProps) {
                                         onClick={() =>
                                             handleActivateIndicator(item)
                                         }
-                                        onMouseEnter={() =>
-                                            setHoveredTool(
-                                                () => item.description,
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                        onMouseEnter={(event: any) =>
+                                            handleOnMouseEnter(
+                                                event,
+                                                item.description,
                                             )
                                         }
                                         onMouseLeave={() =>
                                             setHoveredTool(() => undefined)
+                                        }
+                                        onTouchStart={() =>
+                                            handleActivateIndicator(item)
                                         }
                                     >
                                         <IconActive
@@ -381,9 +402,25 @@ function Toolbar(props: ToolbarProps) {
                                                 item.operation();
                                             }
                                         }}
-                                        onMouseEnter={() =>
-                                            setHoveredTool(
-                                                () => item.description,
+                                        onTouchStart={() => {
+                                            if (
+                                                item.stack.has(actionKey) &&
+                                                Number(
+                                                    item.stack.get(actionKey)
+                                                        ?.length,
+                                                ) > 0
+                                            ) {
+                                                setSelectedDrawnShape(
+                                                    undefined,
+                                                );
+                                                item.operation();
+                                            }
+                                        }}
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                        onMouseEnter={(event: any) =>
+                                            handleOnMouseEnter(
+                                                event,
+                                                item.description,
                                             )
                                         }
                                         onMouseLeave={() =>
@@ -415,12 +452,14 @@ function Toolbar(props: ToolbarProps) {
                             <IconCard>
                                 <IconActiveContainer
                                     onClick={() => handleDeleteAll()}
-                                    onMouseEnter={() =>
-                                        setHoveredTool(() => 'Delete All')
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                    onMouseEnter={(event: any) =>
+                                        handleOnMouseEnter(event, 'Delete All')
                                     }
                                     onMouseLeave={() =>
                                         setHoveredTool(() => undefined)
                                     }
+                                    onTouchStart={() => handleDeleteAll()}
                                 >
                                     <img src={trashIcon} alt='' />
                                 </IconActiveContainer>
@@ -443,6 +482,9 @@ function Toolbar(props: ToolbarProps) {
                 <DividerButton
                     isActive={isToolbarOpen}
                     onClick={() => setIsToolbarOpen((prev: boolean) => !prev)}
+                    onTouchStart={() =>
+                        setIsToolbarOpen((prev: boolean) => !prev)
+                    }
                 >
                     <ArrowRight isActive={isToolbarOpen}></ArrowRight>
                 </DividerButton>
