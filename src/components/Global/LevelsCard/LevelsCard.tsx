@@ -4,7 +4,7 @@ import { LuCopy, LuExternalLink, LuShare2 } from 'react-icons/lu';
 import LevelLine from '../LevelLine/LevelLine';
 import { useContext, useRef } from 'react';
 import { UserDataContext } from '../../../contexts/UserDataContext';
-import { trimString } from '../../../ambient-utils/dataLayer';
+import { printDomToImage, trimString } from '../../../ambient-utils/dataLayer';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -69,7 +69,16 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
     const levelsCanvasRef = useRef(null);
     const copyCardToClipboard = async () => {
         if (levelsCanvasRef.current) {
-            console.log('copied');
+            const blob = await printDomToImage(
+                levelsCanvasRef.current,
+                '#171d27',
+                undefined,
+                50,
+            );
+            if (blob) {
+                copy(blob);
+                openSnackbar('Card image copied to clipboard', 'info');
+            }
         }
     };
 
@@ -109,7 +118,7 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
                     </Text>
                 </FlexContainer>
             </FlexContainer>
-            <LuShare2 size={24} />
+            <LuShare2 size={24} onClick={copyCardToClipboard} />
         </FlexContainer>
     );
 
@@ -142,7 +151,6 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
     return (
         <div className={styles.main_container} ref={levelsCanvasRef}>
             {header}
-            <button onClick={copyCardToClipboard}>Right here</button>
             <Text fontSize='header1' color='text1' padding='8px 32px'>
                 {`Level ${
                     currentLevel !== undefined

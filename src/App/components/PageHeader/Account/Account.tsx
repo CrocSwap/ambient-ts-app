@@ -110,6 +110,7 @@ export default function Account(props: propsIF) {
         </section>
     );
     const currentLevel = connectedUserXp?.data?.currentLevel;
+    console.log(currentLevel?.toString()?.length);
     const formattedXpLevel = getFormattedNumber({
         value: currentLevel,
         abbrevThreshold: 1000,
@@ -132,10 +133,10 @@ export default function Account(props: propsIF) {
                 tabIndex={0}
                 onClick={() => setShowLevelDropdown(!showLevelDropdown)}
                 aria-label={ariaLabel}
-                large={formattedXpLevel.length > 3}
+                large={formattedXpLevel.length >= 2}
             >
                 {currentLevel !== undefined &&
-                currentLevel?.toString()?.length > 2
+                currentLevel?.toString()?.length >= 2
                     ? formattedXpLevel
                     : currentLevel}
             </LevelButton>

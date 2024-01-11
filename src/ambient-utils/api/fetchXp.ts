@@ -72,7 +72,8 @@ export const fetchUserXpData = async (args: argsIF) => {
         userAddress: user,
         leaderboardRank: 1,
         recentPoints: 4000000000000,
-        totalPoints: 4000000005600,
+        // totalPoints: 4000000005600,
+        totalPoints: 2005600,
         pointsHistory: [
             {
                 addedPoints: 4000000000000,
