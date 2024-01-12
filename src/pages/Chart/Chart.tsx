@@ -3479,24 +3479,6 @@ export default function Chart(props: propsIF) {
                                         bandArea([bandData]);
                                     });
 
-                                    if (item.line.active) {
-                                        if (ctx)
-                                            ctx.setLineDash(item.line.dash);
-                                        lineSeries.decorate(
-                                            (
-                                                context: CanvasRenderingContext2D,
-                                            ) => {
-                                                context.strokeStyle =
-                                                    item.line.color;
-                                                context.lineWidth =
-                                                    item.line.lineWidth;
-                                            },
-                                        );
-                                        lineSeries(data);
-                                    }
-
-                                    if (ctx) ctx.setLineDash([0, 0]);
-
                                     fibLineData.forEach((lineData) => {
                                         const lineLabel =
                                             lineData[0].level +
@@ -3727,6 +3709,24 @@ export default function Chart(props: propsIF) {
                                             );
                                         }
                                     });
+
+                                    if (item.line.active) {
+                                        if (ctx)
+                                            ctx.setLineDash(item.line.dash);
+                                        lineSeries.decorate(
+                                            (
+                                                context: CanvasRenderingContext2D,
+                                            ) => {
+                                                context.strokeStyle =
+                                                    item.line.color;
+                                                context.lineWidth =
+                                                    item.line.lineWidth;
+                                            },
+                                        );
+                                        lineSeries(data);
+                                    }
+
+                                    if (ctx) ctx.setLineDash([0, 0]);
                                 }
 
                                 if (
