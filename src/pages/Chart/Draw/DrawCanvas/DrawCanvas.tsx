@@ -719,6 +719,8 @@ function DrawCanvas(props: DrawCanvasProps) {
             .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
 
+        const canvasRect = canvas.getBoundingClientRect();
+
         if (
             scaleData &&
             lineData.length > 1 &&
@@ -840,13 +842,34 @@ function DrawCanvas(props: DrawCanvasProps) {
                                 ? -(infoLabelHeight + 15)
                                 : 15);
 
+                        const dpRangeLabelYPlacement =
+                            scaleData.yScale(firstPointYAxisData) < 0
+                                ? infoLabelYAxisData
+                                : scaleData.yScale(firstPointYAxisData) < 463
+                                ? infoLabelYAxisData + infoLabelHeight >
+                                  canvasRect.height
+                                    ? canvasRect.height - infoLabelHeight - 5
+                                    : Math.max(infoLabelYAxisData, 5)
+                                : infoLabelYAxisData;
+
                         if (ctx) {
+                            const arrowArray = createArrowPointsOfDPRangeLine(
+                                lineData,
+                                scaleData,
+                                denomInBase,
+                                height > 30 && width > 30 ? 10 : 5,
+                            );
+
+                            arrowArray.forEach((arrow) => {
+                                lineSeries(arrow);
+                            });
+
                             ctx.beginPath();
                             ctx.fillStyle = 'rgb(34,44,58)';
                             ctx.fillRect(
                                 scaleData.xScale(infoLabelXAxisData) -
                                     infoLabelWidth / 2,
-                                infoLabelYAxisData,
+                                dpRangeLabelYPlacement,
                                 infoLabelWidth,
                                 infoLabelHeight,
                             );
@@ -887,7 +910,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                                     '%)  ' +
                                     dpRangeTickPrice,
                                 scaleData.xScale(infoLabelXAxisData),
-                                infoLabelYAxisData + 16,
+                                dpRangeLabelYPlacement + 16,
                             );
                             ctx.fillText(
                                 (lengthAsBars / (1000 * period))
@@ -896,7 +919,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                                     ' bars,  ' +
                                     lengthAsDate,
                                 scaleData.xScale(infoLabelXAxisData),
-                                infoLabelYAxisData + 33,
+                                dpRangeLabelYPlacement + 33,
                             );
                             ctx.fillText(
                                 'Vol ' +
@@ -904,20 +927,9 @@ function DrawCanvas(props: DrawCanvasProps) {
                                         totalVolumeCovered,
                                     ).replace('$', ''),
                                 scaleData.xScale(infoLabelXAxisData),
-                                infoLabelYAxisData + 50,
+                                dpRangeLabelYPlacement + 50,
                             );
                         }
-
-                        const arrowArray = createArrowPointsOfDPRangeLine(
-                            lineData,
-                            scaleData,
-                            denomInBase,
-                            height > 30 && width > 30 ? 10 : 5,
-                        );
-
-                        arrowArray.forEach((arrow) => {
-                            lineSeries(arrow);
-                        });
                     }
                 })
                 .on('measure', (event: CustomEvent) => {
@@ -942,6 +954,9 @@ function DrawCanvas(props: DrawCanvasProps) {
             .select('canvas')
             .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
+
+        const canvasRect = canvas.getBoundingClientRect();
+
         const localDrawSettings = drawSettings
             ? drawSettings[activeDrawingType]
             : defaultShapeAttributes;
@@ -1031,7 +1046,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                                     : 0;
 
                             const bufferRight =
-                                canvas.width -
+                                canvasRect.width -
                                 (localDrawSettings.extendRight &&
                                 localDrawSettings.labelPlacement === 'Right'
                                     ? lineMeasures.width + 15
@@ -1041,7 +1056,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                                 bufferLeft,
                                 0,
                                 bufferRight,
-                                canvas.height,
+                                canvasRect.height,
                                 canvas,
                             );
                         }
