@@ -6,20 +6,20 @@ interface argsIF {
 
 // function to convert level to xp
 export const levelToXp = (level: number) => {
-    const xp = 250 * level ** (3 / 2);
+    const xp = 250 * (level - 1) ** (3 / 2);
     return xp;
 };
 
 // function to convert xp to levels
 export const xpToLevel = (xp: number) => {
-    const level = Math.floor((xp / 250) ** (2 / 3));
+    const level = Math.floor((xp / 250) ** (2 / 3)) + 1;
     return level;
 };
 
 // function to calculate points to next level
 export const pointsToNextLevel = (xp: number) => {
-    const level = xpToLevel(xp);
-    const pointsToNextLevel = 250 * (level + 1) ** (3 / 2) - xp;
+    const nextLevel = xpToLevel(xp) + 1;
+    const pointsToNextLevel = levelToXp(nextLevel) - xp;
     return pointsToNextLevel;
 };
 
@@ -72,8 +72,7 @@ export const fetchUserXpData = async (args: argsIF) => {
         userAddress: user,
         leaderboardRank: 1,
         recentPoints: 4000000000000,
-        // totalPoints: 4000000005600,
-        totalPoints: 2005600,
+        totalPoints: 4000000005600,
         pointsHistory: [
             {
                 addedPoints: 4000000000000,
@@ -160,8 +159,134 @@ export const fetchXpLeadersData = async () => {
         {
             userAddress: '0xa86dabFBb529a4C8186BdD52bd226aC81757E090',
             leaderboardRank: 2,
+            recentPoints: 24000000,
+            totalPoints: 25000000,
+            pointsHistory: [
+                {
+                    snapshotUnixTime: 1702512000,
+                    addedPoints: 2400,
+                    cumulativePoints: 2500,
+                },
+                {
+                    snapshotUnixTime: 1701302400,
+                    addedPoints: 100,
+                    cumulativePoints: 100,
+                },
+            ],
+        },
+        {
+            userAddress: '0xa86dabFBb529a4C8186BdD52bd226aC81757E090',
+            leaderboardRank: 2,
+            recentPoints: 2400000,
+            totalPoints: 2500000,
+            pointsHistory: [
+                {
+                    snapshotUnixTime: 1702512000,
+                    addedPoints: 2400,
+                    cumulativePoints: 2500,
+                },
+                {
+                    snapshotUnixTime: 1701302400,
+                    addedPoints: 100,
+                    cumulativePoints: 100,
+                },
+            ],
+        },
+        {
+            userAddress: '0xa86dabFBb529a4C8186BdD52bd226aC81757E090',
+            leaderboardRank: 2,
+            recentPoints: 240000,
+            totalPoints: 250000,
+            pointsHistory: [
+                {
+                    snapshotUnixTime: 1702512000,
+                    addedPoints: 2400,
+                    cumulativePoints: 2500,
+                },
+                {
+                    snapshotUnixTime: 1701302400,
+                    addedPoints: 100,
+                    cumulativePoints: 100,
+                },
+            ],
+        },
+        {
+            userAddress: '0xa86dabFBb529a4C8186BdD52bd226aC81757E090',
+            leaderboardRank: 2,
+            recentPoints: 24000,
+            totalPoints: 25000,
+            pointsHistory: [
+                {
+                    snapshotUnixTime: 1702512000,
+                    addedPoints: 2400,
+                    cumulativePoints: 2500,
+                },
+                {
+                    snapshotUnixTime: 1701302400,
+                    addedPoints: 100,
+                    cumulativePoints: 100,
+                },
+            ],
+        },
+        {
+            userAddress: '0xa86dabFBb529a4C8186BdD52bd226aC81757E090',
+            leaderboardRank: 2,
             recentPoints: 2400,
             totalPoints: 2500,
+            pointsHistory: [
+                {
+                    snapshotUnixTime: 1702512000,
+                    addedPoints: 2400,
+                    cumulativePoints: 2500,
+                },
+                {
+                    snapshotUnixTime: 1701302400,
+                    addedPoints: 100,
+                    cumulativePoints: 100,
+                },
+            ],
+        },
+        {
+            userAddress: '0xa86dabFBb529a4C8186BdD52bd226aC81757E090',
+            leaderboardRank: 2,
+            recentPoints: 240,
+            totalPoints: 250,
+            pointsHistory: [
+                {
+                    snapshotUnixTime: 1702512000,
+                    addedPoints: 2400,
+                    cumulativePoints: 2500,
+                },
+                {
+                    snapshotUnixTime: 1701302400,
+                    addedPoints: 100,
+                    cumulativePoints: 100,
+                },
+            ],
+        },
+        {
+            userAddress: '0xa86dabFBb529a4C8186BdD52bd226aC81757E090',
+            leaderboardRank: 2,
+            recentPoints: 24,
+            totalPoints: 25,
+            pointsHistory: [
+                {
+                    snapshotUnixTime: 1702512000,
+                    addedPoints: 2400,
+                    cumulativePoints: 2500,
+                },
+                {
+                    snapshotUnixTime: 1701302400,
+                    addedPoints: 100,
+                    cumulativePoints: 100,
+                },
+            ],
+        },
+        {
+            userAddress: '0xa86dabFBb529a4C8186BdD52bd226aC81757E090',
+            leaderboardRank: 2,
+            recentPoints: 2,
+            totalPoints: 2,
             pointsHistory: [
                 {
                     snapshotUnixTime: 1702512000,

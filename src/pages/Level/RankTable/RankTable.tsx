@@ -17,7 +17,10 @@ export default function RankTable() {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0,
             }),
-            currentLevel: entry.currentLevel,
+            currentLevel: entry.currentLevel.toLocaleString('en-US', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+            }),
         })) || [];
 
     return (

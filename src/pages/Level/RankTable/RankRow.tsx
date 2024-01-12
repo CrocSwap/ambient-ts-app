@@ -10,7 +10,7 @@ interface PropsIF {
         walletDisplay: string;
         userAddress: string;
         points: string;
-        currentLevel: number;
+        currentLevel: string;
     };
 }
 export default function RankRow(props: PropsIF) {
