@@ -8,7 +8,6 @@ import {
     memo,
 } from 'react';
 
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import Transactions from './Transactions/Transactions';
 import Orders from './Orders/Orders';
 import moment from 'moment';
@@ -96,15 +95,8 @@ function TradeTabs2(props: propsIF) {
 
     const { tokens } = useContext(TokenContext);
 
-    const {
-        showAllData,
-        setShowAllData,
-        setCurrentLimitOrderActive,
-        setCurrentPositionActive,
-        setCurrentTxActiveInTransactions,
-        outsideControl,
-        selectedOutsideTab,
-    } = useContext(TradeTableContext);
+    const { showAllData, setShowAllData, outsideControl, selectedOutsideTab } =
+        useContext(TradeTableContext);
 
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
@@ -384,12 +376,6 @@ function TradeTabs2(props: propsIF) {
     // -------------------------------END OF DATA-----------------------------------------
     const tabComponentRef = useRef<HTMLDivElement>(null);
 
-    const clickOutsideHandler = () => {
-        setCurrentTxActiveInTransactions('');
-        setCurrentPositionActive('');
-        setCurrentLimitOrderActive('');
-    };
-
     const clearButtonOrNull = isCandleSelected ? (
         <ClearButton onClick={() => unselectCandle()}>Clear</ClearButton>
     ) : null;
@@ -453,8 +439,6 @@ function TradeTabs2(props: propsIF) {
             {clearButtonOrNull}
         </FlexContainer>
     );
-
-    useOnClickOutside(tabComponentRef, clickOutsideHandler);
 
     return (
         <FlexContainer
