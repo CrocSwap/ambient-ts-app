@@ -12,6 +12,7 @@ import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 import { GCGO_ETHEREUM_URL } from '../gcgo';
 import { AMBIENT_UTILS_OVERRIDES } from '../../initAmbientUtils';
+import { Provider } from '@ethersproject/providers';
 
 const PROVIDER_KEY =
     process.env.NODE_ENV === 'test'
