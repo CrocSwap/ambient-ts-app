@@ -9,11 +9,11 @@ import {
     selectedDrawnData,
     setCanvasResolution,
 } from '../../ChartUtils/chartUtils';
-import { diffHashSig } from '../../../../ambient-utils/dataLayer';
 import { createCircle } from '../../ChartUtils/circle';
 import { createLinearLineSeries } from './LinearLineSeries';
 import { createBandArea, createPointsOfBandLine } from './BandArea';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { diffHashSig } from '../../../../utils/diffHashSig';
 
 interface DrawCanvasProps {
     scaleData: scaleData;

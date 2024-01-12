@@ -27,11 +27,6 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import useDebounce from '../../../App/hooks/useDebounce';
-import {
-    diffHashSigLimits,
-    diffHashSigPostions,
-    diffHashSigTxs,
-} from '../../../ambient-utils/dataLayer';
 import { CandleContext } from '../../../contexts/CandleContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { ChartContext } from '../../../contexts/ChartContext';
@@ -44,6 +39,11 @@ import TableInfo from '../TableInfo/TableInfo';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import {
+    diffHashSigLimits,
+    diffHashSigPostions,
+    diffHashSigTxs,
+} from '../../../utils/diffHashSig';
 interface propsIF {
     filter: CandleDataIF | undefined;
     setTransactionFilter: Dispatch<SetStateAction<CandleDataIF | undefined>>;

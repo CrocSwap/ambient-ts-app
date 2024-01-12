@@ -14,7 +14,6 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import {
     getPositionData,
     getFormattedNumber,
-    printDomToImage,
 } from '../../../ambient-utils/dataLayer';
 import { TokenContext } from '../../../contexts/TokenContext';
 import modalBackground from '../../../assets/images/backgrounds/background.png';
@@ -22,6 +21,7 @@ import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import Modal from '../../Global/Modal/Modal';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { printDomToImage } from '../../../utils/printDomToImage';
 
 interface propsIF {
     position: PositionIF;

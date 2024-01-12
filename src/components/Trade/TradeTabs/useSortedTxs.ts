@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { TransactionIF } from '../../../ambient-utils/types';
-import { diffHashSig } from '../../../ambient-utils/dataLayer';
 import { BigNumber } from 'ethers/lib/ethers';
+import { diffHashSig } from '../../../utils/diffHashSig';
 
 export type TxSortType =
     | 'time'

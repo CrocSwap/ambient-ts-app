@@ -26,9 +26,6 @@ import useHandleSwipeBack from '../../utils/hooks/useHandleSwipeBack';
 import { candleTimeIF } from '../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import {
-    diffHashSig,
-    diffHashSigChart,
-    diffHashSigScaleData,
     getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
     getPinnedTickFromDisplayPrice,
@@ -98,6 +95,11 @@ import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { actionKeyIF } from './ChartUtils/useUndoRedo';
+import {
+    diffHashSig,
+    diffHashSigChart,
+    diffHashSigScaleData,
+} from '../../utils/diffHashSig';
 
 interface propsIF {
     isTokenABase: boolean;
