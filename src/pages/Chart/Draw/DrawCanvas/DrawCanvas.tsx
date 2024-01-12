@@ -299,8 +299,6 @@ function DrawCanvas(props: DrawCanvasProps) {
             ? drawSettings[activeDrawingType]
             : defaultShapeAttributes;
 
-        let touchTimeout: NodeJS.Timeout | null = null; // Declare touchTimeout
-
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const cancelDrawEvent = (event: any) => {
             if (event.key === 'Escape') {
@@ -324,14 +322,6 @@ function DrawCanvas(props: DrawCanvasProps) {
             const clientX = event.targetTouches[0].clientX;
             const clientY = event.targetTouches[0].clientY;
             draw(clientX, clientY);
-
-            if (touchTimeout) {
-                clearTimeout(touchTimeout);
-            }
-            // check touchmove end
-            touchTimeout = setTimeout(() => {
-                endDrawing(clientX, clientY);
-            }, 500);
         });
 
         d3.select(d3DrawCanvas.current).on(
@@ -350,7 +340,7 @@ function DrawCanvas(props: DrawCanvasProps) {
             },
         );
 
-        d3.select(d3DrawCanvas.current).on('mouseup', (event: PointerEvent) => {
+        canvas.addEventListener('pointerup', (event: PointerEvent) => {
             endDrawing(event.clientX, event.clientY);
         });
 

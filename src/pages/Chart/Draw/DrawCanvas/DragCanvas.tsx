@@ -47,6 +47,7 @@ interface DragCanvasProps {
     firstCandleData: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     lastCandleData: any;
+    setIsDragActive: React.Dispatch<boolean>;
 }
 
 export default function DragCanvas(props: DragCanvasProps) {
@@ -72,6 +73,7 @@ export default function DragCanvas(props: DragCanvasProps) {
         isChartZoom,
         firstCandleData,
         lastCandleData,
+        setIsDragActive,
     } = props;
 
     useEffect(() => {
@@ -354,6 +356,16 @@ export default function DragCanvas(props: DragCanvasProps) {
             }
         }
     }
+
+    useEffect(() => {
+        const canvas = d3
+            .select(d3DragCanvas.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+        canvas.addEventListener('pointerup', () => {
+            setIsDragActive(false);
+        });
+    }, []);
 
     // mousemove
     useEffect(() => {

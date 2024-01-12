@@ -823,7 +823,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                     ? liquidityDepthScale(liqMaxActiveLiq)
                     : liquidityScale(liqMaxActiveLiq);
 
-            setLiqMaxActiveLiq(liqMaxActiveLiqX * 7);
+            setLiqMaxActiveLiq(liqMaxActiveLiqX * 8);
         }
     }, [
         liqMaxActiveLiq,
