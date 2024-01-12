@@ -11,6 +11,7 @@ import {
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { diffHashSigScaleData } from '../../../../ambient-utils/dataLayer';
 import { CandleDataIF } from '../../../../ambient-utils/types';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 interface DragCanvasProps {
     scaleData: scaleData;
@@ -75,6 +76,8 @@ export default function DragCanvas(props: DragCanvasProps) {
         lastCandleData,
         setIsDragActive,
     } = props;
+
+    const mobileView = useMediaQuery('(max-width: 600px)');
 
     useEffect(() => {
         if (scaleData !== undefined && !isChartZoom) {
@@ -376,6 +379,12 @@ export default function DragCanvas(props: DragCanvasProps) {
                 mousemove(event);
             },
         );
+    }, []);
+
+    useEffect(() => {
+        if (mobileView) {
+            setSelectedDrawnShape(hoveredDrawnShape);
+        }
     }, []);
 
     useEffect(() => {
