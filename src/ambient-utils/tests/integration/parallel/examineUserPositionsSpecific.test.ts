@@ -1,13 +1,13 @@
-import { fetchRecords } from '../../api/fetchUserPositions';
-import { memoizeQuerySpotPrice } from '../../dataLayer';
+import { fetchRecords } from '../../../api/fetchUserPositions';
+import { memoizeQuerySpotPrice } from '../../../dataLayer';
 import {
     memoizeTokenPrice,
     fetchContractDetails,
     fetchEnsAddress,
-} from '../../api';
-import { RecordType } from '../../types';
-import { createNetworkSession } from '../../constants/networks/createNetworkSession';
-import { isNetworkAccessDisabled } from '../config';
+} from '../../../api';
+import { RecordType } from '../../../types';
+import { createNetworkSession } from '../../../constants/networks/createNetworkSession';
+import { isNetworkAccessDisabled } from '../../config';
 
 const fetchDataForChain = async (
     recordType: RecordType,
