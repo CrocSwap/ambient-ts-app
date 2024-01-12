@@ -1,3 +1,5 @@
+import { Message } from './Model/MessageModel';
+
 export const LS_USER_VERIFY_TOKEN = 'CHAT_user_verify';
 export const LS_USER_NON_VERIFIED_MESSAGES = 'CHAT_non_verified_messages';
 
@@ -65,4 +67,35 @@ export const removeFromUnverifiedList = (id: string, address?: string) => {
 export const getUserVerifyToken = (address?: string) => {
     const userToken = getLS(LS_USER_VERIFY_TOKEN, address);
     return userToken;
+};
+
+export const hasEns = (message: Message) => {
+    return !(
+        message.ensName === '' ||
+        message.ensName === 'defaultValue' ||
+        message.ensName === null ||
+        message.ensName === 'null' ||
+        message.ensName === undefined ||
+        message.ensName === 'undefined'
+    );
+};
+
+export const getShownName = (message: Message) => {
+    if (!hasEns(message)) {
+        return message.walletID.slice(0, 6) + '...';
+    } else {
+        return message.ensName;
+    }
+};
+
+export const formatMessageTime = (time: string) => {
+    const date = new Date(time);
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const _min = minutes.toString().padStart(2, '0');
+    const strTime = hours + ':' + _min + ' ' + ampm;
+    return strTime;
 };

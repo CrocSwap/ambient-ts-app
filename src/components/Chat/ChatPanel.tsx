@@ -74,7 +74,7 @@ function ChatPanel(props: propsIF) {
         useState(true);
 
     const [isReplyButtonPressed, setIsReplyButtonPressed] = useState(false);
-    const [replyMessageContent, setReplyMessageContent] = useState<
+    const [selectedMessageforReply, setSelectedMessageForReply] = useState<
         Message | undefined
     >();
 
@@ -760,8 +760,9 @@ function ChatPanel(props: propsIF) {
                             setPopUpText={setPopUpText}
                             isReplyButtonPressed={isReplyButtonPressed}
                             setIsReplyButtonPressed={setIsReplyButtonPressed}
-                            replyMessageContent={replyMessageContent}
-                            setReplyMessageContent={setReplyMessageContent}
+                            setSelectedMessageForReply={
+                                setSelectedMessageForReply
+                            }
                             isSubscriptionsEnabled={isSubscriptionsEnabled}
                             isChatOpen={isChatOpen}
                             address={userAddress}
@@ -934,10 +935,10 @@ function ChatPanel(props: propsIF) {
             setPopUpText={setPopUpText}
             isReplyButtonPressed={isReplyButtonPressed}
             setIsReplyButtonPressed={setIsReplyButtonPressed}
-            replyMessageContent={replyMessageContent}
-            setReplyMessageContent={setReplyMessageContent}
             isInputDisabled={isInputDisabled}
             sendMessageCooldown={sendMessageCooldown}
+            selectedMessageForReply={selectedMessageforReply}
+            setSelectedMessageForReply={setSelectedMessageForReply}
         />
     );
 

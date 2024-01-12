@@ -51,8 +51,8 @@ interface MessageInputProps {
     popUpText: string;
     isReplyButtonPressed: boolean;
     setIsReplyButtonPressed: Dispatch<SetStateAction<boolean>>;
-    replyMessageContent: Message | undefined;
-    setReplyMessageContent: Dispatch<SetStateAction<Message | undefined>>;
+    selectedMessageForReply: Message | undefined;
+    setSelectedMessageForReply: Dispatch<SetStateAction<Message | undefined>>;
     sendMessageCooldown: number;
 }
 
@@ -371,20 +371,20 @@ export default function MessageInput(props: MessageInputProps) {
     const handleSendMsg = async (msg: string, roomId: string) => {
         if (msg !== '' && userAddress) {
             if (
-                (isRoomAdmins && props.replyMessageContent !== undefined) ||
-                (props.replyMessageContent?.roomInfo !== 'Admins' &&
-                    props.replyMessageContent?.roomInfo !== undefined)
+                (isRoomAdmins && props.selectedMessageForReply !== undefined) ||
+                (props.selectedMessageForReply?.roomInfo !== 'Admins' &&
+                    props.selectedMessageForReply?.roomInfo !== undefined)
             ) {
                 props.sendMsg(
                     props.currentUser,
                     message,
-                    props.replyMessageContent?.roomInfo as string,
+                    props.selectedMessageForReply?.roomInfo as string,
                     props.ensName,
                     userAddress,
                     mentUser ? userLabelForFilter(mentUser) : null,
                     mentUser ? mentUser.walletID : null,
-                    props.replyMessageContent !== undefined
-                        ? props.replyMessageContent?._id
+                    props.selectedMessageForReply !== undefined
+                        ? props.selectedMessageForReply?._id
                         : undefined,
                 );
             } else {
@@ -396,13 +396,13 @@ export default function MessageInput(props: MessageInputProps) {
                     userAddress,
                     mentUser ? userLabelForFilter(mentUser) : null,
                     mentUser ? mentUser.walletID : null,
-                    props.replyMessageContent !== undefined
-                        ? props.replyMessageContent?._id
+                    props.selectedMessageForReply !== undefined
+                        ? props.selectedMessageForReply?._id
                         : undefined,
                 );
             }
             props.setIsReplyButtonPressed(false);
-            props.setReplyMessageContent(undefined);
+            props.setSelectedMessageForReply(undefined);
         }
         setInputLength(0);
     };
@@ -471,26 +471,21 @@ export default function MessageInput(props: MessageInputProps) {
                                 : props.ensName
                         }
                     />
-                    <div>
+                    <>
                         {props.isReplyButtonPressed ? (
                             <ReplyMessage
-                                message={props.replyMessageContent?.message}
                                 setIsReplyButtonPressed={
                                     props.setIsReplyButtonPressed
                                 }
                                 isReplyButtonPressed={
                                     props.isReplyButtonPressed
                                 }
-                                repliedMessageEnsName={
-                                    props.replyMessageContent?.ensName
-                                }
-                                ensName={props.replyMessageContent?.ensName}
-                                walletID={props.replyMessageContent?.walletID}
+                                messageObj={props.selectedMessageForReply}
                             />
                         ) : (
                             ''
                         )}
-                    </div>
+                    </>
 
                     <div
                         className={

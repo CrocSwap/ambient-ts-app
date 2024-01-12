@@ -20,7 +20,12 @@ import PositionBox from '../PositionBox/PositionBox';
 import styles from './SentMessagePanel.module.css';
 
 import { IoReturnUpForwardSharp } from 'react-icons/io5';
-import { LS_USER_NON_VERIFIED_MESSAGES, getLS } from '../../ChatUtils';
+import {
+    LS_USER_NON_VERIFIED_MESSAGES,
+    getLS,
+    getShownName,
+    hasEns,
+} from '../../ChatUtils';
 import Menu from '../Options/Menu/Menu';
 import Options from '../Options/Options';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
@@ -61,8 +66,7 @@ interface SentMessageProps {
     setPopUpText: Dispatch<SetStateAction<string>>;
     isReplyButtonPressed: boolean;
     setIsReplyButtonPressed: Dispatch<SetStateAction<boolean>>;
-    replyMessageContent: Message | undefined;
-    setReplyMessageContent: Dispatch<SetStateAction<Message | undefined>>;
+    setSelectedMessageForReply: Dispatch<SetStateAction<Message | undefined>>;
     isSubscriptionsEnabled: boolean;
     address: `0x${string}` | undefined;
     isChatOpen: boolean;
@@ -95,12 +99,6 @@ function SentMessagePanel(props: SentMessageProps) {
     const [flipped, setFlipped] = useState(false);
     const [flipRead, setFlipRead] = useState(false);
     const [count, setCount] = useState(0);
-    const [repliedMessageText, setRepliedMessageText] = useState<string>('');
-    const [repliedMessageEnsName, setRepliedMessageEnsName] =
-        useState<string>('');
-    const [repliedMessageDate, setRepliedMessageDate] = useState<string>('');
-    const [repliedMessageWalletID, setRepliedMessageWalletID] =
-        useState<string>('');
     const [timestampForChildRefresh, setTimestampForChildRefresh] = useState(
         new Date().getTime(),
     );
@@ -135,6 +133,9 @@ function SentMessagePanel(props: SentMessageProps) {
 
     const [processedReactions, setProcessedReactions] = useState<string[]>([]);
     const [hasUserReacted, setHasUserReacted] = useState<boolean>(false);
+    const [repliedMesssage, setRepliedMessage] = useState<
+        Message | undefined
+    >();
 
     useEffect(() => {
         const previousMessageDate = new Date(props.previousMessage?.createdAt);
@@ -328,25 +329,6 @@ function SentMessagePanel(props: SentMessageProps) {
             }
         }
     };
-
-    function hasEns(message: Message) {
-        return !(
-            message.ensName === '' ||
-            message.ensName === 'defaultValue' ||
-            message.ensName === null ||
-            message.ensName === 'null' ||
-            message.ensName === undefined ||
-            message.ensName === 'undefined'
-        );
-    }
-
-    function getShownName(message: Message) {
-        if (!hasEns(message)) {
-            return message.walletID.slice(0, 6) + '...';
-        } else {
-            return message.ensName;
-        }
-    }
 
     function handleOpenExplorer(url: string) {
         window.open(url);
@@ -619,28 +601,13 @@ function SentMessagePanel(props: SentMessageProps) {
         <Jazzicon diameter={25} seed={jsNumberForAddress(jazziconsSeed)} />
     );
 
-    const repliedJazzicon = props.message.repliedMessage ? (
-        <Jazzicon
-            svgStyles={{ marginBottom: '8px' }}
-            diameter={10}
-            seed={jsNumberForAddress(repliedMessageWalletID.toLowerCase())}
-        />
-    ) : undefined;
-
     // function blockUser(userId: string) {
 
     // }
     function getReplyMessageInfo(_id: string) {
         getRepliedMessageInfo(_id).then((result: any) => {
-            setRepliedMessageText(result[0].message);
-            setRepliedMessageDate(formatAMPM(result[0].createdAt));
-            setRepliedMessageEnsName(result[0].ensName);
-            setRepliedMessageWalletID(result[0].walletID);
+            setRepliedMessage(result[0]);
         });
-        return repliedMessageText;
-    }
-    function clickOptionButton() {
-        setIsClickedOptions(!isClickedOptions);
     }
 
     function handleLikeAndDislikeLS(messageId: string, val: number) {
@@ -881,11 +848,8 @@ function SentMessagePanel(props: SentMessageProps) {
                                     isReplyButtonPressed={
                                         props.isReplyButtonPressed
                                     }
-                                    replyMessageContent={
-                                        props.replyMessageContent
-                                    }
-                                    setReplyMessageContent={
-                                        props.setReplyMessageContent
+                                    setSelectedMessageForReply={
+                                        props.setSelectedMessageForReply
                                     }
                                     addReactionListener={
                                         props.addReactionListener
@@ -955,25 +919,12 @@ function SentMessagePanel(props: SentMessageProps) {
                             {props.message.repliedMessage ? (
                                 <div className={styles.replied_box}>
                                     <ReplyMessage
-                                        message={repliedMessageText}
-                                        time={repliedMessageDate}
                                         setIsReplyButtonPressed={
                                             props.setIsReplyButtonPressed
                                         }
                                         isReplyButtonPressed={false}
-                                        myJazzicon={repliedJazzicon}
-                                        repliedMessageEnsName={
-                                            props.replyMessageContent?.ensName
-                                        }
-                                        ensName={
-                                            props.replyMessageContent?.ensName
-                                        }
-                                        walletID={
-                                            props.replyMessageContent?.walletID
-                                        }
                                         currentUserId={props.currentUser}
-                                        messageObj={props.replyMessageContent}
-                                        getShownName={getShownName}
+                                        messageObj={repliedMesssage}
                                     />
                                 </div>
                             ) : (
@@ -1109,52 +1060,6 @@ function SentMessagePanel(props: SentMessageProps) {
                                         showAvatar={showAvatar}
                                     />
                                     {!isPosition && renderMessage()}
-                                    {isMoreButtonPressed ? (
-                                        <Menu
-                                            isMessageDeleted={
-                                                props.isMessageDeleted
-                                            }
-                                            setIsMessageDeleted={
-                                                props.setIsMessageDeleted
-                                            }
-                                            setIsMoreButtonPressed={
-                                                setIsMoreButtonPressed
-                                            }
-                                            setFlipped={(val) => {
-                                                setFlipped(true);
-                                                setFlipRead(true);
-                                            }}
-                                            deleteMsgFromList={
-                                                deleteMsgFromList
-                                            }
-                                            id={props.message._id}
-                                            isModerator={props.isModerator}
-                                            isUsersMessage={
-                                                props.message.sender ===
-                                                props.currentUser
-                                            }
-                                            setIsReplyButtonPressed={
-                                                props.setIsReplyButtonPressed
-                                            }
-                                            isReplyButtonPressed={false}
-                                            replyMessageContent={
-                                                props.replyMessageContent
-                                            }
-                                            setReplyMessageContent={
-                                                props.setReplyMessageContent
-                                            }
-                                            message={props.message}
-                                            addReactionListener={
-                                                props.addReactionListener
-                                            }
-                                            isUserVerified={
-                                                props.isUserVerified
-                                            }
-                                            riseToBottom={shouldOptionsRiseToBottom()}
-                                        />
-                                    ) : (
-                                        <></>
-                                    )}
                                 </div>
 
                                 <div className={styles.reply_message}>

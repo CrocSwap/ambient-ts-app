@@ -12,8 +12,7 @@ import { AiOutlineDelete, AiOutlineRotateLeft } from 'react-icons/ai';
 interface propsIF {
     setIsReplyButtonPressed: Dispatch<SetStateAction<boolean>>;
     isReplyButtonPressed: boolean;
-    replyMessageContent: Message | undefined;
-    setReplyMessageContent: Dispatch<SetStateAction<Message | undefined>>;
+    setSelectedMessageForReply: Dispatch<SetStateAction<Message | undefined>>;
     message: Message | undefined;
     addReactionListener: (message?: Message) => void;
     tooltipTop: boolean;
@@ -29,7 +28,7 @@ export default function Options(props: propsIF) {
 
     function setReplyMessage() {
         props.setIsReplyButtonPressed(!props.isReplyButtonPressed);
-        props.setReplyMessageContent(props.message);
+        props.setSelectedMessageForReply(props.message);
     }
 
     const reply = (
