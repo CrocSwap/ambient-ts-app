@@ -2713,6 +2713,8 @@ export default function Chart(props: propsIF) {
             .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
 
+        const canvasSize = canvas.getBoundingClientRect();
+
         if (scaleData && lineSeries) {
             const rayLine = createAnnotationLineSeries(
                 scaleData?.xScale.copy(),
@@ -3180,8 +3182,8 @@ export default function Chart(props: propsIF) {
                                                   ) < 463
                                                 ? infoLabelYAxisData +
                                                       infoLabelHeight >
-                                                  canvas.height
-                                                    ? canvas.height -
+                                                  canvasSize.height
+                                                    ? canvasSize.height -
                                                       infoLabelHeight -
                                                       5
                                                     : Math.max(
@@ -3521,7 +3523,7 @@ export default function Chart(props: propsIF) {
                                                     : 0;
 
                                             const bufferRight =
-                                                canvas.width -
+                                                canvasSize.width -
                                                 (item.extendRight &&
                                                 item.labelPlacement === 'Right'
                                                     ? lineMeasures.width + 15
@@ -3534,7 +3536,7 @@ export default function Chart(props: propsIF) {
                                                 bufferLeft,
                                                 0,
                                                 bufferRight,
-                                                canvas.height,
+                                                canvasSize.height,
                                             );
 
                                             ctx.clip();
@@ -3567,15 +3569,15 @@ export default function Chart(props: propsIF) {
                                                 buffer -
                                                     lineMeasures.width / 2 -
                                                     5,
-                                                canvas.height,
+                                                canvasSize.height,
                                             );
                                             ctx.rect(
                                                 buffer +
                                                     lineMeasures.width / 2 +
                                                     5,
                                                 0,
-                                                canvas.width,
-                                                canvas.height,
+                                                canvasSize.width,
+                                                canvasSize.height,
                                             );
 
                                             ctx.clip();
