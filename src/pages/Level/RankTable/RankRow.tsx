@@ -40,6 +40,7 @@ export default function RankRow(props: PropsIF) {
             gap={4}
             padding='0 8px'
             style={{ borderLeft: '1px solid var(--dark3)' }}
+            justifyContent='flex-end'
         >
             <div className={styles.menu_button} onClick={goToLevelsPage}>
                 XP
