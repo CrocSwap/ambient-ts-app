@@ -274,8 +274,7 @@ function Toolbar(props: ToolbarProps) {
         deleteAllShapes();
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleOnMouseEnter = (event: any, description: string) => {
+    const handleOnMouseEnter = (description: string) => {
         setHoveredTool(() => description);
 
         if (mobileView) {
@@ -310,10 +309,8 @@ function Toolbar(props: ToolbarProps) {
                                             !mobileView &&
                                             handleDrawModeChange(item)
                                         }
-                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                        onMouseEnter={(event: any) => {
+                                        onMouseEnter={() => {
                                             handleOnMouseEnter(
-                                                event,
                                                 item.description,
                                             );
                                         }}
@@ -350,10 +347,8 @@ function Toolbar(props: ToolbarProps) {
                                             !mobileView &&
                                             handleActivateIndicator(item)
                                         }
-                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                        onMouseEnter={(event: any) => {
+                                        onMouseEnter={() => {
                                             handleOnMouseEnter(
-                                                event,
                                                 item.description,
                                             );
                                         }}
@@ -421,12 +416,8 @@ function Toolbar(props: ToolbarProps) {
                                                 item.operation();
                                             }
                                         }}
-                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                        onMouseEnter={(event: any) =>
-                                            handleOnMouseEnter(
-                                                event,
-                                                item.description,
-                                            )
+                                        onMouseEnter={() =>
+                                            handleOnMouseEnter(item.description)
                                         }
                                         onMouseLeave={() =>
                                             setHoveredTool(() => undefined)
@@ -459,9 +450,8 @@ function Toolbar(props: ToolbarProps) {
                                     onClick={() =>
                                         !mobileView && handleDeleteAll()
                                     }
-                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                    onMouseEnter={(event: any) => {
-                                        handleOnMouseEnter(event, 'Delete All');
+                                    onMouseEnter={() => {
+                                        handleOnMouseEnter('Delete All');
                                     }}
                                     onMouseLeave={() =>
                                         setHoveredTool(() => undefined)
