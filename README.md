@@ -71,7 +71,7 @@ Code changes are viewable on GitHub [Link](https://github.com/CrocSwap/ambient-t
 ### version 1.6
 Summary:
 * Added the ability to switch to the Scroll network and a test network (Görli) using the network selector in the page header
-* Added an external link to [Canto](https://beta.canto.io/lp) in the network selector
+* Added an external link to [Canto](https://canto.io/lp) in the network selector
 * Updated the pool initialization form to enable additionally minting of an initial liquidity position
 * Fixed a bug preventing approvals of certain tokens (thanks [busimus](https://github.com/busimus)!)
 * Added the ability to annotate the price charts with trend lines and horizontal rays
