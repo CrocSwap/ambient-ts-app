@@ -3,8 +3,8 @@
 Please follow these items as close to as possible for your PR. Please add a description or link a Git issue for context. Check off relevant items and remove them as not needed. These will help your reviewer find similar ground for starting their review from. 
 
 #### Workflow Adherence
-- [ ] Has an issue been created which this PR addresses?
-- [ ] Has the PR been set to close relevant issues in GitHub?
+- [ ] Has an issue been created that this PR addresses?
+- [ ] Has the PR been set to close relevant issues on GitHub?
 - [ ] Did you pull code from branch `origin/develop` prior to submitting the PR?
 
 #### Code Quality
