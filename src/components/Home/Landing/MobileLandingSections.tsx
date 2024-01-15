@@ -57,7 +57,7 @@ export default function MobileLandingSections() {
                     gap={8}
                 >
                     <Text fontSize='body' style={{ marginTop: '2.5px' }}>
-                        Points system is now live{' '}
+                        Points system now live!{' '}
                     </Text>
                     <Link to='/xp-leaderboard'>
                         <Text

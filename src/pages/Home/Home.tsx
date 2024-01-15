@@ -81,7 +81,7 @@ export default function Home() {
                 </div>
             )}
             <PointSystemContainer>
-                <Text fontSize='header1'>Points system is now live </Text>
+                <Text fontSize='header1'>Points system now live!</Text>
 
                 <Link to={isUserConnected ? '/account/xp' : '/xp-leaderboard'}>
                     <Text
