@@ -28,11 +28,9 @@ export default function RankTable() {
             <RankHeader />
             <Divider />
             <div className={styles.main_table_content}>
-                {[...formattedData, ...formattedData, ...formattedData].map(
-                    (data, idx) => (
-                        <RankRow key={idx} data={data} />
-                    ),
-                )}
+                {[...formattedData].map((data, idx) => (
+                    <RankRow key={idx} data={data} />
+                ))}
             </div>
         </div>
     );
