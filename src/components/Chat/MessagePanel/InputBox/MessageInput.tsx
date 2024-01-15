@@ -157,6 +157,12 @@ export default function MessageInput(props: MessageInputProps) {
         }
     }, [cursorPosition]);
 
+    useEffect(() => {
+        if (props.isReplyButtonPressed) {
+            inputRef.current?.focus();
+        }
+    }, [props.isReplyButtonPressed]);
+
     const handleSendMessageButton = () => {
         if (message === '') {
             return;
@@ -512,7 +518,9 @@ export default function MessageInput(props: MessageInputProps) {
                             onDoubleClick={handleInputDoubleClick}
                             autoComplete={'off'}
                             tabIndex={-1}
-                            autoFocus={props.appPage}
+                            autoFocus={
+                                props.appPage || props.isReplyButtonPressed
+                            }
                             maxLength={140}
                             ref={inputRef}
                         />

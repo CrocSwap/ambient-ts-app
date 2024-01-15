@@ -6,6 +6,7 @@ import { Message } from '../../Model/MessageModel';
 import { formatMessageTime, getShownName } from '../../ChatUtils';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
+import { AiOutlineCheck } from 'react-icons/ai';
 interface propsIF {
     setIsReplyButtonPressed: Dispatch<SetStateAction<boolean>>;
     isReplyButtonPressed: boolean;
@@ -58,6 +59,20 @@ export default function ReplyMessage(props: propsIF) {
         }
     };
 
+    const renderVerificationIcon = () => {
+        if (props.messageObj?.isVerified) {
+            return (
+                <>
+                    <div className={styles.verified_icon}>
+                        <AiOutlineCheck color='var(--other-green)' size={8} />
+                    </div>
+                </>
+            );
+        } else {
+            return <></>;
+        }
+    };
+
     return props.isReplyButtonPressed === true && props.messageObj ? (
         <div style={{ marginTop: '10px' }} className={styles.reply_box}>
             <motion.div
@@ -82,6 +97,7 @@ export default function ReplyMessage(props: propsIF) {
                     }`}
                 >
                     {getShownName(props.messageObj)}
+                    {renderVerificationIcon()}
                 </div>
 
                 <div className={styles.reply_panel_close_icon}>
@@ -117,6 +133,7 @@ export default function ReplyMessage(props: propsIF) {
                                 }`}
                             >
                                 {getShownName(props.messageObj)}
+                                {renderVerificationIcon()}
                             </div>
                             <div className={styles.tooltip_message_time}>
                                 {formatMessageTime(props.messageObj.createdAt)}
@@ -145,6 +162,8 @@ export default function ReplyMessage(props: propsIF) {
                         >
                             {getShownName(props.messageObj)}
                         </div>
+                        {renderVerificationIcon()}
+                        <div></div>
 
                         <div className={styles.tooltip_message_time}>
                             <p>

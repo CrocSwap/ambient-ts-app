@@ -301,7 +301,6 @@ export default function Room(props: propsIF) {
     }
 
     function handleRoomClick(event: any, name: string, poolName?: string) {
-        console.log(event);
         props.setRoom(event.target.dataset.value || poolName);
 
         if (name.toString() === 'Current Pool') {
@@ -416,13 +415,6 @@ export default function Room(props: propsIF) {
     }
 
     const smallScrenView = useMediaQuery('(max-width: 968px)');
-    console.log(roomArray);
-    console.log(roomArray);
-    console.log(roomArray);
-    console.log(roomArray);
-    console.log(roomArray);
-    console.log(roomArray);
-    console.log(roomArray);
     return (
         <div className={styles.dropdown}>
             <div

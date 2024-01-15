@@ -100,3 +100,8 @@
 .replied_message_box .time_text{
     
 }
+
+.verified_icon{
+    display: inline-block;
+    margin-left: .2rem;
+}
