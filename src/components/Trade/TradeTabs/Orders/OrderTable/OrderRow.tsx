@@ -12,7 +12,6 @@ import {
     LimitModalAction,
     LimitOrderIF,
 } from '../../../../../ambient-utils/types';
-import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { orderRowConstants } from '../orderRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
@@ -121,11 +120,6 @@ function OrderRow(props: propsIF) {
             : '';
 
     const activePositionRef = useRef(null);
-
-    const clickOutsideHandler = () => {
-        setCurrentLimitOrderActive('');
-    };
-    useOnClickOutside(activePositionRef, clickOutsideHandler);
 
     function scrollToDiv() {
         const element = document.getElementById(orderDomId);
