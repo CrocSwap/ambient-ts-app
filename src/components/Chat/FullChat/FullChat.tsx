@@ -509,13 +509,9 @@ function FullChat(props: FullChatPropsIF) {
                             className={`${styles.pool_display}`}
                             // eslint-disable-next-line
                             onClick={(event: any) => {
-                                console.log('other room clicked');
-
                                 props.setRoom(e.name);
 
                                 setReadableName(e.name);
-                                // setReadableRoom(e);
-
                                 props.setIsCurrentPool(false);
                                 props.setShowCurrentPoolButton(true);
 

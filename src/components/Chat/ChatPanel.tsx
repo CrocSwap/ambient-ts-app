@@ -101,8 +101,9 @@ function ChatPanel(props: propsIF) {
 
     const [confirmationPanelContent, setConfirmationPanelContent] = useState(0);
 
+    // some tricky date set for old messages verification. if it is not changed by confirmation panel, some future date will be used to not verify any messages
     const [verifyOldMessagesStartDate, setVerifyOldMessagesStartDate] =
-        useState(new Date());
+        useState(new Date(new Date().getTime() + 1000 * 60 * 60 * 100));
 
     const [toastrActive, setToastrActive] = useState(false);
     const [toastrType, setToastrType] = useState<
@@ -557,7 +558,6 @@ function ChatPanel(props: propsIF) {
         startDate: Date,
         endDate?: Date,
     ) => {
-        console.log('HANDLE CONFIRMATION DIALOG');
         setConfirmationPanelContent(confirmationType);
         setVerifyOldMessagesStartDate(startDate);
         setShowVerifyOldMessagesPanel(true);
@@ -592,15 +592,8 @@ function ChatPanel(props: propsIF) {
             })
             // eslint-disable-next-line
             .then((signedMessage: any) => {
-                console.log(verifyOldMessagesStartDate);
-                console.log(verifyOldMessagesStartDate);
-                console.log(verifyOldMessagesStartDate);
-                console.log(verifyOldMessagesStartDate);
-                console.log(verifyOldMessagesStartDate);
-                console.log(verifyOldMessagesStartDate);
                 verifyUser(signedMessage, verifyDate);
                 if (verifyOldMessagesStartDate) {
-                    console.log('oldmessages will be verified');
                     setTimeout(() => {
                         setShowVerifyOldMessagesPanel(false);
                         updateUnverifiedMessages(
