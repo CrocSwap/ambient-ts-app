@@ -3163,7 +3163,12 @@ export default function Chart(props: propsIF) {
                                             ) /
                                                 2;
 
-                                        const infoLabelYAxisData =
+                                        const deltaY =
+                                            canvasSize.height -
+                                            infoLabelHeight -
+                                            5;
+
+                                        let infoLabelYAxisData =
                                             scaleData.yScale(
                                                 secondPointYAxisData,
                                             ) +
@@ -3172,6 +3177,13 @@ export default function Chart(props: propsIF) {
                                                 ? -(infoLabelHeight + 15)
                                                 : 15);
 
+                                        infoLabelYAxisData =
+                                            infoLabelYAxisData +
+                                                infoLabelHeight >
+                                            canvasSize.height
+                                                ? deltaY
+                                                : infoLabelYAxisData;
+
                                         const dpRangeLabelYPlacement =
                                             scaleData.yScale(
                                                 firstPointYAxisData,
@@ -3179,13 +3191,11 @@ export default function Chart(props: propsIF) {
                                                 ? infoLabelYAxisData
                                                 : scaleData.yScale(
                                                       firstPointYAxisData,
-                                                  ) < 463
+                                                  ) < canvasSize.height
                                                 ? infoLabelYAxisData +
                                                       infoLabelHeight >
                                                   canvasSize.height
-                                                    ? canvasSize.height -
-                                                      infoLabelHeight -
-                                                      5
+                                                    ? deltaY
                                                     : Math.max(
                                                           infoLabelYAxisData,
                                                           5,
