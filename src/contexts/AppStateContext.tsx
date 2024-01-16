@@ -17,6 +17,7 @@ import {
 
 interface AppStateContextIF {
     appOverlay: { isActive: boolean; setIsActive: (val: boolean) => void };
+    appBlur: { isActive: boolean; setIsActive: (val: boolean) => void };
     globalPopup: globalPopupMethodsIF;
     snackbar: snackbarMethodsIF;
     tutorial: { isActive: boolean; setIsActive: (val: boolean) => void };
@@ -53,6 +54,7 @@ export const AppStateContextProvider = (props: {
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isChatEnabled, setIsChatEnabled] = useState(CHAT_ENABLED);
     const [isUserOnline, setIsUserOnline] = useState(navigator.onLine);
+    const [isAppBlurred, setIsAppBlurred] = useState(false);
 
     window.ononline = () => setIsUserOnline(true);
     window.onoffline = () => setIsUserOnline(false);
@@ -88,6 +90,10 @@ export const AppStateContextProvider = (props: {
             appOverlay: {
                 isActive: isAppOverlayActive,
                 setIsActive: setIsAppOverlayActive,
+            },
+            appBlur: {
+                isActive: isAppBlurred,
+                setIsActive: setIsAppBlurred,
             },
             globalPopup,
             snackbar,
@@ -128,6 +134,8 @@ export const AppStateContextProvider = (props: {
             isWagmiModalOpenWallet,
             openWagmiModalWallet,
             closeWagmiModalWallet,
+            isAppBlurred,
+            setIsAppBlurred,
         ],
     );
 

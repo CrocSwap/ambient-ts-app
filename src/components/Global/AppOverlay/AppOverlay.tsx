@@ -136,6 +136,7 @@ function AppOverlay() {
             </button>
         </div>
     );
+
     if (!isAppOverlayActive) return null;
     return (
         <div className={styles.main}>

@@ -1,5 +1,6 @@
 .main {
     z-index: 999999;
+    background-color: red;
 }
 .tutorial_navigation_container {
     z-index: 999999;
@@ -33,3 +34,20 @@
     border: none;
     background: transparent;
 }
+
+
+.blur_overlay_active {
+    position: fixed;
+    top: 56px; /* Header height */
+    bottom: 64px; /* Footer height */
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.8); /* Adjust the alpha value for the desired level of transparency */
+    backdrop-filter: blur(8px);
+    display: none;
+    z-index: 999; /* Adjust as needed */
+  }
+  
+  .blur_overlay_active {
+    display: block;
+  }

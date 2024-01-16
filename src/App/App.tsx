@@ -61,6 +61,7 @@ export default function App() {
         },
         theme: { selected: selectedTheme },
         wagmiModal: { isOpen: isWagmiModalOpen },
+        appBlur,
     } = useContext(AppStateContext);
     const { isWalletChainSupported, defaultUrlParams } =
         useContext(CrocEnvContext);
@@ -169,7 +170,9 @@ export default function App() {
                 <AppOverlay />
                 <PageHeader />
                 <section
-                    className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
+                    className={`${showSidebarOrNullStyle} ${swapBodyStyle} ${
+                        appBlur.isActive && smallScreen ? 'active_blur' : ''
+                    } `}
                 >
                     {(!currentLocation.startsWith('/swap') || smallScreen) &&
                         sidebarRender}

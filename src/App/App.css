@@ -248,6 +248,10 @@ input[type='number'] {
     -moz-appearance: textfield;
 }
 
+.active_blur{
+    filter: blur(10px);
+
+}
 @media only screen and (max-width: 600px) {
     .swap-body {
         /* max-height: 86.5vh; */
@@ -257,12 +261,14 @@ input[type='number'] {
     }
 }
 
+
 @media only screen and (min-width: 1280px) {
     .sidebar_content_layout {
         transition: var(--transition);
         display: grid;
         grid-template-columns: 296px auto;
         overflow-y: hidden;
+       
     }
     .sidebar_content_layout_close {
         transition: var(--transition);
@@ -270,6 +276,7 @@ input[type='number'] {
         display: grid;
         grid-template-columns: 32px auto;
         overflow-y: hidden;
+        
     }
 
     .content-container {

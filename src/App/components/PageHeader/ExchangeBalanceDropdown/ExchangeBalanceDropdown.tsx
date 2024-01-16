@@ -1,21 +1,27 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import ExchangeBalance from '../../../../components/Portfolio/ExchangeBalance/ExchangeBalance';
 import coins from '../../../../assets/images/coins.svg';
 import NavItem from '../NavItem/NavItem';
 import useKeyPress from '../../../hooks/useKeyPress';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { StyledExchangeBalanceDropdown } from '../../../../styled/Components/Header';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 export const ExchangeBalanceDropdown = () => {
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
     const [tokenModalOpen, setTokenModalOpen] = useState(false);
     const escapePressed = useKeyPress('Escape');
+    const { appBlur } = useContext(AppStateContext);
 
     useEffect(() => {
         if (fullLayoutActive && !tokenModalOpen && escapePressed) {
             setFullLayoutActive(false);
+            appBlur.setIsActive(false);
         }
-    }, [escapePressed]);
+        if (fullLayoutActive) {
+            appBlur.setIsActive(true);
+        }
+    }, [escapePressed, fullLayoutActive]);
 
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
 

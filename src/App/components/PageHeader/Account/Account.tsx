@@ -30,6 +30,7 @@ export default function Account(props: propsIF) {
 
     const {
         snackbar: { open: openSnackbar },
+        appBlur,
     } = useContext(AppStateContext);
 
     const { isUserConnected } = useContext(UserDataContext);
@@ -55,6 +56,7 @@ export default function Account(props: propsIF) {
     const walletDropdownItemRef = useRef<HTMLDivElement>(null);
     const clickOutsideHandler = () => {
         setShowWalletDropdown(false);
+        appBlur.setIsActive(false);
     };
     UseOnClickOutside(walletDropdownItemRef, clickOutsideHandler);
 
@@ -69,6 +71,12 @@ export default function Account(props: propsIF) {
             setShowWalletDropdown(false);
         }
     }, [isEscapePressed]);
+    useEffect(() => {
+        if (openNavbarMenu || showWalletDropdown) {
+            appBlur.setIsActive(true);
+        }
+    }, [openNavbarMenu, showWalletDropdown]);
+
     const walletDisplay = (
         <section
             style={{ position: 'relative', fontSize: '16px' }}
