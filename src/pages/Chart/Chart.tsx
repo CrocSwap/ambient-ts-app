@@ -4536,8 +4536,14 @@ export default function Chart(props: propsIF) {
 
             const startX = fibLineData[0][0].x;
             const endX = fibLineData[0][1].x;
-            const startXLocation = scaleData.xScale(startX);
-            const endXLocation = scaleData.xScale(endX);
+            const tempStartXLocation = scaleData.xScale(startX);
+            const tempEndXLocation = scaleData.xScale(endX);
+
+            const startXLocation = Math.min(
+                tempStartXLocation,
+                tempEndXLocation,
+            );
+            const endXLocation = Math.max(tempStartXLocation, tempEndXLocation);
 
             let startY = Number.MAX_VALUE;
             let endY = Number.MIN_VALUE;
