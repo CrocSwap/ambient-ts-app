@@ -1218,6 +1218,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                         settingsDivHeight={settingsDivHeight}
                         drawnShapeHistory={drawnShapeHistory}
                         isDropdownHeightCalculated={isDropdownHeightCalculated}
+                        divTop={divTop}
                     />
                 )}
             </FloatingDropdownOptions>

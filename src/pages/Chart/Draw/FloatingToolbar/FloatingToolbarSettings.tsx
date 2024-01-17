@@ -86,6 +86,7 @@ interface FloatingToolbarSettingsProps {
     settingsDivHeight: number;
     drawnShapeHistory: drawDataHistory[];
     isDropdownHeightCalculated: boolean;
+    divTop: number;
 }
 
 function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
@@ -107,6 +108,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
         settingsDivHeight,
         drawnShapeHistory,
         isDropdownHeightCalculated,
+        divTop,
     } = props;
 
     // disabled options
@@ -200,12 +202,16 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
     };
 
     useEffect(() => {
-        if (Math.abs(floatingToolbarHeight - settingsDivHeight) < 90) {
+        const screenHeight = window.innerHeight;
+        const myFloatingDivHeight = settingsDivHeight + floatingToolbarHeight;
+        const diffBottom = screenHeight - (divTop + myFloatingDivHeight);
+        if (diffBottom < 100) {
             setCheckNearestWindow(true);
         } else {
             setCheckNearestWindow(false);
         }
     }, [
+        divTop,
         isLabelPlacementOptionTabActive,
         isLabelAlignmentOptionTabActive,
         floatingToolbarHeight,
@@ -964,11 +970,9 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                 {isLabelPlacementOptionTabActive && (
                                     <DropDownListContainer
                                         style={{
-                                            bottom:
-                                                isNearestWindow ||
-                                                checkNearestWindow
-                                                    ? '30px'
-                                                    : '',
+                                            bottom: checkNearestWindow
+                                                ? '30px'
+                                                : '',
                                         }}
                                     >
                                         <DropDownList>
