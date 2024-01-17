@@ -50,7 +50,9 @@ const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
         HTMLButtonElement
     > = () => {
         setShowNotificationTable(!showNotificationTable);
-        appHeaderDropdown.setIsActive(!appHeaderDropdown.isActive);
+        if (!showNotificationTable) {
+            appHeaderDropdown.setIsActive(true);
+        } else appHeaderDropdown.setIsActive(false);
     };
 
     const pendingCircle = (
