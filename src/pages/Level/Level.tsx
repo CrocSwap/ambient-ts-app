@@ -93,7 +93,11 @@ export default function Level(props: LevelPropsIF) {
                     : 'Pending...';
             return {
                 date: elapsedTimeString,
-                points: entry.addedPoints.toLocaleString('en-US', {
+                addedPoints: entry.addedPoints.toLocaleString('en-US', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                }),
+                retroPoints: entry.retroPoints.toLocaleString('en-US', {
                     minimumFractionDigits: 0,
                     maximumFractionDigits: 0,
                 }),

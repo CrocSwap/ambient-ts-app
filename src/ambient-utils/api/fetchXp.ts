@@ -76,31 +76,37 @@ export const fetchUserXpData = async (args: argsIF) => {
         pointsHistory: [
             {
                 addedPoints: 40000,
+                retroPoints: 2500,
                 cumulativePoints: 4000000005600,
                 snapshotUnixTime: 1704326400,
             },
             {
                 addedPoints: 1100,
+                retroPoints: 500,
                 cumulativePoints: 5600,
                 snapshotUnixTime: 1703721600,
             },
             {
                 addedPoints: 1500,
+                retroPoints: 0,
                 cumulativePoints: 4500,
                 snapshotUnixTime: 1703116800,
             },
             {
                 addedPoints: 1800,
+                retroPoints: 0,
                 cumulativePoints: 3000,
                 snapshotUnixTime: 1702512000,
             },
             {
                 addedPoints: 1000,
+                retroPoints: 0,
                 cumulativePoints: 1200,
                 snapshotUnixTime: 1701907200,
             },
             {
                 addedPoints: 200,
+                retroPoints: 0,
                 cumulativePoints: 200,
                 snapshotUnixTime: 1701302400,
             },
@@ -131,26 +137,31 @@ export const fetchXpLeadersData = async () => {
             pointsHistory: [
                 {
                     addedPoints: 4000000000000,
+                    retroPoints: 500,
                     cumulativePoints: 4000000005600,
                     snapshotUnixTime: 1704326400,
                 },
                 {
                     addedPoints: 1100,
+                    retroPoints: 200,
                     cumulativePoints: 5600,
                     snapshotUnixTime: 1703721600,
                 },
                 {
                     addedPoints: 1800,
+                    retroPoints: 0,
                     cumulativePoints: 3000,
                     snapshotUnixTime: 1702512000,
                 },
                 {
                     addedPoints: 1000,
+                    retroPoints: 0,
                     cumulativePoints: 1200,
                     snapshotUnixTime: 1701907200,
                 },
                 {
                     addedPoints: 200,
+                    retroPoints: 0,
                     cumulativePoints: 200,
                     snapshotUnixTime: 1701302400,
                 },
@@ -164,26 +175,31 @@ export const fetchXpLeadersData = async () => {
             pointsHistory: [
                 {
                     addedPoints: 2000000000000,
+                    retroPoints: 0,
                     cumulativePoints: 2000000005600,
                     snapshotUnixTime: 1704326400,
                 },
                 {
                     addedPoints: 1100,
+                    retroPoints: 0,
                     cumulativePoints: 5600,
                     snapshotUnixTime: 1703721600,
                 },
                 {
                     addedPoints: 1800,
+                    retroPoints: 0,
                     cumulativePoints: 3000,
                     snapshotUnixTime: 1702512000,
                 },
                 {
                     addedPoints: 1000,
+                    retroPoints: 0,
                     cumulativePoints: 1200,
                     snapshotUnixTime: 1701907200,
                 },
                 {
                     addedPoints: 200,
+                    retroPoints: 0,
                     cumulativePoints: 200,
                     snapshotUnixTime: 1701302400,
                 },
@@ -197,11 +213,13 @@ export const fetchXpLeadersData = async () => {
             pointsHistory: [
                 {
                     snapshotUnixTime: 1702512000,
+                    retroPoints: 20,
                     addedPoints: 2400,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
+                    retroPoints: 25,
                     addedPoints: 100,
                     cumulativePoints: 100,
                 },
@@ -216,11 +234,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -234,11 +254,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -252,11 +274,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -270,11 +294,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -288,11 +314,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -306,11 +334,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -324,11 +354,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -342,11 +374,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -360,11 +394,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -378,11 +414,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -396,11 +434,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -414,11 +454,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -432,11 +474,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -450,11 +494,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -468,11 +514,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -486,11 +534,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -504,11 +554,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -522,11 +574,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -540,11 +594,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -558,11 +614,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -576,11 +634,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -594,11 +654,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -612,11 +674,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -630,11 +694,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -648,11 +714,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -666,11 +734,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -684,11 +754,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],
@@ -702,11 +774,13 @@ export const fetchXpLeadersData = async () => {
                 {
                     snapshotUnixTime: 1702512000,
                     addedPoints: 2400,
+                    retroPoints: 0,
                     cumulativePoints: 2500,
                 },
                 {
                     snapshotUnixTime: 1701302400,
                     addedPoints: 100,
+                    retroPoints: 0,
                     cumulativePoints: 100,
                 },
             ],

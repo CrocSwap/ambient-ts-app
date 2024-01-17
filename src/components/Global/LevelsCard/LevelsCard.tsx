@@ -22,7 +22,8 @@ interface LevelsCardPropsIF {
     progressPercentage: number;
     pointsData: {
         date: string;
-        points: string;
+        addedPoints: string;
+        retroPoints: string;
     }[];
     jazziconsToDisplay: JSX.Element | null;
     ensNameToDisplay: string;

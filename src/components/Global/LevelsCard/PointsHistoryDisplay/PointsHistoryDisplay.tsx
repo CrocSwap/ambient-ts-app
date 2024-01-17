@@ -7,7 +7,8 @@ import React from 'react';
 interface PropsIF {
     pointsData: {
         date: string;
-        points: string;
+        addedPoints: string;
+        retroPoints: string;
     }[];
     hideLevelCardScroll: boolean;
 }
@@ -42,7 +43,7 @@ export default function PointsHistoryDisplay(props: PropsIF) {
                 }`}
             >
                 {[...pointsData].map((data) => (
-                    <React.Fragment key={data?.date + data?.points}>
+                    <React.Fragment key={data?.date + data?.addedPoints}>
                         <Text
                             fontSize={!desktopScreen ? 'body' : 'header2'}
                             color='text1'
@@ -54,14 +55,14 @@ export default function PointsHistoryDisplay(props: PropsIF) {
                             color='text1'
                             style={{ textAlign: 'center' }}
                         >
-                            {data?.points}
+                            {data?.addedPoints}
                         </Text>
                         <Text
                             fontSize={!desktopScreen ? 'body' : 'header2'}
                             color='text1'
                             style={{ textAlign: 'end' }}
                         >
-                            1200
+                            {data?.retroPoints}
                         </Text>
                     </React.Fragment>
                 ))}
