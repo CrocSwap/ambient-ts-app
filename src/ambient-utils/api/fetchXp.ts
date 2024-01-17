@@ -75,6 +75,18 @@ export const fetchUserXpData = async (args: argsIF) => {
         totalPoints: 4000000005600,
         pointsHistory: [
             {
+                addedPoints: 10000,
+                retroPoints: 2000,
+                cumulativePoints: 4000000005600,
+                snapshotUnixTime: 1705449600,
+            },
+            {
+                addedPoints: 40000,
+                retroPoints: 2500,
+                cumulativePoints: 4000000005600,
+                snapshotUnixTime: 1704931200,
+            },
+            {
                 addedPoints: 40000,
                 retroPoints: 2500,
                 cumulativePoints: 4000000005600,

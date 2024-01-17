@@ -19,7 +19,11 @@ export default function PointsHistoryDisplay(props: PropsIF) {
     const pointsHistoryDisplay = (
         <div className={`${styles.point_history_container} `}>
             <header className={styles.points_history_header}>
-                <Text fontSize={'body'} color='text2'>
+                <Text
+                    fontSize={'body'}
+                    color='text2'
+                    style={{ textAlign: 'center' }}
+                >
                     Time
                 </Text>
                 <Text
@@ -32,7 +36,7 @@ export default function PointsHistoryDisplay(props: PropsIF) {
                 <Text
                     fontSize={'body'}
                     color='text2'
-                    style={{ textAlign: 'end' }}
+                    style={{ textAlign: 'center' }}
                 >
                     Retroactive pts
                 </Text>
@@ -47,22 +51,23 @@ export default function PointsHistoryDisplay(props: PropsIF) {
                         <Text
                             fontSize={!desktopScreen ? 'body' : 'header2'}
                             color='text1'
+                            style={{ textAlign: 'end' }}
                         >
                             {data?.date}
                         </Text>
                         <Text
                             fontSize={!desktopScreen ? 'body' : 'header2'}
                             color='text1'
-                            style={{ textAlign: 'center' }}
+                            style={{ textAlign: 'end' }}
                         >
-                            {data?.addedPoints}
+                            {data?.addedPoints} pts
                         </Text>
                         <Text
                             fontSize={!desktopScreen ? 'body' : 'header2'}
                             color='text1'
                             style={{ textAlign: 'end' }}
                         >
-                            {data?.retroPoints}
+                            {data?.retroPoints} pts
                         </Text>
                     </React.Fragment>
                 ))}
