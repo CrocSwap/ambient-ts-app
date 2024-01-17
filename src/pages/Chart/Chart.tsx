@@ -4521,6 +4521,52 @@ export default function Chart(props: propsIF) {
         return false;
     }
 
+    function checkFibonacciLocation(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data: any,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        extraData: any,
+        mouseX: number,
+        mouseY: number,
+        denomInBase: boolean,
+    ) {
+        if (scaleData) {
+            const fibLineData = calculateFibRetracement(data, extraData);
+
+            const startX = fibLineData[0][0].x;
+            const endX = fibLineData[0][1].x;
+            const startXLocation = scaleData.xScale(startX);
+            const endXLocation = scaleData.xScale(endX);
+
+            let startY = Number.MAX_VALUE;
+            let endY = Number.MIN_VALUE;
+
+            for (const items of fibLineData) {
+                for (const item of items) {
+                    startY = Math.min(startY, item.y);
+                    endY = Math.max(endY, item.y);
+                }
+            }
+
+            startY = data[0].denomInBase === denomInBase ? startY : 1 / startY;
+            endY = data[0].denomInBase === denomInBase ? endY : 1 / endY;
+
+            const tempStartYLocation = scaleData.yScale(startY);
+            const tempEndYLocation = scaleData.yScale(endY);
+
+            const startYLocation = Math.min(
+                tempStartYLocation,
+                tempEndYLocation,
+            );
+            const endYLocation = Math.max(tempStartYLocation, tempEndYLocation);
+
+            const isIncludeX = startXLocation < mouseX && mouseX < endXLocation;
+
+            const isIncludeY = startYLocation < mouseY && mouseY < endYLocation;
+
+            return isIncludeX && isIncludeY;
+        }
+    }
     const drawnShapesHoverStatus = (mouseX: number, mouseY: number) => {
         let resElement = undefined;
 
@@ -4536,30 +4582,29 @@ export default function Chart(props: propsIF) {
                         : element.pool.tokenA);
 
             if (isShapeInCurrentPool) {
-                if (
-                    element.type === 'Brush' ||
-                    element.type === 'Angle' ||
-                    element.type === 'FibRetracement'
-                ) {
-                    const lineData: Array<lineData[]> = [];
-                    lineData.push(element.data);
+                if (element.type === 'FibRetracement') {
+                    const data = structuredClone(element.data);
 
-                    if (element.type === 'FibRetracement') {
-                        const data = structuredClone(element.data);
+                    if (element.reverse) {
+                        [data[0], data[1]] = [data[1], data[0]];
+                    }
 
-                        if (element.reverse) {
-                            [data[0], data[1]] = [data[1], data[0]];
-                        }
-
-                        const fibLineData = calculateFibRetracement(
+                    if (
+                        checkFibonacciLocation(
                             data,
                             element.extraData,
-                        );
-
-                        fibLineData.forEach((fibData) =>
-                            lineData.push(fibData),
-                        );
+                            mouseX,
+                            mouseY,
+                            denomInBase,
+                        )
+                    ) {
+                        resElement = element;
                     }
+                }
+
+                if (element.type === 'Brush' || element.type === 'Angle') {
+                    const lineData: Array<lineData[]> = [];
+                    lineData.push(element.data);
 
                     lineData.forEach((line) => {
                         if (
