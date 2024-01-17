@@ -41,7 +41,7 @@ function SnackbarComponent() {
                 autoHideDuration={8000}
                 onClose={handleClose}
                 // z-index needs to be greater than globalPopup
-                style={{ width: '900px', zIndex: 10000000 }}
+                style={{ zIndex: 10000000 }}
             >
                 <motion.div
                     initial={{ scale: 0.5 }}

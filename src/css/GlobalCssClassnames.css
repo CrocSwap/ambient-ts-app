@@ -209,6 +209,12 @@ aside.emoji-picker-react {
         overflow-y: scroll;
         height: 45dvh;
     }
+    .css-th9gsg-MuiPaper-root-MuiAlert-root{
+        margin: 0 auto;
+        width: 80%;
+        text-wrap:wrap;
+        word-wrap: break-word;
+    }
   }
 @media only screen and (min-width: 1280px) {
     .top-pools-analytics-table td,
