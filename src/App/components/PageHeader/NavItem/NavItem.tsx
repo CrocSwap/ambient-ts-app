@@ -7,12 +7,14 @@ import React, {
     Dispatch,
     SetStateAction,
     memo,
+    useContext,
 } from 'react';
 import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 import {
     NavItemButton,
     NavItemIconButton,
 } from '../../../../styled/Components/Header';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 interface NavItemPropsIF {
     children: ReactNode;
@@ -24,6 +26,8 @@ interface NavItemPropsIF {
 }
 
 function NavItem(props: NavItemPropsIF) {
+    const { appHeaderDropdown } = useContext(AppStateContext);
+
     const {
         children,
         icon,
@@ -55,7 +59,16 @@ function NavItem(props: NavItemPropsIF) {
             tabIndex={0}
             aria-label='Nav item'
         >
-            <NavItemIconButton square={square} onClick={() => setOpen(!open)}>
+            <NavItemIconButton
+                square={square}
+                onClick={() => {
+                    setOpen(!open);
+                    if (!open) {
+                        appHeaderDropdown.setIsActive(true);
+                    } else appHeaderDropdown.setIsActive(false);
+                }}
+            >
+                {' '}
                 {icon}
             </NavItemIconButton>
             {open && childrenWithProps}

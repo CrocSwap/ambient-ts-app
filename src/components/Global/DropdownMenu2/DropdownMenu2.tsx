@@ -1,9 +1,10 @@
-import { useState, useRef, ReactNode } from 'react';
+import { useState, useRef, ReactNode, useContext } from 'react';
 import { FaAngleDown } from 'react-icons/fa';
 import { dropdownAnimation } from '../../../utils/others/FramerMotionAnimations';
 import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { MenuContainer, Menu, MenuItem, Icon } from './DropdownMenu2.styles';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 // Interface for React functional components
 interface DropdownMenuPropsIF {
@@ -17,17 +18,26 @@ interface DropdownMenuPropsIF {
 export default function DropdownMenu2(props: DropdownMenuPropsIF) {
     const { title, children, marginTop, titleWidth, logo } = props;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { appHeaderDropdown } = useContext(AppStateContext);
 
     const dropdownRefItem = useRef<HTMLDivElement>(null);
 
-    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen);
+        if (!isMenuOpen) {
+            appHeaderDropdown.setIsActive(true);
+        } else appHeaderDropdown.setIsActive(false);
+    };
     const clickOutsideHandler = () => setIsMenuOpen(false);
 
     UseOnClickOutside(dropdownRefItem, clickOutsideHandler);
 
     const dropdownMenuContent = (
         <MenuContainer
-            onClick={() => setIsMenuOpen(false)}
+            onClick={() => {
+                setIsMenuOpen(false);
+                appHeaderDropdown.setIsActive(false);
+            }}
             variants={dropdownAnimation}
             initial='hidden'
             animate='show'
