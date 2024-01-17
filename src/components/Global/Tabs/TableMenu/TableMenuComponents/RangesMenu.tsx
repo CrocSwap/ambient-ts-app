@@ -146,7 +146,7 @@ function RangesMenu(props: propsIF) {
                     ? 'Disabled during transaction confirmation'
                     : ''
             }
-            style={{ cursor: isConfirmationActive ? 'not-allowed' : 'default' }}
+            style={{ cursor: isConfirmationActive ? 'not-allowed' : 'pointer' }}
         >
             <Link
                 id={`reposition_button_${position.positionId}`}
