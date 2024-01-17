@@ -68,7 +68,7 @@ export default function TransactionSubmitted(props: PropsIF) {
             className={styles.view_etherscan}
             aria-label='view on explorer'
         >
-            View on Explorer
+            View on Block Explorer
         </a>
     );
     return (
