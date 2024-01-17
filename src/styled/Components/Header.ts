@@ -35,6 +35,9 @@ export const PrimaryHeader = styled.header<PrimaryHeaderProps>`
         grid-template-columns: repeat(3, 1fr);
         padding: 0 16px;
     }
+    @media only screen and (max-width: 600px) {
+        padding: 0 1rem;
+    }
 `;
 
 // Define the styles for LogoContainer
