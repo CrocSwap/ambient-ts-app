@@ -71,11 +71,11 @@ export const fetchUserXpData = async (args: argsIF) => {
     const userXpServerData: UserXpServerIF = {
         userAddress: user,
         leaderboardRank: 1,
-        recentPoints: 4000000000000,
+        recentPoints: 40000,
         totalPoints: 4000000005600,
         pointsHistory: [
             {
-                addedPoints: 4000000000000,
+                addedPoints: 40000,
                 cumulativePoints: 4000000005600,
                 snapshotUnixTime: 1704326400,
             },
