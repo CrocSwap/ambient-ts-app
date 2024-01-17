@@ -9,6 +9,7 @@ import {
     OptionsTabSize,
     OptionsTabStyle,
     ColorPickerTab,
+    FloatingDropdownOptions,
 } from './FloatingToolbarCss';
 import dragButton from '../../../../assets/images/icons/draw/floating_button.svg';
 import {
@@ -74,10 +75,12 @@ function FloatingToolbar(props: FloatingToolbarProps) {
     } = props;
 
     const floatingDivRef = useRef<HTMLDivElement>(null);
-
+    const floatingMenuDivRef = useRef<HTMLDivElement>(null);
     const floatingDivContainerRef = useRef<HTMLDivElement>(null);
     const { isFullScreen: fullScreenChart } = useContext(ChartContext);
     const [isDragging, setIsDragging] = useState(false);
+    const [isDragged, setIsDragged] = useState(false);
+
     const [divLeft, setDivLeft] = useState(0);
     const [divTop, setDivTop] = useState(0);
 
@@ -103,10 +106,12 @@ function FloatingToolbar(props: FloatingToolbarProps) {
     const [isSettingsTabActive, setIsSettingsTabActive] = useState(false);
 
     const [isNearestWindow, setIsNearestWindow] = useState(false);
-    const [floatingToolbarHeight, setFloatingToolbarHeight] = useState(0);
     const [settingsDivHeight, setSettingsDivHeight] = useState(0);
     const isDeletePressed = useKeyPress('Delete');
+    const floatingToolbarHeight = 32;
 
+    const [isDropdownHeightCalculated, setIsDropdownHeightCalculated] =
+        useState(false);
     useEffect(() => {
         if (isDeletePressed && selectedDrawnShape) {
             deleteDrawnShape();
@@ -114,6 +119,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
     }, [isDeletePressed]);
 
     useEffect(() => {
+        setIsDropdownHeightCalculated(false);
         setIsStyleOptionTabActive(false);
         setIsLineColorPickerTabActive(false);
         setIsSizeOptionTabActive(false);
@@ -214,30 +220,60 @@ function FloatingToolbar(props: FloatingToolbarProps) {
 
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const canvasDiv = d3.select('#floatingDivContainer') as any;
+        const canvasDiv = d3.select(floatingMenuDivRef.current) as any;
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const resizeObserver = new ResizeObserver((result: any) => {
+        const resizeObserver = new ResizeObserver(async (result: any) => {
             const height = result[0].contentRect.height;
+            const screenHeight = window.innerHeight;
+            const diffBottom = Math.abs(divTop - screenHeight);
 
-            height && height !== 30 && setSettingsDivHeight(height);
+            if (!isDragging) {
+                if (
+                    diffBottom < 100 ||
+                    diffBottom + 60 < height + floatingToolbarHeight
+                ) {
+                    setIsNearestWindow(true);
+                } else {
+                    setIsNearestWindow(false);
+                }
+            }
+
+            setSettingsDivHeight(height);
+
+            requestAnimationFrame(() => {
+                setIsDropdownHeightCalculated(true);
+            });
         });
 
         resizeObserver.observe(canvasDiv.node());
 
         return () => resizeObserver.unobserve(canvasDiv.node());
-    }, []);
+    }, [divTop, isDragging]);
 
     useEffect(() => {
-        const screenHeight = window.innerHeight;
-        const diffBottom = Math.abs(divTop - screenHeight);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const canvasDiv = d3.select(floatingDivRef.current) as any;
 
-        if (diffBottom < 100 || diffBottom + 60 < settingsDivHeight) {
-            setIsNearestWindow(true);
-        } else {
-            setIsNearestWindow(false);
-        }
-    }, [settingsDivHeight, divTop]);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const resizeObserver = new ResizeObserver((result: any) => {
+            const width = result[0].contentRect.width;
+            const screenWidth = window.innerWidth;
+
+            if (divLeft && !isDragging) {
+                const divLeftLocal = Math.max(
+                    1,
+                    Math.min(screenWidth - width, divLeft),
+                );
+
+                setDivLeft(divLeftLocal);
+            }
+        });
+
+        resizeObserver.observe(canvasDiv.node());
+
+        return () => resizeObserver.unobserve(canvasDiv.node());
+    }, [divLeft, isDragging]);
 
     const handleEditSize = (value: number, line: boolean, border = false) => {
         if (selectedDrawnShape?.data) {
@@ -401,6 +437,8 @@ function FloatingToolbar(props: FloatingToolbarProps) {
     };
 
     const closeAllOptions = (exclude: string) => {
+        setIsDropdownHeightCalculated(false);
+
         exclude !== 'style' && setIsStyleOptionTabActive(false);
         exclude !== 'size' && setIsSizeOptionTabActive(false);
         exclude !== 'line' && setIsLineColorPickerTabActive(false);
@@ -823,22 +861,14 @@ function FloatingToolbar(props: FloatingToolbarProps) {
     }
     const layoutTab = (
         <OptionsTab
-            style={
-                isNearestWindow
-                    ? {
-                          position: 'fixed',
-                          width: 'auto',
-                          bottom: floatingToolbarHeight + 'px',
-                      }
-                    : {
-                          marginLeft: '40px',
-                          width: '85%',
-                      }
-            }
+            style={{
+                width: '250px',
+                visibility: isDropdownHeightCalculated ? 'visible' : 'hidden',
+            }}
         >
             <OptionsTabSize
                 backgroundColor={undefined}
-                style={{ justifyContent: 'start' }}
+                style={{ justifyContent: 'start', width: '250px' }}
                 onClick={() => setDefaultOptions()}
             >
                 Apply Default Drawing Template
@@ -855,6 +885,9 @@ function FloatingToolbar(props: FloatingToolbarProps) {
             .select(floatingDivRef.current)
             .node() as HTMLDivElement;
 
+        const floatingMenuDiv = d3
+            .select(floatingMenuDivRef.current)
+            .node() as HTMLDivElement;
         let offsetX = 0;
         let offsetY = 0;
 
@@ -862,6 +895,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
             const floatingDivDrag = d3
                 .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
                 .on('start', function (event) {
+                    setIsDragging(true);
                     const clientX =
                         event.sourceEvent.type === 'touchstart'
                             ? event.sourceEvent.changedTouches[0].clientX
@@ -886,7 +920,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                                 ? event.sourceEvent.changedTouches[0].clientY
                                 : event.sourceEvent.clientY;
 
-                        setIsDragging(true);
+                        setIsDragged(true);
                         const screenWidth = window.innerWidth;
                         const screenHeight = window.innerHeight;
 
@@ -895,56 +929,62 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                         const divHeight =
                             floatingDiv.getBoundingClientRect().height;
 
-                        const containerDivHeight =
-                            floatingDivContainer.getBoundingClientRect().height;
+                        const floatingMenuDivHeight =
+                            floatingMenuDiv.getBoundingClientRect().height;
+
+                        const floatingMenuDivWidth =
+                            floatingMenuDiv.getBoundingClientRect().width;
 
                         let divLeft = clientX - offsetX;
                         let divTop = clientY - offsetY;
 
-                        if (!isSettingsTabActive) {
+                        if (floatingMenuDivHeight === 0 || isNearestWindow) {
                             divLeft = Math.max(
                                 1,
-                                Math.min(screenWidth - divWidth, divLeft),
+                                Math.min(
+                                    screenWidth -
+                                        Math.max(
+                                            divWidth,
+                                            floatingMenuDivWidth,
+                                        ),
+                                    divLeft,
+                                ),
                             );
                             divTop = Math.max(
-                                1,
+                                floatingMenuDivHeight,
                                 Math.min(screenHeight - divHeight, divTop),
                             );
                         } else {
-                            const floatingToolbarOptionsHeight = (
-                                document.getElementById(
-                                    'floatingToolbarOptionsId',
-                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                ) as any
-                            )?.clientHeight;
+                            if (!isNearestWindow) {
+                                divLeft = Math.max(
+                                    1,
+                                    Math.min(
+                                        screenWidth -
+                                            Math.max(
+                                                divWidth,
+                                                floatingMenuDivWidth,
+                                            ),
+                                        divLeft,
+                                    ),
+                                );
 
-                            const checkDivHeight =
-                                containerDivHeight !== divHeight;
-                            const tempHeight = checkDivHeight
-                                ? divHeight + floatingToolbarOptionsHeight
-                                : divHeight;
-
-                            divLeft = Math.max(
-                                1,
-                                Math.min(screenWidth - divWidth, divLeft),
-                            );
-                            divTop = Math.max(
-                                1,
-                                Math.min(
-                                    screenHeight - tempHeight,
-                                    divTop < floatingToolbarOptionsHeight &&
-                                        !checkDivHeight
-                                        ? floatingToolbarOptionsHeight
-                                        : divTop,
-                                ),
-                            );
+                                divTop = Math.max(
+                                    1,
+                                    Math.min(
+                                        screenHeight -
+                                            (divHeight + floatingMenuDivHeight),
+                                        divTop,
+                                    ),
+                                );
+                            }
                         }
-
-                        setFloatingToolbarHeight(screenHeight - divTop);
 
                         setDivLeft(divLeft);
                         setDivTop(divTop);
                     }
+                })
+                .on('end', () => {
+                    setIsDragging(false);
                 });
 
             if (floatingDivRef.current) {
@@ -953,26 +993,38 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 ).call(floatingDivDrag);
             }
         }
-    }, [floatingDivRef, selectedDrawnShape, isSettingsTabActive]);
+    }, [
+        floatingDivRef,
+        selectedDrawnShape,
+        isSettingsTabActive,
+        isNearestWindow,
+    ]);
 
     useEffect(() => {
-        if (floatingDivRef.current && !isDragging) {
+        if (floatingDivRef.current && !isDragged) {
             const floatingDiv = d3
                 .select(floatingDivRef.current)
                 .node() as HTMLDivElement;
 
             const yAxis = d3.select('#y-axis-canvas').node() as HTMLDivElement;
 
-            setDivLeft(
-                mainCanvasBoundingClientRect.x +
-                    mainCanvasBoundingClientRect.width / 2 -
-                    floatingDiv.getBoundingClientRect().width / 2 +
-                    yAxis.getBoundingClientRect().width / 2,
-            );
-            setDivTop(
-                mainCanvasBoundingClientRect?.top -
-                    floatingDiv.getBoundingClientRect().height,
-            );
+            const divTopLocal = mainCanvasBoundingClientRect?.top;
+
+            const floatingDivContainer = d3
+                .select(floatingDivContainerRef.current)
+                .node() as HTMLDivElement;
+
+            const containerDivSize =
+                floatingDivContainer.getBoundingClientRect();
+            const containerDivHeight = containerDivSize.height;
+            containerDivHeight &&
+                setDivLeft(
+                    mainCanvasBoundingClientRect.x +
+                        mainCanvasBoundingClientRect.width / 2 -
+                        floatingDiv.getBoundingClientRect().width / 2 +
+                        yAxis.getBoundingClientRect().width / 2,
+                );
+            setDivTop(divTopLocal);
         }
     }, [
         floatingDivRef.current === null,
@@ -1020,155 +1072,155 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                         ),
                 )}
             </FloatingDiv>
+            <FloatingDropdownOptions
+                ref={floatingMenuDivRef}
+                style={{
+                    position: 'fixed',
+                    top:
+                        (isNearestWindow
+                            ? divTop - settingsDivHeight
+                            : divTop + floatingToolbarHeight) + 'px',
+                }}
+            >
+                {isLayoutTabActive && layoutTab}
 
-            {isLayoutTabActive && layoutTab}
+                {(isLineColorPickerTabActive ||
+                    isBorderColorPickerTabActive ||
+                    isBackgroundColorPickerTabActive) && (
+                    <ColorPickerTab
+                        style={{
+                            visibility: isDropdownHeightCalculated
+                                ? 'visible'
+                                : 'hidden',
+                        }}
+                    >
+                        <SketchPicker
+                            color={
+                                isLineColorPickerTabActive
+                                    ? colorPicker.lineColor
+                                    : isBorderColorPickerTabActive
+                                    ? colorPicker.borderColor
+                                    : colorPicker.background
+                            }
+                            width={'170px'}
+                            onChange={(item) =>
+                                handleEditColor(
+                                    item,
+                                    isLineColorPickerTabActive,
+                                    isBorderColorPickerTabActive,
+                                    isBackgroundColorPickerTabActive,
+                                )
+                            }
+                        />
+                    </ColorPickerTab>
+                )}
 
-            {(isLineColorPickerTabActive ||
-                isBorderColorPickerTabActive ||
-                isBackgroundColorPickerTabActive) && (
-                <ColorPickerTab
-                    style={
-                        isNearestWindow
-                            ? {
-                                  position: 'fixed',
-                                  bottom: floatingToolbarHeight + 'px',
-                              }
-                            : {}
-                    }
-                >
-                    <SketchPicker
-                        color={
-                            isLineColorPickerTabActive
-                                ? colorPicker.lineColor
-                                : isBorderColorPickerTabActive
-                                ? colorPicker.borderColor
-                                : colorPicker.background
-                        }
-                        width={'170px'}
-                        onChange={(item) =>
-                            handleEditColor(
-                                item,
-                                isLineColorPickerTabActive,
-                                isBorderColorPickerTabActive,
-                                isBackgroundColorPickerTabActive,
-                            )
-                        }
+                {isSizeOptionTabActive && selectedDrawnShape && (
+                    <OptionsTab
+                        style={{
+                            marginLeft: '70px',
+                            width: '150px',
+                            visibility: isDropdownHeightCalculated
+                                ? 'visible'
+                                : 'hidden',
+                        }}
+                    >
+                        {sizeOptions.map((item, index) => (
+                            <OptionsTabSize
+                                backgroundColor={
+                                    item.value ===
+                                    (!['Rect'].includes(
+                                        selectedDrawnShape?.data.type,
+                                    )
+                                        ? selectedDrawnShape.data.line.lineWidth
+                                        : selectedDrawnShape.data.border
+                                              .lineWidth)
+                                        ? '#434c58'
+                                        : undefined
+                                }
+                                key={index}
+                                onClick={() =>
+                                    handleEditSize(
+                                        item.value,
+                                        !['Rect'].includes(
+                                            selectedDrawnShape?.data.type,
+                                        ),
+                                        ['Rect'].includes(
+                                            selectedDrawnShape?.data.type,
+                                        ),
+                                    )
+                                }
+                            >
+                                {item.icon} {item.name}
+                            </OptionsTabSize>
+                        ))}
+                    </OptionsTab>
+                )}
+
+                {isStyleOptionTabActive && selectedDrawnShape && (
+                    <OptionsTab
+                        style={{
+                            marginLeft: '80px',
+                            width: '150px',
+                            visibility: isDropdownHeightCalculated
+                                ? 'visible'
+                                : 'hidden',
+                        }}
+                    >
+                        {styleOptions.map((item, index) => (
+                            <OptionsTabStyle
+                                backgroundColor={
+                                    item.value[0] ===
+                                    (!['Rect'].includes(
+                                        selectedDrawnShape?.data.type,
+                                    )
+                                        ? selectedDrawnShape.data.line.dash[0]
+                                        : selectedDrawnShape.data.border
+                                              .dash[0])
+                                        ? '#434c58'
+                                        : undefined
+                                }
+                                key={index}
+                                onClick={() =>
+                                    handleEditStyle(
+                                        item.value,
+                                        !['Rect'].includes(
+                                            selectedDrawnShape?.data.type,
+                                        ),
+                                        ['Rect'].includes(
+                                            selectedDrawnShape?.data.type,
+                                        ),
+                                    )
+                                }
+                            >
+                                <img src={item.icon} alt='' /> {item.name}
+                            </OptionsTabStyle>
+                        ))}
+                    </OptionsTab>
+                )}
+
+                {isSettingsTabActive && (
+                    <FloatingToolbarSettings
+                        selectedDrawnShape={selectedDrawnShape}
+                        handleEditColor={handleEditColor}
+                        handleEditSize={handleEditSize}
+                        handleEditStyle={handleEditStyle}
+                        handleEditLabel={handleEditLabel}
+                        sizeOptions={sizeOptions}
+                        styleOptions={styleOptions}
+                        handleEditLines={handleEditLines}
+                        setIsShapeEdited={setIsShapeEdited}
+                        setDrawnShapeHistory={setDrawnShapeHistory}
+                        addDrawActionStack={addDrawActionStack}
+                        colorPicker={colorPicker}
+                        isNearestWindow={isNearestWindow}
+                        floatingToolbarHeight={floatingToolbarHeight}
+                        settingsDivHeight={settingsDivHeight}
+                        drawnShapeHistory={drawnShapeHistory}
+                        isDropdownHeightCalculated={isDropdownHeightCalculated}
                     />
-                </ColorPickerTab>
-            )}
-
-            {isSizeOptionTabActive && selectedDrawnShape && (
-                <OptionsTab
-                    style={
-                        isNearestWindow
-                            ? {
-                                  position: 'fixed',
-                                  bottom: floatingToolbarHeight + 'px',
-                                  marginLeft: '90px',
-                                  width: 'auto',
-                              }
-                            : {
-                                  marginLeft: '70px',
-                              }
-                    }
-                >
-                    {sizeOptions.map((item, index) => (
-                        <OptionsTabSize
-                            backgroundColor={
-                                item.value ===
-                                (!['Rect'].includes(
-                                    selectedDrawnShape?.data.type,
-                                )
-                                    ? selectedDrawnShape.data.line.lineWidth
-                                    : selectedDrawnShape.data.border.lineWidth)
-                                    ? '#434c58'
-                                    : undefined
-                            }
-                            key={index}
-                            onClick={() =>
-                                handleEditSize(
-                                    item.value,
-                                    !['Rect'].includes(
-                                        selectedDrawnShape?.data.type,
-                                    ),
-                                    ['Rect'].includes(
-                                        selectedDrawnShape?.data.type,
-                                    ),
-                                )
-                            }
-                        >
-                            {item.icon} {item.name}
-                        </OptionsTabSize>
-                    ))}
-                </OptionsTab>
-            )}
-
-            {isStyleOptionTabActive && selectedDrawnShape && (
-                <OptionsTab
-                    style={
-                        isNearestWindow
-                            ? {
-                                  position: 'fixed',
-                                  bottom: floatingToolbarHeight + 'px',
-                                  marginLeft: '100px',
-                                  width: 'auto',
-                              }
-                            : {
-                                  marginLeft: '70px',
-                              }
-                    }
-                >
-                    {styleOptions.map((item, index) => (
-                        <OptionsTabStyle
-                            backgroundColor={
-                                item.value[0] ===
-                                (!['Rect'].includes(
-                                    selectedDrawnShape?.data.type,
-                                )
-                                    ? selectedDrawnShape.data.line.dash[0]
-                                    : selectedDrawnShape.data.border.dash[0])
-                                    ? '#434c58'
-                                    : undefined
-                            }
-                            key={index}
-                            onClick={() =>
-                                handleEditStyle(
-                                    item.value,
-                                    !['Rect'].includes(
-                                        selectedDrawnShape?.data.type,
-                                    ),
-                                    ['Rect'].includes(
-                                        selectedDrawnShape?.data.type,
-                                    ),
-                                )
-                            }
-                        >
-                            <img src={item.icon} alt='' /> {item.name}
-                        </OptionsTabStyle>
-                    ))}
-                </OptionsTab>
-            )}
-
-            {isSettingsTabActive && (
-                <FloatingToolbarSettings
-                    selectedDrawnShape={selectedDrawnShape}
-                    handleEditColor={handleEditColor}
-                    handleEditSize={handleEditSize}
-                    handleEditStyle={handleEditStyle}
-                    handleEditLabel={handleEditLabel}
-                    sizeOptions={sizeOptions}
-                    styleOptions={styleOptions}
-                    handleEditLines={handleEditLines}
-                    setIsShapeEdited={setIsShapeEdited}
-                    setDrawnShapeHistory={setDrawnShapeHistory}
-                    addDrawActionStack={addDrawActionStack}
-                    colorPicker={colorPicker}
-                    isNearestWindow={isNearestWindow}
-                    floatingToolbarHeight={floatingToolbarHeight}
-                    settingsDivHeight={settingsDivHeight}
-                    drawnShapeHistory={drawnShapeHistory}
-                />
-            )}
+                )}
+            </FloatingDropdownOptions>
         </FloatingDivContainer>
     );
 }

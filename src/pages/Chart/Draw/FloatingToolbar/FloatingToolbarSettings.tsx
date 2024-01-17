@@ -85,6 +85,7 @@ interface FloatingToolbarSettingsProps {
     floatingToolbarHeight: number;
     settingsDivHeight: number;
     drawnShapeHistory: drawDataHistory[];
+    isDropdownHeightCalculated: boolean;
 }
 
 function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
@@ -105,6 +106,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
         floatingToolbarHeight,
         settingsDivHeight,
         drawnShapeHistory,
+        isDropdownHeightCalculated,
     } = props;
 
     // disabled options
@@ -389,17 +391,12 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
         <>
             <FloatingToolbarSettingsContainer
                 onClick={() => closeAllOptions('none')}
-                style={
-                    isNearestWindow
-                        ? {
-                              position: 'fixed',
-                              width: 'auto',
-                              minWidth: '280px',
-                              bottom: floatingToolbarHeight + 4 + 'px',
-                          }
-                        : {}
-                }
-                id='floatingToolbarOptionsId'
+                style={{
+                    visibility: isDropdownHeightCalculated
+                        ? 'visible'
+                        : 'hidden',
+                    minWidth: '280px',
+                }}
             >
                 {selectedDrawnShape && (
                     <LineContainer>

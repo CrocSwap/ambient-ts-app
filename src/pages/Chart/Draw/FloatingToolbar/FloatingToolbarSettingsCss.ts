@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 const FloatingToolbarSettingsContainer = styled.div`
     background: #242f3f;
-    margin-top: 4px;
+    margin: 4px;
     border-radius: 3px;
     box-shadow: 4px 4px 6px #0d1117;
 
@@ -318,10 +318,9 @@ const StyledCheckbox = styled.div<{
         checked ? (disabled ? '#434c58' : '#2196F3') : '#f0f0f8'};
 
     border-radius: 2px;
-    transition: all 50ms;
 
     ${Icon} {
-        visibility: ${({ checked }) => (checked ? 'visible' : 'hidden')};
+        opacity: ${({ checked }) => (checked ? 1 : 0)};
     }
 
     cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
