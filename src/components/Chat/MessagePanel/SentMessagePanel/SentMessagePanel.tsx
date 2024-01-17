@@ -26,7 +26,6 @@ import {
     getShownName,
     hasEns,
 } from '../../ChatUtils';
-import Menu from '../Options/Menu/Menu';
 import Options from '../Options/Options';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
 

@@ -179,9 +179,7 @@ export default function Options(props: propsIF) {
         <>
             <div key={props.tsForRefresh}>
                 <div className={styles.dropdown_item}>
-                    {/* CHAT_FEATURES_WBO - Feature: Reply */}
                     {ReplyWithTooltip}
-                    {/* CHAT_FEATURES_WBO - Feature: Add Reaction */}
                     {(props.isUsersMessage && props.isUserVerified) ||
                     (props.isModerator && props.isUserVerified) ? (
                         deleteMessage

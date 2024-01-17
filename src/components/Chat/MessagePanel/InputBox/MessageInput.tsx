@@ -19,6 +19,7 @@ import { UserDataContext } from '../../../../contexts/UserDataContext';
 import CircularProgressBar from '../../../Global/OpenOrderStatus/CircularProgressBar';
 import { User, getUserLabel, userLabelForFilter } from '../../Model/UserModel';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
+import MentionAutoComplete from './MentionAutoComplete/MentionAutoComplete';
 
 interface MessageInputProps {
     currentUser: string;
@@ -441,13 +442,13 @@ export default function MessageInput(props: MessageInputProps) {
     // CHAT_FEATURES_WBO
     // Feature : Mention & AutoComplete
     const mentionAutoComplete = (
-        <></>
-        // <MentionAutoComplete
-        //     userList={filteredUsers}
-        //     active={mentPanelActive}
-        //     queryStr={mentPanelQueryStr}
-        //     selectedUser={possibleMentUser}
-        // />
+        // <></>
+        <MentionAutoComplete
+            userList={filteredUsers}
+            active={mentPanelActive}
+            queryStr={mentPanelQueryStr}
+            selectedUser={possibleMentUser}
+        />
     );
 
     return (

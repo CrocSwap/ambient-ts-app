@@ -55,3 +55,25 @@
     margin: 0 auto;
     padding-left: .4rem;
 }
+
+
+@media only screen and (max-width: 600px){
+
+    .ment_autocomp_wrapper{
+        bottom: 3.2rem;
+        max-height: 20vh;
+        overflow-y: auto;
+        backdrop-filter: blur(10px);
+        box-shadow: inset 0px 0px 50px 0px rgba(0,0,0 .4);
+        border-radius: 0;
+        padding: 1rem 0;
+    }
+
+.ment_autocomp_user_wrapper{
+    width: 90%;
+    font-size: .9rem;
+    padding: .5rem 0;
+    margin: .4rem auto;
+}
+
+}

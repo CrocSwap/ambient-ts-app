@@ -1079,7 +1079,6 @@ function ChatPanel(props: propsIF) {
                     )}
 
                     {messageInput}
-                    {/* {mentionAutoComplete} */}
                     <div id='thelastmessage' />
                 </div>
             </div>

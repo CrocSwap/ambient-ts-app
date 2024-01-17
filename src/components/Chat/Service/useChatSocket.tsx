@@ -394,6 +394,8 @@ const useChatSocket = (
                 updateMessages(data);
             });
         }
+
+        getUsersFromMessage(messages);
     }, [messages]);
 
     async function getMsg() {
@@ -435,6 +437,10 @@ const useChatSocket = (
         }
 
         return data;
+    }
+
+    function getUsersFromMessage(messages: Message[]) {
+        console.log('asdasdasd');
     }
 
     async function sendMsg(
