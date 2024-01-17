@@ -231,8 +231,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                     <Text fontSize='body' color='text2' align='center'>
                         {tokenAQuantity} {tokenA.symbol}
                     </Text>
-                    <AiOutlineDash />
-
+                    →
                     <TokenIcon
                         token={tokenB}
                         src={uriToHttp(tokenB.logoURI)}
