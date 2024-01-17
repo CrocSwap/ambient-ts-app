@@ -2719,6 +2719,7 @@ export default function Chart(props: propsIF) {
             const rayLine = createAnnotationLineSeries(
                 scaleData?.xScale.copy(),
                 scaleData?.yScale,
+                denomInBase,
             );
 
             const bandArea = createBandArea(
@@ -5226,6 +5227,7 @@ export default function Chart(props: propsIF) {
             const annotationLineSeries = createAnnotationLineSeries(
                 scaleData?.xScale.copy(),
                 scaleData?.yScale,
+                denomInBase,
             );
 
             annotationLineSeries.decorate(
