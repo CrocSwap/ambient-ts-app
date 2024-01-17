@@ -51,12 +51,25 @@ max-width: 100%;
     display: flex;
     flex-direction: column;
     gap:8px;
+
+width: 100%;
+  
+
+}
+.points_history_content{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     border: 1px solid var(--dark3);
     border-radius: 4px;
-width: 100%;
     height: 101px;
     overflow-y: scroll;
+    padding: 0 8px;
+}
 
+.points_history_header{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 0 8px;
 }
 .hide_scroll{
     overflow-y: hidden;
@@ -105,6 +118,10 @@ align-items: center;
          color: var(--accent5);
          text-decoration: underline;
     }
+
+
+
+
 @media (min-width: 768px) {
     
     .main_container{

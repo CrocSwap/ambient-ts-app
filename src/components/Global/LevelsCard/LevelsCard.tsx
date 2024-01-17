@@ -2,7 +2,7 @@ import { FlexContainer, Text } from '../../../styled/Common';
 import styles from './LevelsCard.module.css';
 import { LuCopy, LuExternalLink } from 'react-icons/lu';
 import LevelLine from '../LevelLine/LevelLine';
-import { useContext, useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { printDomToImage, trimString } from '../../../ambient-utils/dataLayer';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
@@ -11,6 +11,7 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { Link } from 'react-router-dom';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { RiScreenshot2Fill } from 'react-icons/ri';
+import { ViewMoreButton } from '../../../styled/Components/TransactionTable';
 
 interface LevelsCardPropsIF {
     resolvedAddress?: string;
@@ -126,32 +127,59 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
     );
 
     const pointsHistoryDisplay = (
-        <div
-            className={`${styles.point_history_container} ${
-                hideLevelCardScroll && styles.hide_scroll
-            }`}
-        >
-            {pointsData.map((data) => (
-                <FlexContainer
-                    justifyContent='space-between'
-                    key={data?.date + data?.points}
-                    gap={32}
+        <div className={`${styles.point_history_container} `}>
+            <header className={styles.points_history_header}>
+                <Text fontSize={'body'} color='text2'>
+                    Time
+                </Text>
+                <Text
+                    fontSize={'body'}
+                    color='text2'
+                    style={{ textAlign: 'center' }}
                 >
-                    <Text
-                        fontSize={!desktopScreen ? 'body' : 'header2'}
-                        color='text1'
-                    >
-                        {data?.date}
-                    </Text>
-                    <Text
-                        fontSize={!desktopScreen ? 'body' : 'header2'}
-                        color='text1'
-                        style={{ textAlign: 'end' }}
-                    >
-                        {data?.points} pts
-                    </Text>
-                </FlexContainer>
-            ))}
+                    New pts
+                </Text>
+                <Text
+                    fontSize={'body'}
+                    color='text2'
+                    style={{ textAlign: 'end' }}
+                >
+                    Retroactive pts
+                </Text>
+            </header>
+            <div
+                className={`${styles.points_history_content} ${
+                    hideLevelCardScroll && styles.hide_scroll
+                }`}
+            >
+                {pointsData.map((data) => (
+                    <React.Fragment key={data?.date + data?.points}>
+                        <Text
+                            fontSize={!desktopScreen ? 'body' : 'body'}
+                            color='text1'
+                        >
+                            {data?.date}
+                        </Text>
+                        <Text
+                            fontSize={!desktopScreen ? 'body' : 'body'}
+                            color='text1'
+                            style={{ textAlign: 'center' }}
+                        >
+                            {data?.points} pts
+                        </Text>
+                        <Text
+                            fontSize={!desktopScreen ? 'body' : 'body'}
+                            color='text1'
+                            style={{ textAlign: 'end' }}
+                        >
+                            1200 pts
+                        </Text>
+                    </React.Fragment>
+                ))}
+                <ViewMoreButton onClick={() => console.log('view')}>
+                    View More
+                </ViewMoreButton>
+            </div>
         </div>
     );
 
