@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, Dispatch, SetStateAction } from 'react';
+import React, {
+    useEffect,
+    useRef,
+    Dispatch,
+    SetStateAction,
+    useContext,
+} from 'react';
 import { AnimatePresence, useAnimation } from 'framer-motion';
 
 import {
@@ -7,6 +13,7 @@ import {
     CircleButton,
     Ring,
 } from './ActivityIndicator.styles';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 interface AcitivtyIndicatorProps {
     value: number;
@@ -23,6 +30,7 @@ const animStates = {
     pressed: { scale: 0.95 },
 };
 const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
+    const { appHeaderDropdown } = useContext(AppStateContext);
     const controls = useAnimation();
     const isFirstRun = useRef(true);
 
@@ -42,6 +50,7 @@ const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
         HTMLButtonElement
     > = () => {
         setShowNotificationTable(!showNotificationTable);
+        appHeaderDropdown.setIsActive(!appHeaderDropdown.isActive);
     };
 
     const pendingCircle = (

@@ -61,6 +61,7 @@ export default function App() {
         },
         theme: { selected: selectedTheme },
         wagmiModal: { isOpen: isWagmiModalOpen },
+        appHeaderDropdown,
     } = useContext(AppStateContext);
     const { isWalletChainSupported, defaultUrlParams } =
         useContext(CrocEnvContext);
@@ -168,6 +169,10 @@ export default function App() {
                 {!isWalletChainSupported && <SwitchNetwork />}
                 <AppOverlay />
                 <PageHeader />
+                <div
+                    className={appHeaderDropdown.isActive ? 'app_blur' : ''}
+                    onClick={() => appHeaderDropdown.setIsActive(false)}
+                />
                 <section
                     className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
                 >

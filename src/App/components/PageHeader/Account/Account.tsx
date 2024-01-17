@@ -35,6 +35,7 @@ export default function Account(props: propsIF) {
 
     const {
         snackbar: { open: openSnackbar },
+        appHeaderDropdown,
     } = useContext(AppStateContext);
 
     const { isUserConnected, connectedUserXp } = useContext(UserDataContext);
@@ -78,6 +79,7 @@ export default function Account(props: propsIF) {
         if (isEscapePressed) {
             setShowWalletDropdown(false);
             setShowLevelDropdown(false);
+            appHeaderDropdown.setIsActive(false);
         }
     }, [isEscapePressed]);
 
@@ -89,7 +91,12 @@ export default function Account(props: propsIF) {
         >
             <TitleGradientButton
                 tabIndex={0}
-                onClick={() => setShowWalletDropdown(!showWalletDropdown)}
+                onClick={() => {
+                    setShowWalletDropdown(!showWalletDropdown);
+                    if (!showWalletDropdown) {
+                        appHeaderDropdown.setIsActive(true);
+                    } else appHeaderDropdown.setIsActive(false);
+                }}
                 aria-label={ariaLabel}
             >
                 <MdAccountBalanceWallet color='var(--text1)' />
@@ -131,7 +138,12 @@ export default function Account(props: propsIF) {
         >
             <LevelButton
                 tabIndex={0}
-                onClick={() => setShowLevelDropdown(!showLevelDropdown)}
+                onClick={() => {
+                    setShowLevelDropdown(!showLevelDropdown);
+                    if (!showLevelDropdown) {
+                        appHeaderDropdown.setIsActive(true);
+                    } else appHeaderDropdown.setIsActive(false);
+                }}
                 aria-label={ariaLabel}
                 large={formattedXpLevel.length >= 2}
             >
