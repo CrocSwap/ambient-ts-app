@@ -4,6 +4,8 @@ import {
     chartSettingsMethodsIF,
     useChartSettings,
 } from '../App/hooks/useChartSettings';
+import { getLocalStorageItem } from '../ambient-utils/dataLayer';
+import { LS_KEY_CHART_ANNOTATIONS } from '../pages/Chart/ChartUtils/chartConstants';
 
 type TradeTableState = 'Expanded' | 'Collapsed' | undefined;
 
@@ -25,6 +27,10 @@ interface ChartContextIF {
     canvasRef: React.MutableRefObject<null>;
     chartCanvasRef: React.MutableRefObject<null>;
     tradeTableState: TradeTableState;
+    isMagnetActive: { value: boolean };
+    setIsMagnetActive: React.Dispatch<{ value: boolean }>;
+    isChangeScaleChart: boolean;
+    setIsChangeScaleChart: React.Dispatch<boolean>;
 }
 
 export const ChartContext = createContext<ChartContextIF>({} as ChartContextIF);
@@ -43,6 +49,18 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     if (CHART_SAVED_HEIGHT_LOCAL_STORAGE) {
         CHART_SAVED_HEIGHT = parseInt(CHART_SAVED_HEIGHT_LOCAL_STORAGE);
     }
+
+    const chartAnnotations: {
+        isMagnetActive: boolean;
+    } | null = JSON.parse(
+        getLocalStorageItem(LS_KEY_CHART_ANNOTATIONS) ?? '{}',
+    );
+
+    const [isMagnetActive, setIsMagnetActive] = useState({
+        value: chartAnnotations?.isMagnetActive ?? false,
+    });
+
+    const [isChangeScaleChart, setIsChangeScaleChart] = useState(false);
 
     const [chartHeights, setChartHeights] = useState<{
         current: number;
@@ -119,6 +137,10 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         canvasRef,
         chartCanvasRef,
         tradeTableState,
+        isMagnetActive,
+        setIsMagnetActive,
+        isChangeScaleChart,
+        setIsChangeScaleChart,
     };
 
     useEffect(() => {
@@ -126,6 +148,32 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
             setFullScreenChart(false);
         }
     }, [currentLocation]);
+
+    useEffect(() => {
+        const storedData = localStorage.getItem(LS_KEY_CHART_ANNOTATIONS);
+        if (!storedData) {
+            localStorage.setItem(
+                LS_KEY_CHART_ANNOTATIONS,
+                JSON.stringify({
+                    isOpenAnnotationPanel: true,
+                    drawnShapes: [],
+                    isMagnetActive: false,
+                }),
+            );
+        }
+    }, []);
+
+    useEffect(() => {
+        const storedData = localStorage.getItem(LS_KEY_CHART_ANNOTATIONS);
+        if (storedData) {
+            const parseStoredData = JSON.parse(storedData);
+            parseStoredData.isMagnetActive = isMagnetActive.value;
+            localStorage.setItem(
+                LS_KEY_CHART_ANNOTATIONS,
+                JSON.stringify(parseStoredData),
+            );
+        }
+    }, [isMagnetActive]);
 
     return (
         <ChartContext.Provider value={chartContext}>

@@ -68,7 +68,12 @@ export function checkCricleLocation(
 }
 
 function createCirclePoints(element: drawDataHistory, denomInBase: boolean) {
-    if (element.type === 'Brush' || element.type === 'Angle') {
+    if (
+        element.type === 'Brush' ||
+        element.type === 'Angle' ||
+        element.type === 'FibRetracement' ||
+        element.type === 'DPRange'
+    ) {
         const data: lineData[] = [];
 
         element.data.forEach((item) => {
@@ -82,7 +87,7 @@ function createCirclePoints(element: drawDataHistory, denomInBase: boolean) {
         return data;
     }
 
-    if (element.type === 'Square') {
+    if (element.type === 'Rect') {
         const startX = element.data[0].x;
         const startY =
             element.data[0].denomInBase === denomInBase

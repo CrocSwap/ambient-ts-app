@@ -37,6 +37,7 @@ interface TvlData {
     lastCandleData: CandleDataIF;
     isChartZoom: boolean;
     setIsChartZoom: React.Dispatch<React.SetStateAction<boolean>>;
+    isToolbarOpen: boolean;
 }
 
 function TvlChart(props: TvlData) {
@@ -61,6 +62,7 @@ function TvlChart(props: TvlData) {
         setIsChartZoom,
         zoomBase,
         render,
+        isToolbarOpen,
     } = props;
 
     // const tvlMainDiv = useRef(null);
@@ -515,7 +517,15 @@ function TvlChart(props: TvlData) {
     }, [crosshairActive]);
 
     return (
-        <div id='tvl_chart' data-testid={'chart'}>
+        <div
+            id='tvl_chart'
+            data-testid={'chart'}
+            style={{
+                gridTemplateColumns:
+                    (isToolbarOpen ? 38 : 9) +
+                    'px auto 1fr auto minmax(1em, max-content)',
+            }}
+        >
             <d3fc-canvas
                 id='d3PlotTvl'
                 ref={d3CanvasArea}
@@ -528,7 +538,13 @@ function TvlChart(props: TvlData) {
                 className='d3CanvasCrosshair'
             ></d3fc-canvas>
 
-            <label style={{ position: 'absolute', left: '0%' }}>
+            <label
+                style={{
+                    paddingLeft: '5px',
+                    gridColumnStart: '3',
+                    gridColumnEnd: '3',
+                }}
+            >
                 TVL:{' '}
                 {formatDollarAmountAxis(
                     subChartValues.filter(

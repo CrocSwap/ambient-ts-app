@@ -9,7 +9,7 @@ export const MainSection = styled.section<{
     gap: ${(props) => (props.isDropdown ? '8px' : 'initial')};
 
     grid-template-columns: auto 380px;
-    height: calc(100dvh - 180px);
+    height: calc(100dvh - 150px);
 
     border-top: ${(props) => !props.isDropdown && '1px solid var(--dark2)'};
 
@@ -118,7 +118,7 @@ export const ChartContainer = styled.div<{ fullScreen: boolean }>`
         width: 100%;
         min-height: 200px;
         height: 100%;
-        overflow: auto;
+        overflow: hidden;
 
         @media (min-width: 1200px) {
             background: var(--dark2);
