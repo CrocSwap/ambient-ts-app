@@ -80,7 +80,11 @@ export async function fetchCandleSeriesHybrid(
 
         candles.candles = candles.candles.concat(uniCandles);
     } catch (e) {
-        console.warn(e);
+        if (e.name === 'AbortError') {
+            console.warn('Zoom request cancelled');
+        } else {
+            console.warn(e);
+        }
     }
 
     return candles;
@@ -155,7 +159,11 @@ export async function fetchCandleSeriesCroc(
             };
         })
         .catch((e) => {
-            console.warn(e);
+            if (e.name === 'AbortError') {
+                console.warn('Zoom request cancelled');
+            } else {
+                console.warn(e);
+            }
             return undefined;
         });
 }

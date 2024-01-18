@@ -35,3 +35,18 @@ export const MainContainer = styled(FlexContainer)`
         overflow: hidden;
     }
 `;
+
+export const ArrowContainer = styled.div<{ degree?: number }>`
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    cursor: pointer;
+    font-size: var(--body-lh);
+    line-height: var(--body-lh);
+    color: var(--text2);
+    border-top: 1px solid var(--text2);
+    border-right: 1px solid var(--text2);
+    transition: all 600ms;
+    margin: auto;
+    transform: ${({ degree }) => `rotate(${degree}deg)`};
+`;
