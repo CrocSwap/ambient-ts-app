@@ -52,7 +52,7 @@ function SwapExtraInfo(props: propsIF) {
 
     const priceImpactNum =
         !priceImpact?.percentChange ||
-        Math.abs(priceImpact?.percentChange) > 100
+        Math.abs(priceImpact?.percentChange) > 0.9999
             ? undefined
             : Math.abs(priceImpact.percentChange) * 100;
 
@@ -61,21 +61,27 @@ function SwapExtraInfo(props: propsIF) {
             title: 'Avg. Rate',
             tooltipTitle:
                 'Expected Conversion Rate After Price Impact and Provider Fee',
-            data: isDenomBase
-                ? `${getFormattedNumber({
-                      value: effectivePriceWithDenom,
-                  })} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                : `${getFormattedNumber({
-                      value: effectivePriceWithDenom,
-                  })} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+            data:
+                priceImpactNum !== undefined
+                    ? isDenomBase
+                        ? `${getFormattedNumber({
+                              value: effectivePriceWithDenom,
+                          })} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                        : `${getFormattedNumber({
+                              value: effectivePriceWithDenom,
+                          })} ${baseTokenSymbol} per ${quoteTokenSymbol}`
+                    : '...',
             placement: 'bottom',
         },
         {
             title: 'Final Price',
             tooltipTitle: 'Expected Pool Price After Swap',
-            data: isDenomBase
-                ? `${finalPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                : `${finalPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+            data:
+                priceImpactNum !== undefined
+                    ? isDenomBase
+                        ? `${finalPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                        : `${finalPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`
+                    : '...',
             placement: 'bottom',
         },
         {

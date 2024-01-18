@@ -179,7 +179,7 @@ function SwapTokenInput(props: propsIF) {
         isTokenAPrimary ? setIsBuyLoading(false) : setIsSellLoading(false);
 
         if (impact) {
-            if (Math.abs(impact.percentChange) > 1) {
+            if (Math.abs(impact.percentChange) > 0.9999) {
                 setIsLiquidityInsufficient(true);
                 setSwapAllowed(false);
                 return undefined;
