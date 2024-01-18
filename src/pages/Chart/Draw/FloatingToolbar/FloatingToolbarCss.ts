@@ -29,6 +29,12 @@ const FloatingDiv = styled.div`
     gap: 5px;
 `;
 
+export const FloatingDropdownOptions = styled.div`
+    height: auto;
+    display: grid;
+    grid-template-rows: auto;
+`;
+
 export const FloatingButtonDiv = styled.div`
     align-items: center;
     color: #b2b5be;

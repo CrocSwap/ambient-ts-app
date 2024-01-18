@@ -1,9 +1,8 @@
 import styled from 'styled-components';
-import * as d3 from 'd3';
 
 const FloatingToolbarSettingsContainer = styled.div`
     background: #242f3f;
-    margin-top: 4px;
+    margin: 4px;
     border-radius: 3px;
     box-shadow: 4px 4px 6px #0d1117;
 
@@ -30,10 +29,19 @@ const OptionColor = styled.div<{
 }>`
     ${({ backgroundColor, isFibColor, disabled }) => {
         if (backgroundColor) {
-            const fibLevelColor = d3.color(backgroundColor);
+            const rgbaValues = backgroundColor.match(/\d+(\.\d+)?/g);
 
-            if (fibLevelColor && isFibColor) {
-                fibLevelColor.opacity = disabled ? 0.4 : 1.2;
+            if (rgbaValues && rgbaValues.length > 3 && isFibColor) {
+                const fibLevelColor =
+                    'rgba(' +
+                    rgbaValues[0] +
+                    ',' +
+                    rgbaValues[1] +
+                    ',' +
+                    rgbaValues[2] +
+                    ',' +
+                    (disabled ? 0.4 : 1.2) +
+                    ')';
                 return 'background: ' + fibLevelColor.toString() + ';';
             } else {
                 return 'background: ' + backgroundColor + ';';
@@ -310,10 +318,9 @@ const StyledCheckbox = styled.div<{
         checked ? (disabled ? '#434c58' : '#2196F3') : '#f0f0f8'};
 
     border-radius: 2px;
-    transition: all 50ms;
 
     ${Icon} {
-        visibility: ${({ checked }) => (checked ? 'visible' : 'hidden')};
+        opacity: ${({ checked }) => (checked ? 1 : 0)};
     }
 
     cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};

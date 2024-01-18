@@ -2,8 +2,9 @@
 function useHandleSwipeBack(ref: any, exceptionDivRef?: any) {
     const handleSwipeBack = (event: WheelEvent | TouchEvent) => {
         if (
-            exceptionDivRef.current &&
-            exceptionDivRef.current.contains(event.target as Node)
+            (exceptionDivRef.current &&
+                exceptionDivRef.current.contains(event.target as Node)) ||
+            event.target instanceof HTMLInputElement
         ) {
             return;
         }

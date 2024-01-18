@@ -11,6 +11,7 @@ import {
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { diffHashSigScaleData } from '../../../../ambient-utils/dataLayer';
 import { CandleDataIF } from '../../../../ambient-utils/types';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 interface DragCanvasProps {
     scaleData: scaleData;
@@ -47,6 +48,7 @@ interface DragCanvasProps {
     firstCandleData: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     lastCandleData: any;
+    setIsDragActive: React.Dispatch<boolean>;
 }
 
 export default function DragCanvas(props: DragCanvasProps) {
@@ -72,7 +74,10 @@ export default function DragCanvas(props: DragCanvasProps) {
         isChartZoom,
         firstCandleData,
         lastCandleData,
+        setIsDragActive,
     } = props;
+
+    const mobileView = useMediaQuery('(max-width: 600px)');
 
     useEffect(() => {
         if (scaleData !== undefined && !isChartZoom) {
@@ -355,6 +360,16 @@ export default function DragCanvas(props: DragCanvasProps) {
         }
     }
 
+    useEffect(() => {
+        const canvas = d3
+            .select(d3DragCanvas.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+        canvas.addEventListener('pointerup', () => {
+            setIsDragActive(false);
+        });
+    }, []);
+
     // mousemove
     useEffect(() => {
         d3.select(d3DragCanvas.current).on(
@@ -364,6 +379,12 @@ export default function DragCanvas(props: DragCanvasProps) {
                 mousemove(event);
             },
         );
+    }, []);
+
+    useEffect(() => {
+        if (mobileView) {
+            setSelectedDrawnShape(hoveredDrawnShape);
+        }
     }, []);
 
     useEffect(() => {

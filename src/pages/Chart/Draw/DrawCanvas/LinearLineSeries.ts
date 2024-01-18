@@ -41,10 +41,11 @@ export function updateSeriesDecorate(series: any, options: any) {
 export function createAnnotationLineSeries(
     xScale: d3.ScaleLinear<number, number>,
     yScale: d3.ScaleLinear<number, number>,
+    denomInBase: boolean,
 ) {
     return d3fc
         .annotationCanvasLine()
-        .value((d: lineData) => d.y)
+        .value((d: lineData) => (denomInBase === d.denomInBase ? d.y : 1 / d.y))
         .xScale(xScale)
         .yScale(yScale)
         .label('')
