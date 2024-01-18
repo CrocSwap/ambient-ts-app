@@ -68,6 +68,7 @@ interface yAxisIF {
     simpleRangeWidth: number;
     poolPriceDisplay: number;
     isChartZoom: boolean;
+    isUpdatingShape: boolean;
     selectedDrawnShape: selectedDrawnData | undefined;
 }
 
@@ -110,6 +111,7 @@ function YAxisCanvas(props: yAxisIF) {
         poolPriceDisplay,
         isChartZoom,
         selectedDrawnShape,
+        isUpdatingShape,
     } = props;
 
     const d3Yaxis = useRef<HTMLInputElement | null>(null);
@@ -584,7 +586,7 @@ function YAxisCanvas(props: yAxisIF) {
                     const rectHeight =
                         yScale(secondPointInDenom) - yScale(firstPointInDenom);
 
-                    context.fillStyle = '#7674ff1e';
+                    context.fillStyle = 'rgba(115, 113, 252, 0.075)';
                     context.fillRect(
                         0,
                         yScale(firstPointInDenom),
@@ -596,7 +598,7 @@ function YAxisCanvas(props: yAxisIF) {
                         context,
                         yScale(shapePoint),
                         X,
-                        '#5553be',
+                        'rgba(115, 113, 252, 1)',
                         'white',
                         shapePointTick,
                         undefined,
@@ -606,7 +608,7 @@ function YAxisCanvas(props: yAxisIF) {
                 });
             }
 
-            if (crosshairActive === 'chart') {
+            if (crosshairActive === 'chart' && !isUpdatingShape) {
                 const isScientificCrTick = crosshairData[0].y
                     .toString()
                     .includes('e');
@@ -952,6 +954,7 @@ function YAxisCanvas(props: yAxisIF) {
         location,
         crosshairActive,
         selectedDrawnShape,
+        isUpdatingShape,
     ]);
 
     function addYaxisLabel(y: number) {

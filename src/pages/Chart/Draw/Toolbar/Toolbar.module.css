@@ -4,20 +4,74 @@
     grid-row: 3;
     width: 9px;
     transition: all 600ms ease-in-out;
+    position: absolute;
+    z-index: 1;
 }
 
 .toolbar_container.toolbar_container_active {
     width: 38px;
 }
 
-.icon_card {
-    flex-direction: row-reverse;
-    display: flex;
+.scrollableDiv {
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 
-.icon_active_container,.icon_inactive_container img:hover {
+.scrollableDiv::-webkit-scrollbar {
+    width: 0;
+    display: none;
+}
+
+.scrollableDiv::-webkit-scrollbar-thumb {
+    background-color: transparent;
+}
+
+.icon_card {
+    flex-direction: row-reverse;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.icon_active_container,
+.icon_inactive_container img:hover {
     cursor: pointer;
+}
+
+.icon_fill_container {
+    background-color: rgba(115, 113, 252, 0.7);
+    margin-bottom: 10px;
+    display: flex;
+    width: 24px;
+    height: 24px;
+    padding: 2px;
+    border-radius: 4px;
+    grid-gap: 10px;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.arrowContainer_container {
+    position: absolute;
+    display: flex;
+    width: 45px;
+    height: 25px;
+    padding: 2px;
+    border-radius: 4px;
+    grid-gap: 10px;
+    gap: 10px;
+    cursor: pointer;
+    z-index: 1;
+    opacity: 0.9;
+    left: -8px;
+    align-items: center;
+    background-color: #101626c2;
+}
+
+.icon_fill_container img {
+    filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg)
+        brightness(200%) contrast(100%);
 }
 
 @keyframes identifier {
@@ -40,7 +94,7 @@
     width: 0%;
 }
 
-.drawlist_container.drawlist_container_active {
+.drawlist_container_active {
     animation: identifier 600ms ease-in-out forwards;
     opacity: 0;
     width: 70%;
@@ -98,7 +152,6 @@
     background: var(--dark1);
 }
 
-
 .close_divider_button,
 .divider_button {
     position: relative;
@@ -130,3 +183,39 @@
     margin-left: 0px;
     transform: rotate(225deg);
 }
+
+.undo_redo_button_active {
+    margin-bottom: 10px;
+    display: flex;
+    width: Fixed (24px);
+    height: Fixed (24px);
+    padding: 2px;
+    border-radius: 4px;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.undo_redo_button_passive {
+    margin-bottom: 10px;
+    display: flex;
+    width: Fixed (24px);
+    height: Fixed (24px);
+    padding: 2px;
+    border-radius: 4px;
+    gap: 10px;
+}
+
+.undo_redo_button_active img {
+    filter: invert(39%) sepia(27%) saturate(240%) hue-rotate(171deg)
+        brightness(100%) contrast(82%);
+}
+
+.undo_redo_button_active:hover {
+    background: #242f3f;
+}
+
+.undo_redo_button_passive img {
+    filter: invert(39%) sepia(27%) saturate(240%) hue-rotate(171deg)
+        brightness(50%) contrast(82%);
+}
+

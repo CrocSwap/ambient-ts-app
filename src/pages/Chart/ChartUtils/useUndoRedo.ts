@@ -1,7 +1,9 @@
-import { CHART_ANNOTATIONS_LS_KEY, drawDataHistory } from './chartUtils';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { drawDataHistory, drawnShapeEditAttributes } from './chartUtils';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { fibDefaultLevels } from './drawConstants';
+import { LS_KEY_CHART_ANNOTATIONS } from './chartConstants';
 
 export interface actionKeyIF {
     poolIndex: number;
@@ -9,28 +11,110 @@ export interface actionKeyIF {
     tokenB: string;
 }
 
-export function useUndoRedo(denomInBase: boolean) {
-    const initialData = localStorage.getItem(CHART_ANNOTATIONS_LS_KEY);
+export interface actionStackIF {
+    type: string;
+    time: number;
+    data: Array<drawDataHistory>;
+}
+
+export function useUndoRedo(denomInBase: boolean, isTokenABase: boolean) {
+    const initialData = localStorage.getItem(LS_KEY_CHART_ANNOTATIONS);
     const initialArray = initialData
         ? JSON.parse(initialData)?.drawnShapes || []
         : [];
 
-    const [drawnShapeHistory, setDrawnShapeHistory] =
-        useState<drawDataHistory[]>(initialArray);
+    const [drawnShapeHistory, setDrawnShapeHistory] = useState<
+        drawDataHistory[]
+    >([]);
 
     const {
         chainData: { poolIndex },
     } = useContext(CrocEnvContext);
 
     const [drawActionStack, setDrawActionStack] = useState(
-        new Map<actionKeyIF, drawDataHistory[]>(),
+        new Map<actionKeyIF, Array<actionStackIF>>(),
     );
 
-    const [undoStack] = useState(new Map<actionKeyIF, drawDataHistory[]>());
+    const [undoStack] = useState(new Map<actionKeyIF, Array<actionStackIF>>());
+
+    const [isLocalStorageFetched, setIsLocalStorageFetched] = useState(false);
 
     const currentPool = useContext(TradeDataContext);
 
     const { tokenA, tokenB } = currentPool;
+
+    useEffect(() => {
+        if (
+            drawnShapeHistory.length === 0 &&
+            initialArray.length > 0 &&
+            !isLocalStorageFetched
+        ) {
+            const refactoredArray: Array<drawDataHistory> = [];
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            initialArray.forEach((element: any) => {
+                if (
+                    Object.prototype.hasOwnProperty.call(
+                        element,
+                        'lineWidth',
+                    ) ||
+                    (element.type === 'FibRetracement' &&
+                        Object.prototype.hasOwnProperty.call(
+                            element.extraData[0],
+                            'color',
+                        ))
+                ) {
+                    const newElement: drawDataHistory = {
+                        data: element.data,
+                        type: element.type,
+                        time: element.time,
+                        pool: element.pool,
+                        extendLeft: false,
+                        extendRight: false,
+                        labelPlacement: 'left',
+                        labelAlignment: 'center',
+                        reverse: false,
+                        extraData: ['FibRetracement'].includes(element.type)
+                            ? structuredClone(fibDefaultLevels)
+                            : [],
+                        line: {
+                            active: !['Rect'].includes(element.type),
+                            color: 'rgba(115, 113, 252, 1)',
+                            lineWidth: 1.5,
+                            dash:
+                                element.type === 'FibRetracement'
+                                    ? [6, 6]
+                                    : [0, 0],
+                        } as drawnShapeEditAttributes,
+
+                        border: {
+                            active: ['Rect'].includes(element.type),
+                            color: 'rgba(115, 113, 252, 1)',
+                            lineWidth: 0,
+                            dash: [0, 0],
+                        } as drawnShapeEditAttributes,
+
+                        background: {
+                            active: ['Rect', 'DPRange'].includes(element.type),
+                            color: 'rgba(115, 113, 252, 0.15)',
+                            lineWidth: 1.5,
+                            dash: [0, 0],
+                        } as drawnShapeEditAttributes,
+                    };
+
+                    refactoredArray.push(newElement);
+                }
+            });
+
+            setDrawnShapeHistory(() =>
+                refactoredArray.length > 0 ? refactoredArray : initialArray,
+            );
+        }
+
+        setIsLocalStorageFetched(() => {
+            return true;
+        });
+    }, [initialData, isLocalStorageFetched]);
 
     const actionKey = useMemo(() => {
         const newActionKey = {
@@ -54,99 +138,173 @@ export function useUndoRedo(denomInBase: boolean) {
         return newActionKey;
     }, [poolIndex, tokenA, tokenB]);
 
-    useEffect(() => {
-        initialArray.forEach((element: drawDataHistory) => {
-            const tempData = {
-                data: [
-                    {
-                        x: element.data[0].x,
-                        y: element.data[0].y,
-                        denomInBase: denomInBase,
-                    },
-                    {
-                        x: element.data[1].x,
-                        y: element.data[1].y,
-                        denomInBase: denomInBase,
-                    },
-                ],
-                type: element.type,
-                time: element.time,
-                pool: element.pool,
-                color: element.color,
-                lineWidth: element.lineWidth,
-                style: element.style,
+    const deleteAllShapes = useCallback(() => {
+        const deletedItems: drawDataHistory[] = [];
+
+        const actionList = drawActionStack.get(actionKey);
+
+        const filteredDrawnShapeHistory = drawnShapeHistory.filter(
+            (element) => {
+                const isShapeInCurrentPool =
+                    currentPool.tokenA.address ===
+                        (isTokenABase === element.pool.isTokenABase
+                            ? element.pool.tokenA
+                            : element.pool.tokenB) &&
+                    currentPool.tokenB.address ===
+                        (isTokenABase === element.pool.isTokenABase
+                            ? element.pool.tokenB
+                            : element.pool.tokenA);
+
+                if (isShapeInCurrentPool) {
+                    deletedItems.push(element);
+                }
+                return !isShapeInCurrentPool;
+            },
+        );
+
+        if (actionList && deletedItems.length > 0) {
+            const newActionStack: actionStackIF = {
+                type: 'deleteAll',
+                time: new Date().getTime(),
+                data: deletedItems,
             };
 
-            if (!drawActionStack.has(actionKey)) {
-                if (
-                    (actionKey.tokenA === element.pool.tokenA.address &&
-                        actionKey.tokenB === element.pool.tokenB.address) ||
-                    (actionKey.tokenA === element.pool.tokenB.address &&
-                        actionKey.tokenB === element.pool.tokenA.address)
-                ) {
-                    drawActionStack.set(actionKey, [tempData]);
-                } else {
-                    drawActionStack.set(actionKey, []);
-                }
-            } else {
-                const actionList = drawActionStack
-                    .get(actionKey)
-                    ?.find((item) => item.time === element.time);
-                if (
-                    actionList === undefined &&
-                    actionKey.tokenA === element.pool.tokenA.address &&
-                    actionKey.tokenB === element.pool.tokenB.address
-                ) {
-                    drawActionStack.get(actionKey)?.push(tempData);
-                }
-            }
-        });
+            drawActionStack.get(actionKey)?.push(newActionStack);
+        }
+
+        setDrawnShapeHistory(filteredDrawnShapeHistory);
+    }, [actionKey, drawnShapeHistory]);
+
+    useEffect(() => {
+        drawActionStack.set(actionKey, []);
     }, [actionKey]);
 
-    function deleteItem(item: drawDataHistory) {
-        const actionList = drawActionStack.get(actionKey);
-        if (actionList) {
-            const findItem = actionList.find((i) => {
-                return (
-                    JSON.stringify(i.data) === JSON.stringify(item.data) &&
-                    i.time === item.time
-                );
+    const deleteItem = useCallback(
+        (item: drawDataHistory) => {
+            const tempHistoryData = {
+                data: [
+                    {
+                        x: item.data[0].x,
+                        y: item.data[0].y,
+                        denomInBase: item.data[0].denomInBase,
+                    },
+                    {
+                        x: item.data[1].x,
+                        y: item.data[1].y,
+                        denomInBase: item.data[1].denomInBase,
+                    },
+                ],
+                type: item.type,
+                time: item.time,
+                pool: item.pool,
+                border: item.border,
+                line: item.line,
+                background: item.background,
+                extraData: item.extraData,
+                extendLeft: item.extendLeft,
+                extendRight: item.extendRight,
+                labelPlacement: item.labelPlacement,
+                labelAlignment: item.labelAlignment,
+                reverse: item.reverse,
+            };
+
+            const newActionStack: actionStackIF = {
+                type: 'delete',
+                time: new Date().getTime(),
+                data: [tempHistoryData],
+            };
+
+            drawActionStack.get(actionKey)?.push(newActionStack);
+
+            if (undoStack.has(actionKey)) {
+                undoStack.set(actionKey, []);
+            }
+        },
+        [actionKey, drawActionStack, denomInBase, undoStack],
+    );
+
+    const undoDrawnShapeHistory = useCallback(
+        (action: actionStackIF) => {
+            let tempData: drawDataHistory | undefined = undefined;
+
+            const index = drawnShapeHistory.findIndex(
+                (item) =>
+                    JSON.stringify(item.time) ===
+                    JSON.stringify(action.data[0].time),
+            );
+
+            const tempDataArray: drawDataHistory[] = [];
+
+            action.data.forEach((shapeData, index) => {
+                if (action.type !== 'update' || index === 0) {
+                    tempData = {
+                        data: [
+                            {
+                                x: shapeData.data[0].x,
+                                y: shapeData.data[0].y,
+                                denomInBase: shapeData.data[0].denomInBase,
+                            },
+                            {
+                                x: shapeData.data[1].x,
+                                y: shapeData.data[1].y,
+                                denomInBase: shapeData.data[0].denomInBase,
+                            },
+                        ],
+                        type: shapeData.type,
+                        time: shapeData.time,
+                        pool: shapeData.pool,
+                        border: structuredClone(shapeData.border),
+                        line: structuredClone(shapeData.line),
+                        background: structuredClone(shapeData.background),
+                        extraData: structuredClone(shapeData.extraData),
+                        extendLeft: shapeData.extendLeft,
+                        extendRight: shapeData.extendRight,
+                        labelPlacement: shapeData.labelPlacement,
+                        labelAlignment: shapeData.labelAlignment,
+                        reverse: shapeData.reverse,
+                    } as drawDataHistory;
+
+                    tempDataArray.push(tempData);
+                }
             });
 
-            if (findItem) {
-                const tempHistoryData = {
-                    data: [
-                        {
-                            x: 0,
-                            y: 0,
-                            denomInBase: denomInBase,
-                        },
-                        {
-                            x: 0,
-                            y: 0,
-                            denomInBase: denomInBase,
-                        },
-                    ],
-                    type: findItem.type,
-                    time: findItem.time,
-                    pool: findItem.pool,
-                    color: '#7371fc',
-                    lineWidth: 1.5,
-                    style: [0, 0],
-                };
+            setDrawnShapeHistory((prev) => {
+                if (action.type !== 'create' && tempData) {
+                    const shouldFill = ['delete', 'deleteAll'].includes(
+                        action.type,
+                    );
 
-                drawActionStack.get(actionKey)?.push(tempHistoryData);
-            }
-        }
-    }
-    function undo() {
+                    if (shouldFill && index === -1) {
+                        return [...prev, ...tempDataArray];
+                    } else {
+                        const newDrawnShapeHistory = [...prev];
+                        newDrawnShapeHistory[index] = tempData;
+
+                        return newDrawnShapeHistory;
+                    }
+                } else {
+                    const newDrawnShapeHistory = [...prev];
+
+                    return newDrawnShapeHistory.filter(
+                        (item) =>
+                            JSON.stringify(item.data) !==
+                            JSON.stringify(action.data[0].data),
+                    );
+                }
+            });
+        },
+        [actionKey, drawActionStack, drawnShapeHistory, setDrawnShapeHistory],
+    );
+
+    const undo = useCallback(() => {
         const actionList = drawActionStack.get(actionKey);
 
         if (actionList) {
-            const action = actionList.pop();
+            const action = actionList?.pop();
 
             if (action) {
                 undoDrawnShapeHistory(action);
+
                 if (!undoStack.has(actionKey)) {
                     undoStack.set(actionKey, []);
                 }
@@ -156,18 +314,20 @@ export function useUndoRedo(denomInBase: boolean) {
                 if (undoStackList) {
                     const lastDataUndoStack =
                         undoStackList[undoStackList?.length - 1];
+
+                    const shouldFillWithActionData = [
+                        'delete',
+                        'deleteAll',
+                    ].includes(action.type);
+
                     if (
-                        undoStackList.length === 0 ||
+                        undoStackList?.length === 0 ||
                         !(
                             lastDataUndoStack.time === action.time &&
-                            lastDataUndoStack.data[0].x === 0 &&
-                            lastDataUndoStack.data[0].y === 0 &&
-                            lastDataUndoStack.data[1].x === 0 &&
-                            lastDataUndoStack.data[1].y === 0 &&
-                            action.data[0].x === 0 &&
-                            action.data[0].y === 0 &&
-                            action.data[1].x === 0 &&
-                            action.data[1].y === 0
+                            ['delete', 'deleteAll'].includes(
+                                lastDataUndoStack.type,
+                            ) &&
+                            shouldFillWithActionData
                         )
                     ) {
                         undoStack.get(actionKey)?.push(action);
@@ -175,204 +335,172 @@ export function useUndoRedo(denomInBase: boolean) {
                 }
             }
         }
-    }
+    }, [actionKey, drawActionStack, undoDrawnShapeHistory, undoStack]);
 
-    function redo() {
+    const redoDrawnShapeHistory = useCallback(
+        (action: actionStackIF) => {
+            action.data.forEach((element, i) => {
+                if (action.type !== 'update' || i === 1) {
+                    const tempData = {
+                        data: [
+                            {
+                                x: element.data[0].x,
+                                y: element.data[0].y,
+                                denomInBase: element.data[0].denomInBase,
+                            },
+                            {
+                                x: element.data[1].x,
+                                y: element.data[1].y,
+                                denomInBase: element.data[0].denomInBase,
+                            },
+                        ],
+                        type: element.type,
+                        time: element.time,
+                        pool: element.pool,
+                        border: structuredClone(element.border),
+                        line: structuredClone(element.line),
+                        background: structuredClone(element.background),
+                        extraData: structuredClone(element.extraData),
+                        extendLeft: element.extendLeft,
+                        extendRight: element.extendRight,
+                        labelPlacement: element.labelPlacement,
+                        labelAlignment: element.labelAlignment,
+                        reverse: element.reverse,
+                    } as drawDataHistory;
+
+                    const index = drawnShapeHistory.findIndex(
+                        (item) => item.time === action.data[0].time,
+                    );
+
+                    setDrawnShapeHistory((prev) => {
+                        const updatedHistory = [...prev];
+
+                        const shouldDelete = ['delete', 'deleteAll'].includes(
+                            action.type,
+                        );
+
+                        if (shouldDelete) {
+                            updatedHistory.splice(index, index + 1);
+                            return updatedHistory;
+                        } else {
+                            if (index !== -1) {
+                                updatedHistory[index] = tempData;
+                                return updatedHistory;
+                            } else {
+                                return [...prev, tempData];
+                            }
+                        }
+                    });
+                }
+            });
+        },
+        [drawnShapeHistory, setDrawnShapeHistory],
+    );
+
+    const redo = useCallback(() => {
         if (drawActionStack.has(actionKey)) {
             const undoActionList = undoStack.get(actionKey);
+
             if (undoActionList) {
                 const lastValue = undoActionList[undoActionList?.length - 1];
 
                 if (lastValue) {
-                    if (undoActionList) {
-                        drawActionStack.get(actionKey)?.push({
-                            color: lastValue.color,
-                            data: [
-                                {
-                                    x: lastValue.data[0].x,
-                                    y: lastValue.data[0].y,
-                                    denomInBase: lastValue.data[0].denomInBase,
-                                },
-                                {
-                                    x: lastValue.data[1].x,
-                                    y: lastValue.data[1].y,
-                                    denomInBase: lastValue.data[0].denomInBase,
-                                },
-                            ],
-                            lineWidth: lastValue.lineWidth,
-                            pool: lastValue.pool,
-                            style: lastValue.style,
-                            time: lastValue.time,
-                            type: lastValue.type,
-                        });
+                    drawActionStack
+                        .get(actionKey)
+                        ?.push(structuredClone(lastValue));
+
+                    const action = undoActionList.pop();
+                    if (action) {
+                        redoDrawnShapeHistory(action);
                     }
-                    if (undoActionList) {
-                        const action = undoActionList.pop();
-                        if (action) {
-                            redoDrawnShapeHistory(action);
+                }
+            }
+        }
+    }, [actionKey, drawActionStack, undoStack, redoDrawnShapeHistory]);
+
+    const addDrawActionStack = useCallback(
+        (
+            tempLastData: drawDataHistory,
+            isNewShape: boolean,
+            type: string,
+            updatedData: drawDataHistory | undefined = undefined,
+        ) => {
+            const tempDta = [
+                {
+                    data: structuredClone(tempLastData.data),
+                    type: tempLastData.type,
+                    time: tempLastData.time,
+                    pool: tempLastData.pool,
+                    border: structuredClone(tempLastData.border),
+                    line: structuredClone(tempLastData.line),
+                    background: structuredClone(tempLastData.background),
+                    extraData: structuredClone(tempLastData.extraData),
+                    extendLeft: tempLastData.extendLeft,
+                    extendRight: tempLastData.extendRight,
+                    labelPlacement: tempLastData.labelPlacement,
+                    labelAlignment: tempLastData.labelAlignment,
+                    reverse: tempLastData.reverse,
+                },
+            ];
+
+            if (type === 'update' && updatedData) {
+                tempDta.push({
+                    data: structuredClone(updatedData.data),
+                    type: updatedData.type,
+                    time: updatedData.time,
+                    pool: updatedData.pool,
+                    border: structuredClone(updatedData.border),
+                    line: structuredClone(updatedData.line),
+                    background: structuredClone(updatedData.background),
+                    extraData: structuredClone(updatedData.extraData),
+                    extendLeft: updatedData.extendLeft,
+                    extendRight: updatedData.extendRight,
+                    labelPlacement: updatedData.labelPlacement,
+                    labelAlignment: updatedData.labelAlignment,
+                    reverse: updatedData.reverse,
+                });
+            }
+
+            const tempMap = new Map<actionKeyIF, actionStackIF[]>(
+                drawActionStack,
+            );
+
+            if (drawActionStack.has(actionKey)) {
+                const actions = drawActionStack.get(actionKey);
+
+                if (actions) {
+                    tempMap.set(actionKey, actions);
+
+                    const values = tempMap.get(actionKey);
+                    if (values) {
+                        if (actions) {
+                            const newActionStack: actionStackIF = {
+                                type: type,
+                                time: new Date().getTime(),
+                                data: tempDta,
+                            };
+
+                            actions?.push(newActionStack);
                         }
                     }
                 }
-            }
-        }
-    }
-
-    function undoDrawnShapeHistory(action: drawDataHistory) {
-        const actions = drawActionStack
-            .get(actionKey)
-            ?.filter((item) => item.time === action.time);
-        let tempData: drawDataHistory | undefined = undefined;
-
-        const index = drawnShapeHistory.findIndex(
-            (item) => JSON.stringify(item.time) === JSON.stringify(action.time),
-        );
-        let lastActionData: drawDataHistory | undefined = undefined;
-        if (actions && actions?.length > 0) {
-            lastActionData = actions[actions?.length - 1];
-            tempData = {
-                data: [
-                    {
-                        x: lastActionData.data[0].x,
-                        y: lastActionData.data[0].y,
-                        denomInBase: lastActionData.data[0].denomInBase,
-                    },
-                    {
-                        x: lastActionData.data[1].x,
-                        y: lastActionData.data[1].y,
-                        denomInBase: lastActionData.data[0].denomInBase,
-                    },
-                ],
-                type: lastActionData.type,
-                time: lastActionData.time,
-                pool: lastActionData.pool,
-                color: lastActionData.color,
-                lineWidth: lastActionData.lineWidth,
-                style: lastActionData.style,
-            } as drawDataHistory;
-        }
-
-        setDrawnShapeHistory((prev) => {
-            if (tempData) {
-                if (
-                    action.data[0].x === 0 &&
-                    action.data[0].y === 0 &&
-                    action.data[1].x === 0 &&
-                    action.data[1].y === 0 &&
-                    JSON.stringify(lastActionData) !== JSON.stringify(action) &&
-                    index === -1
-                ) {
-                    return [...prev, tempData];
-                } else {
-                    const newDrawnShapeHistory = [...prev];
-                    newDrawnShapeHistory[index] = tempData;
-                    return newDrawnShapeHistory;
-                }
+                setDrawActionStack(tempMap);
             } else {
-                const newDrawnShapeHistory = [...prev];
-                return newDrawnShapeHistory.filter(
-                    (item) =>
-                        JSON.stringify(item.data) !==
-                        JSON.stringify(action.data),
-                );
+                const newActionStack: actionStackIF = {
+                    type: type,
+                    time: new Date().getTime(),
+                    data: tempDta,
+                };
+
+                drawActionStack.set(actionKey, [newActionStack]);
             }
-        });
-    }
 
-    function redoDrawnShapeHistory(action: drawDataHistory) {
-        const tempData = {
-            data: [
-                {
-                    x: action.data[0].x,
-                    y: action.data[0].y,
-                    denomInBase: action.data[0].denomInBase,
-                },
-                {
-                    x: action.data[1].x,
-                    y: action.data[1].y,
-                    denomInBase: action.data[0].denomInBase,
-                },
-            ],
-            type: action.type,
-            time: action.time,
-            pool: action.pool,
-            color: action.color,
-            lineWidth: action.lineWidth,
-            style: action.style,
-        } as drawDataHistory;
-
-        if (
-            action.data[0].x !== 0 &&
-            action.data[0].y !== 0 &&
-            action.data[1].x !== 0 &&
-            action.data[1].y !== 0
-        ) {
-            const index = drawnShapeHistory.findIndex(
-                (item) => item.time === action.time,
-            );
-
-            setDrawnShapeHistory((prev) => {
-                const updatedHistory = [...prev];
-                if (index !== -1) {
-                    updatedHistory[index] = tempData;
-                    return updatedHistory;
-                } else {
-                    return [...prev, tempData];
-                }
-            });
-        }
-    }
-
-    function addDrawActionStack(
-        tempLastData: drawDataHistory,
-        isNewShape: boolean,
-    ) {
-        const tempDta = {
-            data: [
-                {
-                    x: tempLastData.data[0].x,
-                    y: tempLastData.data[0].y,
-                    denomInBase: tempLastData.data[0].denomInBase,
-                },
-                {
-                    x: tempLastData.data[1].x,
-                    y: tempLastData.data[1].y,
-                    denomInBase: tempLastData.data[0].denomInBase,
-                },
-            ],
-            type: tempLastData.type,
-            time: tempLastData.time,
-            pool: tempLastData.pool,
-            color: tempLastData.color,
-            lineWidth: tempLastData.lineWidth,
-            style: tempLastData.style,
-        };
-
-        const tempMap = new Map<actionKeyIF, drawDataHistory[]>(
-            drawActionStack,
-        );
-
-        if (drawActionStack.has(actionKey)) {
-            const actions = drawActionStack.get(actionKey);
-
-            if (actions) {
-                tempMap.set(actionKey, actions);
-
-                const values = tempMap.get(actionKey);
-                if (values) {
-                    if (actions) {
-                        actions.push(tempDta);
-                    }
-                }
+            if (isNewShape) {
+                undoStack.clear();
             }
-            setDrawActionStack(tempMap);
-        } else {
-            drawActionStack.set(actionKey, [tempDta]);
-        }
-
-        if (isNewShape) {
-            undoStack.clear();
-        }
-    }
+        },
+        [actionKey, drawActionStack, setDrawActionStack, undoStack],
+    );
 
     return {
         undo,
@@ -385,5 +513,6 @@ export function useUndoRedo(denomInBase: boolean) {
         actionKey,
         addDrawActionStack,
         undoStack,
+        deleteAllShapes,
     };
 }
