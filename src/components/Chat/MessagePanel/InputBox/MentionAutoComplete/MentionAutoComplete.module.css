@@ -66,6 +66,10 @@
         backdrop-filter: blur(10px);
         box-shadow: inset 0px 0px 50px 0px rgba(0,0,0 .4);
         border-radius: 0;
+
+        position: fixed;
+        max-height: calc(100dvh - 8.7rem);
+        bottom: 8.7rem;
     }
     
     .ment_autocomp_wrapper_active{
