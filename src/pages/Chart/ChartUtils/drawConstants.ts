@@ -1,8 +1,8 @@
 export const drawnShapeDefaultColor = '#7371fc';
 export const drawnShapeDefaultBackgroundColor = 'rgba(115, 113, 252, 0.15)';
-export const drawnShapeDefaultLineWidth = 1.5;
+export const drawnShapeDefaultLineWidth = 2;
 export const drawnShapeDefaultDash = [0, 0];
-export const fibonacciDefaultDash = [6, 6];
+export const fibonacciDefaultDash = [3, 6];
 
 export const fibDefaultLevels = [
     {

@@ -274,6 +274,16 @@ function Toolbar(props: ToolbarProps) {
         deleteAllShapes();
     };
 
+    const handleOnMouseEnter = (description: string) => {
+        setHoveredTool(() => description);
+
+        if (mobileView) {
+            setTimeout(() => {
+                setHoveredTool(undefined);
+            }, 200);
+        }
+    };
+
     return (
         <ToolbarContainer
             isActive={isToolbarOpen}
@@ -296,15 +306,19 @@ function Toolbar(props: ToolbarProps) {
                                 <IconCard key={index}>
                                     <IconActiveContainer
                                         onClick={() =>
+                                            !mobileView &&
                                             handleDrawModeChange(item)
                                         }
-                                        onMouseEnter={() =>
-                                            setHoveredTool(
-                                                () => item.description,
-                                            )
-                                        }
+                                        onMouseEnter={() => {
+                                            handleOnMouseEnter(
+                                                item.description,
+                                            );
+                                        }}
                                         onMouseLeave={() =>
                                             setHoveredTool(() => undefined)
+                                        }
+                                        onTouchStart={() =>
+                                            handleDrawModeChange(item)
                                         }
                                     >
                                         <IconActive
@@ -330,15 +344,19 @@ function Toolbar(props: ToolbarProps) {
                                     <IconFillContainer
                                         isActive={isMagnetActive.value}
                                         onClick={() =>
+                                            !mobileView &&
                                             handleActivateIndicator(item)
                                         }
-                                        onMouseEnter={() =>
-                                            setHoveredTool(
-                                                () => item.description,
-                                            )
-                                        }
+                                        onMouseEnter={() => {
+                                            handleOnMouseEnter(
+                                                item.description,
+                                            );
+                                        }}
                                         onMouseLeave={() =>
                                             setHoveredTool(() => undefined)
+                                        }
+                                        onTouchStart={() =>
+                                            handleActivateIndicator(item)
                                         }
                                     >
                                         <IconActive
@@ -368,6 +386,23 @@ function Toolbar(props: ToolbarProps) {
                                             ) > 0
                                         }
                                         onClick={() => {
+                                            if (!mobileView) {
+                                                if (
+                                                    item.stack.has(actionKey) &&
+                                                    Number(
+                                                        item.stack.get(
+                                                            actionKey,
+                                                        )?.length,
+                                                    ) > 0
+                                                ) {
+                                                    setSelectedDrawnShape(
+                                                        undefined,
+                                                    );
+                                                    item.operation();
+                                                }
+                                            }
+                                        }}
+                                        onTouchStart={() => {
                                             if (
                                                 item.stack.has(actionKey) &&
                                                 Number(
@@ -382,9 +417,7 @@ function Toolbar(props: ToolbarProps) {
                                             }
                                         }}
                                         onMouseEnter={() =>
-                                            setHoveredTool(
-                                                () => item.description,
-                                            )
+                                            handleOnMouseEnter(item.description)
                                         }
                                         onMouseLeave={() =>
                                             setHoveredTool(() => undefined)
@@ -414,13 +447,16 @@ function Toolbar(props: ToolbarProps) {
 
                             <IconCard>
                                 <IconActiveContainer
-                                    onClick={() => handleDeleteAll()}
-                                    onMouseEnter={() =>
-                                        setHoveredTool(() => 'Delete All')
+                                    onClick={() =>
+                                        !mobileView && handleDeleteAll()
                                     }
+                                    onMouseEnter={() => {
+                                        handleOnMouseEnter('Delete All');
+                                    }}
                                     onMouseLeave={() =>
                                         setHoveredTool(() => undefined)
                                     }
+                                    onTouchStart={() => handleDeleteAll()}
                                 >
                                     <img src={trashIcon} alt='' />
                                 </IconActiveContainer>
@@ -442,7 +478,13 @@ function Toolbar(props: ToolbarProps) {
                 <Divider />
                 <DividerButton
                     isActive={isToolbarOpen}
-                    onClick={() => setIsToolbarOpen((prev: boolean) => !prev)}
+                    onClick={() =>
+                        !mobileView &&
+                        setIsToolbarOpen((prev: boolean) => !prev)
+                    }
+                    onTouchStart={() =>
+                        setIsToolbarOpen((prev: boolean) => !prev)
+                    }
                 >
                     <ArrowRight isActive={isToolbarOpen}></ArrowRight>
                 </DividerButton>

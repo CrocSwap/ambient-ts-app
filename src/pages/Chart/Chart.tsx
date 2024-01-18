@@ -1113,7 +1113,7 @@ export default function Chart(props: propsIF) {
                                 scaleData?.yScale.invert(eventPoint);
 
                             const isHoverLiqidite = liqMaxActiveLiq
-                                ? liqMaxActiveLiq - eventPointX > 60
+                                ? liqMaxActiveLiq - eventPointX > 10
                                 : false;
 
                             const limitLineValue = limit;
@@ -2011,7 +2011,7 @@ export default function Chart(props: propsIF) {
             const eventPointX = event.targetTouches[0].clientX - leftPositin;
 
             const isHoverLiqidite = liqMaxActiveLiq
-                ? liqMaxActiveLiq - eventPointX > 60
+                ? liqMaxActiveLiq - eventPointX > 10
                 : false;
 
             return isHoverLiqidite;
@@ -2730,10 +2730,13 @@ export default function Chart(props: propsIF) {
             .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
 
+        const canvasSize = canvas.getBoundingClientRect();
+
         if (scaleData && lineSeries) {
             const rayLine = createAnnotationLineSeries(
                 scaleData?.xScale.copy(),
                 scaleData?.yScale,
+                denomInBase,
             );
 
             const bandArea = createBandArea(
@@ -3039,7 +3042,12 @@ export default function Chart(props: propsIF) {
                                             ) /
                                                 2;
 
-                                        const infoLabelYAxisData =
+                                        const deltaY =
+                                            canvasSize.height -
+                                            infoLabelHeight -
+                                            5;
+
+                                        let infoLabelYAxisData =
                                             scaleData.yScale(
                                                 secondPointYAxisData,
                                             ) +
@@ -3048,6 +3056,13 @@ export default function Chart(props: propsIF) {
                                                 ? -(infoLabelHeight + 15)
                                                 : 15);
 
+                                        infoLabelYAxisData =
+                                            infoLabelYAxisData +
+                                                infoLabelHeight >
+                                            canvasSize.height
+                                                ? deltaY
+                                                : infoLabelYAxisData;
+
                                         const dpRangeLabelYPlacement =
                                             scaleData.yScale(
                                                 firstPointYAxisData,
@@ -3055,13 +3070,11 @@ export default function Chart(props: propsIF) {
                                                 ? infoLabelYAxisData
                                                 : scaleData.yScale(
                                                       firstPointYAxisData,
-                                                  ) < 463
+                                                  ) < canvasSize.height
                                                 ? infoLabelYAxisData +
                                                       infoLabelHeight >
-                                                  canvas.height
-                                                    ? canvas.height -
-                                                      infoLabelHeight -
-                                                      5
+                                                  canvasSize.height
+                                                    ? deltaY
                                                     : Math.max(
                                                           infoLabelYAxisData,
                                                           5,
@@ -3327,25 +3340,9 @@ export default function Chart(props: propsIF) {
                                               ),
                                     ];
 
-                                    annotationLineSeries.xScale().range(range);
-
                                     bandArea.xScale().range(range);
 
-                                    if (item.line.active) {
-                                        if (ctx)
-                                            ctx.setLineDash(item.line.dash);
-                                        lineSeries.decorate(
-                                            (
-                                                context: CanvasRenderingContext2D,
-                                            ) => {
-                                                context.strokeStyle =
-                                                    item.line.color;
-                                                context.lineWidth =
-                                                    item.line.lineWidth;
-                                            },
-                                        );
-                                        lineSeries(data);
-                                    }
+                                    annotationLineSeries.xScale().range(range);
 
                                     const fibLineData = calculateFibRetracement(
                                         data,
@@ -3370,8 +3367,6 @@ export default function Chart(props: propsIF) {
 
                                         bandArea([bandData]);
                                     });
-
-                                    if (ctx) ctx.setLineDash([0, 0]);
 
                                     fibLineData.forEach((lineData) => {
                                         const lineLabel =
@@ -3399,7 +3394,7 @@ export default function Chart(props: propsIF) {
                                                     : 0;
 
                                             const bufferRight =
-                                                canvas.width -
+                                                canvasSize.width -
                                                 (item.extendRight &&
                                                 item.labelPlacement === 'Right'
                                                     ? lineMeasures.width + 15
@@ -3412,7 +3407,7 @@ export default function Chart(props: propsIF) {
                                                 bufferLeft,
                                                 0,
                                                 bufferRight,
-                                                canvas.height,
+                                                canvasSize.height,
                                             );
 
                                             ctx.clip();
@@ -3445,15 +3440,15 @@ export default function Chart(props: propsIF) {
                                                 buffer -
                                                     lineMeasures.width / 2 -
                                                     5,
-                                                canvas.height,
+                                                canvasSize.height,
                                             );
                                             ctx.rect(
                                                 buffer +
                                                     lineMeasures.width / 2 +
                                                     5,
                                                 0,
-                                                canvas.width,
-                                                canvas.height,
+                                                canvasSize.width,
+                                                canvasSize.height,
                                             );
 
                                             ctx.clip();
@@ -3603,6 +3598,24 @@ export default function Chart(props: propsIF) {
                                             );
                                         }
                                     });
+
+                                    if (item.line.active) {
+                                        if (ctx)
+                                            ctx.setLineDash(item.line.dash);
+                                        lineSeries.decorate(
+                                            (
+                                                context: CanvasRenderingContext2D,
+                                            ) => {
+                                                context.strokeStyle =
+                                                    item.line.color;
+                                                context.lineWidth =
+                                                    item.line.lineWidth;
+                                            },
+                                        );
+                                        lineSeries(data);
+                                    }
+
+                                    if (ctx) ctx.setLineDash([0, 0]);
                                 }
 
                                 if (
@@ -4414,6 +4427,59 @@ export default function Chart(props: propsIF) {
         return false;
     }
 
+    function checkFibonacciLocation(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data: any,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        extraData: any,
+        mouseX: number,
+        mouseY: number,
+        denomInBase: boolean,
+    ) {
+        if (scaleData) {
+            const fibLineData = calculateFibRetracement(data, extraData);
+
+            const startX = fibLineData[0][0].x;
+            const endX = fibLineData[0][1].x;
+            const tempStartXLocation = scaleData.xScale(startX);
+            const tempEndXLocation = scaleData.xScale(endX);
+
+            const startXLocation = Math.min(
+                tempStartXLocation,
+                tempEndXLocation,
+            );
+            const endXLocation = Math.max(tempStartXLocation, tempEndXLocation);
+
+            let startY = Number.MAX_VALUE;
+            let endY = Number.MIN_VALUE;
+
+            for (const items of fibLineData) {
+                for (const item of items) {
+                    startY = Math.min(startY, item.y);
+                    endY = Math.max(endY, item.y);
+                }
+            }
+
+            startY = data[0].denomInBase === denomInBase ? startY : 1 / startY;
+            endY = data[0].denomInBase === denomInBase ? endY : 1 / endY;
+
+            const tempStartYLocation = scaleData.yScale(startY);
+            const tempEndYLocation = scaleData.yScale(endY);
+
+            const startYLocation = Math.min(
+                tempStartYLocation,
+                tempEndYLocation,
+            );
+            const endYLocation = Math.max(tempStartYLocation, tempEndYLocation);
+
+            const isIncludeX = startXLocation < mouseX && mouseX < endXLocation;
+
+            const isIncludeY = startYLocation < mouseY && mouseY < endYLocation;
+
+            return isIncludeX && isIncludeY;
+        }
+    }
+
     const drawnShapesHoverStatus = (mouseX: number, mouseY: number) => {
         let resElement = undefined;
 
@@ -4429,30 +4495,29 @@ export default function Chart(props: propsIF) {
                         : element.pool.tokenA);
 
             if (isShapeInCurrentPool) {
-                if (
-                    element.type === 'Brush' ||
-                    element.type === 'Angle' ||
-                    element.type === 'FibRetracement'
-                ) {
-                    const lineData: Array<lineData[]> = [];
-                    lineData.push(element.data);
+                if (element.type === 'FibRetracement') {
+                    const data = structuredClone(element.data);
 
-                    if (element.type === 'FibRetracement') {
-                        const data = structuredClone(element.data);
+                    if (element.reverse) {
+                        [data[0], data[1]] = [data[1], data[0]];
+                    }
 
-                        if (element.reverse) {
-                            [data[0], data[1]] = [data[1], data[0]];
-                        }
-
-                        const fibLineData = calculateFibRetracement(
+                    if (
+                        checkFibonacciLocation(
                             data,
                             element.extraData,
-                        );
-
-                        fibLineData.forEach((fibData) =>
-                            lineData.push(fibData),
-                        );
+                            mouseX,
+                            mouseY,
+                            denomInBase,
+                        )
+                    ) {
+                        resElement = element;
                     }
+                }
+
+                if (element.type === 'Brush' || element.type === 'Angle') {
+                    const lineData: Array<lineData[]> = [];
+                    lineData.push(element.data);
 
                     lineData.forEach((line) => {
                         if (
@@ -5144,6 +5209,7 @@ export default function Chart(props: propsIF) {
             const annotationLineSeries = createAnnotationLineSeries(
                 scaleData?.xScale.copy(),
                 scaleData?.yScale,
+                denomInBase,
             );
 
             annotationLineSeries.decorate(
@@ -5409,6 +5475,7 @@ export default function Chart(props: propsIF) {
                                 isChartZoom={isChartZoom}
                                 lastCandleData={lastCandleData}
                                 firstCandleData={firstCandleData}
+                                setIsDragActive={setIsDragActive}
                             />
                         )}
                         <YAxisCanvas {...yAxisCanvasProps} />
