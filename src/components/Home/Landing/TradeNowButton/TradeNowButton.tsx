@@ -22,6 +22,7 @@ export default function TradeNowButton(props: propsIF) {
             tabIndex={0}
             aria-label='Go to trade page button'
             inNav={inNav}
+            style={{ zIndex: '1' }}
         >
             <FlexContainer
                 fullHeight

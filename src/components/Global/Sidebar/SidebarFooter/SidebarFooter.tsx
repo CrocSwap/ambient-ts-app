@@ -10,10 +10,11 @@ import { chainNumToString } from '../../../../ambient-utils/dataLayer';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { VscLayoutSidebarLeft } from 'react-icons/vsc';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 function SidebarFooter() {
     const location = useLocation();
-
+    const { appHeaderDropdown } = useContext(AppStateContext);
     const currentLocation = location.pathname;
 
     const sidebarPositionStyle =
@@ -82,12 +83,22 @@ function SidebarFooter() {
         >
             {linksData.map((link) =>
                 link.isButton ? (
-                    <span onClick={link.onClick} key={link.title}>
+                    <span
+                        onClick={() => {
+                            link.onClick();
+                            appHeaderDropdown.setIsActive(false);
+                        }}
+                        key={link.title}
+                    >
                         <link.icon size={18} color='var(--text-highlight)' />
                         <p>{link.title}</p>
                     </span>
                 ) : link.destination ? (
-                    <Link to={link.destination} key={link.destination}>
+                    <Link
+                        to={link.destination}
+                        key={link.destination}
+                        onClick={() => appHeaderDropdown.setIsActive(false)}
+                    >
                         <link.icon
                             size={18}
                             color={
