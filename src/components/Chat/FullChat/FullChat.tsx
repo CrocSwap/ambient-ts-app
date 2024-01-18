@@ -643,7 +643,7 @@ function FullChat(props: FullChatPropsIF) {
                 className={styles.active_channel_dropdown}
                 onClick={() => setShowChannelsDropdown(!showChannelsDropdown)}
             >
-                {readableRoomName}
+                {readableRoomName}__
             </button>
             {showChannelsDropdown && (
                 <div
