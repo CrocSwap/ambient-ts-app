@@ -50,9 +50,11 @@ function SwapExtraInfo(props: propsIF) {
 
     const finalPriceString = getFormattedNumber({ value: finalPriceWithDenom });
 
-    const priceImpactNum = !priceImpact?.percentChange
-        ? undefined
-        : Math.abs(priceImpact.percentChange) * 100;
+    const priceImpactNum =
+        !priceImpact?.percentChange ||
+        Math.abs(priceImpact?.percentChange) > 100
+            ? undefined
+            : Math.abs(priceImpact.percentChange) * 100;
 
     const extraInfo = [
         {
