@@ -5,6 +5,7 @@ interface MentionAutoCompleteProps {
     userList: User[];
     selectedUser: User | null;
     active: boolean;
+    userPickerForMention: (user: User) => void;
     queryStr?: string;
 }
 
@@ -22,6 +23,7 @@ export default function MentionAutoComplete(props: MentionAutoCompleteProps) {
                                 ? styles.ment_autocomp_user_selected
                                 : ''
                         }`}
+                        onClick={() => props.userPickerForMention(user)}
                     >
                         {getUserLabel(user)}
                     </div>

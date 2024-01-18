@@ -852,6 +852,7 @@
 .mentioned_name_token{
     font-weight: bold;
     cursor: pointer;
+    color: #7371FC;
 }
 
 .vrf_msg_dbg{

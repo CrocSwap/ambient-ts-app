@@ -184,6 +184,18 @@ export default function MessageInput(props: MessageInputProps) {
         }
     };
 
+    const userPickerForMention = (possibleMentUser: User) => {
+        setMentUser(possibleMentUser);
+
+        const reg = /@([^\s]*)/g;
+        const newMessage = message.replace(
+            reg,
+            '@' + getUserLabel(possibleMentUser) + ' ',
+        );
+        setMessage(newMessage);
+        setMentPanelActive(false);
+    };
+
     const handleInputChange = (e: any) => {
         const newMessage = e.target.value;
         setMessage(newMessage);
@@ -254,15 +266,9 @@ export default function MessageInput(props: MessageInputProps) {
                 }
                 // assign user for ment
                 else {
-                    setMentUser(possibleMentUser);
-
-                    const reg = /@([^\s]*)/g;
-                    const newMessage = message.replace(
-                        reg,
-                        '@' + getUserLabel(possibleMentUser) + ' ',
-                    );
-                    setMessage(newMessage);
-                    setMentPanelActive(false);
+                    if (possibleMentUser != null) {
+                        userPickerForMention(possibleMentUser);
+                    }
                 }
             }
         } else if (
@@ -448,6 +454,7 @@ export default function MessageInput(props: MessageInputProps) {
             active={mentPanelActive}
             queryStr={mentPanelQueryStr}
             selectedUser={possibleMentUser}
+            userPickerForMention={userPickerForMention}
         />
     );
 
