@@ -73,7 +73,7 @@ function TradeTabs2(props: propsIF) {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
     const { chartSettings, tradeTableState } = useContext(ChartContext);
-    const { setChangesByUser } = useContext(GraphDataContext);
+    const { setTransactionsByUser } = useContext(GraphDataContext);
     const candleTime = chartSettings.candleTime.global;
 
     const {
@@ -101,10 +101,10 @@ function TradeTabs2(props: propsIF) {
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     const { isUserConnected, userAddress } = useContext(UserDataContext);
-    const { positionsByUser, limitOrdersByUser, changesByUser } =
+    const { positionsByUser, limitOrdersByUser, transactionsByUser } =
         useContext(GraphDataContext);
 
-    const userChanges = changesByUser?.changes;
+    const userChanges = transactionsByUser?.changes;
     const userLimitOrders = limitOrdersByUser?.limitOrders;
     const userPositions = positionsByUser?.positions;
 
@@ -279,7 +279,7 @@ function TradeTabs2(props: propsIF) {
                 })
                     .then((updatedTransactions) => {
                         if (updatedTransactions) {
-                            setChangesByUser({
+                            setTransactionsByUser({
                                 dataReceived: true,
                                 changes: updatedTransactions,
                             });
