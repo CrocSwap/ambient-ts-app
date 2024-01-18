@@ -70,6 +70,7 @@
         position: fixed;
         max-height: calc(100dvh - 8.7rem);
         bottom: 8.7rem;
+        z-index: 9999;
     }
     
     .ment_autocomp_wrapper_active{
