@@ -41,7 +41,7 @@ import { TradeDataContext } from '../../contexts/TradeDataContext';
 import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
 import { PoolContext } from '../../contexts/PoolContext';
 import { MdAutoGraph } from 'react-icons/md';
-import Toolbar from '../Chart/Draw/Toolbar/Toolbar';
+import ChartToolbar from '../Chart/Draw/Toolbar/Toolbar';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -251,6 +251,8 @@ function Trade() {
                     />
                 </ContentContainer>
             )}
+
+            {!isChartLoading && <ChartToolbar />}
         </MainSection>
     );
 
@@ -368,9 +370,8 @@ function Trade() {
                         }}
                     />
                 </FlexContainer>
+                {!isChartLoading && <ChartToolbar />}
             </MainSection>
-
-            <Toolbar />
         </>
     );
 }

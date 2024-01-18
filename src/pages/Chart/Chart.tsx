@@ -150,23 +150,7 @@ interface propsIF {
     unparsedData: CandlesByPoolAndDurationIF;
     prevPeriod: number;
     candleTimeInSeconds: number;
-    undo: () => void;
-    redo: () => void;
-    drawnShapeHistory: drawDataHistory[];
-    setDrawnShapeHistory: React.Dispatch<
-        React.SetStateAction<drawDataHistory[]>
-    >;
-    deleteItem: (item: drawDataHistory) => void;
     updateURL: (changes: updatesIF) => void;
-    addDrawActionStack: (
-        item: drawDataHistory,
-        isNewShape: boolean,
-        type: string,
-    ) => void;
-    drawActionStack: Map<actionKeyIF, Array<actionStackIF>>;
-    undoStack: Map<actionKeyIF, Array<actionStackIF>>;
-    deleteAllShapes: () => void;
-    actionKey: actionKeyIF;
 }
 
 export default function Chart(props: propsIF) {
@@ -191,15 +175,15 @@ export default function Chart(props: propsIF) {
         unparsedData,
         prevPeriod,
         candleTimeInSeconds,
-        undo,
-        redo,
-        drawnShapeHistory,
-        setDrawnShapeHistory,
-        deleteItem,
+        // undo,
+        // redo,
+        // drawnShapeHistory,
+        // setDrawnShapeHistory,
+        // deleteItem,
         updateURL,
-        addDrawActionStack,
-        drawActionStack,
-        undoStack,
+        // addDrawActionStack,
+        // drawActionStack,
+        // undoStack,
     } = props;
 
     const {
@@ -215,10 +199,20 @@ export default function Chart(props: propsIF) {
         setActiveDrawingType,
         selectedDrawnShape,
         setSelectedDrawnShape,
-        setChartContainerHeight,
+        // setChartContainerHeight,
+        undoRedoOptions: {
+            drawnShapeHistory,
+            setDrawnShapeHistory,
+            undo,
+            redo,
+            drawActionStack,
+            undoStack,
+            addDrawActionStack,
+            deleteItem,
+        },
+        isMagnetActiveLocal,
+        setChartContainerOptions,
     } = useContext(ChartContext);
-
-    const [isMagnetActiveLocal] = useState(isMagnetActive.value);
 
     const chainId = chainData.chainId;
     const { setCandleDomains, setCandleScale, timeOfEndCandle } =
@@ -2643,7 +2637,8 @@ export default function Chart(props: propsIF) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const resizeObserver = new ResizeObserver((result: any) => {
                 const height = result[0].contentRect.height;
-                setChartContainerHeight(height);
+                const chartRect = canvasDiv.node().getBoundingClientRect();
+                setChartContainerOptions(chartRect);
                 setD3ContainerHeight(height);
             });
 

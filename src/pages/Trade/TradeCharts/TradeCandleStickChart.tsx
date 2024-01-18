@@ -892,17 +892,7 @@ function TradeCandleStickChart(props: propsIF) {
                         liquidityDepthScale={liquidityDepthScale}
                         candleTime={chartSettings.candleTime.global}
                         unparsedData={candleData}
-                        undo={undo}
-                        redo={redo}
-                        drawnShapeHistory={drawnShapeHistory}
-                        setDrawnShapeHistory={setDrawnShapeHistory}
-                        deleteItem={deleteItem}
                         updateURL={updateURL}
-                        addDrawActionStack={addDrawActionStack}
-                        drawActionStack={drawActionStack}
-                        undoStack={undoStack}
-                        deleteAllShapes={deleteAllShapes}
-                        actionKey={actionKey}
                     />
                 ) : (
                     <Spinner size={100} bg='var(--dark2)' centered />

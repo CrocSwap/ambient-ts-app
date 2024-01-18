@@ -53,7 +53,7 @@ interface undoRedoButtonList {
     description: string;
 }
 
-function Toolbar() {
+function ChartToolbar() {
     const mobileView = useMediaQuery('(max-width: 600px)');
 
     const {
@@ -73,7 +73,9 @@ function Toolbar() {
         activeDrawingType,
         setActiveDrawingType,
         setSelectedDrawnShape,
-        chartContainerHeight,
+        chartContainerOptions,
+        isChartHeightMinimum,
+        setIsMagnetActiveLocal,
     } = useContext(ChartContext);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -174,13 +176,10 @@ function Toolbar() {
         },
     ];
 
-    useEffect(() => {
-        console.log('isMagnetActive.value', isMagnetActive.value);
-    }, [isMagnetActive.value]);
-
     function handleActivateIndicator(item: IconList) {
         if (item.label === 'magnet') {
             setIsMagnetActive({ value: !isMagnetActive.value });
+            setIsMagnetActiveLocal(!isMagnetActive.value);
         }
     }
 
@@ -232,7 +231,7 @@ function Toolbar() {
         </ArrowContainerContainer>
     );
 
-    const downScroll = (
+    const downScroll = chartContainerOptions && (
         <ArrowContainerContainer
             onClick={() => handleScroll('down')}
             width={
@@ -241,7 +240,7 @@ function Toolbar() {
                     : 'auto'
             }
             style={{
-                top: chartContainerHeight - xAxisHeightPixel + 'px',
+                top: chartContainerOptions.height - xAxisHeightPixel + 'px',
             }}
         >
             <ArrowContainer degree={135} style={{ marginTop: '3px' }} />
@@ -264,9 +263,11 @@ function Toolbar() {
         }
     };
 
-    return (
+    return !isChartHeightMinimum && chartContainerOptions ? (
         <ToolbarContainer
             isActive={isToolbarOpen}
+            isMobile={mobileView}
+            marginTopValue={chartContainerOptions.top - 57}
             id='toolbar_container'
             ref={toolbarRef}
             backgroundColor={mobileView ? 'var(--dark1)' : 'var(--dark2)'}
@@ -277,7 +278,7 @@ function Toolbar() {
                 <ScrollableDiv
                     ref={scrollContainerRef}
                     height={
-                        chartContainerHeight - (xAxisHeightPixel - 2) + 'px'
+                        chartContainerOptions.height - xAxisHeightPixel + 'px'
                     }
                     isHover={hoveredTool !== undefined}
                 >
@@ -472,7 +473,9 @@ function Toolbar() {
                 </DividerButton>
             </DividerContainer>
         </ToolbarContainer>
+    ) : (
+        <></>
     );
 }
 
-export default Toolbar;
+export default ChartToolbar;

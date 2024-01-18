@@ -76,9 +76,11 @@ interface ChartContextIF {
     setSelectedDrawnShape: React.Dispatch<
         SetStateAction<selectedDrawnData | undefined>
     >;
-
-    chartContainerHeight: number;
-    setChartContainerHeight: React.Dispatch<SetStateAction<number>>;
+    chartContainerOptions: any;
+    setChartContainerOptions: React.Dispatch<SetStateAction<any>>;
+    isChartHeightMinimum: boolean;
+    isMagnetActiveLocal: boolean;
+    setIsMagnetActiveLocal: React.Dispatch<SetStateAction<boolean>>;
 }
 
 export const ChartContext = createContext<ChartContextIF>({} as ChartContextIF);
@@ -108,6 +110,10 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         value: chartAnnotations?.isMagnetActive ?? false,
     });
 
+    const [isMagnetActiveLocal, setIsMagnetActiveLocal] = useState(
+        isMagnetActive.value,
+    );
+
     const { isDenomBase, isTokenABase } = useContext(TradeDataContext);
     const toolbarRef = useRef<HTMLDivElement | null>(null);
 
@@ -121,7 +127,10 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         selectedDrawnData | undefined
     >(undefined);
 
-    const [chartContainerHeight, setChartContainerHeight] = useState(0);
+    const [chartContainerOptions, setChartContainerOptions] = useState();
+
+    const [isChartHeightMinimum, setIsChartHeightMinimum] = useState(false);
+
     const [chartHeights, setChartHeights] = useState<{
         current: number;
         saved: number;
@@ -218,9 +227,16 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         setActiveDrawingType,
         selectedDrawnShape,
         setSelectedDrawnShape,
-        chartContainerHeight,
-        setChartContainerHeight,
+        chartContainerOptions,
+        setChartContainerOptions,
+        isChartHeightMinimum,
+        isMagnetActiveLocal,
+        setIsMagnetActiveLocal,
     };
+
+    useEffect(() => {
+        setIsChartHeightMinimum(chartHeights.current <= CHART_MIN_HEIGHT);
+    }, [chartHeights.current]);
 
     useEffect(() => {
         if (!currentLocation.startsWith('/trade')) {
