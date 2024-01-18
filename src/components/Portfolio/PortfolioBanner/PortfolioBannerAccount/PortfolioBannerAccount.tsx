@@ -1,6 +1,6 @@
 // import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 interface IPortfolioBannerAccountPropsIF {
     ensName: string;
     resolvedAddress: string;
@@ -14,11 +14,13 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { FlexContainer } from '../../../../styled/Common';
 import { PortfolioBannerMainContainer } from '../../../../styled/Components/Portfolio';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import NFTBannerAccount from './NFTBannerAccount';
 
 export default function PortfolioBannerAccount(
     props: IPortfolioBannerAccountPropsIF,
 ) {
     const [showAccountDetails, setShowAccountDetails] = useState(false);
+    const [showNFTPage, setShowNFTPage] = useState(false);
 
     const {
         ensName,
@@ -80,6 +82,7 @@ export default function PortfolioBannerAccount(
     return (
         <PortfolioBannerMainContainer
             animate={showAccountDetails ? 'open' : 'closed'}
+            onClick={() => setShowNFTPage(!showNFTPage)}
         >
             <FlexContainer
                 alignItems='flex-end'
@@ -87,7 +90,14 @@ export default function PortfolioBannerAccount(
                 gap={22}
                 onClick={() => setShowAccountDetails(!showAccountDetails)}
             >
-                {props.jazziconsToDisplay}
+                <div
+                    onClick={(event) => {
+                        event.stopPropagation();
+                        setShowNFTPage(!showNFTPage);
+                    }}
+                >
+                    {props.jazziconsToDisplay}
+                </div>
 
                 <FlexContainer flexDirection='column'>
                     <FlexContainer
@@ -123,6 +133,8 @@ export default function PortfolioBannerAccount(
                     </FlexContainer>
                 </FlexContainer>
             </FlexContainer>
+
+            {showNFTPage && <NFTBannerAccount></NFTBannerAccount>}
         </PortfolioBannerMainContainer>
     );
 }

@@ -2,6 +2,18 @@ import React, { createContext, useContext, useEffect } from 'react';
 import { TokenIF } from '../ambient-utils/types';
 import { UserDataContext } from './UserDataContext';
 
+export interface NftTokenContractBalanceItemIF {
+    balance: any;
+    balance24h: any;
+    contractAddress: string;
+    contractName: string;
+    contractTickerSymbol: string;
+    isSpam: boolean;
+    lastTransferedAt: any;
+    nftData: any;
+    supportsErc: Array<string>;
+    type: string;
+}
 interface TokenBalanceContextIF {
     tokenBalances: TokenIF[] | undefined;
     resetTokenBalances: () => void;
@@ -12,6 +24,10 @@ interface TokenBalanceContextIF {
     }) => void;
     setTokenBalances: React.Dispatch<
         React.SetStateAction<TokenIF[] | undefined>
+    >;
+    NFTData: NftTokenContractBalanceItemIF[] | undefined;
+    setNFTData: React.Dispatch<
+        React.SetStateAction<NftTokenContractBalanceItemIF[] | undefined>
     >;
 }
 
@@ -24,6 +40,10 @@ export const TokenBalanceContextProvider = (props: {
 }) => {
     const [tokenBalances, setTokenBalances] = React.useState<
         TokenIF[] | undefined
+    >(undefined);
+
+    const [NFTData, setNFTData] = React.useState<
+        NftTokenContractBalanceItemIF[] | undefined
     >(undefined);
 
     const { userAddress, isUserConnected } = useContext(UserDataContext);
@@ -69,6 +89,8 @@ export const TokenBalanceContextProvider = (props: {
         resetTokenBalances,
         setTokenBalance,
         setTokenBalances,
+        setNFTData,
+        NFTData,
     };
 
     return (

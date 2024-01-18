@@ -15,7 +15,7 @@ export interface IDepositedTokenBalance {
     balance: string;
 }
 
-const COVALENT_CHAIN_IDS = {
+export const COVALENT_CHAIN_IDS = {
     '0x1': 'eth-mainnet',
     '0x5': 'eth-goerli',
     '066eed': 'arbitrum-goerli',

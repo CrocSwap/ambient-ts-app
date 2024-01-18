@@ -19,7 +19,10 @@ import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
 import { Client } from '@covalenthq/client-sdk';
 import { UserDataContext } from './UserDataContext';
-import { TokenBalanceContext } from './TokenBalanceContext';
+import {
+    NftTokenContractBalanceItemIF,
+    TokenBalanceContext,
+} from './TokenBalanceContext';
 import { fetchBlockNumber } from '../ambient-utils/api';
 
 interface ChainDataContextIF {
@@ -37,11 +40,11 @@ export const ChainDataContext = createContext<ChainDataContextIF>(
 export const ChainDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const { setTokenBalances } = useContext(TokenBalanceContext);
+    const { setTokenBalances, setNFTData } = useContext(TokenBalanceContext);
 
     const { chainData, activeNetwork, crocEnv, provider } =
         useContext(CrocEnvContext);
-    const { cachedFetchTokenBalances, cachedTokenDetails } =
+    const { cachedFetchTokenBalances, cachedTokenDetails, cachedFetchNFT } =
         useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
 
@@ -134,6 +137,59 @@ export const ChainDataContextProvider = (props: {
 
     // used to trigger token balance refreshes every 5 minutes
     const everyFiveMinutes = Math.floor(Date.now() / 300000);
+
+    useEffect(() => {
+        (async () => {
+            if (
+                crocEnv &&
+                isUserConnected &&
+                userAddress &&
+                chainData.chainId &&
+                client
+            ) {
+                try {
+                    const NFTData = await cachedFetchNFT(
+                        userAddress,
+                        chainData.chainId,
+                        crocEnv,
+                        client,
+                    );
+
+                    const parsedNftData: NftTokenContractBalanceItemIF[] = [];
+
+                    NFTData.forEach((element: any) => {
+                        const item = {
+                            balance: element.balance,
+                            balance24h: element.balance_24h,
+                            contractAddress: element.contract_address,
+                            contractName: element.contract_name,
+                            contractTickerSymbol:
+                                element.contract_ticker_symbol,
+                            isSpam: element.is_spam,
+                            lastTransferedAt: element.last_transfered_at,
+                            nftData: element.nft_data,
+                            supportsErc: element.supports_erc,
+                            type: element.type,
+                        };
+
+                        parsedNftData.push(item);
+                    });
+
+                    setNFTData(parsedNftData);
+                } catch (error) {
+                    console.error({ error });
+                }
+            }
+        })();
+    }, [
+        crocEnv,
+        isUserConnected,
+        userAddress,
+        chainData.chainId,
+        everyFiveMinutes,
+        client !== undefined,
+        activeNetwork.graphCacheUrl,
+    ]);
 
     useEffect(() => {
         (async () => {
