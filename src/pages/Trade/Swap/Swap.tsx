@@ -639,6 +639,7 @@ function Swap(props: propsIF) {
                     handleSetActiveContent={handleSetActiveContent}
                     showStepperComponent={showStepperComponent}
                     setShowStepperComponent={setShowStepperComponent}
+                    priceImpactWarning={priceImpactWarning}
                 />
             }
             button={

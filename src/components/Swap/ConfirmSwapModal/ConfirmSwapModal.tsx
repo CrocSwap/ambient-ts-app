@@ -36,6 +36,7 @@ interface propsIF {
     handleSetActiveContent: (newActiveContent: string) => void;
     showStepperComponent: boolean;
     setShowStepperComponent: React.Dispatch<React.SetStateAction<boolean>>;
+    priceImpactWarning?: JSX.Element | undefined;
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
@@ -63,6 +64,7 @@ export default function ConfirmSwapModal(props: propsIF) {
         handleSetActiveContent,
         showStepperComponent,
         setShowStepperComponent,
+        priceImpactWarning,
     } = props;
 
     const { pool } = useContext(PoolContext);
@@ -251,6 +253,7 @@ export default function ConfirmSwapModal(props: propsIF) {
             handleSetActiveContent={handleSetActiveContent}
             showStepperComponent={showStepperComponent}
             setShowStepperComponent={setShowStepperComponent}
+            priceImpactWarning={priceImpactWarning}
         />
     );
 }

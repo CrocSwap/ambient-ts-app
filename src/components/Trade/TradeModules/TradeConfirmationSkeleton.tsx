@@ -77,7 +77,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         minPrice,
         maxPrice,
         fillEnd,
-        // priceImpactWarning,
+        priceImpactWarning,
     } = props;
 
     const {
@@ -259,6 +259,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
             height='100%'
         >
             {!showStepperComponent && confirmationContent}
+            {priceImpactWarning}
             {/* <footer style={{marginTop: 'auto'}}> */}
 
             {!showConfirmation ? (
