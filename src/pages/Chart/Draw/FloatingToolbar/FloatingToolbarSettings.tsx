@@ -85,6 +85,8 @@ interface FloatingToolbarSettingsProps {
     floatingToolbarHeight: number;
     settingsDivHeight: number;
     drawnShapeHistory: drawDataHistory[];
+    isDropdownHeightCalculated: boolean;
+    divTop: number;
 }
 
 function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
@@ -105,6 +107,8 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
         floatingToolbarHeight,
         settingsDivHeight,
         drawnShapeHistory,
+        isDropdownHeightCalculated,
+        divTop,
     } = props;
 
     // disabled options
@@ -198,12 +202,16 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
     };
 
     useEffect(() => {
-        if (Math.abs(floatingToolbarHeight - settingsDivHeight) < 90) {
+        const screenHeight = window.innerHeight;
+        const myFloatingDivHeight = settingsDivHeight + floatingToolbarHeight;
+        const diffBottom = screenHeight - (divTop + myFloatingDivHeight);
+        if (diffBottom < 100) {
             setCheckNearestWindow(true);
         } else {
             setCheckNearestWindow(false);
         }
     }, [
+        divTop,
         isLabelPlacementOptionTabActive,
         isLabelAlignmentOptionTabActive,
         floatingToolbarHeight,
@@ -389,17 +397,12 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
         <>
             <FloatingToolbarSettingsContainer
                 onClick={() => closeAllOptions('none')}
-                style={
-                    isNearestWindow
-                        ? {
-                              position: 'fixed',
-                              width: 'auto',
-                              minWidth: '280px',
-                              bottom: floatingToolbarHeight + 4 + 'px',
-                          }
-                        : {}
-                }
-                id='floatingToolbarOptionsId'
+                style={{
+                    visibility: isDropdownHeightCalculated
+                        ? 'visible'
+                        : 'hidden',
+                    minWidth: '280px',
+                }}
             >
                 {selectedDrawnShape && (
                     <LineContainer>
@@ -967,11 +970,9 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                 {isLabelPlacementOptionTabActive && (
                                     <DropDownListContainer
                                         style={{
-                                            bottom:
-                                                isNearestWindow ||
-                                                checkNearestWindow
-                                                    ? '30px'
-                                                    : '',
+                                            bottom: checkNearestWindow
+                                                ? '30px'
+                                                : '',
                                         }}
                                     >
                                         <DropDownList>

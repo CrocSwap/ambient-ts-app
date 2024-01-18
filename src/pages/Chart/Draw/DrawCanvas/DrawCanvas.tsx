@@ -158,6 +158,7 @@ function DrawCanvas(props: DrawCanvasProps) {
             const annotationLineSeries = createAnnotationLineSeries(
                 scaleData?.xScale.copy(),
                 scaleData?.yScale,
+                denomInBase,
             );
 
             annotationLineSeries.decorate(
