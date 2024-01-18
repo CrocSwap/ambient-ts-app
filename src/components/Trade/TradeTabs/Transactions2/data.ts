@@ -17,9 +17,22 @@ export const infoCells: columnSlugsType[] = [
 export const actionButtons: columnSlugsType[] = [
     'editBtn',
     'removeBtn',
-    'copyBtn',
-    'walletBtn',
     'overflowBtn',
+];
+
+export const priorityInDOM: columnSlugsType[] = [
+    'timeStamp',
+    'txWallet',
+    'txPrice',
+    'txType',
+    'overflowBtn',
+    'txValue',
+    'txId',
+    'txSide',
+    'txBase',
+    'txQuote',
+    'editBtn',
+    'removeBtn',
 ];
 
 // left-to-right DOM sequence for overflow menu buttons

@@ -24,7 +24,6 @@ export default function TxButton(props: propsIF) {
         onMenuToggle ? onMenuToggle() : alert(iconName);
     };
 
-    false && width;
     let icon: JSX.Element;
     switch (iconName) {
         case 'overflowBtn':
@@ -65,7 +64,7 @@ export default function TxButton(props: propsIF) {
     // top-level wrapper allows the button to be removed from the DOM but space maintained
     // middle wrapper is how we get the icon
     return (
-        <div className={styles.tx_button_wrapper}>
+        <div style={{ width: width }} className={styles.tx_button_wrapper}>
             {hide || (
                 <div className={styles.tx_button} onClick={handleButtonClick}>
                     {icon}

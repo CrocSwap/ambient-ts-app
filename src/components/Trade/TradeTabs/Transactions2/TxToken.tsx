@@ -50,9 +50,13 @@ export default function TxToken(props: propsIF) {
         flowDisplay !== undefined ? `${flowDisplay || '0'}` : '…';
 
     return (
-        <div data-label={tx.baseSymbol} className='base_color' tabIndex={0}>
+        <div
+            style={{ width: width }}
+            data-label={tx.baseSymbol}
+            className='base_color'
+            tabIndex={0}
+        >
             <FlexContainer
-                width={width.toString()}
                 alignItems='center'
                 justifyContent='flex-end'
                 gap={4}

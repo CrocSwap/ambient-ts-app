@@ -5,6 +5,7 @@ import { CandleDataIF, TransactionIF } from '../../../../ambient-utils/types';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import TxHeader from './TxHeader';
+import { priorityInDOM } from './data';
 
 // columns to display in table and px width to alot for each
 const columnMetaInfo = {
@@ -125,32 +126,7 @@ export default function Transactions2(props: propsIF) {
     // list of columns to display in the DOM as determined by priority and space available
     // this is recalculated every time the elem changes width, but later memoization prevents
     // ... unnecessary re-renders from happening
-
-    // array to define column priority in the DOM, columns listed last will be removed from the
-    // ... DOM first when space is limited
-    const priority: columnSlugsType[] = [
-        'timeStamp',
-        'txPrice',
-        'txId',
-        'txWallet',
-        'txSide',
-        'txType',
-        'txValue',
-        'txBase',
-        'txQuote',
-        'overflowBtn',
-        'editBtn',
-        'harvestBtn',
-        'addBtn',
-        'leafBtn',
-        'removeBtn',
-        'shareBtn',
-        'exportBtn',
-        'walletBtn',
-        'copyBtn',
-        'downloadBtn',
-    ];
-    const containerWidthRef = useRef(1000);
+    const containerWidthRef = useRef(0);
     const getContainerWidth = () => containerWidthRef.current;
     const setContainerWidth = (newWidth: number) => {
         containerWidthRef.current = newWidth;
@@ -179,8 +155,8 @@ export default function Transactions2(props: propsIF) {
         const columnList: [columnSlugsType, number, string][] = [];
         let totalWidthNeeded = 0;
 
-        for (let i = 0; i < priority.length; i++) {
-            const columnId: columnSlugsType = priority[i];
+        for (let i = 0; i < priorityInDOM.length; i++) {
+            const columnId: columnSlugsType = priorityInDOM[i];
             const columnSize: number = columnMetaInfo[columnId].width;
             const columnTitle: string = columnMetaInfo[columnId].readable;
 
@@ -237,6 +213,13 @@ export default function Transactions2(props: propsIF) {
             }),
         [transactionsData.length, columnsToRender.length],
     );
+
+    console.log(columnsToRender);
+    console.log({
+        totWidth: getContainerWidth(),
+        widthUsed: columnsToRender.map(col => col[1]).reduce((sum, num) => sum + num, 0)
+    })
+
     return (
         <ol className={styles.tx_ol} ref={containerRef}>
             <TxHeader activeColumns={columnsToRender} />

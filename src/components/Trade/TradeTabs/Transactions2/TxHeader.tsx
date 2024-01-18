@@ -15,7 +15,6 @@ export default function TxHeader(props: propsIF) {
         <header className={styles.header_row}>
             {
                 activeColumns
-                .filter((col) => col[2].length)
                 .sort((a, b) => allColumns.indexOf(a[0]) - allColumns.indexOf(b[0]))
                 .map(
                     (header) => {
