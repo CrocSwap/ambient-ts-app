@@ -10,7 +10,7 @@ _Closes #0000_
 - [ ] Did I request feedback from a team member prior to the merge? 
 - [ ] Does my code following the style guide at `docs/CODING-STYLE.md`?
 
-### Instructions for Reviewer
+### Instructions for Reviewers
 **Functionalities or workflows that should specifically be tested.**
 
 1.
