@@ -73,11 +73,11 @@ function OrderHistortyDisplay(props: OrderHistortyDisplayPropsIF) {
             selected: showLiquidity,
             action: handleLiquidityToggle,
         },
-        {
-            name: 'Historical',
-            selected: showHistorical,
-            action: handleHistoricalToggle,
-        },
+        // {
+        //     name: 'Historical',
+        //     selected: showHistorical,
+        //     action: handleHistoricalToggle,
+        // },
     ];
 
     const wrapperStyle = showOrderHistortyDisplayDropdown
@@ -107,13 +107,10 @@ function OrderHistortyDisplay(props: OrderHistortyDisplayPropsIF) {
                 tabIndex={0}
                 aria-label='Open volume and tvl dropdown.'
             >
-                {showSwap
-                    ? 'Buys/Sells'
-                    : showLiquidity
-                    ? 'Liquidity'
-                    : showHistorical
+                {showSwap ? 'Buys/Sells' : showLiquidity ? 'Liquidity' : ''}
+                {/* showHistorical
                     ? 'Historical'
-                    : ''}
+                    : ''} */}
             </button>
 
             <div className={wrapperStyle}>

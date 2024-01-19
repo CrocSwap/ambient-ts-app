@@ -71,6 +71,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
     }
 
     useEffect(() => {
+        console.log(userTransactionData);
         if (userTransactionData) {
             const domainRight = d3.max(userTransactionData, (data) => {
                 if (data.entityType === 'swap') return data.totalValueUSD;
