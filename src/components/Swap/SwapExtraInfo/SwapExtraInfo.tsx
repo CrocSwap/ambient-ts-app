@@ -52,7 +52,8 @@ function SwapExtraInfo(props: propsIF) {
 
     const priceImpactNum =
         !priceImpact?.percentChange ||
-        Math.abs(priceImpact?.percentChange) > 0.9999
+        priceImpact.percentChange < -0.9999 ||
+        priceImpact.percentChange > 2
             ? undefined
             : Math.abs(priceImpact.percentChange) * 100;
 
