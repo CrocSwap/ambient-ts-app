@@ -2051,10 +2051,10 @@ export default function Chart(props: propsIF) {
                 ? liqMaxActiveLiq - eventPointX > 10
                 : false;
 
-            return isHoverLiqidite;
+            return isHoverLiqidite && !isConfirmationActive;
         }
 
-        return true;
+        return !isConfirmationActive;
     }
     // dragLimit
     useEffect(() => {
@@ -2083,9 +2083,6 @@ export default function Chart(props: propsIF) {
         };
         const dragLimit = d3
             .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
-            .filter(() => {
-                return !isConfirmationActive;
-            })
             .filter((event) => filterDragEvent(event, rectCanvas.left))
             .on('start', (event) => {
                 // When the drag starts:
