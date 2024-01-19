@@ -63,7 +63,6 @@ import {
     calculateFibRetracementBandAreas,
     chartItemStates,
     crosshair,
-    drawDataHistory,
     fillLiqAdvanced,
     findSnapTime,
     formatTimeDifference,
@@ -102,7 +101,6 @@ import { updatesIF } from '../../utils/hooks/useUrlParams';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
-import { actionKeyIF, actionStackIF } from './ChartUtils/useUndoRedo';
 import { formatDollarAmountAxis } from '../../utils/numbers';
 import { ChartContext } from '../../contexts/ChartContext';
 import { useDrawSettings } from '../../App/hooks/useDrawSettings';
@@ -481,7 +479,9 @@ export default function Chart(props: propsIF) {
         return prev.time < current.time ? prev : current;
     });
 
-    const toolbarWidth = isToolbarOpen ? 35 : 6;
+    const toolbarWidth = isToolbarOpen
+        ? 40 - (mobileView ? 0 : 4)
+        : 9 - (mobileView ? 0 : 4);
 
     const [prevlastCandleTime, setPrevLastCandleTime] = useState<number>(
         lastCandleData.time,

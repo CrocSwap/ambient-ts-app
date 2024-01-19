@@ -76,7 +76,9 @@ interface ChartContextIF {
     setSelectedDrawnShape: React.Dispatch<
         SetStateAction<selectedDrawnData | undefined>
     >;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     chartContainerOptions: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setChartContainerOptions: React.Dispatch<SetStateAction<any>>;
     isChartHeightMinimum: boolean;
     setIsChartHeightMinimum: React.Dispatch<SetStateAction<boolean>>;

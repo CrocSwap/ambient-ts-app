@@ -34,7 +34,6 @@ import {
     scaleData,
 } from '../../Chart/ChartUtils/chartUtils';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { useUndoRedo } from '../../Chart/ChartUtils/useUndoRedo';
 import { updatesIF } from '../../../utils/hooks/useUrlParams';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
@@ -118,7 +117,6 @@ function TradeCandleStickChart(props: propsIF) {
 
     const { liquidityData: unparsedLiquidityData } =
         useContext(GraphDataContext);
-    const denominationsInBase = isDenomBase;
 
     const tokenPair = useMemo(
         () => ({
@@ -130,19 +128,6 @@ function TradeCandleStickChart(props: propsIF) {
 
     // TODO: could probably be determined from the isTokenABase in context?
     const isTokenABase = tokenPair?.dataTokenA.address === baseTokenAddress;
-
-    const {
-        undo,
-        redo,
-        drawnShapeHistory,
-        setDrawnShapeHistory,
-        deleteItem,
-        addDrawActionStack,
-        drawActionStack,
-        undoStack,
-        deleteAllShapes,
-        actionKey,
-    } = useUndoRedo(denominationsInBase, isTokenABase);
 
     const poolPriceDisplay = poolPriceWithoutDenom
         ? isDenomBase && poolPriceWithoutDenom
