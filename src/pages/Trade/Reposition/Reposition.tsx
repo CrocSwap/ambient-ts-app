@@ -15,7 +15,6 @@ import Button from '../../../components/Form/Button';
 // START: Import Other Local Files
 import styles from './Reposition.module.css';
 import { PositionIF, PositionServerIF } from '../../../ambient-utils/types';
-import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 import {
@@ -36,6 +35,7 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import {
     getPositionData,
     getFormattedNumber,
+    getPinnedPriceValuesFromTicks,
 } from '../../../ambient-utils/dataLayer';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
@@ -610,9 +610,9 @@ function Reposition() {
             target='_blank'
             rel='noreferrer'
             className={styles.view_etherscan}
-            aria-label='view on etherscan'
+            aria-label='view on block explorer'
         >
-            View on Etherscan
+            View on Block Explorer
             <FiExternalLink size={12} color='var(--text1)' />
         </a>
     );

@@ -5,6 +5,8 @@ import {
     getFormattedNumber,
     getPriceImpactString,
     isStablePair,
+    getTxReceipt,
+    performSwap,
 } from '../../../ambient-utils/dataLayer';
 import Button from '../../../components/Form/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
@@ -343,9 +345,6 @@ function Swap(props: propsIF) {
         setShowConfirmation(true);
         if (!crocEnv) return;
 
-        const sellTokenAddress = tokenA.address;
-        const buyTokenAddress = tokenB.address;
-
         const qty = isTokenAPrimary
             ? sellQtyString.replaceAll(',', '')
             : buyQtyString.replaceAll(',', '');
@@ -354,20 +353,25 @@ function Swap(props: propsIF) {
 
         let tx;
         try {
-            const plan = isQtySell
-                ? crocEnv.sell(sellTokenAddress, qty).for(buyTokenAddress, {
-                      slippage: slippageTolerancePercentage / 100,
-                  })
-                : crocEnv.buy(buyTokenAddress, qty).with(sellTokenAddress, {
-                      slippage: slippageTolerancePercentage / 100,
-                  });
-            tx = await plan.swap({
-                surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked],
+            const sellTokenAddress = isQtySell
+                ? tokenA.address
+                : tokenB.address;
+            const buyTokenAddress = isQtySell ? tokenB.address : tokenA.address;
+
+            tx = await performSwap({
+                crocEnv,
+                qty,
+                buyTokenAddress,
+                sellTokenAddress,
+                slippageTolerancePercentage,
+                isWithdrawFromDexChecked,
+                isSaveAsDexSurplusChecked,
             });
 
             setNewSwapTransactionHash(tx?.hash);
             addPendingTx(tx?.hash);
-            if (tx.hash)
+
+            if (tx.hash) {
                 addTransactionByType({
                     txHash: tx.hash,
                     txAction:
@@ -386,6 +390,7 @@ function Swap(props: propsIF) {
                         isBid: isSellTokenBase,
                     },
                 });
+            }
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
@@ -395,33 +400,36 @@ function Swap(props: propsIF) {
             setTxErrorMessage(error?.data?.message);
         }
 
-        let receipt;
-        try {
-            if (tx) receipt = await tx.wait();
-        } catch (e) {
-            const error = e as TransactionError;
-            console.error({ error });
-            // The user used "speed up" or something similar
-            // in their client, but we now have the updated info
-            if (isTransactionReplacedError(error)) {
-                IS_LOCAL_ENV && console.debug('repriced');
-                removePendingTx(error.hash);
+        if (tx) {
+            let receipt;
+            try {
+                receipt = await getTxReceipt(tx);
+            } catch (e) {
+                const error = e as TransactionError;
+                console.error({ error });
+                // The user used "speed up" or something similar
+                // in their client, but we now have the updated info
+                if (isTransactionReplacedError(error)) {
+                    IS_LOCAL_ENV && console.debug('repriced');
+                    removePendingTx(error.hash);
 
-                const newTransactionHash = error.replacement.hash;
-                addPendingTx(newTransactionHash);
+                    const newTransactionHash = error.replacement.hash;
 
-                updateTransactionHash(error.hash, error.replacement.hash);
-                setNewSwapTransactionHash(newTransactionHash);
-                IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                receipt = error.receipt;
-            } else if (isTransactionFailedError(error)) {
-                receipt = error.receipt;
+                    addPendingTx(newTransactionHash);
+                    updateTransactionHash(error.hash, error.replacement.hash);
+                    setNewSwapTransactionHash(newTransactionHash);
+
+                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
+                    receipt = error.receipt;
+                } else if (isTransactionFailedError(error)) {
+                    receipt = error.receipt;
+                }
             }
-        }
 
-        if (receipt) {
-            addReceipt(JSON.stringify(receipt));
-            removePendingTx(receipt.transactionHash);
+            if (receipt) {
+                addReceipt(JSON.stringify(receipt));
+                removePendingTx(receipt.transactionHash);
+            }
         }
     }
 
@@ -573,6 +581,7 @@ function Swap(props: propsIF) {
                         sellQtyString={sellQtyString}
                         buyQtyString={buyQtyString}
                         isTokenAPrimary={isTokenAPrimary}
+                        priceImpactWarning={priceImpactWarning}
                     />
                 ) : (
                     <></>

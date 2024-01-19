@@ -10,10 +10,17 @@ import {
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 import { GCGO_ETHEREUM_URL } from '../gcgo';
+import { Provider } from '@ethersproject/providers';
+
+const PROVIDER_KEY =
+    process.env.NODE_ENV === 'test'
+        ? process.env.PROVIDER_KEY
+        : process.env.REACT_APP_INFURA_KEY;
 
 export const ethereumMainnet: NetworkIF = {
     chainId: '0x1',
     graphCacheUrl: GCGO_ETHEREUM_URL,
+    evmRpcUrl: 'https://mainnet.infura.io/v3/' + PROVIDER_KEY,
     wagmiChain,
     shouldPollBlock: false,
     marketData: '0x1',
@@ -24,11 +31,8 @@ export const ethereumMainnet: NetworkIF = {
         new TopPool(mainnetDAI, mainnetUSDC, lookupChain('0x1').poolIndex),
         new TopPool(mainnetUSDT, mainnetUSDC, lookupChain('0x1').poolIndex),
     ],
-    getGasPriceInGwei: async () => {
-        const response = await fetch(
-            'https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=KNJM7A9ST1Q1EESYXPPQITIP7I8EFSY456',
-        );
-        const gasPrice = (await response.json()).result.ProposeGasPrice;
-        return gasPrice ? parseInt(gasPrice) : undefined;
+    getGasPriceInGwei: async (provider?: Provider) => {
+        if (!provider) return 0;
+        return (await provider.getGasPrice()).toNumber() * 1e-9;
     },
 };

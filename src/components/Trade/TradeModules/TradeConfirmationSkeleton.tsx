@@ -7,10 +7,7 @@ import Button from '../../Form/Button';
 // START: Import Other Local Files
 import { TokenIF } from '../../../ambient-utils/types';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
-import {
-    getFormattedNumber,
-    uriToHttp,
-} from '../../../ambient-utils/dataLayer';
+import { uriToHttp } from '../../../ambient-utils/dataLayer';
 import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
@@ -39,6 +36,7 @@ interface propsIF {
     transactionDetails?: React.ReactNode;
     acknowledgeUpdate?: React.ReactNode;
     extraNotes?: React.ReactNode;
+    priceImpactWarning?: JSX.Element | undefined;
 }
 
 export default function TradeConfirmationSkeleton(props: propsIF) {
@@ -58,6 +56,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         poolTokenDisplay,
         acknowledgeUpdate,
         extraNotes,
+        priceImpactWarning,
     } = props;
 
     const {
@@ -70,21 +69,11 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
     const [skipFutureConfirmation, setSkipFutureConfirmation] =
         useState<boolean>(false);
 
-    const formattedTokenAQuantity = getFormattedNumber({
-        value: tokenAQuantity ? parseFloat(tokenAQuantity) : undefined,
-        abbrevThreshold: 1000000000,
-    });
-
-    const formattedTokenBQuantity = getFormattedNumber({
-        value: tokenBQuantity ? parseFloat(tokenBQuantity) : undefined,
-        abbrevThreshold: 1000000000,
-    });
-
     const tokenDisplay = (
         <>
             <ConfirmationQuantityContainer>
                 <Text fontSize='header2' color='text1'>
-                    {formattedTokenAQuantity}
+                    {tokenAQuantity}
                 </Text>
                 <FlexContainer
                     alignItems='center'
@@ -111,7 +100,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
             </FlexContainer>
             <ConfirmationQuantityContainer>
                 <Text fontSize='header2' color='text1'>
-                    {formattedTokenBQuantity}
+                    {tokenBQuantity}
                 </Text>
                 <FlexContainer
                     alignItems='center'
@@ -155,6 +144,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                         {transactionDetails}
                     </ConfirmationDetailsContainer>
                 )}
+                {priceImpactWarning}
                 {extraNotes && extraNotes}
                 <footer>
                     {!showConfirmation ? (

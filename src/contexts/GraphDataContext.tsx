@@ -1,24 +1,20 @@
 import React, { createContext, useContext, useEffect } from 'react';
-import { fetchUserRecentChanges } from '../ambient-utils/api';
-import { getLimitOrderData, getPositionData } from '../ambient-utils/dataLayer';
+import { fetchUserRecentChanges, fetchRecords } from '../ambient-utils/api';
 import useDebounce from '../App/hooks/useDebounce';
-import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../ambient-utils/constants';
+import { IS_LOCAL_ENV } from '../ambient-utils/constants';
 import {
     TokenIF,
-    TransactionIF,
     PositionIF,
-    PositionServerIF,
     LimitOrderIF,
-    LimitOrderServerIF,
+    TransactionIF,
     LiquidityDataIF,
+    RecordType,
 } from '../ambient-utils/types';
-
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
-
 import { UserDataContext } from './UserDataContext';
 import { DataLoadingContext } from './DataLoadingContext';
 
@@ -163,15 +159,9 @@ export const GraphDataContextProvider = (props: {
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
-    const { userAddress, isUserConnected } = useContext(UserDataContext);
-
-    const userLimitOrderStatesCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/user_limit_orders?'
-        : activeNetwork.graphCacheUrl + '/user_limit_orders?';
-
-    const userPositionsCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/user_positions?'
-        : activeNetwork.graphCacheUrl + '/user_positions?';
+    const { userAddress: userDefaultAddress, isUserConnected } =
+        useContext(UserDataContext);
+    const userAddress = userDefaultAddress;
 
     const resetUserGraphData = () => {
         setPositionsByUser({
@@ -227,122 +217,70 @@ export const GraphDataContextProvider = (props: {
     const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
 
     useEffect(() => {
-        // This useEffect controls a series of other dispatches that fetch data on update of the user object
-        // user Postions, limit orders, and recent changes are all governed here
-        if (
-            isServerEnabled &&
-            isUserConnected &&
-            userAddress &&
-            crocEnv &&
-            provider &&
-            tokens.tokenUniv.length &&
-            chainData.chainId
-        ) {
-            IS_LOCAL_ENV && console.debug('fetching user positions');
-
-            try {
-                fetch(
-                    userPositionsCacheEndpoint +
-                        new URLSearchParams({
-                            user: userAddress,
-                            chainId: chainData.chainId,
-                            ensResolution: 'true',
-                            annotate: 'true',
-                            omitKnockout: 'true',
-                            addValue: 'true',
-                        }),
-                )
-                    .then((response) => response?.json())
-                    .then((json) => {
-                        // temporarily skip ENS fetch
-                        const skipENSFetch = true;
-                        const userPositions = json?.data;
-                        if (userPositions && crocEnv) {
-                            Promise.all(
-                                userPositions.map(
-                                    (position: PositionServerIF) => {
-                                        return getPositionData(
-                                            position,
-                                            tokens.tokenUniv,
-                                            crocEnv,
-                                            provider,
-                                            chainData.chainId,
-                                            lastBlockNumber,
-                                            cachedFetchTokenPrice,
-                                            cachedQuerySpotPrice,
-                                            cachedTokenDetails,
-                                            cachedEnsResolve,
-                                            skipENSFetch,
-                                        );
-                                    },
-                                ),
-                            ).then((updatedPositions) => {
-                                setPositionsByUser({
-                                    dataReceived: true,
-                                    positions: updatedPositions,
-                                }),
-                                    setDataLoadingStatus({
-                                        datasetName:
-                                            'isConnectedUserRangeDataLoading',
-                                        loadingStatus: false,
-                                    });
-                            });
-                        }
-                    })
-                    .catch(console.error);
-            } catch (error) {
-                console.error;
+        const fetchData = async () => {
+            // This useEffect controls a series of other dispatches that fetch data on update of the user object
+            // user Postions, limit orders, and recent changes are all governed here
+            if (
+                !isServerEnabled ||
+                !isUserConnected ||
+                !userAddress ||
+                !crocEnv ||
+                !provider ||
+                !tokens.tokenUniv.length ||
+                !chainData.chainId
+            ) {
+                return;
             }
-
-            IS_LOCAL_ENV && console.debug('fetching user limit orders ');
-
-            fetch(
-                userLimitOrderStatesCacheEndpoint +
-                    new URLSearchParams({
+            const recordTargets = [RecordType.Position, RecordType.LimitOrder];
+            for (let i = 0; i < recordTargets.length; i++) {
+                IS_LOCAL_ENV &&
+                    console.debug(
+                        'fetching user positions for ' + recordTargets[i],
+                    );
+                try {
+                    const updatedLedger = await fetchRecords({
+                        recordType: recordTargets[i],
                         user: userAddress,
                         chainId: chainData.chainId,
-                        ensResolution: 'true',
-                        omitEmpty: 'true',
-                    }),
-            )
-                .then((response) => response?.json())
-                .then((json) => {
-                    // temporarily skip ENS fetch
-                    const skipENSFetch = true;
-                    const userLimitOrderStates = json?.data;
-                    if (userLimitOrderStates) {
-                        Promise.all(
-                            userLimitOrderStates.map(
-                                (limitOrder: LimitOrderServerIF) => {
-                                    return getLimitOrderData(
-                                        limitOrder,
-                                        tokens.tokenUniv,
-                                        crocEnv,
-                                        provider,
-                                        chainData.chainId,
-                                        lastBlockNumber,
-                                        cachedFetchTokenPrice,
-                                        cachedQuerySpotPrice,
-                                        cachedTokenDetails,
-                                        cachedEnsResolve,
-                                        skipENSFetch,
-                                    );
-                                },
-                            ),
-                        ).then((updatedLimitOrderStates) => {
-                            setLimitOrdersByUser({
-                                dataReceived: true,
-                                limitOrders: updatedLimitOrderStates,
-                            }),
-                                setDataLoadingStatus({
-                                    datasetName:
-                                        'isConnectedUserOrderDataLoading',
-                                    loadingStatus: false,
-                                });
+                        gcUrl: activeNetwork.graphCacheUrl,
+                        provider,
+                        lastBlockNumber,
+                        tokenUniv: tokens.tokenUniv,
+                        crocEnv,
+                        cachedFetchTokenPrice,
+                        cachedQuerySpotPrice,
+                        cachedTokenDetails,
+                        cachedEnsResolve,
+                    });
+
+                    if (recordTargets[i] == RecordType.Position) {
+                        setPositionsByUser({
+                            dataReceived: true,
+                            positions: updatedLedger as PositionIF[],
                         });
+                        setDataLoadingStatus({
+                            datasetName: 'isConnectedUserRangeDataLoading',
+                            loadingStatus: false,
+                        });
+                    } else {
+                        // default user_positions
+                        setLimitOrdersByUser({
+                            dataReceived: true,
+                            limitOrders: updatedLedger as LimitOrderIF[],
+                        }),
+                            setDataLoadingStatus({
+                                datasetName: 'isConnectedUserOrderDataLoading',
+                                loadingStatus: false,
+                            });
                     }
-                })
-                .catch(console.error);
+                } catch (error) {
+                    console.error(error);
+                }
+                IS_LOCAL_ENV &&
+                    console.debug(
+                        'fetching user limit orders ' + recordTargets[i],
+                    );
+            }
 
             try {
                 fetchUserRecentChanges({
@@ -433,7 +371,8 @@ export const GraphDataContextProvider = (props: {
             } catch (error) {
                 console.error;
             }
-        }
+        };
+        fetchData();
     }, [
         isServerEnabled,
         tokens.tokenUniv.length,
