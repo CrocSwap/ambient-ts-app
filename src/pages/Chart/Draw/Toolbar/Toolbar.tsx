@@ -74,7 +74,6 @@ function ChartToolbar() {
         setActiveDrawingType,
         setSelectedDrawnShape,
         chartContainerOptions,
-        isChartHeightMinimum,
         setIsMagnetActiveLocal,
     } = useContext(ChartContext);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -263,7 +262,7 @@ function ChartToolbar() {
         }
     };
 
-    return !isChartHeightMinimum && chartContainerOptions ? (
+    return chartContainerOptions ? (
         <ToolbarContainer
             isActive={isToolbarOpen}
             isMobile={mobileView}

@@ -60,6 +60,8 @@ function Trade() {
         setChartHeight,
         canvasRef,
         tradeTableState,
+        isChartHeightMinimum,
+        setIsChartHeightMinimum,
     } = useContext(ChartContext);
 
     const isPoolInitialized = useSimulatedIsPoolInitialized();
@@ -252,7 +254,7 @@ function Trade() {
                 </ContentContainer>
             )}
 
-            {!isChartLoading && <ChartToolbar />}
+            {!isChartLoading && !isChartHeightMinimum && <ChartToolbar />}
         </MainSection>
     );
 
@@ -297,6 +299,21 @@ function Trade() {
                                 height: chartHeights.current,
                             }}
                             minHeight={4}
+                            onResize={(
+                                evt: MouseEvent | TouchEvent,
+                                dir: Direction,
+                                ref: HTMLElement,
+                                d: NumberSize,
+                            ) => {
+                                if (
+                                    chartHeights.current + d.height <
+                                    TRADE_CHART_MIN_HEIGHT
+                                ) {
+                                    setIsChartHeightMinimum(true);
+                                } else {
+                                    setIsChartHeightMinimum(false);
+                                }
+                            }}
                             onResizeStart={() => {
                                 // may be useful later
                             }}
@@ -370,7 +387,7 @@ function Trade() {
                         }}
                     />
                 </FlexContainer>
-                {!isChartLoading && <ChartToolbar />}
+                {!isChartLoading && !isChartHeightMinimum && <ChartToolbar />}
             </MainSection>
         </>
     );

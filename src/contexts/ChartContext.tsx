@@ -79,6 +79,7 @@ interface ChartContextIF {
     chartContainerOptions: any;
     setChartContainerOptions: React.Dispatch<SetStateAction<any>>;
     isChartHeightMinimum: boolean;
+    setIsChartHeightMinimum: React.Dispatch<SetStateAction<boolean>>;
     isMagnetActiveLocal: boolean;
     setIsMagnetActiveLocal: React.Dispatch<SetStateAction<boolean>>;
 }
@@ -230,6 +231,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         chartContainerOptions,
         setChartContainerOptions,
         isChartHeightMinimum,
+        setIsChartHeightMinimum,
         isMagnetActiveLocal,
         setIsMagnetActiveLocal,
     };
