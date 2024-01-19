@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useContext, memo } from 'react';
+import { MutableRefObject, useEffect, useState, useContext, memo } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { useLocation } from 'react-router-dom';
@@ -19,6 +19,7 @@ import {
     diffHashSig,
     diffHashSigScaleData,
 } from '../../../../utils/diffHashSig';
+import { xAxisHeightPixel } from '../../ChartUtils/chartConstants';
 interface xAxisIF {
     scaleData: scaleData | undefined;
     lastCrDate: number | undefined;
@@ -48,6 +49,10 @@ interface xAxisIF {
     isChartZoom: boolean;
     isToolbarOpen: boolean;
     selectedDrawnShape: selectedDrawnData | undefined;
+    toolbarWidth: number;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    d3Xaxis: MutableRefObject<any>;
+    isUpdatingShape: boolean;
 }
 
 function XAxisCanvas(props: xAxisIF) {
@@ -75,9 +80,11 @@ function XAxisCanvas(props: xAxisIF) {
         isChartZoom,
         isToolbarOpen,
         selectedDrawnShape,
+        toolbarWidth,
+        d3Xaxis,
+        isUpdatingShape,
     } = props;
 
-    const d3Xaxis = useRef<HTMLInputElement | null>(null);
     const { timeOfEndCandle } = useContext(CandleContext);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [xAxis, setXaxis] = useState<any>();
@@ -197,8 +204,8 @@ function XAxisCanvas(props: xAxisIF) {
                     if (d.date instanceof Date) {
                         context.textAlign = 'center';
                         context.textBaseline = 'top';
-                        context.fillStyle = 'rgba(189,189,189,0.8)';
-                        context.font = '50 11.425px Lexend Deca';
+                        context.fillStyle = 'rgba(240, 240, 248, 0.8)';
+                        context.font = '50 11.5px Lexend Deca';
                         context.filter = ' blur(0px)';
 
                         const formatValue = formatDateTicks(d.date, 'tick');
@@ -302,7 +309,11 @@ function XAxisCanvas(props: xAxisIF) {
 
                 context.beginPath();
 
-                if (dateCrosshair && crosshairActive !== 'none') {
+                if (
+                    dateCrosshair &&
+                    crosshairActive !== 'none' &&
+                    !isUpdatingShape
+                ) {
                     context.fillText(
                         dateCrosshair,
                         xScale(crosshairData[0].x) + column,
@@ -357,7 +368,7 @@ function XAxisCanvas(props: xAxisIF) {
                         xScale(shapeData.data[1].x) -
                         xScale(shapeData.data[0].x);
 
-                    context.fillStyle = '#7674ff3f';
+                    context.fillStyle = 'rgba(115, 113, 252, 0.1)';
                     context.fillRect(
                         xScale(shapeData.data[0].x) + column,
                         height * 0.175,
@@ -375,7 +386,8 @@ function XAxisCanvas(props: xAxisIF) {
                                     shapePoint - (_width - 15) &&
                                 xScale(crosshairData[0].x) <
                                     shapePoint + (_width - 15) &&
-                                crosshairActive !== 'none'
+                                crosshairActive !== 'none' &&
+                                !isUpdatingShape
                             ) {
                                 context.filter = ' blur(7px)';
                                 context.fillText(
@@ -387,7 +399,7 @@ function XAxisCanvas(props: xAxisIF) {
                                 const textWidth =
                                     context.measureText(point).width + 10;
 
-                                context.fillStyle = '#5553be';
+                                context.fillStyle = 'rgba(115, 113, 252, 1)';
                                 context.fillRect(
                                     shapePoint + column - textWidth / 2,
                                     height * 0.175,
@@ -477,19 +489,20 @@ function XAxisCanvas(props: xAxisIF) {
         d3.select(d3Xaxis.current).on('mousemove', (event: MouseEvent) => {
             d3.select(d3Xaxis.current).style('cursor', 'col-resize');
             if (scaleData) {
+                const mouseLocation = event.offsetX - toolbarWidth;
+
                 const isEgg =
                     timeOfEndCandle &&
-                    event.offsetX > scaleData?.xScale(timeOfEndCandle) - 15 &&
-                    event.offsetX < scaleData?.xScale(timeOfEndCandle) + 15;
+                    mouseLocation > scaleData?.xScale(timeOfEndCandle) - 15 &&
+                    mouseLocation < scaleData?.xScale(timeOfEndCandle) + 15;
 
                 const isCroc =
                     lastCrDate &&
-                    event.offsetX > scaleData?.xScale(lastCrDate) - 15 &&
-                    event.offsetX < scaleData?.xScale(lastCrDate) + 15;
+                    mouseLocation > scaleData?.xScale(lastCrDate) - 15 &&
+                    mouseLocation < scaleData?.xScale(lastCrDate) + 15;
 
                 if (isEgg || isCroc) {
                     d3.select(d3Xaxis.current).style('cursor', 'default');
-
                     setXaxisActiveTooltip(isCroc ? 'croc' : 'egg');
                 } else {
                     setXaxisActiveTooltip('');
@@ -498,7 +511,7 @@ function XAxisCanvas(props: xAxisIF) {
                 setCrosshairActive('none');
             }
         });
-    }, [lastCrDate, timeOfEndCandle]);
+    }, [lastCrDate, timeOfEndCandle, toolbarWidth]);
 
     // mouseleave
     useEffect(() => {
@@ -584,7 +597,7 @@ function XAxisCanvas(props: xAxisIF) {
             id='x-axis'
             className='x-axis'
             style={{
-                height: '2em',
+                height: xAxisHeightPixel + 'px',
                 width: '100%',
                 gridColumn: 3,
                 gridRow: 4,

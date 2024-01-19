@@ -30,6 +30,7 @@ interface FreeRateData {
     isChartZoom: boolean;
     firstCandleData: any;
     lastCandleData: any;
+    isToolbarOpen: boolean;
 }
 
 function FeeRateChart(props: FreeRateData) {
@@ -54,6 +55,7 @@ function FeeRateChart(props: FreeRateData) {
         render,
         firstCandleData,
         lastCandleData,
+        isToolbarOpen,
     } = props;
 
     const d3Yaxis = useRef<HTMLCanvasElement | null>(null);
@@ -380,7 +382,15 @@ function FeeRateChart(props: FreeRateData) {
     );
 
     return (
-        <div id='fee_rate_chart' data-testid={'chart'}>
+        <div
+            id='fee_rate_chart'
+            data-testid={'chart'}
+            style={{
+                gridTemplateColumns:
+                    (isToolbarOpen ? 38 : 9) +
+                    'px auto 1fr auto minmax(1em, max-content)',
+            }}
+        >
             <d3fc-canvas
                 id='d3PlotFeeRate'
                 ref={d3CanvasArea}
@@ -393,7 +403,13 @@ function FeeRateChart(props: FreeRateData) {
                 className='d3CanvasCrosshair'
             ></d3fc-canvas>
 
-            <label style={{ position: 'absolute', left: '0%' }}>
+            <label
+                style={{
+                    paddingLeft: '5px',
+                    gridColumnStart: '3',
+                    gridColumnEnd: '3',
+                }}
+            >
                 Fee Rate:{' '}
                 {subChartValues.filter(
                     (value: any) => value.name === 'feeRate',
