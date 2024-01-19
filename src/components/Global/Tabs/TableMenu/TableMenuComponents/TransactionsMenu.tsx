@@ -209,7 +209,7 @@ export default function TransactionsMenu(props: propsIF) {
             }
         >
             <Chip
-                disabled={disableReverseTokens || isConfirmationActive}
+                disabledOnHover={disableReverseTokens || isConfirmationActive}
                 onClick={() => copyButtonFunction(tx.entityType)}
             >
                 {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
