@@ -481,7 +481,7 @@ export default function Chart(props: propsIF) {
         return prev.time < current.time ? prev : current;
     });
 
-    const toolbarWidth = isToolbarOpen ? 40 : 10;
+    const toolbarWidth = isToolbarOpen ? 35 : 6;
 
     const [prevlastCandleTime, setPrevLastCandleTime] = useState<number>(
         lastCandleData.time,
@@ -5347,7 +5347,8 @@ export default function Chart(props: propsIF) {
                         id='chart_grid'
                         style={{
                             gridTemplateColumns:
-                                9 + 'px auto 1fr auto minmax(1em, max-content)',
+                                toolbarWidth +
+                                'px auto 1fr auto minmax(1em, max-content)',
                         }}
                     >
                         <CandleChart
@@ -5497,6 +5498,7 @@ export default function Chart(props: propsIF) {
                                 lastCandleData={lastCandleData}
                                 firstCandleData={firstCandleData}
                                 isToolbarOpen={isToolbarOpen}
+                                toolbarWidth={toolbarWidth}
                             />
                         </>
                     )}
@@ -5531,6 +5533,7 @@ export default function Chart(props: propsIF) {
                                 zoomBase={zoomBase}
                                 setIsChartZoom={setIsChartZoom}
                                 isToolbarOpen={isToolbarOpen}
+                                toolbarWidth={toolbarWidth}
                             />
                         </>
                     )}

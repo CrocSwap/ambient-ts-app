@@ -374,7 +374,7 @@ export function getXandYLocationForChart(
     let offsetY = event.clientY - rect?.top;
     let offsetX = event.clientX - rect?.left;
 
-    if (event instanceof TouchEvent) {
+    if (typeof TouchEvent !== 'undefined' && event instanceof TouchEvent) {
         offsetY = event.targetTouches[0].clientY - rect?.top;
         offsetX = event.targetTouches[0].clientX - rect?.left;
     }

@@ -26,7 +26,7 @@ const ToolbarContainer = styled.div<{
             return `
             width: 9px;
             margin-left:5px;
-            margin-top: ${marginTopValue};
+            margin-top: ${marginTopValue}px;
             `;
         }
     }}

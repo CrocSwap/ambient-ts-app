@@ -254,7 +254,9 @@ function Trade() {
                 </ContentContainer>
             )}
 
-            {!isChartLoading && !isChartHeightMinimum && <ChartToolbar />}
+            {!isChartLoading &&
+                !isChartHeightMinimum &&
+                activeMobileComponent === 'chart' && <ChartToolbar />}
         </MainSection>
     );
 
