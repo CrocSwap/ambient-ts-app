@@ -365,13 +365,15 @@ function Trade() {
                                 </ChartContainer>
                             )}
                         </ResizableContainer>
-                        <FlexContainer
-                            ref={tradeTableRef}
-                            style={{ flex: 1 }}
-                            overflow='hidden'
-                        >
-                            <TradeTabs2 {...tradeTabsProps} />
-                        </FlexContainer>
+                        {!isChartFullScreen && (
+                            <FlexContainer
+                                ref={tradeTableRef}
+                                style={{ flex: 1 }}
+                                overflow='hidden'
+                            >
+                                <TradeTabs2 {...tradeTabsProps} />
+                            </FlexContainer>
+                        )}
                     </FlexContainer>
                 </FlexContainer>
                 <FlexContainer
