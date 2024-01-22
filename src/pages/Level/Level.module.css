@@ -6,6 +6,7 @@
     background-size: cover;
 
     display: flex;
+    justify-content: center;
     flex-direction: column;
     min-height: 80vh;
     overflow-y: scroll;

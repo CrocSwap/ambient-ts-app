@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { RiScreenshot2Fill } from 'react-icons/ri';
 import PointsHistoryDisplay from './PointsHistoryDisplay/PointsHistoryDisplay';
+import { FaArrowLeftLong } from 'react-icons/fa6';
 
 interface LevelsCardPropsIF {
     resolvedAddress?: string;
@@ -33,6 +34,7 @@ interface LevelsCardPropsIF {
 }
 
 export default function LevelsCard(props: LevelsCardPropsIF) {
+    const [isViewMoreActive, setIsViewMoreActive] = useState(false);
     const {
         currentLevel,
         totalPoints,
@@ -88,7 +90,12 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
     };
 
     const header = (
-        <FlexContainer flexDirection='row' gap={16} alignItems='center'>
+        <FlexContainer
+            flexDirection='row'
+            gap={16}
+            alignItems='center'
+            justifyContent='center'
+        >
             <Link
                 to={`/${ensName ? ensName : resolvedAddress}`}
                 className={styles.user_image}
@@ -127,8 +134,30 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
         </FlexContainer>
     );
 
+    const pointsHistoryOnly = (
+        <div className={styles.main_container_full} ref={levelsCanvasRef}>
+            <div
+                className={styles.back_button}
+                onClick={() => setIsViewMoreActive(!isViewMoreActive)}
+            >
+                <FaArrowLeftLong />
+            </div>
+
+            {header}
+            <PointsHistoryDisplay
+                pointsData={pointsData}
+                hideLevelCardScroll={hideLevelCardScroll}
+                isViewMoreActive={isViewMoreActive}
+                setIsViewMoreActive={setIsViewMoreActive}
+            />
+        </div>
+    );
+    if (isViewMoreActive) return pointsHistoryOnly;
+
     return (
         <div className={styles.main_container} ref={levelsCanvasRef}>
+            <div className={styles.back_button} />
+
             {header}
             <Text fontSize='header1' color='text1' padding='8px 32px'>
                 {`Level ${
@@ -190,6 +219,8 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
             <PointsHistoryDisplay
                 pointsData={pointsData}
                 hideLevelCardScroll={hideLevelCardScroll}
+                isViewMoreActive={isViewMoreActive}
+                setIsViewMoreActive={setIsViewMoreActive}
             />
 
             <Link to='/xp-leaderboard' className={styles.link}>

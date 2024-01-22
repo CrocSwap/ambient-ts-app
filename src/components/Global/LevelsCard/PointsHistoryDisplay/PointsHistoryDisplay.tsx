@@ -1,4 +1,5 @@
 import { FlexContainer, Text } from '../../../../styled/Common';
+import { ViewMoreButton } from '../../../../styled/Components/TransactionTable';
 // import { ViewMoreButton } from '../../../../styled/Components/TransactionTable';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import styles from './PointsHistoryDisplay.module.css';
@@ -11,11 +12,20 @@ interface PropsIF {
         retroPoints: string;
     }[];
     hideLevelCardScroll: boolean;
+    full?: boolean;
+    isViewMoreActive: boolean;
+    setIsViewMoreActive: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export default function PointsHistoryDisplay(props: PropsIF) {
     const desktopScreen = useMediaQuery('(min-width: 500px)');
 
-    const { pointsData, hideLevelCardScroll } = props;
+    const {
+        pointsData,
+        hideLevelCardScroll,
+        isViewMoreActive,
+        setIsViewMoreActive,
+    } = props;
+
     const pointsHistoryDisplay = (
         <div className={`${styles.point_history_container} `}>
             <header className={styles.points_history_header}>
@@ -45,8 +55,12 @@ export default function PointsHistoryDisplay(props: PropsIF) {
                 className={`${styles.points_history_content} ${
                     hideLevelCardScroll && styles.hide_scroll
                 }`}
+                style={{ height: !isViewMoreActive ? '101px' : '400px' }}
             >
-                {[...pointsData].map((data) => (
+                {(isViewMoreActive
+                    ? [...pointsData, ...pointsData, ...pointsData]
+                    : pointsData
+                ).map((data) => (
                     <React.Fragment key={data?.date + data?.addedPoints}>
                         <Text
                             fontSize={!desktopScreen ? 'body' : 'header2'}
@@ -71,10 +85,12 @@ export default function PointsHistoryDisplay(props: PropsIF) {
                         </Text>
                     </React.Fragment>
                 ))}
-                {/* <ViewMoreButton onClick={() => console.log('view')}>
-                    View More
-                </ViewMoreButton> */}
             </div>
+            <ViewMoreButton
+                onClick={() => setIsViewMoreActive(!isViewMoreActive)}
+            >
+                {!isViewMoreActive ? 'View More' : 'View Less'}
+            </ViewMoreButton>
         </div>
     );
 
