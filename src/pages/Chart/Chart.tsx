@@ -4452,35 +4452,21 @@ export default function Chart(props: propsIF) {
 
         if (scaleData) {
             const threshold = 10;
-            const allBandLines = createPointsOfBandLine(element);
 
-            allBandLines.forEach(
-                (item: { x: number; y: number; denomInBase: boolean }[]) => {
-                    const startX = item[0].x;
-                    const startY =
-                        item[0].denomInBase === denomInBase
-                            ? item[0].y
-                            : 1 / item[0].y;
-                    const endX = item[1].x;
-                    const endY =
-                        item[1].denomInBase === denomInBase
-                            ? item[1].y
-                            : 1 / item[1].y;
+            const startY = Math.min(element[0].y, element[1].y);
+            const endY = Math.max(element[0].y, element[1].y);
 
-                    const distance = distanceToLine(
-                        mouseX,
-                        mouseY,
-                        scaleData.xScale(startX),
-                        scaleData.yScale(startY),
-                        scaleData.xScale(endX),
-                        scaleData.yScale(endY),
-                    );
+            const startX = Math.min(element[0].x, element[1].x);
+            const endX = Math.max(element[0].x, element[1].x);
 
-                    if (distance < threshold) {
-                        isOverLine = true;
-                    }
-                },
-            );
+            if (
+                mouseX > scaleData.xScale(startX) - threshold &&
+                mouseX < scaleData.xScale(endX) + threshold &&
+                mouseY < scaleData.yScale(startY) - threshold &&
+                mouseY > scaleData.yScale(endY) + threshold
+            ) {
+                isOverLine = true;
+            }
         }
 
         return isOverLine;
@@ -4623,69 +4609,6 @@ export default function Chart(props: propsIF) {
                 if (element.type === 'Rect' || element.type === 'DPRange') {
                     if (checkRectLocation(element.data, mouseX, mouseY)) {
                         resElement = element;
-                    }
-
-                    if (element.type === 'DPRange') {
-                        const startX = Math.min(
-                            element.data[0].x,
-                            element.data[1].x,
-                        );
-                        const startY = Math.max(
-                            element.data[0].y,
-                            element.data[1].y,
-                        );
-                        const endX = Math.max(
-                            element.data[0].x,
-                            element.data[1].x,
-                        );
-                        const endY = Math.min(
-                            element.data[0].y,
-                            element.data[1].y,
-                        );
-
-                        const lineOfDPRange = [
-                            [
-                                {
-                                    x: startX + (endX - startX) / 2,
-                                    y: startY,
-                                    denomInBase: element.data[0].denomInBase,
-                                    ctx: undefined,
-                                },
-                                {
-                                    x: startX + (endX - startX) / 2,
-                                    y: endY,
-                                    denomInBase: element.data[1].denomInBase,
-                                    ctx: undefined,
-                                },
-                            ],
-                            [
-                                {
-                                    x: startX,
-                                    y: startY - (startY - endY) / 2,
-                                    denomInBase: element.data[0].denomInBase,
-                                    ctx: undefined,
-                                },
-                                {
-                                    x: endX,
-                                    y: startY - (startY - endY) / 2,
-                                    denomInBase: element.data[0].denomInBase,
-                                    ctx: undefined,
-                                },
-                            ],
-                        ];
-
-                        lineOfDPRange.forEach((line) => {
-                            if (
-                                checkLineLocation(
-                                    line,
-                                    mouseX,
-                                    mouseY,
-                                    denomInBase,
-                                )
-                            ) {
-                                resElement = element;
-                            }
-                        });
                     }
                 }
 
