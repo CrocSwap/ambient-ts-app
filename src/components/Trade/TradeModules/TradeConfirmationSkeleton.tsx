@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 // START: Import JSX Components
 import Button from '../../Form/Button';
@@ -69,11 +69,22 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
     const [skipFutureConfirmation, setSkipFutureConfirmation] =
         useState<boolean>(false);
 
+    // logic to prevent swap quantities updating during/after swap completion
+    const [memoTokenA, setMemoTokenA] = useState<string | undefined>();
+    const [memoTokenB, setMemoTokenB] = useState<string | undefined>();
+
+    useEffect(() => {
+        if (transactionHash === '') {
+            setMemoTokenA(tokenAQuantity);
+            setMemoTokenB(tokenBQuantity);
+        }
+    }, [transactionHash, tokenAQuantity, tokenBQuantity]);
+
     const tokenDisplay = (
         <>
             <ConfirmationQuantityContainer>
                 <Text fontSize='header2' color='text1'>
-                    {tokenAQuantity}
+                    {memoTokenA}
                 </Text>
                 <FlexContainer
                     alignItems='center'
@@ -100,7 +111,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
             </FlexContainer>
             <ConfirmationQuantityContainer>
                 <Text fontSize='header2' color='text1'>
-                    {tokenBQuantity}
+                    {memoTokenB}
                 </Text>
                 <FlexContainer
                     alignItems='center'
