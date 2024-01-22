@@ -3164,44 +3164,42 @@ export default function Chart(props: propsIF) {
                                             ) /
                                                 2;
 
-                                        const deltaY =
-                                            canvasSize.height -
-                                            infoLabelHeight -
-                                            5;
-
-                                        let infoLabelYAxisData =
-                                            scaleData.yScale(
-                                                secondPointYAxisData,
-                                            ) +
-                                            (secondPointYAxisData >
-                                            firstPointYAxisData
-                                                ? -(infoLabelHeight + 15)
-                                                : 15);
-
-                                        infoLabelYAxisData =
-                                            infoLabelYAxisData +
-                                                infoLabelHeight >
-                                            canvasSize.height
-                                                ? deltaY
-                                                : infoLabelYAxisData;
-
-                                        const dpRangeLabelYPlacement =
+                                        const yAxisLabelPlacement =
                                             scaleData.yScale(
                                                 firstPointYAxisData,
-                                            ) < 0
-                                                ? infoLabelYAxisData
+                                            ) <
+                                            scaleData.yScale(
+                                                secondPointYAxisData,
+                                            )
+                                                ? scaleData.yScale(
+                                                      firstPointYAxisData,
+                                                  ) > canvas.height
+                                                    ? scaleData.yScale(
+                                                          secondPointYAxisData,
+                                                      ) + 15
+                                                    : Math.min(
+                                                          scaleData.yScale(
+                                                              secondPointYAxisData,
+                                                          ) + 15,
+                                                          canvasSize.height -
+                                                              (infoLabelHeight +
+                                                                  5),
+                                                      )
                                                 : scaleData.yScale(
                                                       firstPointYAxisData,
-                                                  ) < canvasSize.height
-                                                ? infoLabelYAxisData +
-                                                      infoLabelHeight >
-                                                  canvasSize.height
-                                                    ? deltaY
-                                                    : Math.max(
-                                                          infoLabelYAxisData,
-                                                          5,
-                                                      )
-                                                : infoLabelYAxisData;
+                                                  ) < 5
+                                                ? scaleData.yScale(
+                                                      secondPointYAxisData,
+                                                  ) -
+                                                  (infoLabelHeight + 15)
+                                                : Math.max(
+                                                      scaleData.yScale(
+                                                          secondPointYAxisData,
+                                                      ) -
+                                                          (infoLabelHeight +
+                                                              15),
+                                                      5,
+                                                  );
 
                                         const arrowArray =
                                             createArrowPointsOfDPRangeLine(
@@ -3225,7 +3223,7 @@ export default function Chart(props: propsIF) {
                                                     infoLabelXAxisData,
                                                 ) -
                                                     infoLabelWidth / 2,
-                                                dpRangeLabelYPlacement,
+                                                yAxisLabelPlacement,
                                                 infoLabelWidth,
                                                 infoLabelHeight,
                                             );
@@ -3273,7 +3271,7 @@ export default function Chart(props: propsIF) {
                                                 scaleData.xScale(
                                                     infoLabelXAxisData,
                                                 ),
-                                                dpRangeLabelYPlacement + 16,
+                                                yAxisLabelPlacement + 16,
                                             );
                                             ctx.fillText(
                                                 (lengthAsBars / (1000 * period))
@@ -3284,7 +3282,7 @@ export default function Chart(props: propsIF) {
                                                 scaleData.xScale(
                                                     infoLabelXAxisData,
                                                 ),
-                                                dpRangeLabelYPlacement + 33,
+                                                yAxisLabelPlacement + 33,
                                             );
                                             ctx.fillText(
                                                 'Vol ' +
@@ -3294,7 +3292,7 @@ export default function Chart(props: propsIF) {
                                                 scaleData.xScale(
                                                     infoLabelXAxisData,
                                                 ),
-                                                dpRangeLabelYPlacement + 50,
+                                                yAxisLabelPlacement + 50,
                                             );
                                         }
                                     }
