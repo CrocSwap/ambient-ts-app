@@ -202,41 +202,13 @@ function TradeCandleStickChart(props: propsIF) {
         cachedEnsResolve,
     } = useContext(CachedDataContext);
 
-    const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
+    const { changesByUser } = useContext(GraphDataContext);
 
     useEffect(() => {
-        if (userAddress && isServerEnabled && crocEnv && provider) {
-            try {
-                fetchUserRecentChanges({
-                    tokenList: tokens.tokenUniv,
-                    user: userAddress,
-                    chainId: chainId,
-                    annotate: true,
-                    addValue: true,
-                    simpleCalc: true,
-                    annotateMEV: false,
-                    ensResolution: true,
-                    n: 10, // fetch last 100 changes,
-                    crocEnv,
-                    graphCacheUrl: activeNetwork.graphCacheUrl,
-                    provider,
-                    lastBlockNumber,
-                    cachedFetchTokenPrice: cachedFetchTokenPrice,
-                    cachedQuerySpotPrice: cachedQuerySpotPrice,
-                    cachedTokenDetails: cachedTokenDetails,
-                    cachedEnsResolve: cachedEnsResolve,
-                })
-                    .then((updatedTransactions) => {
-                        if (updatedTransactions) {
-                            setUserTransactionData(() => updatedTransactions);
-                        }
-                    })
-                    .catch(console.error);
-            } catch (error) {
-                console.error;
-            }
+        if (changesByUser && changesByUser.changes.length > 0) {
+            setUserTransactionData(changesByUser.changes);
         }
-    }, [isServerEnabled, userAddress, !!crocEnv, !!provider]);
+    }, [changesByUser]);
 
     useEffect(() => {
         setIsLoading(true);

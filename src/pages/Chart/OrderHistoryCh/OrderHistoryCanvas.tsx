@@ -71,7 +71,6 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
     }
 
     useEffect(() => {
-        console.log(userTransactionData);
         if (userTransactionData) {
             const domainRight = d3.max(userTransactionData, (data) => {
                 if (data.entityType === 'swap') return data.totalValueUSD;
@@ -79,8 +78,6 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
             const domainLeft = d3.min(userTransactionData, (data) => {
                 if (data.entityType === 'swap') return data.totalValueUSD;
             });
-
-            console.log(userTransactionData);
 
             if (domainRight && domainLeft) {
                 const scale = d3
@@ -96,7 +93,6 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
     }, [userTransactionData]);
 
     useEffect(() => {
-        console.log(userTransactionData);
         if (userTransactionData && circleScale) {
             const circleSerieArray: any[] = [];
 
@@ -305,92 +301,122 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                             }
                         }
 
-                        // if (showHistorical && order.entityType === 'limitOrder' && lineSeries) {
-                        //     const lineData: lineData[] = [];
-
-                        //     lineData.push({
-                        //         x: order.txTime * 1000,
-                        //         y: denomInBase ? order.askTickInvPriceDecimalCorrected : order.askTickPriceDecimalCorrected,
-                        //         denomInBase: denomInBase,
-                        //     });
-                        //     lineData.push({
-                        //         x: (order.txTime + 3600 * 2) * 1000,
-                        //         y: denomInBase ? order.bidTickInvPriceDecimalCorrected : order.bidTickPriceDecimalCorrected,
-                        //         denomInBase: denomInBase,
-                        //     });
-
-                        //     lineSeries(lineData);
-                        // }
-
                         if (
-                            showLiquidity &&
-                            order.entityType === 'liqchange' &&
-                            bandArea &&
+                            showHistorical &&
+                            order.entityType === 'limitOrder' &&
                             lineSeries
                         ) {
-                            const range = [
-                                scaleData?.xScale(order?.txTime * 1000),
-                                scaleData.xScale(
-                                    (order?.txTime + 3600 * 4) * 1000,
-                                ),
-                            ];
+                            console.log(
+                                order.changeType,
+                                new Date(order.txTime * 1000),
+                            );
 
-                            bandArea.xScale().range(range);
+                            if (
+                                order.changeType === 'mint' ||
+                                order.changeType === 'recover'
+                            ) {
+                                const lineData: lineData[] = [];
 
-                            const bandData = {
-                                fromValue: denomInBase
-                                    ? order.bidTickInvPriceDecimalCorrected
-                                    : order.bidTickPriceDecimalCorrected,
-                                toValue: denomInBase
-                                    ? order.askTickInvPriceDecimalCorrected
-                                    : order.askTickPriceDecimalCorrected,
-                                denomInBase: denomInBase,
-                            } as bandLineData;
-
-                            lineSeries;
-
-                            bandArea([bandData]);
-
-                            const lineData: lineData[][] = [];
-
-                            lineData.push([
-                                {
+                                lineData.push({
                                     x: order.txTime * 1000,
                                     y: denomInBase
-                                        ? order.askTickInvPriceDecimalCorrected
-                                        : order.askTickPriceDecimalCorrected,
+                                        ? order.invLimitPriceDecimalCorrected
+                                        : order.invLimitPriceDecimalCorrected,
                                     denomInBase: denomInBase,
-                                },
-                                {
-                                    x: (order.txTime + 3600 * 4) * 1000,
+                                });
+                                lineData.push({
+                                    x:
+                                        order.changeType === 'mint' ||
+                                        order.changeType === 'recover'
+                                            ? new Date().getTime()
+                                            : (order.txTime + 3600 * 2) * 1000,
                                     y: denomInBase
-                                        ? order.askTickInvPriceDecimalCorrected
-                                        : order.askTickPriceDecimalCorrected,
+                                        ? order.invLimitPriceDecimalCorrected
+                                        : order.invLimitPriceDecimalCorrected,
                                     denomInBase: denomInBase,
-                                },
-                            ]);
+                                });
 
-                            lineData.push([
-                                {
-                                    x: order.txTime * 1000,
-                                    y: denomInBase
-                                        ? order.bidTickInvPriceDecimalCorrected
-                                        : order.bidTickPriceDecimalCorrected,
-                                    denomInBase: denomInBase,
-                                },
-                                {
-                                    x: (order.txTime + 3600 * 4) * 1000,
-                                    y: denomInBase
-                                        ? order.bidTickInvPriceDecimalCorrected
-                                        : order.bidTickPriceDecimalCorrected,
-                                    denomInBase: denomInBase,
-                                },
-                            ]);
+                                lineSeries.decorate(
+                                    (context: CanvasRenderingContext2D) => {
+                                        context.strokeStyle = order.isBuy
+                                            ? 'rgba(115, 113, 252)'
+                                            : 'rgba(205, 193, 255)';
+                                    },
+                                );
 
-                            lineData.forEach((line) => {
-                                liquidityLineSeries(line);
-                            });
+                                lineSeries(lineData);
+                            }
                         }
+
+                        // if (
+                        //     showLiquidity &&
+                        //     order.entityType === 'liqchange' &&
+                        //     bandArea &&
+                        //     lineSeries
+                        // ) {
+                        //     const range = [
+                        //         scaleData?.xScale(order?.txTime * 1000),
+                        //         scaleData.xScale(
+                        //             (order?.txTime + 3600 * 4) * 1000,
+                        //         ),
+                        //     ];
+
+                        //     bandArea.xScale().range(range);
+
+                        //     const bandData = {
+                        //         fromValue: denomInBase
+                        //             ? order.bidTickInvPriceDecimalCorrected
+                        //             : order.bidTickPriceDecimalCorrected,
+                        //         toValue: denomInBase
+                        //             ? order.askTickInvPriceDecimalCorrected
+                        //             : order.askTickPriceDecimalCorrected,
+                        //         denomInBase: denomInBase,
+                        //     } as bandLineData;
+
+                        //     lineSeries;
+
+                        //     bandArea([bandData]);
+
+                        //     const lineData: lineData[][] = [];
+
+                        //     lineData.push([
+                        //         {
+                        //             x: order.txTime * 1000,
+                        //             y: denomInBase
+                        //                 ? order.askTickInvPriceDecimalCorrected
+                        //                 : order.askTickPriceDecimalCorrected,
+                        //             denomInBase: denomInBase,
+                        //         },
+                        //         {
+                        //             x: (order.txTime + 3600 * 4) * 1000,
+                        //             y: denomInBase
+                        //                 ? order.askTickInvPriceDecimalCorrected
+                        //                 : order.askTickPriceDecimalCorrected,
+                        //             denomInBase: denomInBase,
+                        //         },
+                        //     ]);
+
+                        //     lineData.push([
+                        //         {
+                        //             x: order.txTime * 1000,
+                        //             y: denomInBase
+                        //                 ? order.bidTickInvPriceDecimalCorrected
+                        //                 : order.bidTickPriceDecimalCorrected,
+                        //             denomInBase: denomInBase,
+                        //         },
+                        //         {
+                        //             x: (order.txTime + 3600 * 4) * 1000,
+                        //             y: denomInBase
+                        //                 ? order.bidTickInvPriceDecimalCorrected
+                        //                 : order.bidTickPriceDecimalCorrected,
+                        //             denomInBase: denomInBase,
+                        //         },
+                        //     ]);
+
+                        //     lineData.forEach((line) => {
+                        //         liquidityLineSeries(line);
+                        //     });
+                        // }
                     });
                 })
                 .on('measure', () => {
