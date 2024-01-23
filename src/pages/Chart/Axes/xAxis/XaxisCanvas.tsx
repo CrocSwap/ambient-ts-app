@@ -8,6 +8,7 @@ import {
 } from '../../../../ambient-utils/dataLayer';
 import {
     crosshair,
+    isTimeZoneStart,
     renderCanvasArray,
     scaleData,
     selectedDrawnData,
@@ -187,20 +188,7 @@ function XAxisCanvas(props: xAxisIF) {
                     ticks,
                 );
 
-                const filteredData = data.reduce(
-                    (acc: xAxisTick[], d: xAxisTick) => {
-                        const sameTime = acc.find((d1: xAxisTick) => {
-                            return d1.date.getTime() === d.date.getTime();
-                        });
-                        if (!sameTime) {
-                            acc.push(d);
-                        }
-                        return acc;
-                    },
-                    [],
-                );
-
-                filteredData.forEach((d: xAxisTick) => {
+                data.forEach((d: xAxisTick) => {
                     if (d.date instanceof Date) {
                         context.textAlign = 'center';
                         context.textBaseline = 'top';
@@ -243,51 +231,52 @@ function XAxisCanvas(props: xAxisIF) {
                             )
                         ) {
                             if (formatValue) {
-                                const indexValue = filteredData.findIndex(
+                                const indexValue = data.findIndex(
                                     (d1: xAxisTick) => d1.date === d.date,
                                 );
                                 if (!d.style) {
                                     const maxIndex =
-                                        indexValue === filteredData.length - 1
+                                        indexValue === data.length - 1
                                             ? indexValue
                                             : indexValue + 1;
                                     const minIndex =
                                         indexValue === 0
                                             ? indexValue
                                             : indexValue - 1;
-                                    const lastData = filteredData[maxIndex];
-                                    const beforeData = filteredData[minIndex];
+                                    const lastData = data[maxIndex];
+                                    const beforeData = data[minIndex];
+
+                                    const lastDataLocation = scaleData.xScale(
+                                        lastData.date,
+                                    );
+                                    const beforeDataLocation = scaleData.xScale(
+                                        beforeData.date,
+                                    );
+                                    const currentDataLocation =
+                                        scaleData.xScale(d.date);
+
+                                    const isTimeZoneStartLastData =
+                                        isTimeZoneStart(lastData.date);
 
                                     if (
-                                        beforeData.style ||
-                                        (lastData.style &&
-                                            xScale(d.date.getTime()))
+                                        Math.abs(
+                                            currentDataLocation -
+                                                beforeDataLocation,
+                                        ) > 20
                                     ) {
                                         if (
+                                            !isTimeZoneStartLastData ||
                                             Math.abs(
-                                                xScale(
-                                                    beforeData.date.getTime(),
-                                                ) - xScale(d.date.getTime()),
-                                            ) > _width &&
-                                            Math.abs(
-                                                xScale(
-                                                    lastData.date.getTime(),
-                                                ) - xScale(d.date.getTime()),
-                                            ) > _width
+                                                lastDataLocation -
+                                                    currentDataLocation,
+                                            ) > 20
                                         ) {
                                             context.fillText(
                                                 formatValue,
-                                                xScale(d.date.getTime()) +
-                                                    column,
+                                                currentDataLocation + column,
                                                 Y + tickSize,
                                             );
                                         }
-                                    } else {
-                                        context.fillText(
-                                            formatValue,
-                                            xScale(d.date.getTime()) + column,
-                                            Y + tickSize,
-                                        );
                                     }
                                 } else {
                                     context.fillText(

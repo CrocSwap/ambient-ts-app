@@ -282,6 +282,10 @@ function DrawCanvas(props: DrawCanvasProps) {
             valueY = scaleData?.yScale.invert(offsetY);
         }
 
+        if (scaleData.xScale.invert(offsetX) < valueX) {
+            valueX = scaleData.xScale.invert(offsetX);
+        }
+
         return { valueX: valueX, valueY: valueY };
     }
 
@@ -341,9 +345,11 @@ function DrawCanvas(props: DrawCanvasProps) {
             },
         );
 
-        canvas.addEventListener('pointerup', (event: PointerEvent) => {
+        const pointerUpHandler = (event: PointerEvent) => {
             endDrawing(event.clientX, event.clientY);
-        });
+        };
+
+        canvas.addEventListener('pointerup', pointerUpHandler);
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         function startDrawing(mouseX: number, mouseY: number) {
@@ -578,6 +584,10 @@ function DrawCanvas(props: DrawCanvasProps) {
 
             renderCanvasArray([d3DrawCanvas]);
         }
+
+        return () => {
+            canvas.removeEventListener('pointerup', pointerUpHandler);
+        };
     }, [activeDrawingType, JSON.stringify(drawSettings)]);
 
     // Draw
