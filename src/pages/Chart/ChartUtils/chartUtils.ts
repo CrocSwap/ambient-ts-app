@@ -467,3 +467,17 @@ export const renderChart = () => {
     const nd = d3.select('#d3fc_group').node() as any;
     if (nd) nd.requestRedraw();
 };
+
+export function isTimeZoneStart(date: Date): boolean {
+    try {
+        const day = date.getDate();
+
+        if (day === 1) {
+            return true;
+        } else {
+            return false;
+        }
+    } catch (error) {
+        return false;
+    }
+}
