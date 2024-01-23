@@ -4453,8 +4453,17 @@ export default function Chart(props: propsIF) {
         if (scaleData) {
             const threshold = 10;
 
-            const startY = Math.min(element[0].y, element[1].y);
-            const endY = Math.max(element[0].y, element[1].y);
+            const denomStartY =
+                element[0].denomInBase === denomInBase
+                    ? element[0].y
+                    : 1 / element[0].y;
+            const denomEndY =
+                element[0].denomInBase === denomInBase
+                    ? element[1].y
+                    : 1 / element[1].y;
+
+            const startY = Math.min(denomStartY, denomEndY);
+            const endY = Math.max(denomStartY, denomEndY);
 
             const startX = Math.min(element[0].x, element[1].x);
             const endX = Math.max(element[0].x, element[1].x);
@@ -4462,8 +4471,8 @@ export default function Chart(props: propsIF) {
             if (
                 mouseX > scaleData.xScale(startX) - threshold &&
                 mouseX < scaleData.xScale(endX) + threshold &&
-                mouseY < scaleData.yScale(startY) - threshold &&
-                mouseY > scaleData.yScale(endY) + threshold
+                mouseY < scaleData.yScale(startY) + threshold &&
+                mouseY > scaleData.yScale(endY) - threshold
             ) {
                 isOverLine = true;
             }
@@ -4523,6 +4532,8 @@ export default function Chart(props: propsIF) {
             const tempStartXLocation = scaleData.xScale(startX);
             const tempEndXLocation = scaleData.xScale(endX);
 
+            const threshold = 10;
+
             const startXLocation = Math.min(
                 tempStartXLocation,
                 tempEndXLocation,
@@ -4551,9 +4562,13 @@ export default function Chart(props: propsIF) {
             );
             const endYLocation = Math.max(tempStartYLocation, tempEndYLocation);
 
-            const isIncludeX = startXLocation < mouseX && mouseX < endXLocation;
+            const isIncludeX =
+                startXLocation - threshold < mouseX &&
+                mouseX < endXLocation + threshold;
 
-            const isIncludeY = startYLocation < mouseY && mouseY < endYLocation;
+            const isIncludeY =
+                startYLocation - threshold < mouseY &&
+                mouseY < endYLocation + threshold;
 
             return isIncludeX && isIncludeY;
         }
