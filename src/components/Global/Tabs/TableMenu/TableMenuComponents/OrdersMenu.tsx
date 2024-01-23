@@ -82,8 +82,8 @@ export default function OrdersMenu(props: propsIF) {
 
     const showAbbreviatedCopyTradeButton = isAccountView
         ? isSidebarOpen
-            ? useMediaQuery('(max-width: 1400px)')
-            : useMediaQuery('(max-width: 1150px)')
+            ? useMediaQuery('(max-width: 1600px)')
+            : useMediaQuery('(max-width: 1450px)')
         : isSidebarOpen
         ? useMediaQuery('(max-width: 1500px)')
         : useMediaQuery('(max-width: 1250px)');
