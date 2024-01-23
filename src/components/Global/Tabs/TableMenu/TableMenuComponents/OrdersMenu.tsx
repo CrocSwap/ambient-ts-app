@@ -91,10 +91,6 @@ export default function OrdersMenu(props: propsIF) {
     // ------------------  END OF MODAL FUNCTIONALITY-----------------
 
     const minView = useMediaQuery('(min-width: 720px)');
-    const view3 = useMediaQuery('(min-width: 2300px)');
-
-    const view2WithNoSidebar =
-        useMediaQuery('(min-width: 1680px)') && !isSidebarOpen;
 
     const walletButton = (
         <Chip ariaLabel='View wallet.' onClick={handleAccountClick}>
@@ -186,7 +182,6 @@ export default function OrdersMenu(props: propsIF) {
                 className={styles.main_container}
             >
                 <div className={styles.actions_menu}>
-                    {(view3 || view2WithNoSidebar) && detailsButton}
                     {minView && claimButton}
                     {minView && removeButton}
                     {minView && copyButton}
