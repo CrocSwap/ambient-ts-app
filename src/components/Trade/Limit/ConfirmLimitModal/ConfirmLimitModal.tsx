@@ -19,6 +19,8 @@ interface propsIF {
     middleDisplayPrice: number;
     endDisplayPrice: number;
     onClose: () => void;
+    limitAllowed: boolean;
+    limitButtonErrorMessage: string;
 }
 
 export default function ConfirmLimitModal(props: propsIF) {
@@ -29,13 +31,23 @@ export default function ConfirmLimitModal(props: propsIF) {
         txErrorMessage,
         resetConfirmation,
         showConfirmation,
+        insideTickDisplayPrice,
         startDisplayPrice,
         middleDisplayPrice,
         endDisplayPrice,
         tokenAInputQty,
         tokenBInputQty,
         onClose = () => null,
+        limitAllowed,
+        limitButtonErrorMessage,
     } = props;
+
+    console.log({
+        insideTickDisplayPrice,
+        startDisplayPrice,
+        middleDisplayPrice,
+        endDisplayPrice,
+    });
 
     const { poolPriceDisplay } = useContext(PoolContext);
 
@@ -132,7 +144,9 @@ export default function ConfirmLimitModal(props: propsIF) {
             txErrorMessage={txErrorMessage}
             statusText={
                 !showConfirmation
-                    ? 'Submit Limit Order'
+                    ? limitAllowed
+                        ? 'Submit Limit Order'
+                        : limitButtonErrorMessage
                     : `Submitting Limit Order to Swap ${tokenAInputQty} ${tokenA.symbol} for ${tokenBInputQty} ${tokenB.symbol}`
             }
             showConfirmation={showConfirmation}
