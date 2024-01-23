@@ -18,6 +18,8 @@ interface LevelPropsIF {
     isLevelOnly?: boolean;
     isDisplayRank?: boolean;
     resolvedUserXp?: UserXpDataIF;
+    isViewMoreActive?: boolean;
+    setIsViewMoreActive?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export default function Level(props: LevelPropsIF) {
     const {
@@ -29,9 +31,10 @@ export default function Level(props: LevelPropsIF) {
         isLevelOnly,
         isDisplayRank,
         resolvedUserXp,
+        isViewMoreActive,
+        setIsViewMoreActive,
     } = props;
     const { userAddress, connectedUserXp } = useContext(UserDataContext);
-
     const ensNameToDisplay = ensNameAvailable
         ? ensName
         : truncatedAccountAddress;
@@ -145,6 +148,8 @@ export default function Level(props: LevelPropsIF) {
         resolvedAddress,
         pointsRemainingToNextLevel: xpData?.data?.pointsRemainingToNextLevel,
         ensName: ensName,
+        isViewMoreActive,
+        setIsViewMoreActive,
     };
 
     if (isLevelOnly)
@@ -170,6 +175,14 @@ export default function Level(props: LevelPropsIF) {
 
                     <RankTable />
                 </FlexContainer>
+            </div>
+        );
+    }
+
+    if (isViewMoreActive) {
+        return (
+            <div className={styles.level_page_container}>
+                <LevelsCard {...levelsCardProps} />
             </div>
         );
     }

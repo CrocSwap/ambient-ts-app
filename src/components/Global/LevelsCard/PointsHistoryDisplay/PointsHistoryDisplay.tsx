@@ -1,5 +1,5 @@
+import { Link } from 'react-router-dom';
 import { FlexContainer, Text } from '../../../../styled/Common';
-import { ViewMoreButton } from '../../../../styled/Components/TransactionTable';
 // import { ViewMoreButton } from '../../../../styled/Components/TransactionTable';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import styles from './PointsHistoryDisplay.module.css';
@@ -13,19 +13,14 @@ interface PropsIF {
     }[];
     hideLevelCardScroll: boolean;
     full?: boolean;
-    isViewMoreActive: boolean;
-    setIsViewMoreActive: React.Dispatch<React.SetStateAction<boolean>>;
+    isViewMoreActive?: boolean;
 }
 export default function PointsHistoryDisplay(props: PropsIF) {
     const desktopScreen = useMediaQuery('(min-width: 500px)');
 
-    const {
-        pointsData,
-        hideLevelCardScroll,
-        isViewMoreActive,
-        setIsViewMoreActive,
-    } = props;
+    const { pointsData, hideLevelCardScroll, isViewMoreActive } = props;
 
+    console.log(pointsData.length);
     const pointsHistoryDisplay = (
         <div className={`${styles.point_history_container} `}>
             <header className={styles.points_history_header}>
@@ -86,11 +81,16 @@ export default function PointsHistoryDisplay(props: PropsIF) {
                     </React.Fragment>
                 ))}
             </div>
-            <ViewMoreButton
-                onClick={() => setIsViewMoreActive(!isViewMoreActive)}
-            >
-                {!isViewMoreActive ? 'View More' : 'View Less'}
-            </ViewMoreButton>
+            {pointsData.length > 5 && (
+                <Link
+                    to={
+                        isViewMoreActive ? '/account/xp' : '/account/xp/history'
+                    }
+                    className={styles.view_more_link}
+                >
+                    {!isViewMoreActive ? 'View More' : 'View Less'}
+                </Link>
+            )}
         </div>
     );
 

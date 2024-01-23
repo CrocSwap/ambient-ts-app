@@ -29,3 +29,22 @@ width: 100%;
 .hide_scroll{
     overflow-y: hidden;
 }
+.view_more_link{
+    background: var(--dark2);
+    border: none;
+    outline: none;
+    box-shadow: 2px 1000px 1px var(--dark2) inset;
+    transition: var(--transition);
+    white-space: nowrap;
+    height: 23px;
+    padding: 1px 12px;
+    text-decoration: none;
+    border-radius: 6.25rem;
+    cursor: pointer;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+    font-size: 11px;
+    color: var(--text2);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

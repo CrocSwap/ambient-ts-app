@@ -102,15 +102,12 @@ align-items: center;
          line-height: var(--body-lh);
          color: var(--accent5);
          text-decoration: underline;
+         display: flex;
+         justify-content: center;
+         cursor: pointer;
+        
     }
 
-.back_button{
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-    height: 25px;
-    
-}
 
 
 @media (min-width: 768px) {

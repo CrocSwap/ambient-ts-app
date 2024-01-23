@@ -32,6 +32,7 @@ import Level from '../Level/Level';
 interface PortfolioPropsIF {
     isLevelsPage?: boolean;
     isRanksPage?: boolean;
+    isViewMoreActive?: boolean;
 }
 
 function Portfolio(props: PortfolioPropsIF) {
@@ -41,7 +42,7 @@ function Portfolio(props: PortfolioPropsIF) {
         ensName,
         setSecondaryEnsInContext,
     } = useContext(UserDataContext);
-    const { isLevelsPage, isRanksPage } = props;
+    const { isLevelsPage, isRanksPage, isViewMoreActive } = props;
 
     const isUserConnected = useSimulatedIsUserConnected();
 
@@ -322,6 +323,7 @@ function Portfolio(props: PortfolioPropsIF) {
         connectedAccountActive: connectedAccountActive,
         isDisplayRank: isRanksPage,
         resolvedUserXp,
+        isViewMoreActive,
     };
 
     const profileSettingsProps = {
