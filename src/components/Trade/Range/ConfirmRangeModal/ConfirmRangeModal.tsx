@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { memo, useContext, useState } from 'react';
+import { memo, useContext, useEffect, useState } from 'react';
 
 // START: Import JSX Functional Components
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
@@ -68,6 +68,42 @@ function ConfirmRangeModal(props: propsIF) {
     const tokenACharacter: string = getUnicodeCharacter(tokenA.symbol);
     const tokenBCharacter: string = getUnicodeCharacter(tokenB.symbol);
 
+    // logic to prevent pool quantities updating during/after pool completion
+    const [memoTokenAQty, setMemoTokenAQty] = useState<string | undefined>();
+    const [memoTokenBQty, setMemoTokenBQty] = useState<string | undefined>();
+    const [memoMinPriceBase, setMemoMinPriceBase] = useState<
+        string | undefined
+    >();
+    const [memoMinPriceQuote, setMemoMinPriceQuote] = useState<
+        string | undefined
+    >();
+    const [memoMaxPriceBase, setMemoMaxPriceBase] = useState<
+        string | undefined
+    >();
+    const [memoMaxPriceQuote, setMemoMaxPriceQuote] = useState<
+        string | undefined
+    >();
+
+    useEffect(() => {
+        if (newRangeTransactionHash === '') {
+            console.log({ tokenAQty, tokenBQty });
+            setMemoTokenAQty(tokenAQty);
+            setMemoTokenBQty(tokenBQty);
+            setMemoMinPriceBase(pinnedMinPriceDisplayTruncatedInBase);
+            setMemoMinPriceQuote(pinnedMinPriceDisplayTruncatedInQuote);
+            setMemoMaxPriceBase(pinnedMaxPriceDisplayTruncatedInBase);
+            setMemoMaxPriceQuote(pinnedMaxPriceDisplayTruncatedInQuote);
+        }
+    }, [
+        newRangeTransactionHash,
+        tokenAQty,
+        tokenBQty,
+        pinnedMinPriceDisplayTruncatedInBase,
+        pinnedMinPriceDisplayTruncatedInQuote,
+        pinnedMaxPriceDisplayTruncatedInBase,
+        pinnedMaxPriceDisplayTruncatedInQuote,
+    ]);
+
     const poolTokenDisplay = (
         <>
             <FlexContainer
@@ -113,8 +149,8 @@ function ConfirmRangeModal(props: propsIF) {
                             <Text fontSize='body'>{tokenA.symbol}</Text>
                         </FlexContainer>
                         <Text fontSize='body'>
-                            {tokenAQty !== ''
-                                ? tokenACharacter + tokenAQty
+                            {memoTokenAQty !== ''
+                                ? tokenACharacter + memoTokenAQty
                                 : '0'}
                         </Text>
                     </FlexContainer>
@@ -129,7 +165,9 @@ function ConfirmRangeModal(props: propsIF) {
                             <Text fontSize='body'>{tokenB.symbol}</Text>
                         </FlexContainer>
                         <Text fontSize='body'>
-                            {tokenBQty ? tokenBCharacter + tokenBQty : '0'}
+                            {memoTokenBQty
+                                ? tokenBCharacter + memoTokenBQty
+                                : '0'}
                         </Text>
                     </FlexContainer>
                 </GridContainer>
@@ -140,18 +178,10 @@ function ConfirmRangeModal(props: propsIF) {
                     setIsDenomBase={setIsDenomBaseocalToRangeConfirm}
                     isTokenABase={isTokenABase}
                     isAmbient={isAmbient}
-                    pinnedMinPriceDisplayTruncatedInBase={
-                        pinnedMinPriceDisplayTruncatedInBase
-                    }
-                    pinnedMinPriceDisplayTruncatedInQuote={
-                        pinnedMinPriceDisplayTruncatedInQuote
-                    }
-                    pinnedMaxPriceDisplayTruncatedInBase={
-                        pinnedMaxPriceDisplayTruncatedInBase
-                    }
-                    pinnedMaxPriceDisplayTruncatedInQuote={
-                        pinnedMaxPriceDisplayTruncatedInQuote
-                    }
+                    pinnedMinPriceDisplayTruncatedInBase={memoMinPriceBase}
+                    pinnedMinPriceDisplayTruncatedInQuote={memoMinPriceQuote}
+                    pinnedMaxPriceDisplayTruncatedInBase={memoMaxPriceBase}
+                    pinnedMaxPriceDisplayTruncatedInQuote={memoMaxPriceQuote}
                 />
             )}
         </>
@@ -160,8 +190,8 @@ function ConfirmRangeModal(props: propsIF) {
     return (
         <TradeConfirmationSkeleton
             type='Range'
-            tokenA={{ token: tokenA, quantity: tokenAQty }}
-            tokenB={{ token: tokenB, quantity: tokenBQty }}
+            tokenA={{ token: tokenA, quantity: memoTokenAQty }}
+            tokenB={{ token: tokenB, quantity: memoTokenBQty }}
             transactionHash={newRangeTransactionHash}
             txErrorCode={txErrorCode}
             txErrorMessage={txErrorMessage}
@@ -172,9 +202,11 @@ function ConfirmRangeModal(props: propsIF) {
                     ? isAdd
                         ? `Add ${isAmbient ? 'Ambient' : ''} Liquidity`
                         : `Submit ${isAmbient ? 'Ambient' : ''} Liquidity`
-                    : `Minting a Position with ${tokenAQty ? tokenAQty : '0'} ${
-                          tokenA.symbol
-                      } and ${tokenBQty ? tokenBQty : '0'} ${tokenB.symbol}`
+                    : `Minting a Position with ${
+                          memoTokenAQty ? memoTokenAQty : '0'
+                      } ${tokenA.symbol} and ${
+                          memoTokenBQty ? memoTokenBQty : '0'
+                      } ${tokenB.symbol}`
             }
             initiate={sendTransaction}
             resetConfirmation={resetConfirmation}
