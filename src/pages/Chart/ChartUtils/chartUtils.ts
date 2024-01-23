@@ -374,9 +374,28 @@ export function getXandYLocationForChart(
     let offsetY = event.clientY - rect?.top;
     let offsetX = event.clientX - rect?.left;
 
-    if (event instanceof TouchEvent) {
+    if (typeof TouchEvent !== 'undefined' && event instanceof TouchEvent) {
         offsetY = event.targetTouches[0].clientY - rect?.top;
         offsetX = event.targetTouches[0].clientX - rect?.left;
+    }
+
+    return { offsetX: offsetX, offsetY: offsetY };
+}
+
+export function getXandYLocationForChartDrag(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    event: any,
+    rect: DOMRect,
+) {
+    let offsetY = event.sourceEvent.clientY - rect?.top;
+    let offsetX = event.sourceEvent.clientX - rect?.left;
+
+    if (
+        typeof TouchEvent !== 'undefined' &&
+        event.sourceEvent instanceof TouchEvent
+    ) {
+        offsetY = event.sourceEvent.touches[0].clientY - rect?.top;
+        offsetX = event.sourceEvent.touches[0].clientX - rect?.left;
     }
 
     return { offsetX: offsetX, offsetY: offsetY };

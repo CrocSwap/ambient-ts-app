@@ -430,7 +430,10 @@ export default function DragCanvas(props: DragCanvasProps) {
             .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
             .on('start', (event) => {
                 document.addEventListener('keydown', cancelDragEvent);
-                if (event.sourceEvent instanceof TouchEvent) {
+                if (
+                    typeof TouchEvent !== 'undefined' &&
+                    event.sourceEvent instanceof TouchEvent
+                ) {
                     tempMovemementY =
                         event.sourceEvent.touches[0].clientY - canvasRect?.top;
                     tempMovemementX =
@@ -490,7 +493,10 @@ export default function DragCanvas(props: DragCanvasProps) {
             .on('drag', function (event) {
                 if (!cancelDrag) {
                     (async () => {
-                        if (event.sourceEvent instanceof TouchEvent) {
+                        if (
+                            typeof TouchEvent !== 'undefined' &&
+                            event.sourceEvent instanceof TouchEvent
+                        ) {
                             offsetY =
                                 event.sourceEvent.touches[0].clientY -
                                 canvasRect?.top;
@@ -547,7 +553,10 @@ export default function DragCanvas(props: DragCanvasProps) {
                             }
                         }
                     })().then(() => {
-                        if (event.sourceEvent instanceof TouchEvent) {
+                        if (
+                            typeof TouchEvent !== 'undefined' &&
+                            event.sourceEvent instanceof TouchEvent
+                        ) {
                             tempMovemementX =
                                 event.sourceEvent.touches[0].clientX -
                                 canvasRect?.left;
