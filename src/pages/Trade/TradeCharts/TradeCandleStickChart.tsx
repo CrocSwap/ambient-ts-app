@@ -80,7 +80,8 @@ function TradeCandleStickChart(props: propsIF) {
         setCandleScale,
         candleScale,
     } = useContext(CandleContext);
-    const { chartSettings, isChangeScaleChart } = useContext(ChartContext);
+    const { chartSettings, isChangeScaleChart, setSelectedDrawnShape } =
+        useContext(ChartContext);
     const { chainData } = useContext(CrocEnvContext);
     const { poolPriceDisplay: poolPriceWithoutDenom, isPoolInitialized } =
         useContext(PoolContext);
@@ -152,6 +153,10 @@ function TradeCandleStickChart(props: propsIF) {
     useEffect(() => {
         setIsLoading(true);
     }, [period, isDenomBase]);
+
+    useEffect(() => {
+        setSelectedDrawnShape(undefined);
+    }, [period, tokenPair]);
 
     useEffect(() => {
         if (unparsedLiquidityData !== undefined) {

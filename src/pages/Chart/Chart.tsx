@@ -197,7 +197,6 @@ export default function Chart(props: propsIF) {
         setActiveDrawingType,
         selectedDrawnShape,
         setSelectedDrawnShape,
-        // setChartContainerHeight,
         undoRedoOptions: {
             drawnShapeHistory,
             setDrawnShapeHistory,
@@ -347,10 +346,6 @@ export default function Chart(props: propsIF) {
     const [annotationLineSeries, setAnnotationLineSeries] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [dashedLineSeries, setDashedLineSeries] = useState<any>();
-
-    // const [selectedDrawnShape, setSelectedDrawnShape] = useState<
-    //     selectedDrawnData | undefined
-    // >(undefined);
 
     const [hoveredDrawnShape, setHoveredDrawnShape] = useState<
         selectedDrawnData | undefined
