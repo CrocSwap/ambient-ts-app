@@ -83,24 +83,27 @@ function ConfirmRangeModal(props: propsIF) {
     const [memoMaxPriceQuote, setMemoMaxPriceQuote] = useState<
         string | undefined
     >();
+    const [memoIsAdd, setMemoIsAdd] = useState<boolean>(isAdd);
 
     useEffect(() => {
-        if (newRangeTransactionHash === '') {
+        if (showConfirmation === false) {
             setMemoTokenAQty(tokenAQty);
             setMemoTokenBQty(tokenBQty);
             setMemoMinPriceBase(pinnedMinPriceDisplayTruncatedInBase);
             setMemoMinPriceQuote(pinnedMinPriceDisplayTruncatedInQuote);
             setMemoMaxPriceBase(pinnedMaxPriceDisplayTruncatedInBase);
             setMemoMaxPriceQuote(pinnedMaxPriceDisplayTruncatedInQuote);
+            setMemoIsAdd(isAdd);
         }
     }, [
-        newRangeTransactionHash,
+        showConfirmation,
         tokenAQty,
         tokenBQty,
         pinnedMinPriceDisplayTruncatedInBase,
         pinnedMinPriceDisplayTruncatedInQuote,
         pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote,
+        isAdd,
     ]);
 
     const poolTokenDisplay = (
@@ -198,9 +201,15 @@ function ConfirmRangeModal(props: propsIF) {
             poolTokenDisplay={poolTokenDisplay}
             statusText={
                 !showConfirmation
-                    ? isAdd
+                    ? memoIsAdd
                         ? `Add ${isAmbient ? 'Ambient' : ''} Liquidity`
                         : `Submit ${isAmbient ? 'Ambient' : ''} Liquidity`
+                    : memoIsAdd
+                    ? `Adding ${memoTokenAQty ? memoTokenAQty : '0'} ${
+                          tokenA.symbol
+                      } and ${memoTokenBQty ? memoTokenBQty : '0'} ${
+                          tokenB.symbol
+                      }`
                     : `Minting a Position with ${
                           memoTokenAQty ? memoTokenAQty : '0'
                       } ${tokenA.symbol} and ${
