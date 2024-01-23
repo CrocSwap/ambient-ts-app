@@ -365,8 +365,10 @@ export default function DragCanvas(props: DragCanvasProps) {
             .select(d3DragCanvas.current)
             .select('canvas')
             .node() as HTMLCanvasElement;
-        canvas.addEventListener('pointerup', () => {
-            setIsDragActive(false);
+        canvas.addEventListener('pointerup', (event: PointerEvent) => {
+            if (event.pointerType === 'touch') {
+                setIsDragActive(false);
+            }
         });
     }, []);
 
