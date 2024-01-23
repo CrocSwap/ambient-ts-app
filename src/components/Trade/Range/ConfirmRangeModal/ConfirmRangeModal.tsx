@@ -86,7 +86,6 @@ function ConfirmRangeModal(props: propsIF) {
 
     useEffect(() => {
         if (newRangeTransactionHash === '') {
-            console.log({ tokenAQty, tokenBQty });
             setMemoTokenAQty(tokenAQty);
             setMemoTokenBQty(tokenBQty);
             setMemoMinPriceBase(pinnedMinPriceDisplayTruncatedInBase);
