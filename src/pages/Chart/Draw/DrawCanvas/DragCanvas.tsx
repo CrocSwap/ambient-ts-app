@@ -191,6 +191,10 @@ export default function DragCanvas(props: DragCanvasProps) {
             valueY = scaleData?.yScale.invert(offsetY);
         }
 
+        if (scaleData.xScale.invert(offsetX) < valueX) {
+            valueX = scaleData.xScale.invert(offsetX);
+        }
+
         return { valueX: valueX, valueY: valueY };
     }
 
