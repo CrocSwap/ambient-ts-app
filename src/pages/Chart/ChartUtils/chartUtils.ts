@@ -382,6 +382,25 @@ export function getXandYLocationForChart(
     return { offsetX: offsetX, offsetY: offsetY };
 }
 
+export function getXandYLocationForChartDrag(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    event: any,
+    rect: DOMRect,
+) {
+    let offsetY = event.sourceEvent.clientY - rect?.top;
+    let offsetX = event.sourceEvent.clientX - rect?.left;
+
+    if (
+        typeof TouchEvent !== 'undefined' &&
+        event.sourceEvent instanceof TouchEvent
+    ) {
+        offsetY = event.sourceEvent.touches[0].clientY - rect?.top;
+        offsetX = event.sourceEvent.touches[0].clientX - rect?.left;
+    }
+
+    return { offsetX: offsetX, offsetY: offsetY };
+}
+
 export function saveShapeAttiributesToLocalStorage(item: drawDataHistory) {
     const storedData = localStorage.getItem(LS_KEY_CHART_ANNOTATIONS);
     if (storedData) {
@@ -448,3 +467,17 @@ export const renderChart = () => {
     const nd = d3.select('#d3fc_group').node() as any;
     if (nd) nd.requestRedraw();
 };
+
+export function isTimeZoneStart(date: Date): boolean {
+    try {
+        const day = date.getDate();
+
+        if (day === 1) {
+            return true;
+        } else {
+            return false;
+        }
+    } catch (error) {
+        return false;
+    }
+}

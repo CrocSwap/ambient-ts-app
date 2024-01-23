@@ -68,6 +68,7 @@ import {
     formatTimeDifference,
     getInitialDisplayCandleCount,
     getXandYLocationForChart,
+    getXandYLocationForChartDrag,
     lineData,
     lineValue,
     liquidityChartData,
@@ -1554,7 +1555,6 @@ export default function Chart(props: propsIF) {
 
             let oldRangeMinValue: number | undefined = undefined;
             let oldRangeMaxValue: number | undefined = undefined;
-            let offsetY = 0;
             const dragRange = d3
                 .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
                 .filter((event) => filterDragEvent(event, rectCanvas.left))
@@ -1565,15 +1565,10 @@ export default function Chart(props: propsIF) {
 
                     d3.select('#y-axis-canvas').style('cursor', 'none');
 
-                    let clientY = 0;
-
-                    if (event.sourceEvent instanceof TouchEvent) {
-                        clientY =
-                            event.sourceEvent.touches[0].clientY -
-                            rectCanvas?.top;
-                    } else {
-                        clientY = event.sourceEvent.clientY - rectCanvas?.top;
-                    }
+                    const { offsetY: clientY } = getXandYLocationForChartDrag(
+                        event,
+                        rectCanvas,
+                    );
 
                     const advancedValue = scaleData?.yScale.invert(clientY);
 
@@ -1598,13 +1593,10 @@ export default function Chart(props: propsIF) {
                     }
                 })
                 .on('drag', function (event) {
-                    if (event.sourceEvent instanceof TouchEvent) {
-                        offsetY =
-                            event.sourceEvent.touches[0].clientY -
-                            rectCanvas?.top;
-                    } else {
-                        offsetY = event.sourceEvent.clientY - rectCanvas?.top;
-                    }
+                    const { offsetY } = getXandYLocationForChartDrag(
+                        event,
+                        rectCanvas,
+                    );
 
                     if (!cancelDrag && liquidityData) {
                         setIsLineDrag(true);
@@ -2030,7 +2022,10 @@ export default function Chart(props: propsIF) {
                 oldLimitValue = limit;
                 newLimitValue = limit;
                 tempNewLimitValue = limit;
-                if (event.sourceEvent instanceof TouchEvent) {
+                if (
+                    typeof TouchEvent !== 'undefined' &&
+                    event.sourceEvent instanceof TouchEvent
+                ) {
                     tempMovemementY =
                         event.sourceEvent.touches[0].clientY - rectCanvas?.top;
                 }
@@ -2039,7 +2034,10 @@ export default function Chart(props: propsIF) {
                 (async () => {
                     // Indicate that line is dragging
                     setIsLineDrag(true);
-                    if (event.sourceEvent instanceof TouchEvent) {
+                    if (
+                        typeof TouchEvent !== 'undefined' &&
+                        event.sourceEvent instanceof TouchEvent
+                    ) {
                         offsetY =
                             event.sourceEvent.touches[0].clientY -
                             rectCanvas?.top;
@@ -2076,7 +2074,10 @@ export default function Chart(props: propsIF) {
                         }
                     }
                 })().then(() => {
-                    if (event.sourceEvent instanceof TouchEvent) {
+                    if (
+                        typeof TouchEvent !== 'undefined' &&
+                        event.sourceEvent instanceof TouchEvent
+                    ) {
                         tempMovemementY =
                             event.sourceEvent.touches[0].clientY -
                             rectCanvas?.top;
@@ -3152,44 +3153,42 @@ export default function Chart(props: propsIF) {
                                             ) /
                                                 2;
 
-                                        const deltaY =
-                                            canvasSize.height -
-                                            infoLabelHeight -
-                                            5;
-
-                                        let infoLabelYAxisData =
-                                            scaleData.yScale(
-                                                secondPointYAxisData,
-                                            ) +
-                                            (secondPointYAxisData >
-                                            firstPointYAxisData
-                                                ? -(infoLabelHeight + 15)
-                                                : 15);
-
-                                        infoLabelYAxisData =
-                                            infoLabelYAxisData +
-                                                infoLabelHeight >
-                                            canvasSize.height
-                                                ? deltaY
-                                                : infoLabelYAxisData;
-
-                                        const dpRangeLabelYPlacement =
+                                        const yAxisLabelPlacement =
                                             scaleData.yScale(
                                                 firstPointYAxisData,
-                                            ) < 0
-                                                ? infoLabelYAxisData
+                                            ) <
+                                            scaleData.yScale(
+                                                secondPointYAxisData,
+                                            )
+                                                ? scaleData.yScale(
+                                                      firstPointYAxisData,
+                                                  ) > canvas.height
+                                                    ? scaleData.yScale(
+                                                          secondPointYAxisData,
+                                                      ) + 15
+                                                    : Math.min(
+                                                          scaleData.yScale(
+                                                              secondPointYAxisData,
+                                                          ) + 15,
+                                                          canvasSize.height -
+                                                              (infoLabelHeight +
+                                                                  5),
+                                                      )
                                                 : scaleData.yScale(
                                                       firstPointYAxisData,
-                                                  ) < canvasSize.height
-                                                ? infoLabelYAxisData +
-                                                      infoLabelHeight >
-                                                  canvasSize.height
-                                                    ? deltaY
-                                                    : Math.max(
-                                                          infoLabelYAxisData,
-                                                          5,
-                                                      )
-                                                : infoLabelYAxisData;
+                                                  ) < 5
+                                                ? scaleData.yScale(
+                                                      secondPointYAxisData,
+                                                  ) -
+                                                  (infoLabelHeight + 15)
+                                                : Math.max(
+                                                      scaleData.yScale(
+                                                          secondPointYAxisData,
+                                                      ) -
+                                                          (infoLabelHeight +
+                                                              15),
+                                                      5,
+                                                  );
 
                                         const arrowArray =
                                             createArrowPointsOfDPRangeLine(
@@ -3213,7 +3212,7 @@ export default function Chart(props: propsIF) {
                                                     infoLabelXAxisData,
                                                 ) -
                                                     infoLabelWidth / 2,
-                                                dpRangeLabelYPlacement,
+                                                yAxisLabelPlacement,
                                                 infoLabelWidth,
                                                 infoLabelHeight,
                                             );
@@ -3261,7 +3260,7 @@ export default function Chart(props: propsIF) {
                                                 scaleData.xScale(
                                                     infoLabelXAxisData,
                                                 ),
-                                                dpRangeLabelYPlacement + 16,
+                                                yAxisLabelPlacement + 16,
                                             );
                                             ctx.fillText(
                                                 (lengthAsBars / (1000 * period))
@@ -3272,7 +3271,7 @@ export default function Chart(props: propsIF) {
                                                 scaleData.xScale(
                                                     infoLabelXAxisData,
                                                 ),
-                                                dpRangeLabelYPlacement + 33,
+                                                yAxisLabelPlacement + 33,
                                             );
                                             ctx.fillText(
                                                 'Vol ' +
@@ -3282,7 +3281,7 @@ export default function Chart(props: propsIF) {
                                                 scaleData.xScale(
                                                     infoLabelXAxisData,
                                                 ),
-                                                dpRangeLabelYPlacement + 50,
+                                                yAxisLabelPlacement + 50,
                                             );
                                         }
                                     }
@@ -4442,35 +4441,30 @@ export default function Chart(props: propsIF) {
 
         if (scaleData) {
             const threshold = 10;
-            const allBandLines = createPointsOfBandLine(element);
 
-            allBandLines.forEach(
-                (item: { x: number; y: number; denomInBase: boolean }[]) => {
-                    const startX = item[0].x;
-                    const startY =
-                        item[0].denomInBase === denomInBase
-                            ? item[0].y
-                            : 1 / item[0].y;
-                    const endX = item[1].x;
-                    const endY =
-                        item[1].denomInBase === denomInBase
-                            ? item[1].y
-                            : 1 / item[1].y;
+            const denomStartY =
+                element[0].denomInBase === denomInBase
+                    ? element[0].y
+                    : 1 / element[0].y;
+            const denomEndY =
+                element[0].denomInBase === denomInBase
+                    ? element[1].y
+                    : 1 / element[1].y;
 
-                    const distance = distanceToLine(
-                        mouseX,
-                        mouseY,
-                        scaleData.xScale(startX),
-                        scaleData.yScale(startY),
-                        scaleData.xScale(endX),
-                        scaleData.yScale(endY),
-                    );
+            const startY = Math.min(denomStartY, denomEndY);
+            const endY = Math.max(denomStartY, denomEndY);
 
-                    if (distance < threshold) {
-                        isOverLine = true;
-                    }
-                },
-            );
+            const startX = Math.min(element[0].x, element[1].x);
+            const endX = Math.max(element[0].x, element[1].x);
+
+            if (
+                mouseX > scaleData.xScale(startX) - threshold &&
+                mouseX < scaleData.xScale(endX) + threshold &&
+                mouseY < scaleData.yScale(startY) + threshold &&
+                mouseY > scaleData.yScale(endY) - threshold
+            ) {
+                isOverLine = true;
+            }
         }
 
         return isOverLine;
@@ -4527,6 +4521,8 @@ export default function Chart(props: propsIF) {
             const tempStartXLocation = scaleData.xScale(startX);
             const tempEndXLocation = scaleData.xScale(endX);
 
+            const threshold = 10;
+
             const startXLocation = Math.min(
                 tempStartXLocation,
                 tempEndXLocation,
@@ -4555,9 +4551,13 @@ export default function Chart(props: propsIF) {
             );
             const endYLocation = Math.max(tempStartYLocation, tempEndYLocation);
 
-            const isIncludeX = startXLocation < mouseX && mouseX < endXLocation;
+            const isIncludeX =
+                startXLocation - threshold < mouseX &&
+                mouseX < endXLocation + threshold;
 
-            const isIncludeY = startYLocation < mouseY && mouseY < endYLocation;
+            const isIncludeY =
+                startYLocation - threshold < mouseY &&
+                mouseY < endYLocation + threshold;
 
             return isIncludeX && isIncludeY;
         }
@@ -4613,69 +4613,6 @@ export default function Chart(props: propsIF) {
                 if (element.type === 'Rect' || element.type === 'DPRange') {
                     if (checkRectLocation(element.data, mouseX, mouseY)) {
                         resElement = element;
-                    }
-
-                    if (element.type === 'DPRange') {
-                        const startX = Math.min(
-                            element.data[0].x,
-                            element.data[1].x,
-                        );
-                        const startY = Math.max(
-                            element.data[0].y,
-                            element.data[1].y,
-                        );
-                        const endX = Math.max(
-                            element.data[0].x,
-                            element.data[1].x,
-                        );
-                        const endY = Math.min(
-                            element.data[0].y,
-                            element.data[1].y,
-                        );
-
-                        const lineOfDPRange = [
-                            [
-                                {
-                                    x: startX + (endX - startX) / 2,
-                                    y: startY,
-                                    denomInBase: element.data[0].denomInBase,
-                                    ctx: undefined,
-                                },
-                                {
-                                    x: startX + (endX - startX) / 2,
-                                    y: endY,
-                                    denomInBase: element.data[1].denomInBase,
-                                    ctx: undefined,
-                                },
-                            ],
-                            [
-                                {
-                                    x: startX,
-                                    y: startY - (startY - endY) / 2,
-                                    denomInBase: element.data[0].denomInBase,
-                                    ctx: undefined,
-                                },
-                                {
-                                    x: endX,
-                                    y: startY - (startY - endY) / 2,
-                                    denomInBase: element.data[0].denomInBase,
-                                    ctx: undefined,
-                                },
-                            ],
-                        ];
-
-                        lineOfDPRange.forEach((line) => {
-                            if (
-                                checkLineLocation(
-                                    line,
-                                    mouseX,
-                                    mouseY,
-                                    denomInBase,
-                                )
-                            ) {
-                                resElement = element;
-                            }
-                        });
                     }
                 }
 

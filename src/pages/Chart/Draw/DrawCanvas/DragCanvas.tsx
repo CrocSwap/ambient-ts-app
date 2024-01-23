@@ -191,6 +191,10 @@ export default function DragCanvas(props: DragCanvasProps) {
             valueY = scaleData?.yScale.invert(offsetY);
         }
 
+        if (scaleData.xScale.invert(offsetX) < valueX) {
+            valueX = scaleData.xScale.invert(offsetX);
+        }
+
         return { valueX: valueX, valueY: valueY };
     }
 
@@ -365,8 +369,10 @@ export default function DragCanvas(props: DragCanvasProps) {
             .select(d3DragCanvas.current)
             .select('canvas')
             .node() as HTMLCanvasElement;
-        canvas.addEventListener('pointerup', () => {
-            setIsDragActive(false);
+        canvas.addEventListener('pointerup', (event: PointerEvent) => {
+            if (event.pointerType === 'touch') {
+                setIsDragActive(false);
+            }
         });
     }, []);
 
@@ -430,7 +436,10 @@ export default function DragCanvas(props: DragCanvasProps) {
             .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
             .on('start', (event) => {
                 document.addEventListener('keydown', cancelDragEvent);
-                if (event.sourceEvent instanceof TouchEvent) {
+                if (
+                    typeof TouchEvent !== 'undefined' &&
+                    event.sourceEvent instanceof TouchEvent
+                ) {
                     tempMovemementY =
                         event.sourceEvent.touches[0].clientY - canvasRect?.top;
                     tempMovemementX =
@@ -490,7 +499,10 @@ export default function DragCanvas(props: DragCanvasProps) {
             .on('drag', function (event) {
                 if (!cancelDrag) {
                     (async () => {
-                        if (event.sourceEvent instanceof TouchEvent) {
+                        if (
+                            typeof TouchEvent !== 'undefined' &&
+                            event.sourceEvent instanceof TouchEvent
+                        ) {
                             offsetY =
                                 event.sourceEvent.touches[0].clientY -
                                 canvasRect?.top;
@@ -547,7 +559,10 @@ export default function DragCanvas(props: DragCanvasProps) {
                             }
                         }
                     })().then(() => {
-                        if (event.sourceEvent instanceof TouchEvent) {
+                        if (
+                            typeof TouchEvent !== 'undefined' &&
+                            event.sourceEvent instanceof TouchEvent
+                        ) {
                             tempMovemementX =
                                 event.sourceEvent.touches[0].clientX -
                                 canvasRect?.left;
