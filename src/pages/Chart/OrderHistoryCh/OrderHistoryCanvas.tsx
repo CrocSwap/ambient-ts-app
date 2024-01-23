@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-    bandLineData,
     lineData,
     renderCanvasArray,
     scaleData,
@@ -21,6 +20,7 @@ interface OrderHistoryCanvasProps {
     showHistorical: boolean;
     hoveredOrderHistory: TransactionIF | undefined;
     isHoveredOrderHistory: boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     drawSettings: any;
     userTransactionData: TransactionIF[] | undefined;
 }
@@ -40,12 +40,16 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
 
     const d3OrderCanvas = useRef<HTMLDivElement | null>(null);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [bandArea, setBandArea] = useState<any>();
-    const [bandAreaHighlighted, setBandAreaHighlighted] = useState<any>();
+    // const [bandAreaHighlighted, setBandAreaHighlighted] = useState<any>();
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [circleScale, setCircleScale] = useState<any>();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [circleSeries, setCircleSeries] = useState<any>();
     const [circleSeriesHighlighted, setCircleSeriesHighlighted] =
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         useState<any>();
 
     const lineSeries = createLinearLineSeries(
@@ -94,6 +98,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
 
     useEffect(() => {
         if (userTransactionData && circleScale) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const circleSerieArray: any[] = [];
 
             userTransactionData.forEach((order) => {
@@ -421,6 +426,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                     if (liquidityLineSeries !== undefined)
                         liquidityLineSeries.context(ctx);
                     if (circleSeries !== undefined && circleSeries.length > 0) {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         circleSeries.forEach((element: any) => {
                             element.context(ctx);
                         });
@@ -429,14 +435,15 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                         circleSeriesHighlighted !== undefined &&
                         circleSeriesHighlighted.length > 0
                     ) {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         circleSeriesHighlighted.forEach((element: any) => {
                             element.context(ctx);
                         });
                     }
                     if (bandArea !== undefined) bandArea.context(ctx);
-                    if (bandAreaHighlighted !== undefined) {
-                        bandAreaHighlighted.context(ctx);
-                    }
+                    // if (bandAreaHighlighted !== undefined) {
+                    //     bandAreaHighlighted.context(ctx);
+                    // }
                 });
         }
 
@@ -451,7 +458,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
         showLiquidity,
         showSwap,
         liquidityLineSeries,
-        bandAreaHighlighted,
+        // bandAreaHighlighted,
     ]);
 
     return <d3fc-canvas className='d3_order_canvas' ref={d3OrderCanvas} />;

@@ -129,10 +129,10 @@ function TradeCharts(props: propsIF) {
         orderHistoryState?.isSwapOrderHistoryEnabled ?? false,
     );
     const [showLiquidity, setShowLiquidity] = useState(
-        orderHistoryState?.isLiquidityOrderHistoryEnabled ?? false,
+        false, // orderHistoryState?.isLiquidityOrderHistoryEnabled ?? false,
     );
     const [showHistorical, setShowHistorical] = useState(
-        orderHistoryState?.isHistoricalOrderHistoryEnabled ?? false,
+        false, // orderHistoryState?.isHistoricalOrderHistoryEnabled ?? false,
     );
 
     const chartItemStates = useMemo(() => {

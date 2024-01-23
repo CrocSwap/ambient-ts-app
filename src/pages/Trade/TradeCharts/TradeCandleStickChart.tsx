@@ -43,13 +43,6 @@ import { updatesIF } from '../../../utils/hooks/useUrlParams';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { xAxisBuffer } from '../../Chart/ChartUtils/chartConstants';
-import { UserDataContext } from '../../../contexts/UserDataContext';
-import { AppStateContext } from '../../../contexts/AppStateContext';
-import { fetchUserRecentChanges } from '../../../ambient-utils/api';
-import { TokenContext } from '../../../contexts/TokenContext';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import useDebounce from '../../../App/hooks/useDebounce';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface propsIF {
@@ -177,30 +170,6 @@ function TradeCandleStickChart(props: propsIF) {
 
     const [userTransactionData, setUserTransactionData] =
         useState<Array<TransactionIF>>();
-
-    const { userAddress } = useContext(UserDataContext);
-
-    const {
-        server: { isEnabled: isServerEnabled },
-    } = useContext(AppStateContext);
-
-    const {
-        crocEnv,
-        activeNetwork,
-        provider,
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
-
-    const { tokens } = useContext(TokenContext);
-
-    const { lastBlockNumber } = useContext(ChainDataContext);
-
-    const {
-        cachedQuerySpotPrice,
-        cachedFetchTokenPrice,
-        cachedTokenDetails,
-        cachedEnsResolve,
-    } = useContext(CachedDataContext);
 
     const { changesByUser } = useContext(GraphDataContext);
 

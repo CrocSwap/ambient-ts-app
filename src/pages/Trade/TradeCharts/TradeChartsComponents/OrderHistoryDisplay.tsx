@@ -15,8 +15,8 @@ interface OrderHistortyDisplayPropsIF {
 function OrderHistortyDisplay(props: OrderHistortyDisplayPropsIF) {
     const {
         setShowSwap,
-        setShowLiquidity,
-        setShowHistorical,
+        // setShowLiquidity,
+        // setShowHistorical,
         showSwap,
         showLiquidity,
         showHistorical,
@@ -49,22 +49,22 @@ function OrderHistortyDisplay(props: OrderHistortyDisplayPropsIF) {
         });
     };
 
-    const handleLiquidityToggle = () => {
-        setShowLiquidity(!showLiquidity);
-        updateOrderHistoryToggles({
-            isSwapOrderHistoryEnabled: showSwap,
-            isLiquidityOrderHistoryEnabled: !showLiquidity,
-            isHistoricalOrderHistoryEnabled: showHistorical,
-        });
-    };
-    const handleHistoricalToggle = () => {
-        setShowHistorical(!showHistorical);
-        updateOrderHistoryToggles({
-            isSwapOrderHistoryEnabled: showSwap,
-            isLiquidityOrderHistoryEnabled: showLiquidity,
-            isHistoricalOrderHistoryEnabled: !showHistorical,
-        });
-    };
+    // const handleLiquidityToggle = () => {
+    //     setShowLiquidity(!showLiquidity);
+    //     updateOrderHistoryToggles({
+    //         isSwapOrderHistoryEnabled: showSwap,
+    //         isLiquidityOrderHistoryEnabled: !showLiquidity,
+    //         isHistoricalOrderHistoryEnabled: showHistorical,
+    //     });
+    // };
+    // const handleHistoricalToggle = () => {
+    //     setShowHistorical(!showHistorical);
+    //     updateOrderHistoryToggles({
+    //         isSwapOrderHistoryEnabled: showSwap,
+    //         isLiquidityOrderHistoryEnabled: showLiquidity,
+    //         isHistoricalOrderHistoryEnabled: !showHistorical,
+    //     });
+    // };
 
     const orderHistortyDisplay = [
         { name: 'Buys/Sells', selected: showSwap, action: handleSwapToggle },
@@ -73,11 +73,11 @@ function OrderHistortyDisplay(props: OrderHistortyDisplayPropsIF) {
         //     selected: showLiquidity,
         //     action: handleLiquidityToggle,
         // },
-        {
-            name: 'Historical',
-            selected: showHistorical,
-            action: handleHistoricalToggle,
-        },
+        // {
+        //     name: 'Historical',
+        //     selected: showHistorical,
+        //     action: handleHistoricalToggle,
+        // },
     ];
 
     const wrapperStyle = showOrderHistortyDisplayDropdown
@@ -107,7 +107,8 @@ function OrderHistortyDisplay(props: OrderHistortyDisplayPropsIF) {
                 tabIndex={0}
                 aria-label='Open volume and tvl dropdown.'
             >
-                {showSwap ? 'Buys/Sells' : showHistorical ? 'Historical' : ''}
+                Buys/Sells
+                {/* {showSwap ? 'Buys/Sells' : showHistorical ? 'Historical' : ''} */}
                 {/* showLiquidity
                     ? 'Liquidity'
                     : ''} */}

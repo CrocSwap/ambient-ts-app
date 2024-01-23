@@ -4555,6 +4555,7 @@ export default function Chart(props: propsIF) {
     };
 
     const orderHistoryHoverStatus = (mouseX: number, mouseY: number) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let resElement: any = undefined;
 
         if (scaleData && userTransactionData) {

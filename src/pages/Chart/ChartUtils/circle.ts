@@ -13,7 +13,7 @@ const circleOrderSellStrokeColor = '#8A8AFF';
 const circleOrderBuyStrokeColor = '#CDC1FF';
 const circleOrderSellFillColor = 'rgba(115, 113, 252, 0.3)';
 const circleOrderBuyFillColor = 'rgba(205, 193, 255, 0.3)';
-const howeredCircleFillColor = 'wheat';
+// const howeredCircleFillColor = 'wheat';
 
 export function createCircle(
     xScale: any,
