@@ -69,6 +69,7 @@ import {
     formatTimeDifference,
     getInitialDisplayCandleCount,
     getXandYLocationForChart,
+    getXandYLocationForChartDrag,
     lineData,
     lineValue,
     liquidityChartData,
@@ -1568,7 +1569,6 @@ export default function Chart(props: propsIF) {
 
             let oldRangeMinValue: number | undefined = undefined;
             let oldRangeMaxValue: number | undefined = undefined;
-            let offsetY = 0;
             const dragRange = d3
                 .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
                 .filter((event) => filterDragEvent(event, rectCanvas.left))
@@ -1579,15 +1579,10 @@ export default function Chart(props: propsIF) {
 
                     d3.select('#y-axis-canvas').style('cursor', 'none');
 
-                    let clientY = 0;
-
-                    if (event.sourceEvent instanceof TouchEvent) {
-                        clientY =
-                            event.sourceEvent.touches[0].clientY -
-                            rectCanvas?.top;
-                    } else {
-                        clientY = event.sourceEvent.clientY - rectCanvas?.top;
-                    }
+                    const { offsetY: clientY } = getXandYLocationForChartDrag(
+                        event,
+                        rectCanvas,
+                    );
 
                     const advancedValue = scaleData?.yScale.invert(clientY);
 
@@ -1612,13 +1607,10 @@ export default function Chart(props: propsIF) {
                     }
                 })
                 .on('drag', function (event) {
-                    if (event.sourceEvent instanceof TouchEvent) {
-                        offsetY =
-                            event.sourceEvent.touches[0].clientY -
-                            rectCanvas?.top;
-                    } else {
-                        offsetY = event.sourceEvent.clientY - rectCanvas?.top;
-                    }
+                    const { offsetY } = getXandYLocationForChartDrag(
+                        event,
+                        rectCanvas,
+                    );
 
                     if (!cancelDrag && liquidityData) {
                         setIsLineDrag(true);
@@ -2044,7 +2036,10 @@ export default function Chart(props: propsIF) {
                 oldLimitValue = limit;
                 newLimitValue = limit;
                 tempNewLimitValue = limit;
-                if (event.sourceEvent instanceof TouchEvent) {
+                if (
+                    typeof TouchEvent !== 'undefined' &&
+                    event.sourceEvent instanceof TouchEvent
+                ) {
                     tempMovemementY =
                         event.sourceEvent.touches[0].clientY - rectCanvas?.top;
                 }
@@ -2053,7 +2048,10 @@ export default function Chart(props: propsIF) {
                 (async () => {
                     // Indicate that line is dragging
                     setIsLineDrag(true);
-                    if (event.sourceEvent instanceof TouchEvent) {
+                    if (
+                        typeof TouchEvent !== 'undefined' &&
+                        event.sourceEvent instanceof TouchEvent
+                    ) {
                         offsetY =
                             event.sourceEvent.touches[0].clientY -
                             rectCanvas?.top;
@@ -2090,7 +2088,10 @@ export default function Chart(props: propsIF) {
                         }
                     }
                 })().then(() => {
-                    if (event.sourceEvent instanceof TouchEvent) {
+                    if (
+                        typeof TouchEvent !== 'undefined' &&
+                        event.sourceEvent instanceof TouchEvent
+                    ) {
                         tempMovemementY =
                             event.sourceEvent.touches[0].clientY -
                             rectCanvas?.top;
