@@ -1122,7 +1122,21 @@ function Range() {
                         transactionPendingDisplayString={
                             isAdd
                                 ? `Adding ${tokenA.symbol} and ${tokenB.symbol}`
-                                : `Minting a Position with ${tokenA.symbol} and ${tokenB.symbol}`
+                                : `Minting a Position with ${
+                                      !isTokenAInputDisabled
+                                          ? tokenA.symbol
+                                          : ''
+                                  } ${
+                                      !isTokenAInputDisabled &&
+                                      !isTokenBInputDisabled
+                                          ? 'and'
+                                          : ''
+                                  } ${
+                                      !isTokenBInputDisabled
+                                          ? tokenB.symbol
+                                          : ''
+                                  }
+                                     `
                         }
                     />
                 ) : undefined
