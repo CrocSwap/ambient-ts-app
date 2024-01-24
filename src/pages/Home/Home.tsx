@@ -6,7 +6,10 @@ import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import MobileLandingSections from '../../components/Home/Landing/MobileLandingSections';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useSwitchNetwork } from 'wagmi';
-import { supportedNetworks } from '../../ambient-utils/constants';
+import {
+    APP_ENVIRONMENT,
+    supportedNetworks,
+} from '../../ambient-utils/constants';
 import { useAppChain } from '../../App/hooks/useAppChain';
 import { useContext, useEffect } from 'react';
 import { lookupChainId } from '../../ambient-utils/dataLayer';
@@ -81,21 +84,25 @@ export default function Home() {
                     <Hero />
                 </div>
             )}
-            <PointSystemContainer>
-                <Text fontSize='header1'>Points system now live!</Text>
+            {APP_ENVIRONMENT !== 'production' && (
+                <PointSystemContainer>
+                    <Text fontSize='header1'>Points system now live!</Text>
 
-                <Link to={isUserConnected ? '/account/xp' : '/xp-leaderboard'}>
-                    <Text
-                        fontSize='header2'
-                        color='accent1'
-                        style={{ textDecoration: 'underline' }}
+                    <Link
+                        to={isUserConnected ? '/account/xp' : '/xp-leaderboard'}
                     >
-                        {isUserConnected
-                            ? ' View your current XP here'
-                            : 'View XP leaderboard'}
-                    </Text>
-                </Link>
-            </PointSystemContainer>
+                        <Text
+                            fontSize='header2'
+                            color='accent1'
+                            style={{ textDecoration: 'underline' }}
+                        >
+                            {isUserConnected
+                                ? ' View your current XP here'
+                                : 'View XP leaderboard'}
+                        </Text>
+                    </Link>
+                </PointSystemContainer>
+            )}
             <div>
                 <TopPools />
                 <Stats />
