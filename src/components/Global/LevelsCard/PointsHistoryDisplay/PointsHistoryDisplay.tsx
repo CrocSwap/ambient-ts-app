@@ -69,14 +69,14 @@ export default function PointsHistoryDisplay(props: PropsIF) {
                             color='text1'
                             style={{ textAlign: 'end' }}
                         >
-                            {data?.addedPoints} pts
+                            {data?.addedPoints}
                         </Text>
                         <Text
                             fontSize={!desktopScreen ? 'body' : 'header2'}
                             color='text1'
                             style={{ textAlign: 'end' }}
                         >
-                            {data?.retroPoints} pts
+                            {data?.retroPoints}
                         </Text>
                     </React.Fragment>
                 ))}
