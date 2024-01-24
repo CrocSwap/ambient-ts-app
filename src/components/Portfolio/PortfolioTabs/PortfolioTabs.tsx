@@ -76,7 +76,7 @@ export default function PortfolioTabs(props: propsIF) {
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
-    const { positionsByUser, limitOrdersByUser, changesByUser } =
+    const { positionsByUser, limitOrdersByUser, transactionsByUser } =
         useContext(GraphDataContext);
 
     // TODO: can pull into GraphDataContext
@@ -84,7 +84,7 @@ export default function PortfolioTabs(props: propsIF) {
         x.chainId === chainId;
 
     const _positionsByUser = positionsByUser.positions.filter(filterFn);
-    const _txsByUser = changesByUser.changes.filter(filterFn);
+    const _txsByUser = transactionsByUser.changes.filter(filterFn);
     const _limitsByUser = limitOrdersByUser.limitOrders.filter(filterFn);
 
     const [lookupAccountPositionData, setLookupAccountPositionData] = useState<

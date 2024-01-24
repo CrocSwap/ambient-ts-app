@@ -92,7 +92,8 @@ function Transactions(props: propsIF) {
     // NOTE: this is done to improve rendering speed for this page.
 
     const dataLoadingStatus = useContext(DataLoadingContext);
-    const { changesByUser, changesByPool } = useContext(GraphDataContext);
+    const { userTransactionsByPool, transactionsByPool } =
+        useContext(GraphDataContext);
     const { transactionsByType, pendingTransactions } =
         useContext(ReceiptContext);
     const { baseToken, quoteToken } = useContext(TradeDataContext);
@@ -114,7 +115,7 @@ function Transactions(props: propsIF) {
             setTransactionData(activeAccountTransactionData || []);
         else if (!showAllData)
             setTransactionData(
-                changesByUser.changes.filter(
+                userTransactionsByPool.changes.filter(
                     (tx) =>
                         tx.base.toLowerCase() ===
                             baseToken.address.toLowerCase() &&
@@ -126,7 +127,7 @@ function Transactions(props: propsIF) {
             );
         else {
             setTransactionData(
-                changesByPool.changes.filter(
+                transactionsByPool.changes.filter(
                     (tx) =>
                         tx.base.toLowerCase() ===
                             baseToken.address.toLowerCase() &&
@@ -141,8 +142,8 @@ function Transactions(props: propsIF) {
         showAllData,
         isCandleSelected,
         activeAccountTransactionData,
-        changesByUser,
-        changesByPool,
+        userTransactionsByPool,
+        transactionsByPool,
     ]);
 
     useEffect(() => {
@@ -157,13 +158,14 @@ function Transactions(props: propsIF) {
         else if (isCandleSelected) {
             setIsLoading(dataLoadingStatus.isCandleDataLoading);
         } else if (!showAllData)
-            setIsLoading(dataLoadingStatus.isConnectedUserTxDataLoading);
+            setIsLoading(dataLoadingStatus.isConnectedUserPoolTxDataLoading);
         else setIsLoading(dataLoadingStatus.isPoolTxDataLoading);
     }, [
         isCandleSelected,
         showAllData,
         connectedAccountActive,
         dataLoadingStatus.isConnectedUserTxDataLoading,
+        dataLoadingStatus.isConnectedUserPoolTxDataLoading,
         dataLoadingStatus.isLookupUserTxDataLoading,
         dataLoadingStatus.isPoolTxDataLoading,
         dataLoadingStatus.isCandleDataLoading,
