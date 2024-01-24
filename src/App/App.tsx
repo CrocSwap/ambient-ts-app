@@ -1,5 +1,5 @@
 /** ***** Import React and Dongles *******/
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
     Routes,
     Route,
@@ -46,6 +46,7 @@ import Explore from '../pages/Explore/Explore';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
 import ExampleForm from '../pages/InitPool/FormExample';
+import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
 
 /** ***** React Function *******/
 export default function App() {
@@ -158,6 +159,7 @@ export default function App() {
         }
     }, [isEscapePressed]);
     const showMobileVersion = useMediaQuery('(max-width: 500px)');
+    const [showPointSystemPopup, setShowPointSystemPopup] = useState(true);
 
     return (
         <>
@@ -167,6 +169,12 @@ export default function App() {
                 data-theme={selectedTheme}
             >
                 {!isWalletChainSupported && <SwitchNetwork />}
+                {showPointSystemPopup && (
+                    <PointSystemPopup
+                        showPointSystemPopup={showPointSystemPopup}
+                        setShowPointSystemPopup={setShowPointSystemPopup}
+                    />
+                )}
                 <AppOverlay />
                 <PageHeader />
                 <div

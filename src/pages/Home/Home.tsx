@@ -73,6 +73,7 @@ export default function Home() {
     `;
 
     if (showMobileVersion) return <MobileLandingSections />;
+
     return (
         <section data-testid={'home'}>
             {!showMobileVersion && (
