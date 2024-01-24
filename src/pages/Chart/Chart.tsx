@@ -70,6 +70,7 @@ import {
     formatTimeDifference,
     getInitialDisplayCandleCount,
     getXandYLocationForChart,
+    getXandYLocationForChartDrag,
     lineData,
     lineValue,
     liquidityChartData,
@@ -1585,7 +1586,6 @@ export default function Chart(props: propsIF) {
 
             let oldRangeMinValue: number | undefined = undefined;
             let oldRangeMaxValue: number | undefined = undefined;
-            let offsetY = 0;
             const dragRange = d3
                 .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
                 .filter((event) => filterDragEvent(event, rectCanvas.left))
@@ -1596,15 +1596,10 @@ export default function Chart(props: propsIF) {
 
                     d3.select('#y-axis-canvas').style('cursor', 'none');
 
-                    let clientY = 0;
-
-                    if (event.sourceEvent instanceof TouchEvent) {
-                        clientY =
-                            event.sourceEvent.touches[0].clientY -
-                            rectCanvas?.top;
-                    } else {
-                        clientY = event.sourceEvent.clientY - rectCanvas?.top;
-                    }
+                    const { offsetY: clientY } = getXandYLocationForChartDrag(
+                        event,
+                        rectCanvas,
+                    );
 
                     const advancedValue = scaleData?.yScale.invert(clientY);
 
@@ -1629,13 +1624,10 @@ export default function Chart(props: propsIF) {
                     }
                 })
                 .on('drag', function (event) {
-                    if (event.sourceEvent instanceof TouchEvent) {
-                        offsetY =
-                            event.sourceEvent.touches[0].clientY -
-                            rectCanvas?.top;
-                    } else {
-                        offsetY = event.sourceEvent.clientY - rectCanvas?.top;
-                    }
+                    const { offsetY } = getXandYLocationForChartDrag(
+                        event,
+                        rectCanvas,
+                    );
 
                     if (!cancelDrag && liquidityData) {
                         setIsLineDrag(true);
@@ -2061,7 +2053,10 @@ export default function Chart(props: propsIF) {
                 oldLimitValue = limit;
                 newLimitValue = limit;
                 tempNewLimitValue = limit;
-                if (event.sourceEvent instanceof TouchEvent) {
+                if (
+                    typeof TouchEvent !== 'undefined' &&
+                    event.sourceEvent instanceof TouchEvent
+                ) {
                     tempMovemementY =
                         event.sourceEvent.touches[0].clientY - rectCanvas?.top;
                 }
@@ -2070,7 +2065,10 @@ export default function Chart(props: propsIF) {
                 (async () => {
                     // Indicate that line is dragging
                     setIsLineDrag(true);
-                    if (event.sourceEvent instanceof TouchEvent) {
+                    if (
+                        typeof TouchEvent !== 'undefined' &&
+                        event.sourceEvent instanceof TouchEvent
+                    ) {
                         offsetY =
                             event.sourceEvent.touches[0].clientY -
                             rectCanvas?.top;
@@ -2107,7 +2105,10 @@ export default function Chart(props: propsIF) {
                         }
                     }
                 })().then(() => {
-                    if (event.sourceEvent instanceof TouchEvent) {
+                    if (
+                        typeof TouchEvent !== 'undefined' &&
+                        event.sourceEvent instanceof TouchEvent
+                    ) {
                         tempMovemementY =
                             event.sourceEvent.touches[0].clientY -
                             rectCanvas?.top;
@@ -4330,8 +4331,17 @@ export default function Chart(props: propsIF) {
         if (scaleData) {
             const threshold = 10;
 
-            const startY = Math.min(element[0].y, element[1].y);
-            const endY = Math.max(element[0].y, element[1].y);
+            const denomStartY =
+                element[0].denomInBase === denomInBase
+                    ? element[0].y
+                    : 1 / element[0].y;
+            const denomEndY =
+                element[0].denomInBase === denomInBase
+                    ? element[1].y
+                    : 1 / element[1].y;
+
+            const startY = Math.min(denomStartY, denomEndY);
+            const endY = Math.max(denomStartY, denomEndY);
 
             const startX = Math.min(element[0].x, element[1].x);
             const endX = Math.max(element[0].x, element[1].x);
@@ -4339,8 +4349,8 @@ export default function Chart(props: propsIF) {
             if (
                 mouseX > scaleData.xScale(startX) - threshold &&
                 mouseX < scaleData.xScale(endX) + threshold &&
-                mouseY < scaleData.yScale(startY) - threshold &&
-                mouseY > scaleData.yScale(endY) + threshold
+                mouseY < scaleData.yScale(startY) + threshold &&
+                mouseY > scaleData.yScale(endY) - threshold
             ) {
                 isOverLine = true;
             }
@@ -4428,6 +4438,8 @@ export default function Chart(props: propsIF) {
             const tempStartXLocation = scaleData.xScale(startX);
             const tempEndXLocation = scaleData.xScale(endX);
 
+            const threshold = 10;
+
             const startXLocation = Math.min(
                 tempStartXLocation,
                 tempEndXLocation,
@@ -4456,9 +4468,13 @@ export default function Chart(props: propsIF) {
             );
             const endYLocation = Math.max(tempStartYLocation, tempEndYLocation);
 
-            const isIncludeX = startXLocation < mouseX && mouseX < endXLocation;
+            const isIncludeX =
+                startXLocation - threshold < mouseX &&
+                mouseX < endXLocation + threshold;
 
-            const isIncludeY = startYLocation < mouseY && mouseY < endYLocation;
+            const isIncludeY =
+                startYLocation - threshold < mouseY &&
+                mouseY < endYLocation + threshold;
 
             return isIncludeX && isIncludeY;
         }
