@@ -129,10 +129,12 @@ export const useAppChain = (): {
                                 linkGenPool.navigate(
                                     `chain=${incomingChainFromWallet}`,
                                 );
-                            } else {
+                            } else if (pathname.includes('chain')) {
                                 linkGenCurrent.navigate(
                                     `chain=${incomingChainFromWallet}`,
                                 );
+                            } else {
+                                linkGenCurrent.navigate();
                             }
                         }
                         window.location.reload();
@@ -181,14 +183,17 @@ export const useAppChain = (): {
     // ... else in this file responds to changes in the browser environment
     function chooseNetwork(network: NetworkIF): void {
         localStorage.setItem(CHAIN_LS_KEY, network.chainId);
+        const { pathname } = window.location;
         setActiveNetwork(network);
         if (
             linkGenCurrent.currentPage === 'initpool' ||
             linkGenCurrent.currentPage === 'reposition'
         ) {
             linkGenPool.navigate(`chain=${network.chainId}`);
-        } else {
+        } else if (pathname.includes('chain')) {
             linkGenCurrent.navigate(`chain=${network.chainId}`);
+        } else {
+            linkGenCurrent.navigate();
         }
         window.location.reload();
     }
