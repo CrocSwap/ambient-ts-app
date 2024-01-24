@@ -174,7 +174,10 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                                         initiate();
                                     }}
                                     flat
-                                    disabled={!isAllowed || !!acknowledgeUpdate}
+                                    disabled={
+                                        isAllowed === false ||
+                                        !!acknowledgeUpdate
+                                    }
                                 />
                             </>
                         ) : (
