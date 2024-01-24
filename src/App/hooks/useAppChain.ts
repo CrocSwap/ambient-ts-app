@@ -25,9 +25,6 @@ export const useAppChain = (): {
     // hook to generate navigation actions with pre-loaded path
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
     const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
-    const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
-    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
-    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
     const [searchParams] = useSearchParams();
     const chainParam = searchParams.get('chain');
@@ -125,18 +122,13 @@ export const useAppChain = (): {
                             if (chainParam || networkParam) {
                                 // navigate to index page only if "chain" or "network" in URL
                                 linkGenIndex.navigate();
-                            } else if (pathname.includes('swap')) {
-                                // navigate to index page only if swap in URL
-                                linkGenSwap.navigate();
-                            } else if (pathname.includes('market')) {
-                                // navigate to index page only if market in URL
-                                linkGenMarket.navigate();
-                            } else if (pathname.includes('limit')) {
-                                // navigate to index page only if limit in URL
-                                linkGenLimit.navigate();
-                            } else if (pathname.includes('pool')) {
-                                // navigate to index page only if pool in URL
+                            } else if (
+                                linkGenCurrent.currentPage === 'initpool' ||
+                                linkGenCurrent.currentPage === 'reposition'
+                            ) {
                                 linkGenPool.navigate();
+                            } else {
+                                linkGenCurrent.navigate();
                             }
                         }
                         window.location.reload();
