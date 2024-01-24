@@ -760,6 +760,8 @@ export default function Limit() {
                         startDisplayPrice={startDisplayPrice}
                         middleDisplayPrice={middleDisplayPrice}
                         endDisplayPrice={endDisplayPrice}
+                        limitAllowed={limitAllowed}
+                        limitButtonErrorMessage={limitButtonErrorMessage}
                     />
                 ) : (
                     <></>

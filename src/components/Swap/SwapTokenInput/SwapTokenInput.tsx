@@ -178,8 +178,12 @@ function SwapTokenInput(props: propsIF) {
 
         isTokenAPrimary ? setIsBuyLoading(false) : setIsSellLoading(false);
 
+        // prevent swaps with a price impact in excess of -99.99% or 1 million percent
         if (impact) {
-            if (impact.percentChange < -0.9999 || impact.percentChange > 2) {
+            if (
+                impact.percentChange < -0.9999 ||
+                impact.percentChange > 10000
+            ) {
                 setIsLiquidityInsufficient(true);
                 setSwapAllowed(false);
                 return undefined;
