@@ -14,14 +14,12 @@ export default function OrderHistoryTooltip(props: {
     scaleData: scaleData;
     hoveredOrderHistory: TransactionIF;
     isHoveredOrderHistory: boolean;
-    bandwidth: number;
     denomInBase: boolean;
 }) {
     const {
         scaleData,
         hoveredOrderHistory,
         isHoveredOrderHistory,
-        bandwidth,
         denomInBase,
     } = props;
 
@@ -39,8 +37,7 @@ export default function OrderHistoryTooltip(props: {
                         : hoveredOrderHistory.swapPriceDecimalCorrected,
                 )}
                 left={
-                    scaleData?.xScale(hoveredOrderHistory?.txTime * 1000) +
-                    bandwidth * 13
+                    scaleData?.xScale(hoveredOrderHistory?.txTime * 1000) + 70
                 }
             >
                 <OrderHistoryHeader>

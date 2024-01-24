@@ -5567,7 +5567,6 @@ export default function Chart(props: propsIF) {
                     scaleData={scaleData}
                     hoveredOrderHistory={hoveredOrderHistory}
                     isHoveredOrderHistory={isHoveredOrderHistory}
-                    bandwidth={bandwidth}
                     denomInBase={denomInBase}
                 />
             )}

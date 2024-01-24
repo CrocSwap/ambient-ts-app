@@ -311,8 +311,6 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                             order.entityType === 'limitOrder' &&
                             lineSeries
                         ) {
-                            console.log(order.changeType, index);
-
                             if (
                                 order.changeType === 'mint' ||
                                 order.changeType === 'recover'

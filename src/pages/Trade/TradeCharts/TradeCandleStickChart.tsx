@@ -171,13 +171,16 @@ function TradeCandleStickChart(props: propsIF) {
     const [userTransactionData, setUserTransactionData] =
         useState<Array<TransactionIF>>();
 
-    const { changesByUser } = useContext(GraphDataContext);
+    const { userTransactionsByPool } = useContext(GraphDataContext);
 
     useEffect(() => {
-        if (changesByUser && changesByUser.changes.length > 0) {
-            setUserTransactionData(changesByUser.changes);
+        if (
+            userTransactionsByPool &&
+            userTransactionsByPool.changes.length > 0
+        ) {
+            setUserTransactionData(userTransactionsByPool.changes);
         }
-    }, [changesByUser]);
+    }, [userTransactionsByPool]);
 
     useEffect(() => {
         setIsLoading(true);
