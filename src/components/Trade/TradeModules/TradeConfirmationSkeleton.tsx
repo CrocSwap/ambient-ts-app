@@ -1,5 +1,11 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useContext, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
 
 // START: Import JSX Components
 import Button from '../../Form/Button';
@@ -104,6 +110,17 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
             />
         </svg>
     );
+
+    // logic to prevent swap quantities updating during/after swap completion
+    const [memoTokenA, setMemoTokenA] = useState<string | undefined>();
+    const [memoTokenB, setMemoTokenB] = useState<string | undefined>();
+
+    useEffect(() => {
+        if (activeStep === 0) {
+            setMemoTokenA(tokenAQuantity);
+            setMemoTokenB(tokenBQuantity);
+        }
+    }, [activeStep, tokenAQuantity, tokenBQuantity]);
 
     const tokenDisplay = (
         <>
@@ -229,7 +246,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                         size='s'
                     />
                     <Text fontSize='body' color='text2' align='center'>
-                        {tokenAQuantity} {tokenA.symbol}
+                        {memoTokenA} {tokenA.symbol}
                     </Text>
                     →
                     <TokenIcon
@@ -239,7 +256,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                         size='s'
                     />
                     <Text fontSize='body' color='text2' align='center'>
-                        {tokenBQuantity} {tokenB.symbol}
+                        {memoTokenB} {tokenB.symbol}
                     </Text>
                 </FlexContainer>
                 {fillEnd && (
