@@ -22,6 +22,7 @@ interface PropsIF {
     tokenBImage: string;
     chainId: string | number;
     isConfirmed: boolean;
+    isTransactionFailed: boolean;
     noAnimation?: boolean;
     stepperComponent?: boolean;
 }
@@ -37,6 +38,7 @@ export default function TransactionSubmitted(props: PropsIF) {
         noAnimation,
         chainId,
         isConfirmed,
+        isTransactionFailed,
     } = props;
 
     const blockExplorer = getChainExplorer(chainId);
@@ -95,36 +97,47 @@ export default function TransactionSubmitted(props: PropsIF) {
                     style={{ textAlign: 'center', width: '100%' }}
                 >
                     {type === 'Limit'
-                        ? isConfirmed
+                        ? isTransactionFailed
+                            ? 'Limit Order Failed'
+                            : isConfirmed
                             ? 'Limit Order Success!'
                             : 'Successfully Submitted'
                         : type === 'Range'
-                        ? isConfirmed
+                        ? isTransactionFailed
+                            ? 'Pool Failed'
+                            : isConfirmed
                             ? 'Pool Success!'
                             : 'Successfully Submitted'
                         : type === 'Reposition'
                         ? `Reposition ${
-                              isConfirmed
+                              isTransactionFailed
+                                  ? 'Failed'
+                                  : isConfirmed
                                   ? 'Confirmed'
                                   : 'Successfully Submitted'
                           }`
                         : type === 'Reset'
                         ? `Reset ${
-                              isConfirmed
+                              isTransactionFailed
+                                  ? 'Failed'
+                                  : isConfirmed
                                   ? 'Confirmed'
                                   : 'Successfully Submitted'
                           }`
                         : type === 'Remove'
                         ? `Removal ${
-                              isConfirmed
+                              isTransactionFailed
+                                  ? 'Failed'
+                                  : isConfirmed
                                   ? 'Confirmed'
                                   : 'Successfully Submitted'
                           }`
+                        : isTransactionFailed
+                        ? 'Swap Failed'
                         : isConfirmed
                         ? 'Swap Success!'
                         : 'Successfully Submitted'}
                 </Text>
-
                 <div
                     className={`${styles.action_buttons} ${
                         noAnimation && styles.bypass_buttons
