@@ -4,11 +4,7 @@ import styles from './DomDebugger.module.css';
 import { clearDomDebug } from './DomDebuggerUtils';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-interface propsIF {
-    isActive?: boolean;
-}
-
-export default function DomDebugger(props: propsIF) {
+export default function DomDebugger() {
     const [debugEnabled, setDebugEnabled] = useState(false);
     useEffect(() => {
         const lsVal = getLS('debugEnabled');

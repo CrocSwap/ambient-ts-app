@@ -81,7 +81,6 @@ interface SentMessageProps {
     handleConfirmationDialog: (
         confirmationType: number,
         startDate: Date,
-        endDate?: Date,
     ) => void;
 }
 
@@ -89,7 +88,6 @@ function SentMessagePanel(props: SentMessageProps) {
     const { deleteMsgFromList } = props;
     const [isMoreButtonPressed, setIsMoreButtonPressed] = useState(false);
     const [hasSeparator, setHasSeparator] = useState(false);
-    const [isClickedOptions, setIsClickedOptions] = useState(false);
     const [isPosition, setIsPosition] = useState(false);
     const [showAvatar, setShowAvatar] = useState<boolean>(true);
     const [showName, setShowName] = useState<boolean>(true);

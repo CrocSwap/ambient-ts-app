@@ -15,12 +15,14 @@ interface propsIF {
 }
 
 export default function ReplyMessage(props: propsIF) {
-    function truncateText(text: string | undefined, maxLength: number) {
-        if (text!.length <= maxLength) {
-            return text;
+    function truncateText(text: string | undefined, maxLength: number): string {
+        if (text) {
+            if (text.length <= maxLength) {
+                return text as string;
+            }
+            return text.slice(0, maxLength - 3) + '...';
         }
-
-        return text!.slice(0, maxLength - 3) + '...';
+        return '';
     }
 
     const replyJazzIcon = (

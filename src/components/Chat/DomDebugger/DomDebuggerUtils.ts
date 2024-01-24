@@ -1,6 +1,6 @@
 import styles from './DomDebugger.module.css';
 
-export const domDebug = (key: string, value: any) => {
+export const domDebug = (key: string, value: string) => {
     const el = document.getElementById('dom-debugger');
     if (el === null) {
         return; // not in debug mode

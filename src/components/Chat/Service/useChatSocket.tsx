@@ -391,11 +391,16 @@ const useChatSocket = (
                 updateMessages(data);
             });
             socketRef.current.on('message-updated-listener', (data: any) => {
+                console.log(data);
+                console.log(data);
+                console.log(data);
+                console.log(data);
+                console.log(data);
+                console.log(data);
+                console.log(data);
                 updateMessages(data);
             });
         }
-
-        getUsersFromMessage(messages);
     }, [messages]);
 
     async function getMsg() {
@@ -437,10 +442,6 @@ const useChatSocket = (
         }
 
         return data;
-    }
-
-    function getUsersFromMessage(messages: Message[]) {
-        console.log('asdasdasd');
     }
 
     async function sendMsg(
@@ -551,6 +552,7 @@ const useChatSocket = (
         fetchForNotConnectedUser,
         getUserSummaryDetails,
         updateUnverifiedMessages,
+        getMentionsWithRest,
     };
 };
 

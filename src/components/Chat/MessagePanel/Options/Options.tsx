@@ -1,14 +1,10 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
-import {
-    BsEmojiSmile,
-    BsEmojiSmileUpsideDown,
-    BsFillReplyFill,
-} from 'react-icons/bs';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { AiOutlineDelete, AiOutlineRotateLeft } from 'react-icons/ai';
+import { BsEmojiSmile, BsFillReplyFill } from 'react-icons/bs';
 import { SlOptions } from 'react-icons/sl';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { Message } from '../../Model/MessageModel';
 import styles from './Options.module.css';
-import { AiOutlineDelete, AiOutlineRotateLeft } from 'react-icons/ai';
 interface propsIF {
     setIsReplyButtonPressed: Dispatch<SetStateAction<boolean>>;
     isReplyButtonPressed: boolean;
@@ -26,6 +22,9 @@ interface propsIF {
 export default function Options(props: propsIF) {
     const [showDetailsGroup, setShowDetailsGroup] = useState(false);
 
+    const showFlipCard = false;
+    const showMore = false;
+
     function setReplyMessage() {
         props.setIsReplyButtonPressed(!props.isReplyButtonPressed);
         props.setSelectedMessageForReply(props.message);
@@ -42,10 +41,6 @@ export default function Options(props: propsIF) {
     useEffect(() => {
         setShowDetailsGroup(false);
     }, [props.tsForRefresh]);
-
-    // Create a ref to the outermost element of the dropdown
-    const dropdownRef = useRef<HTMLDivElement>(null);
-    // Add an event listener to handle clicks outside the dropdown
 
     const options = (
         <SlOptions
@@ -186,9 +181,9 @@ export default function Options(props: propsIF) {
                     ) : (
                         <></>
                     )}
-                    {/* {flipCard} */}
+                    {showFlipCard && flipCard}
                     {addReactionWithTooltip}
-                    {/* {optionsWithTooltip} */}
+                    {showMore && optionsWithTooltip}
                 </div>
             </div>
         </>

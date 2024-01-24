@@ -6,12 +6,9 @@ interface MentionAutoCompleteProps {
     selectedUser: User | null;
     active: boolean;
     userPickerForMention: (user: User) => void;
-    queryStr?: string;
 }
 
 export default function MentionAutoComplete(props: MentionAutoCompleteProps) {
-    // test
-    // test2
     const usersDom = (
         <span>
             {props.userList.map((user) => {

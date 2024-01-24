@@ -32,7 +32,7 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { uriToHttp } from '../../../ambient-utils/dataLayer';
 import ChatToaster from '../ChatToaster/ChatToaster';
 import ChatConfirmationPanel from '../ChatConfirmationPanel/ChatConfirmationPanel';
-import Picker from 'emoji-picker-react';
+import Picker, { IEmojiData } from 'emoji-picker-react';
 
 interface FullChatPropsIF {
     messageList: JSX.Element;
@@ -51,7 +51,11 @@ interface FullChatPropsIF {
     isChatOpen: boolean;
     isModerator: boolean;
     isVerified: boolean;
-    verifyWallet: (val: number, date: Date, e: any) => void;
+    verifyWallet: (
+        val: number,
+        date: Date,
+        e: React.MouseEvent<HTMLDivElement>,
+    ) => void;
     toastrActive: boolean;
     toastrActivator: Dispatch<SetStateAction<boolean>>;
     toastrText: string;
@@ -67,7 +71,10 @@ interface FullChatPropsIF {
     confirmationPanelContent: number;
     setShowVerifyOldMessagesPanel: Dispatch<SetStateAction<boolean>>;
     showPicker: boolean;
-    addReactionEmojiPickListener: (event: any, data: any) => void;
+    addReactionEmojiPickListener: (
+        event: React.MouseEvent,
+        data: IEmojiData,
+    ) => void;
     setShowPicker: Dispatch<SetStateAction<boolean>>;
 }
 

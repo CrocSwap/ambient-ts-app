@@ -5,8 +5,8 @@ interface propsIF {
     isActive: boolean;
     title: string;
     content: string;
-    confirmListener?: any;
-    cancelListener?: any;
+    confirmListener?: () => void;
+    cancelListener?: () => void;
 }
 
 export default function ChatConfirmationPanel(props: propsIF) {
@@ -25,7 +25,9 @@ export default function ChatConfirmationPanel(props: propsIF) {
                 <div
                     className={styles.btn_wrapper}
                     onClick={() => {
-                        props.cancelListener();
+                        if (props.cancelListener) {
+                            props.cancelListener();
+                        }
                     }}
                 >
                     Cancel
@@ -33,7 +35,9 @@ export default function ChatConfirmationPanel(props: propsIF) {
                 <div
                     className={styles.btn_wrapper + ' ' + styles.primary_btn}
                     onClick={() => {
-                        props.confirmListener();
+                        if (props.confirmListener) {
+                            props.confirmListener();
+                        }
                     }}
                 >
                     Confirm

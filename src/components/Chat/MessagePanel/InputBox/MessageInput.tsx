@@ -1,7 +1,7 @@
 import { BsEmojiSmile } from 'react-icons/bs';
 import { Message } from '../../Model/MessageModel';
 
-import Picker from 'emoji-picker-react';
+import Picker, { IEmojiData } from 'emoji-picker-react';
 import {
     Dispatch,
     SetStateAction,
@@ -14,7 +14,7 @@ import PositionBox from '../PositionBox/PositionBox';
 import styles from './MessageInput.module.css';
 
 import { RiCloseFill, RiInformationLine } from 'react-icons/ri';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
+// import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import CircularProgressBar from '../../../Global/OpenOrderStatus/CircularProgressBar';
 import { User, getUserLabel, userLabelForFilter } from '../../Model/UserModel';
@@ -66,13 +66,14 @@ export default function MessageInput(props: MessageInputProps) {
     const [isInfoPressed, setIsInfoPressed] = useState(false);
     const { userAddress, isUserConnected } = useContext(UserDataContext);
     const [isPosition, setIsPosition] = useState(false);
-    const {
-        chat: { isOpen: isChatOpen },
-        subscriptions: { isEnabled: isSubscriptionsEnabled },
-    } = useContext(AppStateContext);
+
+    // disabled for now due to es-lint warnings
+    // const {
+    //     chat: { isOpen: isChatOpen },
+    //     subscriptions: { isEnabled: isSubscriptionsEnabled },
+    // } = useContext(AppStateContext);
 
     const [mentPanelActive, setMentPanelActive] = useState(false);
-    const [mentPanelQueryStr, setMentPanelQueryStr] = useState('');
     const [possibleMentUser, setPossibleMentUser] = useState<User | null>(null);
     const [inputLength, setInputLength] = useState(0);
     const [mentUser, setMentUser] = useState<User | null>(null);
@@ -82,7 +83,10 @@ export default function MessageInput(props: MessageInputProps) {
 
     const isRoomAdmins = roomId === 'Admins';
 
-    const handleEmojiClick = (event: any, emojiObject: any) => {
+    const handleEmojiClick = (
+        event: React.MouseEvent,
+        emojiObject: IEmojiData,
+    ) => {
         if (inputRef.current) {
             const emoji = emojiObject.emoji;
             const currentMessage = message;
@@ -194,13 +198,15 @@ export default function MessageInput(props: MessageInputProps) {
         );
         setMessage(newMessage);
         setMentPanelActive(false);
+
+        inputRef.current?.focus();
     };
 
-    const handleInputChange = (e: any) => {
-        const newMessage = e.target.value;
+    const handleInputChange = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        const newMessage = e.currentTarget.value;
         setMessage(newMessage);
         setInputLength(newMessage.length);
-        setCursorPosition(e.target.selectionStart);
+        setCursorPosition(e.currentTarget.selectionStart);
 
         // Check if the message length is less than or equal to 140 characters,
         // and hide the pop-up message if it was shown previously
@@ -209,7 +215,7 @@ export default function MessageInput(props: MessageInputProps) {
         }
     };
 
-    const handleInputClick = (e: any) => {
+    const handleInputClick = () => {
         // Update cursor position when the user clicks inside the input field
         if (inputRef.current) {
             setCursorPosition(inputRef.current.selectionStart);
@@ -221,17 +227,19 @@ export default function MessageInput(props: MessageInputProps) {
         }
     };
 
-    const getEffectiveCursorPosition = () => {
-        if (cursorPosition === null) {
-            return null;
-        }
-        const currentMessage = message.slice(0, cursorPosition);
-        const emojiCount = (currentMessage.match(/[\uD800-\uDFFF]/g) || [])
-            .length;
-        return cursorPosition - emojiCount;
-    };
+    // disabled due to es-lint warnings
 
-    const isEmoji = (char: any) => {
+    // const getEffectiveCursorPosition = () => {
+    //     if (cursorPosition === null) {
+    //         return null;
+    //     }
+    //     const currentMessage = message.slice(0, cursorPosition);
+    //     const emojiCount = (currentMessage.match(/[\uD800-\uDFFF]/g) || [])
+    //         .length;
+    //     return cursorPosition - emojiCount;
+    // };
+
+    const isEmoji = (char: string) => {
         // You can implement a more comprehensive check for emojis
         // For simplicity, this example only checks for surrogate pairs
         return /[\uD800-\uDFFF]/.test(char);
@@ -429,7 +437,6 @@ export default function MessageInput(props: MessageInputProps) {
             if (possibleMentUser === null) {
                 setMentPanelActive(true);
             }
-            // setMentPanelQueryStr();
             const filteredUsers = filterUsers(e.target.value.split('@')[1]);
             setFilteredUsers(filteredUsers);
             if (filteredUsers.length < 1) {
@@ -452,7 +459,6 @@ export default function MessageInput(props: MessageInputProps) {
         <MentionAutoComplete
             userList={filteredUsers}
             active={mentPanelActive}
-            queryStr={mentPanelQueryStr}
             selectedUser={possibleMentUser}
             userPickerForMention={userPickerForMention}
         />
