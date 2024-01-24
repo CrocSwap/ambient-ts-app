@@ -54,10 +54,11 @@ function SwapExtraInfo(props: propsIF) {
 
     const finalPriceString = getFormattedNumber({ value: finalPriceWithDenom });
 
+    // prevent swaps with a price impact in excess of -99.99% or 1 million percent
     const priceImpactNum =
         !priceImpact?.percentChange ||
         priceImpact.percentChange < -0.9999 ||
-        priceImpact.percentChange > 2
+        priceImpact.percentChange > 10000
             ? undefined
             : Math.abs(priceImpact.percentChange) * 100;
 

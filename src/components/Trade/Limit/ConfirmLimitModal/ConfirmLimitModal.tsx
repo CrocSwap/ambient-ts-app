@@ -27,6 +27,8 @@ interface propsIF {
     handleSetActiveContent: (newActiveContent: string) => void;
     showStepperComponent: boolean;
     setShowStepperComponent: React.Dispatch<React.SetStateAction<boolean>>;
+    limitAllowed: boolean;
+    limitButtonErrorMessage: string;
 }
 
 export default function ConfirmLimitModal(props: propsIF) {
@@ -49,6 +51,8 @@ export default function ConfirmLimitModal(props: propsIF) {
         handleSetActiveContent,
         showStepperComponent,
         setShowStepperComponent,
+        limitAllowed,
+        limitButtonErrorMessage,
     } = props;
 
     const { poolPriceDisplay } = useContext(PoolContext);
@@ -146,7 +150,9 @@ export default function ConfirmLimitModal(props: propsIF) {
             txErrorMessage={txErrorMessage}
             statusText={
                 !showConfirmation
-                    ? 'Submit Limit Order'
+                    ? limitAllowed
+                        ? 'Submit Limit Order'
+                        : limitButtonErrorMessage
                     : `Submitting Limit Order to Swap ${tokenAInputQty} ${tokenA.symbol} for ${tokenBInputQty} ${tokenB.symbol}`
             }
             poolPrice={displayPoolPriceWithDenom.toFixed(2)}
@@ -159,6 +165,7 @@ export default function ConfirmLimitModal(props: propsIF) {
             handleSetActiveContent={handleSetActiveContent}
             showStepperComponent={showStepperComponent}
             setShowStepperComponent={setShowStepperComponent}
+            isAllowed={limitAllowed}
         />
     );
 }

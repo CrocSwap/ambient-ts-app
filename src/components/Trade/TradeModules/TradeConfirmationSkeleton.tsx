@@ -55,6 +55,7 @@ interface propsIF {
     maxPrice?: string;
     fillEnd?: string;
     priceImpactWarning?: JSX.Element | undefined;
+    isAllowed?: boolean;
 }
 
 export default function TradeConfirmationSkeleton(props: propsIF) {
@@ -84,6 +85,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         maxPrice,
         fillEnd,
         priceImpactWarning,
+        isAllowed,
     } = props;
 
     const {
@@ -302,7 +304,9 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                                 initiate();
                             }}
                             flat
-                            disabled={!!acknowledgeUpdate}
+                            disabled={
+                                isAllowed === false || !!acknowledgeUpdate
+                            }
                             idForDOM='trade_conf_skeleton_btn'
                         />
                     </footer>

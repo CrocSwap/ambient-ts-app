@@ -812,6 +812,8 @@ export default function Limit() {
                     handleSetActiveContent={handleSetActiveContent}
                     showStepperComponent={showStepperComponent}
                     setShowStepperComponent={setShowStepperComponent}
+                    limitAllowed={limitAllowed}
+                    limitButtonErrorMessage={limitButtonErrorMessage}
                 />
             }
             button={
