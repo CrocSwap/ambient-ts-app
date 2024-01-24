@@ -37,6 +37,7 @@ interface propsIF {
     acknowledgeUpdate?: React.ReactNode;
     extraNotes?: React.ReactNode;
     priceImpactWarning?: JSX.Element | undefined;
+    isAllowed?: boolean;
 }
 
 export default function TradeConfirmationSkeleton(props: propsIF) {
@@ -57,6 +58,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         acknowledgeUpdate,
         extraNotes,
         priceImpactWarning,
+        isAllowed,
     } = props;
 
     const {
@@ -172,7 +174,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                                         initiate();
                                     }}
                                     flat
-                                    disabled={!!acknowledgeUpdate}
+                                    disabled={!isAllowed || !!acknowledgeUpdate}
                                 />
                             </>
                         ) : (

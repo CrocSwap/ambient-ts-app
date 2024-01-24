@@ -151,6 +151,7 @@ export default function ConfirmLimitModal(props: propsIF) {
             }
             showConfirmation={showConfirmation}
             resetConfirmation={resetConfirmation}
+            isAllowed={limitAllowed}
         />
     );
 }
