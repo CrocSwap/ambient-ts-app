@@ -1174,11 +1174,25 @@ function Range() {
                         txErrorMessage={txErrorMessage}
                         resetConfirmation={resetConfirmation}
                         sendTransaction={sendTransaction}
-                        transactionPendingDisplayString={`Minting a Position with ${
-                            tokenAInputQty ?? '0'
-                        } ${tokenA.symbol} and ${tokenBInputQty ?? '0'} ${
-                            tokenB.symbol
-                        }.`}
+                        transactionPendingDisplayString={
+                            isAdd
+                                ? `Adding ${tokenA.symbol} and ${tokenB.symbol}`
+                                : `Minting a Position with ${
+                                      !isTokenAInputDisabled
+                                          ? tokenA.symbol
+                                          : ''
+                                  } ${
+                                      !isTokenAInputDisabled &&
+                                      !isTokenBInputDisabled
+                                          ? 'and'
+                                          : ''
+                                  } ${
+                                      !isTokenBInputDisabled
+                                          ? tokenB.symbol
+                                          : ''
+                                  }
+                                     `
+                        }
                         activeStep={activeStep}
                         setActiveStep={setActiveStep}
                         steps={rangeSteps}

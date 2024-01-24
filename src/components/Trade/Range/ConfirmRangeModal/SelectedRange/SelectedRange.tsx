@@ -9,10 +9,10 @@ import { GraphDataContext } from '../../../../../contexts/GraphDataContext';
 interface propsIF {
     isTokenABase: boolean;
     isAmbient: boolean;
-    pinnedMinPriceDisplayTruncatedInBase: string;
-    pinnedMinPriceDisplayTruncatedInQuote: string;
-    pinnedMaxPriceDisplayTruncatedInBase: string;
-    pinnedMaxPriceDisplayTruncatedInQuote: string;
+    pinnedMinPriceDisplayTruncatedInBase: string | undefined;
+    pinnedMinPriceDisplayTruncatedInQuote: string | undefined;
+    pinnedMaxPriceDisplayTruncatedInBase: string | undefined;
+    pinnedMaxPriceDisplayTruncatedInQuote: string | undefined;
     showOnlyFeeTier?: boolean;
     isDenomBase: boolean;
     setIsDenomBase: Dispatch<SetStateAction<boolean>>;
@@ -51,12 +51,12 @@ function SelectedRange(props: propsIF) {
         (isTokenABase && isDenomBase) || (!isTokenABase && !isDenomBase);
 
     const minPrice = isDenomBase
-        ? pinnedMinPriceDisplayTruncatedInBase
-        : pinnedMinPriceDisplayTruncatedInQuote;
+        ? pinnedMinPriceDisplayTruncatedInBase || '...'
+        : pinnedMinPriceDisplayTruncatedInQuote || '...';
 
     const maxPrice = isDenomBase
-        ? pinnedMaxPriceDisplayTruncatedInBase
-        : pinnedMaxPriceDisplayTruncatedInQuote;
+        ? pinnedMaxPriceDisplayTruncatedInBase || '...'
+        : pinnedMaxPriceDisplayTruncatedInQuote || '...';
 
     const displayPriceWithDenom =
         isInitPage && initialPrice
