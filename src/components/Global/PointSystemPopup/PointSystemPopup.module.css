@@ -129,9 +129,8 @@ transition: all var(--animation-speed) ease-in-out;
 }
 
 .connect_button:hover{
-    background: var(--dark1, #0D1117);
-    color: var(--accent1, #7371FC);
-    border: 1px solid var(--accent1, #7371FC);
+
+    color: var(--text1);
 }
 
 .leaderboard_link{
@@ -142,8 +141,7 @@ transition: all var(--animation-speed) ease-in-out;
     
 }
 .leaderboard_link:hover{
-    background: var(--accent1, #7371FC);;
-    color: var(--dark1, #0D1117);
+    color: var(--text1);
 }
 
 @media only screen and (min-width: 768px) {

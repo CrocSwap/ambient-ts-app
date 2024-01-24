@@ -49,7 +49,6 @@ export default function PointSystemPopup(props: PropsIF) {
     };
     // Any location we won't to exclude the popup from goes here
     const excludedLocations = ['/404', '/terms', '/privacy'];
-    console.log({ isEnabledLocally });
 
     if (excludedLocations.includes(currentLocation) || !isEnabledLocally)
         return null;
@@ -76,14 +75,26 @@ export default function PointSystemPopup(props: PropsIF) {
                             alignItems='center'
                         >
                             <h2 className={styles.sub_text}>
-                                Connect wallet to check your ambient points
+                                {isUserConnected
+                                    ? 'Check your ambient points here'
+                                    : 'Connect wallet to check your ambient points'}
                             </h2>
                             <FlexContainer
                                 flexDirection='row'
                                 alignItems='center'
                                 gap={32}
                             >
-                                {!isUserConnected && (
+                                {isUserConnected ? (
+                                    <Link
+                                        className={styles.connect_button}
+                                        to='/account/xp'
+                                        onClick={() =>
+                                            setShowPointSystemPopup(false)
+                                        }
+                                    >
+                                        View Points
+                                    </Link>
+                                ) : (
                                     <button
                                         className={styles.connect_button}
                                         onClick={handleConnectButtonClick}
@@ -91,6 +102,7 @@ export default function PointSystemPopup(props: PropsIF) {
                                         Connect wallet
                                     </button>
                                 )}
+
                                 <Link
                                     className={styles.leaderboard_link}
                                     to='/xp-leaderboard'
