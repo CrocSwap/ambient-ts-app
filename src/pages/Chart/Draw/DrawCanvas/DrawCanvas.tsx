@@ -1,19 +1,47 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import {
+    CandleDataChart,
     bandLineData,
+    calculateFibRetracement,
+    calculateFibRetracementBandAreas,
+    clipCanvas,
+    crosshair,
     drawDataHistory,
+    drawnShapeEditAttributes,
+    findSnapTime,
+    formatTimeDifference,
     lineData,
     renderCanvasArray,
     scaleData,
     selectedDrawnData,
     setCanvasResolution,
 } from '../../ChartUtils/chartUtils';
-import { diffHashSig } from '../../../../ambient-utils/dataLayer';
+import {
+    diffHashSig,
+    diffHashSigScaleData,
+} from '../../../../ambient-utils/dataLayer';
 import { createCircle } from '../../ChartUtils/circle';
-import { createLinearLineSeries } from './LinearLineSeries';
-import { createBandArea, createPointsOfBandLine } from './BandArea';
+import {
+    createAnnotationLineSeries,
+    createLinearLineSeries,
+} from './LinearLineSeries';
+import {
+    createArrowPointsOfDPRangeLine,
+    createBandArea,
+    createPointsOfBandLine,
+    createPointsOfDPRangeLine,
+} from './BandArea';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import {
+    defaultShapeAttributes,
+    drawnShapeDefaultDash,
+    fibDefaultLevels,
+} from '../../ChartUtils/drawConstants';
+import { CandleDataIF } from '../../../../ambient-utils/types';
+import { formatDollarAmountAxis } from '../../../../utils/numbers';
 
 interface DrawCanvasProps {
     scaleData: scaleData;
@@ -28,7 +56,29 @@ interface DrawCanvasProps {
         React.SetStateAction<selectedDrawnData | undefined>
     >;
     denomInBase: boolean;
-    addDrawActionStack: (item: drawDataHistory, isNewShape: boolean) => void;
+    addDrawActionStack: (
+        item: drawDataHistory,
+        isNewShape: boolean,
+        type: string,
+    ) => void;
+    period: number;
+    crosshairData: crosshair[];
+    snapForCandle: (
+        point: number,
+        filtered: Array<CandleDataIF>,
+    ) => CandleDataIF;
+    visibleCandleData: CandleDataChart[];
+    zoomBase: any;
+    setIsChartZoom: React.Dispatch<React.SetStateAction<boolean>>;
+    isChartZoom: boolean;
+    firstCandleData: any;
+    lastCandleData: any;
+    render: any;
+    isMagnetActive: { value: boolean };
+    drawSettings: any;
+    quoteTokenDecimals: number;
+    baseTokenDecimals: number;
+    setIsUpdatingShape: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function DrawCanvas(props: DrawCanvasProps) {
@@ -45,7 +95,25 @@ function DrawCanvas(props: DrawCanvasProps) {
         setSelectedDrawnShape,
         denomInBase,
         addDrawActionStack,
+        snapForCandle,
+        visibleCandleData,
+        zoomBase,
+        setIsChartZoom,
+        isChartZoom,
+        firstCandleData,
+        lastCandleData,
+        render,
+        isMagnetActive,
+        drawSettings,
+        quoteTokenDecimals,
+        baseTokenDecimals,
+        period,
+        setIsUpdatingShape,
     } = props;
+
+    const {
+        chainData: { poolIndex },
+    } = useContext(CrocEnvContext);
 
     const circleSeries = createCircle(
         scaleData?.xScale,
@@ -54,12 +122,9 @@ function DrawCanvas(props: DrawCanvasProps) {
         1,
         denomInBase,
     );
-
-    const lineSeries = createLinearLineSeries(
-        scaleData?.xScale,
-        scaleData?.yScale,
-        denomInBase,
-    );
+    const [lineSeries, setLineSeries] = useState<any>();
+    const [annotationLineSeries, setAnnotationLineSeries] = useState<any>();
+    const [borderLineSeries, setBorderLineSeries] = useState<any>();
 
     const currentPool = useContext(TradeDataContext);
 
@@ -69,6 +134,155 @@ function DrawCanvas(props: DrawCanvasProps) {
         newXScale.range([scaleData?.xScale(x), scaleData?.xScale(x2)]);
 
         return newXScale;
+    }
+
+    useEffect(() => {
+        if (scaleData) {
+            const lineSeries = createLinearLineSeries(
+                scaleData?.xScale,
+                scaleData?.yScale,
+                denomInBase,
+                drawSettings[activeDrawingType].line,
+            );
+            setLineSeries(() => lineSeries);
+
+            const borderLineSeries = createLinearLineSeries(
+                scaleData?.xScale,
+                scaleData?.yScale,
+                denomInBase,
+                drawSettings[activeDrawingType].border,
+            );
+
+            setBorderLineSeries(() => borderLineSeries);
+
+            const annotationLineSeries = createAnnotationLineSeries(
+                scaleData?.xScale.copy(),
+                scaleData?.yScale,
+                denomInBase,
+            );
+
+            annotationLineSeries.decorate(
+                (context: CanvasRenderingContext2D) => {
+                    context.fillStyle = 'transparent';
+                },
+            );
+            setAnnotationLineSeries(() => annotationLineSeries);
+        }
+    }, [scaleData, denomInBase, diffHashSig(drawSettings), activeDrawingType]);
+
+    useEffect(() => {
+        if (scaleData !== undefined && !isChartZoom) {
+            let wheellTimeout: NodeJS.Timeout | null = null; // Declare wheellTimeout
+            const lastCandleDate = lastCandleData?.time * 1000;
+            const firstCandleDate = firstCandleData?.time * 1000;
+            d3.select(d3DrawCanvas.current).on(
+                'wheel',
+                function (event) {
+                    if (wheellTimeout === null) {
+                        setIsChartZoom(true);
+                    }
+
+                    zoomBase.zoomWithWheel(
+                        event,
+                        scaleData,
+                        firstCandleDate,
+                        lastCandleDate,
+                    );
+                    render();
+
+                    if (wheellTimeout) {
+                        clearTimeout(wheellTimeout);
+                    }
+                    // check wheel end
+                    wheellTimeout = setTimeout(() => {
+                        setIsChartZoom(false);
+                    }, 200);
+                },
+                { passive: true },
+            );
+        }
+    }, [diffHashSigScaleData(scaleData, 'x'), isChartZoom]);
+
+    function getXandYvalueOfDrawnShape(offsetX: number, offsetY: number) {
+        let valueY = scaleData?.yScale.invert(offsetY);
+        const nearest = snapForCandle(offsetX, visibleCandleData);
+
+        const high = denomInBase
+            ? nearest?.invMinPriceExclMEVDecimalCorrected
+            : nearest?.minPriceExclMEVDecimalCorrected;
+
+        const low = denomInBase
+            ? nearest?.invMaxPriceExclMEVDecimalCorrected
+            : nearest?.maxPriceExclMEVDecimalCorrected;
+
+        const open = denomInBase
+            ? nearest.invPriceOpenExclMEVDecimalCorrected
+            : nearest.priceOpenExclMEVDecimalCorrected;
+
+        const close = denomInBase
+            ? nearest.invPriceCloseExclMEVDecimalCorrected
+            : nearest.priceCloseExclMEVDecimalCorrected;
+
+        const highToCoordinat = scaleData.yScale(high);
+        const lowToCoordinat = scaleData.yScale(low);
+        const openToCoordinat = scaleData.yScale(open);
+        const closeToCoordinat = scaleData.yScale(close);
+
+        const highDiff = Math.abs(offsetY - highToCoordinat);
+        const lowDiff = Math.abs(offsetY - lowToCoordinat);
+        const openDiff = Math.abs(offsetY - openToCoordinat);
+        const closeDiff = Math.abs(offsetY - closeToCoordinat);
+
+        if (
+            isMagnetActive.value &&
+            (highDiff <= 100 ||
+                lowDiff <= 100 ||
+                openDiff <= 100 ||
+                closeDiff <= 100)
+        ) {
+            const minDiffForYValue = Math.min(
+                openDiff,
+                closeDiff,
+                lowDiff,
+                highDiff,
+            );
+
+            switch (minDiffForYValue) {
+                case highDiff:
+                    valueY = high;
+                    break;
+
+                case lowDiff:
+                    valueY = low;
+                    break;
+                case openDiff:
+                    valueY = open;
+                    break;
+
+                case closeDiff:
+                    valueY = close;
+                    break;
+            }
+        }
+
+        let valueX = nearest.time * 1000;
+        const valueXLocation = scaleData.xScale(nearest.time * 1000);
+        const sensitiveDistance =
+            scaleData.xScale(nearest.time * 1000 + nearest.period * 1000) -
+            scaleData.xScale(nearest.time * 1000);
+        const snappedTime = findSnapTime(
+            scaleData?.xScale.invert(offsetX),
+            nearest.period,
+        );
+        if (
+            Math.abs(valueXLocation - offsetX) > sensitiveDistance &&
+            nearest === visibleCandleData[0]
+        ) {
+            valueX = snappedTime;
+            valueY = scaleData?.yScale.invert(offsetY);
+        }
+
+        return { valueX: valueX, valueY: valueY };
     }
 
     useEffect(() => {
@@ -82,8 +296,9 @@ function DrawCanvas(props: DrawCanvasProps) {
         let cancelDraw = false;
         let isDrawing = false;
         const tempLineData: lineData[] = [];
-
-        let touchTimeout: NodeJS.Timeout | null = null; // Declare touchTimeout
+        const localDrawSettings = drawSettings
+            ? drawSettings[activeDrawingType]
+            : defaultShapeAttributes;
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const cancelDrawEvent = (event: any) => {
@@ -108,14 +323,6 @@ function DrawCanvas(props: DrawCanvasProps) {
             const clientX = event.targetTouches[0].clientX;
             const clientY = event.targetTouches[0].clientY;
             draw(clientX, clientY);
-
-            if (touchTimeout) {
-                clearTimeout(touchTimeout);
-            }
-            // check touchmove end
-            touchTimeout = setTimeout(() => {
-                endDrawing(clientX, clientY);
-            }, 500);
         });
 
         d3.select(d3DrawCanvas.current).on(
@@ -134,31 +341,36 @@ function DrawCanvas(props: DrawCanvasProps) {
             },
         );
 
-        d3.select(d3DrawCanvas.current).on('mouseup', (event: PointerEvent) => {
+        canvas.addEventListener('pointerup', (event: PointerEvent) => {
             endDrawing(event.clientX, event.clientY);
         });
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         function startDrawing(mouseX: number, mouseY: number) {
             isDrawing = true;
+            setIsUpdatingShape(true);
             const offsetY = mouseY - canvasRect?.top;
             const offsetX = mouseX - canvasRect?.left;
 
-            const valueX = scaleData?.xScale.invert(offsetX);
-            const valueY = scaleData?.yScale.invert(offsetY);
+            const { valueX, valueY } = getXandYvalueOfDrawnShape(
+                offsetX,
+                offsetY,
+            );
 
-            if (tempLineData.length > 0 || activeDrawingType === 'Ray') {
-                endDrawing(mouseX, mouseY);
-            } else {
-                tempLineData.push({
-                    x: valueX,
-                    y: valueY,
-                    denomInBase: denomInBase,
-                });
+            if (valueY > 0) {
+                if (tempLineData.length > 0 || activeDrawingType === 'Ray') {
+                    endDrawing(mouseX, mouseY);
+                } else {
+                    tempLineData.push({
+                        x: valueX,
+                        y: valueY,
+                        denomInBase: denomInBase,
+                    });
+                }
+
+                setLineData(tempLineData);
+                renderCanvasArray([d3DrawCanvas]);
             }
-
-            setLineData(tempLineData);
-            renderCanvasArray([d3DrawCanvas]);
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -168,8 +380,10 @@ function DrawCanvas(props: DrawCanvasProps) {
                 const offsetY = mouseY - canvasRect?.top;
                 const offsetX = mouseX - canvasRect?.left;
 
-                const valueX = scaleData?.xScale.invert(offsetX);
-                const valueY = scaleData?.yScale.invert(offsetY);
+                const { valueX, valueY } = getXandYvalueOfDrawnShape(
+                    offsetX,
+                    offsetY,
+                );
 
                 if (activeDrawingType !== 'Ray') {
                     const firstValueX = scaleData?.xScale(tempLineData[0].x);
@@ -199,16 +413,50 @@ function DrawCanvas(props: DrawCanvasProps) {
                     };
 
                     isDrawing = false;
+                    setIsUpdatingShape(false);
+
                     setActiveDrawingType('Cross');
+
                     const endPoint = {
                         data: tempLineData,
                         type: activeDrawingType,
                         time: Date.now(),
-                        pool: currentPool,
-                        color: 'rgba(115, 113, 252, 1)',
-                        lineWidth: 1.5,
-                        style: [0, 0],
+                        pool: {
+                            poolIndex: poolIndex,
+                            tokenA: currentPool.tokenA.address,
+                            tokenB: currentPool.tokenB.address,
+                            isTokenABase: currentPool.isTokenABase,
+                            denomInBase: currentPool.isDenomBase,
+                        },
+                        extendLeft: localDrawSettings.extendLeft,
+                        extendRight: localDrawSettings.extendRight,
+                        labelPlacement: localDrawSettings.labelPlacement,
+                        labelAlignment: localDrawSettings.labelAlignment,
+                        reverse: localDrawSettings.reverse,
+                        line: {
+                            active: localDrawSettings.line.active,
+                            color: localDrawSettings.line.color,
+                            lineWidth: localDrawSettings.line.lineWidth,
+                            dash: localDrawSettings.line.dash,
+                        } as drawnShapeEditAttributes,
+
+                        border: {
+                            active: localDrawSettings.border.active,
+                            color: localDrawSettings.border.color,
+                            lineWidth: localDrawSettings.border.lineWidth,
+                            dash: localDrawSettings.border.dash,
+                        } as drawnShapeEditAttributes,
+
+                        background: {
+                            active: localDrawSettings.background.active,
+                            color: localDrawSettings.background.color,
+                            lineWidth: localDrawSettings.background.lineWidth,
+                            dash: localDrawSettings.background.dash,
+                        } as drawnShapeEditAttributes,
+
+                        extraData: structuredClone(localDrawSettings.extraData),
                     };
+
                     setDrawnShapeHistory((prevData: drawDataHistory[]) => {
                         if (tempLineData.length > 0) {
                             endPoint.time = Date.now();
@@ -221,7 +469,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                         }
                         return prevData;
                     });
-                    addDrawActionStack(endPoint, true);
+                    addDrawActionStack(endPoint, true, 'create');
                 }
             } else {
                 setActiveDrawingType('Cross');
@@ -233,49 +481,96 @@ function DrawCanvas(props: DrawCanvasProps) {
                 const offsetY = mouseY - canvasRect?.top;
                 const offsetX = mouseX - canvasRect?.left;
 
+                const { valueX, valueY } = getXandYvalueOfDrawnShape(
+                    offsetX,
+                    offsetY,
+                );
+
                 setCrossHairDataFunc(offsetX, offsetY);
 
                 if (!isDrawing || activeDrawingType === 'Ray') return;
 
-                const newBandScale = createScaleForBandArea(
-                    tempLineData[0].x,
-                    scaleData.xScale.invert(offsetX),
-                );
+                if (valueY > 0) {
+                    const newBandScale = createScaleForBandArea(
+                        tempLineData[0].x,
+                        scaleData.xScale.invert(offsetX),
+                    );
 
-                const bandArea = createBandArea(
-                    newBandScale,
-                    scaleData?.yScale,
-                    denomInBase,
-                );
+                    const bandArea = createBandArea(
+                        newBandScale,
+                        scaleData?.yScale,
+                        denomInBase,
+                        drawSettings[activeDrawingType],
+                    );
 
-                setBandArea(() => bandArea);
-                const valueX = scaleData?.xScale.invert(offsetX);
-                const valueY = scaleData?.yScale.invert(offsetY);
-                if (tempLineData.length === 1) {
-                    tempLineData.push({
-                        x: valueX,
-                        y: valueY,
-                        denomInBase: denomInBase,
+                    setBandArea(() => bandArea);
+
+                    if (tempLineData.length === 1) {
+                        tempLineData.push({
+                            x: valueX,
+                            y: valueY,
+                            denomInBase: denomInBase,
+                        });
+                    } else {
+                        tempLineData[1] = {
+                            x: valueX,
+                            y: valueY,
+                            denomInBase: denomInBase,
+                        };
+                    }
+
+                    setSelectedDrawnShape({
+                        data: {
+                            data: tempLineData,
+                            type: activeDrawingType,
+                            time: Date.now(),
+                            extendLeft: false,
+                            extendRight: false,
+                            labelPlacement: 'Left',
+                            labelAlignment: 'Middle',
+                            reverse: false,
+                            pool: {
+                                poolIndex: poolIndex,
+                                tokenA: currentPool.tokenA.address,
+                                tokenB: currentPool.tokenB.address,
+                                isTokenABase: currentPool.isTokenABase,
+                                denomInBase: currentPool.isDenomBase,
+                            },
+
+                            line: {
+                                active: !['Rect'].includes(activeDrawingType),
+                                color: 'rgba(115, 113, 252, 1)',
+                                lineWidth: 1.5,
+                                dash:
+                                    activeDrawingType === 'FibRetracement'
+                                        ? [6, 6]
+                                        : [0, 0],
+                            } as drawnShapeEditAttributes,
+
+                            border: {
+                                active: ['Rect'].includes(activeDrawingType),
+                                color: 'rgba(115, 113, 252, 1)',
+                                lineWidth: 1.5,
+                                dash: [0, 0],
+                            } as drawnShapeEditAttributes,
+
+                            background: {
+                                active: ['Rect', 'DPRange'].includes(
+                                    activeDrawingType,
+                                ),
+                                color: 'rgba(115, 113, 252, 0.15)',
+                                lineWidth: 1.5,
+                                dash: [0, 0],
+                            } as drawnShapeEditAttributes,
+                            extraData: ['FibRetracement'].includes(
+                                activeDrawingType,
+                            )
+                                ? structuredClone(fibDefaultLevels)
+                                : [],
+                        },
+                        selectedCircle: undefined,
                     });
-                } else {
-                    tempLineData[1] = {
-                        x: valueX,
-                        y: valueY,
-                        denomInBase: denomInBase,
-                    };
                 }
-                setSelectedDrawnShape({
-                    data: {
-                        data: tempLineData,
-                        type: activeDrawingType,
-                        time: Date.now(),
-                        pool: currentPool,
-                        color: 'rgba(115, 113, 252, 1)',
-                        lineWidth: 1.5,
-                        style: [0, 0],
-                    },
-                    selectedCircle: undefined,
-                });
             } else {
                 setSelectedDrawnShape(undefined);
                 setLineData([]);
@@ -283,7 +578,7 @@ function DrawCanvas(props: DrawCanvasProps) {
 
             renderCanvasArray([d3DrawCanvas]);
         }
-    }, [activeDrawingType]);
+    }, [activeDrawingType, JSON.stringify(drawSettings)]);
 
     // Draw
     useEffect(() => {
@@ -301,7 +596,6 @@ function DrawCanvas(props: DrawCanvasProps) {
             d3.select(d3DrawCanvas.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
-                    if (ctx) ctx.setLineDash([0, 0]);
                     lineSeries(lineData);
                     circleSeries(lineData);
 
@@ -416,10 +710,12 @@ function DrawCanvas(props: DrawCanvasProps) {
             .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
 
+        const canvasRect = canvas.getBoundingClientRect();
+
         if (
             scaleData &&
             lineData.length > 1 &&
-            activeDrawingType === 'Square'
+            (activeDrawingType === 'Rect' || activeDrawingType === 'DPRange')
         ) {
             d3.select(d3DrawCanvas.current)
                 .on('draw', () => {
@@ -431,18 +727,424 @@ function DrawCanvas(props: DrawCanvasProps) {
                         denomInBase: denomInBase,
                     } as bandLineData;
 
-                    const lineOfBand = createPointsOfBandLine(lineData);
+                    const range = [
+                        scaleData?.xScale(lineData[0].x),
+                        scaleData?.xScale(lineData[1].x),
+                    ];
+
+                    bandArea.xScale().range(range);
 
                     bandArea && bandArea([bandData]);
 
-                    lineOfBand?.forEach((item) => {
-                        lineSeries(item);
-                        circleSeries(item);
+                    if (activeDrawingType === 'Rect') {
+                        const lineOfBand = createPointsOfBandLine(lineData);
+
+                        lineOfBand?.forEach((item) => {
+                            borderLineSeries(item);
+                            circleSeries(item);
+                        });
+                        if (drawSettings[activeDrawingType].line.active) {
+                            lineSeries(lineData);
+                        }
+                    }
+
+                    if (activeDrawingType === 'DPRange') {
+                        const lineOfBand = createPointsOfDPRangeLine(lineData);
+
+                        if (drawSettings[activeDrawingType].border.active) {
+                            const lineOfBand = createPointsOfBandLine(lineData);
+
+                            lineOfBand?.forEach((line) => {
+                                borderLineSeries(line);
+                            });
+                        }
+                        lineOfBand?.forEach((item) => {
+                            lineSeries(item);
+                        });
+                        circleSeries(lineData);
+
+                        const height = Math.abs(
+                            scaleData.yScale(lineData[0].y) -
+                                scaleData.yScale(lineData[1].y),
+                        );
+                        const width = Math.abs(
+                            scaleData.xScale(lineData[0].x) -
+                                scaleData.xScale(lineData[1].x),
+                        );
+
+                        const firstPointYAxisData =
+                            lineData[0].denomInBase === denomInBase
+                                ? lineData[0].y
+                                : 1 / lineData[0].y;
+                        const secondPointYAxisData =
+                            lineData[1].denomInBase === denomInBase
+                                ? lineData[1].y
+                                : 1 / lineData[1].y;
+
+                        const filtered = visibleCandleData.filter(
+                            (data: CandleDataIF) =>
+                                data.time * 1000 >=
+                                    Math.min(lineData[0].x, lineData[1].x) &&
+                                data.time * 1000 <=
+                                    Math.max(lineData[0].x, lineData[1].x),
+                        );
+
+                        const totalVolumeCovered = filtered.reduce(
+                            (sum, obj) => sum + obj.volumeUSD,
+                            0,
+                        );
+
+                        const lengthAsBars = Math.abs(
+                            lineData[0].x - lineData[1].x,
+                        );
+                        const lengthAsDate =
+                            (lineData[0].x > lineData[1].x ? '-' : '') +
+                            formatTimeDifference(
+                                new Date(
+                                    Math.min(lineData[1].x, lineData[0].x),
+                                ),
+                                new Date(
+                                    Math.max(lineData[1].x, lineData[0].x),
+                                ),
+                            );
+
+                        const heightAsPrice =
+                            secondPointYAxisData - firstPointYAxisData;
+
+                        const heightAsPercentage = (
+                            (Number(heightAsPrice) /
+                                Math.min(
+                                    firstPointYAxisData,
+                                    secondPointYAxisData,
+                                )) *
+                            100
+                        ).toFixed(2);
+
+                        const infoLabelHeight = 66;
+                        const infoLabelWidth = 150;
+
+                        const infoLabelXAxisData =
+                            Math.min(lineData[0].x, lineData[1].x) +
+                            Math.abs(lineData[0].x - lineData[1].x) / 2;
+
+                        const infoLabelYAxisData =
+                            scaleData.yScale(secondPointYAxisData) +
+                            (secondPointYAxisData > firstPointYAxisData
+                                ? -(infoLabelHeight + 15)
+                                : 15);
+
+                        const dpRangeLabelYPlacement =
+                            scaleData.yScale(firstPointYAxisData) < 0
+                                ? infoLabelYAxisData
+                                : scaleData.yScale(firstPointYAxisData) < 463
+                                ? infoLabelYAxisData + infoLabelHeight >
+                                  canvasRect.height
+                                    ? canvasRect.height - infoLabelHeight - 5
+                                    : Math.max(infoLabelYAxisData, 5)
+                                : infoLabelYAxisData;
+
+                        if (ctx) {
+                            const arrowArray = createArrowPointsOfDPRangeLine(
+                                lineData,
+                                scaleData,
+                                denomInBase,
+                                height > 30 && width > 30 ? 10 : 5,
+                            );
+
+                            arrowArray.forEach((arrow) => {
+                                lineSeries(arrow);
+                            });
+
+                            ctx.beginPath();
+                            ctx.fillStyle = 'rgb(34,44,58)';
+                            ctx.fillRect(
+                                scaleData.xScale(infoLabelXAxisData) -
+                                    infoLabelWidth / 2,
+                                dpRangeLabelYPlacement,
+                                infoLabelWidth,
+                                infoLabelHeight,
+                            );
+                            ctx.fillStyle = 'rgba(210,210,210,1)';
+                            ctx.font = '12.425px Lexend Deca';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+
+                            const maxPrice =
+                                secondPointYAxisData *
+                                Math.pow(
+                                    10,
+                                    baseTokenDecimals - quoteTokenDecimals,
+                                );
+
+                            const minPrice =
+                                firstPointYAxisData *
+                                Math.pow(
+                                    10,
+                                    baseTokenDecimals - quoteTokenDecimals,
+                                );
+
+                            const dpRangeTickPrice =
+                                maxPrice && minPrice
+                                    ? Math.floor(
+                                          Math.log(maxPrice) / Math.log(1.0001),
+                                      ) -
+                                      Math.floor(
+                                          Math.log(minPrice) / Math.log(1.0001),
+                                      )
+                                    : 0;
+
+                            ctx.fillText(
+                                heightAsPrice.toFixed(2) +
+                                    ' ' +
+                                    ' (' +
+                                    heightAsPercentage.toString() +
+                                    '%)  ' +
+                                    dpRangeTickPrice,
+                                scaleData.xScale(infoLabelXAxisData),
+                                dpRangeLabelYPlacement + 16,
+                            );
+                            ctx.fillText(
+                                (lengthAsBars / (1000 * period))
+                                    .toFixed(0)
+                                    .toString() +
+                                    ' bars,  ' +
+                                    lengthAsDate,
+                                scaleData.xScale(infoLabelXAxisData),
+                                dpRangeLabelYPlacement + 33,
+                            );
+                            ctx.fillText(
+                                'Vol ' +
+                                    formatDollarAmountAxis(
+                                        totalVolumeCovered,
+                                    ).replace('$', ''),
+                                scaleData.xScale(infoLabelXAxisData),
+                                dpRangeLabelYPlacement + 50,
+                            );
+                        }
+                    }
+                })
+                .on('measure', (event: CustomEvent) => {
+                    bandArea && bandArea.context(ctx);
+                    lineSeries.context(ctx);
+                    borderLineSeries.context(ctx);
+                    circleSeries.context(ctx);
+                    scaleData?.yScale.range([event.detail.height, 0]);
+                });
+        }
+    }, [
+        diffHashSig(lineData),
+        denomInBase,
+        bandArea,
+        borderLineSeries,
+        lineSeries,
+    ]);
+
+    useEffect(() => {
+        const canvas = d3
+            .select(d3DrawCanvas.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d');
+
+        const canvasRect = canvas.getBoundingClientRect();
+
+        const localDrawSettings = drawSettings
+            ? drawSettings[activeDrawingType]
+            : defaultShapeAttributes;
+        if (
+            scaleData &&
+            lineData.length > 1 &&
+            activeDrawingType === 'FibRetracement'
+        ) {
+            d3.select(d3DrawCanvas.current)
+                .on('draw', () => {
+                    setCanvasResolution(canvas);
+                    const data = structuredClone(lineData);
+
+                    if (localDrawSettings.reverse) {
+                        [data[0], data[1]] = [data[1], data[0]];
+                    }
+
+                    const range = [
+                        localDrawSettings.extendLeft
+                            ? scaleData.xScale.range()[0]
+                            : scaleData?.xScale(data[0].x),
+                        localDrawSettings.extendRight
+                            ? scaleData.xScale.range()[1]
+                            : scaleData?.xScale(data[1].x),
+                    ];
+
+                    annotationLineSeries.xScale().range(range);
+                    bandArea.xScale().range(range);
+
+                    if (localDrawSettings.line.active) {
+                        lineSeries.decorate(
+                            (context: CanvasRenderingContext2D) => {
+                                context.strokeStyle =
+                                    localDrawSettings.line.color;
+                                context.lineWidth =
+                                    localDrawSettings.line.lineWidth;
+                                context.beginPath();
+                                context.setLineDash(
+                                    localDrawSettings.line.dash,
+                                );
+                                context.closePath();
+                            },
+                        );
+
+                        lineSeries(data);
+                    }
+
+                    const fibLineData = calculateFibRetracement(
+                        data,
+                        localDrawSettings.extraData,
+                    );
+
+                    const bandAreaData = calculateFibRetracementBandAreas(
+                        data,
+                        localDrawSettings.extraData,
+                    );
+
+                    bandAreaData.forEach((bandData) => {
+                        bandArea.decorate(
+                            (context: CanvasRenderingContext2D) => {
+                                context.fillStyle =
+                                    bandData.areaColor.toString();
+                            },
+                        );
+
+                        bandArea([bandData]);
+                    });
+                    fibLineData.forEach((lineData) => {
+                        const lineLabel =
+                            lineData[0].level +
+                            ' (' +
+                            lineData[0].y.toFixed(2).toString() +
+                            ')';
+
+                        const lineMeasures = ctx?.measureText(lineLabel);
+
+                        if (
+                            lineMeasures &&
+                            (localDrawSettings.extendLeft ||
+                                localDrawSettings.extendRight) &&
+                            localDrawSettings.labelAlignment === 'Middle'
+                        ) {
+                            const bufferLeft =
+                                localDrawSettings.extendLeft &&
+                                localDrawSettings.labelPlacement === 'Left'
+                                    ? lineMeasures.width + 15
+                                    : 0;
+
+                            const bufferRight =
+                                canvasRect.width -
+                                (localDrawSettings.extendRight &&
+                                localDrawSettings.labelPlacement === 'Right'
+                                    ? lineMeasures.width + 15
+                                    : 0);
+
+                            clipCanvas(
+                                bufferLeft,
+                                0,
+                                bufferRight,
+                                canvasRect.height,
+                                canvas,
+                            );
+                        }
+
+                        annotationLineSeries.decorate(
+                            (context: CanvasRenderingContext2D) => {
+                                context.strokeStyle =
+                                    lineData[0].lineColor.toString();
+                                context.lineWidth = 1.5;
+                                context.beginPath();
+                                context.setLineDash(drawnShapeDefaultDash);
+                                context.closePath();
+                            },
+                        );
+                        annotationLineSeries(lineData);
+                        ctx?.restore();
+
+                        const textColor = lineData[0].lineColor;
+
+                        let alignment;
+
+                        if (localDrawSettings.extendLeft) {
+                            alignment =
+                                localDrawSettings.extendRight &&
+                                localDrawSettings.labelPlacement === 'Right'
+                                    ? 'right'
+                                    : 'left';
+                        } else if (
+                            localDrawSettings.extendRight ||
+                            localDrawSettings.labelPlacement === 'Left'
+                        ) {
+                            alignment = 'right';
+                        } else {
+                            alignment = 'left';
+                        }
+
+                        if (ctx && textColor) {
+                            ctx.fillStyle = textColor?.toString();
+                            ctx.font = '12px Lexend Deca';
+                            ctx.textAlign = alignment as CanvasTextAlign;
+                            ctx.textBaseline =
+                                localDrawSettings.labelAlignment.toLowerCase() as CanvasTextBaseline;
+
+                            let location;
+
+                            if (localDrawSettings.extendLeft) {
+                                location =
+                                    localDrawSettings.labelPlacement === 'Left'
+                                        ? scaleData.xScale.domain()[0]
+                                        : localDrawSettings.extendRight
+                                        ? scaleData.xScale.domain()[1]
+                                        : Math.max(
+                                              lineData[0].x,
+                                              lineData[1].x,
+                                          );
+                            } else if (localDrawSettings.extendRight) {
+                                location =
+                                    localDrawSettings.labelPlacement === 'Left'
+                                        ? Math.min(lineData[0].x, lineData[1].x)
+                                        : scaleData.xScale.domain()[1];
+                            } else {
+                                location =
+                                    localDrawSettings.labelPlacement === 'Left'
+                                        ? Math.min(lineData[0].x, lineData[1].x)
+                                        : Math.max(
+                                              lineData[0].x,
+                                              lineData[1].x,
+                                          );
+                            }
+
+                            const linePlacement =
+                                scaleData.xScale(location) +
+                                (alignment === 'right' ? -10 : +10);
+
+                            ctx.fillText(
+                                lineLabel,
+                                linePlacement,
+                                scaleData.yScale(
+                                    denomInBase === lineData[0].denomInBase
+                                        ? lineData[0].y
+                                        : 1 / lineData[0].y,
+                                ) +
+                                    (localDrawSettings.labelAlignment.toLowerCase() ===
+                                    'top'
+                                        ? 5
+                                        : localDrawSettings.labelAlignment.toLowerCase() ===
+                                          'bottom'
+                                        ? -5
+                                        : 0),
+                            );
+                        }
                     });
                 })
                 .on('measure', (event: CustomEvent) => {
                     bandArea && bandArea.context(ctx);
                     lineSeries.context(ctx);
+                    annotationLineSeries.context(ctx);
                     circleSeries.context(ctx);
                     scaleData?.yScale.range([event.detail.height, 0]);
                 });
@@ -461,12 +1163,6 @@ function DrawCanvas(props: DrawCanvasProps) {
                 .on('draw', () => {
                     setCanvasResolution(canvas);
 
-                    // lineData[1].ctx([
-                    //     {
-                    //         denomInBase: lineData[0].denomInBase,
-                    //         y: lineData[0].y,
-                    //     },
-                    // ]);
                     circleSeries([
                         {
                             denomInBase: lineData[0].denomInBase,
@@ -476,7 +1172,6 @@ function DrawCanvas(props: DrawCanvasProps) {
                     ]);
                 })
                 .on('measure', (event: CustomEvent) => {
-                    // lineData[1].ctx.context(ctx);
                     circleSeries.context(ctx);
                     scaleData?.yScale.range([event.detail.height, 0]);
                 });

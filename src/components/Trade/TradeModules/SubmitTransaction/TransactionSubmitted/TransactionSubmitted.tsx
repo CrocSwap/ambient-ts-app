@@ -23,6 +23,7 @@ interface PropsIF {
     tokenBImage: string;
     chainId: string | number;
     isConfirmed: boolean;
+    isTransactionFailed: boolean;
     noAnimation?: boolean;
 }
 
@@ -37,6 +38,7 @@ export default function TransactionSubmitted(props: PropsIF) {
         noAnimation,
         chainId,
         isConfirmed,
+        isTransactionFailed,
     } = props;
 
     const blockExplorer = getChainExplorer(chainId);
@@ -70,9 +72,9 @@ export default function TransactionSubmitted(props: PropsIF) {
             target='_blank'
             rel='noreferrer'
             className={styles.view_etherscan}
-            aria-label='view on etherscan'
+            aria-label='view on block explorer'
         >
-            View on Etherscan
+            View on Block Explorer
             <FiExternalLink size={18} color='var(--text1)' />
         </a>
     );
@@ -96,31 +98,59 @@ export default function TransactionSubmitted(props: PropsIF) {
 
             <h2 style={{ marginBottom: '15px' }}>
                 {type === 'Limit'
-                    ? `Limit Transaction ${
-                          isConfirmed ? 'Confirmed' : 'Successfully Submitted'
+                    ? `Limit Order ${
+                          isTransactionFailed
+                              ? 'Failed'
+                              : isConfirmed
+                              ? 'Success!'
+                              : 'Submitted'
                       }`
                     : type === 'Range'
-                    ? `Pool Transaction ${
-                          isConfirmed ? 'Confirmed' : 'Successfully Submitted'
+                    ? `Pool ${
+                          isTransactionFailed
+                              ? 'Failed'
+                              : isConfirmed
+                              ? 'Success!'
+                              : 'Submitted'
                       }`
                     : type === 'Reposition'
                     ? `Reposition ${
-                          isConfirmed ? 'Confirmed' : 'Successfully Submitted'
+                          isTransactionFailed
+                              ? 'Failed'
+                              : isConfirmed
+                              ? 'Success!'
+                              : 'Submitted'
                       }`
                     : type === 'Harvest'
                     ? `Harvest ${
-                          isConfirmed ? 'Confirmed' : 'Successfully Submitted'
+                          isTransactionFailed
+                              ? 'Failed'
+                              : isConfirmed
+                              ? 'Success!'
+                              : 'Submitted'
                       }`
                     : type === 'Reset'
                     ? `Reset ${
-                          isConfirmed ? 'Confirmed' : 'Successfully Submitted'
+                          isTransactionFailed
+                              ? 'Failed'
+                              : isConfirmed
+                              ? 'Success!'
+                              : 'Submitted'
                       }`
                     : type === 'Remove'
                     ? `Removal ${
-                          isConfirmed ? 'Confirmed' : 'Successfully Submitted'
+                          isTransactionFailed
+                              ? 'Failed'
+                              : isConfirmed
+                              ? 'Success!'
+                              : 'Submitted'
                       }`
-                    : `Swap Transaction ${
-                          isConfirmed ? 'Confirmed' : 'Successfully Submitted'
+                    : `Swap ${
+                          isTransactionFailed
+                              ? 'Failed'
+                              : isConfirmed
+                              ? 'Success!'
+                              : 'Submitted'
                       }`}
             </h2>
             <div
