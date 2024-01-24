@@ -126,9 +126,13 @@ export const useAppChain = (): {
                                 linkGenCurrent.currentPage === 'initpool' ||
                                 linkGenCurrent.currentPage === 'reposition'
                             ) {
-                                linkGenPool.navigate();
+                                linkGenPool.navigate(
+                                    `chain=${incomingChainFromWallet}`,
+                                );
                             } else {
-                                linkGenCurrent.navigate();
+                                linkGenCurrent.navigate(
+                                    `chain=${incomingChainFromWallet}`,
+                                );
                             }
                         }
                         window.location.reload();
