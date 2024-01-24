@@ -671,7 +671,7 @@ function Reposition() {
                                 txErrorMessage={txErrorMessage}
                                 sendTransaction={sendRepositionTransaction}
                                 resetConfirmation={resetConfirmation}
-                                transactionPendingDisplayString={`Repositioning transaction with ${tokenA.symbol} and ${tokenB.symbol}`}
+                                transactionPendingDisplayString={`Repositioning ${tokenA.symbol} and ${tokenB.symbol}`}
                             />
                         ) : (
                             <Button
