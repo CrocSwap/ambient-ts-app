@@ -3,8 +3,6 @@ import styled from 'styled-components';
 const OrderHistoryContainer = styled.div<{ top: number; left: number }>`
     position: absolute;
     text-align: center;
-    cursor: pointer;
-    pointer-events: none;
 
     top: ${({ top }) => top + 'px'};
     left: ${({ left }) => left + 'px'};
@@ -44,8 +42,22 @@ const OrderHistoryBody = styled.div`
 const StyledHeader = styled.div<{ color: string; size: string }>`
     display: flex;
     align-items: center;
+    cursor: default;
 
     justify-content: space-evenly;
+    color: ${({ color }) => color};
+    font-size: ${({ size }) => size};
+`;
+
+const StyledLink = styled.div<{ color: string; size: string }>`
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    justify-content: center;
+
+    gap: 5px;
+
     color: ${({ color }) => color};
     font-size: ${({ size }) => size};
 `;
@@ -55,4 +67,5 @@ export {
     OrderHistoryHeader,
     StyledHeader,
     OrderHistoryBody,
+    StyledLink,
 };

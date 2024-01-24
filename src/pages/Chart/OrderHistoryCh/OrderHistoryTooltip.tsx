@@ -7,8 +7,12 @@ import {
     OrderHistoryContainer,
     OrderHistoryHeader,
     StyledHeader,
+    StyledLink,
 } from './OrderHistoryTooltipCss';
 import { trimString, uriToHttp } from '../../../ambient-utils/dataLayer';
+import { RiExternalLinkLine } from 'react-icons/ri';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { useContext } from 'react';
 
 export default function OrderHistoryTooltip(props: {
     scaleData: scaleData;
@@ -22,6 +26,15 @@ export default function OrderHistoryTooltip(props: {
         isHoveredOrderHistory,
         denomInBase,
     } = props;
+
+    const {
+        chainData: { blockExplorer },
+    } = useContext(CrocEnvContext);
+
+    function handleOpenExplorer(txHash: string) {
+        const explorerUrl = `${blockExplorer}tx/${txHash}`;
+        window.open(explorerUrl);
+    }
 
     return (
         <CSSTransition
@@ -84,9 +97,16 @@ export default function OrderHistoryTooltip(props: {
                                 0,
                             )}
                     </StyledHeader>
-                    <StyledHeader color={'#8b98a5'} size={'13px'}>
+                    <StyledLink
+                        color={'#8b98a5'}
+                        size={'13px'}
+                        onClick={() => {
+                            handleOpenExplorer(hoveredOrderHistory.txHash);
+                        }}
+                    >
                         {trimString(hoveredOrderHistory.txHash, 6, 4, '…')}
-                    </StyledHeader>
+                        <RiExternalLinkLine />
+                    </StyledLink>
                 </OrderHistoryBody>
             </OrderHistoryContainer>
         </CSSTransition>
