@@ -1,4 +1,4 @@
-import React, { MutableRefObject, useContext, useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import drawLine from '../../../../assets/images/icons/draw/draw_line.svg';
 import drawCross from '../../../../assets/images/icons/draw/draw_cross.svg';
 import drawRect from '../../../../assets/images/icons/draw/rect.svg';
@@ -11,10 +11,6 @@ import { ChartContext } from '../../../../contexts/ChartContext';
 import trashIcon from '../../../../assets/images/icons/draw/delete.svg';
 import undoIcon from '../../../../assets/images/icons/draw/undo.svg';
 import redoIcon from '../../../../assets/images/icons/draw/redo.svg';
-import {
-    drawDataHistory,
-    selectedDrawnData,
-} from '../../ChartUtils/chartUtils';
 import { ArrowContainer } from '../../../../styled/Components/Chart';
 import { useMediaQuery } from '@material-ui/core';
 import { actionKeyIF, actionStackIF } from '../../ChartUtils/useUndoRedo';
@@ -37,29 +33,9 @@ import {
     UndoRedoButtonActive,
 } from './ToolbarCss';
 
-interface ToolbarProps {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    toolbarRef: MutableRefObject<any>;
-    activeDrawingType: string;
-    setActiveDrawingType: React.Dispatch<React.SetStateAction<string>>;
-    isToolbarOpen: boolean;
-    setIsToolbarOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    setDrawnShapeHistory: React.Dispatch<
-        React.SetStateAction<drawDataHistory[]>
-    >;
-    setIsMagnetActiveLocal: React.Dispatch<boolean>;
-    deleteAllShapes: () => void;
-    chartHeights: number;
-    d3ContainerHeight: number;
-    undo: () => void;
-    redo: () => void;
-    undoStack: Map<actionKeyIF, Array<actionStackIF>>;
-    drawActionStack: Map<actionKeyIF, Array<actionStackIF>>;
-    actionKey: actionKeyIF;
-    setSelectedDrawnShape: React.Dispatch<
-        React.SetStateAction<selectedDrawnData | undefined>
-    >;
-}
+/* interface ToolbarProps {
+  
+} */
 
 interface IconList {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -77,31 +53,33 @@ interface undoRedoButtonList {
     description: string;
 }
 
-function Toolbar(props: ToolbarProps) {
-    const {
-        activeDrawingType,
-        setActiveDrawingType,
-        isToolbarOpen,
-        setIsToolbarOpen,
-        setIsMagnetActiveLocal,
-        deleteAllShapes,
-        undo,
-        redo,
-        undoStack,
-        drawActionStack,
-        actionKey,
-        setSelectedDrawnShape,
-        toolbarRef,
-        d3ContainerHeight,
-    } = props;
-
+function ChartToolbar() {
     const mobileView = useMediaQuery('(max-width: 600px)');
 
-    const { setIsMagnetActive, isMagnetActive } = useContext(ChartContext);
+    const {
+        toolbarRef,
+        setIsMagnetActive,
+        isMagnetActive,
+        isToolbarOpen,
+        setIsToolbarOpen,
+        undoRedoOptions: {
+            undo,
+            redo,
+            deleteAllShapes,
+            undoStack,
+            drawActionStack,
+            actionKey,
+        },
+        activeDrawingType,
+        setActiveDrawingType,
+        setSelectedDrawnShape,
+        chartContainerOptions,
+        setIsMagnetActiveLocal,
+    } = useContext(ChartContext);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     const [isHoveredUp, setIsHoveredUp] = useState(false);
-    const [isHoveredDown, setIsHoveredDown] = useState(false);
+    const [isHoveredDown, setIsHoveredDown] = useState(false); /*  */
 
     const [hoveredTool, setHoveredTool] = useState<string | undefined>(
         undefined,
@@ -252,7 +230,7 @@ function Toolbar(props: ToolbarProps) {
         </ArrowContainerContainer>
     );
 
-    const downScroll = (
+    const downScroll = chartContainerOptions && (
         <ArrowContainerContainer
             onClick={() => handleScroll('down')}
             width={
@@ -261,7 +239,7 @@ function Toolbar(props: ToolbarProps) {
                     : 'auto'
             }
             style={{
-                top: d3ContainerHeight - xAxisHeightPixel + 'px',
+                top: chartContainerOptions.height - xAxisHeightPixel + 'px',
             }}
         >
             <ArrowContainer degree={135} style={{ marginTop: '3px' }} />
@@ -284,9 +262,11 @@ function Toolbar(props: ToolbarProps) {
         }
     };
 
-    return (
+    return chartContainerOptions ? (
         <ToolbarContainer
             isActive={isToolbarOpen}
+            isMobile={mobileView}
+            marginTopValue={chartContainerOptions.top - 57}
             id='toolbar_container'
             ref={toolbarRef}
             backgroundColor={mobileView ? 'var(--dark1)' : 'var(--dark2)'}
@@ -296,7 +276,9 @@ function Toolbar(props: ToolbarProps) {
             <DrawlistContainer isActive={isToolbarOpen}>
                 <ScrollableDiv
                     ref={scrollContainerRef}
-                    height={d3ContainerHeight - (xAxisHeightPixel - 2) + 'px'}
+                    height={
+                        chartContainerOptions.height - xAxisHeightPixel + 'px'
+                    }
                     isHover={hoveredTool !== undefined}
                 >
                     {isHoveredUp && upScroll}
@@ -490,7 +472,9 @@ function Toolbar(props: ToolbarProps) {
                 </DividerButton>
             </DividerContainer>
         </ToolbarContainer>
+    ) : (
+        <></>
     );
 }
 
-export default Toolbar;
+export default ChartToolbar;
