@@ -31,7 +31,6 @@ export default function ConfirmLimitModal(props: propsIF) {
         txErrorMessage,
         resetConfirmation,
         showConfirmation,
-        insideTickDisplayPrice,
         startDisplayPrice,
         middleDisplayPrice,
         endDisplayPrice,
@@ -41,13 +40,6 @@ export default function ConfirmLimitModal(props: propsIF) {
         limitAllowed,
         limitButtonErrorMessage,
     } = props;
-
-    console.log({
-        insideTickDisplayPrice,
-        startDisplayPrice,
-        middleDisplayPrice,
-        endDisplayPrice,
-    });
 
     const { poolPriceDisplay } = useContext(PoolContext);
 
