@@ -59,7 +59,7 @@ function Sidebar() {
     const { sidebar, toggleMobileModeVisibility, hideOnMobile } =
         useContext(SidebarContext);
 
-    const { positionsByUser, limitOrdersByUser, changesByUser } =
+    const { positionsByUser, limitOrdersByUser, transactionsByUser } =
         useContext(GraphDataContext);
 
     // TODO: can pull into GraphDataContext
@@ -67,7 +67,7 @@ function Sidebar() {
         x.chainId === chainData.chainId;
 
     const _positionsByUser = positionsByUser.positions.filter(filterFn);
-    const _txsByUser = changesByUser.changes.filter(filterFn);
+    const _txsByUser = transactionsByUser.changes.filter(filterFn);
     const _limitsByUser = limitOrdersByUser.limitOrders.filter(filterFn);
 
     const mostRecentTxs = _txsByUser.slice(0, 4);
