@@ -207,12 +207,12 @@ function Swap(props: propsIF) {
         } else if (isPoolInitialized === false) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Pool Not Initialized');
-        } else if (isNaN(parseFloat(sellQtyString))) {
-            setSwapAllowed(false);
-            setSwapButtonErrorMessage('Enter an Amount');
         } else if (isLiquidityInsufficient) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Liquidity Insufficient');
+        } else if (isNaN(parseFloat(sellQtyString))) {
+            setSwapAllowed(false);
+            setSwapButtonErrorMessage('Enter an Amount');
         } else if (parseFloat(sellQtyString) <= 0) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Enter an Amount');
@@ -353,13 +353,12 @@ function Swap(props: propsIF) {
 
         let tx;
         try {
-            const sellTokenAddress = isQtySell
-                ? tokenA.address
-                : tokenB.address;
-            const buyTokenAddress = isQtySell ? tokenB.address : tokenA.address;
+            const sellTokenAddress = tokenA.address;
+            const buyTokenAddress = tokenB.address;
 
             tx = await performSwap({
                 crocEnv,
+                isQtySell,
                 qty,
                 buyTokenAddress,
                 sellTokenAddress,
@@ -470,7 +469,7 @@ function Swap(props: propsIF) {
             color='other-red'
             padding='4px 8px'
         >
-            <div>Current Pool Liquidity is Insufficient for this Swap</div>
+            <div>Pool Liquidity is Insufficient for this Swap</div>
             <TooltipComponent
                 title='Current Pool Liquidity is Insufficient for this Swap'
                 placement='bottom'
