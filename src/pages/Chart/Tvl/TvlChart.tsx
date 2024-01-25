@@ -8,12 +8,9 @@ import {
     renderCanvasArray,
     setCanvasResolution,
 } from '../ChartUtils/chartUtils';
-import {
-    diffHashSig,
-    diffHashSigScaleData,
-} from '../../../ambient-utils/dataLayer';
 import { CandleDataIF } from '../../../ambient-utils/types';
 import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
+import { diffHashSig, diffHashSigScaleData } from '../../../utils/diffHashSig';
 
 interface TvlData {
     tvlData: Array<CandleDataIF>;

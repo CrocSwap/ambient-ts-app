@@ -11,13 +11,11 @@ import modalBackground from '../../../assets/images/backgrounds/background.png';
 import { GCGO_OVERRIDE_URL } from '../../../ambient-utils/constants';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import {
-    getPositionData,
-    printDomToImage,
-} from '../../../ambient-utils/dataLayer';
+import { getPositionData } from '../../../ambient-utils/dataLayer';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import Modal from '../Modal/Modal';
+import { printDomToImage } from '../../../utils/printDomToImage';
 
 interface propsIF {
     tx: TransactionIF;

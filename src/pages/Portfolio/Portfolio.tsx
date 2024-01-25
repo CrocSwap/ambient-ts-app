@@ -14,7 +14,6 @@ import { fetchEnsAddress } from '../../ambient-utils/api';
 import { Navigate, useParams } from 'react-router-dom';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { diffHashSig } from '../../ambient-utils/dataLayer';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { TokenContext } from '../../contexts/TokenContext';
@@ -27,6 +26,7 @@ import {
 } from '../../styled/Components/Portfolio';
 import { FlexContainer, Text } from '../../styled/Common';
 import { UserDataContext } from '../../contexts/UserDataContext';
+import { diffHashSig } from '../../utils/diffHashSig';
 
 function Portfolio() {
     const { userAddress, setResolvedAddressInContext, ensName } =

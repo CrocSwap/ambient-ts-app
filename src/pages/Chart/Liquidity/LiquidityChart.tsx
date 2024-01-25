@@ -7,10 +7,6 @@ import {
     useState,
 } from 'react';
 import * as d3 from 'd3';
-import {
-    diffHashSig,
-    diffHashSigScaleData,
-} from '../../../ambient-utils/dataLayer';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { formatAmountWithoutDigit } from '../../../utils/numbers';
 import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
@@ -32,6 +28,7 @@ import {
 } from './LiquiditySeries/LineSeries';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { RangeContext } from '../../../contexts/RangeContext';
+import { diffHashSig, diffHashSigScaleData } from '../../../utils/diffHashSig';
 
 interface liquidityPropsIF {
     liqMode: string;

@@ -1,13 +1,13 @@
-import { fetchRecords } from '../../api/fetchUserPositions';
-import { querySpotPrice } from '../../dataLayer';
+import { fetchRecords } from '../../../api/fetchUserPositions';
+import { memoizeQuerySpotPrice } from '../../../dataLayer';
 import {
-    fetchTokenPrice,
+    memoizeTokenPrice,
     fetchContractDetails,
     fetchEnsAddress,
-} from '../../api';
-import { RecordType } from '../../types';
-import { createNetworkSession } from '../../constants/networks/createNetworkSession';
-import { isNetworkAccessDisabled } from '../config';
+} from '../../../api';
+import { RecordType } from '../../../types';
+import { createNetworkSession } from '../../../constants/networks/createNetworkSession';
+import { isNetworkAccessDisabled } from '../../config';
 
 const fetchDataForChain = async (
     recordType: RecordType,
@@ -28,8 +28,8 @@ const fetchDataForChain = async (
         crocEnv: sess.crocEnv,
 
         // Decoration Data Related:
-        cachedFetchTokenPrice: fetchTokenPrice,
-        cachedQuerySpotPrice: querySpotPrice,
+        cachedFetchTokenPrice: memoizeTokenPrice(),
+        cachedQuerySpotPrice: memoizeQuerySpotPrice(),
         cachedTokenDetails: fetchContractDetails,
         cachedEnsResolve: fetchEnsAddress,
     });

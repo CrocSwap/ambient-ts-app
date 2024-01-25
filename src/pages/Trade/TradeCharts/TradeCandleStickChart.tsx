@@ -14,11 +14,7 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
-import {
-    diffHashSig,
-    diffHashSigLiquidity,
-    getPinnedPriceValuesFromTicks,
-} from '../../../ambient-utils/dataLayer';
+import { getPinnedPriceValuesFromTicks } from '../../../ambient-utils/dataLayer';
 import { CandleContext } from '../../../contexts/CandleContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
@@ -37,6 +33,7 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { updatesIF } from '../../../utils/hooks/useUrlParams';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { diffHashSig, diffHashSigLiquidity } from '../../../utils/diffHashSig';
 import { xAxisBuffer } from '../../Chart/ChartUtils/chartConstants';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */

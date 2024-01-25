@@ -5,7 +5,6 @@ import {
     trimString,
     getMoneynessRank,
     getElapsedTime,
-    diffHashSig,
     getFormattedNumber,
     uriToHttp,
 } from '../../ambient-utils/dataLayer';
@@ -23,6 +22,7 @@ import moment from 'moment';
 import { getAddress } from 'ethers/lib/utils.js';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { useFetchBatch } from '../../App/hooks/useFetchBatch';
+import { diffHashSig } from '../diffHashSig';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,

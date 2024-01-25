@@ -14,10 +14,11 @@ import {
 } from '../App/hooks/useRecentPools';
 import { sidebarMethodsIF, useSidebar } from '../App/hooks/useSidebar';
 import { IS_LOCAL_ENV } from '../ambient-utils/constants';
-import { diffHashSig, isJsonString } from '../ambient-utils/dataLayer';
+import { isJsonString } from '../ambient-utils/dataLayer';
 import { AppStateContext } from './AppStateContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { ReceiptContext } from './ReceiptContext';
+import { diffHashSig } from '../utils/diffHashSig';
 
 interface SidebarStateIF {
     recentPools: recentPoolsMethodsIF;

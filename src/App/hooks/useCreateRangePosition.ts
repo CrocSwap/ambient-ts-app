@@ -10,7 +10,7 @@ import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { RangeContext } from '../../contexts/RangeContext';
-import { createRangePositionTx } from '../../ambient-utils/dataLayer/transactions/range';
+import { createRangePositionTx } from '../../ambient-utils/dataLayer';
 import { ReceiptContext } from '../../contexts/ReceiptContext';
 
 export function useCreateRangePosition() {

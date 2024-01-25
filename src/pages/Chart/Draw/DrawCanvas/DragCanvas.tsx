@@ -9,9 +9,9 @@ import {
     selectedDrawnData,
 } from '../../ChartUtils/chartUtils';
 import { ChartContext } from '../../../../contexts/ChartContext';
-import { diffHashSigScaleData } from '../../../../ambient-utils/dataLayer';
 import { CandleDataIF } from '../../../../ambient-utils/types';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { diffHashSigScaleData } from '../../../../utils/diffHashSig';
 
 interface DragCanvasProps {
     scaleData: scaleData;

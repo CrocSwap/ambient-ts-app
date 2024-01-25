@@ -1,5 +1,6 @@
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { mainnet as wagmiChain } from 'wagmi/chains';
+import { Provider } from '@ethersproject/providers';
 import {
     mainnetETH,
     mainnetUSDC,
@@ -10,11 +11,13 @@ import {
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 import { GCGO_ETHEREUM_URL } from '../gcgo';
-import { Provider } from '@ethersproject/providers';
+import { AMBIENT_UTILS_OVERRIDES } from '../../initAmbientUtils';
 
 const PROVIDER_KEY =
     process.env.NODE_ENV === 'test'
         ? process.env.PROVIDER_KEY
+        : process.env.NODE_ENV === 'package'
+        ? AMBIENT_UTILS_OVERRIDES['INFURA_API_KEY']
         : process.env.REACT_APP_INFURA_KEY;
 
 export const ethereumMainnet: NetworkIF = {

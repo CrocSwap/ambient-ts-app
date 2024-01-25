@@ -18,11 +18,7 @@ import {
     selectedDrawnData,
     setCanvasResolution,
 } from '../../ChartUtils/chartUtils';
-import {
-    diffHashSig,
-    diffHashSigScaleData,
-    getFormattedNumber,
-} from '../../../../ambient-utils/dataLayer';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import { createCircle } from '../../ChartUtils/circle';
 import {
     createAnnotationLineSeries,
@@ -43,6 +39,10 @@ import {
 } from '../../ChartUtils/drawConstants';
 import { CandleDataIF } from '../../../../ambient-utils/types';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
+import {
+    diffHashSig,
+    diffHashSigScaleData,
+} from '../../../../utils/diffHashSig';
 
 interface DrawCanvasProps {
     scaleData: scaleData;

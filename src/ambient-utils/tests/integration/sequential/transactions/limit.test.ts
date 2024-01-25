@@ -9,11 +9,11 @@ import { ethers } from 'ethers';
 import {
     submitLimitOrder,
     SubmitLimitOrderParams,
-} from '../../../dataLayer/transactions/limit';
-import { goerliETH, goerliUSDC } from '../../../constants';
-import { fetchBlockNumber } from '../../../api';
+} from '../../../../dataLayer';
+import { goerliETH, goerliUSDC } from '../../../../constants';
+import { fetchBlockNumber } from '../../../../api';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { isNetworkAccessDisabled } from '../../config';
+import { isNetworkAccessDisabled } from '../../../config';
 
 describe('Submit and Remove Limit Orders on Goerli\'s ETH/USDC pool', () => {
     const sleep = (ms: number) =>

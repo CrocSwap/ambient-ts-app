@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { PositionIF } from '../../../ambient-utils/types';
-import { diffHashSig } from '../../../ambient-utils/dataLayer';
 import { BigNumber } from 'ethers';
+import { diffHashSig } from '../../../utils/diffHashSig';
 
 export type RangeSortType =
     | 'id'

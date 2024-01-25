@@ -23,7 +23,6 @@ import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import {
     getFormattedNumber,
     getUnicodeCharacter,
-    diffHashSig,
     isStablePair,
     truncateDecimals,
     getPinnedPriceValuesFromDisplayPrices,
@@ -44,6 +43,7 @@ import {
     NUM_GWEI_IN_WEI,
     RANGE_BUFFER_MULTIPLIER,
 } from '../../../ambient-utils/constants/';
+import { diffHashSig } from '../../../utils/diffHashSig';
 
 export const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 export const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;

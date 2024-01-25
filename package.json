@@ -52,16 +52,20 @@
         "build": "node -v | grep -q \"v16\" && yarn run build:regular || yarn run build:legacy",
         "build:legacy": "react-scripts --openssl-legacy-provider --max_old_space_size=4096 build",
         "build:regular": "react-scripts --max_old_space_size=4096 build",
-        "test": "react-scripts test",
-        "test:sequential": "react-scripts test --runInBand --testPathPattern=ambient-utils/tests/sequential",
-        "test:parallel": "react-scripts test --testPathPattern=ambient-utils/tests/parallel",
-        "test:nowatch": "react-scripts test --watchAll=false",
+        "test": "yarn test:unit",
+        "test:nowatch": "yarn test:unit --watchAll=false",
+        "test:all": "yarn test:unit && yarn test:integration",
+        "test:unit": "react-scripts test --testPathPattern=ambient-utils/tests/unit",
+        "test:integration": "yarn test:parallel && yarn test:sequential",
+        "test:sequential": "react-scripts test --runInBand --testPathPattern=ambient-utils/tests/integration/sequential",
+        "test:parallel": "react-scripts test --testPathPattern=ambient-utils/tests/integration/parallel",
         "eject": "react-scripts eject",
         "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
         "lint:fix": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\"",
         "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
         "pre-commit": "yarn lint:fix && yarn format && yarn test:nowatch",
-        "prepare": "husky install"
+        "prepare": "husky install",
+        "publish-ambient-utils": "node scripts/publish-ambient-utils.js"
     },
     "lint-staged": {
         "*.{js,jsx,ts,tsx}": [

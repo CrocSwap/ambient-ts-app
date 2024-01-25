@@ -24,9 +24,6 @@ export * from './GCServerPoolIF';
 
 export * from './NetworkIF';
 
-// ScaleData
-export * from './ScaleDataIF';
-
 export * from './TradeTableDataRow';
 
 export enum RecordType {

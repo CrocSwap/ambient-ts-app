@@ -6,8 +6,8 @@ import {
     defaultDpRangeDrawnShapeEditAttributes,
     fibDefaultLevels,
 } from '../../pages/Chart/ChartUtils/drawConstants';
-import { diffHashSig } from '../../ambient-utils/dataLayer';
 import { LS_KEY_CHART_ANNOTATIONS } from '../../pages/Chart/ChartUtils/chartConstants';
+import { diffHashSig } from '../../utils/diffHashSig';
 
 export const useDrawSettings = () => {
     function getLineOptions(itemType: string) {
