@@ -41,6 +41,7 @@ import { TradeDataContext } from '../../contexts/TradeDataContext';
 import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
 import { PoolContext } from '../../contexts/PoolContext';
 import { MdAutoGraph } from 'react-icons/md';
+import ChartToolbar from '../Chart/Draw/Toolbar/Toolbar';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -59,6 +60,8 @@ function Trade() {
         setChartHeight,
         canvasRef,
         tradeTableState,
+        isChartHeightMinimum,
+        setIsChartHeightMinimum,
     } = useContext(ChartContext);
 
     const isPoolInitialized = useSimulatedIsPoolInitialized();
@@ -250,6 +253,10 @@ function Trade() {
                     />
                 </ContentContainer>
             )}
+
+            {!isChartLoading &&
+                !isChartHeightMinimum &&
+                activeMobileComponent === 'chart' && <ChartToolbar />}
         </MainSection>
     );
 
@@ -258,105 +265,135 @@ function Trade() {
     const showNoChartData = !isPoolInitialized || isCandleDataNull;
 
     return (
-        <MainSection>
-            <FlexContainer
-                flexDirection='column'
-                fullWidth
-                background='dark2'
-                gap={8}
-                style={{ height: 'calc(100vh - 56px)' }}
-                ref={canvasRef}
-            >
-                <TradeChartsHeader tradePage />
-                {/* This div acts as a parent to maintain a min/max for the resizable element below */}
+        <>
+            <MainSection>
+                <FlexContainer
+                    flexDirection='column'
+                    fullWidth
+                    background='dark2'
+                    gap={8}
+                    style={{ height: 'calc(100vh - 56px)' }}
+                    ref={canvasRef}
+                >
+                    <TradeChartsHeader tradePage />
+                    {/* This div acts as a parent to maintain a min/max for the resizable element below */}
+                    <FlexContainer
+                        flexDirection='column'
+                        fullHeight
+                        overflow='hidden'
+                    >
+                        <ResizableContainer
+                            showResizeable={
+                                !isCandleDataNull && !isChartFullScreen
+                            }
+                            enable={{
+                                bottom: !isChartFullScreen,
+                                top: false,
+                                left: false,
+                                topLeft: false,
+                                bottomLeft: false,
+                                right: false,
+                                topRight: false,
+                                bottomRight: false,
+                            }}
+                            size={{
+                                width: '100%',
+                                height: chartHeights.current,
+                            }}
+                            minHeight={4}
+                            onResize={(
+                                evt: MouseEvent | TouchEvent,
+                                dir: Direction,
+                                ref: HTMLElement,
+                                d: NumberSize,
+                            ) => {
+                                if (
+                                    chartHeights.current + d.height <
+                                    TRADE_CHART_MIN_HEIGHT
+                                ) {
+                                    setIsChartHeightMinimum(true);
+                                } else {
+                                    setIsChartHeightMinimum(false);
+                                }
+                            }}
+                            onResizeStart={() => {
+                                // may be useful later
+                            }}
+                            onResizeStop={(
+                                evt: MouseEvent | TouchEvent,
+                                dir: Direction,
+                                ref: HTMLElement,
+                                d: NumberSize,
+                            ) => {
+                                if (
+                                    chartHeights.current + d.height <
+                                    TRADE_CHART_MIN_HEIGHT
+                                ) {
+                                    if (tradeTableState == 'Expanded') {
+                                        setChartHeight(chartHeights.default);
+                                    } else {
+                                        setChartHeight(chartHeights.min);
+                                    }
+                                } else {
+                                    setChartHeight(
+                                        chartHeights.current + d.height,
+                                    );
+                                }
+                            }}
+                            bounds={'parent'}
+                        >
+                            {showNoChartData && (
+                                <NoChartData
+                                    chainId={chainId}
+                                    tokenA={
+                                        isDenomBase ? baseToken : quoteToken
+                                    }
+                                    tokenB={
+                                        isDenomBase ? quoteToken : baseToken
+                                    }
+                                    isCandleDataNull
+                                    isTableExpanded={
+                                        tradeTableState == 'Expanded'
+                                    }
+                                />
+                            )}
+                            {!showNoChartData && isPoolInitialized && (
+                                <ChartContainer fullScreen={isChartFullScreen}>
+                                    {!isCandleDataNull && (
+                                        <TradeCharts {...tradeChartsProps} />
+                                    )}
+                                </ChartContainer>
+                            )}
+                        </ResizableContainer>
+                        {!isChartFullScreen && (
+                            <FlexContainer
+                                ref={tradeTableRef}
+                                style={{ flex: 1 }}
+                                overflow='hidden'
+                            >
+                                <TradeTabs2 {...tradeTabsProps} />
+                            </FlexContainer>
+                        )}
+                    </FlexContainer>
+                </FlexContainer>
                 <FlexContainer
                     flexDirection='column'
                     fullHeight
-                    overflow='hidden'
+                    fullWidth
+                    background='dark1'
+                    overflow='auto'
                 >
-                    <ResizableContainer
-                        showResizeable={!isCandleDataNull && !isChartFullScreen}
-                        enable={{
-                            bottom: !isChartFullScreen,
-                            top: false,
-                            left: false,
-                            topLeft: false,
-                            bottomLeft: false,
-                            right: false,
-                            topRight: false,
-                            bottomRight: false,
+                    <Outlet
+                        context={{
+                            urlParamMap: urlParamMap,
+                            limitTick: limitTick,
+                            updateURL: updateURL,
                         }}
-                        size={{
-                            width: '100%',
-                            height: chartHeights.current,
-                        }}
-                        minHeight={4}
-                        onResizeStart={() => {
-                            // may be useful later
-                        }}
-                        onResizeStop={(
-                            evt: MouseEvent | TouchEvent,
-                            dir: Direction,
-                            ref: HTMLElement,
-                            d: NumberSize,
-                        ) => {
-                            if (
-                                chartHeights.current + d.height <
-                                TRADE_CHART_MIN_HEIGHT
-                            ) {
-                                if (tradeTableState == 'Expanded') {
-                                    setChartHeight(chartHeights.default);
-                                } else {
-                                    setChartHeight(chartHeights.min);
-                                }
-                            } else {
-                                setChartHeight(chartHeights.current + d.height);
-                            }
-                        }}
-                        bounds={'parent'}
-                    >
-                        {showNoChartData && (
-                            <NoChartData
-                                chainId={chainId}
-                                tokenA={isDenomBase ? baseToken : quoteToken}
-                                tokenB={isDenomBase ? quoteToken : baseToken}
-                                isCandleDataNull
-                                isTableExpanded={tradeTableState == 'Expanded'}
-                            />
-                        )}
-                        {!showNoChartData && isPoolInitialized && (
-                            <ChartContainer fullScreen={isChartFullScreen}>
-                                {!isCandleDataNull && (
-                                    <TradeCharts {...tradeChartsProps} />
-                                )}
-                            </ChartContainer>
-                        )}
-                    </ResizableContainer>
-                    <FlexContainer
-                        ref={tradeTableRef}
-                        style={{ flex: 1 }}
-                        overflow='hidden'
-                    >
-                        <TradeTabs2 {...tradeTabsProps} />
-                    </FlexContainer>
+                    />
                 </FlexContainer>
-            </FlexContainer>
-            <FlexContainer
-                flexDirection='column'
-                fullHeight
-                fullWidth
-                background='dark1'
-                overflow='auto'
-            >
-                <Outlet
-                    context={{
-                        urlParamMap: urlParamMap,
-                        limitTick: limitTick,
-                        updateURL: updateURL,
-                    }}
-                />
-            </FlexContainer>
-        </MainSection>
+                {!isChartLoading && !isChartHeightMinimum && <ChartToolbar />}
+            </MainSection>
+        </>
     );
 }
 
