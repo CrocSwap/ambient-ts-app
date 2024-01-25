@@ -3219,7 +3219,7 @@ export default function Chart(props: propsIF) {
                                             );
                                             ctx.fillStyle =
                                                 'rgba(210,210,210,1)';
-                                            ctx.font = '12.425px Lexend Deca';
+                                            ctx.font = '13px Lexend Deca';
                                             ctx.textAlign = 'center';
                                             ctx.textBaseline = 'middle';
 
