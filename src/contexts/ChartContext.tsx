@@ -1,4 +1,11 @@
-import React, { createContext, useEffect, useRef, useState } from 'react';
+import React, {
+    createContext,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import { useLocation } from 'react-router-dom';
 import {
     chartSettingsMethodsIF,
@@ -6,6 +13,16 @@ import {
 } from '../App/hooks/useChartSettings';
 import { getLocalStorageItem } from '../ambient-utils/dataLayer';
 import { LS_KEY_CHART_ANNOTATIONS } from '../pages/Chart/ChartUtils/chartConstants';
+import {
+    actionKeyIF,
+    actionStackIF,
+    useUndoRedo,
+} from '../pages/Chart/ChartUtils/useUndoRedo';
+import { TradeDataContext, TradeDataContextIF } from './TradeDataContext';
+import {
+    drawDataHistory,
+    selectedDrawnData,
+} from '../pages/Chart/ChartUtils/chartUtils';
 
 type TradeTableState = 'Expanded' | 'Collapsed' | undefined;
 
@@ -31,6 +48,42 @@ interface ChartContextIF {
     setIsMagnetActive: React.Dispatch<{ value: boolean }>;
     isChangeScaleChart: boolean;
     setIsChangeScaleChart: React.Dispatch<boolean>;
+    isToolbarOpen: boolean;
+    setIsToolbarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    undoRedoOptions: {
+        undo: () => void;
+        redo: () => void;
+        deleteItem: (item: drawDataHistory) => void;
+        currentPool: TradeDataContextIF;
+        drawnShapeHistory: drawDataHistory[];
+        setDrawnShapeHistory: React.Dispatch<SetStateAction<drawDataHistory[]>>;
+        drawActionStack: Map<actionKeyIF, actionStackIF[]>;
+        actionKey: actionKeyIF;
+        addDrawActionStack: (
+            tempLastData: drawDataHistory,
+            isNewShape: boolean,
+            type: string,
+            updatedData?: drawDataHistory | undefined,
+        ) => void;
+        undoStack: Map<actionKeyIF, actionStackIF[]>;
+        deleteAllShapes: () => void;
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    toolbarRef: React.MutableRefObject<any>;
+    activeDrawingType: string;
+    setActiveDrawingType: React.Dispatch<SetStateAction<string>>;
+    selectedDrawnShape: selectedDrawnData | undefined;
+    setSelectedDrawnShape: React.Dispatch<
+        SetStateAction<selectedDrawnData | undefined>
+    >;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    chartContainerOptions: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setChartContainerOptions: React.Dispatch<SetStateAction<any>>;
+    isChartHeightMinimum: boolean;
+    setIsChartHeightMinimum: React.Dispatch<SetStateAction<boolean>>;
+    isMagnetActiveLocal: boolean;
+    setIsMagnetActiveLocal: React.Dispatch<SetStateAction<boolean>>;
 }
 
 export const ChartContext = createContext<ChartContextIF>({} as ChartContextIF);
@@ -60,7 +113,26 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         value: chartAnnotations?.isMagnetActive ?? false,
     });
 
+    const [isMagnetActiveLocal, setIsMagnetActiveLocal] = useState(
+        isMagnetActive.value,
+    );
+
+    const { isDenomBase, isTokenABase } = useContext(TradeDataContext);
+    const toolbarRef = useRef<HTMLDivElement | null>(null);
+
+    const denominationsInBase = isDenomBase;
+    const undoRedoOptions = useUndoRedo(denominationsInBase, isTokenABase);
     const [isChangeScaleChart, setIsChangeScaleChart] = useState(false);
+
+    const [activeDrawingType, setActiveDrawingType] = useState('Cross');
+
+    const [selectedDrawnShape, setSelectedDrawnShape] = useState<
+        selectedDrawnData | undefined
+    >(undefined);
+
+    const [chartContainerOptions, setChartContainerOptions] = useState();
+
+    const [isChartHeightMinimum, setIsChartHeightMinimum] = useState(false);
 
     const [chartHeights, setChartHeights] = useState<{
         current: number;
@@ -125,6 +197,15 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         process.env.REACT_APP_CHART_IS_ENABLED.toLowerCase() === 'false'
             ? false
             : true;
+
+    const initialData = localStorage.getItem(LS_KEY_CHART_ANNOTATIONS);
+
+    const initialIsToolbarOpen = initialData
+        ? JSON.parse(initialData).isOpenAnnotationPanel
+        : true;
+
+    const [isToolbarOpen, setIsToolbarOpen] =
+        useState<boolean>(initialIsToolbarOpen);
     const chartSettings = useChartSettings();
 
     const chartContext = {
@@ -141,7 +222,25 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         setIsMagnetActive,
         isChangeScaleChart,
         setIsChangeScaleChart,
+        isToolbarOpen,
+        setIsToolbarOpen,
+        undoRedoOptions,
+        toolbarRef,
+        activeDrawingType,
+        setActiveDrawingType,
+        selectedDrawnShape,
+        setSelectedDrawnShape,
+        chartContainerOptions,
+        setChartContainerOptions,
+        isChartHeightMinimum,
+        setIsChartHeightMinimum,
+        isMagnetActiveLocal,
+        setIsMagnetActiveLocal,
     };
+
+    useEffect(() => {
+        setIsChartHeightMinimum(chartHeights.current <= CHART_MIN_HEIGHT);
+    }, [chartHeights.current]);
 
     useEffect(() => {
         if (!currentLocation.startsWith('/trade')) {

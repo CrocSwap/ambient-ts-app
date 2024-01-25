@@ -2,13 +2,17 @@ import styled from 'styled-components';
 
 const ToolbarContainer = styled.div<{
     isActive: boolean;
+    isMobile: boolean;
     backgroundColor: string;
+    marginTopValue: number;
 }>`
-    ${({ isActive }) => {
+    ${({ isActive, marginTopValue }) => {
         if (isActive) {
             return `
             width: 38px;
-        
+            margin-left:5px;
+
+            margin-top: ${marginTopValue}px;
             &::-webkit-scrollbar {
                 width: 0;
                 display: none;
@@ -21,6 +25,8 @@ const ToolbarContainer = styled.div<{
         } else {
             return `
             width: 9px;
+            margin-left:5px;
+            margin-top: ${marginTopValue}px;
             `;
         }
     }}
@@ -34,7 +40,7 @@ const ToolbarContainer = styled.div<{
     grid-row: 3;
 
     transition: all 600ms ease-in-out;
-    z-index: 1;
+    z-index: 20;
 `;
 
 const ScrollableDiv = styled.div<{ height: string; isHover: boolean }>`
