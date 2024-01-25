@@ -102,10 +102,6 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
             const circleSerieArray: any[] = [];
 
             userTransactionData.forEach((order) => {
-                if (order.changeType === 'swap') {
-                    console.log(order, denomInBase);
-                }
-
                 const circleSerie = createCircle(
                     scaleData?.xScale,
                     scaleData?.yScale,
@@ -114,7 +110,8 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                     denomInBase,
                     false,
                     false,
-                    !order.isBuy && denomInBase,
+                    (denomInBase && !order.isBuy) ||
+                        (!denomInBase && order.isBuy),
                 );
 
                 circleSerieArray.push(circleSerie);
@@ -342,9 +339,11 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
 
                                 lineSeries.decorate(
                                     (context: CanvasRenderingContext2D) => {
-                                        context.strokeStyle = order.isBuy
-                                            ? 'rgba(115, 113, 252)'
-                                            : 'rgba(205, 193, 255)';
+                                        context.strokeStyle =
+                                            (denomInBase && !order.isBuy) ||
+                                            (!denomInBase && order.isBuy)
+                                                ? 'rgba(115, 113, 252)'
+                                                : 'rgba(205, 193, 255)';
                                     },
                                 );
 

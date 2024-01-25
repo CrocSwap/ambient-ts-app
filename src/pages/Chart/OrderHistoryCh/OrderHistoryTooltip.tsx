@@ -56,18 +56,26 @@ export default function OrderHistoryTooltip(props: {
                 <OrderHistoryHeader>
                     <StyledHeader
                         color={
-                            hoveredOrderHistory.isBuy ? '#CDC1FF' : '#7371fc'
+                            (denomInBase && !hoveredOrderHistory.isBuy) ||
+                            (!denomInBase && hoveredOrderHistory.isBuy)
+                                ? '#CDC1FF'
+                                : '#7371fc'
                         }
                         size={'15px'}
                     >
-                        {(hoveredOrderHistory.isBuy ? 'Buy' : 'Sell') + ': '}
+                        {((denomInBase && !hoveredOrderHistory.isBuy) ||
+                        (!denomInBase && hoveredOrderHistory.isBuy)
+                            ? 'Buy'
+                            : 'Sell') + ': '}
                     </StyledHeader>
 
                     {hoveredOrderHistory.entityType !== 'liquidity' && (
                         <StyledHeader color={'white'} size={'15px'}>
                             {formatAmountWithoutDigit(
                                 Math.abs(
-                                    hoveredOrderHistory.baseFlowDecimalCorrected,
+                                    denomInBase
+                                        ? hoveredOrderHistory.baseFlowDecimalCorrected
+                                        : hoveredOrderHistory.quoteFlowDecimalCorrected,
                                 ),
                             )}
                         </StyledHeader>
@@ -75,11 +83,17 @@ export default function OrderHistoryTooltip(props: {
 
                     {hoveredOrderHistory.entityType !== 'liquidity' && (
                         <StyledHeader color={'white'} size={'15px'}>
-                            {hoveredOrderHistory.baseSymbol}
+                            {denomInBase
+                                ? hoveredOrderHistory.baseSymbol
+                                : hoveredOrderHistory.quoteSymbol}
                         </StyledHeader>
                     )}
                     <img
-                        src={uriToHttp(hoveredOrderHistory.baseTokenLogoURI)}
+                        src={uriToHttp(
+                            denomInBase
+                                ? hoveredOrderHistory.baseTokenLogoURI
+                                : hoveredOrderHistory.quoteTokenLogoURI,
+                        )}
                         alt='base token'
                         style={{ width: '18px' }}
                     />
@@ -94,7 +108,7 @@ export default function OrderHistoryTooltip(props: {
                         {'$' +
                             formatAmountWithoutDigit(
                                 hoveredOrderHistory.totalValueUSD,
-                                0,
+                                2,
                             )}
                     </StyledHeader>
                     <StyledLink

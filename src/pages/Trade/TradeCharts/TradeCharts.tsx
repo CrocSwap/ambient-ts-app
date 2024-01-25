@@ -159,6 +159,14 @@ function TradeCharts(props: propsIF) {
         showHistorical,
     ]);
 
+    useEffect(() => {
+        if (!isUserConnected) {
+            setShowSwap(false);
+            setShowLiquidity(false);
+            setShowHistorical(false);
+        }
+    }, [isUserConnected]);
+
     // END OF CHART SETTINGS------------------------------------------------------------
 
     function closeOnEscapeKeyDown(e: KeyboardEvent) {
