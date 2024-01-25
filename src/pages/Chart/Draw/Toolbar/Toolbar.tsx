@@ -262,7 +262,7 @@ function ChartToolbar() {
         }
     };
 
-    return chartContainerOptions ? (
+    return chartContainerOptions && chartContainerOptions.top !== 0 ? (
         <ToolbarContainer
             isActive={isToolbarOpen}
             isMobile={mobileView}
