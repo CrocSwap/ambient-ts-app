@@ -3362,11 +3362,7 @@ export default function Chart(props: propsIF) {
                                         {
                                             denomInBase:
                                                 item.data[0].denomInBase,
-                                            y:
-                                                item.data[0].denomInBase ===
-                                                denomInBase
-                                                    ? item.data[0].y
-                                                    : 1 / item.data[0].y,
+                                            y: item.data[0].y,
                                         },
                                     ]);
                                     if (
