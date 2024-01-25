@@ -67,11 +67,6 @@ function Orders(props: propsIF) {
 
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
-    // OrdersOC
-    useEffect(() => {
-        console.log(userLimitOrdersByPool.limitOrders);
-    }, [userLimitOrdersByPool]);
-
     const baseTokenSymbol = baseToken.symbol;
     const quoteTokenSymbol = quoteToken.symbol;
     const baseTokenAddress = baseToken.address;

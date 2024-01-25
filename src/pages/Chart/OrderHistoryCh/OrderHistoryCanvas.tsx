@@ -306,6 +306,9 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                             }
                         }
 
+                        // if (order.entityType === 'limitOrder')
+                        //     console.log(order.changeType, index);
+
                         if (
                             showHistorical &&
                             order.entityType === 'limitOrder' &&
