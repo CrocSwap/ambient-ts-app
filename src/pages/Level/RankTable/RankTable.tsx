@@ -1,12 +1,20 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Divider from '../../../components/Global/Divider/Divider';
 import { XpLeadersContext } from '../../../contexts/XpLeadersContext';
 import RankHeader from './RankHeader';
 import RankRow from './RankRow';
 import styles from './RankTable.module.css';
 import { trimString } from '../../../ambient-utils/dataLayer';
+import { SpinnerContainer } from '../../../styled/Components/Analytics';
+import Spinner from '../../../components/Global/Spinner/Spinner';
 
-export default function RankTable() {
+interface Props {
+    selectedTimeFrame: string;
+    isLoading: boolean;
+}
+export default function RankTable(props: Props) {
+    const { selectedTimeFrame, isLoading } = props;
+
     const { xpLeadersData } = useContext(XpLeadersContext);
     const formattedData =
         xpLeadersData?.data?.map((entry) => ({
@@ -23,14 +31,27 @@ export default function RankTable() {
             }),
         })) || [];
 
+    const loadingSpinner = (
+        <SpinnerContainer
+            fullHeight
+            fullWidth
+            alignItems='center'
+            justifyContent='center'
+        >
+            <Spinner size={100} bg='var(--dark1)' centered />
+        </SpinnerContainer>
+    );
+
     return (
         <div className={styles.main_table}>
             <RankHeader />
             <Divider />
             <div className={styles.main_table_content}>
-                {[...formattedData].map((data, idx) => (
-                    <RankRow key={idx} data={data} />
-                ))}
+                {isLoading
+                    ? loadingSpinner
+                    : formattedData?.map((data, idx) => (
+                          <RankRow key={idx} data={data} />
+                      ))}
             </div>
         </div>
     );

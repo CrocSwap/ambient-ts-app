@@ -1,13 +1,15 @@
 import LevelsCard from '../../components/Global/LevelsCard/LevelsCard';
 import styles from './Level.module.css';
 import { UserDataContext, UserXpDataIF } from '../../contexts/UserDataContext';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import LevelDisplay from '../../components/Global/LevelsCard/UserLevelDisplay';
 import Jazzicon from 'react-jazzicon/dist/Jazzicon';
 import { jsNumberForAddress } from 'react-jazzicon';
 import RankTable from './RankTable/RankTable';
 import { FlexContainer, Text } from '../../styled/Common';
 import { progressToNextLevel } from '../../ambient-utils/api';
+import { RefreshButton } from '../../styled/Components/TradeModules';
+import { FiRefreshCcw } from 'react-icons/fi';
 
 interface LevelPropsIF {
     ensName: string;
@@ -160,6 +162,20 @@ export default function Level(props: LevelPropsIF) {
                 user={ensName ?? addressToDisplay}
             />
         );
+    // LEADERBOARD
+    const [selectedTimeFrame, setSelectedTimeFrame] = useState('Global');
+    const [isLeaderboardLoading, setIsLeaderboardLoading] = useState(false);
+    const handleLeaderboardRefresh = () => {
+        setIsLeaderboardLoading(true);
+
+        setTimeout(() => {
+            setIsLeaderboardLoading(false);
+        }, 2000);
+    };
+    const handleOptionClick = (timeFrame: string) => {
+        setSelectedTimeFrame(timeFrame);
+    };
+    const timeFrameOptions = ['Global', 'Weekly', 'Chain'];
 
     if (isDisplayRank) {
         return (
@@ -169,11 +185,53 @@ export default function Level(props: LevelPropsIF) {
                     margin='2rem auto'
                     style={{ height: '100%', gap: '1rem' }}
                 >
-                    <Text fontSize='header1' color='white' align='start'>
-                        Leaderboard
-                    </Text>
+                    <FlexContainer
+                        flexDirection='row'
+                        alignItems='center'
+                        justifyContent='space-between'
+                    >
+                        <Text fontSize='header1' color='white' align='start'>
+                            Leaderboard
+                        </Text>
+                        <FlexContainer
+                            flexDirection='row'
+                            alignItems='center'
+                            gap={8}
+                        >
+                            <FlexContainer
+                                flexDirection='row'
+                                alignItems='center'
+                                gap={8}
+                            >
+                                {timeFrameOptions.map((option) => (
+                                    <button
+                                        className={`${styles.option_button} ${
+                                            option === selectedTimeFrame &&
+                                            styles.selected_button
+                                        }`}
+                                        key={option}
+                                        onClick={() =>
+                                            handleOptionClick(option)
+                                        }
+                                    >
+                                        {option}
+                                    </button>
+                                ))}
+                            </FlexContainer>
 
-                    <RankTable />
+                            <div
+                                className={styles.refresh_button}
+                                onClick={handleLeaderboardRefresh}
+                            >
+                                <FiRefreshCcw />
+                            </div>
+                        </FlexContainer>
+                    </FlexContainer>
+
+                    <RankTable
+                        selectedTimeFrame={selectedTimeFrame}
+                        isLoading={isLeaderboardLoading}
+                    />
                 </FlexContainer>
             </div>
         );

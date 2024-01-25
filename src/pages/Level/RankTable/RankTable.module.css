@@ -47,6 +47,8 @@ text-align: center;
     display: flex;
     flex-direction: column;
     gap: 8px;
+
+    min-height: 600px;
     
 
 }
@@ -110,6 +112,7 @@ display: none;
   
   
 }
+
 
 @media only screen and (min-width: 580px)  {
     .row_container, .row_container_header{
