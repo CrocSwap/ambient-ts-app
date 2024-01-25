@@ -920,7 +920,6 @@ export default function TransactionDetailsGraph(
                                     horizontalBandData,
                                 ]).call(horizontalBand);
                             } else if (tx.claimableLiq > 0) {
-                                console.log(tx);
                                 addExtraCandle(
                                     tx.timeFirstMint,
                                     tx.askTickInvPriceDecimalCorrected,

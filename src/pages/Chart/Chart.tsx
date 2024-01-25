@@ -358,8 +358,6 @@ export default function Chart(props: propsIF) {
     const [lineSeries, setLineSeries] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [annotationLineSeries, setAnnotationLineSeries] = useState<any>();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [dashedLineSeries, setDashedLineSeries] = useState<any>();
 
     const [hoveredDrawnShape, setHoveredDrawnShape] = useState<
         selectedDrawnData | undefined

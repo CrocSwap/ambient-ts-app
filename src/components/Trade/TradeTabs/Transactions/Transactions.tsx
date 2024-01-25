@@ -109,7 +109,6 @@ function Transactions(props: propsIF) {
     const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
 
     useEffect(() => {
-        console.log(userTransactionsByPool);
         // handled in useEffect below
         if (isCandleSelected) return;
         if (isAccountView)
