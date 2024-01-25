@@ -70,21 +70,20 @@ export function getFormattedNumber({
                 maximumFractionDigits: maxFracDigits,
             });
         }
-    } else if (value < 0) {
-        valueString = value.toLocaleString('en-US', {
-            minimumFractionDigits: minFracDigits,
-            maximumFractionDigits: maxFracDigits,
-        });
-    } else if (value <= 0.0001) {
+    } else if (Math.abs(value) <= 0.0001) {
         // use subscript format for small numbers
-        valueString = formatSubscript(value);
-    } else if (value < 1) {
+        if (value < 0) {
+            valueString = '-' + formatSubscript(Math.abs(value));
+        } else {
+            valueString = formatSubscript(value);
+        }
+    } else if (Math.abs(value) < 1) {
         // show 3 significant digits (after 0s)
         valueString = value.toPrecision(3);
-    } else if (value < 2) {
+    } else if (Math.abs(value) < 2) {
         // restrict to 3 places after decimal
         valueString = value.toFixed(3);
-    } else if (value >= abbrevThreshold && !isInput) {
+    } else if (Math.abs(value) >= abbrevThreshold && !isInput) {
         // use abbreviations (k, M, B, T) for big numbers
         valueString = formatAbbrev(value, isTvl);
     } else {
