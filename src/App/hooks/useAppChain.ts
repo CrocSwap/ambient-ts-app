@@ -25,6 +25,7 @@ export const useAppChain = (): {
     // hook to generate navigation actions with pre-loaded path
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
     const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
     const [searchParams] = useSearchParams();
     const chainParam = searchParams.get('chain');
     const networkParam = searchParams.get('network');
@@ -118,13 +119,22 @@ export const useAppChain = (): {
                             }
                             linkGenCurrent.navigate(templateURL);
                         } else {
-                            if (
-                                pathname.includes('token') ||
-                                chainParam ||
-                                networkParam
-                            ) {
-                                // navigate to index page only if token pair in URL
+                            if (chainParam || networkParam) {
+                                // navigate to index page only if "chain" or "network" in URL
                                 linkGenIndex.navigate();
+                            } else if (
+                                linkGenCurrent.currentPage === 'initpool' ||
+                                linkGenCurrent.currentPage === 'reposition'
+                            ) {
+                                linkGenPool.navigate(
+                                    `chain=${incomingChainFromWallet}`,
+                                );
+                            } else if (pathname.includes('chain')) {
+                                linkGenCurrent.navigate(
+                                    `chain=${incomingChainFromWallet}`,
+                                );
+                            } else {
+                                linkGenCurrent.navigate();
                             }
                         }
                         window.location.reload();
@@ -173,11 +183,17 @@ export const useAppChain = (): {
     // ... else in this file responds to changes in the browser environment
     function chooseNetwork(network: NetworkIF): void {
         localStorage.setItem(CHAIN_LS_KEY, network.chainId);
-        setActiveNetwork(network);
         const { pathname } = window.location;
-        if (pathname.includes('token')) {
-            // navigate to index page only if token pair in URL
-            linkGenIndex.navigate();
+        setActiveNetwork(network);
+        if (
+            linkGenCurrent.currentPage === 'initpool' ||
+            linkGenCurrent.currentPage === 'reposition'
+        ) {
+            linkGenPool.navigate(`chain=${network.chainId}`);
+        } else if (pathname.includes('chain')) {
+            linkGenCurrent.navigate(`chain=${network.chainId}`);
+        } else {
+            linkGenCurrent.navigate();
         }
         window.location.reload();
     }
