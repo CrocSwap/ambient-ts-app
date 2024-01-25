@@ -31,6 +31,7 @@ import { FlexContainer } from '../../../styled/Common';
 import { MainContainer } from '../../../styled/Components/Chart';
 import { TutorialButton } from '../../../styled/Components/Tutorial';
 import OrderHistoryDisplay from './TradeChartsComponents/OrderHistoryDisplay';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -81,6 +82,8 @@ function TradeCharts(props: propsIF) {
         setIsFullScreen: setIsChartFullScreen,
         chartCanvasRef,
     } = useContext(ChartContext);
+
+    const { isUserConnected } = useContext(UserDataContext);
 
     const { pathname } = useLocation();
 
@@ -190,16 +193,18 @@ function TradeCharts(props: propsIF) {
                     showFeeRate={showFeeRate}
                 />
             </div>
-            <div>
-                <OrderHistoryDisplay
-                    setShowHistorical={setShowHistorical}
-                    setShowSwap={setShowSwap}
-                    setShowLiquidity={setShowLiquidity}
-                    showLiquidity={showLiquidity}
-                    showHistorical={showHistorical}
-                    showSwap={showSwap}
-                />
-            </div>
+            {isUserConnected && (
+                <div>
+                    <OrderHistoryDisplay
+                        setShowHistorical={setShowHistorical}
+                        setShowSwap={setShowSwap}
+                        setShowLiquidity={setShowLiquidity}
+                        showLiquidity={showLiquidity}
+                        showHistorical={showHistorical}
+                        showSwap={showSwap}
+                    />
+                </div>
+            )}
             <div>
                 <CurveDepth overlayMethods={chartSettings.poolOverlay} />
             </div>
