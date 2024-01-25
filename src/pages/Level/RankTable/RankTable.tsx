@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 import Divider from '../../../components/Global/Divider/Divider';
 import { XpLeadersContext } from '../../../contexts/XpLeadersContext';
 import RankHeader from './RankHeader';
@@ -13,7 +13,7 @@ interface Props {
     isLoading: boolean;
 }
 export default function RankTable(props: Props) {
-    const { selectedTimeFrame, isLoading } = props;
+    const { isLoading } = props;
 
     const { xpLeadersData } = useContext(XpLeadersContext);
     const formattedData =

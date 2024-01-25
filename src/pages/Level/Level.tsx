@@ -8,7 +8,6 @@ import { jsNumberForAddress } from 'react-jazzicon';
 import RankTable from './RankTable/RankTable';
 import { FlexContainer, Text } from '../../styled/Common';
 import { progressToNextLevel } from '../../ambient-utils/api';
-import { RefreshButton } from '../../styled/Components/TradeModules';
 import { FiRefreshCcw } from 'react-icons/fi';
 
 interface LevelPropsIF {
