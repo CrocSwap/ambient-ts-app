@@ -70,14 +70,18 @@ export function getFormattedNumber({
                 maximumFractionDigits: maxFracDigits,
             });
         }
+    } else if (Math.abs(value) <= 0.0001) {
+        // use subscript format for small numbers
+        if (value < 0) {
+            valueString = '-' + formatSubscript(Math.abs(value));
+        } else {
+            valueString = formatSubscript(value);
+        }
     } else if (value < 0) {
         valueString = value.toLocaleString('en-US', {
             minimumFractionDigits: minFracDigits,
             maximumFractionDigits: maxFracDigits,
         });
-    } else if (value <= 0.0001) {
-        // use subscript format for small numbers
-        valueString = formatSubscript(value);
     } else if (value < 1) {
         // show 3 significant digits (after 0s)
         valueString = value.toPrecision(3);
