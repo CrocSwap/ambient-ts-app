@@ -35,6 +35,7 @@ interface TvlData {
     isChartZoom: boolean;
     setIsChartZoom: React.Dispatch<React.SetStateAction<boolean>>;
     isToolbarOpen: boolean;
+    toolbarWidth: number;
 }
 
 function TvlChart(props: TvlData) {
@@ -60,6 +61,7 @@ function TvlChart(props: TvlData) {
         zoomBase,
         render,
         isToolbarOpen,
+        toolbarWidth,
     } = props;
 
     // const tvlMainDiv = useRef(null);
@@ -519,8 +521,7 @@ function TvlChart(props: TvlData) {
             data-testid={'chart'}
             style={{
                 gridTemplateColumns:
-                    (isToolbarOpen ? 38 : 9) +
-                    'px auto 1fr auto minmax(1em, max-content)',
+                    toolbarWidth + 'px auto 1fr auto minmax(1em, max-content)',
             }}
         >
             <d3fc-canvas
@@ -537,7 +538,7 @@ function TvlChart(props: TvlData) {
 
             <label
                 style={{
-                    paddingLeft: '5px',
+                    paddingLeft: isToolbarOpen ? '38px' : '9px',
                     gridColumnStart: '3',
                     gridColumnEnd: '3',
                 }}

@@ -19,6 +19,7 @@ import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import {
     crosshair,
     fillLiqAdvanced,
+    getXandYLocationForChart,
     lineValue,
     liquidityChartData,
     renderCanvasArray,
@@ -549,7 +550,10 @@ function YAxisCanvas(props: yAxisIF) {
                 const shapeData = selectedDrawnShape.data;
 
                 shapeData.data.forEach((data) => {
-                    const isScientificShapeTick = data.y
+                    const shapeDataWithDenom =
+                        data.denomInBase === denomInBase ? data.y : 1 / data.y;
+
+                    const isScientificShapeTick = shapeDataWithDenom
                         .toString()
                         .includes('e');
 
@@ -852,12 +856,10 @@ function YAxisCanvas(props: yAxisIF) {
                 })
                 .filter((event) => {
                     const isWheel = event.type === 'wheel';
-                    let offsetY: number | undefined = undefined;
-                    if (event instanceof TouchEvent) {
-                        offsetY = event.touches[0].clientY - rectCanvas?.top;
-                    } else {
-                        offsetY = event.offsetY;
-                    }
+                    const { offsetY } = getXandYLocationForChart(
+                        event,
+                        rectCanvas,
+                    );
 
                     const isLabel =
                         yAxisLabels?.find((element: yLabel) => {

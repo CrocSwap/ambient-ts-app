@@ -4,6 +4,7 @@ import * as d3fc from 'd3fc';
 import { useLocation } from 'react-router-dom';
 import {
     crosshair,
+    isTimeZoneStart,
     renderCanvasArray,
     scaleData,
     selectedDrawnData,
@@ -154,10 +155,6 @@ function XAxisCanvas(props: xAxisIF) {
             const _width = mobileView ? 25 : 65; // magic number of pixels to blur surrounding price
             const tickSize = 6;
 
-            const toolbar = document.getElementById('toolbar_container');
-
-            const column = toolbar ? toolbar.getClientRects()[0].width : 9;
-
             const timeOfEndCandleLocation = timeOfEndCandle
                 ? xScale(timeOfEndCandle)
                 : undefined;
@@ -187,20 +184,7 @@ function XAxisCanvas(props: xAxisIF) {
                     ticks,
                 );
 
-                const filteredData = data.reduce(
-                    (acc: xAxisTick[], d: xAxisTick) => {
-                        const sameTime = acc.find((d1: xAxisTick) => {
-                            return d1.date.getTime() === d.date.getTime();
-                        });
-                        if (!sameTime) {
-                            acc.push(d);
-                        }
-                        return acc;
-                    },
-                    [],
-                );
-
-                filteredData.forEach((d: xAxisTick) => {
+                data.forEach((d: xAxisTick) => {
                     if (d.date instanceof Date) {
                         context.textAlign = 'center';
                         context.textBaseline = 'top';
@@ -243,56 +227,57 @@ function XAxisCanvas(props: xAxisIF) {
                             )
                         ) {
                             if (formatValue) {
-                                const indexValue = filteredData.findIndex(
+                                const indexValue = data.findIndex(
                                     (d1: xAxisTick) => d1.date === d.date,
                                 );
                                 if (!d.style) {
                                     const maxIndex =
-                                        indexValue === filteredData.length - 1
+                                        indexValue === data.length - 1
                                             ? indexValue
                                             : indexValue + 1;
                                     const minIndex =
                                         indexValue === 0
                                             ? indexValue
                                             : indexValue - 1;
-                                    const lastData = filteredData[maxIndex];
-                                    const beforeData = filteredData[minIndex];
+                                    const lastData = data[maxIndex];
+                                    const beforeData = data[minIndex];
+
+                                    const lastDataLocation = scaleData.xScale(
+                                        lastData.date,
+                                    );
+                                    const beforeDataLocation = scaleData.xScale(
+                                        beforeData.date,
+                                    );
+                                    const currentDataLocation =
+                                        scaleData.xScale(d.date);
+
+                                    const isTimeZoneStartLastData =
+                                        isTimeZoneStart(lastData.date);
 
                                     if (
-                                        beforeData.style ||
-                                        (lastData.style &&
-                                            xScale(d.date.getTime()))
+                                        Math.abs(
+                                            currentDataLocation -
+                                                beforeDataLocation,
+                                        ) > 20
                                     ) {
                                         if (
+                                            !isTimeZoneStartLastData ||
                                             Math.abs(
-                                                xScale(
-                                                    beforeData.date.getTime(),
-                                                ) - xScale(d.date.getTime()),
-                                            ) > _width &&
-                                            Math.abs(
-                                                xScale(
-                                                    lastData.date.getTime(),
-                                                ) - xScale(d.date.getTime()),
-                                            ) > _width
+                                                lastDataLocation -
+                                                    currentDataLocation,
+                                            ) > 20
                                         ) {
                                             context.fillText(
                                                 formatValue,
-                                                xScale(d.date.getTime()) +
-                                                    column,
+                                                currentDataLocation,
                                                 Y + tickSize,
                                             );
                                         }
-                                    } else {
-                                        context.fillText(
-                                            formatValue,
-                                            xScale(d.date.getTime()) + column,
-                                            Y + tickSize,
-                                        );
                                     }
                                 } else {
                                     context.fillText(
                                         formatValue,
-                                        xScale(d.date.getTime()) + column,
+                                        xScale(d.date.getTime()),
                                         Y + tickSize,
                                     );
                                 }
@@ -316,7 +301,7 @@ function XAxisCanvas(props: xAxisIF) {
                 ) {
                     context.fillText(
                         dateCrosshair,
-                        xScale(crosshairData[0].x) + column,
+                        xScale(crosshairData[0].x),
                         Y + tickSize,
                     );
                 }
@@ -333,11 +318,7 @@ function XAxisCanvas(props: xAxisIF) {
                 }
 
                 if (firstCrDateLocation) {
-                    context.fillText(
-                        '🐊',
-                        firstCrDateLocation + column,
-                        Y + tickSize,
-                    );
+                    context.fillText('🐊', firstCrDateLocation, Y + tickSize);
                 }
 
                 if (timeOfEndCandle && timeOfEndCandleLocation) {
@@ -354,7 +335,7 @@ function XAxisCanvas(props: xAxisIF) {
                     }
                     context.fillText(
                         '🥚',
-                        timeOfEndCandleLocation + column,
+                        timeOfEndCandleLocation,
                         Y + tickSize,
                     );
                 }
@@ -370,7 +351,7 @@ function XAxisCanvas(props: xAxisIF) {
 
                     context.fillStyle = 'rgba(115, 113, 252, 0.1)';
                     context.fillRect(
-                        xScale(shapeData.data[0].x) + column,
+                        xScale(shapeData.data[0].x),
                         height * 0.175,
                         rectWidth,
                         height * 0.65,
@@ -392,7 +373,7 @@ function XAxisCanvas(props: xAxisIF) {
                                 context.filter = ' blur(7px)';
                                 context.fillText(
                                     point,
-                                    shapePoint + column,
+                                    shapePoint,
                                     height * 0.5375,
                                 );
                             } else {
@@ -401,7 +382,7 @@ function XAxisCanvas(props: xAxisIF) {
 
                                 context.fillStyle = 'rgba(115, 113, 252, 1)';
                                 context.fillRect(
-                                    shapePoint + column - textWidth / 2,
+                                    shapePoint - textWidth / 2,
                                     height * 0.175,
                                     textWidth,
                                     height * 0.65,
@@ -412,7 +393,7 @@ function XAxisCanvas(props: xAxisIF) {
                                 context.textBaseline = 'middle';
                                 context.fillText(
                                     point,
-                                    shapePoint + column,
+                                    shapePoint,
                                     height * 0.5375,
                                 );
                             }
@@ -489,7 +470,7 @@ function XAxisCanvas(props: xAxisIF) {
         d3.select(d3Xaxis.current).on('mousemove', (event: MouseEvent) => {
             d3.select(d3Xaxis.current).style('cursor', 'col-resize');
             if (scaleData) {
-                const mouseLocation = event.offsetX - toolbarWidth;
+                const mouseLocation = event.offsetX;
 
                 const isEgg =
                     timeOfEndCandle &&
@@ -511,7 +492,7 @@ function XAxisCanvas(props: xAxisIF) {
                 setCrosshairActive('none');
             }
         });
-    }, [lastCrDate, timeOfEndCandle, toolbarWidth]);
+    }, [lastCrDate, timeOfEndCandle]);
 
     // mouseleave
     useEffect(() => {
@@ -599,8 +580,7 @@ function XAxisCanvas(props: xAxisIF) {
             style={{
                 height: xAxisHeightPixel + 'px',
                 width: '100%',
-                gridColumn: 3,
-                gridRow: 4,
+                marginLeft: toolbarWidth + 'px',
             }}
         ></d3fc-canvas>
     );

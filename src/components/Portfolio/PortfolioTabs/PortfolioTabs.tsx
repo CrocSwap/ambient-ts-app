@@ -137,21 +137,22 @@ export default function PortfolioTabs(props: propsIF) {
                                 skipENSFetch,
                             );
                         }),
-                    ).then((updatedPositions) => {
-                        setLookupAccountPositionData(
-                            updatedPositions.filter((p) => p.positionLiq > 0),
-                        );
-                    });
+                    )
+                        .then((updatedPositions) => {
+                            setLookupAccountPositionData(
+                                updatedPositions.filter(
+                                    (p) => p.positionLiq > 0,
+                                ),
+                            );
+                        })
+                        .finally(() => {
+                            setDataLoadingStatus({
+                                datasetName: 'isLookupUserRangeDataLoading',
+                                loadingStatus: false,
+                            });
+                        });
                 }
-                IS_LOCAL_ENV && console.debug('dispatch');
-            })
-            .finally(() => {
-                setDataLoadingStatus({
-                    datasetName: 'isLookupUserRangeDataLoading',
-                    loadingStatus: false,
-                });
             });
-
     const getLookupUserLimitOrders = async (accountToSearch: string) =>
         fetch(
             userLimitOrdersCacheEndpoint +
@@ -186,18 +187,20 @@ export default function PortfolioTabs(props: propsIF) {
                                 );
                             },
                         ),
-                    ).then((updatedLimitOrderStates) => {
-                        setLookupAccountLimitOrderData(updatedLimitOrderStates);
-                    });
+                    )
+                        .then((updatedLimitOrderStates) => {
+                            setLookupAccountLimitOrderData(
+                                updatedLimitOrderStates,
+                            );
+                        })
+                        .finally(() => {
+                            setDataLoadingStatus({
+                                datasetName: 'isLookupUserOrderDataLoading',
+                                loadingStatus: false,
+                            });
+                        });
                 }
-            })
-            .finally(() => {
-                setDataLoadingStatus({
-                    datasetName: 'isLookupUserOrderDataLoading',
-                    loadingStatus: false,
-                });
             });
-
     const getLookupUserTransactions = async (accountToSearch: string) => {
         if (crocEnv && provider) {
             fetchUserRecentChanges({

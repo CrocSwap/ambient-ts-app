@@ -438,7 +438,7 @@ function Ranges(props: propsIF) {
             }
         </div>
     ) : (
-        <NoTableData type='ranges' isAccountView={isAccountView} />
+        <NoTableData type='liquidity' isAccountView={isAccountView} />
     );
 
     return (
