@@ -29,6 +29,7 @@ import {
     diffHashSig,
     diffHashSigChart,
     diffHashSigScaleData,
+    getFormattedNumber,
     getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
     getPinnedTickFromDisplayPrice,
@@ -3251,7 +3252,10 @@ export default function Chart(props: propsIF) {
                                                     : 0;
 
                                             ctx.fillText(
-                                                heightAsPrice.toFixed(2) +
+                                                getFormattedNumber({
+                                                    value: heightAsPrice,
+                                                    abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                                                }) +
                                                     ' ' +
                                                     ' (' +
                                                     heightAsPercentage.toString() +
