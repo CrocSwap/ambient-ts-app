@@ -6,88 +6,109 @@ import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import TxHeader from './TxHeader';
 import { priorityInDOM } from './data';
+import useSort from './useSort';
 
 // columns to display in table and px width to alot for each
 const columnMetaInfo = {
     timeStamp: {
         width: 60,
         readable: 'Timestamp',
+        sortable: true,
     },
     txId: {
         width: 120,
         readable: 'ID',
+        sortable: false,
     },
     txWallet: {
         width: 120,
         readable: 'Wallet',
+        sortable: true,
     },
     txPrice: {
         width: 100,
         readable: 'Price',
+        sortable: false,
     },
     txValue: {
         width: 100,
         readable: 'Value',
+        sortable: true,
     },
     txSide: {
         width: 80,
         readable: 'Side',
+        sortable: false,
     },
     txType: {
         width: 80,
         readable: 'Type',
+        sortable: false,
     },
     txBase: {
         width: 100,
         readable: '',
+        sortable: false,
     },
     txQuote: {
         width: 100,
         readable: '',
+        sortable: false,
     },
     overflowBtn: {
         width: 30,
         readable: '',
+        sortable: false,
     },
     editBtn: {
         width: 30,
         readable: '',
+        sortable: false,
     },
     harvestBtn: {
         width: 30,
         readable: '',
+        sortable: false,
     },
     addBtn: {
         width: 30,
         readable: '',
+        sortable: false,
     },
     leafBtn: {
         width: 30,
         readable: '',
+        sortable: false,
     },
     removeBtn: {
         width: 30,
         readable: '',
+        sortable: false,
     },
     shareBtn: {
         width: 30,
         readable: '',
+        sortable: false,
     },
     exportBtn: {
         width: 30,
         readable: '',
+        sortable: false,
     },
     walletBtn: {
         width: 30,
         readable: '',
+        sortable: false,
     },
     copyBtn: {
         width: 30,
         readable: '',
+        sortable: false,
     },
     downloadBtn: {
         width: 30,
         readable: '',
+        sortable: false,
     },
 };
 
@@ -151,17 +172,18 @@ export default function Transactions2(props: propsIF) {
     }, []);
 
     // STEP 2: Given our target width, what columns do we want to show?
-    const columnsToRender = useMemo(() => {
-        const columnList: [columnSlugsType, number, string][] = [];
+    const columnsToRender = useMemo<[columnSlugsType, number, string, boolean][]>(() => {
+        const columnList: [columnSlugsType, number, string, boolean][] = [];
         let totalWidthNeeded = 0;
 
         for (let i = 0; i < priorityInDOM.length; i++) {
             const columnId: columnSlugsType = priorityInDOM[i];
             const columnSize: number = columnMetaInfo[columnId].width;
             const columnTitle: string = columnMetaInfo[columnId].readable;
+            const isSortable: boolean = columnMetaInfo[columnId].sortable;
 
             if (totalWidthNeeded + columnSize <= getContainerWidth()) {
-                columnList.push([columnId, columnSize, columnTitle]);
+                columnList.push([columnId, columnSize, columnTitle, isSortable]);
                 totalWidthNeeded += columnSize;
             }
         }
@@ -175,30 +197,32 @@ export default function Transactions2(props: propsIF) {
         setOpenMenuRow((prevRowId) => (prevRowId === rowId ? null : rowId));
     };
 
+    const { sortedTransactions, updateSort } = useSort(transactionsData);
+    console.log(sortedTransactions[0]?.txHash);
+
     // array of row elements to render in the DOM, the base underlying data used for generation
     // ... is updated frequently but this memoization on recalculates if other items change
 
-    const getFastHash = (tx: TransactionIF): string => {
-        // Slightly faster than JSON.stringify
-        let theId = '';
-        if (tx.txId) theId = theId + tx.txId.toString();
-        else theId = theId + 'null_id';
-
-        if (tx.askTick) theId = theId + tx.bidTick.toString();
-        else theId = theId + 'bidEmpty';
-        if (tx.askTick) theId = theId + tx.bidTick.toString();
-        else theId = theId + 'askEmpty';
-
-        if (tx.txHash) theId = theId + tx.txHash.toString();
-        else theId = theId + 'txHash';
-        return theId;
-    };
-
     // STEP 3: Given our columns, create a new transactions grid.
     const transactionRows = useMemo<JSX.Element[]>(
-        () =>
-            transactionsData.map((tx: TransactionIF) => {
-                const txString = getFastHash(tx);
+        () => {
+            const makeString = (tx: TransactionIF): string => {
+                // Slightly faster than JSON.stringify
+                let theId = '';
+                if (tx.txId) theId = theId + tx.txId.toString();
+                else theId = theId + 'null_id';
+        
+                if (tx.askTick) theId = theId + tx.bidTick.toString();
+                else theId = theId + 'bidEmpty';
+                if (tx.askTick) theId = theId + tx.bidTick.toString();
+                else theId = theId + 'askEmpty';
+        
+                if (tx.txHash) theId = theId + tx.txHash.toString();
+                else theId = theId + 'txHash';
+                return theId;
+            };
+            return sortedTransactions.map((tx: TransactionIF) => {
+                const txString = makeString(tx);
                 return (
                     <TransactionRow2
                         key={txString}
@@ -210,19 +234,14 @@ export default function Transactions2(props: propsIF) {
                         hideMenu={() => handleMenuToggle('')}
                     />
                 );
-            }),
-        [transactionsData.length, columnsToRender.length],
+            })
+        },
+        [JSON.stringify(sortedTransactions), columnsToRender.length],
     );
-
-    console.log(columnsToRender);
-    console.log({
-        totWidth: getContainerWidth(),
-        widthUsed: columnsToRender.map(col => col[1]).reduce((sum, num) => sum + num, 0)
-    })
 
     return (
         <ol className={styles.tx_ol} ref={containerRef}>
-            <TxHeader activeColumns={columnsToRender} />
+            <TxHeader activeColumns={columnsToRender} updateSort={updateSort} />
             {transactionRows}
         </ol>
     );

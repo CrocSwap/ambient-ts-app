@@ -31,7 +31,7 @@ export type btnIconNameType =
 
 interface propsIF {
     tx: TransactionIF;
-    columnsToShow: [columnSlugsType, number, string][];
+    columnsToShow: [columnSlugsType, number, string, boolean][];
     isAccountPage: boolean;
     isMenuOpen: boolean;
     onMenuToggle: () => void;
@@ -57,7 +57,7 @@ export default function TransactionRow2(props: propsIF) {
 
     const renderElem = (el: columnSlugsType): JSX.Element | null => {
         const elemMeta = columnsToShow.find(
-            (col: [columnSlugsType, number, string]) => col[0] === el,
+            (col: [columnSlugsType, number, string, boolean]) => col[0] === el,
         );
         let elemForDOM: JSX.Element | null = null;
         if (elemMeta) {
