@@ -49,11 +49,12 @@ interface PoolRequestParams {
 interface GraphDataContextIF {
     positionsByUser: PositionsByUser;
     limitOrdersByUser: LimitOrdersByUser;
-    changesByUser: Changes;
+    transactionsByUser: Changes;
+    userTransactionsByPool: Changes;
+    transactionsByPool: Changes;
     userPositionsByPool: PositionsByPool;
     positionsByPool: PositionsByPool;
     leaderboardByPool: PositionsByPool;
-    changesByPool: Changes;
     userLimitOrdersByPool: LimitOrdersByPool;
     limitOrdersByPool: LimitOrdersByPool;
     liquidityData: LiquidityDataIF | undefined;
@@ -62,8 +63,9 @@ interface GraphDataContextIF {
     setLiquidityPending: (params: PoolRequestParams) => void;
     setLiquidity: (liqData: LiquidityDataIF) => void;
     setLiquidityFee: React.Dispatch<React.SetStateAction<number>>;
-    setChangesByPool: React.Dispatch<React.SetStateAction<Changes>>;
-    setChangesByUser: React.Dispatch<React.SetStateAction<Changes>>;
+    setTransactionsByPool: React.Dispatch<React.SetStateAction<Changes>>;
+    setTransactionsByUser: React.Dispatch<React.SetStateAction<Changes>>;
+    setUserTransactionsByPool: React.Dispatch<React.SetStateAction<Changes>>;
     setUserPositionsByPool: React.Dispatch<
         React.SetStateAction<PositionsByPool>
     >;
@@ -100,14 +102,21 @@ export const GraphDataContextProvider = (props: {
             dataReceived: false,
             limitOrders: [],
         });
-    const [changesByUser, setChangesByUser] = React.useState<Changes>({
-        dataReceived: false,
-        changes: [],
-    });
+    const [transactionsByUser, setTransactionsByUser] = React.useState<Changes>(
+        {
+            dataReceived: false,
+            changes: [],
+        },
+    );
     const [userPositionsByPool, setUserPositionsByPool] =
         React.useState<PositionsByPool>({
             dataReceived: false,
             positions: [],
+        });
+    const [userTransactionsByPool, setUserTransactionsByPool] =
+        React.useState<Changes>({
+            dataReceived: false,
+            changes: [],
         });
 
     const [positionsByPool, setPositionsByPool] =
@@ -120,10 +129,12 @@ export const GraphDataContextProvider = (props: {
             dataReceived: false,
             positions: [],
         });
-    const [changesByPool, setChangesByPool] = React.useState<Changes>({
-        dataReceived: false,
-        changes: [],
-    });
+    const [transactionsByPool, setTransactionsByPool] = React.useState<Changes>(
+        {
+            dataReceived: false,
+            changes: [],
+        },
+    );
     const [userLimitOrdersByPool, setUserLimitOrdersByPool] =
         React.useState<LimitOrdersByPool>({
             dataReceived: false,
@@ -172,7 +183,7 @@ export const GraphDataContextProvider = (props: {
             dataReceived: false,
             limitOrders: [],
         });
-        setChangesByUser({
+        setTransactionsByUser({
             dataReceived: false,
             changes: [],
         });
@@ -304,7 +315,7 @@ export const GraphDataContextProvider = (props: {
                 })
                     .then((updatedTransactions) => {
                         if (updatedTransactions) {
-                            setChangesByUser({
+                            setTransactionsByUser({
                                 dataReceived: true,
                                 changes: updatedTransactions,
                             });
@@ -387,17 +398,19 @@ export const GraphDataContextProvider = (props: {
     const graphDataContext: GraphDataContextIF = {
         positionsByUser,
         limitOrdersByUser,
-        changesByUser,
+        transactionsByUser,
         userPositionsByPool,
+        userTransactionsByPool,
         resetUserGraphData,
-        setChangesByUser,
+        setTransactionsByUser,
         setUserPositionsByPool,
+        setUserTransactionsByPool,
         positionsByPool,
         leaderboardByPool,
         setPositionsByPool,
         setLeaderboardByPool,
-        changesByPool,
-        setChangesByPool,
+        transactionsByPool,
+        setTransactionsByPool,
         userLimitOrdersByPool,
         setUserLimitOrdersByPool,
         limitOrdersByPool,

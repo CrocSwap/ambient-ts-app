@@ -1,9 +1,18 @@
 // eslint-disable-next-line quotes
-import { DetailedHTMLProps, HTMLAttributes, MutableRefObject } from 'react';
+import {
+    DetailedHTMLProps,
+    HTMLAttributes,
+    MouseEvent,
+    MutableRefObject,
+} from 'react';
 import * as d3 from 'd3';
 import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
 import { CandleDataIF } from '../../../ambient-utils/types';
-import { TradeDataContextIF } from '../../../contexts/TradeDataContext';
+import {
+    LS_KEY_CHART_ANNOTATIONS,
+    initialDisplayCandleCount,
+    initialDisplayCandleCountForMobile,
+} from './chartConstants';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -25,24 +34,44 @@ declare global {
     }
 }
 
-export const CHART_ANNOTATIONS_LS_KEY = 'chart_annotations';
-export const defaultCandleBandwith = 5;
-
 export type chartAnnotationData = {
     isOpenAnnotationPanel: boolean;
     drawnShapes: drawDataHistory[];
 };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type lineData = { x: number; y: number; denomInBase: boolean };
+export type poolDataChart = {
+    poolIndex: number;
+    tokenA: string;
+    tokenB: string;
+    isTokenABase: boolean;
+    denomInBase: boolean;
+};
+
+export type drawnShapeEditAttributes = {
+    active: boolean;
+    color: string;
+    lineWidth: number;
+    dash: number[];
+};
+
 export type drawDataHistory = {
     data: lineData[];
     type: string;
     time: number;
-    pool: TradeDataContextIF;
-    color: string;
-    lineWidth: number;
-    style: number[];
+    pool: poolDataChart;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    extraData: Array<any>;
+    border: drawnShapeEditAttributes;
+    line: drawnShapeEditAttributes;
+    background: drawnShapeEditAttributes;
+    extendLeft: boolean;
+    extendRight: boolean;
+    labelPlacement: string;
+    labelAlignment: string;
+    reverse: boolean;
 };
+
 export type bandLineData = {
     fromValue: number;
     toValue: number;
@@ -214,5 +243,241 @@ export function fillLiqAdvanced(
                 });
             }
         }
+    }
+}
+
+export function formatTimeDifference(startDate: Date, endDate: Date): string {
+    const timeDifference = endDate.getTime() - startDate.getTime();
+    const secondsDifference = Math.floor(timeDifference / 1000);
+
+    const days = Math.floor(secondsDifference / 86400);
+    const hours = Math.floor((secondsDifference % 86400) / 3600);
+    const minutes = Math.floor((secondsDifference % 3600) / 60);
+
+    if (days > 0) {
+        return `${days}d ${hours}h ${minutes}m`;
+    } else {
+        return `${hours}h ${minutes}m`;
+    }
+}
+
+export function calculateFibRetracement(
+    lineData: lineData[],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fibLevels: Array<any>,
+) {
+    const retracementIsUp = lineData[0].y > lineData[1].y;
+
+    const pointLevel = lineData[1].y;
+    const secondLevel = lineData[0].y;
+
+    const diff = Math.abs(pointLevel - secondLevel);
+
+    const fibLineData: Array<
+        {
+            x: number;
+            y: number;
+            denomInBase: boolean;
+            lineColor: string;
+            areaColor: string;
+            level: number;
+        }[]
+    > = [];
+
+    fibLevels.forEach((level) => {
+        if (level.active) {
+            fibLineData.push([
+                {
+                    x: lineData[0].x,
+                    y:
+                        pointLevel +
+                        diff * level.level * (retracementIsUp ? 1 : -1),
+                    denomInBase: lineData[0].denomInBase,
+                    lineColor: level.lineColor,
+                    areaColor: level.areaColor,
+                    level: level.level,
+                },
+                {
+                    x: lineData[1].x,
+                    y:
+                        pointLevel +
+                        diff * level.level * (retracementIsUp ? 1 : -1),
+                    denomInBase: lineData[0].denomInBase,
+                    lineColor: level.lineColor,
+                    areaColor: level.areaColor,
+                    level: level.level,
+                },
+            ]);
+        }
+    });
+
+    fibLineData.sort((a, b) =>
+        retracementIsUp ? a[0].y - b[0].y : b[0].y - a[0].y,
+    );
+
+    return fibLineData;
+}
+
+export function calculateFibRetracementBandAreas(
+    lineData: lineData[],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fibLevels: Array<any>,
+) {
+    const retracementIsUp = lineData[0].y > lineData[1].y;
+
+    const pointLevel = lineData[1].y;
+    const secondLevel = lineData[0].y;
+
+    const diff = Math.abs(pointLevel - secondLevel);
+
+    const fibLineData: Array<{
+        fromValue: number;
+        toValue: number;
+        denomInBase: boolean;
+        lineColor: string;
+        areaColor: string;
+    }> = [];
+
+    const activeFibLevels = fibLevels.filter((level) => level.active);
+
+    if (activeFibLevels.length > 0) {
+        activeFibLevels.reduce((prev, curr) => {
+            if (curr.active) {
+                fibLineData.push({
+                    fromValue:
+                        pointLevel +
+                        diff * prev.level * (retracementIsUp ? 1 : -1),
+                    toValue:
+                        pointLevel +
+                        diff * curr.level * (retracementIsUp ? 1 : -1),
+                    denomInBase: lineData[0].denomInBase,
+                    lineColor: curr.lineColor,
+                    areaColor: curr.areaColor,
+                });
+            }
+
+            return curr;
+        });
+    }
+
+    fibLineData.sort((a, b) =>
+        retracementIsUp ? a.fromValue - b.fromValue : b.fromValue - a.fromValue,
+    );
+
+    return fibLineData;
+}
+
+export function getXandYLocationForChart(
+    event: MouseEvent<HTMLDivElement>,
+    rect: DOMRect,
+) {
+    let offsetY = event.clientY - rect?.top;
+    let offsetX = event.clientX - rect?.left;
+
+    if (typeof TouchEvent !== 'undefined' && event instanceof TouchEvent) {
+        offsetY = event.targetTouches[0].clientY - rect?.top;
+        offsetX = event.targetTouches[0].clientX - rect?.left;
+    }
+
+    return { offsetX: offsetX, offsetY: offsetY };
+}
+
+export function getXandYLocationForChartDrag(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    event: any,
+    rect: DOMRect,
+) {
+    let offsetY = event.sourceEvent.clientY - rect?.top;
+    let offsetX = event.sourceEvent.clientX - rect?.left;
+
+    if (
+        typeof TouchEvent !== 'undefined' &&
+        event.sourceEvent instanceof TouchEvent
+    ) {
+        offsetY = event.sourceEvent.touches[0].clientY - rect?.top;
+        offsetX = event.sourceEvent.touches[0].clientX - rect?.left;
+    }
+
+    return { offsetX: offsetX, offsetY: offsetY };
+}
+
+export function saveShapeAttiributesToLocalStorage(item: drawDataHistory) {
+    const storedData = localStorage.getItem(LS_KEY_CHART_ANNOTATIONS);
+    if (storedData) {
+        const parseStoredData = JSON.parse(storedData);
+
+        if (parseStoredData.defaultSettings === undefined) {
+            parseStoredData.defaultSettings = {};
+        }
+        parseStoredData.defaultSettings[item.type] = {
+            line: item.line,
+            background: item.background,
+            border: item.border,
+            extraData: item.extraData,
+            extendLeft: item.extendLeft,
+            extendRight: item.extendRight,
+            labelPlacement: item.labelPlacement,
+            labelAlignment: item.labelAlignment,
+            reverse: item.reverse,
+        };
+
+        localStorage.setItem(
+            LS_KEY_CHART_ANNOTATIONS,
+            JSON.stringify(parseStoredData),
+        );
+    }
+}
+
+export const clipCanvas = (
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    canvas: HTMLCanvasElement,
+) => {
+    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, width, height);
+    ctx.clip();
+};
+
+export const getInitialDisplayCandleCount = (mobileView: boolean) => {
+    if (mobileView) {
+        return initialDisplayCandleCountForMobile;
+    }
+
+    return initialDisplayCandleCount;
+};
+
+export const findSnapTime = (timeSeconds: number, period: number) => {
+    const snapDiff = timeSeconds % (period * 1000);
+
+    const snappedTime =
+        timeSeconds -
+        (snapDiff > period * 1000 - snapDiff
+            ? -1 * (period * 1000 - snapDiff)
+            : snapDiff);
+
+    return snappedTime;
+};
+
+export const renderChart = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const nd = d3.select('#d3fc_group').node() as any;
+    if (nd) nd.requestRedraw();
+};
+
+export function isTimeZoneStart(date: Date): boolean {
+    try {
+        const day = date.getDate();
+
+        if (day === 1) {
+            return true;
+        } else {
+            return false;
+        }
+    } catch (error) {
+        return false;
     }
 }

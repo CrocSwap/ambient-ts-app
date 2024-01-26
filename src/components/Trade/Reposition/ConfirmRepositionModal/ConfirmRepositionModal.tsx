@@ -186,7 +186,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
                     ? isPositionInRange
                         ? 'Position Currently In Range'
                         : 'Send Reposition'
-                    : 'Repositioning'
+                    : `Repositioning ${tokenA.symbol} and ${tokenB.symbol}`
             }
             initiate={onSend}
             resetConfirmation={resetConfirmation}
