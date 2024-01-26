@@ -127,10 +127,10 @@ export default function Transactions2(props: propsIF) {
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     // tx data which will be used to render line items
-    const { changesByPool } = useContext(GraphDataContext);
+    const { transactionsByPool } = useContext(GraphDataContext);
 
     const transactionsData = useMemo<TransactionIF[]>(() => {
-        const output: TransactionIF[] = changesByPool.changes.filter(
+        const output: TransactionIF[] = transactionsByPool.changes.filter(
             (tx: TransactionIF) =>
                 tx.base.toLowerCase() === baseToken.address.toLowerCase() &&
                 tx.quote.toLowerCase() === quoteToken.address.toLowerCase() &&
@@ -138,7 +138,7 @@ export default function Transactions2(props: propsIF) {
                 tx.changeType !== 'cross',
         );
         return output;
-    }, [changesByPool]);
+    }, [transactionsByPool]);
 
     // ref holding the container in which we render the table, this gatekeeps code to render the
     // ... table until the container renders and tells us how much width (pixels) is available
@@ -172,7 +172,9 @@ export default function Transactions2(props: propsIF) {
     }, []);
 
     // STEP 2: Given our target width, what columns do we want to show?
-    const columnsToRender = useMemo<[columnSlugsType, number, string, boolean][]>(() => {
+    const columnsToRender = useMemo<
+        [columnSlugsType, number, string, boolean][]
+    >(() => {
         const columnList: [columnSlugsType, number, string, boolean][] = [];
         let totalWidthNeeded = 0;
 
@@ -183,7 +185,12 @@ export default function Transactions2(props: propsIF) {
             const isSortable: boolean = columnMetaInfo[columnId].sortable;
 
             if (totalWidthNeeded + columnSize <= getContainerWidth()) {
-                columnList.push([columnId, columnSize, columnTitle, isSortable]);
+                columnList.push([
+                    columnId,
+                    columnSize,
+                    columnTitle,
+                    isSortable,
+                ]);
                 totalWidthNeeded += columnSize;
             }
         }
@@ -204,40 +211,37 @@ export default function Transactions2(props: propsIF) {
     // ... is updated frequently but this memoization on recalculates if other items change
 
     // STEP 3: Given our columns, create a new transactions grid.
-    const transactionRows = useMemo<JSX.Element[]>(
-        () => {
-            const makeString = (tx: TransactionIF): string => {
-                // Slightly faster than JSON.stringify
-                let theId = '';
-                if (tx.txId) theId = theId + tx.txId.toString();
-                else theId = theId + 'null_id';
-        
-                if (tx.askTick) theId = theId + tx.bidTick.toString();
-                else theId = theId + 'bidEmpty';
-                if (tx.askTick) theId = theId + tx.bidTick.toString();
-                else theId = theId + 'askEmpty';
-        
-                if (tx.txHash) theId = theId + tx.txHash.toString();
-                else theId = theId + 'txHash';
-                return theId;
-            };
-            return sortedTransactions.map((tx: TransactionIF) => {
-                const txString = makeString(tx);
-                return (
-                    <TransactionRow2
-                        key={txString}
-                        tx={tx}
-                        columnsToShow={columnsToRender}
-                        isAccountPage={isAccountPage}
-                        isMenuOpen={openMenuRow === txString}
-                        onMenuToggle={() => handleMenuToggle(txString)}
-                        hideMenu={() => handleMenuToggle('')}
-                    />
-                );
-            })
-        },
-        [JSON.stringify(sortedTransactions), columnsToRender.length],
-    );
+    const transactionRows = useMemo<JSX.Element[]>(() => {
+        const makeString = (tx: TransactionIF): string => {
+            // Slightly faster than JSON.stringify
+            let theId = '';
+            if (tx.txId) theId = theId + tx.txId.toString();
+            else theId = theId + 'null_id';
+
+            if (tx.askTick) theId = theId + tx.bidTick.toString();
+            else theId = theId + 'bidEmpty';
+            if (tx.askTick) theId = theId + tx.bidTick.toString();
+            else theId = theId + 'askEmpty';
+
+            if (tx.txHash) theId = theId + tx.txHash.toString();
+            else theId = theId + 'txHash';
+            return theId;
+        };
+        return sortedTransactions.map((tx: TransactionIF) => {
+            const txString = makeString(tx);
+            return (
+                <TransactionRow2
+                    key={txString}
+                    tx={tx}
+                    columnsToShow={columnsToRender}
+                    isAccountPage={isAccountPage}
+                    isMenuOpen={openMenuRow === txString}
+                    onMenuToggle={() => handleMenuToggle(txString)}
+                    hideMenu={() => handleMenuToggle('')}
+                />
+            );
+        });
+    }, [JSON.stringify(sortedTransactions), columnsToRender.length]);
 
     return (
         <ol className={styles.tx_ol} ref={containerRef}>
