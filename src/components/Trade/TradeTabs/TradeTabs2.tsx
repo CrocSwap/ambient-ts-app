@@ -75,7 +75,7 @@ function TradeTabs2(props: propsIF) {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
     const { chartSettings, tradeTableState } = useContext(ChartContext);
-    const { setChangesByUser } = useContext(GraphDataContext);
+    const { setTransactionsByUser } = useContext(GraphDataContext);
     const candleTime = chartSettings.candleTime.global;
 
     const {
@@ -103,10 +103,10 @@ function TradeTabs2(props: propsIF) {
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     const { isUserConnected, userAddress } = useContext(UserDataContext);
-    const { positionsByUser, limitOrdersByUser, changesByUser } =
+    const { positionsByUser, limitOrdersByUser, userTransactionsByPool } =
         useContext(GraphDataContext);
 
-    const userChanges = changesByUser?.changes;
+    const userChanges = userTransactionsByPool?.changes;
     const userLimitOrders = limitOrdersByUser?.limitOrders;
     const userPositions = positionsByUser?.positions;
 
@@ -119,17 +119,6 @@ function TradeTabs2(props: propsIF) {
 
     const selectedBaseAddress = baseToken.address;
     const selectedQuoteAddress = quoteToken.address;
-
-    const userChangesMatchingTokenSelection = userChanges.filter(
-        (userChange) => {
-            return (
-                userChange.base.toLowerCase() ===
-                    selectedBaseAddress.toLowerCase() &&
-                userChange.quote.toLowerCase() ===
-                    selectedQuoteAddress.toLowerCase()
-            );
-        },
-    );
 
     const userLimitOrdersMatchingTokenSelection = userLimitOrders.filter(
         (userLimitOrder) => {
@@ -184,15 +173,12 @@ function TradeTabs2(props: propsIF) {
                     (!isUserConnected && !isCandleSelected) ||
                     (!isCandleSelected &&
                         !showAllData &&
-                        userChangesMatchingTokenSelection.length < 1)
+                        userChanges.length < 1)
                 ) {
                     setShowAllData(true);
-                } else if (userChangesMatchingTokenSelection.length < 1) {
+                } else if (userChanges.length < 1) {
                     return;
-                } else if (
-                    showAllData &&
-                    userChangesMatchingTokenSelection.length >= 1
-                ) {
+                } else if (showAllData && userChanges.length >= 1) {
                     setShowAllData(false);
                 }
             } else if (
@@ -246,7 +232,7 @@ function TradeTabs2(props: propsIF) {
         selectedInsideTab,
         selectedOutsideTab,
         showAllData,
-        diffHashSigTxs(userChangesMatchingTokenSelection),
+        diffHashSigTxs(userChanges),
         diffHashSigLimits(userLimitOrders),
         diffHashSigPostions(userPositionsMatchingTokenSelection),
     ]);
@@ -281,7 +267,7 @@ function TradeTabs2(props: propsIF) {
                 })
                     .then((updatedTransactions) => {
                         if (updatedTransactions) {
-                            setChangesByUser({
+                            setTransactionsByUser({
                                 dataReceived: true,
                                 changes: updatedTransactions,
                             });
@@ -453,7 +439,7 @@ function TradeTabs2(props: propsIF) {
             fullWidth
             fullHeight
             padding='8px'
-            style={{ position: 'relative' }}
+            style={{ position: 'relative', zIndex: 21 }}
         >
             <FlexContainer
                 flexDirection='column'
