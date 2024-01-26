@@ -322,19 +322,25 @@ function DrawCanvas(props: DrawCanvasProps) {
                 const clientY = event.targetTouches[0].clientY;
                 startDrawing(clientX, clientY);
             },
+            { passive: true },
         );
 
-        d3.select(d3DrawCanvas.current).on('touchmove', (event: TouchEvent) => {
-            const clientX = event.targetTouches[0].clientX;
-            const clientY = event.targetTouches[0].clientY;
-            draw(clientX, clientY);
-        });
+        d3.select(d3DrawCanvas.current).on(
+            'touchmove',
+            (event: TouchEvent) => {
+                const clientX = event.targetTouches[0].clientX;
+                const clientY = event.targetTouches[0].clientY;
+                draw(clientX, clientY);
+            },
+            { passive: true },
+        );
 
         d3.select(d3DrawCanvas.current).on(
             'mousemove',
             (event: PointerEvent) => {
                 draw(event.clientX, event.clientY);
             },
+            { passive: true },
         );
 
         d3.select(d3DrawCanvas.current).on(
@@ -344,6 +350,7 @@ function DrawCanvas(props: DrawCanvasProps) {
 
                 startDrawing(event.clientX, event.clientY);
             },
+            { passive: true },
         );
 
         const pointerUpHandler = (event: PointerEvent) => {
