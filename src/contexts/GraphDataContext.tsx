@@ -17,6 +17,7 @@ import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
 import { UserDataContext } from './UserDataContext';
 import { DataLoadingContext } from './DataLoadingContext';
+import { ReceiptContext } from './ReceiptContext';
 
 interface Changes {
     dataReceived: boolean;
@@ -51,6 +52,7 @@ interface GraphDataContextIF {
     limitOrdersByUser: LimitOrdersByUser;
     transactionsByUser: Changes;
     userTransactionsByPool: Changes;
+    unindexedNonFailedSessionTransactionHashes: string[];
     transactionsByPool: Changes;
     userPositionsByPool: PositionsByPool;
     positionsByPool: PositionsByPool;
@@ -158,6 +160,8 @@ export const GraphDataContextProvider = (props: {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
 
+    const { pendingTransactions, sessionReceipts } = useContext(ReceiptContext);
+
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const {
         cachedQuerySpotPrice,
@@ -187,6 +191,7 @@ export const GraphDataContextProvider = (props: {
             dataReceived: false,
             changes: [],
         });
+        setSessionTransactionHashes([]);
     };
 
     const setLiquidity = (liqData: LiquidityDataIF) => {
@@ -219,9 +224,37 @@ export const GraphDataContextProvider = (props: {
         setLiquidityData(undefined);
     };
 
+    const [sessionTransactionHashes, setSessionTransactionHashes] =
+        React.useState<string[]>([]);
+
     useEffect(() => {
         resetUserGraphData();
     }, [isUserConnected, userAddress]);
+
+    const userTxByPoolHashArray = userTransactionsByPool.changes.map(
+        (change) => change.txHash,
+    );
+
+    useEffect(() => {
+        for (let i = 0; i < pendingTransactions.length; i++) {
+            const pendingTx = pendingTransactions[i];
+
+            setSessionTransactionHashes((prev) => [pendingTx, ...prev]);
+        }
+    }, [pendingTransactions]);
+
+    const unindexedSessionTransactionHashes = sessionTransactionHashes.filter(
+        (tx) => !userTxByPoolHashArray.includes(tx),
+    );
+
+    const failedSessionTransactionHashes = sessionReceipts
+        .filter((r) => JSON.parse(r).status === 0)
+        .map((r) => JSON.parse(r).transactionHash);
+
+    const unindexedNonFailedSessionTransactionHashes =
+        unindexedSessionTransactionHashes.filter(
+            (tx) => !failedSessionTransactionHashes.includes(tx),
+        );
 
     // Wait 2 seconds before refreshing to give cache server time to sync from
     // last block
@@ -401,6 +434,7 @@ export const GraphDataContextProvider = (props: {
         transactionsByUser,
         userPositionsByPool,
         userTransactionsByPool,
+        unindexedNonFailedSessionTransactionHashes,
         resetUserGraphData,
         setTransactionsByUser,
         setUserPositionsByPool,
