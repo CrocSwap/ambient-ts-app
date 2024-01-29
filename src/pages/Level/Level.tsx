@@ -1,7 +1,7 @@
 import LevelsCard from '../../components/Global/LevelsCard/LevelsCard';
 import styles from './Level.module.css';
 import { UserDataContext, UserXpDataIF } from '../../contexts/UserDataContext';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import LevelDisplay from '../../components/Global/LevelsCard/UserLevelDisplay';
 import Jazzicon from 'react-jazzicon/dist/Jazzicon';
 import { jsNumberForAddress } from 'react-jazzicon';
@@ -9,6 +9,7 @@ import RankTable from './RankTable/RankTable';
 import { FlexContainer, Text } from '../../styled/Common';
 import { progressToNextLevel } from '../../ambient-utils/api';
 import { FiRefreshCcw } from 'react-icons/fi';
+import { XpLeadersContext } from '../../contexts/XpLeadersContext';
 
 interface LevelPropsIF {
     ensName: string;
@@ -36,6 +37,8 @@ export default function Level(props: LevelPropsIF) {
         setIsViewMoreActive,
     } = props;
     const { userAddress, connectedUserXp } = useContext(UserDataContext);
+    const { xpLeaders } = useContext(XpLeadersContext);
+
     const ensNameToDisplay = ensNameAvailable
         ? ensName
         : truncatedAccountAddress;
@@ -162,19 +165,24 @@ export default function Level(props: LevelPropsIF) {
             />
         );
     // LEADERBOARD
-    const [selectedTimeFrame, setSelectedTimeFrame] = useState('Global');
+    const [selectedXpLeaderboardType, setSelectedXpLeaderboardType] =
+        useState('Global');
+
+    useEffect(() => {
+        console.log({ selectedXpLeaderboardType });
+        xpLeaders.getXpLeaders(selectedXpLeaderboardType);
+    }, [selectedXpLeaderboardType]);
+
     const [isLeaderboardLoading, setIsLeaderboardLoading] = useState(false);
     const handleLeaderboardRefresh = () => {
         setIsLeaderboardLoading(true);
-
-        setTimeout(() => {
-            setIsLeaderboardLoading(false);
-        }, 2000);
+        xpLeaders.getXpLeaders(selectedXpLeaderboardType);
+        setIsLeaderboardLoading(false);
     };
     const handleOptionClick = (timeFrame: string) => {
-        setSelectedTimeFrame(timeFrame);
+        setSelectedXpLeaderboardType(timeFrame);
     };
-    const timeFrameOptions = ['Global', 'Weekly', 'Chain'];
+    const xpLeaderboardTypes = ['Global', 'Weekly', 'Chain'];
 
     if (isDisplayRank) {
         return (
@@ -202,10 +210,11 @@ export default function Level(props: LevelPropsIF) {
                                 alignItems='center'
                                 gap={8}
                             >
-                                {timeFrameOptions.map((option) => (
+                                {xpLeaderboardTypes.map((option) => (
                                     <button
                                         className={`${styles.option_button} ${
-                                            option === selectedTimeFrame &&
+                                            option ===
+                                                selectedXpLeaderboardType &&
                                             styles.selected_button
                                         }`}
                                         key={option}
@@ -228,7 +237,8 @@ export default function Level(props: LevelPropsIF) {
                     </FlexContainer>
 
                     <RankTable
-                        selectedTimeFrame={selectedTimeFrame}
+                        xpLeaders={xpLeaders}
+                        selectedXpLeaderboardType={selectedXpLeaderboardType}
                         isLoading={isLeaderboardLoading}
                     />
                 </FlexContainer>

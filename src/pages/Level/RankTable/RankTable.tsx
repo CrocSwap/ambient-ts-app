@@ -1,6 +1,5 @@
-import { useContext } from 'react';
 import Divider from '../../../components/Global/Divider/Divider';
-import { XpLeadersContext } from '../../../contexts/XpLeadersContext';
+import { XpLeadersDataIF } from '../../../contexts/XpLeadersContext';
 import RankHeader from './RankHeader';
 import RankRow from './RankRow';
 import styles from './RankTable.module.css';
@@ -9,15 +8,20 @@ import { SpinnerContainer } from '../../../styled/Components/Analytics';
 import Spinner from '../../../components/Global/Spinner/Spinner';
 
 interface Props {
-    selectedTimeFrame: string;
+    xpLeaders: XpLeadersDataIF;
+    selectedXpLeaderboardType: string;
     isLoading: boolean;
 }
 export default function RankTable(props: Props) {
-    const { isLoading } = props;
+    const { xpLeaders, isLoading, selectedXpLeaderboardType } = props;
 
-    const { xpLeadersData } = useContext(XpLeadersContext);
     const formattedData =
-        xpLeadersData?.data?.map((entry) => ({
+        (selectedXpLeaderboardType === 'Chain'
+            ? xpLeaders.byChain
+            : selectedXpLeaderboardType === 'Weekly'
+            ? xpLeaders.byWeek
+            : xpLeaders.global
+        )?.data?.map((entry) => ({
             rank: entry.leaderboardRank,
             walletDisplay: trimString(entry.userAddress ?? '', 6, 6, '…'),
             userAddress: entry.userAddress,
