@@ -13,6 +13,7 @@ import moment from 'moment';
 import { getAddress } from 'ethers/lib/utils.js';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { useFetchBatch } from '../../App/hooks/useFetchBatch';
+import { UserDataContext } from '../../contexts/UserDataContext';
 
 export const useProcessRange = (
     position: PositionIF,
@@ -22,6 +23,7 @@ export const useProcessRange = (
     const blockExplorer = getChainExplorer(position.chainId);
 
     const { isDenomBase, poolPriceNonDisplay } = useContext(TradeDataContext);
+    const { ensName: ensNameConnectedUser } = useContext(UserDataContext);
 
     const tokenAAddress = position.base;
     const tokenBAddress = position.quote;
@@ -69,7 +71,11 @@ export const useProcessRange = (
 
     let ensAddress = null;
     if (data && !error) {
-        ensAddress = data.ens_address;
+        // prevent showing ens address if it is the same as the connected user due to async issue when switching tables
+        ensAddress =
+            data.ens_address !== ensNameConnectedUser
+                ? data.ens_address
+                : undefined;
     }
 
     const ensName = ensAddress
