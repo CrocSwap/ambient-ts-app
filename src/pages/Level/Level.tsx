@@ -177,10 +177,18 @@ export default function Level(props: LevelPropsIF) {
     const handleLeaderboardRefresh = () => {
         setIsLeaderboardLoading(true);
         xpLeaders.getXpLeaders(selectedXpLeaderboardType);
-        setIsLeaderboardLoading(false);
+
+        setTimeout(() => {
+            setIsLeaderboardLoading(false);
+        }, 500);
     };
     const handleOptionClick = (timeFrame: string) => {
         setSelectedXpLeaderboardType(timeFrame);
+        setIsLeaderboardLoading(true);
+
+        setTimeout(() => {
+            setIsLeaderboardLoading(false);
+        }, 500);
     };
     const xpLeaderboardTypes = ['Global', 'Weekly', 'Chain'];
 

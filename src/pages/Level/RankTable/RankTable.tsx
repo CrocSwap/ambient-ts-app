@@ -4,7 +4,6 @@ import RankHeader from './RankHeader';
 import RankRow from './RankRow';
 import styles from './RankTable.module.css';
 import { trimString } from '../../../ambient-utils/dataLayer';
-import { SpinnerContainer } from '../../../styled/Components/Analytics';
 import Spinner from '../../../components/Global/Spinner/Spinner';
 
 interface Props {
@@ -35,27 +34,18 @@ export default function RankTable(props: Props) {
             }),
         })) || [];
 
-    const loadingSpinner = (
-        <SpinnerContainer
-            fullHeight
-            fullWidth
-            alignItems='center'
-            justifyContent='center'
-        >
-            <Spinner size={100} bg='var(--dark1)' centered />
-        </SpinnerContainer>
-    );
-
     return (
         <div className={styles.main_table}>
             <RankHeader />
             <Divider />
             <div className={styles.main_table_content}>
-                {isLoading
-                    ? loadingSpinner
-                    : formattedData?.map((data, idx) => (
-                          <RankRow key={idx} data={data} />
-                      ))}
+                {isLoading ? (
+                    <Spinner size={100} bg='var(--dark1)' centered />
+                ) : (
+                    formattedData?.map((data, idx) => (
+                        <RankRow key={idx} data={data} />
+                    ))
+                )}
             </div>
         </div>
     );
