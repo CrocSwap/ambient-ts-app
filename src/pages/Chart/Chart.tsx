@@ -4613,6 +4613,66 @@ export default function Chart(props: propsIF) {
                 }
 
                 if (element.type === 'Rect' || element.type === 'DPRange') {
+                    if (element.type === 'DPRange' && scaleData) {
+                        const dpRangeTooltipData: lineData[] = [
+                            {
+                                x: scaleData.xScale.invert(
+                                    scaleData.xScale(
+                                        Math.min(
+                                            element.data[0].x,
+                                            element.data[1].x,
+                                        ) +
+                                            Math.abs(
+                                                element.data[0].x -
+                                                    element.data[1].x,
+                                            ) /
+                                                2,
+                                    ) - 90,
+                                ),
+                                y: scaleData.yScale.invert(
+                                    scaleData.yScale(element.data[1].y) +
+                                        (element.data[1].y > element.data[0].y
+                                            ? -15
+                                            : 15),
+                                ),
+                                denomInBase: element.data[0].denomInBase,
+                            },
+                            {
+                                x: scaleData.xScale.invert(
+                                    scaleData.xScale(
+                                        Math.min(
+                                            element.data[0].x,
+                                            element.data[1].x,
+                                        ) +
+                                            Math.abs(
+                                                element.data[0].x -
+                                                    element.data[1].x,
+                                            ) /
+                                                2,
+                                    ) + 90,
+                                ),
+                                y: scaleData.yScale.invert(
+                                    scaleData.yScale(element.data[1].y) +
+                                        (element.data[1].y > element.data[0].y
+                                            ? -80
+                                            : 80),
+                                ),
+                                denomInBase: element.data[1].denomInBase,
+                            },
+                        ];
+
+                        console.log(dpRangeTooltipData);
+
+                        if (
+                            checkRectLocation(
+                                dpRangeTooltipData,
+                                mouseX,
+                                mouseY,
+                            )
+                        ) {
+                            resElement = element;
+                        }
+                    }
                     if (checkRectLocation(element.data, mouseX, mouseY)) {
                         resElement = element;
                     }
