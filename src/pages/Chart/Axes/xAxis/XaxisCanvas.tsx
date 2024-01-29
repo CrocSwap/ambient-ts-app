@@ -155,10 +155,6 @@ function XAxisCanvas(props: xAxisIF) {
             const _width = mobileView ? 25 : 65; // magic number of pixels to blur surrounding price
             const tickSize = 6;
 
-            const toolbar = document.getElementById('toolbar_container');
-
-            const column = toolbar ? toolbar.getClientRects()[0].width : 9;
-
             const timeOfEndCandleLocation = timeOfEndCandle
                 ? xScale(timeOfEndCandle)
                 : undefined;
@@ -273,7 +269,7 @@ function XAxisCanvas(props: xAxisIF) {
                                         ) {
                                             context.fillText(
                                                 formatValue,
-                                                currentDataLocation + column,
+                                                currentDataLocation,
                                                 Y + tickSize,
                                             );
                                         }
@@ -281,7 +277,7 @@ function XAxisCanvas(props: xAxisIF) {
                                 } else {
                                     context.fillText(
                                         formatValue,
-                                        xScale(d.date.getTime()) + column,
+                                        xScale(d.date.getTime()),
                                         Y + tickSize,
                                     );
                                 }
@@ -305,7 +301,7 @@ function XAxisCanvas(props: xAxisIF) {
                 ) {
                     context.fillText(
                         dateCrosshair,
-                        xScale(crosshairData[0].x) + column,
+                        xScale(crosshairData[0].x),
                         Y + tickSize,
                     );
                 }
@@ -322,11 +318,7 @@ function XAxisCanvas(props: xAxisIF) {
                 }
 
                 if (firstCrDateLocation) {
-                    context.fillText(
-                        '🐊',
-                        firstCrDateLocation + column,
-                        Y + tickSize,
-                    );
+                    context.fillText('🐊', firstCrDateLocation, Y + tickSize);
                 }
 
                 if (timeOfEndCandle && timeOfEndCandleLocation) {
@@ -343,7 +335,7 @@ function XAxisCanvas(props: xAxisIF) {
                     }
                     context.fillText(
                         '🥚',
-                        timeOfEndCandleLocation + column,
+                        timeOfEndCandleLocation,
                         Y + tickSize,
                     );
                 }
@@ -359,7 +351,7 @@ function XAxisCanvas(props: xAxisIF) {
 
                     context.fillStyle = 'rgba(115, 113, 252, 0.1)';
                     context.fillRect(
-                        xScale(shapeData.data[0].x) + column,
+                        xScale(shapeData.data[0].x),
                         height * 0.175,
                         rectWidth,
                         height * 0.65,
@@ -381,7 +373,7 @@ function XAxisCanvas(props: xAxisIF) {
                                 context.filter = ' blur(7px)';
                                 context.fillText(
                                     point,
-                                    shapePoint + column,
+                                    shapePoint,
                                     height * 0.5375,
                                 );
                             } else {
@@ -390,7 +382,7 @@ function XAxisCanvas(props: xAxisIF) {
 
                                 context.fillStyle = 'rgba(115, 113, 252, 1)';
                                 context.fillRect(
-                                    shapePoint + column - textWidth / 2,
+                                    shapePoint - textWidth / 2,
                                     height * 0.175,
                                     textWidth,
                                     height * 0.65,
@@ -401,7 +393,7 @@ function XAxisCanvas(props: xAxisIF) {
                                 context.textBaseline = 'middle';
                                 context.fillText(
                                     point,
-                                    shapePoint + column,
+                                    shapePoint,
                                     height * 0.5375,
                                 );
                             }
@@ -478,7 +470,7 @@ function XAxisCanvas(props: xAxisIF) {
         d3.select(d3Xaxis.current).on('mousemove', (event: MouseEvent) => {
             d3.select(d3Xaxis.current).style('cursor', 'col-resize');
             if (scaleData) {
-                const mouseLocation = event.offsetX - toolbarWidth;
+                const mouseLocation = event.offsetX;
 
                 const isEgg =
                     timeOfEndCandle &&
@@ -500,7 +492,7 @@ function XAxisCanvas(props: xAxisIF) {
                 setCrosshairActive('none');
             }
         });
-    }, [lastCrDate, timeOfEndCandle, toolbarWidth]);
+    }, [lastCrDate, timeOfEndCandle]);
 
     // mouseleave
     useEffect(() => {
@@ -588,8 +580,7 @@ function XAxisCanvas(props: xAxisIF) {
             style={{
                 height: xAxisHeightPixel + 'px',
                 width: '100%',
-                gridColumn: 3,
-                gridRow: 4,
+                marginLeft: toolbarWidth + 'px',
             }}
         ></d3fc-canvas>
     );

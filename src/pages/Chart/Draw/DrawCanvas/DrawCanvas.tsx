@@ -21,6 +21,7 @@ import {
 import {
     diffHashSig,
     diffHashSigScaleData,
+    getFormattedNumber,
 } from '../../../../ambient-utils/dataLayer';
 import { createCircle } from '../../ChartUtils/circle';
 import {
@@ -282,6 +283,10 @@ function DrawCanvas(props: DrawCanvasProps) {
             valueY = scaleData?.yScale.invert(offsetY);
         }
 
+        if (scaleData.xScale.invert(offsetX) < valueX) {
+            valueX = scaleData.xScale.invert(offsetX);
+        }
+
         return { valueX: valueX, valueY: valueY };
     }
 
@@ -317,19 +322,25 @@ function DrawCanvas(props: DrawCanvasProps) {
                 const clientY = event.targetTouches[0].clientY;
                 startDrawing(clientX, clientY);
             },
+            { passive: true },
         );
 
-        d3.select(d3DrawCanvas.current).on('touchmove', (event: TouchEvent) => {
-            const clientX = event.targetTouches[0].clientX;
-            const clientY = event.targetTouches[0].clientY;
-            draw(clientX, clientY);
-        });
+        d3.select(d3DrawCanvas.current).on(
+            'touchmove',
+            (event: TouchEvent) => {
+                const clientX = event.targetTouches[0].clientX;
+                const clientY = event.targetTouches[0].clientY;
+                draw(clientX, clientY);
+            },
+            { passive: true },
+        );
 
         d3.select(d3DrawCanvas.current).on(
             'mousemove',
             (event: PointerEvent) => {
                 draw(event.clientX, event.clientY);
             },
+            { passive: true },
         );
 
         d3.select(d3DrawCanvas.current).on(
@@ -339,11 +350,14 @@ function DrawCanvas(props: DrawCanvasProps) {
 
                 startDrawing(event.clientX, event.clientY);
             },
+            { passive: true },
         );
 
-        canvas.addEventListener('pointerup', (event: PointerEvent) => {
+        const pointerUpHandler = (event: PointerEvent) => {
             endDrawing(event.clientX, event.clientY);
-        });
+        };
+
+        canvas.addEventListener('pointerup', pointerUpHandler);
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         function startDrawing(mouseX: number, mouseY: number) {
@@ -578,6 +592,10 @@ function DrawCanvas(props: DrawCanvasProps) {
 
             renderCanvasArray([d3DrawCanvas]);
         }
+
+        return () => {
+            canvas.removeEventListener('pointerup', pointerUpHandler);
+        };
     }, [activeDrawingType, JSON.stringify(drawSettings)]);
 
     // Draw
@@ -821,7 +839,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                         ).toFixed(2);
 
                         const infoLabelHeight = 66;
-                        const infoLabelWidth = 150;
+                        const infoLabelWidth = 180;
 
                         const infoLabelXAxisData =
                             Math.min(lineData[0].x, lineData[1].x) +
@@ -865,7 +883,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                                 infoLabelHeight,
                             );
                             ctx.fillStyle = 'rgba(210,210,210,1)';
-                            ctx.font = '12.425px Lexend Deca';
+                            ctx.font = '13.5px Lexend Deca';
                             ctx.textAlign = 'center';
                             ctx.textBaseline = 'middle';
 
@@ -894,7 +912,10 @@ function DrawCanvas(props: DrawCanvasProps) {
                                     : 0;
 
                             ctx.fillText(
-                                heightAsPrice.toFixed(2) +
+                                getFormattedNumber({
+                                    value: heightAsPrice,
+                                    abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                                }) +
                                     ' ' +
                                     ' (' +
                                     heightAsPercentage.toString() +
