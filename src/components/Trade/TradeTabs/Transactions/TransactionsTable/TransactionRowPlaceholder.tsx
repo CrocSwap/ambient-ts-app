@@ -70,7 +70,11 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
             {trimString(transaction.hash, 9, 0, '…')}
         </RowItem>
     );
-    const wallet = <p>you</p>;
+    const wallet = (
+        <RowItem style={{ textTransform: 'lowercase' }}>
+            <p>you</p>
+        </RowItem>
+    );
 
     const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
         isDenomBase,
