@@ -804,7 +804,7 @@ export const fetchXpLeadersData = async (
     ];
     const xpWeeklyLeadersMockServerData: Array<UserXpServerIF> = [
         {
-            userAddress: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
+            userAddress: '0xa86dabFBb529a4C8186BdD52bd226aC81757E090',
             leaderboardRank: 1,
             recentPoints: 1000000000000,
             totalPoints: 1000000005600,
