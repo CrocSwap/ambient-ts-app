@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useContext } from 'react';
 
-import styles from './OrderDetailsModal.module.css';
+import styles from '../../../components/Global/TransactionDetails/TransactionDetailsModal.module.css';
 import OrderDetailsHeader from '../OrderDetailsHeader/OrderDetailsHeader';
 import PriceInfo from '../PriceInfo/PriceInfo';
 import { useProcessOrder } from '../../../utils/hooks/useProcessOrder';

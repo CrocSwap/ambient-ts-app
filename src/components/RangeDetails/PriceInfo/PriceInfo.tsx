@@ -1,7 +1,6 @@
 import styles from './PriceInfo.module.css';
 
 import Apy from '../../Global/Tabs/Apy/Apy';
-import DividerDark from '../../Global/DividerDark/DividerDark';
 import { useLocation } from 'react-router-dom';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import { TokenIF } from '../../../ambient-utils/types';
@@ -157,6 +156,34 @@ export default function PriceInfo(props: propsIF) {
         </div>
     );
 
+    const exampleChain1 = 'BLAST';
+    const exampleChain2 = 'AMBI';
+    const exampleChain1Earned = '5,762.60';
+    const exampleChain2Earned = '5,762.60';
+    const showEarnedRewards = true;
+
+    const rewardsContent = (
+        <section>
+            <span className={styles.divider} />
+            <div>Rewards:</div>
+            <div>
+                <p>{`Earned ${exampleChain1}`}</p>
+                <p>
+                    {exampleChain1Earned}
+                    {baseTokenLogoDisplay}
+                </p>
+            </div>
+
+            <div>
+                <p>{`Earned ${exampleChain2}`}</p>
+                <p>
+                    {exampleChain2Earned}
+                    {quoteTokenLogoDisplay}
+                </p>
+            </div>
+        </section>
+    );
+
     return (
         <div className={styles.main_container}>
             <div className={styles.price_info_container}>
@@ -184,8 +211,11 @@ export default function PriceInfo(props: propsIF) {
                             </p>
                         </div>
                     </section>
-                    <DividerDark />
+                    <span className={styles.divider} />
+
                     {earnedContent}
+
+                    {showEarnedRewards && rewardsContent}
                 </div>
 
                 {priceStatusContent}
@@ -193,6 +223,7 @@ export default function PriceInfo(props: propsIF) {
                     amount={positionApy || undefined}
                     fs='48px'
                     lh='60px'
+                    fw='300px'
                     center
                     showTitle
                 />

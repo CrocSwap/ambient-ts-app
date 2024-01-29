@@ -1,5 +1,5 @@
 import PriceInfo from '.././PriceInfo/PriceInfo';
-import styles from './RangeDetailsModal.module.css';
+import styles from '../../../components/Global/TransactionDetails/TransactionDetailsModal.module.css';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
 import { PositionIF, PositionServerIF } from '../../../ambient-utils/types';
 import RangeDetailsHeader from '.././RangeDetailsHeader/RangeDetailsHeader';

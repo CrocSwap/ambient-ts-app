@@ -6,10 +6,11 @@ interface ApyProps {
     lh?: string;
     center?: boolean;
     showTitle?: boolean;
+    fw?: string;
 }
 
 export default function Apy(props: ApyProps) {
-    const { amount, fs, lh, center, showTitle } = props;
+    const { amount, fs, lh, center, showTitle, fw } = props;
 
     const amountString = amount
         ? amount >= 1000
@@ -36,13 +37,23 @@ export default function Apy(props: ApyProps) {
                 center && styles.align_center
             }`}
         >
-            <p style={{ fontSize: fs ? fs : '', lineHeight: lh ? lh : '' }}>
+            <p
+                style={{
+                    fontWeight: fw ? fw : '100px',
+                    fontSize: fs ? fs : '',
+                    lineHeight: lh ? lh : '',
+                }}
+            >
                 {amountString ? amountString : '…'}
             </p>
             {showTitle && (
                 <p
                     className={aprColor}
-                    style={{ fontSize: '24px', lineHeight: '30px' }}
+                    style={{
+                        fontSize: '24px',
+                        lineHeight: '30px',
+                        fontWeight: '100px',
+                    }}
                 >
                     APR
                 </p>
