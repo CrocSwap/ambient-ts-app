@@ -129,16 +129,20 @@ export const fetchUserXpData = async (args: argsIF) => {
 };
 
 export const fetchXpLeadersData = async (
-    leaderboardType: string,
-    chain?: string,
+    leaderboardType: 'global' | 'byWeek' | 'byChain',
+    chainId?: string,
 ) => {
     console.log('Fetching Xp Leaders');
-    console.log({ chain });
+    console.log({ leaderboardType, chainId });
 
-    // const userXpEndpoint = 'https://ambindexer.net/xp?'
+    // const xpLeadersEndpoint = 'https://ambindexer.net/xp?';
 
     // const xpLeaders = fetch(
-    //     xpLeadersEndpoint
+    //     xpLeadersEndpoint +
+    //         new URLSearchParams({
+    //             leaderboardType: leaderboardType,
+    //             chainId: chainId || '',
+    //         }),
     // )
     //     .then((response) => response?.json())
 
