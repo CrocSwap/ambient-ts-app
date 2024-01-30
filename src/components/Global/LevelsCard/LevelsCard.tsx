@@ -88,6 +88,8 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
                 openSnackbar('Card image copied to clipboard', 'info');
             }
         }
+
+        setHideLevelCardScroll(false);
     };
 
     const header = (
