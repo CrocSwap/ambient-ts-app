@@ -21,10 +21,15 @@ export default function RankTable(props: Props) {
             ? xpLeaders.byWeek
             : xpLeaders.global
         )?.data?.map((entry) => ({
-            rank: entry.leaderboardRank,
+            rank: entry.weeklyRank ?? entry.chainRank ?? entry.globalRank ?? 0,
             walletDisplay: trimString(entry.userAddress ?? '', 6, 6, '…'),
             userAddress: entry.userAddress,
-            points: entry.totalPoints.toLocaleString('en-US', {
+            points: (
+                entry.weeklyPoints ??
+                entry.chainPoints ??
+                entry.globalPoints ??
+                0
+            ).toLocaleString('en-US', {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0,
             }),

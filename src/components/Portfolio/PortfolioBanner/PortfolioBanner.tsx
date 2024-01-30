@@ -69,7 +69,7 @@ export default function PortfolioBanner(props: propsIF) {
             <PortfolioBannerLevelContainer>
                 <UserLevelDisplay
                     currentLevel={xpData?.data?.currentLevel}
-                    totalPoints={xpData?.data?.totalPoints}
+                    globalPoints={xpData?.data?.globalPoints}
                     user={userLink}
                 />
             </PortfolioBannerLevelContainer>

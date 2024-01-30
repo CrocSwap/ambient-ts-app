@@ -11,18 +11,19 @@ import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 interface Props {
     // xpData: UserXpDataIF
     currentLevel: number | undefined;
-    totalPoints: number | undefined;
+    globalPoints: number | undefined;
     user: string;
 }
 export default function UserLevelDisplay(props: Props) {
     const { userAddress, resolvedAddressFromContext } =
         useContext(UserDataContext);
-    const { currentLevel, totalPoints, user } = props;
+    const { currentLevel, globalPoints, user } = props;
 
-    const isTotalPointsLong = totalPoints && totalPoints.toString().length > 6;
+    const isglobalPointsLong =
+        globalPoints && globalPoints.toString().length > 6;
 
-    const totalPointsString = totalPoints
-        ? totalPoints.toLocaleString('en-US', {
+    const globalPointsString = globalPoints
+        ? globalPoints.toLocaleString('en-US', {
               minimumFractionDigits: 0,
               maximumFractionDigits: 0,
           })
@@ -34,7 +35,7 @@ export default function UserLevelDisplay(props: Props) {
         ? `/account/${resolvedAddressFromContext}/xp`
         : `/account/${userAddress}/xp`;
 
-    const progressPercentage = progressToNextLevel(totalPoints ?? 0);
+    const progressPercentage = progressToNextLevel(globalPoints ?? 0);
 
     const formattedXpLevel = getFormattedNumber({
         value: currentLevel,
@@ -66,18 +67,18 @@ export default function UserLevelDisplay(props: Props) {
                 gap={8}
             >
                 <FlexContainer
-                    flexDirection={isTotalPointsLong ? 'column' : 'row'}
+                    flexDirection={isglobalPointsLong ? 'column' : 'row'}
                     gap={8}
                     width='100%'
                     justifyContent='space-between'
                     alignItems={
-                        isTotalPointsLong
+                        isglobalPointsLong
                             ? ('start' as AlignItems)
                             : ('center' as AlignItems)
                     }
                 >
                     <Text
-                        fontSize={isTotalPointsLong ? 'header2' : 'header1'}
+                        fontSize={isglobalPointsLong ? 'header2' : 'header1'}
                         color='text1'
                     >
                         {`Level ${
@@ -90,11 +91,11 @@ export default function UserLevelDisplay(props: Props) {
                         }`}
                     </Text>
                     <Text
-                        fontSize={isTotalPointsLong ? 'header2' : 'header1'}
+                        fontSize={isglobalPointsLong ? 'header2' : 'header1'}
                         color='text2'
                         style={{ textAlign: 'end', wordWrap: 'break-word' }}
                     >
-                        {`XP: ${totalPointsString}`}
+                        {`XP: ${globalPointsString}`}
                     </Text>
                 </FlexContainer>
 

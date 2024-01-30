@@ -27,7 +27,7 @@ export default function LevelDropdown(props: LevelDropdownPropsIF) {
 
             <UserLevelDisplay
                 currentLevel={connectedUserXp?.data?.currentLevel}
-                totalPoints={connectedUserXp?.data?.totalPoints}
+                globalPoints={connectedUserXp?.data?.globalPoints}
                 user={ensName ?? accountAddressFull}
             />
         </LevelWrapper>

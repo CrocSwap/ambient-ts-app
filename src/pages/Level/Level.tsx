@@ -112,7 +112,7 @@ export default function Level(props: LevelPropsIF) {
         }) || [];
 
     const currentLevel = xpData?.data?.currentLevel;
-    const totalPoints = xpData?.data?.totalPoints;
+    const globalPoints = xpData?.data?.globalPoints;
 
     // ------TOTAL POINTS THIS WEEEK-----
     // const now = new Date();
@@ -125,7 +125,7 @@ export default function Level(props: LevelPropsIF) {
 
     // console.log({ startOfWeek, endOfWeek });
 
-    // const totalPointsCurrentWeek =
+    // const globalPointsCurrentWeek =
     //     xpData?.data?.pointsHistory
     //         ?.filter(
     //             (entry) =>
@@ -134,16 +134,16 @@ export default function Level(props: LevelPropsIF) {
     //         )
     //         ?.reduce((acc, entry) => acc + entry.addedPoints, 0) || 0;
 
-    const totalPointsCurrentWeek = xpData?.data?.recentPoints ?? undefined;
+    const globalPointsCurrentWeek = xpData?.data?.weeklyPoints ?? undefined;
 
     // ---------------------------------
 
-    const progressPercentage = progressToNextLevel(totalPoints ?? 0);
+    const progressPercentage = progressToNextLevel(globalPoints ?? 0);
 
     const levelsCardProps = {
         currentLevel,
-        totalPoints,
-        totalPointsCurrentWeek,
+        globalPoints,
+        globalPointsCurrentWeek,
         progressPercentage,
         pointsData,
         jazziconsToDisplay,
@@ -160,7 +160,7 @@ export default function Level(props: LevelPropsIF) {
         return (
             <LevelDisplay
                 currentLevel={currentLevel}
-                totalPoints={totalPoints}
+                globalPoints={globalPoints}
                 user={ensName ?? addressToDisplay}
             />
         );

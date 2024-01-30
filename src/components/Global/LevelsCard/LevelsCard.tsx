@@ -17,8 +17,8 @@ interface LevelsCardPropsIF {
     resolvedAddress?: string;
 
     currentLevel: number | undefined;
-    totalPoints: number | undefined;
-    totalPointsCurrentWeek: number | undefined;
+    globalPoints: number | undefined;
+    globalPointsCurrentWeek: number | undefined;
     progressPercentage: number;
     pointsData: {
         date: string;
@@ -37,8 +37,8 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
     // const [isViewMoreActive, setIsViewMoreActive] = useState(false);
     const {
         currentLevel,
-        totalPoints,
-        totalPointsCurrentWeek,
+        globalPoints,
+        globalPointsCurrentWeek,
         progressPercentage,
         pointsData,
         jazziconsToDisplay,
@@ -174,8 +174,8 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
                     fontSize={desktopScreen ? 'header1' : 'header2'}
                     color='text1'
                 >
-                    {totalPointsCurrentWeek !== undefined
-                        ? totalPointsCurrentWeek.toLocaleString('en-US', {
+                    {globalPointsCurrentWeek !== undefined
+                        ? globalPointsCurrentWeek.toLocaleString('en-US', {
                               minimumFractionDigits: 0,
                               maximumFractionDigits: 0,
                           })
@@ -191,8 +191,8 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
                     fontSize={desktopScreen ? 'header1' : 'header2'}
                     color='text1'
                 >
-                    {totalPoints !== undefined
-                        ? totalPoints.toLocaleString('en-US', {
+                    {globalPoints !== undefined
+                        ? globalPoints.toLocaleString('en-US', {
                               minimumFractionDigits: 0,
                               maximumFractionDigits: 0,
                           })

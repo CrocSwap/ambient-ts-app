@@ -7,10 +7,14 @@ export interface XpSnapshotServerIF {
 
 export interface UserXpServerIF {
     userAddress: string;
-    leaderboardRank: number;
-    recentPoints: number;
-    totalPoints: number;
-    pointsHistory: Array<XpSnapshotServerIF>;
+    globalPoints: number;
+    globalRank?: number;
+    weeklyPoints?: number;
+    weeklyRank?: number;
+    chainPoints?: number;
+    chainRank?: number;
+    chainId?: string;
+    pointsHistory?: Array<XpSnapshotServerIF>;
 }
 export interface XpSnapshotIF {
     addedPoints: number;
@@ -22,10 +26,14 @@ export interface XpSnapshotIF {
 
 export interface UserXpIF {
     userAddress: string;
-    leaderboardRank: number;
+    globalPoints: number;
+    globalRank?: number;
+    weeklyPoints?: number;
+    weeklyRank?: number;
+    chainPoints?: number;
+    chainRank?: number;
+    chainId?: string;
     currentLevel: number;
-    recentPoints: number;
-    totalPoints: number;
     pointsRemainingToNextLevel: number;
-    pointsHistory: Array<XpSnapshotIF>;
+    pointsHistory?: Array<XpSnapshotIF>;
 }

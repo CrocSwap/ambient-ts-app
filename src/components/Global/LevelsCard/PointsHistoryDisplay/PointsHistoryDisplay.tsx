@@ -20,7 +20,6 @@ export default function PointsHistoryDisplay(props: PropsIF) {
 
     const { pointsData, hideLevelCardScroll, isViewMoreActive } = props;
 
-    console.log(pointsData.length);
     const pointsHistoryDisplay = (
         <div className={`${styles.point_history_container} `}>
             <header className={styles.points_history_header}>
