@@ -92,6 +92,8 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
         setHideLevelCardScroll(false);
     };
 
+    const userLink = `/${resolvedAddress || (userAddress ?? '')}`;
+
     const header = (
         <FlexContainer
             flexDirection='row'
@@ -99,15 +101,12 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
             alignItems='center'
             justifyContent='center'
         >
-            <Link
-                to={`/${ensName ? ensName : resolvedAddress}`}
-                className={styles.user_image}
-            >
+            <Link to={userLink} className={styles.user_image}>
                 {jazziconsToDisplay}
             </Link>
             <FlexContainer flexDirection='column'>
                 <FlexContainer flexDirection='row' gap={16}>
-                    <Link to={`/${ensName ? ensName : resolvedAddress}`}>
+                    <Link to={userLink}>
                         <Text fontSize='header2' color='text1'>
                             {ensName ? ensName : ensNameToDisplay}
                         </Text>
