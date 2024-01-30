@@ -29,6 +29,7 @@ import {
     diffHashSig,
     diffHashSigChart,
     diffHashSigScaleData,
+    getFormattedNumber,
     getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
     getPinnedTickFromDisplayPrice,
@@ -3019,7 +3020,7 @@ export default function Chart(props: propsIF) {
                                         ).toFixed(2);
 
                                         const infoLabelHeight = 66;
-                                        const infoLabelWidth = 150;
+                                        const infoLabelWidth = 180;
 
                                         const infoLabelXAxisData =
                                             Math.min(
@@ -3096,7 +3097,7 @@ export default function Chart(props: propsIF) {
                                             );
                                             ctx.fillStyle =
                                                 'rgba(210,210,210,1)';
-                                            ctx.font = '12.425px Lexend Deca';
+                                            ctx.font = '13.5px Lexend Deca';
                                             ctx.textAlign = 'center';
                                             ctx.textBaseline = 'middle';
 
@@ -3129,7 +3130,10 @@ export default function Chart(props: propsIF) {
                                                     : 0;
 
                                             ctx.fillText(
-                                                heightAsPrice.toFixed(2) +
+                                                getFormattedNumber({
+                                                    value: heightAsPrice,
+                                                    abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                                                }) +
                                                     ' ' +
                                                     ' (' +
                                                     heightAsPercentage.toString() +
@@ -4063,6 +4067,7 @@ export default function Chart(props: propsIF) {
                 function (event: MouseEvent<HTMLDivElement>) {
                     mousemove(event);
                 },
+                { passive: true },
             );
 
             d3.select(d3CanvasMain.current).on(
@@ -4070,6 +4075,7 @@ export default function Chart(props: propsIF) {
                 function (event: MouseEvent<HTMLDivElement>) {
                     mousemove(event);
                 },
+                { passive: true },
             );
         }
     }, [
