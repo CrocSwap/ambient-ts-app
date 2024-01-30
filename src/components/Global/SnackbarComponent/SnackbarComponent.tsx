@@ -35,12 +35,13 @@ const MobileSnackbarWrapper = styled.div<{ isSnackbarOpen: boolean }>`
     padding: 16px;
     background-color: #171d27;
     color: white;
-    width: 90%;
+    width: 300px;
+
     font-size: 12px;
     line-height: 16px;
     backdrop-filter: blur(10px);
     text-align: center;
-    word-wrap: break-word;
+    word-break: break-word;
 `;
 
 const SnackbarAlert = forwardRef<HTMLDivElement, AlertProps>(
@@ -80,7 +81,7 @@ function SnackbarComponent() {
         if (isSnackbarOpen && isSmallScreen) {
             timeoutId = setTimeout(() => {
                 handleClose();
-            }, 6000);
+            }, 8000);
         }
 
         return () => {
