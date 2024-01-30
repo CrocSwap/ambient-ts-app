@@ -340,7 +340,7 @@ function Trade() {
                             }}
                             bounds={'parent'}
                         >
-                            {isCandleDataNull && (
+                            {(isCandleDataNull || !isPoolInitialized) && (
                                 <NoChartData
                                     chainId={chainId}
                                     tokenA={
@@ -353,6 +353,7 @@ function Trade() {
                                     isTableExpanded={
                                         tradeTableState == 'Expanded'
                                     }
+                                    isPoolInitialized={isPoolInitialized}
                                 />
                             )}
                             {!isCandleDataNull && isPoolInitialized && (
