@@ -56,6 +56,10 @@
     padding-left: .4rem;
 }
 
+.ment_autocomp_topbar{
+    display: none;
+}
+
 
 @media only screen and (max-width: 600px){
 
@@ -68,15 +72,44 @@
         border-radius: 0;
 
         position: fixed;
-        max-height: calc(100dvh - 8.7rem);
+        max-height: calc(100dvh - 11.7rem);
         bottom: 8.7rem;
-        z-index: 9999;
+        z-index: 99999;
     }
     
     .ment_autocomp_wrapper_active{
         
         padding: 1rem 0;
     }
+
+    .ment_autocomp_topbar{
+        display: none;
+        width: 100vw;
+        
+        position: fixed;
+        top: 0;
+        left: 0;
+        backdrop-filter: blur(10px);
+        background-color: rgba(0,0,0 .4);
+        height: 3rem;
+        z-index: 109999;
+        
+        box-shadow: 0px 10px 70px 0px #00000054;
+    }
+
+    .ment_autocomp_topbar_active{
+        display: block;
+    }
+
+
+    .ment_autocomp_close_btn{
+        position: fixed;
+        z-index: 119999;
+        right: 2rem;
+        top: 1rem;
+        font-size: 1.2rem;
+    }
+    
 
 .ment_autocomp_user_wrapper{
     width: 90%;

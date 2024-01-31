@@ -461,6 +461,7 @@ export default function MessageInput(props: MessageInputProps) {
             active={mentPanelActive}
             selectedUser={possibleMentUser}
             userPickerForMention={userPickerForMention}
+            setMentPanelActive={setMentPanelActive}
         />
     );
 

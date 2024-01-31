@@ -1,12 +1,5 @@
 import Picker, { IEmojiData } from 'emoji-picker-react';
-import React, {
-    MutableRefObject,
-    memo,
-    useContext,
-    useEffect,
-    useRef,
-    useState,
-} from 'react';
+import React, { memo, useContext, useEffect, useRef, useState } from 'react';
 import { AiOutlineCheck, AiOutlineClose, AiOutlineUser } from 'react-icons/ai';
 import { BsChatLeftFill } from 'react-icons/bs';
 import { IoIosArrowDown, IoIosArrowUp, IoIosClose } from 'react-icons/io';
@@ -55,7 +48,7 @@ function ChatPanel(props: propsIF) {
 
     if (!isChatEnabled) return <NotFound />;
 
-    const messageEnd = useRef<MutableRefObject<HTMLDivElement>>(null);
+    const messageEnd = useRef<HTMLDivElement>(null);
     const [favoritePools, setFavoritePools] = useState<PoolIF[]>([]);
     const [room, setRoom] = useState('Global');
     const [isModerator, setIsModerator] = useState(false);
@@ -238,15 +231,14 @@ function ChatPanel(props: propsIF) {
         const userDetails = await getUserSummaryDetails(walletID);
         console.log(userDetails);
         setSelectedUserSummary(userDetails);
-        if (!messageEnd.current?.current.getBoundingClientRect()) return;
+        if (!messageEnd.current) return;
 
         const wrapperCenterPoint =
-            messageEnd.current?.current.getBoundingClientRect().height / 2 +
-            messageEnd.current?.current.getBoundingClientRect().top;
+            messageEnd.current.getBoundingClientRect().height / 2 +
+            messageEnd.current.getBoundingClientRect().top;
         setUserSummaryActive(true);
         setUserSummaryVerticalPosition(
-            elementTop -
-                messageEnd.current?.current.getBoundingClientRect().top,
+            elementTop - messageEnd.current.getBoundingClientRect().top,
         );
         if (elementTop >= wrapperCenterPoint) {
             setUserSummaryToBottom(false);
@@ -284,6 +276,9 @@ function ChatPanel(props: propsIF) {
         event: React.MouseEvent,
         data: IEmojiData,
     ) => {
+        console.log('asdasd');
+        console.log(focusedMessage);
+        console.log(currentUser);
         if (focusedMessage && currentUser) {
             addReaction(focusedMessage._id, currentUser, data.emoji);
             setShowPicker(false);
@@ -346,6 +341,7 @@ function ChatPanel(props: propsIF) {
 
     useEffect(() => {
         setScrollDirection('Scroll Down');
+        console.log(userAddress);
         if (userAddress) {
             if (ens === null || ens === undefined) {
                 setEnsName(defaultEnsName);
@@ -437,16 +433,14 @@ function ChatPanel(props: propsIF) {
     }
 
     const scrollToBottomButton = async () => {
-        messageEnd.current?.current.scrollTo(
-            0,
-            messageEnd.current?.current.scrollHeight,
-        );
+        if (!messageEnd.current) return;
+
+        messageEnd.current.scrollTo(0, messageEnd.current.scrollHeight);
         setTimeout(() => {
+            if (!messageEnd.current) return;
+
             setIsScrollToBottomButtonPressed(true);
-            messageEnd.current?.current.scrollTo(
-                0,
-                messageEnd.current?.current.scrollHeight,
-            );
+            messageEnd.current.scrollTo(0, messageEnd.current.scrollHeight);
         }, 101);
         setScrollDirection('Scroll Down');
     };
@@ -462,7 +456,7 @@ function ChatPanel(props: propsIF) {
         if (data.length === 0 || data.length < 20) {
             setShowPreviousMessagesButton(false);
         } else {
-            const scrollContainer = messageEnd.current?.current; // Referring to the scrollable container
+            const scrollContainer = messageEnd.current; // Referring to the scrollable container
             const scrollPositionBefore = scrollContainer
                 ? scrollContainer.scrollTop
                 : 1;
@@ -478,10 +472,8 @@ function ChatPanel(props: propsIF) {
 
     const scrollToBottom = async () => {
         const timer = setTimeout(() => {
-            messageEnd.current?.current.scrollTo(
-                0,
-                messageEnd.current?.current.scrollHeight,
-            );
+            if (!messageEnd.current) return;
+            messageEnd.current.scrollTo(0, messageEnd.current.scrollHeight);
         }, 1000);
         setScrollDirection('Scroll Down');
         return () => clearTimeout(timer);
@@ -526,10 +518,10 @@ function ChatPanel(props: propsIF) {
 
             for (let i = 0; i < mentionElements.length; i++) {
                 if (
-                    messageEnd.current?.current.getBoundingClientRect() &&
+                    messageEnd.current &&
+                    messageEnd.current.getBoundingClientRect() &&
                     mentionElements[i].getBoundingClientRect().bottom <
-                        messageEnd.current?.current.getBoundingClientRect()
-                            .bottom
+                        messageEnd.current.getBoundingClientRect().bottom
                 ) {
                     const attribute =
                         mentionElements[i].getAttribute('data-ment-index');
@@ -555,10 +547,10 @@ function ChatPanel(props: propsIF) {
         if (way == 1) {
             for (let i = 0; i < mentionElements.length; i++) {
                 if (
-                    messageEnd.current?.current.getBoundingClientRect() &&
+                    messageEnd.current &&
+                    messageEnd.current.getBoundingClientRect() &&
                     mentionElements[i].getBoundingClientRect().bottom >
-                        messageEnd.current?.current.getBoundingClientRect()
-                            .bottom
+                        messageEnd.current.getBoundingClientRect().bottom
                 ) {
                     targetElement = mentionElements[i];
                     break;
@@ -569,9 +561,10 @@ function ChatPanel(props: propsIF) {
         else if (way === -1) {
             for (let i = mentionElements.length - 1; i >= 0; i--) {
                 if (
-                    messageEnd.current?.current.getBoundingClientRect() &&
+                    messageEnd.current &&
+                    messageEnd.current.getBoundingClientRect() &&
                     mentionElements[i].getBoundingClientRect().top <
-                        messageEnd.current?.current.getBoundingClientRect().top
+                        messageEnd.current.getBoundingClientRect().top
                 ) {
                     targetElement = mentionElements[i];
                     break;
@@ -583,10 +576,9 @@ function ChatPanel(props: propsIF) {
             targetElement = mentionElements.item(mentionElements.length - 1);
         }
 
-        if (targetElement != null && messageEnd.current?.current) {
-            messageEnd.current.current.scrollTop =
-                getChatBubbleYPos(targetElement, messageEnd.current?.current) -
-                40;
+        if (targetElement != null && messageEnd.current) {
+            messageEnd.current.scrollTop =
+                getChatBubbleYPos(targetElement, messageEnd.current) - 40;
         }
     };
 
@@ -740,7 +732,7 @@ function ChatPanel(props: propsIF) {
     let mentionIxdexPointer = 0;
     const messageList = (
         <div
-            ref={messageEnd.current}
+            ref={messageEnd}
             className={styles.scrollable_div}
             onScroll={handleScroll}
             id='chatmessage'

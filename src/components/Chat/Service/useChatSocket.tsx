@@ -31,6 +31,7 @@ import {
 } from '../ChatUtils';
 import { Message } from '../Model/MessageModel';
 import { User } from '../Model/UserModel';
+import { LikeDislikePayload } from '../ChatIFs';
 
 const useChatSocket = (
     room: string,
@@ -44,7 +45,7 @@ const useChatSocket = (
     ensName?: string | null,
     currentUserID?: string,
 ) => {
-    // eslint-disable-next-line
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const socketRef: any = useRef();
     const [messages, setMessages] = useState<Message[]>([]);
     const [users, setUsers] = useState<User[]>([]);
@@ -118,7 +119,10 @@ const useChatSocket = (
         return data.reverse();
     }
 
-    async function updateLikeDislike(messageId: string, pl: any) {
+    async function updateLikeDislike(
+        messageId: string,
+        pl: LikeDislikePayload,
+    ) {
         const payload = {
             _id: messageId,
             ...pl,
@@ -333,6 +337,7 @@ const useChatSocket = (
         if (socketRef && socketRef.current) {
             // eslint-disable-next-line
             socketRef.current.on('msg-recieve-2', (data: any) => {
+                console.log('recieve 2');
                 if (
                     data &&
                     data.sender &&
@@ -391,16 +396,10 @@ const useChatSocket = (
                 updateMessages(data);
             });
             socketRef.current.on('message-updated-listener', (data: any) => {
-                console.log(data);
-                console.log(data);
-                console.log(data);
-                console.log(data);
-                console.log(data);
-                console.log(data);
-                console.log(data);
                 updateMessages(data);
             });
         }
+        updateUserCache();
     }, [messages]);
 
     async function getMsg() {

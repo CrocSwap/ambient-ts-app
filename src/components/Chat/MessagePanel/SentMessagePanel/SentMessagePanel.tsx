@@ -28,6 +28,7 @@ import {
 } from '../../ChatUtils';
 import Options from '../Options/Options';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
+import { LikeDislikePayload, MentFoundParam } from '../../ChatIFs';
 
 interface SentMessageProps {
     message: Message;
@@ -48,13 +49,14 @@ interface SentMessageProps {
     nextMessage: any;
     isLinkInCrocodileLabsLinks(word: string): boolean;
     mentionIndex?: number;
-    updateLikeDislike: (messageId: string, like: any) => void;
+    updateLikeDislike: (messageId: string, like: LikeDislikePayload) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     socketRef: any;
     userMap?: Map<string, User>;
     verifyWallet: (
         verificationType: number,
         verificationDate: Date,
-        e?: any,
+        e?: React.MouseEvent<HTMLDivElement>,
     ) => void;
     isUserVerified: boolean;
     formatURL(url: string): void;
@@ -74,10 +76,10 @@ interface SentMessageProps {
     addReactionListener: (message?: Message) => void;
     isDeleteMessageButtonPressed: boolean;
     setIsDeleteMessageButtonPressed: Dispatch<SetStateAction<boolean>>;
-    deleteMsgFromList: any;
+    deleteMsgFromList: (msgId: string) => void;
     addReaction: (messageId: string, userId: string, reaction: string) => void;
     mentionHoverListener: (elementTop: number, walletID: string) => void;
-    mentionMouseLeftListener: any;
+    mentionMouseLeftListener: () => void;
     handleConfirmationDialog: (
         confirmationType: number,
         startDate: Date,
@@ -92,9 +94,10 @@ function SentMessagePanel(props: SentMessageProps) {
     const [showAvatar, setShowAvatar] = useState<boolean>(true);
     const [showName, setShowName] = useState<boolean>(true);
     const [daySeparator, setdaySeparator] = useState('');
-    const [ok, setOk] = useState(false);
     const [flipped, setFlipped] = useState(false);
     const [flipRead, setFlipRead] = useState(false);
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [count, setCount] = useState(0);
     const [timestampForChildRefresh, setTimestampForChildRefresh] = useState(
         new Date().getTime(),
@@ -105,7 +108,7 @@ function SentMessagePanel(props: SentMessageProps) {
         ? props.message.dislikes.length
         : 0;
 
-    const { deleteMessage, getRepliedMessageInfo } = useChatApi();
+    const { getRepliedMessageInfo } = useChatApi();
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -163,9 +166,6 @@ function SentMessagePanel(props: SentMessageProps) {
                 );
                 setShowName(
                     checkForVerifyDiff(props.previousMessage, props.message),
-                );
-                setOk(
-                    !checkForVerifyDiff(props.previousMessage, props.message),
                 );
                 if (
                     nextCurrentDiffInMs < 1 * 60 * 1000 &&
@@ -409,6 +409,8 @@ function SentMessagePanel(props: SentMessageProps) {
         }
     }
 
+    // old chat message renderer function, keeping to comparing new render method, will be gone after code refactoration
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     function mentionedMessage() {
         const messagesArray = props.message.message.split(' ');
         if (showAvatar === true) {
@@ -509,7 +511,7 @@ function SentMessagePanel(props: SentMessageProps) {
         }
     }
 
-    function buildMessageToken(word: string, mentFound: any) {
+    function buildMessageToken(word: string, mentFound: MentFoundParam) {
         let ret = <></>;
         if (
             props.isLinkInCrocodileLabsLinks(word) ||
@@ -602,6 +604,7 @@ function SentMessagePanel(props: SentMessageProps) {
 
     // }
     function getReplyMessageInfo(_id: string) {
+        /* eslint-disable @typescript-eslint/no-explicit-any */
         getRepliedMessageInfo(_id).then((result: any) => {
             setRepliedMessage(result[0]);
         });
@@ -623,18 +626,6 @@ function SentMessagePanel(props: SentMessageProps) {
         };
 
         props.updateLikeDislike(props.message._id, payloadObj);
-    }
-
-    function messageStyle() {
-        if (ok) {
-            if (!hasSeparator) {
-                return { width: '90%', marginBottom: -15 };
-            } else {
-                return { width: '90%', marginBottom: 0 };
-            }
-        } else {
-            return { width: '90%', marginBottom: -7 };
-        }
     }
 
     function getReactionUsers(reaction: string) {
@@ -666,24 +657,6 @@ function SentMessagePanel(props: SentMessageProps) {
         }
 
         return ret;
-    }
-
-    function processReactions() {
-        const emojiCounts = Object.keys(props.message.reactions).map(
-            (emoji) => ({
-                emoji,
-                count: props.message.reactions[emoji].length,
-            }),
-        );
-
-        emojiCounts.sort((a, b) => b.count - a.count);
-
-        const ret = [''];
-
-        emojiCounts.map((e) => {
-            ret.push(e.emoji);
-        });
-        return ret.slice(1, 4);
     }
 
     function processReactionsV2() {
@@ -724,7 +697,7 @@ function SentMessagePanel(props: SentMessageProps) {
         return ret;
     }
 
-    const optionsButtonRef = useRef<any>();
+    const optionsButtonRef = useRef<HTMLDivElement>(null);
 
     function shouldOptionsRiseToBottom() {
         const wrapper = document.getElementById('chatmessage');
@@ -816,7 +789,6 @@ function SentMessagePanel(props: SentMessageProps) {
 
             ${props.room == 'Admins' ? styles.admin_room_msg : ''}
             `}
-            // style={messageStyle()}
             data-ment-index={props.mentionIndex}
             onMouseEnter={() => {
                 // setIsMoreButtonPressed(false);
@@ -857,7 +829,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                         props.message.sender ===
                                         props.currentUser
                                     }
-                                    setFlipped={(val) => {
+                                    setFlipped={() => {
                                         setFlipped(true);
                                         setFlipRead(true);
                                     }}
@@ -1087,7 +1059,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                             //     props.message.reactions,
                                             // )
                                             processedReactions.map(
-                                                (reaction, index) => {
+                                                (reaction) => {
                                                     return (
                                                         <TextOnlyTooltip
                                                             key={reaction}
