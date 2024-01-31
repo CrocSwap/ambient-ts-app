@@ -238,8 +238,11 @@ export const GraphDataContextProvider = (props: {
     useEffect(() => {
         for (let i = 0; i < pendingTransactions.length; i++) {
             const pendingTx = pendingTransactions[i];
-
-            setSessionTransactionHashes((prev) => [pendingTx, ...prev]);
+            setSessionTransactionHashes((prev) => {
+                if (!prev.includes(pendingTx)) {
+                    return [pendingTx, ...prev];
+                } else return prev;
+            });
         }
     }, [pendingTransactions]);
 

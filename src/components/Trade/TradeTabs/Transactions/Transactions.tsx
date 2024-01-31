@@ -163,8 +163,14 @@ function Transactions(props: propsIF) {
         dataLoadingStatus.isCandleDataLoading,
     ]);
 
-    const unindexedNonFailedTransactions = transactionsByType.filter((tx) =>
-        unindexedNonFailedSessionTransactionHashes.includes(tx.txHash),
+    const unindexedNonFailedTransactions = transactionsByType.filter(
+        (tx) =>
+            unindexedNonFailedSessionTransactionHashes.includes(tx.txHash) &&
+            tx.txDetails?.baseAddress.toLowerCase() ===
+                baseToken.address.toLowerCase() &&
+            tx.txDetails?.quoteAddress.toLowerCase() ===
+                quoteToken.address.toLowerCase() &&
+            tx.txDetails?.poolIdx === poolIndex,
     );
 
     const shouldDisplayNoTableData =
