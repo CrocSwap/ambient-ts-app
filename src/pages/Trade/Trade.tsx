@@ -262,8 +262,6 @@ function Trade() {
 
     if (showActiveMobileComponent) return mobileTrade;
 
-    const showNoChartData = !isPoolInitialized || isCandleDataNull;
-
     return (
         <>
             <MainSection>
@@ -342,7 +340,7 @@ function Trade() {
                             }}
                             bounds={'parent'}
                         >
-                            {showNoChartData && (
+                            {(isCandleDataNull || !isPoolInitialized) && (
                                 <NoChartData
                                     chainId={chainId}
                                     tokenA={
@@ -355,9 +353,10 @@ function Trade() {
                                     isTableExpanded={
                                         tradeTableState == 'Expanded'
                                     }
+                                    isPoolInitialized={isPoolInitialized}
                                 />
                             )}
-                            {!showNoChartData && isPoolInitialized && (
+                            {!isCandleDataNull && isPoolInitialized && (
                                 <ChartContainer fullScreen={isChartFullScreen}>
                                     {!isCandleDataNull && (
                                         <TradeCharts {...tradeChartsProps} />
