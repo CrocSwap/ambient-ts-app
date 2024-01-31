@@ -90,6 +90,7 @@ export default function Stats() {
                 volumeTotalUsd = 0,
                 feesTotalUsd = 0;
 
+            const numChainsToAggregate = 2; // currently only Mainnet and Scroll
             let resultsReceived = 0;
 
             if (!mainnetCrocEnv || !scrollCrocEnv) return;
@@ -108,7 +109,7 @@ export default function Stats() {
 
                 resultsReceived += 1;
 
-                if (resultsReceived === 2) {
+                if (resultsReceived === numChainsToAggregate) {
                     setTotalTvlString(
                         getFormattedNumber({
                             value: tvlTotalUsd,
@@ -144,7 +145,7 @@ export default function Stats() {
                 volumeTotalUsd += dexStats.volumeTotalUsd;
                 feesTotalUsd += dexStats.feesTotalUsd;
                 resultsReceived += 1;
-                if (resultsReceived === 2) {
+                if (resultsReceived === numChainsToAggregate) {
                     setTotalTvlString(
                         getFormattedNumber({
                             value: tvlTotalUsd,
