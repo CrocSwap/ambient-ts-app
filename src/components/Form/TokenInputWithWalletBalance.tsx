@@ -85,7 +85,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
                     usdValueNum !== undefined
                         ? getFormattedNumber({
                               value: usdValueNum,
-                              isUSD: true,
+                              prefix: '$',
                           })
                         : undefined;
                 usdValueTruncated !== undefined

@@ -190,6 +190,7 @@ export const useProcessRange = (
 
     const usdValue = getFormattedNumber({
         value: usdValueNum,
+        prefix: '$',
     });
 
     const quantitiesAvailable = baseQty !== undefined || quoteQty !== undefined;
