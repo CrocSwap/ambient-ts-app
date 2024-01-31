@@ -90,6 +90,8 @@ export default function Stats() {
                 volumeTotalUsd = 0,
                 feesTotalUsd = 0;
 
+            let resultsReceived = 0;
+
             if (!mainnetCrocEnv || !scrollCrocEnv) return;
             getChainStats(
                 '0x1',
@@ -104,25 +106,29 @@ export default function Stats() {
                 volumeTotalUsd += dexStats.volumeTotalUsd;
                 feesTotalUsd += dexStats.feesTotalUsd;
 
-                setTotalTvlString(
-                    getFormattedNumber({
-                        value: tvlTotalUsd,
-                        prefix: '$',
-                        isTvl: true,
-                    }),
-                );
-                setTotalVolumeString(
-                    getFormattedNumber({
-                        value: volumeTotalUsd,
-                        prefix: '$',
-                    }),
-                );
-                setTotalFeesString(
-                    getFormattedNumber({
-                        value: feesTotalUsd,
-                        prefix: '$',
-                    }),
-                );
+                resultsReceived += 1;
+
+                if (resultsReceived === 2) {
+                    setTotalTvlString(
+                        getFormattedNumber({
+                            value: tvlTotalUsd,
+                            prefix: '$',
+                            isTvl: true,
+                        }),
+                    );
+                    setTotalVolumeString(
+                        getFormattedNumber({
+                            value: volumeTotalUsd,
+                            prefix: '$',
+                        }),
+                    );
+                    setTotalFeesString(
+                        getFormattedNumber({
+                            value: feesTotalUsd,
+                            prefix: '$',
+                        }),
+                    );
+                }
             });
 
             getChainStats(
@@ -137,32 +143,33 @@ export default function Stats() {
                 tvlTotalUsd += dexStats.tvlTotalUsd;
                 volumeTotalUsd += dexStats.volumeTotalUsd;
                 feesTotalUsd += dexStats.feesTotalUsd;
-
-                setTotalTvlString(
-                    getFormattedNumber({
-                        value: tvlTotalUsd,
-                        prefix: '$',
-                        isTvl: true,
-                    }),
-                );
-                setTotalVolumeString(
-                    getFormattedNumber({
-                        value: volumeTotalUsd,
-                        prefix: '$',
-                    }),
-                );
-                setTotalFeesString(
-                    getFormattedNumber({
-                        value: feesTotalUsd,
-                        prefix: '$',
-                    }),
-                );
+                resultsReceived += 1;
+                if (resultsReceived === 2) {
+                    setTotalTvlString(
+                        getFormattedNumber({
+                            value: tvlTotalUsd,
+                            prefix: '$',
+                            isTvl: true,
+                        }),
+                    );
+                    setTotalVolumeString(
+                        getFormattedNumber({
+                            value: volumeTotalUsd,
+                            prefix: '$',
+                        }),
+                    );
+                    setTotalFeesString(
+                        getFormattedNumber({
+                            value: feesTotalUsd,
+                            prefix: '$',
+                        }),
+                    );
+                }
             });
         }
     }, [
         isServerEnabled,
-        mainnetProvider,
-        scrollProvider,
+        mainnetProvider !== undefined && scrollProvider !== undefined,
         Math.floor((Date.now() + randomOffset) / STATS_WINDOW_GRANULARITY),
     ]);
 
