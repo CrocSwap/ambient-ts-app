@@ -70,12 +70,6 @@ export default function Stats() {
         string | undefined
     >();
 
-    // Refresh chain stats in 15 minute windows
-    const STATS_WINDOW_GRANULARITY = 15 * 60 * 1000;
-    const randomNum = Math.random();
-
-    const randomOffset = STATS_WINDOW_GRANULARITY * randomNum;
-
     useEffect(() => {
         if (isServerEnabled) {
             const mainnetCrocEnv = mainnetProvider
@@ -168,11 +162,7 @@ export default function Stats() {
                 }
             });
         }
-    }, [
-        isServerEnabled,
-        mainnetProvider !== undefined && scrollProvider !== undefined,
-        Math.floor((Date.now() + randomOffset) / STATS_WINDOW_GRANULARITY),
-    ]);
+    }, [mainnetProvider !== undefined && scrollProvider !== undefined]);
 
     const statCardData = [
         {
