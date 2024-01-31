@@ -12,9 +12,10 @@ interface PropsIF {
         points: string;
         currentLevel: string;
     };
+    userRow?: boolean;
 }
 export default function RankRow(props: PropsIF) {
-    const { data } = props;
+    const { data, userRow } = props;
 
     const navigate = useNavigate();
 
@@ -34,7 +35,25 @@ export default function RankRow(props: PropsIF) {
     if (fetcBatchData && !error) {
         ensAddress = fetcBatchData.ens_address;
     }
+    // -------------------
 
+    const rank = data.rank;
+
+    let rankStyle = '';
+    switch (rank) {
+        case 1:
+            rankStyle = styles.first_style;
+            break;
+        case 2:
+            rankStyle = styles.second_style;
+            break;
+        case 3:
+            rankStyle = styles.third_style;
+            break;
+        default:
+    }
+
+    // --------------
     const menu = (
         <FlexContainer
             gap={4}
@@ -52,7 +71,12 @@ export default function RankRow(props: PropsIF) {
     );
 
     return (
-        <div className={styles.row_container} style={{ height: '40px' }}>
+        <div
+            className={`${styles.row_container} 
+        ${userRow && styles.user_row}
+        ${rankStyle}
+        `}
+        >
             <Text fontSize='body' color='text1' fontWeight='400'>
                 {' '}
                 {data.rank}
@@ -63,7 +87,7 @@ export default function RankRow(props: PropsIF) {
                 fontWeight='400'
                 style={{ fontFamily: 'monospace' }}
             >
-                {ensAddress || data.walletDisplay}
+                {userRow ? 'you' : ensAddress || data.walletDisplay}
             </Text>
             <Text fontSize='body' color='accent5' fontWeight='400'>
                 {data.points}

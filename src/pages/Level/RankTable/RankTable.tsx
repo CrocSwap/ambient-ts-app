@@ -5,6 +5,8 @@ import RankRow from './RankRow';
 import styles from './RankTable.module.css';
 import { trimString } from '../../../ambient-utils/dataLayer';
 import Spinner from '../../../components/Global/Spinner/Spinner';
+// import { useContext } from 'react';
+// import { UserDataContext } from '../../../contexts/UserDataContext';
 
 interface Props {
     xpLeaders: XpLeadersDataIF;
@@ -13,6 +15,10 @@ interface Props {
 }
 export default function RankTable(props: Props) {
     const { xpLeaders, isLoading, selectedXpLeaderboardType } = props;
+    // const { userAddress, isUserConnected } = useContext(UserDataContext);
+
+    // const accountAddress = isUserConnected && userAddress ? userAddress : ''
+    // const userXpEntry = xpLeaders.global?.data?.find((entry) => entry.userAddress === accountAddress);
 
     const formattedData =
         (selectedXpLeaderboardType === 'Chain'
@@ -47,11 +53,22 @@ export default function RankTable(props: Props) {
                 {isLoading ? (
                     <Spinner size={100} bg='var(--dark1)' centered />
                 ) : (
-                    formattedData?.map((data, idx) => (
-                        <RankRow key={idx} data={data} />
-                    ))
+                    <div>
+                        {<RankRow data={exampleUserData} userRow />}
+                        {formattedData?.map((data, idx) => (
+                            <RankRow key={idx} data={data} />
+                        ))}
+                    </div>
                 )}
             </div>
         </div>
     );
 }
+
+const exampleUserData = {
+    rank: 30,
+    walletDisplay: 'you',
+    userAddress: '0xa86dabFBb529a4C8186BdD52bd226aC81757E090',
+    points: '18,000',
+    currentLevel: '18',
+};
