@@ -4246,6 +4246,7 @@ export default function Chart(props: propsIF) {
                 function (event: MouseEvent<HTMLDivElement>) {
                     mousemove(event);
                 },
+                { passive: true },
             );
 
             d3.select(d3CanvasMain.current).on(
@@ -4253,6 +4254,7 @@ export default function Chart(props: propsIF) {
                 function (event: MouseEvent<HTMLDivElement>) {
                     mousemove(event);
                 },
+                { passive: true },
             );
         }
     }, [
