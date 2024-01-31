@@ -211,7 +211,7 @@ export const useProcessOrder = (
 
     const usdValue = getFormattedNumber({
         value: usdValueNum,
-        isUSD: true,
+        prefix: '$',
     });
 
     // -----------------------------------------------------------------------------------------
