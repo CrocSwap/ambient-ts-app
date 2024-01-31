@@ -138,7 +138,7 @@ export default function rangeRowConstants(props: propsIF) {
             data-label='value'
             className='base_color'
         >
-            {'$' + usdValue}
+            {usdValue}
         </FlexContainer>
     );
 
