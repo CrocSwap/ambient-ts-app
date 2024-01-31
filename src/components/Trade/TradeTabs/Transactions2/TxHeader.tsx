@@ -4,7 +4,7 @@ import styles from './TxHeader.module.css';
 
 interface propsIF {
     activeColumns: [columnSlugsType, number, string, boolean][];
-    updateSort: (s: columnSlugsType | 'default') => void;
+    updateSort: (slug: columnSlugsType) => void;
 }
 
 export default function TxHeader(props: propsIF) {

@@ -1,124 +1,122 @@
-import { useMemo, useRef } from 'react';
+import { useMemo, useState } from 'react';
 import { TransactionIF } from '../../../../ambient-utils/types';
 import { columnSlugsType } from './Transactions2';
 import { BigNumber } from 'ethers';
 import { diffHashSig } from '../../../../ambient-utils/dataLayer';
 
-interface useSortIF {
-    sortedTransactions: TransactionIF[];
-    updateSort: (s: columnSlugsType | 'default') => void;
+// export type sortSlugs = columnSlugsType | 'default';
+
+export interface useSortIF {
+    update: (slug: columnSlugsType) => void;
+    data: TransactionIF[];
 };
 
-export default function useSort(rawTxs: TransactionIF[]): useSortIF {
-    // data to specify the current sort indicated by the user
-    const activeSort = useRef<
-        {
-            slug: columnSlugsType | 'default';
-            count: number;
-        }
-    >({slug: 'default', count: 0});
+export default function useSort(
+    defaultSort: columnSlugsType,
+    transactions: TransactionIF[],
+): useSortIF {
+    // default sort function
+    const sortByUpdateTime = (unsortedData: TransactionIF[]): TransactionIF[] =>
+        [...unsortedData].sort((a, b) => b.txTime - a.txTime);
+    // sort by token pair
+    // const sortByPool = (unsortedData: TransactionIF[]): TransactionIF[] =>
+    //     [...unsortedData].sort((a, b) => {
+    //         const poolA = a.baseSymbol + a.quoteSymbol;
+    //         const poolB = b.baseSymbol + b.quoteSymbol;
+    //         return poolA.localeCompare(poolB);
+    //     });
+    // sort by wallet or ens address
+    const sortByWallet = (unsortedData: TransactionIF[]): TransactionIF[] => {
+        // array to hold transactions with a valid ENS
+        const txsENS: TransactionIF[] = [];
+        // array to hold transactions with no ENS value
+        const txsNoENS: TransactionIF[] = [];
+        // push each transaction to one of the above temporary arrays
+        unsortedData.forEach((tx: TransactionIF) => {
+            tx.ensResolution ? txsENS.push(tx) : txsNoENS.push(tx);
+        });
+        // sort transactions with an ENS by the ENS value (alphanumeric)
+        const sortedENS: TransactionIF[] = txsENS.sort((a, b) => {
+            return a.ensResolution.localeCompare(b.ensResolution);
+        });
+        // sort transactions with no ENS by the wallet address, for some reason
+        // ... alphanumeric sort fails so we're running a BigNumber comparison
+        const sortedNoENS: TransactionIF[] = txsNoENS.sort((a, b) => {
+            const walletA = BigNumber.from(a.user);
+            const walletB = BigNumber.from(b.user);
+            return walletA.gte(walletB) ? 1 : -1;
+        });
+        // combine and return sorted arrays
+        return [...sortedENS, ...sortedNoENS];
+    };
+    // sort by limit price
+    // const sortByPrice = (unsortedData: TransactionIF[]): TransactionIF[] =>
+    //     [...unsortedData].sort((a, b) => b.limitPrice - a.limitPrice);
+    // sort by value of limit order
+    const sortByValue = (unsortedData: TransactionIF[]): TransactionIF[] =>
+        [...unsortedData].sort((a, b) => {
+            const valueA = a.totalValueUSD;
+            const valueB = b.totalValueUSD;
+            if (!valueB) return -1;
+            return Math.abs(valueB) - Math.abs(valueA);
+        });
 
-    // const cycles = useRef<number>(0);
-    // console.log(cycles);
-    // cycles.current++;
+    // column the user wants the table sorted by
+    // this is set when the user clicks a sortable column header
+    const [sortBy, setSortBy] = useState<columnSlugsType>(defaultSort);
+    // whether the sort should be ascending or descending
+    const [reverseSort, setReverseSort] = useState<boolean>(false);
 
-    // fn to update `activeSort` intelligently
-    function updateSort(s:columnSlugsType|'default') {
-        console.log('updating!!');
-        const oldSort = activeSort.current.slug;
-        const oldCount = activeSort.current.count;
-
-        const setNewSort = (newSlug: columnSlugsType|'default', newCount: number) => {
-            // console.log({ slug: newSlug, count: newCount });
-            activeSort.current = { slug: newSlug, count: newCount };
-        }
-
-        if (s === oldSort) {
-            switch (oldCount) {
-                case 0:
-                case 1:
-                    setNewSort(s, oldCount + 1);
-                    break;
-                default:
-                    setNewSort(s, 0);
-                    break;
-            }
+    function updateSort(slug: columnSlugsType): void {
+        if (sortBy === slug) {
+            if (reverseSort === true) {
+                setSortBy(defaultSort);
+                setReverseSort(false);
+            } else {
+                setReverseSort(true);
+            };
         } else {
-            setNewSort(s, 0);
+            setSortBy(slug);
+            setReverseSort(false);
         }
     };
 
-    const ordersHashSum = useMemo<string>(() => diffHashSig(rawTxs), [rawTxs]);
+    // router to pass data through the appropriate sort function
+    const sortData = (data: TransactionIF[]): TransactionIF[] => {
+        // variable to hold output
+        let sortedData: TransactionIF[];
+        // router to apply a specific sort function
+        switch (sortBy) {
+            case 'txWallet':
+                sortedData = sortByWallet(data);
+                break;
+            case 'txValue':
+                sortedData = sortByValue(data);
+                break;
+            case 'timeStamp':
+            default:
+                sortedData = sortByUpdateTime(data);
+                break;
+        }
+        // return reversed data if user wants data reversed
+        return reverseSort ? [...sortedData].reverse() : sortedData;
+    };
 
-    const sortedTransactions = useMemo<TransactionIF[]>(
-        () => {
-            // console.log('sorting!');
-            const sortByWallet = (unsortedData: TransactionIF[]): TransactionIF[] => {
-                console.log('sorting by wallet');
-                // array to hold transactions with a valid ENS
-                const txsENS: TransactionIF[] = [];
-                // array to hold transactions with no ENS value
-                const txsNoENS: TransactionIF[] = [];
-                // push each transaction to one of the above temporary arrays
-                unsortedData.forEach((tx: TransactionIF) => {
-                    tx.ensResolution ? txsENS.push(tx) : txsNoENS.push(tx);
-                });
-                // sort transactions with an ENS by the ENS value (alphanumeric)
-                const sortedENS: TransactionIF[] = txsENS.sort((a, b) => {
-                    return a.ensResolution.localeCompare(b.ensResolution);
-                });
-                // sort transactions with no ENS by the wallet address, for some reason
-                // ... alphanumeric sort fails so we're running a BigNumber comparison
-                const sortedNoENS: TransactionIF[] = txsNoENS.sort((a, b) => {
-                    const walletA = BigNumber.from(a.user);
-                    const walletB = BigNumber.from(b.user);
-                    return walletA.gte(walletB) ? 1 : -1;
-                });
-                // combine and return sorted arrays
-                return [...sortedENS, ...sortedNoENS];
-            };
-            const sortByPrice = (unsortedData: TransactionIF[]): TransactionIF[] => {
-                console.log('sorting by value');
-                return [...unsortedData].sort((a, b) => b.limitPrice - a.limitPrice);
-            }
-            let output: TransactionIF[];
-            const slugForSort: columnSlugsType | 'default' = activeSort.current.slug;
-            console.log('sorting by: ' + slugForSort);
-            if (slugForSort === 'txWallet') {            
-                output = sortByWallet(rawTxs);
-            } else if (slugForSort === 'txValue') {
-                output = sortByPrice(rawTxs);
-            } else {
-                console.log('sorting by time');
-                output = rawTxs;
-            }
-            // switch(slugForSort) {
-            //     case 'txWallet':
-            //         console.log('party time');
-            //         output = sortByWallet(rawTxs);
-            //         break;
-            //     case 'txValue':
-            //         console.log('ouchies')
-            //         output = sortByPrice(rawTxs);
-            //         break;
-            //     case 'timeStamp':
-            //     default:
-            //         console.log('the original')
-            //         output = rawTxs;
-            //         break;
-            // }
-            // reverse sort if user clicks the column a second time
-            const directional = activeSort.current.count === 2 ? output.reverse() : output;
-            // console.clear();
-            // console.log(directional[0]?.txHash);
-            return directional;
-        }, [activeSort.current, ordersHashSum]
+    // Generates a fingerprint from the positions objects. Used for comparison
+    // in below React hook
+    const ordersHashSum = useMemo<string>(
+        () => diffHashSig(transactions),
+        [transactions]
     );
 
-    // console.log({sortedTransactions});
+    // array of positions sorted by the relevant column
+    const sortedTransactions = useMemo<TransactionIF[]>(
+        () => sortData(transactions),
+        [sortBy, reverseSort, ordersHashSum]
+    );
 
     return {
-        sortedTransactions,
-        updateSort,
+        update: updateSort,
+        data: sortedTransactions
     };
-}
+};

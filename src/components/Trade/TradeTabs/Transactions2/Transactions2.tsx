@@ -6,7 +6,7 @@ import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import TxHeader from './TxHeader';
 import { priorityInDOM } from './data';
-import useSort from './useSort';
+import useSort, { useSortIF } from './useSort';
 
 // columns to display in table and px width to alot for each
 const columnMetaInfo = {
@@ -127,10 +127,10 @@ export default function Transactions2(props: propsIF) {
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     // tx data which will be used to render line items
-    const { changesByPool } = useContext(GraphDataContext);
+    const { transactionsByPool } = useContext(GraphDataContext);
 
     const transactionsData = useMemo<TransactionIF[]>(() => {
-        const output: TransactionIF[] = changesByPool.changes.filter(
+        const output: TransactionIF[] = transactionsByPool.changes.filter(
             (tx: TransactionIF) =>
                 tx.base.toLowerCase() === baseToken.address.toLowerCase() &&
                 tx.quote.toLowerCase() === quoteToken.address.toLowerCase() &&
@@ -138,7 +138,7 @@ export default function Transactions2(props: propsIF) {
                 tx.changeType !== 'cross',
         );
         return output;
-    }, [changesByPool]);
+    }, [transactionsByPool]);
 
     // ref holding the container in which we render the table, this gatekeeps code to render the
     // ... table until the container renders and tells us how much width (pixels) is available
@@ -197,8 +197,7 @@ export default function Transactions2(props: propsIF) {
         setOpenMenuRow((prevRowId) => (prevRowId === rowId ? null : rowId));
     };
 
-    const { sortedTransactions, updateSort } = useSort(transactionsData);
-    console.log(sortedTransactions[0]?.txHash);
+    const sortedTransactions: useSortIF = useSort('timeStamp', transactionsData);
 
     // array of row elements to render in the DOM, the base underlying data used for generation
     // ... is updated frequently but this memoization on recalculates if other items change
@@ -221,7 +220,7 @@ export default function Transactions2(props: propsIF) {
                 else theId = theId + 'txHash';
                 return theId;
             };
-            return sortedTransactions.map((tx: TransactionIF) => {
+            return sortedTransactions.data.map((tx: TransactionIF) => {
                 const txString = makeString(tx);
                 return (
                     <TransactionRow2
@@ -241,7 +240,7 @@ export default function Transactions2(props: propsIF) {
 
     return (
         <ol className={styles.tx_ol} ref={containerRef}>
-            <TxHeader activeColumns={columnsToRender} updateSort={updateSort} />
+            <TxHeader activeColumns={columnsToRender} updateSort={sortedTransactions.update} />
             {transactionRows}
         </ol>
     );
