@@ -478,7 +478,7 @@ export default function rangeRowConstants(props: propsIF) {
     );
 
     const rangeDisplay = (
-        <FlexContainer padding='0 0 0 8px' data-label='status'>
+        <FlexContainer padding='0 0 0 18px' data-label='status'>
             <RangeStatus
                 isInRange={isPositionInRange}
                 isAmbient={isAmbient}

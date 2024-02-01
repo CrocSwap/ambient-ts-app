@@ -41,6 +41,7 @@ interface propsIF {
     openDetailsModal: () => void;
     openActionModal: () => void;
     setRangeModalAction: React.Dispatch<React.SetStateAction<RangeModalAction>>;
+    tableView: 'small' | 'medium' | 'large';
 }
 
 // React functional component
@@ -58,6 +59,7 @@ function RangesMenu(props: propsIF) {
         openDetailsModal: openRangeDetailsModal,
         openActionModal: openRangeActionModal,
         setRangeModalAction,
+        tableView,
     } = props;
 
     const {
@@ -97,8 +99,8 @@ function RangesMenu(props: propsIF) {
 
     // ----------------------
 
-    const view1 = useMediaQuery('(max-width: 600px)');
-    const view3 = useMediaQuery('(min-width: 1800px)');
+    // const view1 = useMediaQuery('(max-width: 600px)');
+    // const view3 = useMediaQuery('(min-width: 1800px)');
 
     const showRepositionButton =
         !isPositionInRange && !isPositionEmpty && userMatchesConnectedAccount;
@@ -257,29 +259,40 @@ function RangesMenu(props: propsIF) {
 
     const rangesMenu = (
         <div className={styles.actions_menu}>
-            {!view1 && showRepositionButton && repositionButton}
-            {!view1 &&
+            {tableView !== 'small' && showRepositionButton && repositionButton}
+            {tableView !== 'small' &&
                 !showRepositionButton &&
                 userMatchesConnectedAccount &&
                 addButton}
-            {view3 && !isEmpty && removeButton}
-            {view3 && !isEmpty && harvestButton}
-            {!userMatchesConnectedAccount && !view1 && copyButton}
+            {tableView !== 'small' &&
+                (!showRepositionButton ||
+                    tableView === 'large' ||
+                    !sidebar.isOpen) &&
+                !isEmpty &&
+                removeButton}
+            {tableView === 'large' && !isEmpty && harvestButton}
+            {!userMatchesConnectedAccount &&
+                tableView !== 'small' &&
+                copyButton}
         </div>
     );
 
     const dropdownMenuContent = (
         <div className={styles.menu_column}>
-            {view1 &&
+            {tableView === 'small' &&
                 !showRepositionButton &&
                 userMatchesConnectedAccount &&
                 addButton}
-            {!view3 && !isEmpty && harvestButton}
-            {!view3 && !isEmpty && removeButton}
+            {tableView !== 'large' && !isEmpty && harvestButton}
+            {((tableView === 'small' && !isEmpty) ||
+                (showRepositionButton && tableView !== 'large')) &&
+                removeButton}
             {detailsButton}
             {!isAccountView && walletButton}
-            {view1 && showRepositionButton && repositionButton}
-            {!userMatchesConnectedAccount && view1 && copyButton}
+            {tableView === 'small' && showRepositionButton && repositionButton}
+            {!userMatchesConnectedAccount &&
+                tableView === 'small' &&
+                copyButton}
         </div>
     );
 
