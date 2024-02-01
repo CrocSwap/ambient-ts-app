@@ -284,6 +284,7 @@ function OrderRow(props: propsIF) {
                         openDetailsModal={openDetailsModal}
                         openActionModal={openActionModal}
                         setLimitModalAction={setLimitModalAction}
+                        tableView={tableView}
                     />
                 </div>
             </OrderRowStyled>

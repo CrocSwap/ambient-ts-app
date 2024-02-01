@@ -133,7 +133,10 @@ function Ranges(props: propsIF) {
         isSmallScreen || (isAccountView && !isLargeScreen && isSidebarOpen)
             ? 'small'
             : (!isSmallScreen && !isLargeScreen) ||
-              (isAccountView && isLargeScreen && isSidebarOpen)
+              (isAccountView &&
+                  connectedAccountActive &&
+                  isLargeScreen &&
+                  isSidebarOpen)
             ? 'medium'
             : 'large';
 
