@@ -24,6 +24,7 @@ import {
     TokenBalanceContext,
 } from './TokenBalanceContext';
 import { fetchBlockNumber } from '../ambient-utils/api';
+import { fetchNFT } from '../ambient-utils/api/fetchNft';
 
 interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
@@ -48,7 +49,7 @@ export const ChainDataContextProvider = (props: {
         useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
 
-    const client = new Client(process.env.REACT_APP_COVALENT_API_KEY || '');
+    const client = new Client('cqt_rQdWPMQV7YGRkVfmvTd7FFRBXHR4');
 
     const { userAddress, isUserConnected } = useContext(UserDataContext);
 
@@ -149,7 +150,8 @@ export const ChainDataContextProvider = (props: {
             ) {
                 try {
                     const NFTData = await cachedFetchNFT(
-                        userAddress,
+                        // cachedFetchNFT(
+                        '0x8e42AEcF40b5cC4c25fFA74E352b3840759aefa2',
                         chainData.chainId,
                         crocEnv,
                         client,

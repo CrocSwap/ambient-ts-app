@@ -1,5 +1,4 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { TokenIF } from '../types/token/TokenIF';
 import { memoizePromiseFn } from '../dataLayer/functions/memoizePromiseFn';
 import { Client } from '@covalenthq/client-sdk';
 import { Chains } from '@covalenthq/client-sdk/dist/services/Client';
@@ -15,7 +14,7 @@ export const fetchNFT = async (
 
     const covalentChainString =
         COVALENT_CHAIN_IDS[chain as keyof typeof COVALENT_CHAIN_IDS] ||
-        'eth-mainnet';
+        'eth-goerli';
 
     const covalentNFTResponse = await client.NftService.getNftsForAddress(
         covalentChainString as Chains,
