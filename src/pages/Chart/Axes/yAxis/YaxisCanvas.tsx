@@ -550,7 +550,10 @@ function YAxisCanvas(props: yAxisIF) {
                 const shapeData = selectedDrawnShape.data;
 
                 shapeData.data.forEach((data) => {
-                    const isScientificShapeTick = data.y
+                    const shapeDataWithDenom =
+                        data.denomInBase === denomInBase ? data.y : 1 / data.y;
+
+                    const isScientificShapeTick = shapeDataWithDenom
                         .toString()
                         .includes('e');
 

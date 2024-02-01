@@ -44,9 +44,10 @@ export default function PositionBox(props: propsIF) {
         string | undefined
     >();
     const { isDenomBase } = useContext(TradeDataContext);
-    const { positionsByPool, changesByPool } = useContext(GraphDataContext);
+    const { positionsByPool, transactionsByPool } =
+        useContext(GraphDataContext);
 
-    const transactionsData = changesByPool.changes;
+    const transactionsData = transactionsByPool.changes;
     const positionData = positionsByPool.positions;
 
     const [minPrice, setMinPrice] = useState<string | undefined>();
