@@ -71,9 +71,9 @@ export const fetchUserXpData = async (args: argsIF) => {
     const userXpServerMockData: UserXpServerIF = {
         userAddress: user,
         globalPoints: 400005600,
-        globalRank: 1,
+        globalRank: 1000,
         weeklyPoints: 4000,
-        weeklyRank: 2,
+        weeklyRank: 1,
         chainPoints: 40000,
         chainRank: 3,
         chainId: '0x1',

@@ -100,6 +100,11 @@ export const UserDataContextProvider = (props: {
                     data: data,
                 });
             });
+        } else {
+            setConnectedUserXp({
+                dataReceived: false,
+                data: undefined,
+            });
         }
     }, [userAddress]);
 

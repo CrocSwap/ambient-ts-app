@@ -169,7 +169,6 @@ export default function Level(props: LevelPropsIF) {
         useState('Global');
 
     useEffect(() => {
-        console.log({ selectedXpLeaderboardType });
         xpLeaders.getXpLeaders(selectedXpLeaderboardType);
     }, [selectedXpLeaderboardType]);
 
@@ -248,6 +247,7 @@ export default function Level(props: LevelPropsIF) {
                         xpLeaders={xpLeaders}
                         selectedXpLeaderboardType={selectedXpLeaderboardType}
                         isLoading={isLeaderboardLoading}
+                        connectedUserXp={connectedUserXp}
                     />
                 </FlexContainer>
             </div>
