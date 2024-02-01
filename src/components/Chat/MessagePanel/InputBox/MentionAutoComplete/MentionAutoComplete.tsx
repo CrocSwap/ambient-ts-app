@@ -26,50 +26,6 @@ export default function MentionAutoComplete(props: MentionAutoCompleteProps) {
                         >
                             {getUserLabel(user)}
                         </div>
-                        <div
-                            key={user._id}
-                            className={`${styles.ment_autocomp_user_wrapper} ${
-                                props.selectedUser?._id === user._id
-                                    ? styles.ment_autocomp_user_selected
-                                    : ''
-                            }`}
-                            onClick={() => props.userPickerForMention(user)}
-                        >
-                            {getUserLabel(user)}
-                        </div>
-                        <div
-                            key={user._id}
-                            className={`${styles.ment_autocomp_user_wrapper} ${
-                                props.selectedUser?._id === user._id
-                                    ? styles.ment_autocomp_user_selected
-                                    : ''
-                            }`}
-                            onClick={() => props.userPickerForMention(user)}
-                        >
-                            {getUserLabel(user)}
-                        </div>
-                        <div
-                            key={user._id}
-                            className={`${styles.ment_autocomp_user_wrapper} ${
-                                props.selectedUser?._id === user._id
-                                    ? styles.ment_autocomp_user_selected
-                                    : ''
-                            }`}
-                            onClick={() => props.userPickerForMention(user)}
-                        >
-                            {getUserLabel(user)}
-                        </div>
-                        <div
-                            key={user._id}
-                            className={`${styles.ment_autocomp_user_wrapper} ${
-                                props.selectedUser?._id === user._id
-                                    ? styles.ment_autocomp_user_selected
-                                    : ''
-                            }`}
-                            onClick={() => props.userPickerForMention(user)}
-                        >
-                            {getUserLabel(user)}
-                        </div>
                     </>
                 );
             })}
