@@ -61,7 +61,7 @@ function Leaderboard() {
         tradeTableState === 'Expanded' ? currentRanges : sortedPositions;
 
     // TODO: Use these as media width constants
-    const isSmallScreen = useMediaQuery('(max-width: 600px)');
+    const isSmallScreen = useMediaQuery('(max-width: 700px)');
     const isLargeScreen = useMediaQuery('(min-width: 2000px)');
 
     const tableView = isSmallScreen

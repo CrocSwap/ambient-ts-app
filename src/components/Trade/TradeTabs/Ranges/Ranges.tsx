@@ -126,7 +126,7 @@ function Ranges(props: propsIF) {
         useSortedPositions('time', rangeData);
 
     // TODO: Use these as media width constants
-    const isSmallScreen = useMediaQuery('(max-width: 600px)');
+    const isSmallScreen = useMediaQuery('(max-width: 700px)');
     const isLargeScreen = useMediaQuery('(min-width: 2000px)');
     const isLargeScreenAccount = useMediaQuery('(min-width: 1600px)');
 
