@@ -156,6 +156,7 @@ function RangesMenu(props: propsIF) {
                 highTick: position.askTick.toString(),
             })}
             onClick={() => {
+                setActiveMobileComponent('trade');
                 setSimpleRangeWidth(10);
                 setCurrentRangeInReposition(position.positionId);
                 setCurrentRangeInAdd('');
@@ -264,10 +265,8 @@ function RangesMenu(props: propsIF) {
                 !showRepositionButton &&
                 userMatchesConnectedAccount &&
                 addButton}
-            {tableView !== 'small' &&
-                (!showRepositionButton ||
-                    tableView === 'large' ||
-                    !sidebar.isOpen) &&
+            {(tableView === 'large' ||
+                (!showRepositionButton && tableView !== 'small')) &&
                 !isEmpty &&
                 removeButton}
             {tableView === 'large' && !isEmpty && harvestButton}
@@ -284,8 +283,9 @@ function RangesMenu(props: propsIF) {
                 userMatchesConnectedAccount &&
                 addButton}
             {tableView !== 'large' && !isEmpty && harvestButton}
-            {((tableView === 'small' && !isEmpty) ||
+            {(tableView === 'small' ||
                 (showRepositionButton && tableView !== 'large')) &&
+                !isEmpty &&
                 removeButton}
             {detailsButton}
             {!isAccountView && walletButton}
