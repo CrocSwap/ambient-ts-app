@@ -98,6 +98,7 @@ function Leaderboard() {
             show: tableView === 'large',
             slug: 'id',
             sortable: false,
+            leftPadding: 3,
         },
         {
             name: 'Last Updated',
