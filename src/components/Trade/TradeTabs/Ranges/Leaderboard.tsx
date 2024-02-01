@@ -62,7 +62,7 @@ function Leaderboard() {
 
     // TODO: Use these as media width constants
     const isSmallScreen = useMediaQuery('(max-width: 600px)');
-    const isLargeScreen = useMediaQuery('(min-width: 1600px)');
+    const isLargeScreen = useMediaQuery('(min-width: 2000px)');
 
     const tableView = isSmallScreen
         ? 'small'
@@ -181,6 +181,7 @@ function Leaderboard() {
             slug: 'apr',
             sortable: false,
             alignRight: true,
+            rightPadding: 8,
         },
         {
             name: 'Status',
@@ -188,6 +189,7 @@ function Leaderboard() {
             show: true,
             slug: 'status',
             sortable: false,
+            leftPadding: 8,
         },
         {
             name: '',
