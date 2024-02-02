@@ -1,6 +1,4 @@
 import { TransactionIF } from '../../../ambient-utils/types';
-import { formatAmountWithoutDigit } from '../../../utils/numbers';
-import { scaleData } from '../ChartUtils/chartUtils';
 import { CSSTransition } from 'react-transition-group';
 import {
     OrderHistoryBody,
@@ -9,22 +7,32 @@ import {
     StyledHeader,
     StyledLink,
 } from './OrderHistoryTooltipCss';
-import { trimString, uriToHttp } from '../../../ambient-utils/dataLayer';
+import {
+    getFormattedNumber,
+    trimString,
+    uriToHttp,
+} from '../../../ambient-utils/dataLayer';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useContext } from 'react';
 
 export default function OrderHistoryTooltip(props: {
-    scaleData: scaleData;
     hoveredOrderHistory: TransactionIF;
     isHoveredOrderHistory: boolean;
     denomInBase: boolean;
+    hoveredOrderTooltipPlacement: { top: number; left: number };
+    handleCardClick: React.Dispatch<TransactionIF>;
+    setSelectedOrderHistory: React.Dispatch<
+        React.SetStateAction<TransactionIF | undefined>
+    >;
 }) {
     const {
-        scaleData,
         hoveredOrderHistory,
         isHoveredOrderHistory,
         denomInBase,
+        hoveredOrderTooltipPlacement,
+        handleCardClick,
+        setSelectedOrderHistory,
     } = props;
 
     const {
@@ -44,14 +52,14 @@ export default function OrderHistoryTooltip(props: {
             unmountOnExit
         >
             <OrderHistoryContainer
-                top={scaleData.yScale(
-                    denomInBase
-                        ? hoveredOrderHistory.swapInvPriceDecimalCorrected
-                        : hoveredOrderHistory.swapPriceDecimalCorrected,
-                )}
-                left={
-                    scaleData?.xScale(hoveredOrderHistory?.txTime * 1000) + 70
-                }
+                top={hoveredOrderTooltipPlacement.top}
+                left={hoveredOrderTooltipPlacement.left}
+                onClick={() => {
+                    handleCardClick(hoveredOrderHistory);
+                    setSelectedOrderHistory(() => {
+                        return hoveredOrderHistory;
+                    });
+                }}
             >
                 <OrderHistoryHeader>
                     <StyledHeader
@@ -71,13 +79,14 @@ export default function OrderHistoryTooltip(props: {
 
                     {hoveredOrderHistory.entityType !== 'liquidity' && (
                         <StyledHeader color={'white'} size={'15px'}>
-                            {formatAmountWithoutDigit(
-                                Math.abs(
+                            {getFormattedNumber({
+                                value: Math.abs(
                                     denomInBase
                                         ? hoveredOrderHistory.baseFlowDecimalCorrected
                                         : hoveredOrderHistory.quoteFlowDecimalCorrected,
                                 ),
-                            )}
+                                abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                            })}
                         </StyledHeader>
                     )}
 
@@ -106,10 +115,10 @@ export default function OrderHistoryTooltip(props: {
                     </StyledHeader>
                     <StyledHeader color={'#8b98a5'} size={'13px'}>
                         {'$' +
-                            formatAmountWithoutDigit(
-                                hoveredOrderHistory.totalValueUSD,
-                                2,
-                            )}
+                            getFormattedNumber({
+                                value: hoveredOrderHistory.totalValueUSD,
+                                abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                            })}
                     </StyledHeader>
                     <StyledLink
                         color={'#8b98a5'}

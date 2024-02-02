@@ -20,9 +20,12 @@ interface OrderHistoryCanvasProps {
     showHistorical: boolean;
     hoveredOrderHistory: TransactionIF | undefined;
     isHoveredOrderHistory: boolean;
+    selectedOrderHistory: TransactionIF | undefined;
+    isSelectedOrderHistory: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     drawSettings: any;
     userTransactionData: TransactionIF[] | undefined;
+    circleScale: d3.ScaleLinear<number, number>;
 }
 
 export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
@@ -34,8 +37,11 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
         showHistorical,
         hoveredOrderHistory,
         isHoveredOrderHistory,
+        selectedOrderHistory,
+        isSelectedOrderHistory,
         drawSettings,
         userTransactionData,
+        circleScale,
     } = props;
 
     const d3OrderCanvas = useRef<HTMLDivElement | null>(null);
@@ -44,8 +50,6 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
     const [bandArea, setBandArea] = useState<any>();
     // const [bandAreaHighlighted, setBandAreaHighlighted] = useState<any>();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [circleScale, setCircleScale] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [circleSeries, setCircleSeries] = useState<any>();
     const [circleSeriesHighlighted, setCircleSeriesHighlighted] =
@@ -73,28 +77,6 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
 
         return newXScale;
     }
-
-    useEffect(() => {
-        if (userTransactionData) {
-            const domainRight = d3.max(userTransactionData, (data) => {
-                if (data.entityType === 'swap') return data.totalValueUSD;
-            });
-            const domainLeft = d3.min(userTransactionData, (data) => {
-                if (data.entityType === 'swap') return data.totalValueUSD;
-            });
-
-            if (domainRight && domainLeft) {
-                const scale = d3
-                    .scaleLinear()
-                    .range([1000, 3000])
-                    .domain([domainLeft, domainRight]);
-
-                setCircleScale(() => {
-                    return scale;
-                });
-            }
-        }
-    }, [userTransactionData]);
 
     useEffect(() => {
         if (userTransactionData && circleScale) {
@@ -286,16 +268,38 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                             circleSeries[index](circleData);
 
                             if (
-                                showSwap &&
                                 hoveredOrderHistory &&
                                 isHoveredOrderHistory &&
                                 circleSeriesHighlighted.length > 0 &&
                                 hoveredOrderHistory.entityType === 'swap' &&
-                                hoveredOrderHistory.txId === order.txId
+                                hoveredOrderHistory.txId === order.txId &&
+                                (selectedOrderHistory === undefined ||
+                                    hoveredOrderHistory.txId !==
+                                        selectedOrderHistory.txId)
                             ) {
                                 const circleDataHg = [
                                     {
                                         x: hoveredOrderHistory.txTime * 1000,
+                                        y: denomInBase
+                                            ? order.swapInvPriceDecimalCorrected
+                                            : order.swapPriceDecimalCorrected,
+                                        denomInBase: denomInBase,
+                                    },
+                                ];
+
+                                circleSeriesHighlighted[index](circleDataHg);
+                            }
+
+                            if (
+                                selectedOrderHistory &&
+                                isSelectedOrderHistory &&
+                                circleSeriesHighlighted.length > 0 &&
+                                selectedOrderHistory.entityType === 'swap' &&
+                                selectedOrderHistory.txId === order.txId
+                            ) {
+                                const circleDataHg = [
+                                    {
+                                        x: selectedOrderHistory.txTime * 1000,
                                         y: denomInBase
                                             ? order.swapInvPriceDecimalCorrected
                                             : order.swapPriceDecimalCorrected,

@@ -116,6 +116,7 @@ import {
 } from './ChartUtils/chartConstants';
 import OrderHistoryCanvas from './OrderHistoryCh/OrderHistoryCanvas';
 import OrderHistoryTooltip from './OrderHistoryCh/OrderHistoryTooltip';
+import { TradeTableContext } from '../../contexts/TradeTableContext';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -370,9 +371,32 @@ export default function Chart(props: propsIF) {
     const [isHoveredOrderHistory, setIsHoveredOrderHistory] =
         useState<boolean>(false);
 
+    const [isSelectedOrderHistory, setIsSelectedOrderHistory] =
+        useState<boolean>(false);
+
+    const [selectedOrderHistory, setSelectedOrderHistory] =
+        useState<TransactionIF>();
+
+    const [hoveredOrderTooltipPlacement, setHoveredOrderTooltipPlacement] =
+        useState<{ top: number; left: number }>();
+    const [selectedOrderTooltipPlacement, setSelectedOrderTooltipPlacement] =
+        useState<{ top: number; left: number }>();
+
+    const [circleScale, setCircleScale] =
+        useState<d3.ScaleLinear<number, number>>();
+
     const mobileView = useMediaQuery('(max-width: 600px)');
 
     const drawSettings = useDrawSettings();
+
+    const {
+        setCurrentTxActiveInTransactions,
+        setShowAllData,
+        setOutsideControl,
+        setSelectedOutsideTab,
+    } = useContext(TradeTableContext);
+
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
 
     const unparsedCandleData = useMemo(() => {
         const data = unparsedData.candles
@@ -4089,6 +4113,7 @@ export default function Chart(props: propsIF) {
         isLineDrag,
         period,
         currentPool,
+        showSwap,
     ]);
 
     useEffect(() => {
@@ -4162,41 +4187,58 @@ export default function Chart(props: propsIF) {
             // Define the 'onClickCanvas' event handler for canvas clicks
             const onClickCanvas = (event: PointerEvent) => {
                 // If the candle or volume click
-                const { isHoverCandleOrVolumeData, nearest } =
-                    candleOrVolumeDataHoverStatus(event.offsetX, event.offsetY);
-                selectedDateEvent(isHoverCandleOrVolumeData, nearest);
+                const offsetX = event.offsetX;
+                const offsetY = event.offsetY;
 
-                setSelectedDrawnShape(undefined);
-                // Check if the location pathname includes 'pool' or 'reposition' and handle the click event.
-
-                if (
-                    (location.pathname.includes('pool') ||
-                        location.pathname.includes('reposition')) &&
-                    scaleData !== undefined &&
-                    !isHoverCandleOrVolumeData
-                ) {
-                    onClickRange(event);
+                let isOrderHistorySelected = undefined;
+                if (showSwap) {
+                    isOrderHistorySelected = orderHistoryHoverStatus(
+                        event.offsetX,
+                        event.offsetY,
+                        true,
+                    );
                 }
 
-                // Check if the location pathname includes '/limit' and handle the click event.
-                if (
-                    location.pathname.includes('/limit') &&
-                    scaleData !== undefined &&
-                    !isHoverCandleOrVolumeData
-                ) {
-                    let newLimitValue = scaleData?.yScale.invert(event.offsetY);
+                if (!isOrderHistorySelected) {
+                    const { isHoverCandleOrVolumeData, nearest } =
+                        candleOrVolumeDataHoverStatus(offsetX, offsetY);
 
-                    if (newLimitValue < 0) newLimitValue = 0;
+                    selectedDateEvent(isHoverCandleOrVolumeData, nearest);
 
-                    const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
+                    setSelectedDrawnShape(undefined);
+                    // Check if the location pathname includes 'pool' or 'reposition' and handle the click event.
 
                     if (
-                        !(
-                            newLimitValue > noGoZoneMin &&
-                            newLimitValue < noGoZoneMax
-                        )
+                        (location.pathname.includes('pool') ||
+                            location.pathname.includes('reposition')) &&
+                        scaleData !== undefined &&
+                        !isHoverCandleOrVolumeData
                     ) {
-                        onBlurLimitRate(limit, newLimitValue);
+                        onClickRange(event);
+                    }
+
+                    // Check if the location pathname includes '/limit' and handle the click event.
+                    if (
+                        location.pathname.includes('/limit') &&
+                        scaleData !== undefined &&
+                        !isHoverCandleOrVolumeData
+                    ) {
+                        let newLimitValue = scaleData?.yScale.invert(
+                            event.offsetY,
+                        );
+
+                        if (newLimitValue < 0) newLimitValue = 0;
+
+                        const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
+
+                        if (
+                            !(
+                                newLimitValue > noGoZoneMin &&
+                                newLimitValue < noGoZoneMax
+                            )
+                        ) {
+                            onBlurLimitRate(limit, newLimitValue);
+                        }
                     }
                 }
             };
@@ -4275,6 +4317,9 @@ export default function Chart(props: propsIF) {
         diffHashSigChart(unparsedCandleData),
         liquidityData,
         hoveredDrawnShape,
+        isSelectedOrderHistory,
+        selectedOrderHistory,
+        showSwap,
     ]);
 
     function checkLineLocation(
@@ -4387,12 +4432,13 @@ export default function Chart(props: propsIF) {
         element: lineData[],
         mouseX: number,
         mouseY: number,
+        diameter: number,
     ) {
-        if (scaleData) {
+        if (scaleData && circleScale) {
             const startX = scaleData.xScale(element[0].x);
             const startY = scaleData.yScale(element[0].y);
 
-            const circleDiameter = Math.sqrt(3000 / Math.PI);
+            const circleDiameter = Math.sqrt(circleScale(diameter) / Math.PI);
 
             let distance = false;
 
@@ -4560,7 +4606,53 @@ export default function Chart(props: propsIF) {
         }
     };
 
-    const orderHistoryHoverStatus = (mouseX: number, mouseY: number) => {
+    useEffect(() => {
+        if (userTransactionData) {
+            const domainRight = d3.max(userTransactionData, (data) => {
+                if (data.entityType === 'swap') return data.totalValueUSD;
+            });
+            const domainLeft = d3.min(userTransactionData, (data) => {
+                if (data.entityType === 'swap') return data.totalValueUSD;
+            });
+
+            if (domainRight && domainLeft) {
+                const scale = d3
+                    .scaleLinear()
+                    .range([1000, 3000])
+                    .domain([domainLeft, domainRight]);
+
+                setCircleScale(() => {
+                    return scale;
+                });
+            }
+        }
+    }, [userTransactionData]);
+
+    const handleCardClick = (tx: TransactionIF): void => {
+        setOutsideControl(true);
+        setSelectedOutsideTab(0);
+        setShowAllData(false);
+        setCurrentTxActiveInTransactions(tx.txId);
+        linkGenMarket.navigate(
+            tx.isBuy
+                ? {
+                      chain: chainId,
+                      tokenA: tx.base,
+                      tokenB: tx.quote,
+                  }
+                : {
+                      chain: chainId,
+                      tokenA: tx.quote,
+                      tokenB: tx.base,
+                  },
+        );
+    };
+
+    const orderHistoryHoverStatus = (
+        mouseX: number,
+        mouseY: number,
+        onClick: boolean,
+    ) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let resElement: any = undefined;
 
@@ -4581,7 +4673,7 @@ export default function Chart(props: propsIF) {
                 //     },
                 // ];
 
-                if (element.entityType === 'swap') {
+                if (element.entityType === 'swap' && showSwap) {
                     const swapOrderData = [
                         {
                             x: element.txTime * 1000,
@@ -4591,12 +4683,19 @@ export default function Chart(props: propsIF) {
                             denomInBase: denomInBase,
                         },
                     ];
-                    if (checkSwapLoation(swapOrderData, mouseX, mouseY)) {
+                    if (
+                        checkSwapLoation(
+                            swapOrderData,
+                            mouseX,
+                            mouseY,
+                            element.totalValueUSD,
+                        )
+                    ) {
                         resElement = element;
                     }
                 }
 
-                // if (element.orderType === 'history') {
+                // if (element.orderType === 'history' && showHistorical) {
                 //     if (checkLineLocation(lineLocation, mouseX, mouseY, denomInBase)) {
                 //         resElement = element;
                 //     }
@@ -4625,8 +4724,24 @@ export default function Chart(props: propsIF) {
                 } else {
                     setIsHoveredOrderHistory(false);
                 }
+
+                if (onClick && scaleData) {
+                    if (resElement) {
+                        handleCardClick(resElement);
+                        setSelectedOrderHistory(() => {
+                            return resElement;
+                        });
+                        setIsSelectedOrderHistory(true);
+                    } else {
+                        setSelectedOrderHistory(undefined);
+                        setIsSelectedOrderHistory(false);
+                    }
+                }
             });
+
+            if (onClick && resElement) return resElement;
         }
+        return undefined;
     };
 
     const candleOrVolumeDataHoverStatus = (mouseX: number, mouseY: number) => {
@@ -4926,7 +5041,7 @@ export default function Chart(props: propsIF) {
                 setIsOnCandleOrVolumeMouseLocation(isHoverCandleOrVolumeData);
 
                 drawnShapesHoverStatus(offsetX, offsetY);
-                orderHistoryHoverStatus(offsetX, offsetY);
+                showSwap && orderHistoryHoverStatus(offsetX, offsetY, false);
             }
         }
     };
@@ -5230,6 +5345,102 @@ export default function Chart(props: propsIF) {
         isUpdatingShape,
     };
 
+    const calculateOrderHistoryTooltipPlacements = () => {
+        if (scaleData && circleScale) {
+            const scale = d3.scaleLinear().range([60, 75]).domain([1000, 3000]);
+
+            if (isHoveredOrderHistory && hoveredOrderHistory) {
+                setHoveredOrderTooltipPlacement(() => {
+                    const top = scaleData.yScale(
+                        denomInBase
+                            ? hoveredOrderHistory.swapInvPriceDecimalCorrected
+                            : hoveredOrderHistory.swapPriceDecimalCorrected,
+                    );
+
+                    const isOverLeft =
+                        isSelectedOrderHistory &&
+                        selectedOrderTooltipPlacement &&
+                        selectedOrderTooltipPlacement.left - 75 <
+                            scaleData?.xScale(
+                                hoveredOrderHistory.txTime * 1000,
+                            ) +
+                                scale(
+                                    circleScale(
+                                        hoveredOrderHistory.totalValueUSD,
+                                    ),
+                                ) +
+                                75 &&
+                        selectedOrderTooltipPlacement.left + 75 >
+                            scaleData?.xScale(
+                                hoveredOrderHistory.txTime * 1000,
+                            ) -
+                                scale(
+                                    circleScale(
+                                        hoveredOrderHistory.totalValueUSD,
+                                    ),
+                                ) -
+                                75;
+
+                    const isOverTop =
+                        isSelectedOrderHistory &&
+                        selectedOrderTooltipPlacement &&
+                        ((selectedOrderTooltipPlacement.top - 35 < top + 35 &&
+                            selectedOrderTooltipPlacement.top - 35 >
+                                top - 35) ||
+                            (selectedOrderTooltipPlacement.top + 35 >
+                                top - 35 &&
+                                selectedOrderTooltipPlacement.top + 35 <
+                                    top + 35));
+
+                    const left =
+                        scaleData?.xScale(hoveredOrderHistory.txTime * 1000) +
+                        (isOverLeft && isOverTop
+                            ? -scale(
+                                  circleScale(
+                                      hoveredOrderHistory.totalValueUSD,
+                                  ),
+                              ) - 90
+                            : +scale(
+                                  circleScale(
+                                      hoveredOrderHistory.totalValueUSD,
+                                  ),
+                              ));
+
+                    return { top, left };
+                });
+            } else {
+                setHoveredOrderTooltipPlacement(() => undefined);
+            }
+
+            if (isSelectedOrderHistory && selectedOrderHistory) {
+                setSelectedOrderTooltipPlacement(() => {
+                    const top = scaleData.yScale(
+                        denomInBase
+                            ? selectedOrderHistory.swapInvPriceDecimalCorrected
+                            : selectedOrderHistory.swapPriceDecimalCorrected,
+                    );
+                    const left =
+                        scaleData?.xScale(selectedOrderHistory.txTime * 1000) +
+                        scale(circleScale(selectedOrderHistory.totalValueUSD));
+
+                    return { top, left };
+                });
+            } else {
+                setSelectedOrderTooltipPlacement(() => undefined);
+            }
+        }
+    };
+
+    useEffect(() => {
+        calculateOrderHistoryTooltipPlacements();
+    }, [
+        isSelectedOrderHistory,
+        isHoveredOrderHistory,
+        diffHashSig(selectedOrderHistory),
+        diffHashSig(hoveredOrderHistory),
+        diffHashSigScaleData(scaleData),
+    ]);
+
     return (
         <div
             ref={d3Container}
@@ -5296,6 +5507,7 @@ export default function Chart(props: propsIF) {
                         )}
 
                         {(showSwap || showLiquidity || showHistorical) &&
+                            circleScale &&
                             scaleData && (
                                 <OrderHistoryCanvas
                                     scaleData={scaleData}
@@ -5309,6 +5521,11 @@ export default function Chart(props: propsIF) {
                                     }
                                     drawSettings={drawSettings}
                                     userTransactionData={userTransactionData}
+                                    circleScale={circleScale}
+                                    isSelectedOrderHistory={
+                                        isSelectedOrderHistory
+                                    }
+                                    selectedOrderHistory={selectedOrderHistory}
                                 />
                             )}
 
@@ -5535,14 +5752,36 @@ export default function Chart(props: propsIF) {
                 </CSSTransition>
             )}
 
-            {scaleData && hoveredOrderHistory && (
-                <OrderHistoryTooltip
-                    scaleData={scaleData}
-                    hoveredOrderHistory={hoveredOrderHistory}
-                    isHoveredOrderHistory={isHoveredOrderHistory}
-                    denomInBase={denomInBase}
-                />
-            )}
+            {scaleData &&
+                hoveredOrderHistory &&
+                hoveredOrderHistory.txId !== selectedOrderHistory?.txId &&
+                hoveredOrderTooltipPlacement && (
+                    <OrderHistoryTooltip
+                        hoveredOrderHistory={hoveredOrderHistory}
+                        isHoveredOrderHistory={isHoveredOrderHistory}
+                        denomInBase={denomInBase}
+                        hoveredOrderTooltipPlacement={
+                            hoveredOrderTooltipPlacement
+                        }
+                        handleCardClick={handleCardClick}
+                        setSelectedOrderHistory={setSelectedOrderHistory}
+                    />
+                )}
+
+            {scaleData &&
+                selectedOrderHistory &&
+                selectedOrderTooltipPlacement && (
+                    <OrderHistoryTooltip
+                        hoveredOrderHistory={selectedOrderHistory}
+                        isHoveredOrderHistory={isSelectedOrderHistory}
+                        denomInBase={denomInBase}
+                        hoveredOrderTooltipPlacement={
+                            selectedOrderTooltipPlacement
+                        }
+                        handleCardClick={handleCardClick}
+                        setSelectedOrderHistory={setSelectedOrderHistory}
+                    />
+                )}
         </div>
     );
 }

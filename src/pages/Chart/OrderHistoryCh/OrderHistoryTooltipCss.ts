@@ -24,6 +24,8 @@ const OrderHistoryContainer = styled.div<{ top: number; left: number }>`
     transform: translateY(-50%);
 
     gap: 6px;
+
+    cursor: pointer;
 `;
 
 const OrderHistoryHeader = styled.div`
@@ -42,7 +44,7 @@ const OrderHistoryBody = styled.div`
 const StyledHeader = styled.div<{ color: string; size: string }>`
     display: flex;
     align-items: center;
-    cursor: default;
+    cursor: pointer;
 
     justify-content: space-evenly;
     color: ${({ color }) => color};
