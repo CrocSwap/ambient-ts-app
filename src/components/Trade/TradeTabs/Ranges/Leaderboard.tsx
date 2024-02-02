@@ -61,8 +61,8 @@ function Leaderboard() {
         tradeTableState === 'Expanded' ? currentRanges : sortedPositions;
 
     // TODO: Use these as media width constants
-    const isSmallScreen = useMediaQuery('(max-width: 600px)');
-    const isLargeScreen = useMediaQuery('(min-width: 1600px)');
+    const isSmallScreen = useMediaQuery('(max-width: 700px)');
+    const isLargeScreen = useMediaQuery('(min-width: 2000px)');
 
     const tableView = isSmallScreen
         ? 'small'
@@ -98,6 +98,7 @@ function Leaderboard() {
             show: tableView === 'large',
             slug: 'id',
             sortable: false,
+            leftPadding: 3,
         },
         {
             name: 'Last Updated',
@@ -181,6 +182,7 @@ function Leaderboard() {
             slug: 'apr',
             sortable: false,
             alignRight: true,
+            rightPadding: 8,
         },
         {
             name: 'Status',
@@ -188,6 +190,7 @@ function Leaderboard() {
             show: true,
             slug: 'status',
             sortable: false,
+            leftPadding: 8,
         },
         {
             name: '',
