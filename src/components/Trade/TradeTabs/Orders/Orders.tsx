@@ -142,7 +142,10 @@ function Orders(props: propsIF) {
         isSmallScreen || (isAccountView && !isLargeScreen && isSidebarOpen)
             ? 'small'
             : (!isSmallScreen && !isLargeScreen) ||
-              (isAccountView && isLargeScreen && isSidebarOpen)
+              (isAccountView &&
+                  connectedAccountActive &&
+                  isLargeScreen &&
+                  isSidebarOpen)
             ? 'medium'
             : 'large';
 
@@ -167,6 +170,7 @@ function Orders(props: propsIF) {
             <p>{`${quoteTokenSymbol}`}</p>
         </>
     );
+
     const headerColumns = [
         {
             name: 'Last Updated',

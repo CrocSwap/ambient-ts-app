@@ -274,6 +274,7 @@ function RangesRow(props: propsIF) {
                         openDetailsModal={openDetailsModal}
                         openActionModal={openActionModal}
                         setRangeModalAction={setRangeModalAction}
+                        tableView={tableView}
                     />
                 </div>
             </RangeRowStyled>
