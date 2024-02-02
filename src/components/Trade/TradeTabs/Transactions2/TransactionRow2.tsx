@@ -1,5 +1,5 @@
 import styles from './TransactionRow2.module.css';
-import { columnSlugsType } from './Transactions2';
+import { columnMetaWithIdIF, columnSlugsType } from './Transactions2';
 import { getAddress } from 'ethers/lib/utils.js';
 import TimeStamp from './TimeStamp';
 import TxId from './TxId';
@@ -31,7 +31,7 @@ export type btnIconNameType =
 
 interface propsIF {
     tx: TransactionIF;
-    columnsToShow: [columnSlugsType, number, string, boolean][];
+    columnsToShow: columnMetaWithIdIF[];
     isAccountPage: boolean;
     isMenuOpen: boolean;
     onMenuToggle: () => void;
@@ -55,139 +55,165 @@ export default function TransactionRow2(props: propsIF) {
         ? getAddress(tx.user).toLowerCase() !== userAddress.toLowerCase()
         : false;
 
+    // logic to take a column slug and return the corresponding DOM element
     const renderElem = (el: columnSlugsType): JSX.Element | null => {
-        const elemMeta = columnsToShow.find(
-            (col: [columnSlugsType, number, string, boolean]) => col[0] === el,
+        const elemMeta: columnMetaWithIdIF|undefined = columnsToShow.find(
+            (col: columnMetaWithIdIF) => col.id === el,
         );
+        if (!elemMeta) return null;
+        const colWidth: number = elemMeta.width;
         let elemForDOM: JSX.Element | null = null;
-        if (elemMeta) {
-            if (elemMeta[0] === 'timeStamp') {
-                elemForDOM = <TimeStamp tx={tx} width={elemMeta[1]} />;
-            } else if (elemMeta[0] === 'txId') {
-                elemForDOM = <TxId tx={tx} width={elemMeta[1]} />;
-            } else if (elemMeta[0] === 'txWallet') {
+        switch (elemMeta.id) {
+            case 'timeStamp':
+                elemForDOM = <TimeStamp tx={tx} width={colWidth} />;
+                break;
+            case 'txId':
+                elemForDOM = <TxId tx={tx} width={colWidth} />;
+                break;
+            case 'txWallet':
                 elemForDOM = (
                     <TxWallet
                         isOwnerActiveAccount={isOwnerActiveAccount}
                         ownerId={ownerId}
                         isAccountPage={isAccountPage}
-                        width={elemMeta[1]}
+                        width={colWidth}
                     />
                 );
-            } else if (elemMeta[0] === 'txPrice') {
+                break;
+            case 'txPrice':
                 elemForDOM = <TxPrice tx={tx} isAccountPage={isAccountPage} />;
-            } else if (elemMeta[0] === 'txSide') {
-                elemForDOM = <TxSide tx={tx} isAccountPage={isAccountPage} width={elemMeta[1]} />;
-            } else if (elemMeta[0] === 'txValue') {
-                elemForDOM = <TxValue width={elemMeta[1]} tx={tx} />;
-            } else if (elemMeta[0] === 'txType') {
-                elemForDOM = <TxType tx={tx} isAccountPage={isAccountPage} width={elemMeta[1]} />;
-            } else if (elemMeta[0] === 'txBase') {
-                elemForDOM = <TxToken tx={tx} width={elemMeta[1]} isAccountPage={isAccountPage} isBase={true} />;
-            } else if (elemMeta[0] === 'txQuote') {
-                elemForDOM = <TxToken tx={tx} width={elemMeta[1]} isAccountPage={isAccountPage} isBase={false} />
-            } else if (elemMeta[0] === 'overflowBtn') {
+                break;
+            case 'txSide':
+                elemForDOM = <TxSide tx={tx} isAccountPage={isAccountPage} width={colWidth} />;
+                break;
+            case 'txValue':
+                elemForDOM = <TxValue width={colWidth} tx={tx} />;
+                break;
+            case 'txType':
+                elemForDOM = <TxType tx={tx} isAccountPage={isAccountPage} width={colWidth} />;
+                break;
+            case 'txBase':
+                elemForDOM = <TxToken tx={tx} width={colWidth} isAccountPage={isAccountPage} isBase={true} />;
+                break;
+            case 'txQuote':
+                elemForDOM = <TxToken tx={tx} width={colWidth} isAccountPage={isAccountPage} isBase={false} />;
+                break;
+            case 'overflowBtn':
                 elemForDOM = (
                     <TxButton
                         tx={tx}
-                        width={elemMeta[1]}
+                        width={colWidth}
                         iconName='overflowBtn'
                         hide={false}
                         onMenuToggle={onMenuToggle}
                     />
                 );
-            } else if (elemMeta[0] === 'editBtn') {
+                break;
+            case 'editBtn':
                 elemForDOM = (
                     <TxButton
                         tx={tx}
-                        width={elemMeta[1]}
+                        width={colWidth}
                         iconName='editBtn'
                         hide={false}
                     />
                 );
-            } else if (elemMeta[0] === 'harvestBtn') {
+                break;
+            case 'harvestBtn':
                 elemForDOM = (
                     <TxButton
                         tx={tx}
-                        width={elemMeta[1]}
+                        width={colWidth}
                         iconName='harvestBtn'
                         hide={false}
                     />
                 );
-            } else if (elemMeta[0] === 'addBtn') {
+                break;
+            case 'addBtn':
                 elemForDOM = (
                     <TxButton
                         tx={tx}
-                        width={elemMeta[1]}
+                        width={colWidth}
                         iconName='addBtn'
                         hide={false}
                     />
                 );
-            } else if (elemMeta[0] === 'leafBtn') {
+                break;
+            case 'leafBtn':
                 elemForDOM = (
                     <TxButton
                         tx={tx}
-                        width={elemMeta[1]}
+                        width={colWidth}
                         iconName='leafBtn'
                         hide={false}
                     />
                 );
-            } else if (elemMeta[0] === 'removeBtn') {
+                break;
+            case 'removeBtn':
                 elemForDOM = (
                     <TxButton
                         tx={tx}
-                        width={elemMeta[1]}
+                        width={colWidth}
                         iconName='removeBtn'
                         hide={false}
                     />
                 );
-            } else if (elemMeta[0] === 'shareBtn') {
+                break;
+            case 'shareBtn':
                 elemForDOM = (
                     <TxButton
                         tx={tx}
-                        width={elemMeta[1]}
+                        width={colWidth}
                         iconName='shareBtn'
                         hide={false}
                     />
                 );
-            } else if (elemMeta[0] === 'exportBtn') {
+                break;
+            case 'exportBtn':
                 elemForDOM = (
                     <TxButton
                         tx={tx}
-                        width={elemMeta[1]}
+                        width={colWidth}
                         iconName='exportBtn'
                         hide={false}
                     />
                 );
-            } else if (elemMeta[0] === 'walletBtn') {
+                break;
+            case 'walletBtn':
                 elemForDOM = (
                     <TxButton
                         tx={tx}
-                        width={elemMeta[1]}
+                        width={colWidth}
                         iconName='walletBtn'
                         hide={false}
                     />
                 );
-            } else if (elemMeta[0] === 'copyBtn') {
+                break;
+            case 'copyBtn':
                 elemForDOM = (
                     <TxButton
                         tx={tx}
-                        width={elemMeta[1]}
+                        width={colWidth}
                         iconName='copyBtn'
                         hide={false}
                     />
                 );
-            } else if (elemMeta[0] === 'downloadBtn') {
+                break;
+            case 'downloadBtn':
                 elemForDOM = (
                     <TxButton
                         tx={tx}
-                        width={elemMeta[1]}
+                        width={colWidth}
                         iconName='downloadBtn'
                         hide={false}
                     />
                 );
-            }
-        }
+                break;
+            default:
+                elemForDOM = null;
+                break;
+        };
+
         return elemForDOM;
     };
 

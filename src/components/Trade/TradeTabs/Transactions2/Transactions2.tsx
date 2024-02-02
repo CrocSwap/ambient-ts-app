@@ -8,117 +8,131 @@ import TxHeader from './TxHeader';
 import { priorityInDOM } from './data';
 import useSort, { useSortIF } from './useSort';
 
+interface singleColumnMetaIF {
+    width: number;
+    readable: string;
+    isSortable: boolean;
+};
+
+interface allColumnMetaIF {
+    [key: string]: singleColumnMetaIF;
+};
+
 // columns to display in table and px width to alot for each
-const columnMetaInfo = {
+const columnMetaInfo: allColumnMetaIF = {
     timeStamp: {
         width: 60,
         readable: 'Timestamp',
-        sortable: true,
+        isSortable: true,
     },
     txId: {
         width: 120,
         readable: 'ID',
-        sortable: false,
+        isSortable: false,
     },
     txWallet: {
         width: 120,
         readable: 'Wallet',
-        sortable: true,
+        isSortable: true,
     },
     txPrice: {
         width: 100,
         readable: 'Price',
-        sortable: false,
+        isSortable: false,
     },
     txValue: {
         width: 100,
         readable: 'Value',
-        sortable: true,
+        isSortable: true,
     },
     txSide: {
         width: 80,
         readable: 'Side',
-        sortable: false,
+        isSortable: false,
     },
     txType: {
         width: 80,
         readable: 'Type',
-        sortable: false,
+        isSortable: false,
     },
     txBase: {
         width: 100,
         readable: '',
-        sortable: false,
+        isSortable: false,
     },
     txQuote: {
         width: 100,
         readable: '',
-        sortable: false,
+        isSortable: false,
     },
     overflowBtn: {
         width: 30,
         readable: '',
-        sortable: false,
+        isSortable: false,
     },
     editBtn: {
         width: 30,
         readable: '',
-        sortable: false,
+        isSortable: false,
     },
     harvestBtn: {
         width: 30,
         readable: '',
-        sortable: false,
+        isSortable: false,
     },
     addBtn: {
         width: 30,
         readable: '',
-        sortable: false,
+        isSortable: false,
     },
     leafBtn: {
         width: 30,
         readable: '',
-        sortable: false,
+        isSortable: false,
     },
     removeBtn: {
         width: 30,
         readable: '',
-        sortable: false,
+        isSortable: false,
     },
     shareBtn: {
         width: 30,
         readable: '',
-        sortable: false,
+        isSortable: false,
     },
     exportBtn: {
         width: 30,
         readable: '',
-        sortable: false,
+        isSortable: false,
     },
     walletBtn: {
         width: 30,
         readable: '',
-        sortable: false,
+        isSortable: false,
     },
     copyBtn: {
         width: 30,
         readable: '',
-        sortable: false,
+        isSortable: false,
     },
     downloadBtn: {
         width: 30,
         readable: '',
-        sortable: false,
+        isSortable: false,
     },
 };
 
 // string-union type of all keys in the `columnsAndSizes` object
 export type columnSlugsType = keyof typeof columnMetaInfo;
+// interface for column metadata with the obj key embedded
+export interface columnMetaWithIdIF extends singleColumnMetaIF {
+    id: columnSlugsType;
+};
 
 interface propsIF {
     isAccountPage: boolean;
     candleData: CandleDataIF | undefined;
-}
+};
 
 export default function Transactions2(props: propsIF) {
     const { isAccountPage, candleData } = props;
@@ -144,54 +158,45 @@ export default function Transactions2(props: propsIF) {
     // ... table until the container renders and tells us how much width (pixels) is available
     const containerRef = useRef<HTMLOListElement>(null);
 
-    // list of columns to display in the DOM as determined by priority and space available
-    // this is recalculated every time the elem changes width, but later memoization prevents
-    // ... unnecessary re-renders from happening
+    // container width in which to fit DOM elements for the table
     const containerWidthRef = useRef(0);
     const getContainerWidth = () => containerWidthRef.current;
     const setContainerWidth = (newWidth: number) => {
         containerWidthRef.current = newWidth;
     };
 
-    // STEP 1: What is our target width, and how do we monitor it?
+    // add an observer to the DOM to watch for changes in table width
     useEffect(() => {
-        const adjustColumnization = () => {
-            if (containerRef.current) {
-                setContainerWidth(containerRef.current.clientWidth);
-            }
-        };
-
-        const resizeObserver = new ResizeObserver(adjustColumnization);
-        if (containerRef.current) {
-            resizeObserver.observe(containerRef.current);
+        // fn to update the memoized width available in the DOM
+        const recordWidth = (): void => {
+            containerRef.current && setContainerWidth(containerRef.current.clientWidth);
         }
 
+        // create an observer and attach it to the DOM element being observed
+        const resizeObserver = new ResizeObserver(recordWidth);
+        containerRef.current && resizeObserver.observe(containerRef.current);
+
+        // clean-up function
         return () => {
             resizeObserver.disconnect();
         };
     }, []);
 
     // STEP 2: Given our target width, what columns do we want to show?
-    const columnsToRender = useMemo<
-        [columnSlugsType, number, string, boolean][]
-    >(() => {
-        const columnList: [columnSlugsType, number, string, boolean][] = [];
+    const columnsToRender = useMemo<columnMetaWithIdIF[]>(() => {
+        const columnList: columnMetaWithIdIF[] = [];
         let totalWidthNeeded = 0;
 
         for (let i = 0; i < priorityInDOM.length; i++) {
             const columnId: columnSlugsType = priorityInDOM[i];
-            const columnSize: number = columnMetaInfo[columnId].width;
-            const columnTitle: string = columnMetaInfo[columnId].readable;
-            const isSortable: boolean = columnMetaInfo[columnId].sortable;
+            const colData: columnMetaWithIdIF = {
+                id: columnId,
+                ...columnMetaInfo[columnId]
+            };
 
-            if (totalWidthNeeded + columnSize <= getContainerWidth()) {
-                columnList.push([
-                    columnId,
-                    columnSize,
-                    columnTitle,
-                    isSortable,
-                ]);
-                totalWidthNeeded += columnSize;
+            if (totalWidthNeeded + colData.width <= getContainerWidth()) {
+                columnList.push(colData);
+                totalWidthNeeded += colData.width;
             }
         }
 

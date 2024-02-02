@@ -99,7 +99,7 @@ export default function useSort(
                 break;
         }
         // return reversed data if user wants data reversed
-        return reverseSort ? sortedData.toReversed() : sortedData;
+        return reverseSort ? [...sortedData].reverse() : sortedData;
     };
 
     // Generates a fingerprint from the positions objects. Used for comparison
