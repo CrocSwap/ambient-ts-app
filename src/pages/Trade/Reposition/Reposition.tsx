@@ -407,10 +407,6 @@ function Reposition() {
         setCurrentQuoteQtyDisplayTruncated,
     ] = useState<string>(position?.positionLiqQuoteTruncated || '0.00');
 
-    const isCurrentPositionEmpty =
-        currentBaseQtyDisplayTruncated === '0.00' &&
-        currentQuoteQtyDisplayTruncated === '0.00';
-
     const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/position_stats?'
         : activeNetwork.graphCacheUrl + '/position_stats?';
@@ -564,8 +560,6 @@ function Reposition() {
         ) {
             return;
         }
-        setNewBaseQtyDisplay('...');
-        setNewQuoteQtyDisplay('...');
         const pool = crocEnv.pool(position.base, position.quote);
 
         const repo = new CrocReposition(pool, {
@@ -574,8 +568,6 @@ function Reposition() {
             mint: mintArgsForReposition(debouncedLowTick, debouncedHighTick),
         });
 
-        setNewBaseQtyDisplay('...');
-        setNewQuoteQtyDisplay('...');
         repo.postBalance().then(([base, quote]: [number, number]) => {
             setNewBaseQtyDisplay(getFormattedNumber({ value: base }));
             setNewQuoteQtyDisplay(getFormattedNumber({ value: quote }));
@@ -623,6 +615,13 @@ function Reposition() {
             <FiExternalLink size={12} color='var(--text1)' />
         </a>
     );
+
+    const isCurrentPositionEmptyOrLoading =
+        (currentBaseQtyDisplayTruncated === '0.00' &&
+            currentQuoteQtyDisplayTruncated === '0.00') ||
+        (currentBaseQtyDisplayTruncated === '...' &&
+            currentQuoteQtyDisplayTruncated === '...') ||
+        (newBaseQtyDisplay === '...' && newQuoteQtyDisplay === '...');
 
     return (
         <>
@@ -701,7 +700,7 @@ function Reposition() {
                                 disabled={
                                     isRepositionSent ||
                                     isPositionInRange ||
-                                    isCurrentPositionEmpty
+                                    isCurrentPositionEmptyOrLoading
                                 }
                                 flat
                             />
