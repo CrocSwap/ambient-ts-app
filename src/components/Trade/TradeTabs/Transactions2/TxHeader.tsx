@@ -5,12 +5,21 @@ import styles from './TxHeader.module.css';
 interface propsIF {
     activeColumns: columnMetaWithIdIF[];
     updateSort: (slug: columnSlugsType) => void;
+    baseSymbol: string;
+    quoteSymbol: string;
 }
 
 export default function TxHeader(props: propsIF) {
-    const { activeColumns, updateSort } = props;
+    const { activeColumns, updateSort, baseSymbol, quoteSymbol } = props;
 
     const allColumns: columnSlugsType[] = infoCells.concat(actionButtons);
+
+    // manual overrides for column titles that are dynamic and cannot be hardcoded, will
+    // ... be consumed if key-val pair exists for the column header being rendered
+    const dynamicReadables: { [key: columnSlugsType]: string; } = {
+        txBase: baseSymbol,
+        txQuote: quoteSymbol,
+    };
 
     return (
         <header className={styles.header_row}>
@@ -28,7 +37,7 @@ export default function TxHeader(props: propsIF) {
                                     isSortable && updateSort(id);
                                 }}
                             >
-                                {readable}
+                                {dynamicReadables[id] ?? readable}
                             </div>
                         );
                     }

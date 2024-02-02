@@ -171,68 +171,62 @@ export default function Transactions2(props: propsIF) {
         const recordWidth = (): void => {
             containerRef.current && setContainerWidth(containerRef.current.clientWidth);
         }
-
         // create an observer and attach it to the DOM element being observed
         const resizeObserver = new ResizeObserver(recordWidth);
         containerRef.current && resizeObserver.observe(containerRef.current);
-
         // clean-up function
         return () => {
             resizeObserver.disconnect();
         };
     }, []);
 
-    // STEP 2: Given our target width, what columns do we want to show?
+    // when the table width changes, update the columns rendered in the DOM
     const columnsToRender = useMemo<columnMetaWithIdIF[]>(() => {
-        const columnList: columnMetaWithIdIF[] = [];
+        // output variable
+        const columnListForDOM: columnMetaWithIdIF[] = [];
+        // running count of pixel-width needed by columns sent to the DOM
         let totalWidthNeeded = 0;
-
+        // iterate through priority array and add columns to the DOM by order of importance
         for (let i = 0; i < priorityInDOM.length; i++) {
+            // slug to identify the column
             const columnId: columnSlugsType = priorityInDOM[i];
-            const colData: columnMetaWithIdIF = {
-                id: columnId,
-                ...columnMetaInfo[columnId]
-            };
-
+            // retrieve and format data for that column from reference data
+            const colData: columnMetaWithIdIF = { id: columnId, ...columnMetaInfo[columnId] };
+            // determine if table has enough width to add the current column
+            // YES ➞ add the column to output and increment the width accrued counter
             if (totalWidthNeeded + colData.width <= getContainerWidth()) {
-                columnList.push(colData);
+                columnListForDOM.push(colData);
                 totalWidthNeeded += colData.width;
             }
         }
-
-        return columnList;
+        // return output variable with columns to place in the DOM
+        return columnListForDOM;
     }, [getContainerWidth()]);
 
+    // logic to open the overflow menu at the end of each `<li>` element
     const [openMenuRow, setOpenMenuRow] = useState<string | null>(null);
-
     const handleMenuToggle = (rowId: string): void => {
         setOpenMenuRow((prevRowId) => (prevRowId === rowId ? null : rowId));
     };
 
-    const sortedTransactions: useSortIF = useSort('timeStamp', transactionsData);
+    // hook to sort transactions in the DOM
+    const sortedTxs: useSortIF = useSort('timeStamp', transactionsData);
 
-    // array of row elements to render in the DOM, the base underlying data used for generation
-    // ... is updated frequently but this memoization on recalculates if other items change
-
-    // STEP 3: Given our columns, create a new transactions grid.
+    // array of `<li>` elements to display transactions in the DOM, recalculates when new
+    // ... data is received or the DOM width of the table changes
     const transactionRows = useMemo<JSX.Element[]>(() => {
+        // slightly faster version of `JSON.stringify()` per Justin
         const makeString = (tx: TransactionIF): string => {
-            // Slightly faster than JSON.stringify
-            let theId = '';
-            if (tx.txId) theId = theId + tx.txId.toString();
-            else theId = theId + 'null_id';
-
-            if (tx.askTick) theId = theId + tx.bidTick.toString();
-            else theId = theId + 'bidEmpty';
-            if (tx.askTick) theId = theId + tx.bidTick.toString();
-            else theId = theId + 'askEmpty';
-
-            if (tx.txHash) theId = theId + tx.txHash.toString();
-            else theId = theId + 'txHash';
+            let theId = tx.txId ? tx.txId.toString() : 'nullId';
+            theId += tx.bidTick ? tx.bidTick.toString() : 'bidEmpty';
+            theId += tx.askTick ? tx.askTick.toString() : 'askEmpty';
+            theId += tx.txHash ? tx.txHash.toString() : 'txHash';
             return theId;
         };
-        return sortedTransactions.data.map((tx: TransactionIF) => {
+        return sortedTxs.data.map((tx: TransactionIF) => {
+            // make a key string for differencing (react and internal use)
             const txString: string = makeString(tx);
+            // return a JSX element
             return (
                 <TransactionRow2
                     key={txString}
@@ -245,11 +239,16 @@ export default function Transactions2(props: propsIF) {
                 />
             );
         });
-    }, [JSON.stringify(sortedTransactions), columnsToRender.length]);
+    }, [JSON.stringify(sortedTxs), columnsToRender.length]);
 
     return (
         <ol className={styles.tx_ol} ref={containerRef}>
-            <TxHeader activeColumns={columnsToRender} updateSort={sortedTransactions.update} />
+            <TxHeader
+                activeColumns={columnsToRender}
+                updateSort={sortedTxs.update}
+                baseSymbol={transactionsData[0]?.baseSymbol ?? 'Base Token'}
+                quoteSymbol={transactionsData[0]?.quoteSymbol ?? 'Quote Token'}
+            />
             {transactionRows}
         </ol>
     );
