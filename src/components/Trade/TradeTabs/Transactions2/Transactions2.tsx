@@ -246,8 +246,10 @@ export default function Transactions2(props: propsIF) {
             <TxHeader
                 activeColumns={columnsToRender}
                 updateSort={sortedTxs.update}
-                baseSymbol={transactionsData[0]?.baseSymbol ?? 'Base Token'}
-                quoteSymbol={transactionsData[0]?.quoteSymbol ?? 'Quote Token'}
+                overrides={{
+                    txBase: transactionsData[0]?.baseSymbol ?? 'Base Token',
+                    txQuote: transactionsData[0]?.quoteSymbol ?? 'Quote Token'
+                }}
             />
             {transactionRows}
         </ol>
