@@ -20,7 +20,8 @@ import {
     DEFAULT_SCROLL_GAS_PRICE_IN_GWEI,
     IS_LOCAL_ENV,
     NUM_WEI_IN_GWEI,
-    DEPOSIT_BUFFER_MULTIPLIER,
+    DEPOSIT_BUFFER_MULTIPLIER_MAINNET,
+    DEPOSIT_BUFFER_MULTIPLIER_SCROLL,
     ZERO_ADDRESS,
 } from '../../../../ambient-utils/constants';
 import { FaGasPump } from 'react-icons/fa';
@@ -90,14 +91,14 @@ export default function Deposit(props: propsIF) {
     )
         .mul(BigNumber.from(NUM_WEI_IN_GWEI))
         .mul(BigNumber.from(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE))
-        .mul(BigNumber.from(DEPOSIT_BUFFER_MULTIPLIER));
+        .mul(BigNumber.from(DEPOSIT_BUFFER_MULTIPLIER_MAINNET));
 
     const amountToReduceNativeTokenQtyScroll = BigNumber.from(
         Math.ceil(gasPriceInGwei || DEFAULT_SCROLL_GAS_PRICE_IN_GWEI),
     )
         .mul(BigNumber.from(NUM_WEI_IN_GWEI))
         .mul(BigNumber.from(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE))
-        .mul(BigNumber.from(DEPOSIT_BUFFER_MULTIPLIER));
+        .mul(BigNumber.from(DEPOSIT_BUFFER_MULTIPLIER_SCROLL));
 
     const amountToReduceNativeTokenQty =
         chainId === '0x82750' || chainId === '0x8274f'
