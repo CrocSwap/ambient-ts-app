@@ -364,14 +364,14 @@ function Transactions(props: propsIF) {
             alignRight: true,
         },
         {
-            name: isAccountView ? <></> : `${baseTokenSymbol}ㅤㅤ`,
+            name: isAccountView ? <></> : `${baseTokenSymbol}`,
             show: tableView === 'large',
             slug: baseTokenSymbol,
             sortable: false,
             alignRight: true,
         },
         {
-            name: isAccountView ? <></> : `${quoteTokenSymbol}ㅤㅤ`, // invisible character added to offset token logo
+            name: isAccountView ? <></> : `${quoteTokenSymbol}`,
             show: tableView === 'large',
             slug: quoteTokenSymbol,
             sortable: false,

@@ -35,6 +35,7 @@ interface propsIF {
     openDetailsModal: () => void;
     openActionModal: () => void;
     setLimitModalAction: React.Dispatch<React.SetStateAction<LimitModalAction>>;
+    tableView: 'small' | 'medium' | 'large';
 }
 
 export type LimitActionType = 'Remove' | 'Claim';
@@ -50,6 +51,7 @@ export default function OrdersMenu(props: propsIF) {
         openDetailsModal,
         openActionModal,
         setLimitModalAction,
+        tableView,
     } = props;
 
     const menuItemRef = useRef<HTMLDivElement>(null);
@@ -90,12 +92,12 @@ export default function OrdersMenu(props: propsIF) {
             ? useMediaQuery('(max-width: 1600px)')
             : useMediaQuery('(max-width: 1450px)')
         : isSidebarOpen
-        ? useMediaQuery('(max-width: 1500px)')
+        ? useMediaQuery('(max-width: 2000px)')
         : useMediaQuery('(max-width: 1250px)');
 
     // ------------------  END OF MODAL FUNCTIONALITY-----------------
 
-    const minView = useMediaQuery('(min-width: 720px)');
+    const smallView = tableView === 'small';
 
     const walletButton = (
         <Chip ariaLabel='View wallet.' onClick={handleAccountClick}>
@@ -161,9 +163,9 @@ export default function OrdersMenu(props: propsIF) {
     const menuContent = (
         <div className={styles.menu_column}>
             {detailsButton}
-            {!minView && claimButton}
-            {!minView && copyButton}
-            {!minView && removeButton}
+            {smallView && claimButton}
+            {smallView && copyButton}
+            {smallView && removeButton}
             {!isAccountView && walletButton}
         </div>
     );
@@ -196,9 +198,9 @@ export default function OrdersMenu(props: propsIF) {
                 className={styles.main_container}
             >
                 <div className={styles.actions_menu}>
-                    {minView && claimButton}
-                    {minView && removeButton}
-                    {minView && copyButton}
+                    {!smallView && claimButton}
+                    {!smallView && removeButton}
+                    {!smallView && copyButton}
                 </div>
                 <div className={styles.dropdown_menu} ref={menuItemRef}>
                     <div
