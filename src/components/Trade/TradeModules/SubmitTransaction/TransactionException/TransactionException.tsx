@@ -15,7 +15,7 @@ export default function TransactionException(props: propsIF) {
     const { isTokenAPrimaryRange } = useContext(RangeContext);
     const { tokenA, tokenB } = useContext(TradeDataContext);
 
-    const isEthSecondary =
+    const isNativeTokenSecondary =
         (isTokenAPrimaryRange && tokenB.address === ZERO_ADDRESS) ||
         (!isTokenAPrimaryRange && tokenA.address === ZERO_ADDRESS);
 
@@ -26,20 +26,16 @@ export default function TransactionException(props: propsIF) {
     const formattedErrorMessage =
         'Error Message: ' + txErrorMessage?.replace('err: ', '');
 
-    const suggestionToCheckWalletETHBalance = !txErrorMessage ? (
-        <div>
-            <p>
-                This may have occurred due to an insufficient native token (e.g.
-                ETH) balance in your wallet to cover the cost of gas for the
-                transaction.
-            </p>
-            <DividerDark />
-        </div>
-    ) : null;
+    const suggestionToCheckWalletETHBalance = (
+        <p>
+            Please verify that the native token (e.g. ETH) balance in your
+            wallet is sufficient to cover the cost of gas.
+        </p>
+    );
 
     return (
         <div className={styles.removal_pending}>
-            {rangeModuleActive && isEthSecondary ? (
+            {rangeModuleActive && isNativeTokenSecondary ? (
                 <>
                     <p>
                         A preliminary simulation of your transaction has failed.
@@ -47,13 +43,13 @@ export default function TransactionException(props: propsIF) {
                     </p>
                     <DividerDark />
                     <p>
-                        This may have occurred due to an insufficient ETH
-                        balance to cover potential slippage.
+                        This may have occurred due to an insufficient native
+                        token (e.g. ETH) balance to cover potential slippage.
                     </p>
                     <DividerDark />
                     <p>
-                        Please try entering a specific amount of ETH, rather
-                        than
+                        Please try entering a specific amount of the native
+                        token, rather than
                         {' ' + primaryTokenSymbol}.
                     </p>
                 </>
@@ -66,10 +62,14 @@ export default function TransactionException(props: propsIF) {
                     <DividerDark />
                     <p>{formattedErrorMessage}</p>
                     <DividerDark />
-                    {suggestionToCheckWalletETHBalance}
-                    <p>
-                        Please check your wallet for notifications or try again.
-                    </p>
+                    {!txErrorMessage ? (
+                        suggestionToCheckWalletETHBalance
+                    ) : (
+                        <p>
+                            Please check your wallet for notifications or try
+                            again.
+                        </p>
+                    )}
                 </>
             )}
         </div>
