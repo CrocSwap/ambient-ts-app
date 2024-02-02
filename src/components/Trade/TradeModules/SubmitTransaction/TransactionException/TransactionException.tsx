@@ -26,6 +26,17 @@ export default function TransactionException(props: propsIF) {
     const formattedErrorMessage =
         'Error Message: ' + txErrorMessage?.replace('err: ', '');
 
+    const suggestionToCheckWalletETHBalance = !txErrorMessage ? (
+        <div>
+            <p>
+                This may have occurred due to an insufficient native token (e.g.
+                ETH) balance in your wallet to cover the cost of gas for the
+                transaction.
+            </p>
+            <DividerDark />
+        </div>
+    ) : null;
+
     return (
         <div className={styles.removal_pending}>
             {rangeModuleActive && isEthSecondary ? (
@@ -55,6 +66,7 @@ export default function TransactionException(props: propsIF) {
                     <DividerDark />
                     <p>{formattedErrorMessage}</p>
                     <DividerDark />
+                    {suggestionToCheckWalletETHBalance}
                     <p>
                         Please check your wallet for notifications or try again.
                     </p>
