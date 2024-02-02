@@ -49,6 +49,7 @@ import {
     NUM_GWEI_IN_WEI,
 } from '../../../ambient-utils/constants/';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
+import { useProcessRange } from '../../../utils/hooks/useProcessRange';
 
 function Reposition() {
     // current URL parameter string
@@ -123,6 +124,8 @@ function Reposition() {
     }
 
     const { position } = locationHook.state as { position: PositionIF };
+
+    const { posHashTruncated } = useProcessRange(position);
 
     useEffect(() => {
         setCurrentRangeInReposition('');
@@ -622,7 +625,7 @@ function Reposition() {
             <div className={styles.repositionContainer}>
                 <RepositionHeader
                     setRangeWidthPercentage={setRangeWidthPercentage}
-                    positionHash={position.firstMintTx}
+                    positionHash={posHashTruncated}
                     resetTxHash={() => setNewRepositionTransactionHash('')}
                 />
                 <div className={styles.reposition_content}>
