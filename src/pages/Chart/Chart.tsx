@@ -1037,6 +1037,8 @@ export default function Chart(props: propsIF) {
 
                                 clickedForLine = true;
 
+                                calculateOrderHistoryTooltipPlacements();
+
                                 render();
                             }
                         }
@@ -5103,8 +5105,10 @@ export default function Chart(props: propsIF) {
             if (!isLineDrag) {
                 setChartMousemoveEvent(event);
                 setCrossHairDataFunc(offsetX, offsetY);
+
                 const { isHoverCandleOrVolumeData } =
                     candleOrVolumeDataHoverStatus(offsetX, offsetY);
+
                 setIsOnCandleOrVolumeMouseLocation(isHoverCandleOrVolumeData);
 
                 drawnShapesHoverStatus(offsetX, offsetY);
