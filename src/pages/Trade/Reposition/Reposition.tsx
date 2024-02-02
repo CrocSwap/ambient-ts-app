@@ -407,6 +407,10 @@ function Reposition() {
         setCurrentQuoteQtyDisplayTruncated,
     ] = useState<string>(position?.positionLiqQuoteTruncated || '0.00');
 
+    const isCurrentPositionEmpty =
+        currentBaseQtyDisplayTruncated === '0.00' &&
+        currentQuoteQtyDisplayTruncated === '0.00';
+
     const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/position_stats?'
         : activeNetwork.graphCacheUrl + '/position_stats?';
@@ -675,6 +679,7 @@ function Reposition() {
                                 sendTransaction={sendRepositionTransaction}
                                 resetConfirmation={resetConfirmation}
                                 transactionPendingDisplayString={`Repositioning ${tokenA.symbol} and ${tokenB.symbol}`}
+                                disableSubmitAgain
                             />
                         ) : (
                             <Button
@@ -693,7 +698,11 @@ function Reposition() {
                                         ? sendRepositionTransaction
                                         : handleModalOpen
                                 }
-                                disabled={isRepositionSent || isPositionInRange}
+                                disabled={
+                                    isRepositionSent ||
+                                    isPositionInRange ||
+                                    isCurrentPositionEmpty
+                                }
                                 flat
                             />
                         )}
