@@ -49,6 +49,7 @@ import {
     NUM_GWEI_IN_WEI,
 } from '../../../ambient-utils/constants/';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
+import { useProcessRange } from '../../../utils/hooks/useProcessRange';
 
 function Reposition() {
     // current URL parameter string
@@ -123,6 +124,8 @@ function Reposition() {
     }
 
     const { position } = locationHook.state as { position: PositionIF };
+
+    const { posHashTruncated } = useProcessRange(position);
 
     useEffect(() => {
         setCurrentRangeInReposition('');
@@ -557,8 +560,6 @@ function Reposition() {
         ) {
             return;
         }
-        setNewBaseQtyDisplay('...');
-        setNewQuoteQtyDisplay('...');
         const pool = crocEnv.pool(position.base, position.quote);
 
         const repo = new CrocReposition(pool, {
@@ -567,8 +568,6 @@ function Reposition() {
             mint: mintArgsForReposition(debouncedLowTick, debouncedHighTick),
         });
 
-        setNewBaseQtyDisplay('...');
-        setNewQuoteQtyDisplay('...');
         repo.postBalance().then(([base, quote]: [number, number]) => {
             setNewBaseQtyDisplay(getFormattedNumber({ value: base }));
             setNewQuoteQtyDisplay(getFormattedNumber({ value: quote }));
@@ -617,12 +616,19 @@ function Reposition() {
         </a>
     );
 
+    const isCurrentPositionEmptyOrLoading =
+        (currentBaseQtyDisplayTruncated === '0.00' &&
+            currentQuoteQtyDisplayTruncated === '0.00') ||
+        (currentBaseQtyDisplayTruncated === '...' &&
+            currentQuoteQtyDisplayTruncated === '...') ||
+        (newBaseQtyDisplay === '...' && newQuoteQtyDisplay === '...');
+
     return (
         <>
             <div className={styles.repositionContainer}>
                 <RepositionHeader
                     setRangeWidthPercentage={setRangeWidthPercentage}
-                    positionHash={position.firstMintTx}
+                    positionHash={posHashTruncated}
                     resetTxHash={() => setNewRepositionTransactionHash('')}
                 />
                 <div className={styles.reposition_content}>
@@ -672,6 +678,7 @@ function Reposition() {
                                 sendTransaction={sendRepositionTransaction}
                                 resetConfirmation={resetConfirmation}
                                 transactionPendingDisplayString={`Repositioning ${tokenA.symbol} and ${tokenB.symbol}`}
+                                disableSubmitAgain
                             />
                         ) : (
                             <Button
@@ -690,7 +697,11 @@ function Reposition() {
                                         ? sendRepositionTransaction
                                         : handleModalOpen
                                 }
-                                disabled={isRepositionSent || isPositionInRange}
+                                disabled={
+                                    isRepositionSent ||
+                                    isPositionInRange ||
+                                    isCurrentPositionEmptyOrLoading
+                                }
                                 flat
                             />
                         )}
