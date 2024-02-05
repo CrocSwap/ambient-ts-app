@@ -423,6 +423,16 @@ export default function LimitActionModal(props: propsIF) {
             if (receipt) {
                 addReceipt(JSON.stringify(receipt));
                 removePendingTx(receipt.transactionHash);
+                if (receipt.status === 1) {
+                    // track claims separately to identify limit mints that were subsequently removed
+                    addPositionUpdate({
+                        positionID: posHash,
+                        isLimit: true,
+                        isFullRemoval: true,
+                        txHash: receipt.transactionHash,
+                        unixTimeReceipt: Math.floor(Date.now() / 1000),
+                    });
+                }
             }
         }
     };
@@ -506,7 +516,7 @@ export default function LimitActionModal(props: propsIF) {
                     <LimitActionInfo {...limitInfoProps} />
                     {showConfirmation ? (
                         <SubmitTransaction
-                            type='Limit'
+                            type={type === 'Remove' ? 'Remove' : 'Claim'}
                             newTransactionHash={newTxHash}
                             txErrorCode={txErrorCode}
                             txErrorMessage={txErrorMessage}
