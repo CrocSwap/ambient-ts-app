@@ -4438,6 +4438,7 @@ export default function Chart(props: propsIF) {
         element: lineData[],
         mouseX: number,
         mouseY: number,
+        isDenomPrices: boolean,
     ) {
         let isOverLine = false;
 
@@ -4445,11 +4446,11 @@ export default function Chart(props: propsIF) {
             const threshold = 10;
 
             const denomStartY =
-                element[0].denomInBase === denomInBase
+                element[0].denomInBase === denomInBase || isDenomPrices
                     ? element[0].y
                     : 1 / element[0].y;
             const denomEndY =
-                element[0].denomInBase === denomInBase
+                element[0].denomInBase === denomInBase || isDenomPrices
                     ? element[1].y
                     : 1 / element[1].y;
 
@@ -4613,7 +4614,73 @@ export default function Chart(props: propsIF) {
                 }
 
                 if (element.type === 'Rect' || element.type === 'DPRange') {
-                    if (checkRectLocation(element.data, mouseX, mouseY)) {
+                    if (element.type === 'DPRange' && scaleData) {
+                        const endY =
+                            element.data[1].denomInBase === denomInBase
+                                ? element.data[1].y
+                                : 1 / element.data[1].y;
+                        const startY =
+                            element.data[0].denomInBase === denomInBase
+                                ? element.data[0].y
+                                : 1 / element.data[0].y;
+
+                        const dpRangeTooltipData: lineData[] = [
+                            {
+                                x: scaleData.xScale.invert(
+                                    scaleData.xScale(
+                                        Math.min(
+                                            element.data[0].x,
+                                            element.data[1].x,
+                                        ) +
+                                            Math.abs(
+                                                element.data[0].x -
+                                                    element.data[1].x,
+                                            ) /
+                                                2,
+                                    ) - 90,
+                                ),
+                                y: scaleData.yScale.invert(
+                                    scaleData.yScale(endY) +
+                                        (endY > startY ? -15 : 15),
+                                ),
+                                denomInBase: element.data[0].denomInBase,
+                            },
+                            {
+                                x: scaleData.xScale.invert(
+                                    scaleData.xScale(
+                                        Math.min(
+                                            element.data[0].x,
+                                            element.data[1].x,
+                                        ) +
+                                            Math.abs(
+                                                element.data[0].x -
+                                                    element.data[1].x,
+                                            ) /
+                                                2,
+                                    ) + 90,
+                                ),
+                                y: scaleData.yScale.invert(
+                                    scaleData.yScale(endY) +
+                                        (endY > startY ? -80 : 80),
+                                ),
+                                denomInBase: element.data[1].denomInBase,
+                            },
+                        ];
+
+                        if (
+                            checkRectLocation(
+                                dpRangeTooltipData,
+                                mouseX,
+                                mouseY,
+                                true,
+                            )
+                        ) {
+                            resElement = element;
+                        }
+                    }
+                    if (
+                        checkRectLocation(element.data, mouseX, mouseY, false)
+                    ) {
                         resElement = element;
                     }
                 }
