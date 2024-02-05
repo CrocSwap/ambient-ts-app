@@ -207,6 +207,7 @@ export default function Withdraw(props: propsIF) {
                 addPendingTx(tx?.hash);
                 if (tx?.hash)
                     addTransactionByType({
+                        userAddress: userAddress || '',
                         txHash: tx.hash,
                         txType: 'Withdraw',
                         txDescription: `Withdrawal of ${selectedToken.symbol}`,

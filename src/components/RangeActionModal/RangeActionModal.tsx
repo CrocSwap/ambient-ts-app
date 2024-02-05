@@ -430,6 +430,7 @@ function RangeActionModal(props: propsIF) {
 
         if (tx?.hash) {
             addTransactionByType({
+                userAddress: userAddress || '',
                 txHash: tx.hash,
                 txAction: 'Remove',
                 txType: 'Range',
@@ -518,6 +519,7 @@ function RangeActionModal(props: propsIF) {
                 setNewTransactionHash(tx?.hash);
                 if (tx?.hash) {
                     addTransactionByType({
+                        userAddress: userAddress || '',
                         txHash: tx.hash,
                         txAction: 'Harvest',
                         txType: 'Range',

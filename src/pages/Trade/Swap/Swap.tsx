@@ -48,6 +48,7 @@ import {
     SWAP_BUFFER_MULTIPLIER_SCROLL,
 } from '../../../ambient-utils/constants/';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -61,6 +62,7 @@ function Swap(props: propsIF) {
         ethMainnetUsdPrice,
         provider,
     } = useContext(CrocEnvContext);
+    const { userAddress } = useContext(UserDataContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { poolPriceDisplay, isPoolInitialized } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
@@ -373,6 +375,7 @@ function Swap(props: propsIF) {
 
             if (tx.hash) {
                 addTransactionByType({
+                    userAddress: userAddress || '',
                     txHash: tx.hash,
                     txAction:
                         buyTokenAddress.toLowerCase() ===

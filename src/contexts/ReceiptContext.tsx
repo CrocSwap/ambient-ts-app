@@ -16,6 +16,7 @@ interface ReceiptContextIF {
 }
 
 interface TransactionByType {
+    userAddress: string;
     txHash: string;
     txAction?:
         | 'Sell'

@@ -115,6 +115,7 @@ export function useCreateRangePosition() {
 
             if (tx?.hash)
                 addTransactionByType({
+                    userAddress: userAddress || '',
                     txHash: tx.hash,
                     txAction: 'Add',
                     txType: 'Range',
