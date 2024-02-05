@@ -266,6 +266,7 @@ export default function Chart(props: propsIF) {
     } = currentPool;
 
     const [isChartZoom, setIsChartZoom] = useState(false);
+    const [cursorStyleTrigger, setCursorStyleTrigger] = useState(false);
 
     const [chartHeights, setChartHeights] = useState(0);
     const [d3ContainerHeight, setD3ContainerHeight] = useState(0);
@@ -778,15 +779,21 @@ export default function Chart(props: propsIF) {
     ]);
 
     useEffect(() => {
-        if (isChartZoom && chartZoomEvent !== 'wheel') {
+        if (cursorStyleTrigger && chartZoomEvent !== 'wheel') {
             d3.select(d3CanvasMain.current).style('cursor', 'grabbing');
+
+            render();
         } else {
             d3.select(d3CanvasMain.current).style(
                 'cursor',
                 isOnCandleOrVolumeMouseLocation ? 'pointer' : 'default',
             );
         }
-    }, [chartZoomEvent, isChartZoom, isOnCandleOrVolumeMouseLocation]);
+    }, [
+        chartZoomEvent,
+        diffHashSig(cursorStyleTrigger),
+        isOnCandleOrVolumeMouseLocation,
+    ]);
 
     useEffect(() => {
         // auto zoom active
@@ -875,6 +882,7 @@ export default function Chart(props: propsIF) {
                     function (event) {
                         if (wheelTimeout === null) {
                             setIsChartZoom(true);
+                            setCursorStyleTrigger(true);
                         }
 
                         zoomBase.zoomWithWheel(
@@ -895,6 +903,7 @@ export default function Chart(props: propsIF) {
                         // check wheel end
                         wheelTimeout = setTimeout(() => {
                             setIsChartZoom(false);
+                            setCursorStyleTrigger(false);
                             showLatestActive();
                         }, 200);
                     },
@@ -993,6 +1002,7 @@ export default function Chart(props: propsIF) {
                                 }
 
                                 render();
+                                setCursorStyleTrigger(true);
 
                                 if (rescale) {
                                     changeScale();
@@ -1063,16 +1073,9 @@ export default function Chart(props: propsIF) {
                     .on('end', (event: any) => {
                         if (event.sourceEvent.type !== 'wheel') {
                             setIsChartZoom(false);
+                            setCursorStyleTrigger(false);
                             setChartZoomEvent('');
-                            if (
-                                event.sourceEvent &&
-                                event.sourceEvent.type != 'wheel'
-                            ) {
-                                d3.select(d3Container.current).style(
-                                    'cursor',
-                                    'default',
-                                );
-                            }
+
                             if (clickedForLine) {
                                 // fires click event when zoom takes too short
                                 if (
@@ -4796,12 +4799,22 @@ export default function Chart(props: propsIF) {
 
                 if (onClick && scaleData) {
                     if (resElement) {
-                        handleCardClick(resElement);
+                        const shouldSelect = selectedOrderHistory
+                            ? resElement.txId !== selectedOrderHistory?.txId
+                            : true;
+
+                        shouldSelect && handleCardClick(resElement);
                         setSelectedOrderHistory(() => {
                             return resElement;
                         });
-                        setIsSelectedOrderHistory(true);
+
+                        setIsSelectedOrderHistory(() => {
+                            !shouldSelect &&
+                                setCurrentTxActiveInTransactions('');
+                            return shouldSelect;
+                        });
                     } else {
+                        setCurrentTxActiveInTransactions('');
                         setSelectedOrderHistory(undefined);
                         setIsSelectedOrderHistory(false);
                     }
