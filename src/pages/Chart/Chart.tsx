@@ -766,10 +766,19 @@ export default function Chart(props: propsIF) {
         } else if (canUserDragLimit || canUserDragRange) {
             d3.select(d3CanvasMain.current).style('cursor', 'row-resize');
         } else {
-            d3.select(d3CanvasMain.current).style(
-                'cursor',
-                isOnCandleOrVolumeMouseLocation ? 'pointer' : 'default',
-            );
+            const cursorType = d3.select(d3CanvasMain.current).style('cursor');
+
+            if (
+                !(
+                    isOnCandleOrVolumeMouseLocation && cursorType === 'pointer'
+                ) &&
+                !(!isOnCandleOrVolumeMouseLocation && cursorType === 'default')
+            ) {
+                d3.select(d3CanvasMain.current).style(
+                    'cursor',
+                    isOnCandleOrVolumeMouseLocation ? 'pointer' : 'default',
+                );
+            }
         }
     }, [
         canUserDragLimit,
@@ -784,10 +793,19 @@ export default function Chart(props: propsIF) {
 
             render();
         } else {
-            d3.select(d3CanvasMain.current).style(
-                'cursor',
-                isOnCandleOrVolumeMouseLocation ? 'pointer' : 'default',
-            );
+            const cursorType = d3.select(d3CanvasMain.current).style('cursor');
+
+            if (
+                !(
+                    isOnCandleOrVolumeMouseLocation && cursorType === 'pointer'
+                ) &&
+                !(!isOnCandleOrVolumeMouseLocation && cursorType === 'default')
+            ) {
+                d3.select(d3CanvasMain.current).style(
+                    'cursor',
+                    isOnCandleOrVolumeMouseLocation ? 'pointer' : 'default',
+                );
+            }
         }
     }, [
         chartZoomEvent,
