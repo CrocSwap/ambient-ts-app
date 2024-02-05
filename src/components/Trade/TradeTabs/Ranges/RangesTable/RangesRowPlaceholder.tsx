@@ -187,7 +187,7 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
                 {
                     <FlexContainer
                         justifyContent='flex-start'
-                        padding='0 0 0 8px'
+                        padding='0 0 0 18px'
                     >
                         <RangeStatus
                             isInRange={false}
