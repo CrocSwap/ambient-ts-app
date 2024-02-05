@@ -548,6 +548,7 @@ export default function Limit() {
             addPendingTx(tx?.hash);
             setNewLimitOrderTransactionHash(tx.hash);
             addTransactionByType({
+                userAddress: userAddress || '',
                 txHash: tx.hash,
                 txAction:
                     tokenB.address.toLowerCase() ===

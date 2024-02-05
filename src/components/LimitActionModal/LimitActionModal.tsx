@@ -183,6 +183,7 @@ export default function LimitActionModal(props: propsIF) {
                     addPendingTx(tx?.hash);
                     if (tx?.hash) {
                         addTransactionByType({
+                            userAddress: userAddress || '',
                             txHash: tx.hash,
                             txAction: 'Remove',
                             txType: 'Limit',
@@ -216,6 +217,7 @@ export default function LimitActionModal(props: propsIF) {
                     addPendingTx(tx?.hash);
                     if (tx?.hash) {
                         addTransactionByType({
+                            userAddress: userAddress || '',
                             txHash: tx.hash,
                             txAction: 'Remove',
                             txType: 'Limit',
@@ -322,6 +324,7 @@ export default function LimitActionModal(props: propsIF) {
                     addPendingTx(tx?.hash);
                     if (tx?.hash) {
                         addTransactionByType({
+                            userAddress: userAddress || '',
                             txHash: tx.hash,
                             txAction: 'Claim',
                             txType: 'Limit',
@@ -355,6 +358,7 @@ export default function LimitActionModal(props: propsIF) {
                     addPendingTx(tx?.hash);
                     if (tx?.hash) {
                         addTransactionByType({
+                            userAddress: userAddress || '',
                             txHash: tx.hash,
                             txAction: 'Claim',
                             txType: 'Limit',

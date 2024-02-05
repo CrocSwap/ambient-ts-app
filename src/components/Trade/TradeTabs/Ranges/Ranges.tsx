@@ -393,6 +393,8 @@ function Ranges(props: propsIF) {
             unindexedNonFailedSessionPositionUpdates.some(
                 (update) => update.txHash === tx.txHash,
             ) &&
+            tx.userAddress.toLowerCase() ===
+                (userAddress || '').toLowerCase() &&
             tx.txDetails?.baseAddress.toLowerCase() ===
                 baseToken.address.toLowerCase() &&
             tx.txDetails?.quoteAddress.toLowerCase() ===
