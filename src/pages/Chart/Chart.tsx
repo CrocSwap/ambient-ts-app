@@ -5810,6 +5810,7 @@ export default function Chart(props: propsIF) {
             )}
 
             {scaleData &&
+                showSwap &&
                 hoveredOrderHistory &&
                 hoveredOrderHistory.txId !== selectedOrderHistory?.txId &&
                 hoveredOrderTooltipPlacement && (
@@ -5826,6 +5827,7 @@ export default function Chart(props: propsIF) {
                 )}
 
             {scaleData &&
+                showSwap &&
                 selectedOrderHistory &&
                 selectedOrderTooltipPlacement && (
                     <OrderHistoryTooltip
