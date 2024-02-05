@@ -4,6 +4,7 @@ import {
     OrderHistoryBody,
     OrderHistoryContainer,
     OrderHistoryHeader,
+    OrderHistoryHover,
     StyledHeader,
     StyledLink,
 } from './OrderHistoryTooltipCss';
@@ -20,7 +21,11 @@ export default function OrderHistoryTooltip(props: {
     hoveredOrderHistory: TransactionIF;
     isHoveredOrderHistory: boolean;
     denomInBase: boolean;
-    hoveredOrderTooltipPlacement: { top: number; left: number };
+    hoveredOrderTooltipPlacement: {
+        top: number;
+        left: number;
+        isOnLeftSide: boolean;
+    };
     handleCardClick: React.Dispatch<TransactionIF>;
     setSelectedOrderHistory: React.Dispatch<
         React.SetStateAction<TransactionIF | undefined>
@@ -51,87 +56,91 @@ export default function OrderHistoryTooltip(props: {
             classNames='orderHistoryTooltip'
             unmountOnExit
         >
-            <OrderHistoryContainer
+            <OrderHistoryHover
                 top={hoveredOrderTooltipPlacement.top}
                 left={hoveredOrderTooltipPlacement.left}
-                onClick={() => {
-                    handleCardClick(hoveredOrderHistory);
-                    setSelectedOrderHistory(() => {
-                        return hoveredOrderHistory;
-                    });
-                }}
+                isOnLeftSide={hoveredOrderTooltipPlacement.isOnLeftSide}
             >
-                <OrderHistoryHeader>
-                    <StyledHeader
-                        color={
-                            (denomInBase && !hoveredOrderHistory.isBuy) ||
+                <OrderHistoryContainer
+                    onClick={() => {
+                        handleCardClick(hoveredOrderHistory);
+                        setSelectedOrderHistory(() => {
+                            return hoveredOrderHistory;
+                        });
+                    }}
+                >
+                    <OrderHistoryHeader>
+                        <StyledHeader
+                            color={
+                                (denomInBase && !hoveredOrderHistory.isBuy) ||
+                                (!denomInBase && hoveredOrderHistory.isBuy)
+                                    ? '#CDC1FF'
+                                    : '#7371fc'
+                            }
+                            size={'15px'}
+                        >
+                            {((denomInBase && !hoveredOrderHistory.isBuy) ||
                             (!denomInBase && hoveredOrderHistory.isBuy)
-                                ? '#CDC1FF'
-                                : '#7371fc'
-                        }
-                        size={'15px'}
-                    >
-                        {((denomInBase && !hoveredOrderHistory.isBuy) ||
-                        (!denomInBase && hoveredOrderHistory.isBuy)
-                            ? 'Buy'
-                            : 'Sell') + ': '}
-                    </StyledHeader>
-
-                    {hoveredOrderHistory.entityType !== 'liquidity' && (
-                        <StyledHeader color={'white'} size={'15px'}>
-                            {getFormattedNumber({
-                                value: Math.abs(
-                                    denomInBase
-                                        ? hoveredOrderHistory.baseFlowDecimalCorrected
-                                        : hoveredOrderHistory.quoteFlowDecimalCorrected,
-                                ),
-                                abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
-                            })}
+                                ? 'Buy'
+                                : 'Sell') + ': '}
                         </StyledHeader>
-                    )}
 
-                    {hoveredOrderHistory.entityType !== 'liquidity' && (
-                        <StyledHeader color={'white'} size={'15px'}>
-                            {denomInBase
-                                ? hoveredOrderHistory.baseSymbol
-                                : hoveredOrderHistory.quoteSymbol}
-                        </StyledHeader>
-                    )}
-                    <img
-                        src={uriToHttp(
-                            denomInBase
-                                ? hoveredOrderHistory.baseTokenLogoURI
-                                : hoveredOrderHistory.quoteTokenLogoURI,
+                        {hoveredOrderHistory.entityType !== 'liquidity' && (
+                            <StyledHeader color={'white'} size={'15px'}>
+                                {getFormattedNumber({
+                                    value: Math.abs(
+                                        denomInBase
+                                            ? hoveredOrderHistory.baseFlowDecimalCorrected
+                                            : hoveredOrderHistory.quoteFlowDecimalCorrected,
+                                    ),
+                                    abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                                })}
+                            </StyledHeader>
                         )}
-                        alt='base token'
-                        style={{ width: '18px' }}
-                    />
-                </OrderHistoryHeader>
-                <OrderHistoryBody>
-                    <StyledHeader color={'#8b98a5'} size={'13px'}>
-                        {hoveredOrderHistory.entityType !== 'liquidity'
-                            ? 'Market'
-                            : ''}
-                    </StyledHeader>
-                    <StyledHeader color={'#8b98a5'} size={'13px'}>
-                        {'$' +
-                            getFormattedNumber({
-                                value: hoveredOrderHistory.totalValueUSD,
-                                abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
-                            })}
-                    </StyledHeader>
-                    <StyledLink
-                        color={'#8b98a5'}
-                        size={'13px'}
-                        onClick={() => {
-                            handleOpenExplorer(hoveredOrderHistory.txHash);
-                        }}
-                    >
-                        {trimString(hoveredOrderHistory.txHash, 6, 4, '…')}
-                        <RiExternalLinkLine />
-                    </StyledLink>
-                </OrderHistoryBody>
-            </OrderHistoryContainer>
+
+                        {hoveredOrderHistory.entityType !== 'liquidity' && (
+                            <StyledHeader color={'white'} size={'15px'}>
+                                {denomInBase
+                                    ? hoveredOrderHistory.baseSymbol
+                                    : hoveredOrderHistory.quoteSymbol}
+                            </StyledHeader>
+                        )}
+                        <img
+                            src={uriToHttp(
+                                denomInBase
+                                    ? hoveredOrderHistory.baseTokenLogoURI
+                                    : hoveredOrderHistory.quoteTokenLogoURI,
+                            )}
+                            alt='base token'
+                            style={{ width: '18px' }}
+                        />
+                    </OrderHistoryHeader>
+                    <OrderHistoryBody>
+                        <StyledHeader color={'#8b98a5'} size={'13px'}>
+                            {hoveredOrderHistory.entityType !== 'liquidity'
+                                ? 'Market'
+                                : ''}
+                        </StyledHeader>
+                        <StyledHeader color={'#8b98a5'} size={'13px'}>
+                            {'$' +
+                                getFormattedNumber({
+                                    value: hoveredOrderHistory.totalValueUSD,
+                                    abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                                })}
+                        </StyledHeader>
+                        <StyledLink
+                            color={'#8b98a5'}
+                            size={'13px'}
+                            onClick={() => {
+                                handleOpenExplorer(hoveredOrderHistory.txHash);
+                            }}
+                        >
+                            {trimString(hoveredOrderHistory.txHash, 6, 4, '…')}
+                            <RiExternalLinkLine />
+                        </StyledLink>
+                    </OrderHistoryBody>
+                </OrderHistoryContainer>
+            </OrderHistoryHover>
         </CSSTransition>
     );
 }

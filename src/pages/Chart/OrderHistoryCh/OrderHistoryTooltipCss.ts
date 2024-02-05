@@ -1,12 +1,22 @@
 import styled from 'styled-components';
 
-const OrderHistoryContainer = styled.div<{ top: number; left: number }>`
+const OrderHistoryHover = styled.div<{
+    top: number;
+    left: number;
+    isOnLeftSide: boolean;
+}>`
     position: absolute;
     text-align: center;
 
-    top: ${({ top }) => top + 'px'};
-    left: ${({ left }) => left + 'px'};
+    padding: 0px 15px 0px 15px;
 
+    transform: translateY(-50%);
+
+    top: ${({ top }) => top + 'px'};
+    left: ${({ left, isOnLeftSide }) => left + (isOnLeftSide ? 0 : -15) + 'px'};
+`;
+
+const OrderHistoryContainer = styled.div`
     background: rgba(36, 47, 63, 0.8);
 
     padding: 3px 8px 3px 8px;
@@ -20,8 +30,6 @@ const OrderHistoryContainer = styled.div<{ top: number; left: number }>`
     min-width: 120px;
 
     line-height: 1.3;
-
-    transform: translateY(-50%);
 
     gap: 6px;
 
@@ -70,4 +78,5 @@ export {
     StyledHeader,
     OrderHistoryBody,
     StyledLink,
+    OrderHistoryHover,
 };
