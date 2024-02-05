@@ -4204,7 +4204,10 @@ export default function Chart(props: propsIF) {
                     );
                 }
 
-                if (!isOrderHistorySelected) {
+                if (
+                    isOrderHistorySelected === undefined ||
+                    isOrderHistorySelected.order === undefined
+                ) {
                     const { isHoverCandleOrVolumeData, nearest } =
                         candleOrVolumeDataHoverStatus(offsetX, offsetY);
 
@@ -4769,8 +4772,9 @@ export default function Chart(props: propsIF) {
                             : true;
 
                         shouldSelect && handleCardClick(resElement);
+
                         setSelectedOrderHistory(() => {
-                            return resElement;
+                            return shouldSelect ? resElement : undefined;
                         });
 
                         setIsSelectedOrderHistory(() => {
@@ -4786,7 +4790,7 @@ export default function Chart(props: propsIF) {
                 }
             });
 
-            if (onClick && resElement) return resElement;
+            return { order: resElement, isClicked: onClick };
         }
         return undefined;
     };
@@ -5087,10 +5091,23 @@ export default function Chart(props: propsIF) {
                 const { isHoverCandleOrVolumeData } =
                     candleOrVolumeDataHoverStatus(offsetX, offsetY);
 
-                setIsOnCandleOrVolumeMouseLocation(isHoverCandleOrVolumeData);
+                let isOrderHistorySelected = undefined;
+                if (showSwap) {
+                    isOrderHistorySelected = orderHistoryHoverStatus(
+                        offsetX,
+                        offsetY,
+                        false,
+                    );
+                }
+
+                setIsOnCandleOrVolumeMouseLocation(
+                    isOrderHistorySelected !== undefined &&
+                        isOrderHistorySelected.order !== undefined
+                        ? true
+                        : isHoverCandleOrVolumeData,
+                );
 
                 drawnShapesHoverStatus(offsetX, offsetY);
-                showSwap && orderHistoryHoverStatus(offsetX, offsetY, false);
             }
         }
     };
