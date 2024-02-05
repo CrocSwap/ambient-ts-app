@@ -1166,12 +1166,14 @@ export default function Chart(props: propsIF) {
                                 mousePlacement > limitLineValue - lineBuffer;
 
                             const isOnRangeMin =
-                                location.pathname.includes('/pool') &&
+                                (location.pathname.includes('pool') ||
+                                    location.pathname.includes('reposition')) &&
                                 mousePlacement < minRangeValue + lineBuffer &&
                                 mousePlacement > minRangeValue - lineBuffer;
 
                             const isOnRangeMax =
-                                location.pathname.includes('/pool') &&
+                                (location.pathname.includes('pool') ||
+                                    location.pathname.includes('reposition')) &&
                                 mousePlacement < maxRangeValue + lineBuffer &&
                                 mousePlacement > maxRangeValue - lineBuffer;
 
