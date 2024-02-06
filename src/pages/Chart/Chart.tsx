@@ -4730,6 +4730,10 @@ export default function Chart(props: propsIF) {
         setCurrentTxActiveInTransactions(tx.txId);
     };
 
+    useEffect(() => {
+        setCurrentTxActiveInTransactions('');
+    }, [denomInBase]);
+
     const orderHistoryHoverStatus = (
         mouseX: number,
         mouseY: number,
