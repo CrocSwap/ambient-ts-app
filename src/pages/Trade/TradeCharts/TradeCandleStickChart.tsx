@@ -778,7 +778,7 @@ function TradeCandleStickChart(props: propsIF) {
 
             return () => clearTimeout(timer);
         }
-    }, [tokenPair]);
+    }, [baseTokenAddress + quoteTokenAddress]);
 
     const resetChart = () => {
         if (scaleData && unparsedCandleData) {
