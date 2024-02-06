@@ -4,7 +4,6 @@ import { RangeContext } from '../../../contexts/RangeContext';
 import { TradeModuleHeaderContainer } from '../../../styled/Components/TradeModules';
 import { useRepoExitPath } from '../../../components/Trade/Reposition/RepositionHeader/useRepoExitPath';
 import { useNavigate } from 'react-router-dom';
-import { trimString } from '../../../ambient-utils/dataLayer';
 import styles from './Reposition.module.css';
 import { BiArrowBack } from 'react-icons/bi';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
@@ -95,7 +94,7 @@ function RepositionHeader(props: RepositionHeaderPropsIF) {
                 <p className={styles.title}>
                     {activeContent === 'settings'
                         ? 'Pool Settings'
-                        : `Reposition: ${trimString(positionHash, 5, 4, '…')}`}
+                        : `Reposition: ${positionHash}`}
                 </p>
 
                 <div />

@@ -44,9 +44,11 @@ import {
     GAS_DROPS_ESTIMATE_SWAP_NATIVE,
     GAS_DROPS_ESTIMATE_SWAP_TO_FROM_DEX,
     NUM_GWEI_IN_WEI,
-    SWAP_BUFFER_MULTIPLIER,
+    SWAP_BUFFER_MULTIPLIER_MAINNET,
+    SWAP_BUFFER_MULTIPLIER_SCROLL,
 } from '../../../ambient-utils/constants/';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -60,6 +62,7 @@ function Swap(props: propsIF) {
         ethMainnetUsdPrice,
         provider,
     } = useContext(CrocEnvContext);
+    const { userAddress } = useContext(UserDataContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { poolPriceDisplay, isPoolInitialized } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
@@ -196,7 +199,7 @@ function Swap(props: propsIF) {
     const [
         amountToReduceNativeTokenQtyScroll,
         setAmountToReduceNativeTokenQtyScroll,
-    ] = useState<number>(0.00001);
+    ] = useState<number>(0.0003);
 
     const amountToReduceNativeTokenQty =
         chainId === '0x82750' || chainId === '0x8274f'
@@ -292,7 +295,7 @@ function Swap(props: propsIF) {
                 gasPriceInGwei * averageSwapCostInGasDrops * NUM_GWEI_IN_WEI;
 
             setAmountToReduceNativeTokenQtyMainnet(
-                SWAP_BUFFER_MULTIPLIER * costOfMainnetSwapInETH,
+                SWAP_BUFFER_MULTIPLIER_MAINNET * costOfMainnetSwapInETH,
             );
 
             const costOfScrollSwapInETH =
@@ -306,7 +309,7 @@ function Swap(props: propsIF) {
             //     });
 
             setAmountToReduceNativeTokenQtyScroll(
-                SWAP_BUFFER_MULTIPLIER * costOfScrollSwapInETH,
+                SWAP_BUFFER_MULTIPLIER_SCROLL * costOfScrollSwapInETH,
             );
 
             const gasPriceInDollarsNum =
@@ -375,6 +378,7 @@ function Swap(props: propsIF) {
 
             if (tx.hash) {
                 addTransactionByType({
+                    userAddress: userAddress || '',
                     txHash: tx.hash,
                     txAction:
                         buyTokenAddress.toLowerCase() ===

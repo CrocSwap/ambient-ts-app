@@ -42,7 +42,8 @@ import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import {
     GAS_DROPS_ESTIMATE_POOL,
     NUM_GWEI_IN_WEI,
-    RANGE_BUFFER_MULTIPLIER,
+    RANGE_BUFFER_MULTIPLIER_MAINNET,
+    RANGE_BUFFER_MULTIPLIER_SCROLL,
 } from '../../../ambient-utils/constants/';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 
@@ -818,7 +819,7 @@ function Range() {
                 gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
 
             setAmountToReduceNativeTokenQtyMainnet(
-                costOfMainnetPoolInETH * RANGE_BUFFER_MULTIPLIER,
+                costOfMainnetPoolInETH * RANGE_BUFFER_MULTIPLIER_MAINNET,
             );
 
             const costOfScrollPoolInETH =
@@ -831,7 +832,7 @@ function Range() {
             //     });
 
             setAmountToReduceNativeTokenQtyScroll(
-                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER,
+                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER_SCROLL,
             );
 
             const gasPriceInDollarsNum =

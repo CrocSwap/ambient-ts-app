@@ -9,6 +9,7 @@ import {
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { ReceiptContext } from '../../contexts/ReceiptContext';
+import { UserDataContext } from '../../contexts/UserDataContext';
 
 export function useApprove() {
     const {
@@ -18,6 +19,7 @@ export function useApprove() {
         removePendingTx,
         updateTransactionHash,
     } = useContext(ReceiptContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const { crocEnv } = useContext(CrocEnvContext);
     // TODO: useTokenBalancesAndAllowances replaces this in the init page branch
@@ -40,6 +42,7 @@ export function useApprove() {
             if (tx) addPendingTx(tx?.hash);
             if (tx?.hash)
                 addTransactionByType({
+                    userAddress: userAddress || '',
                     txHash: tx.hash,
                     txType: 'Approve',
                     txDescription: `Approval of ${tokenSymbol}`,

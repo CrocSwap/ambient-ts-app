@@ -14,6 +14,7 @@ interface PropsIF {
         | 'Reposition'
         | 'Remove'
         | 'Harvest'
+        | 'Claim'
         | 'Reset';
     hash: string;
     tokenBAddress: string;
@@ -97,46 +98,68 @@ export default function TransactionSubmitted(props: PropsIF) {
                     style={{ textAlign: 'center', width: '100%' }}
                 >
                     {type === 'Limit'
-                        ? isTransactionFailed
-                            ? 'Limit Order Failed'
-                            : isConfirmed
-                            ? 'Limit Order Success!'
-                            : 'Successfully Submitted'
+                        ? `Limit Order ${
+                              isTransactionFailed
+                                  ? 'Failed'
+                                  : isConfirmed
+                                  ? 'Success!'
+                                  : 'Submitted'
+                          }`
                         : type === 'Range'
-                        ? isTransactionFailed
-                            ? 'Pool Failed'
-                            : isConfirmed
-                            ? 'Pool Success!'
-                            : 'Successfully Submitted'
+                        ? `Pool ${
+                              isTransactionFailed
+                                  ? 'Failed'
+                                  : isConfirmed
+                                  ? 'Success!'
+                                  : 'Submitted'
+                          }`
                         : type === 'Reposition'
                         ? `Reposition ${
                               isTransactionFailed
                                   ? 'Failed'
                                   : isConfirmed
-                                  ? 'Confirmed'
-                                  : 'Successfully Submitted'
+                                  ? 'Success!'
+                                  : 'Submitted'
+                          }`
+                        : type === 'Harvest'
+                        ? `Harvest ${
+                              isTransactionFailed
+                                  ? 'Failed'
+                                  : isConfirmed
+                                  ? 'Success!'
+                                  : 'Submitted'
                           }`
                         : type === 'Reset'
                         ? `Reset ${
                               isTransactionFailed
                                   ? 'Failed'
                                   : isConfirmed
-                                  ? 'Confirmed'
-                                  : 'Successfully Submitted'
+                                  ? 'Success!'
+                                  : 'Submitted'
                           }`
                         : type === 'Remove'
                         ? `Removal ${
                               isTransactionFailed
                                   ? 'Failed'
                                   : isConfirmed
-                                  ? 'Confirmed'
-                                  : 'Successfully Submitted'
+                                  ? 'Success!'
+                                  : 'Submitted'
                           }`
-                        : isTransactionFailed
-                        ? 'Swap Failed'
-                        : isConfirmed
-                        ? 'Swap Success!'
-                        : 'Successfully Submitted'}
+                        : type === 'Claim'
+                        ? `Claim ${
+                              isTransactionFailed
+                                  ? 'Failed'
+                                  : isConfirmed
+                                  ? 'Success!'
+                                  : 'Submitted'
+                          }`
+                        : `Swap ${
+                              isTransactionFailed
+                                  ? 'Failed'
+                                  : isConfirmed
+                                  ? 'Success!'
+                                  : 'Submitted'
+                          }`}
                 </Text>
                 <div
                     className={`${styles.action_buttons} ${

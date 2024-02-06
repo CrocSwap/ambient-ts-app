@@ -8,7 +8,6 @@ import { VscClose } from 'react-icons/vsc';
 
 // START: Import Local Files
 import styles from './RepositionHeader.module.css';
-import { trimString } from '../../../../ambient-utils/dataLayer';
 import { useRepoExitPath } from './useRepoExitPath';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
@@ -56,10 +55,7 @@ function RepositionHeader(props: propsIF) {
                     alt='settings'
                     onClick={openModal}
                 />
-                <p className={styles.title}>
-                    {' '}
-                    Reposition: {trimString(positionHash, 5, 4, '…')}
-                </p>
+                <p className={styles.title}> Reposition: {positionHash}</p>
                 <VscClose
                     className={styles.close_icon}
                     onClick={() => {

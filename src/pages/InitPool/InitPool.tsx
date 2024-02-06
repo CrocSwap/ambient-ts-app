@@ -75,7 +75,8 @@ import { RangeContext } from '../../contexts/RangeContext';
 import {
     GAS_DROPS_ESTIMATE_INIT_WITH_POOL,
     GAS_DROPS_ESTIMATE_INIT_WITHOUT_POOL,
-    RANGE_BUFFER_MULTIPLIER,
+    RANGE_BUFFER_MULTIPLIER_MAINNET,
+    RANGE_BUFFER_MULTIPLIER_SCROLL,
     GAS_DROPS_ESTIMATE_POOL,
     NUM_GWEI_IN_WEI,
 } from '../../ambient-utils/constants/';
@@ -824,7 +825,7 @@ export default function InitPool() {
                 gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
 
             setAmountToReduceNativeTokenQtyMainnet(
-                costOfMainnetPoolInETH * RANGE_BUFFER_MULTIPLIER,
+                costOfMainnetPoolInETH * RANGE_BUFFER_MULTIPLIER_MAINNET,
             );
 
             const costOfScrollPoolInETH =
@@ -837,7 +838,7 @@ export default function InitPool() {
             //     });
 
             setAmountToReduceNativeTokenQtyScroll(
-                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER,
+                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER_SCROLL,
             );
 
             const gasPriceInDollarsNum =
@@ -1632,6 +1633,7 @@ export default function InitPool() {
 
                     if (tx?.hash) {
                         addTransactionByType({
+                            userAddress: userAddress || '',
                             txHash: tx.hash,
                             txType: 'Withdraw',
                             txDescription: `Withdrawal of ${erc20TokenWithDexBalance.symbol}`,

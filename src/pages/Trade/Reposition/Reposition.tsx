@@ -50,6 +50,9 @@ import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import MultiContentComponent from '../../../components/Global/MultiStepTransaction/MultiContentComponent';
 import RepositionSkeleton from './RepositionSkeleton';
 import TransactionSettings from '../../../components/Global/TransactionSettings/TransactionSettings';
+import { useProcessRange } from '../../../utils/hooks/useProcessRange';
+import { getPositionHash } from '../../../ambient-utils/dataLayer/functions/getPositionHash';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 function Reposition() {
     // current URL parameter string
@@ -77,6 +80,7 @@ function Reposition() {
         addPendingTx,
         addReceipt,
         addTransactionByType,
+        addPositionUpdate,
         removePendingTx,
         updateTransactionHash,
         pendingTransactions,
@@ -91,6 +95,7 @@ function Reposition() {
         setAdvancedMode,
     } = useContext(RangeContext);
     // eslint-disable-next-line
+    const { userAddress } = useContext(UserDataContext);
 
     const [newRepositionTransactionHash, setNewRepositionTransactionHash] =
         useState('');
@@ -126,6 +131,8 @@ function Reposition() {
     }
 
     const { position } = locationHook.state as { position: PositionIF };
+
+    const { posHashTruncated } = useProcessRange(position);
 
     useEffect(() => {
         setCurrentRangeInReposition('');
@@ -308,8 +315,9 @@ function Reposition() {
             tx = await repo.rebal();
             setNewRepositionTransactionHash(tx?.hash);
             addPendingTx(tx?.hash);
-            if (tx?.hash)
+            if (tx?.hash) {
                 addTransactionByType({
+                    userAddress: userAddress || '',
                     txHash: tx.hash,
                     txAction: 'Reposition',
                     txType: 'Range',
@@ -327,6 +335,14 @@ function Reposition() {
                         gridSize: lookupChain(position.chainId).gridSize,
                     },
                 });
+                const posHash = getPositionHash(position);
+                addPositionUpdate({
+                    txHash: tx.hash,
+                    positionID: posHash,
+                    isLimit: false,
+                    unixTimeAdded: Math.floor(Date.now() / 1000),
+                });
+            }
             // We want the user to exit themselves
             // navigate(redirectPath, { replace: true });
         } catch (error) {
@@ -354,6 +370,13 @@ function Reposition() {
 
                 updateTransactionHash(error.hash, error.replacement.hash);
                 setNewRepositionTransactionHash(newTransactionHash);
+                const posHash = getPositionHash(position);
+                addPositionUpdate({
+                    txHash: newTransactionHash,
+                    positionID: posHash,
+                    isLimit: false,
+                    unixTimeAdded: Math.floor(Date.now() / 1000),
+                });
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
             } else if (isTransactionFailedError(error)) {
@@ -564,8 +587,6 @@ function Reposition() {
         ) {
             return;
         }
-        setNewBaseQtyDisplay('...');
-        setNewQuoteQtyDisplay('...');
         const pool = crocEnv.pool(position.base, position.quote);
 
         const repo = new CrocReposition(pool, {
@@ -574,8 +595,6 @@ function Reposition() {
             mint: mintArgsForReposition(debouncedLowTick, debouncedHighTick),
         });
 
-        setNewBaseQtyDisplay('...');
-        setNewQuoteQtyDisplay('...');
         repo.postBalance().then(([base, quote]: [number, number]) => {
             setNewBaseQtyDisplay(getFormattedNumber({ value: base }));
             setNewQuoteQtyDisplay(getFormattedNumber({ value: quote }));
@@ -666,7 +685,7 @@ function Reposition() {
 
     const repositionSkeletonProps = {
         setRangeWidthPercentage,
-        positionHash: position.firstMintTx,
+        positionHash: posHashTruncated,
         resetTxHash: () => setNewRepositionTransactionHash(''),
         activeContent,
         handleSetActiveContent,
@@ -685,6 +704,13 @@ function Reposition() {
             />
         </RepositionSkeleton>
     );
+
+    const isCurrentPositionEmptyOrLoading =
+        (currentBaseQtyDisplayTruncated === '0.00' &&
+            currentQuoteQtyDisplayTruncated === '0.00') ||
+        (currentBaseQtyDisplayTruncated === '...' &&
+            currentQuoteQtyDisplayTruncated === '...') ||
+        (newBaseQtyDisplay === '...' && newQuoteQtyDisplay === '...');
 
     const mainContent = (
         <RepositionSkeleton {...repositionSkeletonProps}>
@@ -736,6 +762,7 @@ function Reposition() {
                                 sendTransaction={sendRepositionTransaction}
                                 resetConfirmation={resetConfirmation}
                                 transactionPendingDisplayString={`Repositioning ${tokenA.symbol} and ${tokenB.symbol}`}
+                                disableSubmitAgain
                             />
                         ) : (
                             <Button
@@ -754,7 +781,11 @@ function Reposition() {
                                         ? sendRepositionTransaction
                                         : handleModalOpen
                                 }
-                                disabled={isRepositionSent || isPositionInRange}
+                                disabled={
+                                    isRepositionSent ||
+                                    isPositionInRange ||
+                                    isCurrentPositionEmptyOrLoading
+                                }
                                 flat
                             />
                         )}
