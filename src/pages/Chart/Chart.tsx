@@ -5106,6 +5106,10 @@ export default function Chart(props: propsIF) {
                     );
                 }
 
+                if (isOrderHistorySelected === undefined) {
+                    setHoveredOrderTooltipPlacement(() => undefined);
+                }
+
                 setIsOnCandleOrVolumeMouseLocation(
                     isOrderHistorySelected !== undefined &&
                         isOrderHistorySelected.order !== undefined
@@ -5480,8 +5484,6 @@ export default function Chart(props: propsIF) {
                         isOnLeftSide: !!(isOverLeft && isOverTop),
                     };
                 });
-            } else {
-                setHoveredOrderTooltipPlacement(() => undefined);
             }
 
             if (isSelectedOrderHistory && selectedOrderHistory) {
