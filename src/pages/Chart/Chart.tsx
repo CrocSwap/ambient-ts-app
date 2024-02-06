@@ -5510,6 +5510,7 @@ export default function Chart(props: propsIF) {
         diffHashSig(selectedOrderHistory),
         diffHashSig(hoveredOrderHistory),
         diffHashSigScaleData(scaleData),
+        reset,
     ]);
 
     return (
