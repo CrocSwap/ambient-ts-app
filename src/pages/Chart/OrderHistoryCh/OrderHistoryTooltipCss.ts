@@ -4,7 +4,12 @@ const OrderHistoryHover = styled.div<{
     top: number;
     left: number;
     isOnLeftSide: boolean;
+    pointerEvents: boolean;
 }>`
+    ${({ pointerEvents }) => {
+        if (!pointerEvents) return 'pointer-events: none';
+    }};
+
     position: absolute;
     text-align: center;
 

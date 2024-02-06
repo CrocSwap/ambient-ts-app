@@ -5102,7 +5102,11 @@ export default function Chart(props: propsIF) {
                     candleOrVolumeDataHoverStatus(offsetX, offsetY);
 
                 let isOrderHistorySelected = undefined;
-                if (showSwap) {
+                if (
+                    showSwap &&
+                    !isDragActive &&
+                    activeDrawingType === 'Cross'
+                ) {
                     isOrderHistorySelected = orderHistoryHoverStatus(
                         offsetX,
                         offsetY,
@@ -5845,6 +5849,9 @@ export default function Chart(props: propsIF) {
                         handleCardClick={handleCardClick}
                         setSelectedOrderHistory={setSelectedOrderHistory}
                         setIsSelectedOrderHistory={setIsSelectedOrderHistory}
+                        pointerEvents={
+                            !isDragActive && activeDrawingType === 'Cross'
+                        }
                     />
                 )}
 
@@ -5862,6 +5869,9 @@ export default function Chart(props: propsIF) {
                         handleCardClick={handleCardClick}
                         setSelectedOrderHistory={setSelectedOrderHistory}
                         setIsSelectedOrderHistory={setIsSelectedOrderHistory}
+                        pointerEvents={
+                            !isDragActive && activeDrawingType === 'Cross'
+                        }
                     />
                 )}
         </div>
