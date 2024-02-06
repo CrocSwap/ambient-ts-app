@@ -30,6 +30,7 @@ export default function OrderHistoryTooltip(props: {
     setSelectedOrderHistory: React.Dispatch<
         React.SetStateAction<TransactionIF | undefined>
     >;
+    setIsSelectedOrderHistory: React.Dispatch<boolean>;
 }) {
     const {
         hoveredOrderHistory,
@@ -38,6 +39,7 @@ export default function OrderHistoryTooltip(props: {
         hoveredOrderTooltipPlacement,
         handleCardClick,
         setSelectedOrderHistory,
+        setIsSelectedOrderHistory,
     } = props;
 
     const {
@@ -67,6 +69,7 @@ export default function OrderHistoryTooltip(props: {
                         setSelectedOrderHistory(() => {
                             return hoveredOrderHistory;
                         });
+                        setIsSelectedOrderHistory(true);
                     }}
                 >
                     <OrderHistoryHeader>

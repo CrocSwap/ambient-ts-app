@@ -397,8 +397,6 @@ export default function Chart(props: propsIF) {
         setSelectedOutsideTab,
     } = useContext(TradeTableContext);
 
-    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
-
     const unparsedCandleData = useMemo(() => {
         const data = unparsedData.candles
             .sort((a, b) => b.time - a.time)
@@ -4802,6 +4800,10 @@ export default function Chart(props: propsIF) {
         return undefined;
     };
 
+    useEffect(() => {
+        console.log(selectedOrderHistory);
+    }, [selectedOrderHistory]);
+
     const candleOrVolumeDataHoverStatus = (mouseX: number, mouseY: number) => {
         const lastDate = scaleData?.xScale.invert(
             mouseX + bandwidth / 2,
@@ -5847,6 +5849,7 @@ export default function Chart(props: propsIF) {
                         }
                         handleCardClick={handleCardClick}
                         setSelectedOrderHistory={setSelectedOrderHistory}
+                        setIsSelectedOrderHistory={setIsSelectedOrderHistory}
                     />
                 )}
 
@@ -5863,6 +5866,7 @@ export default function Chart(props: propsIF) {
                         }
                         handleCardClick={handleCardClick}
                         setSelectedOrderHistory={setSelectedOrderHistory}
+                        setIsSelectedOrderHistory={setIsSelectedOrderHistory}
                     />
                 )}
         </div>
