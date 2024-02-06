@@ -5428,29 +5428,21 @@ export default function Chart(props: propsIF) {
                             : hoveredOrderHistory.swapPriceDecimalCorrected,
                     );
 
+                    const tempPlace =
+                        scaleData?.xScale(hoveredOrderHistory.txTime * 1000) +
+                        scale(circleScale(hoveredOrderHistory.totalValueUSD));
+
                     const isOverLeft =
                         isSelectedOrderHistory &&
                         selectedOrderTooltipPlacement &&
-                        selectedOrderTooltipPlacement.left - 75 <
-                            scaleData?.xScale(
-                                hoveredOrderHistory.txTime * 1000,
-                            ) +
-                                scale(
-                                    circleScale(
-                                        hoveredOrderHistory.totalValueUSD,
-                                    ),
-                                ) +
-                                75 &&
-                        selectedOrderTooltipPlacement.left + 75 >
-                            scaleData?.xScale(
-                                hoveredOrderHistory.txTime * 1000,
-                            ) -
-                                scale(
-                                    circleScale(
-                                        hoveredOrderHistory.totalValueUSD,
-                                    ),
-                                ) -
-                                75;
+                        ((selectedOrderTooltipPlacement.left - 75 <
+                            tempPlace + 75 &&
+                            selectedOrderTooltipPlacement.left - 75 >
+                                tempPlace - 75) ||
+                            (selectedOrderTooltipPlacement.left + 75 <
+                                tempPlace - 75 &&
+                                selectedOrderTooltipPlacement.left + 75 >
+                                    tempPlace + 75));
 
                     const isOverTop =
                         isSelectedOrderHistory &&
