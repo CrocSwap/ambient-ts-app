@@ -469,6 +469,12 @@ export default function LimitActionModal(props: propsIF) {
                   receivingAmountAddress: limitOrder.isBid
                       ? baseTokenAddress
                       : quoteTokenAddress,
+                  claimableAmount: limitOrder.isBid
+                      ? quoteDisplay
+                      : baseDisplay,
+                  claimableAmountAddress: limitOrder.isBid
+                      ? quoteTokenAddress
+                      : baseTokenAddress,
                   networkFee,
               }
             : {
