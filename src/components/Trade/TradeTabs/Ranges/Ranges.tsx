@@ -63,12 +63,14 @@ function Ranges(props: propsIF) {
 
     const { userAddress } = useContext(UserDataContext);
 
-    const { userPositionsByPool, positionsByPool } =
-        useContext(GraphDataContext);
+    const {
+        userPositionsByPool,
+        positionsByPool,
+        unindexedNonFailedSessionPositionUpdates,
+    } = useContext(GraphDataContext);
     const dataLoadingStatus = useContext(DataLoadingContext);
 
-    const { transactionsByType, pendingTransactions } =
-        useContext(ReceiptContext);
+    const { transactionsByType } = useContext(ReceiptContext);
 
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
@@ -388,10 +390,11 @@ function Ranges(props: propsIF) {
 
     const relevantTransactionsByType = transactionsByType.filter(
         (tx) =>
-            tx.txAction &&
-            tx.txDetails &&
-            tx.txType === 'Range' &&
-            pendingTransactions.includes(tx.txHash) &&
+            unindexedNonFailedSessionPositionUpdates.some(
+                (update) => update.txHash === tx.txHash,
+            ) &&
+            tx.userAddress.toLowerCase() ===
+                (userAddress || '').toLowerCase() &&
             tx.txDetails?.baseAddress.toLowerCase() ===
                 baseToken.address.toLowerCase() &&
             tx.txDetails?.quoteAddress.toLowerCase() ===
@@ -402,14 +405,13 @@ function Ranges(props: propsIF) {
     const shouldDisplayNoTableData =
         !isLoading &&
         !rangeData.length &&
-        (relevantTransactionsByType.length === 0 ||
-            pendingTransactions.length === 0);
+        unindexedNonFailedSessionPositionUpdates.length === 0;
 
     const rangeDataOrNull = !shouldDisplayNoTableData ? (
         <div>
             <ul ref={listRef} id='current_row_scroll'>
                 {!isAccountView &&
-                    pendingTransactions.length > 0 &&
+                    relevantTransactionsByType.length > 0 &&
                     relevantTransactionsByType.reverse().map((tx, idx) => (
                         <RangesRowPlaceholder
                             key={idx}
