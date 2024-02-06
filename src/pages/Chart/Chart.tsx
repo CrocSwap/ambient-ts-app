@@ -4800,10 +4800,6 @@ export default function Chart(props: propsIF) {
         return undefined;
     };
 
-    useEffect(() => {
-        console.log(selectedOrderHistory);
-    }, [selectedOrderHistory]);
-
     const candleOrVolumeDataHoverStatus = (mouseX: number, mouseY: number) => {
         const lastDate = scaleData?.xScale.invert(
             mouseX + bandwidth / 2,
