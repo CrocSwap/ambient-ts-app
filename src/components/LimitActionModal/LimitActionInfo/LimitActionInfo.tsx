@@ -53,6 +53,9 @@ export default function LimitActionInfo(props: ILimitActionInfoProps) {
         ? tokens.getTokenByAddress(claimableAmountAddress)
         : undefined;
 
+    const isLimitOrderPartiallyFilled =
+        claimableAmount !== undefined && claimableAmount !== '0';
+
     return (
         <div className={styles.row}>
             <div className={styles.remove_position_info}>
@@ -101,7 +104,9 @@ export default function LimitActionInfo(props: ILimitActionInfoProps) {
                     <Row>
                         <span>
                             {type === 'Remove'
-                                ? 'Return Quantity'
+                                ? isLimitOrderPartiallyFilled
+                                    ? 'Return Quantities'
+                                    : 'Return Quantity'
                                 : 'Claimable Amount'}{' '}
                         </span>
                         <div className={styles.align_center}>
@@ -118,9 +123,7 @@ export default function LimitActionInfo(props: ILimitActionInfoProps) {
                             />
                         </div>
                     </Row>
-                    {type === 'Remove' &&
-                    claimableAmount !== undefined &&
-                    claimableAmount !== '0' ? (
+                    {type === 'Remove' && isLimitOrderPartiallyFilled ? (
                         <Row>
                             <span></span>
                             <div className={styles.align_center}>
