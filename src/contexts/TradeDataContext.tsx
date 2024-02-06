@@ -10,6 +10,7 @@ export interface TradeDataContextIF {
     tokenB: TokenIF;
     baseToken: TokenIF;
     quoteToken: TokenIF;
+    areDefaultTokensUpdatedForChain: boolean;
     isTokenABase: boolean;
     isDenomBase: boolean;
     didUserFlipDenom: boolean;
@@ -55,6 +56,10 @@ export const TradeDataContextProvider = (props: {
 }) => {
     const [tokenA, setTokenA] = React.useState<TokenIF>(dfltTokenA);
     const [tokenB, setTokenB] = React.useState<TokenIF>(dfltTokenB);
+    const [
+        areDefaultTokensUpdatedForChain,
+        setAreDefaultTokensUpdatedForChain,
+    ] = React.useState<boolean>(false);
     const [isDenomBase, setDenomInBase] = React.useState<boolean>(true);
     // TODO: this can likely be refactored out
     const [didUserFlipDenom, setDidUserFlipDenom] =
@@ -102,6 +107,7 @@ export const TradeDataContextProvider = (props: {
             );
             setTokenA(_tokenA);
             setTokenB(_tokenB);
+            setAreDefaultTokensUpdatedForChain(true);
         }
     }, [chainData.chainId]);
 
@@ -134,6 +140,7 @@ export const TradeDataContextProvider = (props: {
         slippageTolerance,
         setTokenA,
         setTokenB,
+        areDefaultTokensUpdatedForChain,
         setDenomInBase,
         setIsTokenAPrimary,
         setDisableReverseTokens,
