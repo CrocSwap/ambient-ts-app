@@ -62,13 +62,15 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
 
     const { isUserConnected } = useContext(UserDataContext);
 
-    const { tokenA, tokenB, limitTick } = useContext(TradeDataContext);
+    const { tokenA, tokenB, limitTick, areDefaultTokensUpdatedForChain } =
+        useContext(TradeDataContext);
 
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
     // values if either token needs to be confirmed before transacting
     const needConfirmTokenA = !tokens.verify(tokenA.address);
     const needConfirmTokenB = !tokens.verify(tokenB.address);
+
     // token acknowledgement needed message (empty string if none needed)
     const ackTokenMessage = useMemo<string>(() => {
         // !Important   any changes to verbiage in this code block must be approved
@@ -141,24 +143,27 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     padding='0 32px'
                 >
                     {transactionDetails}
-                    {isUserConnected === undefined ? null : isUserConnected ===
+                    {isUserConnected === undefined ||
+                    !areDefaultTokensUpdatedForChain ? null : isUserConnected ===
                       true ? (
                         approveButton ? (
                             approveButton
                         ) : (
                             <>
                                 {!bypassConfirm ? button : bypassConfirm}
-                                {ackTokenMessage && (
-                                    // NO
-                                    <AcknowledgeText
-                                        fontSize='body'
-                                        dangerouslySetInnerHTML={{
-                                            __html: formattedAckTokenMessage,
-                                        }}
-                                    ></AcknowledgeText>
-                                )}
-                                {needConfirmTokenA ||
-                                    (needConfirmTokenB && (
+                                {ackTokenMessage &&
+                                    areDefaultTokensUpdatedForChain && (
+                                        // NO
+                                        <AcknowledgeText
+                                            fontSize='body'
+                                            dangerouslySetInnerHTML={{
+                                                __html: formattedAckTokenMessage,
+                                            }}
+                                        ></AcknowledgeText>
+                                    )}
+                                {areDefaultTokensUpdatedForChain &&
+                                    (needConfirmTokenA ||
+                                        needConfirmTokenB) && (
                                         <GridContainer
                                             numCols={2}
                                             gap={16}
@@ -197,7 +202,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                                                 </a>
                                             )}
                                         </GridContainer>
-                                    ))}
+                                    )}
                             </>
                         )
                     ) : (
