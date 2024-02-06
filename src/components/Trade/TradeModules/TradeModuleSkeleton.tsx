@@ -143,7 +143,8 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     padding='0 32px'
                 >
                     {transactionDetails}
-                    {isUserConnected === undefined ? null : isUserConnected ===
+                    {isUserConnected === undefined ||
+                    !areDefaultTokensUpdatedForChain ? null : isUserConnected ===
                       true ? (
                         approveButton ? (
                             approveButton
