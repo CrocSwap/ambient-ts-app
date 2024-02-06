@@ -1,6 +1,5 @@
 export interface PositionServerIF {
     chainId: string;
-    positionId: string;
     askTick: number;
     bidTick: number;
     poolIdx: number;
