@@ -4728,19 +4728,6 @@ export default function Chart(props: propsIF) {
         setSelectedOutsideTab(0);
         setShowAllData(false);
         setCurrentTxActiveInTransactions(tx.txId);
-        linkGenMarket.navigate(
-            tx.isBuy
-                ? {
-                      chain: chainId,
-                      tokenA: tx.base,
-                      tokenB: tx.quote,
-                  }
-                : {
-                      chain: chainId,
-                      tokenA: tx.quote,
-                      tokenB: tx.base,
-                  },
-        );
     };
 
     const orderHistoryHoverStatus = (
