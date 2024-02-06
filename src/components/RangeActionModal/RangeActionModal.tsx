@@ -44,6 +44,7 @@ import {
 import { ReceiptContext } from '../../contexts/ReceiptContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { useProcessRange } from '../../utils/hooks/useProcessRange';
+import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
 
 interface propsIF {
     type: RangeModalAction;
@@ -88,6 +89,7 @@ function RangeActionModal(props: propsIF) {
         addPendingTx,
         addReceipt,
         addTransactionByType,
+        addPositionUpdate,
         removePendingTx,
         updateTransactionHash,
     } = useContext(ReceiptContext);
@@ -426,8 +428,9 @@ function RangeActionModal(props: propsIF) {
                 console.debug('unsupported position type for removal');
         }
 
-        if (tx?.hash)
+        if (tx?.hash) {
             addTransactionByType({
+                userAddress: userAddress || '',
                 txHash: tx.hash,
                 txAction: 'Remove',
                 txType: 'Range',
@@ -446,6 +449,14 @@ function RangeActionModal(props: propsIF) {
                     gridSize: lookupChain(position.chainId).gridSize,
                 },
             });
+            const posHash = getPositionHash(position);
+            addPositionUpdate({
+                txHash: tx.hash,
+                positionID: posHash,
+                isLimit: false,
+                unixTimeAdded: Math.floor(Date.now() / 1000),
+            });
+        }
 
         let receipt;
 
@@ -465,6 +476,13 @@ function RangeActionModal(props: propsIF) {
 
                 updateTransactionHash(error.hash, error.replacement.hash);
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
+                const posHash = getPositionHash(position);
+                addPositionUpdate({
+                    txHash: newTransactionHash,
+                    positionID: posHash,
+                    isLimit: false,
+                    unixTimeAdded: Math.floor(Date.now() / 1000),
+                });
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
             }
@@ -499,8 +517,9 @@ function RangeActionModal(props: propsIF) {
                 IS_LOCAL_ENV && console.debug(tx?.hash);
                 addPendingTx(tx?.hash);
                 setNewTransactionHash(tx?.hash);
-                if (tx?.hash)
+                if (tx?.hash) {
                     addTransactionByType({
+                        userAddress: userAddress || '',
                         txHash: tx.hash,
                         txAction: 'Harvest',
                         txType: 'Range',
@@ -519,6 +538,14 @@ function RangeActionModal(props: propsIF) {
                             gridSize: lookupChain(position.chainId).gridSize,
                         },
                     });
+                    const posHash = getPositionHash(position);
+                    addPositionUpdate({
+                        txHash: tx.hash,
+                        positionID: posHash,
+                        isLimit: false,
+                        unixTimeAdded: Math.floor(Date.now() / 1000),
+                    });
+                }
             } catch (error) {
                 console.error({ error });
                 setTxErrorCode(error?.code);
@@ -550,6 +577,13 @@ function RangeActionModal(props: propsIF) {
                 addPendingTx(newTransactionHash);
 
                 updateTransactionHash(error.hash, error.replacement.hash);
+                const posHash = getPositionHash(position);
+                addPositionUpdate({
+                    txHash: newTransactionHash,
+                    positionID: posHash,
+                    isLimit: false,
+                    unixTimeAdded: Math.floor(Date.now() / 1000),
+                });
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
             }

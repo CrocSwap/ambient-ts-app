@@ -1,5 +1,3 @@
-import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
-
 import {
     getChainExplorer,
     getUnicodeCharacter,
@@ -10,10 +8,10 @@ import {
 import { PositionIF } from '../../ambient-utils/types';
 import { useContext, useMemo } from 'react';
 import moment from 'moment';
-import { getAddress } from 'ethers/lib/utils.js';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { useFetchBatch } from '../../App/hooks/useFetchBatch';
 import { UserDataContext } from '../../contexts/UserDataContext';
+import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
 
 export const useProcessRange = (
     position: PositionIF,
@@ -84,31 +82,14 @@ export const useProcessRange = (
         ? position.ensResolution
         : null;
 
-    const ownerId = position.user ? getAddress(position.user) : position.user;
+    // const ownerId = position.user ? getAddress(position.user) : position.user;
 
     const isOwnerActiveAccount =
         position.user.toLowerCase() === account?.toLowerCase();
 
     // -------------------------------POSITION HASH------------------------
 
-    let posHash;
-    if (position.positionType == 'ambient') {
-        posHash = ambientPosSlot(
-            ownerId,
-            position.base,
-            position.quote,
-            position.poolIdx,
-        );
-    } else {
-        posHash = concPosSlot(
-            position.user ?? '',
-            position.base ?? '',
-            position.quote ?? '',
-            position.bidTick ?? 0,
-            position.askTick ?? 0,
-            position.poolIdx ?? 0,
-        ).toString();
-    }
+    const posHash = getPositionHash(position);
 
     // -----------------------------POSITIONS RANGE--------------------
     let isPositionInRange = position.isPositionInRange;
@@ -209,7 +190,7 @@ export const useProcessRange = (
         ? ensName.length > 16
             ? trimString(ensName, 11, 3, '…')
             : ensName
-        : trimString(ownerId, 6, 4, '…');
+        : trimString(position.user, 6, 4, '…');
 
     const posHashTruncated = trimString(posHash.toString(), 9, 0, '…');
 
@@ -246,7 +227,7 @@ export const useProcessRange = (
 
     return {
         // wallet and id data
-        ownerId,
+        ownerId: position.user,
         posHash,
         ensName,
         userMatchesConnectedAccount,

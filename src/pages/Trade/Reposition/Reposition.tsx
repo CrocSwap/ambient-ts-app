@@ -50,6 +50,8 @@ import {
 } from '../../../ambient-utils/constants/';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { useProcessRange } from '../../../utils/hooks/useProcessRange';
+import { getPositionHash } from '../../../ambient-utils/dataLayer/functions/getPositionHash';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 function Reposition() {
     // current URL parameter string
@@ -75,6 +77,7 @@ function Reposition() {
         addPendingTx,
         addReceipt,
         addTransactionByType,
+        addPositionUpdate,
         removePendingTx,
         updateTransactionHash,
     } = useContext(ReceiptContext);
@@ -87,6 +90,7 @@ function Reposition() {
         setRescaleRangeBoundariesWithSlider,
         setAdvancedMode,
     } = useContext(RangeContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const [isOpen, openModal, closeModal] = useModal();
 
@@ -304,8 +308,9 @@ function Reposition() {
             tx = await repo.rebal();
             setNewRepositionTransactionHash(tx?.hash);
             addPendingTx(tx?.hash);
-            if (tx?.hash)
+            if (tx?.hash) {
                 addTransactionByType({
+                    userAddress: userAddress || '',
                     txHash: tx.hash,
                     txAction: 'Reposition',
                     txType: 'Range',
@@ -323,6 +328,14 @@ function Reposition() {
                         gridSize: lookupChain(position.chainId).gridSize,
                     },
                 });
+                const posHash = getPositionHash(position);
+                addPositionUpdate({
+                    txHash: tx.hash,
+                    positionID: posHash,
+                    isLimit: false,
+                    unixTimeAdded: Math.floor(Date.now() / 1000),
+                });
+            }
             // We want the user to exit themselves
             // navigate(redirectPath, { replace: true });
         } catch (error) {
@@ -350,6 +363,13 @@ function Reposition() {
 
                 updateTransactionHash(error.hash, error.replacement.hash);
                 setNewRepositionTransactionHash(newTransactionHash);
+                const posHash = getPositionHash(position);
+                addPositionUpdate({
+                    txHash: newTransactionHash,
+                    positionID: posHash,
+                    isLimit: false,
+                    unixTimeAdded: Math.floor(Date.now() / 1000),
+                });
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
             } else if (isTransactionFailedError(error)) {
