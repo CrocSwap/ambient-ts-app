@@ -4266,6 +4266,8 @@ export default function Chart(props: propsIF) {
                             onBlurLimitRate(limit, newLimitValue);
                         }
                     }
+
+                    setSelectedOrderTooltipPlacement(() => undefined);
                 }
             };
 
@@ -4759,41 +4761,40 @@ export default function Chart(props: propsIF) {
                         resElement = element;
                     }
                 }
-
-                if (resElement && scaleData) {
-                    setHoveredOrderHistory(() => {
-                        return resElement;
-                    });
-                    setIsHoveredOrderHistory(true);
-                } else {
-                    setHoveredOrderHistory(() => undefined);
-                    setIsHoveredOrderHistory(false);
-                }
-
-                if (onClick && scaleData) {
-                    if (resElement) {
-                        const shouldSelect = selectedOrderHistory
-                            ? resElement.txId !== selectedOrderHistory?.txId
-                            : true;
-
-                        shouldSelect && handleCardClick(resElement);
-
-                        setSelectedOrderHistory(() => {
-                            return shouldSelect ? resElement : undefined;
-                        });
-
-                        setIsSelectedOrderHistory(() => {
-                            !shouldSelect &&
-                                setCurrentTxActiveInTransactions('');
-                            return shouldSelect;
-                        });
-                    } else {
-                        setCurrentTxActiveInTransactions('');
-                        setSelectedOrderHistory(undefined);
-                        setIsSelectedOrderHistory(false);
-                    }
-                }
             });
+
+            if (resElement && scaleData) {
+                setHoveredOrderHistory(() => {
+                    return resElement;
+                });
+                setIsHoveredOrderHistory(true);
+            } else {
+                setHoveredOrderHistory(() => undefined);
+                setIsHoveredOrderHistory(false);
+            }
+
+            if (onClick && scaleData) {
+                if (resElement) {
+                    const shouldSelect = selectedOrderHistory
+                        ? resElement.txId !== selectedOrderHistory?.txId
+                        : true;
+
+                    shouldSelect && handleCardClick(resElement);
+
+                    setSelectedOrderHistory(() => {
+                        return shouldSelect ? resElement : undefined;
+                    });
+
+                    setIsSelectedOrderHistory(() => {
+                        !shouldSelect && setCurrentTxActiveInTransactions('');
+                        return shouldSelect;
+                    });
+                } else {
+                    setCurrentTxActiveInTransactions('');
+                    setSelectedOrderHistory(undefined);
+                    setIsSelectedOrderHistory(false);
+                }
+            }
 
             return { order: resElement, isClicked: onClick };
         }
@@ -5496,8 +5497,6 @@ export default function Chart(props: propsIF) {
 
                     return { top, left, isOnLeftSide: false };
                 });
-            } else {
-                setSelectedOrderTooltipPlacement(() => undefined);
             }
         }
     };
@@ -5511,6 +5510,7 @@ export default function Chart(props: propsIF) {
         diffHashSig(hoveredOrderHistory),
         diffHashSigScaleData(scaleData),
         reset,
+        denomInBase,
     ]);
 
     return (
