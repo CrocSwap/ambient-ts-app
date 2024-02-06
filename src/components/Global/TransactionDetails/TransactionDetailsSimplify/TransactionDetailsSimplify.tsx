@@ -60,6 +60,8 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
     const isBuy = tx.isBid || tx.isBuy;
 
     const isSwap = tx.entityType === 'swap' || tx.entityType === 'limitOrder';
+    const isLimitRemoval =
+        tx.entityType === 'limitOrder' && tx.changeType === 'burn';
 
     function handleOpenWallet() {
         const walletUrl = isOwnerActiveAccount
@@ -166,6 +168,7 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
             ? 'Claim from Limit'
             : 'Market';
 
+    console.log({ quoteQuantityDisplay, estimatedQuoteFlowDisplay });
     // Create a data array for the info and map through it here
     const infoContent = [
         {
@@ -215,28 +218,35 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
         },
 
         {
-            title: isSwap ? 'From Qty ' : 'Token 1 Qty',
+            title: isLimitRemoval
+                ? 'From Qty Removed '
+                : isSwap
+                ? 'From Qty '
+                : 'Token 1 Qty',
             content: (
                 <div style={{ cursor: 'default' }}>
                     {isBuy
                         ? `${
                               tx.entityType !== 'limitOrder' ||
                               tx.changeType === 'burn' ||
-                              tx.changeType === 'mint'
+                              tx.changeType === 'mint' ||
+                              isLimitRemoval
                                   ? baseQuantityDisplay
                                   : estimatedBaseFlowDisplay || '0.00'
                           } ${baseTokenSymbol}`
                         : `${
                               tx.entityType !== 'limitOrder' ||
                               tx.changeType === 'burn' ||
-                              tx.changeType === 'mint'
+                              tx.changeType === 'mint' ||
+                              isLimitRemoval
                                   ? quoteQuantityDisplay
                                   : estimatedQuoteFlowDisplay || '0.00'
                           } ${quoteTokenSymbol}`}
                 </div>
             ),
-            explanation:
-                'The quantity of the sell token (scaled by its decimals value)',
+            explanation: `The quantity of the sell token ${
+                isLimitRemoval ? 'removed ' : ''
+            }`,
         },
 
         {
@@ -252,26 +262,33 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
         },
 
         {
-            title: isSwap ? 'To Qty ' : 'Token 2 Qty ',
+            title: isLimitRemoval
+                ? 'To Token Claimed '
+                : isSwap
+                ? 'To Qty '
+                : 'Token 2 Qty ',
             content: (
                 <div style={{ cursor: 'default' }}>
                     {!isBuy
                         ? `${
                               tx.entityType !== 'limitOrder' ||
-                              tx.changeType === 'recover'
+                              tx.changeType === 'recover' ||
+                              isLimitRemoval
                                   ? baseQuantityDisplay
                                   : estimatedBaseFlowDisplay || '0.00'
                           } ${baseTokenSymbol}`
                         : `${
                               tx.entityType !== 'limitOrder' ||
-                              tx.changeType === 'recover'
+                              tx.changeType === 'recover' ||
+                              isLimitRemoval
                                   ? quoteQuantityDisplay
                                   : estimatedQuoteFlowDisplay || '0.00'
                           } ${quoteTokenSymbol}`}
                 </div>
             ),
-            explanation:
-                'The quantity of the to/buy token (scaled by its decimals value)',
+            explanation: `The quantity of the to/buy token ${
+                isLimitRemoval ? 'claimed ' : ''
+            }`,
         },
         {
             title: isSwap ? 'Price ' : 'Low Price Boundary',
