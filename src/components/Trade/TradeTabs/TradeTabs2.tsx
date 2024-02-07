@@ -161,18 +161,20 @@ function TradeTabs2(props: propsIF) {
                 (outsideControl && selectedOutsideTab === 0) ||
                 (!outsideControl && selectedInsideTab === 0)
             ) {
-                if (dataLoadingStatus.isConnectedUserPoolTxDataLoading) return;
-                if (isCandleSelected) {
-                    setShowAllData(false);
-                } else if (
-                    (!isUserConnected && !isCandleSelected) ||
-                    (!isCandleSelected &&
-                        !showAllData &&
-                        userChanges.length < 1)
-                ) {
+                if (!isUserConnected) {
                     setShowAllData(true);
-                } else if (userChanges.length < 1) {
+                } else if (
+                    !showAllData &&
+                    dataLoadingStatus.isConnectedUserPoolTxDataLoading
+                ) {
                     return;
+                } else if (
+                    showAllData &&
+                    dataLoadingStatus.isPoolTxDataLoading
+                ) {
+                    return;
+                } else if (!showAllData && userChanges.length < 1) {
+                    setShowAllData(true);
                 } else if (showAllData && userChanges.length >= 1) {
                     setShowAllData(false);
                 }
@@ -180,7 +182,8 @@ function TradeTabs2(props: propsIF) {
                 (outsideControl && selectedOutsideTab === 1) ||
                 (!outsideControl && selectedInsideTab === 1)
             ) {
-                if (dataLoadingStatus.isConnectedUserOrderDataLoading) return;
+                if (dataLoadingStatus.isConnectedUserPoolOrderDataLoading)
+                    return;
 
                 if (
                     !isUserConnected ||

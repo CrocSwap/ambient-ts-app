@@ -19,6 +19,7 @@ import { UserDataContext } from './UserDataContext';
 import { DataLoadingContext } from './DataLoadingContext';
 import { PositionUpdateIF, ReceiptContext } from './ReceiptContext';
 import { getPositionHash } from '../ambient-utils/dataLayer/functions/getPositionHash';
+import { TradeDataContext } from './TradeDataContext';
 
 interface Changes {
     dataReceived: boolean;
@@ -163,10 +164,13 @@ export const GraphDataContextProvider = (props: {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
 
+    const { tokenA, tokenB } = useContext(TradeDataContext);
+
     const { pendingTransactions, sessionReceipts, sessionPositionUpdates } =
         useContext(ReceiptContext);
 
-    const { setDataLoadingStatus } = useContext(DataLoadingContext);
+    const { setDataLoadingStatus, resetConnectedUserDataLoadingStatus } =
+        useContext(DataLoadingContext);
     const {
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
@@ -192,6 +196,18 @@ export const GraphDataContextProvider = (props: {
             limitOrders: [],
         });
         setTransactionsByUser({
+            dataReceived: false,
+            changes: [],
+        });
+        setUserPositionsByPool({
+            dataReceived: false,
+            positions: [],
+        });
+        setUserLimitOrdersByPool({
+            dataReceived: false,
+            limitOrders: [],
+        });
+        setUserTransactionsByPool({
             dataReceived: false,
             changes: [],
         });
@@ -234,6 +250,22 @@ export const GraphDataContextProvider = (props: {
     useEffect(() => {
         resetUserGraphData();
     }, [isUserConnected, userAddress]);
+
+    useEffect(() => {
+        resetConnectedUserDataLoadingStatus();
+        setUserPositionsByPool({
+            dataReceived: false,
+            positions: [],
+        });
+        setUserLimitOrdersByPool({
+            dataReceived: false,
+            limitOrders: [],
+        });
+        setUserTransactionsByPool({
+            dataReceived: false,
+            changes: [],
+        });
+    }, [tokenA.address + tokenB.address]);
 
     const userTxByPoolHashArray = userTransactionsByPool.changes.map(
         (change) => change.txHash,
