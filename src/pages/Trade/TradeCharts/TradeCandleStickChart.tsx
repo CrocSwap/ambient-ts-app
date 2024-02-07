@@ -784,16 +784,17 @@ function TradeCandleStickChart(props: propsIF) {
         }
     }, [period, diffHashSig(unparsedCandleData)]);
 
-    // If the last candle is displayed, chart scale according to default values when switch pool
-    useEffect(() => {
-        if (candleScale.isShowLatestCandle) {
-            const timer = setTimeout(() => {
-                resetChart();
-            }, 300);
+    // // If the last candle is displayed, chart scale according to default values when switch pool
+    // useEffect(() => {
+    //     if (candleScale.isShowLatestCandle) {
+    //         const timer = setTimeout(() => {
+    //             console.log('resetting chart');
+    //             resetChart();
+    //         }, 300);
 
-            return () => clearTimeout(timer);
-        }
-    }, [baseTokenAddress + quoteTokenAddress]);
+    //         return () => clearTimeout(timer);
+    //     }
+    // }, [baseTokenAddress + quoteTokenAddress]);
 
     const resetChart = () => {
         if (scaleData && unparsedCandleData) {
