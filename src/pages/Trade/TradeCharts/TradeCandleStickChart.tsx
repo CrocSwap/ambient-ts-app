@@ -212,7 +212,10 @@ function TradeCandleStickChart(props: propsIF) {
         if (unparsedCandleData === undefined) {
             clearLiquidityData();
         }
-    }, [baseTokenAddress + quoteTokenAddress]);
+    }, [
+        baseTokenAddress + quoteTokenAddress,
+        unparsedCandleData === undefined,
+    ]);
 
     const clearLiquidityData = () => {
         if (liquidityData) {
