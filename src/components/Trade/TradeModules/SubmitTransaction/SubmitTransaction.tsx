@@ -1,7 +1,6 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { RiArrowUpSLine, RiArrowDownSLine } from 'react-icons/ri';
 import { uriToHttp } from '../../../../ambient-utils/dataLayer';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import {
     CircleLoaderFailed,
     CircleLoaderCompleted,
@@ -18,6 +17,7 @@ import {
 } from '../../../../styled/Components/TradeModules';
 import { FlexContainer } from '../../../../styled/Common';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 
 interface propsIF {
     type:
@@ -27,6 +27,7 @@ interface propsIF {
         | 'Reposition'
         | 'Remove'
         | 'Harvest'
+        | 'Claim'
         | 'Reset';
     newTransactionHash: string;
     txErrorCode: string;
@@ -37,8 +38,6 @@ interface propsIF {
     disableSubmitAgain?: boolean;
 }
 export default function SubmitTransaction(props: propsIF) {
-    const receiptData = useAppSelector((state) => state.receiptData);
-
     const {
         type,
         newTransactionHash,
@@ -50,6 +49,8 @@ export default function SubmitTransaction(props: propsIF) {
         disableSubmitAgain,
     } = props;
 
+    const { pendingTransactions, sessionReceipts } = useContext(ReceiptContext);
+
     const isTransactionApproved = newTransactionHash !== '';
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
@@ -60,7 +61,7 @@ export default function SubmitTransaction(props: propsIF) {
     );
     const isTransactionConfirmed =
         isTransactionApproved &&
-        !receiptData.pendingTransactions.includes(newTransactionHash);
+        !pendingTransactions.includes(newTransactionHash);
 
     const { tokenB } = useContext(TradeDataContext);
 
@@ -88,16 +89,22 @@ export default function SubmitTransaction(props: propsIF) {
         <TransactionException txErrorMessage={txErrorMessage} />
     );
 
-    const lastReceipt =
-        receiptData?.sessionReceipts.length > 0
-            ? JSON.parse(
-                  receiptData.sessionReceipts[
-                      receiptData.sessionReceipts.length - 1
-                  ],
-              )
-            : null;
+    const [isTransactionFailed, setIsTransactionFailed] =
+        useState<boolean>(false);
 
-    const isLastReceiptSuccess = lastReceipt?.status === 1;
+    // set isTransactionFailed to true if last receipt failed
+    useEffect(() => {
+        const lastReceipt =
+            sessionReceipts.length > 0 ? JSON.parse(sessionReceipts[0]) : null;
+        if (
+            lastReceipt?.status === 0 &&
+            lastReceipt.transactionHash === newTransactionHash
+        ) {
+            setIsTransactionFailed(true);
+        } else {
+            setIsTransactionFailed(false);
+        }
+    }, [sessionReceipts, newTransactionHash]);
 
     const transactionSubmitted = (
         <TransactionSubmitted
@@ -109,6 +116,7 @@ export default function SubmitTransaction(props: propsIF) {
             tokenBImage={uriToHttp(tokenB.logoURI)}
             chainId={tokenB.chainId}
             isConfirmed={isTransactionConfirmed}
+            isTransactionFailed={isTransactionFailed}
             noAnimation
         />
     );
@@ -118,14 +126,12 @@ export default function SubmitTransaction(props: propsIF) {
         ? transactionDenied
         : isTransactionApproved
         ? transactionSubmitted
-        : lastReceipt && !isLastReceiptSuccess
+        : isTransactionFailed
         ? transactionFailed
         : confirmSendMessage;
 
     const buttonColor =
-        isTransactionException ||
-        isTransactionDenied ||
-        (lastReceipt && !isLastReceiptSuccess)
+        isTransactionException || isTransactionDenied || isTransactionFailed
             ? 'var(--negative)'
             : isTransactionApproved
             ? 'var(--positive)'
@@ -133,7 +139,7 @@ export default function SubmitTransaction(props: propsIF) {
 
     const animationDisplay = isTransactionException ? (
         <CircleLoaderFailed size='30px' />
-    ) : isTransactionDenied || (lastReceipt && !isLastReceiptSuccess) ? (
+    ) : isTransactionDenied || isTransactionFailed ? (
         <CircleLoaderFailed size='30px' />
     ) : isTransactionApproved ? (
         <CircleLoaderCompleted size='30px' />
@@ -147,7 +153,7 @@ export default function SubmitTransaction(props: propsIF) {
             : 'Transaction Exception'
         : isTransactionDenied
         ? 'Transaction Denied'
-        : lastReceipt && !isLastReceiptSuccess
+        : isTransactionFailed
         ? 'Transaction Failed'
         : isTransactionConfirmed
         ? 'Transaction Confirmed'

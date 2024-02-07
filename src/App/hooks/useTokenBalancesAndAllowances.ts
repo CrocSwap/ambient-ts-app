@@ -7,11 +7,11 @@ import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { ChartContext } from '../../contexts/ChartContext';
 import { RangeContext } from '../../contexts/RangeContext';
 import { TokenContext } from '../../contexts/TokenContext';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { useTokenPairAllowance } from './useTokenPairAllowance';
 import { usePoolMetadata } from './usePoolMetadata';
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { UserDataContext } from '../../contexts/UserDataContext';
+import { ReceiptContext } from '../../contexts/ReceiptContext';
 
 interface BalancesIF {
     baseTokenBalance: string;
@@ -48,8 +48,8 @@ export const useTokenBalancesAndAllowances = (
     const { setSimpleRangeWidth } = useContext(RangeContext);
     const { tokens } = useContext(TokenContext);
 
-    const { receiptData } = useAppSelector((state) => state);
     const { userAddress, isUserConnected } = useContext(UserDataContext);
+    const { sessionReceipts } = useContext(ReceiptContext);
 
     const {
         tokenAAllowance,
@@ -69,7 +69,7 @@ export const useTokenBalancesAndAllowances = (
         chainData,
         userAddress,
         searchableTokens: tokens.tokenUniv,
-        receiptCount: receiptData.sessionReceipts.length,
+        receiptCount: sessionReceipts.length,
         lastBlockNumber,
         isServerEnabled,
         cachedFetchTokenPrice,

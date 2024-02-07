@@ -19,6 +19,7 @@ import { DataLoadingContextProvider } from './DataLoadingContext';
 import { TokenBalanceContextProvider } from './TokenBalanceContext';
 import { TradeDataContextProvider } from './TradeDataContext';
 import { cleanupBatchManager } from '../ambient-utils/api';
+import { ReceiptContextProvider } from './ReceiptContext';
 
 export const GlobalContexts = (props: { children: React.ReactNode }) => {
     useEffect(() => {
@@ -32,7 +33,7 @@ export const GlobalContexts = (props: { children: React.ReactNode }) => {
             <CachedDataContextProvider>
                 <DataLoadingContextProvider>
                     <UserDataContextProvider>
-                        <ChartContextProvider>
+                        <ReceiptContextProvider>
                             <RangeContextProvider>
                                 <TradeDataContextProvider>
                                     {/* Everything above here has no context dependencies */}
@@ -40,25 +41,27 @@ export const GlobalContexts = (props: { children: React.ReactNode }) => {
                                         <CrocEnvContextProvider>
                                             <TokenContextProvider>
                                                 <ChainDataContextProvider>
-                                                    <GraphDataContextProvider>
-                                                        <TradeTokenContextProvider>
-                                                            <PoolContextProvider>
-                                                                <CandleContextProvider>
-                                                                    <TradeTableContextProvider>
-                                                                        <UserPreferenceContextProvider>
-                                                                            <SidebarContextProvider>
-                                                                                <ExploreContextProvider>
-                                                                                    {
-                                                                                        props.children
-                                                                                    }
-                                                                                </ExploreContextProvider>
-                                                                            </SidebarContextProvider>
-                                                                        </UserPreferenceContextProvider>
-                                                                    </TradeTableContextProvider>
-                                                                </CandleContextProvider>
-                                                            </PoolContextProvider>
-                                                        </TradeTokenContextProvider>
-                                                    </GraphDataContextProvider>
+                                                    <ChartContextProvider>
+                                                        <GraphDataContextProvider>
+                                                            <TradeTokenContextProvider>
+                                                                <PoolContextProvider>
+                                                                    <CandleContextProvider>
+                                                                        <TradeTableContextProvider>
+                                                                            <UserPreferenceContextProvider>
+                                                                                <SidebarContextProvider>
+                                                                                    <ExploreContextProvider>
+                                                                                        {
+                                                                                            props.children
+                                                                                        }
+                                                                                    </ExploreContextProvider>
+                                                                                </SidebarContextProvider>
+                                                                            </UserPreferenceContextProvider>
+                                                                        </TradeTableContextProvider>
+                                                                    </CandleContextProvider>
+                                                                </PoolContextProvider>
+                                                            </TradeTokenContextProvider>
+                                                        </GraphDataContextProvider>
+                                                    </ChartContextProvider>
                                                 </ChainDataContextProvider>
                                             </TokenContextProvider>
                                         </CrocEnvContextProvider>
@@ -66,7 +69,7 @@ export const GlobalContexts = (props: { children: React.ReactNode }) => {
                                     {/* Everything below here has no context dependencies */}
                                 </TradeDataContextProvider>
                             </RangeContextProvider>
-                        </ChartContextProvider>
+                        </ReceiptContextProvider>
                     </UserDataContextProvider>
                 </DataLoadingContextProvider>
             </CachedDataContextProvider>

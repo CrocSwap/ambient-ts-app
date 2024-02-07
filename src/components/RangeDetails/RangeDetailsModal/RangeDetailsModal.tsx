@@ -1,6 +1,6 @@
 import PriceInfo from '.././PriceInfo/PriceInfo';
 import styles from './RangeDetailsModal.module.css';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { memo, useContext, useEffect, useRef, useState } from 'react';
 import { PositionIF, PositionServerIF } from '../../../ambient-utils/types';
 import RangeDetailsHeader from '.././RangeDetailsHeader/RangeDetailsHeader';
 import RangeDetailsSimplify from '.././RangeDetailsSimplify/RangeDetailsSimplify';
@@ -21,53 +21,44 @@ import modalBackground from '../../../assets/images/backgrounds/background.png';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import Modal from '../../Global/Modal/Modal';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface propsIF {
     position: PositionIF;
-    user: string;
-    bidTick: number;
-    askTick: number;
-    isAmbient: boolean;
-    baseTokenSymbol: string;
-    quoteTokenSymbol: string;
-    lowRangeDisplay: string;
-    highRangeDisplay: string;
-    isDenomBase: boolean;
-    baseTokenLogoURI: string;
-    quoteTokenLogoURI: string;
-    baseTokenAddress: string;
-    quoteTokenAddress: string;
-    positionApy: number;
     isAccountView: boolean;
-    isBaseTokenMoneynessGreaterOrEqual: boolean;
-    minRangeDenomByMoneyness: string;
-    maxRangeDenomByMoneyness: string;
     onClose: () => void;
 }
 
-export default function RangeDetailsModal(props: propsIF) {
+function RangeDetailsModal(props: propsIF) {
     const [showShareComponent, setShowShareComponent] = useState(true);
+    const { isDenomBase } = useContext(TradeDataContext);
+
+    const { position, isAccountView, onClose } = props;
 
     const {
-        baseTokenAddress,
-        quoteTokenAddress,
-        baseTokenLogoURI,
-        quoteTokenLogoURI,
-        lowRangeDisplay,
-        highRangeDisplay,
+        base: baseTokenAddress,
+        quote: quoteTokenAddress,
+        baseTokenLogoURI: baseTokenLogoURI,
+        quoteTokenLogoURI: quoteTokenLogoURI,
+        baseSymbol: baseTokenSymbol,
+        quoteSymbol: quoteTokenSymbol,
         user,
         bidTick,
         askTick,
-        position,
-        positionApy,
+        apy: positionApy,
+    } = position;
+
+    const { userAddress } = useContext(UserDataContext);
+
+    const {
+        posHash,
         isAmbient,
-        isAccountView,
         isBaseTokenMoneynessGreaterOrEqual,
         minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness,
-        onClose,
-    } = props;
-    const { userAddress } = useContext(UserDataContext);
+        ambientOrMin: lowRangeDisplay,
+        ambientOrMax: highRangeDisplay,
+    } = useProcessRange(position, userAddress);
 
     const {
         snackbar: { open: openSnackbar },
@@ -122,8 +113,6 @@ export default function RangeDetailsModal(props: propsIF) {
     >(positionApy);
 
     const { crocEnv, activeNetwork } = useContext(CrocEnvContext);
-
-    const { posHash } = useProcessRange(position, userAddress);
 
     const [_, copy] = useCopyToClipboard();
 
@@ -195,7 +184,7 @@ export default function RangeDetailsModal(props: propsIF) {
                     setUsdValue(
                         getFormattedNumber({
                             value: position.totalValueUSD,
-                            isUSD: true,
+                            prefix: '$',
                         }),
                     );
 
@@ -240,9 +229,9 @@ export default function RangeDetailsModal(props: propsIF) {
                         quoteFeesDisplay={quoteFeesDisplay}
                         baseTokenLogoURI={baseTokenLogoURI}
                         quoteTokenLogoURI={quoteTokenLogoURI}
-                        baseTokenSymbol={props.baseTokenSymbol}
-                        quoteTokenSymbol={props.quoteTokenSymbol}
-                        isDenomBase={props.isDenomBase}
+                        baseTokenSymbol={baseTokenSymbol}
+                        quoteTokenSymbol={quoteTokenSymbol}
+                        isDenomBase={isDenomBase}
                         isAmbient={isAmbient}
                         positionApy={updatedPositionApy}
                         minRangeDenomByMoneyness={minRangeDenomByMoneyness}
@@ -291,3 +280,5 @@ export default function RangeDetailsModal(props: propsIF) {
         </Modal>
     );
 }
+
+export default memo(RangeDetailsModal);

@@ -68,6 +68,7 @@ function TradeModuleHeader(props: propsIF) {
                             color='text1'
                             fontSize='header1'
                             role='button'
+                            cursor='pointer'
                             onClick={() => toggleDidUserFlipDenom()}
                         >
                             {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}

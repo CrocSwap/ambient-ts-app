@@ -20,6 +20,7 @@ import { TokenContext } from './TokenContext';
 import { Client } from '@covalenthq/client-sdk';
 import { UserDataContext } from './UserDataContext';
 import { TokenBalanceContext } from './TokenBalanceContext';
+import { fetchBlockNumber } from '../ambient-utils/api';
 
 interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
@@ -59,30 +60,14 @@ export const ChainDataContextProvider = (props: {
                 ? chainData.nodeUrl.slice(0, -32) +
                   process.env.REACT_APP_INFURA_KEY
                 : chainData.nodeUrl;
-
-        return fetch(nodeUrl, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                jsonrpc: '2.0',
-                method: 'eth_blockNumber',
-                params: [],
-                id: 'app-blockNum-sub', // Arbitary string (see JSON-RPC spec)
-            }),
-        })
-            .then((response) => response?.json())
-            .then((json) => json?.result)
-            .then(parseInt)
-            .then((blockNum) => {
-                if (blockNum > lastBlockNumber) {
-                    setLastBlockNumber(blockNum);
-                }
-            })
-            .catch(console.error);
+        try {
+            const lastBlockNumber = await fetchBlockNumber(nodeUrl);
+            if (lastBlockNumber > 0) setLastBlockNumber(lastBlockNumber);
+        } catch (error) {
+            console.error({ error });
+        }
     }
+
     const BLOCK_NUM_POLL_MS = 2000;
     useEffect(() => {
         (async () => {

@@ -14,7 +14,7 @@ _Describe what was expected_
 
 ### Actual
 
-_Describe what actually occured_
+_Describe what actually occurred_
 
 
 ------

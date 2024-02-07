@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { FlexContainer } from '../../styled/Common';
 import StepperComponent from '../../components/Global/MultiStepTransaction/StepperComponent';
+import { AppStateContext } from '../../contexts/AppStateContext';
 
 export default function TestPage() {
     const [activeStep, setActiveStep] = useState(0);
@@ -54,6 +55,24 @@ export default function TestPage() {
     );
 
     // ENd of for demonstration--------------------
+    const {
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
+
+    function handleCopyAddress() {
+        openSnackbar(
+            'this is  copied if you dont lijke toweqroi eqhjo joqj ioja oiqj oiwey csn do whqrt toy wqn',
+        );
+    }
+
+    const yes = true;
+
+    if (yes)
+        return (
+            <FlexContainer flexDirection='row' justifyContent='center'>
+                <button onClick={handleCopyAddress}>Click button</button>
+            </FlexContainer>
+        );
 
     return (
         <FlexContainer flexDirection='row' justifyContent='space-around'>

@@ -1,14 +1,5 @@
 import { useContext } from 'react';
-import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-
-import {
-    addPendingTx,
-    addReceipt,
-    addTransactionByType,
-    removePendingTx,
-    updateTransactionHash,
-} from '../../utils/state/receiptDataSlice';
 
 import {
     isTransactionFailedError,
@@ -19,14 +10,18 @@ import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { RangeContext } from '../../contexts/RangeContext';
+import { createRangePositionTx } from '../../ambient-utils/dataLayer/transactions/range';
+import { ReceiptContext } from '../../contexts/ReceiptContext';
+import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
+import { UserDataContext } from '../../contexts/UserDataContext';
 
 export function useCreateRangePosition() {
-    const dispatch = useAppDispatch();
-
     const {
         crocEnv,
         chainData: { gridSize, poolIndex },
     } = useContext(CrocEnvContext);
+
+    const { userAddress } = useContext(UserDataContext);
 
     const {
         baseToken: { address: baseTokenAddress },
@@ -34,6 +29,14 @@ export function useCreateRangePosition() {
 
     const { tokenA, tokenB, baseToken, quoteToken } =
         useContext(TradeDataContext);
+    const {
+        addPendingTx,
+        addReceipt,
+        addPositionUpdate,
+        addTransactionByType,
+        removePendingTx,
+        updateTransactionHash,
+    } = useContext(ReceiptContext);
     const { isTokenAPrimaryRange } = useContext(RangeContext);
 
     const isTokenABase = tokenA.address === baseTokenAddress;
@@ -76,91 +79,70 @@ export function useCreateRangePosition() {
 
         if (!crocEnv) return;
 
-        const pool = crocEnv.pool(tokenA.address, tokenB.address);
-
-        const poolPrice = await pool.displayPrice();
-
-        const minPrice = poolPrice * (1 - slippageTolerancePercentage / 100);
-        const maxPrice = poolPrice * (1 + slippageTolerancePercentage / 100);
-
         let tx;
-        try {
-            tx = await (isAmbient
-                ? isTokenAPrimaryRange
-                    ? pool.mintAmbientQuote(
-                          tokenAInputQty, // TODO: implementation should disable or not
-                          //   isTokenAInputDisabled ? 0 : tokenAInputQty,
 
-                          [minPrice, maxPrice],
-                          {
-                              surplus: [
-                                  isWithdrawTokenAFromDexChecked,
-                                  isWithdrawTokenBFromDexChecked,
-                              ],
-                          },
-                      )
-                    : pool.mintAmbientBase(
-                          tokenBInputQty,
-                          //   isTokenBInputDisabled ? 0 : tokenBInputQty,
-                          [minPrice, maxPrice],
-                          {
-                              surplus: [
-                                  isWithdrawTokenAFromDexChecked,
-                                  isWithdrawTokenBFromDexChecked,
-                              ],
-                          },
-                      )
-                : isTokenAPrimaryRange
-                ? pool.mintRangeQuote(
-                      tokenAInputQty,
-                      //   isTokenAInputDisabled ? 0 : tokenAInputQty,
-                      [defaultLowTick, defaultHighTick],
-                      [minPrice, maxPrice],
-                      {
-                          surplus: [
-                              isWithdrawTokenAFromDexChecked,
-                              isWithdrawTokenBFromDexChecked,
-                          ],
-                      },
-                  )
-                : pool.mintRangeBase(
-                      tokenBInputQty,
-                      //   isTokenBInputDisabled ? 0 : tokenBInputQty,
-                      [defaultLowTick, defaultHighTick],
-                      [minPrice, maxPrice],
-                      {
-                          surplus: [
-                              isWithdrawTokenAFromDexChecked,
-                              isWithdrawTokenBFromDexChecked,
-                          ],
-                      },
-                  ));
+        const posHash = getPositionHash(undefined, {
+            isPositionTypeAmbient: isAmbient,
+            user: userAddress ?? '',
+            baseAddress: baseToken.address,
+            quoteAddress: quoteToken.address,
+            poolIdx: poolIndex,
+            bidTick: defaultLowTick,
+            askTick: defaultHighTick,
+        });
+
+        try {
+            tx = await createRangePositionTx({
+                crocEnv,
+                isAmbient,
+                slippageTolerancePercentage,
+                tokenA: {
+                    address: tokenA.address,
+                    qty: tokenAInputQty,
+                    isWithdrawFromDexChecked: isWithdrawTokenAFromDexChecked,
+                },
+                tokenB: {
+                    address: tokenB.address,
+                    qty: tokenBInputQty,
+                    isWithdrawFromDexChecked: isWithdrawTokenBFromDexChecked,
+                },
+                isTokenAPrimaryRange,
+                tick: { low: defaultLowTick, high: defaultHighTick },
+            });
+
             setNewRangeTransactionHash(tx?.hash);
-            dispatch(addPendingTx(tx?.hash));
+            addPendingTx(tx?.hash);
+
             if (tx?.hash)
-                dispatch(
-                    addTransactionByType({
-                        txHash: tx.hash,
-                        txAction: 'Add',
-                        txType: 'Range',
-                        txDescription: isAdd
-                            ? `Add to Range ${tokenA.symbol}+${tokenB.symbol}`
-                            : `Create Range ${tokenA.symbol}+${tokenB.symbol}`,
-                        txDetails: {
-                            baseAddress: baseToken.address,
-                            quoteAddress: quoteToken.address,
-                            poolIdx: poolIndex,
-                            baseSymbol: baseToken.symbol,
-                            quoteSymbol: quoteToken.symbol,
-                            baseTokenDecimals: baseTokenDecimals,
-                            quoteTokenDecimals: quoteTokenDecimals,
-                            isAmbient: isAmbient,
-                            lowTick: defaultLowTick,
-                            highTick: defaultHighTick,
-                            gridSize: gridSize,
-                        },
-                    }),
-                );
+                addTransactionByType({
+                    userAddress: userAddress || '',
+                    txHash: tx.hash,
+                    txAction: 'Add',
+                    txType: 'Range',
+                    txDescription: isAdd
+                        ? `Add to Range ${tokenA.symbol}+${tokenB.symbol}`
+                        : `Create Range ${tokenA.symbol}+${tokenB.symbol}`,
+                    txDetails: {
+                        baseAddress: baseToken.address,
+                        quoteAddress: quoteToken.address,
+                        poolIdx: poolIndex,
+                        baseSymbol: baseToken.symbol,
+                        quoteSymbol: quoteToken.symbol,
+                        baseTokenDecimals: baseTokenDecimals,
+                        quoteTokenDecimals: quoteTokenDecimals,
+                        isAmbient: isAmbient,
+                        lowTick: defaultLowTick,
+                        highTick: defaultHighTick,
+                        gridSize: gridSize,
+                    },
+                });
+
+            addPositionUpdate({
+                txHash: tx.hash,
+                positionID: posHash,
+                isLimit: false,
+                unixTimeAdded: Math.floor(Date.now() / 1000),
+            });
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
@@ -180,23 +162,25 @@ export function useCreateRangePosition() {
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
                 IS_LOCAL_ENV && console.debug('repriced');
-                dispatch(removePendingTx(error.hash));
+                removePendingTx(error.hash);
                 const newTransactionHash = error.replacement.hash;
-                dispatch(addPendingTx(newTransactionHash));
-                dispatch(
-                    updateTransactionHash({
-                        oldHash: error.hash,
-                        newHash: error.replacement.hash,
-                    }),
-                );
+                addPendingTx(newTransactionHash);
+
+                addPositionUpdate({
+                    txHash: newTransactionHash,
+                    positionID: posHash,
+                    isLimit: false,
+                    unixTimeAdded: Math.floor(Date.now() / 1000),
+                });
+                updateTransactionHash(error.hash, error.replacement.hash);
                 setNewRangeTransactionHash(newTransactionHash);
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
             }
         }
         if (receipt) {
-            dispatch(addReceipt(JSON.stringify(receipt)));
-            dispatch(removePendingTx(receipt.transactionHash));
+            addReceipt(JSON.stringify(receipt));
+            removePendingTx(receipt.transactionHash);
             if (setIsTxCompletedRange) {
                 setIsTxCompletedRange(true);
             }
