@@ -42,7 +42,8 @@ import {
     GAS_DROPS_ESTIMATE_LIMIT_FROM_DEX,
     GAS_DROPS_ESTIMATE_LIMIT_FROM_WALLET,
     GAS_DROPS_ESTIMATE_LIMIT_NATIVE,
-    LIMIT_BUFFER_MULTIPLIER,
+    LIMIT_BUFFER_MULTIPLIER_MAINNET,
+    LIMIT_BUFFER_MULTIPLIER_SCROLL,
     NUM_GWEI_IN_WEI,
 } from '../../../ambient-utils/constants/';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
@@ -133,7 +134,7 @@ export default function Limit() {
     const [
         amountToReduceNativeTokenQtyScroll,
         setAmountToReduceNativeTokenQtyScroll,
-    ] = useState<number>(0.00001);
+    ] = useState<number>(0.0003);
 
     const amountToReduceNativeTokenQty =
         chainId === '0x82750' || chainId === '0x8274f'
@@ -446,7 +447,7 @@ export default function Limit() {
                 gasPriceInGwei * averageLimitCostInGasDrops * NUM_GWEI_IN_WEI;
 
             setAmountToReduceNativeTokenQtyMainnet(
-                LIMIT_BUFFER_MULTIPLIER * costOfMainnetLimitInETH,
+                LIMIT_BUFFER_MULTIPLIER_MAINNET * costOfMainnetLimitInETH,
             );
 
             const costOfScrollLimitInETH =
@@ -460,7 +461,7 @@ export default function Limit() {
             //     });
 
             setAmountToReduceNativeTokenQtyScroll(
-                LIMIT_BUFFER_MULTIPLIER * costOfScrollLimitInETH,
+                LIMIT_BUFFER_MULTIPLIER_SCROLL * costOfScrollLimitInETH,
             );
 
             const gasPriceInDollarsNum =
@@ -760,6 +761,8 @@ export default function Limit() {
                         startDisplayPrice={startDisplayPrice}
                         middleDisplayPrice={middleDisplayPrice}
                         endDisplayPrice={endDisplayPrice}
+                        limitAllowed={limitAllowed}
+                        limitButtonErrorMessage={limitButtonErrorMessage}
                     />
                 ) : (
                     <></>

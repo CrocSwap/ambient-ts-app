@@ -23,6 +23,7 @@ import moment from 'moment';
 import { getAddress } from 'ethers/lib/utils.js';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { useFetchBatch } from '../../App/hooks/useFetchBatch';
+import { UserDataContext } from '../../contexts/UserDataContext';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
@@ -30,6 +31,8 @@ export const useProcessOrder = (
     isAccountView = false,
 ) => {
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
+    const { ensName: ensNameConnectedUser } = useContext(UserDataContext);
+
     const blockExplorer = getChainExplorer(limitOrder.chainId);
 
     const selectedBaseToken = baseToken.address.toLowerCase();
@@ -53,7 +56,11 @@ export const useProcessOrder = (
 
     let ensAddress = null;
     if (data && !error) {
-        ensAddress = data.ens_address;
+        // prevent showing ens address if it is the same as the connected user due to async issue when switching tables
+        ensAddress =
+            data.ens_address !== ensNameConnectedUser
+                ? data.ens_address
+                : undefined;
     }
 
     const ownerId = ensAddress || getAddress(limitOrder.user);
@@ -204,7 +211,7 @@ export const useProcessOrder = (
 
     const usdValue = getFormattedNumber({
         value: usdValueNum,
-        isUSD: true,
+        prefix: '$',
     });
 
     // -----------------------------------------------------------------------------------------

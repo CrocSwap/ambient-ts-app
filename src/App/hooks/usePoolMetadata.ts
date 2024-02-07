@@ -16,6 +16,7 @@ import {
     PositionIF,
     PositionServerIF,
     TokenIF,
+    TransactionServerIF,
 } from '../../ambient-utils/types';
 import {
     TokenPriceFn,
@@ -28,6 +29,7 @@ import {
     SpotPriceFn,
     getLimitOrderData,
     getPositionData,
+    getTransactionData,
 } from '../../ambient-utils/dataLayer';
 import useDebounce from './useDebounce';
 import { Provider } from '@ethersproject/providers';
@@ -63,9 +65,10 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const {
         setUserPositionsByPool,
+        setUserTransactionsByPool,
         setPositionsByPool,
         setLeaderboardByPool,
-        setChangesByPool,
+        setTransactionsByPool,
         setLimitOrdersByPool,
         setUserLimitOrdersByPool,
         setLiquidity,
@@ -389,7 +392,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     })
                         .then((poolChangesJsonData) => {
                             if (poolChangesJsonData) {
-                                setChangesByPool({
+                                setTransactionsByPool({
                                     dataReceived: true,
                                     changes: poolChangesJsonData,
                                 });
@@ -464,6 +467,78 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         })
                         .catch(console.error);
                     if (props.userAddress) {
+                        // retrieve user_pool_positions
+                        const userPoolTransactionsCacheEndpoint =
+                            GCGO_OVERRIDE_URL
+                                ? GCGO_OVERRIDE_URL + '/user_pool_txs?'
+                                : props.graphCacheUrl + '/user_pool_txs?';
+                        fetch(
+                            userPoolTransactionsCacheEndpoint +
+                                new URLSearchParams({
+                                    user: props.userAddress,
+                                    base: sortedTokens[0].toLowerCase(),
+                                    quote: sortedTokens[1].toLowerCase(),
+                                    poolIdx:
+                                        props.chainData.poolIndex.toString(),
+                                    chainId: props.chainData.chainId,
+                                }),
+                        )
+                            .then((response) => response.json())
+                            .then((json) => {
+                                const userPoolTransactions = json.data;
+                                const crocEnv = props.crocEnv;
+                                const provider = props.provider;
+                                const skipENSFetch = true;
+                                if (
+                                    userPoolTransactions &&
+                                    crocEnv &&
+                                    provider
+                                ) {
+                                    Promise.all(
+                                        userPoolTransactions.map(
+                                            (position: TransactionServerIF) => {
+                                                return getTransactionData(
+                                                    position,
+                                                    props.searchableTokens,
+                                                    crocEnv,
+                                                    provider,
+                                                    props.chainData.chainId,
+                                                    props.lastBlockNumber,
+                                                    props.cachedFetchTokenPrice,
+                                                    props.cachedQuerySpotPrice,
+                                                    props.cachedTokenDetails,
+                                                    props.cachedEnsResolve,
+                                                    skipENSFetch,
+                                                );
+                                            },
+                                        ),
+                                    )
+                                        .then((updatedTransactions) => {
+                                            setUserTransactionsByPool({
+                                                dataReceived: true,
+                                                changes: updatedTransactions,
+                                            });
+                                            setDataLoadingStatus({
+                                                datasetName:
+                                                    'isConnectedUserPoolTxDataLoading',
+                                                loadingStatus: false,
+                                            });
+                                        })
+                                        .catch(console.error);
+                                } else {
+                                    setUserTransactionsByPool({
+                                        dataReceived: false,
+                                        changes: [],
+                                    });
+                                    setDataLoadingStatus({
+                                        datasetName:
+                                            'isConnectedUserPoolTxDataLoading',
+                                        loadingStatus: false,
+                                    });
+                                }
+                            })
+                            .catch(console.error);
+
                         // retrieve user_pool_positions
                         const userPoolPositionsCacheEndpoint = GCGO_OVERRIDE_URL
                             ? GCGO_OVERRIDE_URL + '/user_pool_positions?'

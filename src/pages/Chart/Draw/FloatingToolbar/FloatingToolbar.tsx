@@ -1001,7 +1001,11 @@ function FloatingToolbar(props: FloatingToolbarProps) {
     ]);
 
     useEffect(() => {
-        if (floatingDivRef.current && !isDragged) {
+        if (
+            floatingDivRef.current &&
+            !isDragged &&
+            mainCanvasBoundingClientRect
+        ) {
             const floatingDiv = d3
                 .select(floatingDivRef.current)
                 .node() as HTMLDivElement;
@@ -1024,7 +1028,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                         floatingDiv.getBoundingClientRect().width / 2 +
                         yAxis.getBoundingClientRect().width / 2,
                 );
-            setDivTop(divTopLocal);
+            setDivTop(divTopLocal - 40);
         }
     }, [
         floatingDivRef.current === null,

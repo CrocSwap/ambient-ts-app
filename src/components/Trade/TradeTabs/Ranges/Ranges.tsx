@@ -126,14 +126,22 @@ function Ranges(props: propsIF) {
         useSortedPositions('time', rangeData);
 
     // TODO: Use these as media width constants
-    const isSmallScreen = useMediaQuery('(max-width: 600px)');
-    const isLargeScreen = useMediaQuery('(min-width: 1600px)');
+    const isSmallScreen = useMediaQuery('(max-width: 700px)');
+    const isLargeScreen = useMediaQuery('(min-width: 2000px)');
+    const isLargeScreenAccount = useMediaQuery('(min-width: 1600px)');
 
     const tableView =
-        isSmallScreen || (isAccountView && !isLargeScreen && isSidebarOpen)
+        isSmallScreen ||
+        (isAccountView &&
+            connectedAccountActive &&
+            !isLargeScreenAccount &&
+            isSidebarOpen)
             ? 'small'
             : (!isSmallScreen && !isLargeScreen) ||
-              (isAccountView && isLargeScreen && isSidebarOpen)
+              (isAccountView &&
+                  connectedAccountActive &&
+                  isLargeScreenAccount &&
+                  isSidebarOpen)
             ? 'medium'
             : 'large';
 
@@ -335,6 +343,7 @@ function Ranges(props: propsIF) {
             slug: 'apr',
             sortable: true,
             alignRight: true,
+            rightPadding: 8,
         },
         {
             name: 'Status',
@@ -342,6 +351,7 @@ function Ranges(props: propsIF) {
             show: true,
             slug: 'status',
             sortable: true,
+            leftPadding: 8,
         },
 
         {
@@ -438,7 +448,7 @@ function Ranges(props: propsIF) {
             }
         </div>
     ) : (
-        <NoTableData type='ranges' isAccountView={isAccountView} />
+        <NoTableData type='liquidity' isAccountView={isAccountView} />
     );
 
     return (

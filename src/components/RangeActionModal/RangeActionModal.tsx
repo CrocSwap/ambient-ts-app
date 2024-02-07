@@ -594,6 +594,30 @@ function RangeActionModal(props: propsIF) {
             : mintSlippage.updateVolatile(currentSlippage);
     };
 
+    // logic to prevent harvest button updating during/after harvest completion
+    const [memoIsActionReset, setMemoIsActionReset] = useState<
+        boolean | undefined
+    >();
+    const [memoBaseHarvestNum, setMemoBaseHarvestNum] = useState<
+        number | undefined
+    >();
+    const [memoQuoteHarvestNum, setMemoQuoteHarvestNum] = useState<
+        number | undefined
+    >();
+
+    useEffect(() => {
+        if (newTransactionHash === '') {
+            setMemoIsActionReset(!areFeesAvailableToWithdraw);
+            setMemoBaseHarvestNum(baseHarvestNum);
+            setMemoQuoteHarvestNum(quoteHarvestNum);
+        }
+    }, [
+        newTransactionHash,
+        areFeesAvailableToWithdraw,
+        baseHarvestNum,
+        quoteHarvestNum,
+    ]);
+
     const buttonToDisplay = (
         <div className={styles.button_container}>
             {showSettings ? (
@@ -612,7 +636,7 @@ function RangeActionModal(props: propsIF) {
                 <SubmitTransaction
                     type={
                         type === 'Harvest'
-                            ? !areFeesAvailableToWithdraw
+                            ? memoIsActionReset
                                 ? 'Reset'
                                 : 'Harvest'
                             : type === 'Remove'
@@ -637,7 +661,7 @@ function RangeActionModal(props: propsIF) {
                             (type === 'Remove'
                                 ? liquidityToBurn === undefined ||
                                   liquidityToBurn.isZero()
-                                : !areFeesAvailableToWithdraw) || showSettings
+                                : memoIsActionReset) || showSettings
                         )
                             ? type === 'Remove'
                                 ? 'Remove Liquidity'
@@ -727,8 +751,8 @@ function RangeActionModal(props: propsIF) {
                             quoteTokenSymbol={quoteTokenSymbol}
                             baseTokenLogoURI={baseTokenLogoURI}
                             quoteTokenLogoURI={quoteTokenLogoURI}
-                            baseHarvestNum={baseHarvestNum}
-                            quoteHarvestNum={quoteHarvestNum}
+                            baseHarvestNum={memoBaseHarvestNum}
+                            quoteHarvestNum={memoQuoteHarvestNum}
                         />
                     )}
                     <ExtraControls />

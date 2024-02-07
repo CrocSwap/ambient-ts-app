@@ -29,6 +29,7 @@ import {
     diffHashSig,
     diffHashSigChart,
     diffHashSigScaleData,
+    getFormattedNumber,
     getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
     getPinnedTickFromDisplayPrice,
@@ -63,7 +64,6 @@ import {
     calculateFibRetracementBandAreas,
     chartItemStates,
     crosshair,
-    drawDataHistory,
     fillLiqAdvanced,
     findSnapTime,
     formatTimeDifference,
@@ -98,13 +98,11 @@ import {
 } from './Draw/DrawCanvas/BandArea';
 import { checkCricleLocation, createCircle } from './ChartUtils/circle';
 import DragCanvas from './Draw/DrawCanvas/DragCanvas';
-import Toolbar from './Draw/Toolbar/Toolbar';
 import FloatingToolbar from './Draw/FloatingToolbar/FloatingToolbar';
 import { updatesIF } from '../../utils/hooks/useUrlParams';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
-import { actionKeyIF, actionStackIF } from './ChartUtils/useUndoRedo';
 import { formatDollarAmountAxis } from '../../utils/numbers';
 import { ChartContext } from '../../contexts/ChartContext';
 import { useDrawSettings } from '../../App/hooks/useDrawSettings';
@@ -152,23 +150,7 @@ interface propsIF {
     unparsedData: CandlesByPoolAndDurationIF;
     prevPeriod: number;
     candleTimeInSeconds: number;
-    undo: () => void;
-    redo: () => void;
-    drawnShapeHistory: drawDataHistory[];
-    setDrawnShapeHistory: React.Dispatch<
-        React.SetStateAction<drawDataHistory[]>
-    >;
-    deleteItem: (item: drawDataHistory) => void;
     updateURL: (changes: updatesIF) => void;
-    addDrawActionStack: (
-        item: drawDataHistory,
-        isNewShape: boolean,
-        type: string,
-    ) => void;
-    drawActionStack: Map<actionKeyIF, Array<actionStackIF>>;
-    undoStack: Map<actionKeyIF, Array<actionStackIF>>;
-    deleteAllShapes: () => void;
-    actionKey: actionKeyIF;
 }
 
 export default function Chart(props: propsIF) {
@@ -193,28 +175,43 @@ export default function Chart(props: propsIF) {
         unparsedData,
         prevPeriod,
         candleTimeInSeconds,
-        undo,
-        redo,
-        drawnShapeHistory,
-        setDrawnShapeHistory,
-        deleteItem,
+        // undo,
+        // redo,
+        // drawnShapeHistory,
+        // setDrawnShapeHistory,
+        // deleteItem,
         updateURL,
-        addDrawActionStack,
-        drawActionStack,
-        undoStack,
-        deleteAllShapes,
-        actionKey,
+        // addDrawActionStack,
+        // drawActionStack,
+        // undoStack,
     } = props;
 
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
     const { chainData } = useContext(CrocEnvContext);
-    const { isMagnetActive, setIsChangeScaleChart } = useContext(ChartContext);
-
-    const [isMagnetActiveLocal, setIsMagnetActiveLocal] = useState(
-        isMagnetActive.value,
-    );
+    const {
+        isMagnetActive,
+        setIsChangeScaleChart,
+        isToolbarOpen,
+        toolbarRef,
+        activeDrawingType,
+        setActiveDrawingType,
+        selectedDrawnShape,
+        setSelectedDrawnShape,
+        undoRedoOptions: {
+            drawnShapeHistory,
+            setDrawnShapeHistory,
+            undo,
+            redo,
+            drawActionStack,
+            undoStack,
+            addDrawActionStack,
+            deleteItem,
+        },
+        isMagnetActiveLocal,
+        setChartContainerOptions,
+    } = useContext(ChartContext);
 
     const chainId = chainData.chainId;
     const { setCandleDomains, setCandleScale, timeOfEndCandle } =
@@ -278,7 +275,7 @@ export default function Chart(props: propsIF) {
     const side =
         (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'buy' : 'sell';
     const sellOrderStyle = side === 'sell' ? 'order_sell' : 'order_buy';
-    const [activeDrawingType, setActiveDrawingType] = useState('Cross');
+    // const [activeDrawingType, setActiveDrawingType] = useState('Cross');
 
     const [chartMousemoveEvent, setChartMousemoveEvent] = useState<
         MouseEvent<HTMLDivElement> | undefined
@@ -299,7 +296,7 @@ export default function Chart(props: propsIF) {
         : 0;
 
     const d3Container = useRef<HTMLDivElement | null>(null);
-    const toolbarRef = useRef<HTMLDivElement | null>(null);
+    // const toolbarRef = useRef<HTMLDivElement | null>(null);
     const d3XaxisRef = useRef<HTMLInputElement | null>(null);
 
     const d3CanvasCrosshair = useRef<HTMLCanvasElement | null>(null);
@@ -352,10 +349,6 @@ export default function Chart(props: propsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [dashedLineSeries, setDashedLineSeries] = useState<any>();
 
-    const [selectedDrawnShape, setSelectedDrawnShape] = useState<
-        selectedDrawnData | undefined
-    >(undefined);
-
     const [hoveredDrawnShape, setHoveredDrawnShape] = useState<
         selectedDrawnData | undefined
     >(undefined);
@@ -363,14 +356,6 @@ export default function Chart(props: propsIF) {
     const mobileView = useMediaQuery('(max-width: 600px)');
 
     const drawSettings = useDrawSettings();
-
-    const initialData = localStorage.getItem(LS_KEY_CHART_ANNOTATIONS);
-
-    const initialIsToolbarOpen = initialData
-        ? JSON.parse(initialData).isOpenAnnotationPanel
-        : true;
-
-    const [isToolbarOpen, setIsToolbarOpen] = useState(initialIsToolbarOpen);
 
     const unparsedCandleData = useMemo(() => {
         const data = unparsedData.candles
@@ -491,7 +476,9 @@ export default function Chart(props: propsIF) {
         return prev.time < current.time ? prev : current;
     });
 
-    const toolbarWidth = isToolbarOpen ? 40 : 10;
+    const toolbarWidth = isToolbarOpen
+        ? 40 - (mobileView ? 0 : 4)
+        : 9 - (mobileView ? 0 : 4);
 
     const [prevlastCandleTime, setPrevLastCandleTime] = useState<number>(
         lastCandleData.time,
@@ -1115,12 +1102,14 @@ export default function Chart(props: propsIF) {
                                 mousePlacement > limitLineValue - lineBuffer;
 
                             const isOnRangeMin =
-                                location.pathname.includes('/pool') &&
+                                (location.pathname.includes('pool') ||
+                                    location.pathname.includes('reposition')) &&
                                 mousePlacement < minRangeValue + lineBuffer &&
                                 mousePlacement > minRangeValue - lineBuffer;
 
                             const isOnRangeMax =
-                                location.pathname.includes('/pool') &&
+                                (location.pathname.includes('pool') ||
+                                    location.pathname.includes('reposition')) &&
                                 mousePlacement < maxRangeValue + lineBuffer &&
                                 mousePlacement > maxRangeValue - lineBuffer;
 
@@ -2647,6 +2636,8 @@ export default function Chart(props: propsIF) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const resizeObserver = new ResizeObserver((result: any) => {
                 const height = result[0].contentRect.height;
+                const chartRect = canvasDiv.node().getBoundingClientRect();
+                setChartContainerOptions(chartRect);
                 setD3ContainerHeight(height);
             });
 
@@ -3153,7 +3144,7 @@ export default function Chart(props: propsIF) {
                                         ).toFixed(2);
 
                                         const infoLabelHeight = 66;
-                                        const infoLabelWidth = 150;
+                                        const infoLabelWidth = 180;
 
                                         const infoLabelXAxisData =
                                             Math.min(
@@ -3230,7 +3221,7 @@ export default function Chart(props: propsIF) {
                                             );
                                             ctx.fillStyle =
                                                 'rgba(210,210,210,1)';
-                                            ctx.font = '12.425px Lexend Deca';
+                                            ctx.font = '13.5px Lexend Deca';
                                             ctx.textAlign = 'center';
                                             ctx.textBaseline = 'middle';
 
@@ -3263,7 +3254,10 @@ export default function Chart(props: propsIF) {
                                                     : 0;
 
                                             ctx.fillText(
-                                                heightAsPrice.toFixed(2) +
+                                                getFormattedNumber({
+                                                    value: heightAsPrice,
+                                                    abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                                                }) +
                                                     ' ' +
                                                     ' (' +
                                                     heightAsPercentage.toString() +
@@ -3374,11 +3368,7 @@ export default function Chart(props: propsIF) {
                                         {
                                             denomInBase:
                                                 item.data[0].denomInBase,
-                                            y:
-                                                item.data[0].denomInBase ===
-                                                denomInBase
-                                                    ? item.data[0].y
-                                                    : 1 / item.data[0].y,
+                                            y: item.data[0].y,
                                         },
                                     ]);
                                     if (
@@ -4202,6 +4192,7 @@ export default function Chart(props: propsIF) {
                 function (event: MouseEvent<HTMLDivElement>) {
                     mousemove(event);
                 },
+                { passive: true },
             );
 
             d3.select(d3CanvasMain.current).on(
@@ -4209,6 +4200,7 @@ export default function Chart(props: propsIF) {
                 function (event: MouseEvent<HTMLDivElement>) {
                     mousemove(event);
                 },
+                { passive: true },
             );
         }
     }, [
@@ -4448,6 +4440,7 @@ export default function Chart(props: propsIF) {
         element: lineData[],
         mouseX: number,
         mouseY: number,
+        isDenomPrices: boolean,
     ) {
         let isOverLine = false;
 
@@ -4455,11 +4448,11 @@ export default function Chart(props: propsIF) {
             const threshold = 10;
 
             const denomStartY =
-                element[0].denomInBase === denomInBase
+                element[0].denomInBase === denomInBase || isDenomPrices
                     ? element[0].y
                     : 1 / element[0].y;
             const denomEndY =
-                element[0].denomInBase === denomInBase
+                element[0].denomInBase === denomInBase || isDenomPrices
                     ? element[1].y
                     : 1 / element[1].y;
 
@@ -4623,7 +4616,73 @@ export default function Chart(props: propsIF) {
                 }
 
                 if (element.type === 'Rect' || element.type === 'DPRange') {
-                    if (checkRectLocation(element.data, mouseX, mouseY)) {
+                    if (element.type === 'DPRange' && scaleData) {
+                        const endY =
+                            element.data[1].denomInBase === denomInBase
+                                ? element.data[1].y
+                                : 1 / element.data[1].y;
+                        const startY =
+                            element.data[0].denomInBase === denomInBase
+                                ? element.data[0].y
+                                : 1 / element.data[0].y;
+
+                        const dpRangeTooltipData: lineData[] = [
+                            {
+                                x: scaleData.xScale.invert(
+                                    scaleData.xScale(
+                                        Math.min(
+                                            element.data[0].x,
+                                            element.data[1].x,
+                                        ) +
+                                            Math.abs(
+                                                element.data[0].x -
+                                                    element.data[1].x,
+                                            ) /
+                                                2,
+                                    ) - 90,
+                                ),
+                                y: scaleData.yScale.invert(
+                                    scaleData.yScale(endY) +
+                                        (endY > startY ? -15 : 15),
+                                ),
+                                denomInBase: element.data[0].denomInBase,
+                            },
+                            {
+                                x: scaleData.xScale.invert(
+                                    scaleData.xScale(
+                                        Math.min(
+                                            element.data[0].x,
+                                            element.data[1].x,
+                                        ) +
+                                            Math.abs(
+                                                element.data[0].x -
+                                                    element.data[1].x,
+                                            ) /
+                                                2,
+                                    ) + 90,
+                                ),
+                                y: scaleData.yScale.invert(
+                                    scaleData.yScale(endY) +
+                                        (endY > startY ? -80 : 80),
+                                ),
+                                denomInBase: element.data[1].denomInBase,
+                            },
+                        ];
+
+                        if (
+                            checkRectLocation(
+                                dpRangeTooltipData,
+                                mouseX,
+                                mouseY,
+                                true,
+                            )
+                        ) {
+                            resElement = element;
+                        }
+                    }
+                    if (
+                        checkRectLocation(element.data, mouseX, mouseY, false)
+                    ) {
                         resElement = element;
                     }
                 }
@@ -5291,29 +5350,10 @@ export default function Chart(props: propsIF) {
                         id='chart_grid'
                         style={{
                             gridTemplateColumns:
-                                (isToolbarOpen ? 38 : 9) +
+                                toolbarWidth +
                                 'px auto 1fr auto minmax(1em, max-content)',
                         }}
                     >
-                        <Toolbar
-                            toolbarRef={toolbarRef}
-                            activeDrawingType={activeDrawingType}
-                            setActiveDrawingType={setActiveDrawingType}
-                            isToolbarOpen={isToolbarOpen}
-                            setIsToolbarOpen={setIsToolbarOpen}
-                            setDrawnShapeHistory={setDrawnShapeHistory}
-                            setIsMagnetActiveLocal={setIsMagnetActiveLocal}
-                            deleteAllShapes={deleteAllShapes}
-                            chartHeights={chartHeights}
-                            d3ContainerHeight={d3ContainerHeight}
-                            undo={undo}
-                            redo={redo}
-                            undoStack={undoStack}
-                            drawActionStack={drawActionStack}
-                            actionKey={actionKey}
-                            setSelectedDrawnShape={setSelectedDrawnShape}
-                        />
-
                         <CandleChart
                             chartItemStates={props.chartItemStates}
                             data={visibleCandleData}
@@ -5461,6 +5501,7 @@ export default function Chart(props: propsIF) {
                                 lastCandleData={lastCandleData}
                                 firstCandleData={firstCandleData}
                                 isToolbarOpen={isToolbarOpen}
+                                toolbarWidth={toolbarWidth}
                             />
                         </>
                     )}
@@ -5495,6 +5536,7 @@ export default function Chart(props: propsIF) {
                                 zoomBase={zoomBase}
                                 setIsChartZoom={setIsChartZoom}
                                 isToolbarOpen={isToolbarOpen}
+                                toolbarWidth={toolbarWidth}
                             />
                         </>
                     )}

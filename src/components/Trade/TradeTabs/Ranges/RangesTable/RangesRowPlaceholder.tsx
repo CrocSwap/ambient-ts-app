@@ -105,7 +105,11 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
             {trimString(posHash.toString(), 9, 0, '…')}
         </RowItem>
     );
-    const wallet = <p>you</p>;
+    const wallet = (
+        <RowItem style={{ textTransform: 'lowercase' }}>
+            <p>you</p>
+        </RowItem>
+    );
     // TODO: use media queries and standardized styles
     return (
         <>
@@ -183,7 +187,7 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
                 {
                     <FlexContainer
                         justifyContent='flex-start'
-                        padding='0 0 0 8px'
+                        padding='0 0 0 18px'
                     >
                         <RangeStatus
                             isInRange={false}

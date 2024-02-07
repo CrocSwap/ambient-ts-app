@@ -109,7 +109,11 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
             {trimString(posHash.toString(), 9, 0, '…')}
         </RowItem>
     );
-    const wallet = <p>you</p>;
+    const wallet = (
+        <RowItem style={{ textTransform: 'lowercase' }}>
+            <p>you</p>
+        </RowItem>
+    );
     // TODO: use media queries and standardized styles
     return (
         <>
