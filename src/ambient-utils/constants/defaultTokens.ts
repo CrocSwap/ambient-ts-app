@@ -50,7 +50,7 @@ export const mainnetSYN: TokenIF = {
     decimals: 18,
     fromList: '/ambient-token-list.json',
     logoURI:
-        'https://assets.coingecko.com/coins/images/18024/thumb/synapse_social_icon.png?1696517540',
+        'https://assets.coingecko.com/coins/images/18024/thumb/syn.png?1635002049',
     name: 'Synapse',
     symbol: 'SYN',
 };
