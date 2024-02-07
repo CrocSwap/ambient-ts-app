@@ -1,11 +1,7 @@
 // START: Import React and Dongles
 import { useContext, useEffect, useMemo, useState, memo } from 'react';
 import { useLocation, useParams, Navigate } from 'react-router-dom';
-import {
-    CrocPositionView,
-    CrocReposition,
-    toDisplayPrice,
-} from '@crocswap-libs/sdk';
+import { CrocReposition, toDisplayPrice } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
 import RepositionHeader from '../../../components/Trade/Reposition/RepositionHeader/RepositionHeader';
@@ -14,20 +10,9 @@ import ConfirmRepositionModal from '../../../components/Trade/Reposition/Confirm
 import Button from '../../../components/Form/Button';
 // START: Import Other Local Files
 import styles from './Reposition.module.css';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../utils/hooks/reduxToolkit';
 import { PositionIF, PositionServerIF } from '../../../ambient-utils/types';
-import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import {
-    addPendingTx,
-    addReceipt,
-    addTransactionByType,
-    removePendingTx,
-    updateTransactionHash,
-} from '../../../utils/state/receiptDataSlice';
+
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
@@ -46,6 +31,7 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import {
     getPositionData,
     getFormattedNumber,
+    getPinnedPriceValuesFromTicks,
 } from '../../../ambient-utils/dataLayer';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
@@ -58,6 +44,10 @@ import {
     GAS_DROPS_ESTIMATE_REPOSITION,
     NUM_GWEI_IN_WEI,
 } from '../../../ambient-utils/constants/';
+import { ReceiptContext } from '../../../contexts/ReceiptContext';
+import { useProcessRange } from '../../../utils/hooks/useProcessRange';
+import { getPositionHash } from '../../../ambient-utils/dataLayer/functions/getPositionHash';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 function Reposition() {
     // current URL parameter string
@@ -80,6 +70,14 @@ function Reposition() {
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
     const { bypassConfirmRepo } = useContext(UserPreferenceContext);
     const {
+        addPendingTx,
+        addReceipt,
+        addTransactionByType,
+        addPositionUpdate,
+        removePendingTx,
+        updateTransactionHash,
+    } = useContext(ReceiptContext);
+    const {
         simpleRangeWidth,
         setSimpleRangeWidth,
         setMaxRangePrice: setMaxPrice,
@@ -88,6 +86,7 @@ function Reposition() {
         setRescaleRangeBoundariesWithSlider,
         setAdvancedMode,
     } = useContext(RangeContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const [isOpen, openModal, closeModal] = useModal();
 
@@ -107,7 +106,6 @@ function Reposition() {
     const isRepositionSent = newRepositionTransactionHash !== '';
 
     const locationHook = useLocation();
-    const dispatch = useAppDispatch();
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     // navigate the user to the redirect URL path if locationHook.state has no data
@@ -127,6 +125,8 @@ function Reposition() {
 
     const { position } = locationHook.state as { position: PositionIF };
 
+    const { posHashTruncated } = useProcessRange(position);
+
     useEffect(() => {
         setCurrentRangeInReposition('');
         if (position) {
@@ -138,8 +138,11 @@ function Reposition() {
 
     const updateConcLiq = async () => {
         if (!crocEnv || !position) return;
-        const pool = crocEnv.pool(position.base, position.quote);
-        const pos = new CrocPositionView(pool, position.user);
+        const pos = crocEnv.positions(
+            position.base,
+            position.quote,
+            position.user,
+        );
 
         const liquidity = (
             await pos.queryRangePos(position.bidTick, position.askTick)
@@ -154,11 +157,12 @@ function Reposition() {
     }, [crocEnv, lastBlockNumber, position?.positionId]);
 
     const {
-        tradeData: { poolPriceNonDisplay: currentPoolPriceNonDisplay },
-    } = useAppSelector((state) => state);
-
-    const { isDenomBase, tokenA, tokenB, isTokenABase } =
-        useContext(TradeDataContext);
+        isDenomBase,
+        tokenA,
+        tokenB,
+        isTokenABase,
+        poolPriceNonDisplay: currentPoolPriceNonDisplay,
+    } = useContext(TradeDataContext);
 
     const currentPoolPriceTick =
         Math.log(currentPoolPriceNonDisplay) / Math.log(1.0001);
@@ -302,28 +306,35 @@ function Reposition() {
 
             tx = await repo.rebal();
             setNewRepositionTransactionHash(tx?.hash);
-            dispatch(addPendingTx(tx?.hash));
-            if (tx?.hash)
-                dispatch(
-                    addTransactionByType({
-                        txHash: tx.hash,
-                        txAction: 'Reposition',
-                        txType: 'Range',
-                        txDescription: `Reposition ${position.baseSymbol}+${position.quoteSymbol}`,
-                        txDetails: {
-                            baseAddress: position.base,
-                            quoteAddress: position.quote,
-                            poolIdx: poolIndex,
-                            baseSymbol: position.baseSymbol,
-                            quoteSymbol: position.quoteSymbol,
-                            baseTokenDecimals: baseTokenDecimals,
-                            quoteTokenDecimals: quoteTokenDecimals,
-                            lowTick: pinnedLowTick,
-                            highTick: pinnedHighTick,
-                            gridSize: lookupChain(position.chainId).gridSize,
-                        },
-                    }),
-                );
+            addPendingTx(tx?.hash);
+            if (tx?.hash) {
+                addTransactionByType({
+                    userAddress: userAddress || '',
+                    txHash: tx.hash,
+                    txAction: 'Reposition',
+                    txType: 'Range',
+                    txDescription: `Reposition ${position.baseSymbol}+${position.quoteSymbol}`,
+                    txDetails: {
+                        baseAddress: position.base,
+                        quoteAddress: position.quote,
+                        poolIdx: poolIndex,
+                        baseSymbol: position.baseSymbol,
+                        quoteSymbol: position.quoteSymbol,
+                        baseTokenDecimals: baseTokenDecimals,
+                        quoteTokenDecimals: quoteTokenDecimals,
+                        lowTick: pinnedLowTick,
+                        highTick: pinnedHighTick,
+                        gridSize: lookupChain(position.chainId).gridSize,
+                    },
+                });
+                const posHash = getPositionHash(position);
+                addPositionUpdate({
+                    txHash: tx.hash,
+                    positionID: posHash,
+                    isLimit: false,
+                    unixTimeAdded: Math.floor(Date.now() / 1000),
+                });
+            }
             // We want the user to exit themselves
             // navigate(redirectPath, { replace: true });
         } catch (error) {
@@ -345,16 +356,19 @@ function Reposition() {
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
                 IS_LOCAL_ENV && console.debug('repriced');
-                dispatch(removePendingTx(error.hash));
+                removePendingTx(error.hash);
                 const newTransactionHash = error.replacement.hash;
-                dispatch(addPendingTx(newTransactionHash));
-                dispatch(
-                    updateTransactionHash({
-                        oldHash: error.hash,
-                        newHash: error.replacement.hash,
-                    }),
-                );
+                addPendingTx(newTransactionHash);
+
+                updateTransactionHash(error.hash, error.replacement.hash);
                 setNewRepositionTransactionHash(newTransactionHash);
+                const posHash = getPositionHash(position);
+                addPositionUpdate({
+                    txHash: newTransactionHash,
+                    positionID: posHash,
+                    isLimit: false,
+                    unixTimeAdded: Math.floor(Date.now() / 1000),
+                });
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
             } else if (isTransactionFailedError(error)) {
@@ -362,8 +376,8 @@ function Reposition() {
             }
         }
         if (receipt) {
-            dispatch(addReceipt(JSON.stringify(receipt)));
-            dispatch(removePendingTx(receipt.transactionHash));
+            addReceipt(JSON.stringify(receipt));
+            removePendingTx(receipt.transactionHash);
         }
     };
 
@@ -565,8 +579,6 @@ function Reposition() {
         ) {
             return;
         }
-        setNewBaseQtyDisplay('...');
-        setNewQuoteQtyDisplay('...');
         const pool = crocEnv.pool(position.base, position.quote);
 
         const repo = new CrocReposition(pool, {
@@ -575,8 +587,6 @@ function Reposition() {
             mint: mintArgsForReposition(debouncedLowTick, debouncedHighTick),
         });
 
-        setNewBaseQtyDisplay('...');
-        setNewQuoteQtyDisplay('...');
         repo.postBalance().then(([base, quote]: [number, number]) => {
             setNewBaseQtyDisplay(getFormattedNumber({ value: base }));
             setNewQuoteQtyDisplay(getFormattedNumber({ value: quote }));
@@ -618,19 +628,26 @@ function Reposition() {
             target='_blank'
             rel='noreferrer'
             className={styles.view_etherscan}
-            aria-label='view on etherscan'
+            aria-label='view on block explorer'
         >
-            View on Etherscan
+            View on Block Explorer
             <FiExternalLink size={12} color='var(--text1)' />
         </a>
     );
+
+    const isCurrentPositionEmptyOrLoading =
+        (currentBaseQtyDisplayTruncated === '0.00' &&
+            currentQuoteQtyDisplayTruncated === '0.00') ||
+        (currentBaseQtyDisplayTruncated === '...' &&
+            currentQuoteQtyDisplayTruncated === '...') ||
+        (newBaseQtyDisplay === '...' && newQuoteQtyDisplay === '...');
 
     return (
         <>
             <div className={styles.repositionContainer}>
                 <RepositionHeader
                     setRangeWidthPercentage={setRangeWidthPercentage}
-                    positionHash={position.firstMintTx}
+                    positionHash={posHashTruncated}
                     resetTxHash={() => setNewRepositionTransactionHash('')}
                 />
                 <div className={styles.reposition_content}>
@@ -679,7 +696,8 @@ function Reposition() {
                                 txErrorMessage={txErrorMessage}
                                 sendTransaction={sendRepositionTransaction}
                                 resetConfirmation={resetConfirmation}
-                                transactionPendingDisplayString={`Repositioning transaction with ${tokenA.symbol} and ${tokenB.symbol}`}
+                                transactionPendingDisplayString={`Repositioning ${tokenA.symbol} and ${tokenB.symbol}`}
+                                disableSubmitAgain
                             />
                         ) : (
                             <Button
@@ -698,7 +716,11 @@ function Reposition() {
                                         ? sendRepositionTransaction
                                         : handleModalOpen
                                 }
-                                disabled={isRepositionSent || isPositionInRange}
+                                disabled={
+                                    isRepositionSent ||
+                                    isPositionInRange ||
+                                    isCurrentPositionEmptyOrLoading
+                                }
                                 flat
                             />
                         )}

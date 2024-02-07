@@ -1,5 +1,4 @@
 import { TokenIF } from '../../../../ambient-utils/types';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import {
     Dispatch,
@@ -9,13 +8,7 @@ import {
     useMemo,
     useState,
 } from 'react';
-import {
-    addPendingTx,
-    addReceipt,
-    addTransactionByType,
-    removePendingTx,
-    updateTransactionHash,
-} from '../../../../utils/state/receiptDataSlice';
+
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
@@ -27,7 +20,8 @@ import {
     DEFAULT_SCROLL_GAS_PRICE_IN_GWEI,
     IS_LOCAL_ENV,
     NUM_WEI_IN_GWEI,
-    DEPOSIT_BUFFER_MULTIPLIER,
+    DEPOSIT_BUFFER_MULTIPLIER_MAINNET,
+    DEPOSIT_BUFFER_MULTIPLIER_SCROLL,
     ZERO_ADDRESS,
 } from '../../../../ambient-utils/constants';
 import { FaGasPump } from 'react-icons/fa';
@@ -49,6 +43,7 @@ import {
     GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE,
     GAS_DROPS_ESTIMATE_DEPOSIT_ERC20,
 } from '../../../../ambient-utils/constants/';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -79,9 +74,15 @@ export default function Deposit(props: propsIF) {
 
     const { userAddress } = useContext(UserDataContext);
 
-    const { approve, isApprovalPending } = useApprove();
+    const {
+        addPendingTx,
+        addReceipt,
+        addTransactionByType,
+        removePendingTx,
+        updateTransactionHash,
+    } = useContext(ReceiptContext);
 
-    const dispatch = useAppDispatch();
+    const { approve, isApprovalPending } = useApprove();
 
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
@@ -90,14 +91,14 @@ export default function Deposit(props: propsIF) {
     )
         .mul(BigNumber.from(NUM_WEI_IN_GWEI))
         .mul(BigNumber.from(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE))
-        .mul(BigNumber.from(DEPOSIT_BUFFER_MULTIPLIER));
+        .mul(BigNumber.from(DEPOSIT_BUFFER_MULTIPLIER_MAINNET));
 
     const amountToReduceNativeTokenQtyScroll = BigNumber.from(
         Math.ceil(gasPriceInGwei || DEFAULT_SCROLL_GAS_PRICE_IN_GWEI),
     )
         .mul(BigNumber.from(NUM_WEI_IN_GWEI))
         .mul(BigNumber.from(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE))
-        .mul(BigNumber.from(DEPOSIT_BUFFER_MULTIPLIER));
+        .mul(BigNumber.from(DEPOSIT_BUFFER_MULTIPLIER_SCROLL));
 
     const amountToReduceNativeTokenQty =
         chainId === '0x82750' || chainId === '0x8274f'
@@ -260,15 +261,14 @@ export default function Deposit(props: propsIF) {
                     .token(selectedToken.address)
                     .deposit(depositQtyDisplay, userAddress);
 
-                dispatch(addPendingTx(tx?.hash));
+                addPendingTx(tx?.hash);
                 if (tx?.hash)
-                    dispatch(
-                        addTransactionByType({
-                            txHash: tx.hash,
-                            txType: 'Deposit',
-                            txDescription: `Deposit ${selectedToken.symbol}`,
-                        }),
-                    );
+                    addTransactionByType({
+                        userAddress: userAddress || '',
+                        txHash: tx.hash,
+                        txType: 'Deposit',
+                        txDescription: `Deposit ${selectedToken.symbol}`,
+                    });
 
                 let receipt;
 
@@ -281,16 +281,14 @@ export default function Deposit(props: propsIF) {
                     // in their client, but we now have the updated info
                     if (isTransactionReplacedError(error)) {
                         IS_LOCAL_ENV && 'repriced';
-                        dispatch(removePendingTx(error.hash));
+                        removePendingTx(error.hash);
 
                         const newTransactionHash = error.replacement.hash;
-                        dispatch(addPendingTx(newTransactionHash));
+                        addPendingTx(newTransactionHash);
 
-                        dispatch(
-                            updateTransactionHash({
-                                oldHash: error.hash,
-                                newHash: error.replacement.hash,
-                            }),
+                        updateTransactionHash(
+                            error.hash,
+                            error.replacement.hash,
                         );
                         IS_LOCAL_ENV && { newTransactionHash };
                         receipt = error.receipt;
@@ -301,8 +299,8 @@ export default function Deposit(props: propsIF) {
                 }
 
                 if (receipt) {
-                    dispatch(addReceipt(JSON.stringify(receipt)));
-                    dispatch(removePendingTx(receipt.transactionHash));
+                    addReceipt(JSON.stringify(receipt));
+                    removePendingTx(receipt.transactionHash);
                     resetDepositQty();
                 }
             } catch (error) {

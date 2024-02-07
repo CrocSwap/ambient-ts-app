@@ -1,26 +1,24 @@
 import React, { createContext, useContext, useEffect } from 'react';
-import { fetchUserRecentChanges } from '../ambient-utils/api';
-import { getLimitOrderData, getPositionData } from '../ambient-utils/dataLayer';
+import { fetchUserRecentChanges, fetchRecords } from '../ambient-utils/api';
 import useDebounce from '../App/hooks/useDebounce';
-import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../ambient-utils/constants';
+import { IS_LOCAL_ENV } from '../ambient-utils/constants';
 import {
     TokenIF,
-    TransactionIF,
     PositionIF,
-    PositionServerIF,
     LimitOrderIF,
-    LimitOrderServerIF,
+    TransactionIF,
     LiquidityDataIF,
+    RecordType,
 } from '../ambient-utils/types';
-
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
-
 import { UserDataContext } from './UserDataContext';
 import { DataLoadingContext } from './DataLoadingContext';
+import { PositionUpdateIF, ReceiptContext } from './ReceiptContext';
+import { getPositionHash } from '../ambient-utils/dataLayer/functions/getPositionHash';
 
 interface Changes {
     dataReceived: boolean;
@@ -53,11 +51,15 @@ interface PoolRequestParams {
 interface GraphDataContextIF {
     positionsByUser: PositionsByUser;
     limitOrdersByUser: LimitOrdersByUser;
-    changesByUser: Changes;
+    transactionsByUser: Changes;
+    userTransactionsByPool: Changes;
+    unindexedNonFailedSessionTransactionHashes: string[];
+    unindexedNonFailedSessionPositionUpdates: PositionUpdateIF[];
+    unindexedNonFailedSessionLimitOrderUpdates: PositionUpdateIF[];
+    transactionsByPool: Changes;
     userPositionsByPool: PositionsByPool;
     positionsByPool: PositionsByPool;
     leaderboardByPool: PositionsByPool;
-    changesByPool: Changes;
     userLimitOrdersByPool: LimitOrdersByPool;
     limitOrdersByPool: LimitOrdersByPool;
     liquidityData: LiquidityDataIF | undefined;
@@ -66,8 +68,9 @@ interface GraphDataContextIF {
     setLiquidityPending: (params: PoolRequestParams) => void;
     setLiquidity: (liqData: LiquidityDataIF) => void;
     setLiquidityFee: React.Dispatch<React.SetStateAction<number>>;
-    setChangesByPool: React.Dispatch<React.SetStateAction<Changes>>;
-    setChangesByUser: React.Dispatch<React.SetStateAction<Changes>>;
+    setTransactionsByPool: React.Dispatch<React.SetStateAction<Changes>>;
+    setTransactionsByUser: React.Dispatch<React.SetStateAction<Changes>>;
+    setUserTransactionsByPool: React.Dispatch<React.SetStateAction<Changes>>;
     setUserPositionsByPool: React.Dispatch<
         React.SetStateAction<PositionsByPool>
     >;
@@ -104,14 +107,21 @@ export const GraphDataContextProvider = (props: {
             dataReceived: false,
             limitOrders: [],
         });
-    const [changesByUser, setChangesByUser] = React.useState<Changes>({
-        dataReceived: false,
-        changes: [],
-    });
+    const [transactionsByUser, setTransactionsByUser] = React.useState<Changes>(
+        {
+            dataReceived: false,
+            changes: [],
+        },
+    );
     const [userPositionsByPool, setUserPositionsByPool] =
         React.useState<PositionsByPool>({
             dataReceived: false,
             positions: [],
+        });
+    const [userTransactionsByPool, setUserTransactionsByPool] =
+        React.useState<Changes>({
+            dataReceived: false,
+            changes: [],
         });
 
     const [positionsByPool, setPositionsByPool] =
@@ -124,10 +134,12 @@ export const GraphDataContextProvider = (props: {
             dataReceived: false,
             positions: [],
         });
-    const [changesByPool, setChangesByPool] = React.useState<Changes>({
-        dataReceived: false,
-        changes: [],
-    });
+    const [transactionsByPool, setTransactionsByPool] = React.useState<Changes>(
+        {
+            dataReceived: false,
+            changes: [],
+        },
+    );
     const [userLimitOrdersByPool, setUserLimitOrdersByPool] =
         React.useState<LimitOrdersByPool>({
             dataReceived: false,
@@ -151,6 +163,9 @@ export const GraphDataContextProvider = (props: {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
 
+    const { pendingTransactions, sessionReceipts, sessionPositionUpdates } =
+        useContext(ReceiptContext);
+
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const {
         cachedQuerySpotPrice,
@@ -163,15 +178,9 @@ export const GraphDataContextProvider = (props: {
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
-    const { userAddress, isUserConnected } = useContext(UserDataContext);
-
-    const userLimitOrderStatesCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/user_limit_orders?'
-        : activeNetwork.graphCacheUrl + '/user_limit_orders?';
-
-    const userPositionsCacheEndpoint = GCGO_OVERRIDE_URL
-        ? GCGO_OVERRIDE_URL + '/user_positions?'
-        : activeNetwork.graphCacheUrl + '/user_positions?';
+    const { userAddress: userDefaultAddress, isUserConnected } =
+        useContext(UserDataContext);
+    const userAddress = userDefaultAddress;
 
     const resetUserGraphData = () => {
         setPositionsByUser({
@@ -182,10 +191,11 @@ export const GraphDataContextProvider = (props: {
             dataReceived: false,
             limitOrders: [],
         });
-        setChangesByUser({
+        setTransactionsByUser({
             dataReceived: false,
             changes: [],
         });
+        setSessionTransactionHashes([]);
     };
 
     const setLiquidity = (liqData: LiquidityDataIF) => {
@@ -218,131 +228,188 @@ export const GraphDataContextProvider = (props: {
         setLiquidityData(undefined);
     };
 
+    const [sessionTransactionHashes, setSessionTransactionHashes] =
+        React.useState<string[]>([]);
+
     useEffect(() => {
         resetUserGraphData();
     }, [isUserConnected, userAddress]);
+
+    const userTxByPoolHashArray = userTransactionsByPool.changes.map(
+        (change) => change.txHash,
+    );
+
+    const userPositionsByPoolIndexUpdateArray: PositionUpdateIF[] =
+        userPositionsByPool.positions.map((position) => {
+            return {
+                positionID: getPositionHash(position),
+                isLimit: false,
+                unixTimeIndexed: position.latestUpdateTime,
+            };
+        });
+
+    const userLimitOrdersByPoolIndexUpdateArray: PositionUpdateIF[] =
+        userLimitOrdersByPool.limitOrders.map((limitOrder) => {
+            const posHash = getPositionHash(undefined, {
+                isPositionTypeAmbient: false,
+                user: limitOrder.user,
+                baseAddress: limitOrder.base,
+                quoteAddress: limitOrder.quote,
+                poolIdx: limitOrder.poolIdx,
+                bidTick: limitOrder.bidTick,
+                askTick: limitOrder.askTick,
+            });
+            return {
+                positionID: posHash,
+                isLimit: true,
+                unixTimeIndexed: limitOrder.latestUpdateTime,
+            };
+        });
+
+    useEffect(() => {
+        for (let i = 0; i < pendingTransactions.length; i++) {
+            const pendingTx = pendingTransactions[i];
+            setSessionTransactionHashes((prev) => {
+                if (!prev.includes(pendingTx)) {
+                    return [pendingTx, ...prev];
+                } else return prev;
+            });
+        }
+    }, [pendingTransactions]);
+
+    const unindexedSessionTransactionHashes = sessionTransactionHashes.filter(
+        (tx) => !userTxByPoolHashArray.includes(tx),
+    );
+
+    const failedSessionTransactionHashes = sessionReceipts
+        .filter((r) => JSON.parse(r).status === 0)
+        .map((r) => JSON.parse(r).transactionHash);
+
+    // transaction hashes for subsequently fully removed positions
+    const removedPositionUpdateTxHashes = sessionPositionUpdates
+        .filter((pos1) =>
+            sessionPositionUpdates.some((pos2) => {
+                return (
+                    pos1.positionID === pos2.positionID &&
+                    pos2.isFullRemoval &&
+                    (pos2.unixTimeReceipt || 0) > (pos1.unixTimeAdded || 0)
+                );
+            }),
+        )
+        .map((removedTx) => removedTx.txHash);
+
+    const unindexedNonFailedSessionTransactionHashes =
+        unindexedSessionTransactionHashes.filter(
+            (tx) => !failedSessionTransactionHashes.includes(tx),
+        );
+
+    const unindexedNonFailedSessionPositionUpdates =
+        sessionPositionUpdates.filter(
+            (positionUpdate) =>
+                positionUpdate.isLimit === false &&
+                !failedSessionTransactionHashes.includes(
+                    positionUpdate.txHash,
+                ) &&
+                !removedPositionUpdateTxHashes.includes(
+                    positionUpdate.txHash,
+                ) &&
+                !userPositionsByPoolIndexUpdateArray.some(
+                    (userPositionIndexUpdate) =>
+                        userPositionIndexUpdate.positionID ===
+                            positionUpdate.positionID &&
+                        (userPositionIndexUpdate.unixTimeIndexed || 0) >
+                            (positionUpdate.unixTimeAdded || 0),
+                ),
+        );
+
+    const unindexedNonFailedSessionLimitOrderUpdates =
+        sessionPositionUpdates.filter(
+            (positionUpdate) =>
+                positionUpdate.isLimit === true &&
+                !failedSessionTransactionHashes.includes(
+                    positionUpdate.txHash,
+                ) &&
+                !removedPositionUpdateTxHashes.includes(
+                    positionUpdate.txHash,
+                ) &&
+                !userLimitOrdersByPoolIndexUpdateArray.some(
+                    (userPositionIndexUpdate) =>
+                        userPositionIndexUpdate.positionID ===
+                            positionUpdate.positionID &&
+                        (userPositionIndexUpdate.unixTimeIndexed || 0) >
+                            (positionUpdate.unixTimeAdded || 0),
+                ),
+        );
 
     // Wait 2 seconds before refreshing to give cache server time to sync from
     // last block
     const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
 
     useEffect(() => {
-        // This useEffect controls a series of other dispatches that fetch data on update of the user object
-        // user Postions, limit orders, and recent changes are all governed here
-        if (
-            isServerEnabled &&
-            isUserConnected &&
-            userAddress &&
-            crocEnv &&
-            provider &&
-            tokens.tokenUniv.length &&
-            chainData.chainId
-        ) {
-            IS_LOCAL_ENV && console.debug('fetching user positions');
-
-            try {
-                fetch(
-                    userPositionsCacheEndpoint +
-                        new URLSearchParams({
-                            user: userAddress,
-                            chainId: chainData.chainId,
-                            ensResolution: 'true',
-                            annotate: 'true',
-                            omitKnockout: 'true',
-                            addValue: 'true',
-                        }),
-                )
-                    .then((response) => response?.json())
-                    .then((json) => {
-                        // temporarily skip ENS fetch
-                        const skipENSFetch = true;
-                        const userPositions = json?.data;
-                        if (userPositions && crocEnv) {
-                            Promise.all(
-                                userPositions.map(
-                                    (position: PositionServerIF) => {
-                                        return getPositionData(
-                                            position,
-                                            tokens.tokenUniv,
-                                            crocEnv,
-                                            provider,
-                                            chainData.chainId,
-                                            lastBlockNumber,
-                                            cachedFetchTokenPrice,
-                                            cachedQuerySpotPrice,
-                                            cachedTokenDetails,
-                                            cachedEnsResolve,
-                                            skipENSFetch,
-                                        );
-                                    },
-                                ),
-                            ).then((updatedPositions) => {
-                                setPositionsByUser({
-                                    dataReceived: true,
-                                    positions: updatedPositions,
-                                }),
-                                    setDataLoadingStatus({
-                                        datasetName:
-                                            'isConnectedUserRangeDataLoading',
-                                        loadingStatus: false,
-                                    });
-                            });
-                        }
-                    })
-                    .catch(console.error);
-            } catch (error) {
-                console.error;
+        const fetchData = async () => {
+            // This useEffect controls a series of other dispatches that fetch data on update of the user object
+            // user Postions, limit orders, and recent changes are all governed here
+            if (
+                !isServerEnabled ||
+                !isUserConnected ||
+                !userAddress ||
+                !crocEnv ||
+                !provider ||
+                !tokens.tokenUniv.length ||
+                !chainData.chainId
+            ) {
+                return;
             }
-
-            IS_LOCAL_ENV && console.debug('fetching user limit orders ');
-
-            fetch(
-                userLimitOrderStatesCacheEndpoint +
-                    new URLSearchParams({
+            const recordTargets = [RecordType.Position, RecordType.LimitOrder];
+            for (let i = 0; i < recordTargets.length; i++) {
+                IS_LOCAL_ENV &&
+                    console.debug(
+                        'fetching user positions for ' + recordTargets[i],
+                    );
+                try {
+                    const updatedLedger = await fetchRecords({
+                        recordType: recordTargets[i],
                         user: userAddress,
                         chainId: chainData.chainId,
-                        ensResolution: 'true',
-                        omitEmpty: 'true',
-                    }),
-            )
-                .then((response) => response?.json())
-                .then((json) => {
-                    // temporarily skip ENS fetch
-                    const skipENSFetch = true;
-                    const userLimitOrderStates = json?.data;
-                    if (userLimitOrderStates) {
-                        Promise.all(
-                            userLimitOrderStates.map(
-                                (limitOrder: LimitOrderServerIF) => {
-                                    return getLimitOrderData(
-                                        limitOrder,
-                                        tokens.tokenUniv,
-                                        crocEnv,
-                                        provider,
-                                        chainData.chainId,
-                                        lastBlockNumber,
-                                        cachedFetchTokenPrice,
-                                        cachedQuerySpotPrice,
-                                        cachedTokenDetails,
-                                        cachedEnsResolve,
-                                        skipENSFetch,
-                                    );
-                                },
-                            ),
-                        ).then((updatedLimitOrderStates) => {
-                            setLimitOrdersByUser({
-                                dataReceived: true,
-                                limitOrders: updatedLimitOrderStates,
-                            }),
-                                setDataLoadingStatus({
-                                    datasetName:
-                                        'isConnectedUserOrderDataLoading',
-                                    loadingStatus: false,
-                                });
+                        gcUrl: activeNetwork.graphCacheUrl,
+                        provider,
+                        lastBlockNumber,
+                        tokenUniv: tokens.tokenUniv,
+                        crocEnv,
+                        cachedFetchTokenPrice,
+                        cachedQuerySpotPrice,
+                        cachedTokenDetails,
+                        cachedEnsResolve,
+                    });
+
+                    if (recordTargets[i] == RecordType.Position) {
+                        setPositionsByUser({
+                            dataReceived: true,
+                            positions: updatedLedger as PositionIF[],
                         });
+                        setDataLoadingStatus({
+                            datasetName: 'isConnectedUserRangeDataLoading',
+                            loadingStatus: false,
+                        });
+                    } else {
+                        // default user_positions
+                        setLimitOrdersByUser({
+                            dataReceived: true,
+                            limitOrders: updatedLedger as LimitOrderIF[],
+                        }),
+                            setDataLoadingStatus({
+                                datasetName: 'isConnectedUserOrderDataLoading',
+                                loadingStatus: false,
+                            });
                     }
-                })
-                .catch(console.error);
+                } catch (error) {
+                    console.error(error);
+                }
+                IS_LOCAL_ENV &&
+                    console.debug(
+                        'fetching user limit orders ' + recordTargets[i],
+                    );
+            }
 
             try {
                 fetchUserRecentChanges({
@@ -366,7 +433,7 @@ export const GraphDataContextProvider = (props: {
                 })
                     .then((updatedTransactions) => {
                         if (updatedTransactions) {
-                            setChangesByUser({
+                            setTransactionsByUser({
                                 dataReceived: true,
                                 changes: updatedTransactions,
                             });
@@ -433,7 +500,8 @@ export const GraphDataContextProvider = (props: {
             } catch (error) {
                 console.error;
             }
-        }
+        };
+        fetchData();
     }, [
         isServerEnabled,
         tokens.tokenUniv.length,
@@ -448,17 +516,22 @@ export const GraphDataContextProvider = (props: {
     const graphDataContext: GraphDataContextIF = {
         positionsByUser,
         limitOrdersByUser,
-        changesByUser,
+        transactionsByUser,
         userPositionsByPool,
+        userTransactionsByPool,
+        unindexedNonFailedSessionTransactionHashes,
+        unindexedNonFailedSessionPositionUpdates,
+        unindexedNonFailedSessionLimitOrderUpdates,
         resetUserGraphData,
-        setChangesByUser,
+        setTransactionsByUser,
         setUserPositionsByPool,
+        setUserTransactionsByPool,
         positionsByPool,
         leaderboardByPool,
         setPositionsByPool,
         setLeaderboardByPool,
-        changesByPool,
-        setChangesByPool,
+        transactionsByPool,
+        setTransactionsByPool,
         userLimitOrdersByPool,
         setUserLimitOrdersByPool,
         limitOrdersByPool,
