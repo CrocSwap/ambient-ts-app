@@ -208,24 +208,26 @@ function TradeCandleStickChart(props: propsIF) {
         poolPriceDisplay !== undefined && poolPriceDisplay > 0,
     ]);
 
-    useEffect(() => {
-        if (unparsedCandleData === undefined) {
-            clearLiquidityData();
-        }
-    }, [baseTokenAddress + quoteTokenAddress]);
+    // temporarily commented to prevent unexpected scaling of liquidity curve after pool change
 
-    const clearLiquidityData = () => {
-        if (liquidityData) {
-            liquidityData.liqAskData = [];
-            liquidityData.liqBidData = [];
-            liquidityData.depthLiqBidData = [];
-            liquidityData.depthLiqAskData = [];
-            liquidityData.topBoundary = 0;
-            liquidityData.lowBoundary = 0;
-            liquidityData.liqTransitionPointforCurve = 0;
-            liquidityData.liqTransitionPointforDepth = 0;
-        }
-    };
+    // useEffect(() => {
+    //     if (unparsedCandleData === undefined) {
+    //         clearLiquidityData();
+    //     }
+    // }, [baseTokenAddress + quoteTokenAddress]);
+
+    // const clearLiquidityData = () => {
+    //     if (liquidityData) {
+    //         liquidityData.liqAskData = [];
+    //         liquidityData.liqBidData = [];
+    //         liquidityData.depthLiqBidData = [];
+    //         liquidityData.depthLiqAskData = [];
+    //         liquidityData.topBoundary = 0;
+    //         liquidityData.lowBoundary = 0;
+    //         liquidityData.liqTransitionPointforCurve = 0;
+    //         liquidityData.liqTransitionPointforDepth = 0;
+    //     }
+    // };
 
     // Parse liquidtiy data
     const liquidityData: liquidityChartData | undefined = useMemo(() => {
@@ -553,7 +555,7 @@ function TradeCandleStickChart(props: propsIF) {
             setIsLoading(true);
             return undefined;
         }
-    }, [liqBoundary]);
+    }, [liqBoundary, baseTokenAddress + quoteTokenAddress]);
 
     useEffect(() => {
         if (unparsedCandleData) {
@@ -784,16 +786,17 @@ function TradeCandleStickChart(props: propsIF) {
         }
     }, [period, diffHashSig(unparsedCandleData)]);
 
-    // If the last candle is displayed, chart scale according to default values when switch pool
-    useEffect(() => {
-        if (candleScale.isShowLatestCandle) {
-            const timer = setTimeout(() => {
-                resetChart();
-            }, 300);
+    // // If the last candle is displayed, chart scale according to default values when switch pool
+    // useEffect(() => {
+    //     if (candleScale.isShowLatestCandle) {
+    //         const timer = setTimeout(() => {
+    //             console.log('resetting chart');
+    //             resetChart();
+    //         }, 300);
 
-            return () => clearTimeout(timer);
-        }
-    }, [baseTokenAddress + quoteTokenAddress]);
+    //         return () => clearTimeout(timer);
+    //     }
+    // }, [baseTokenAddress + quoteTokenAddress]);
 
     const resetChart = () => {
         if (scaleData && unparsedCandleData) {
