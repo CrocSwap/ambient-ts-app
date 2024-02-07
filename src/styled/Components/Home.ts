@@ -22,7 +22,7 @@ export const HomeTitle = styled.div`
 `;
 
 export const HomeContent = styled(FlexContainer)`
-    max-width: 1200px;
+    max-width: 1500px;
     margin: 0 auto;
     list-style-type: none;
     display: flex;
