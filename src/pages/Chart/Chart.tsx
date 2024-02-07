@@ -4773,6 +4773,7 @@ export default function Chart(props: propsIF) {
                 });
                 setIsHoveredOrderHistory(true);
             } else {
+                setHoveredOrderTooltipPlacement(() => undefined);
                 setHoveredOrderHistory(() => undefined);
                 setIsHoveredOrderHistory(false);
             }
@@ -5114,10 +5115,6 @@ export default function Chart(props: propsIF) {
                     );
                 }
 
-                if (isOrderHistorySelected === undefined) {
-                    setHoveredOrderTooltipPlacement(() => undefined);
-                }
-
                 setIsOnCandleOrVolumeMouseLocation(
                     isOrderHistorySelected !== undefined &&
                         isOrderHistorySelected.order !== undefined
@@ -5448,14 +5445,14 @@ export default function Chart(props: propsIF) {
                     const isOverLeft =
                         isSelectedOrderHistory &&
                         selectedOrderTooltipPlacement &&
-                        ((selectedOrderTooltipPlacement.left - 75 <
-                            tempPlace + 75 &&
-                            selectedOrderTooltipPlacement.left - 75 >
-                                tempPlace - 75) ||
-                            (selectedOrderTooltipPlacement.left + 75 <
-                                tempPlace - 75 &&
-                                selectedOrderTooltipPlacement.left + 75 >
-                                    tempPlace + 75));
+                        ((tempPlace + 75 <
+                            selectedOrderTooltipPlacement.left + 75 &&
+                            tempPlace + 75 >
+                                selectedOrderTooltipPlacement.left - 75) ||
+                            (tempPlace - 75 <
+                                selectedOrderTooltipPlacement.left + 75 &&
+                                tempPlace - 75 >
+                                    selectedOrderTooltipPlacement.left - 75));
 
                     const isOverTop =
                         isSelectedOrderHistory &&
