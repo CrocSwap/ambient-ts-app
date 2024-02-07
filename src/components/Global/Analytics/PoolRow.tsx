@@ -26,6 +26,8 @@ export default function PoolRow(props: propsIF) {
 
     const mobileScrenView = useMediaQuery('(max-width: 500px)');
 
+    console.log({ pool });
+
     return (
         <TableRow
             onClick={() => goToMarket(pool.base.address, pool.quote.address)}
@@ -54,7 +56,7 @@ export default function PoolRow(props: propsIF) {
                 </FlexContainer>
             </TableCell>
             <TableCell hidden sm left>
-                <p>{pool.name}</p>
+                <p style={{ textTransform: 'none' }}>{pool.name}</p>
             </TableCell>
             <TableCell hidden sm>
                 <p>{pool.displayPrice ?? '...'}</p>

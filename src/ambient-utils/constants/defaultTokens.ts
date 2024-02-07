@@ -44,6 +44,17 @@ export const mainnetPEPE: TokenIF = {
     symbol: 'PEPE',
 };
 
+export const mainnetSYN: TokenIF = {
+    address: '0x0f2d719407fdbeff09d87557abb7232601fd9f29',
+    chainId: 1,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    logoURI:
+        'https://assets.coingecko.com/coins/images/18024/thumb/synapse_social_icon.png?1696517540',
+    name: 'Synapse',
+    symbol: 'SYN',
+};
+
 export const mainnetDAI: TokenIF = {
     address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
     chainId: 1,
@@ -169,6 +180,15 @@ export const scrollETH: TokenIF = {
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
 };
 
+export const scrollwstETH: TokenIF = {
+    name: 'Wrapped stETH',
+    address: '0xf610A9dfB7C89644979b4A0f27063E9e7d7Cda32',
+    symbol: 'wstETH',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: 'https://scroll-tech.github.io/token-list/data/wstETH/logo.svg',
+};
+
 export const scrollUSDC: TokenIF = {
     name: 'USDCoin',
     address: '0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4',
@@ -233,6 +253,8 @@ export const defaultTokens: TokenIF[] = [
     mainnetWBTC,
     mainnetPEPE,
     mainnetDAI,
+    mainnetSYN,
+    mainnetUSDT,
     goerliETH,
     goerliUSDC,
     goerliWBTC,
@@ -246,6 +268,7 @@ export const defaultTokens: TokenIF[] = [
     scrollAxlUSDC,
     scrollUSDT,
     scrollWBTC,
+    scrollwstETH,
     scrollSepoliaETH,
     scrollSepoliaUSDC,
 ];
