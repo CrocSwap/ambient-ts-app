@@ -26,7 +26,11 @@ import { ChartContext } from '../../../contexts/ChartContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import Spinner from '../../../components/Global/Spinner/Spinner';
 import { LiquidityDataLocal } from './TradeCharts';
-import { CandleDataIF, CandleScaleIF } from '../../../ambient-utils/types';
+import {
+    CandleDataIF,
+    CandleScaleIF,
+    TransactionIF,
+} from '../../../ambient-utils/types';
 import {
     chartItemStates,
     getInitialDisplayCandleCount,
@@ -150,6 +154,17 @@ function TradeCandleStickChart(props: propsIF) {
 
     const mobileView = useMediaQuery('(max-width: 600px)');
 
+    const [userTransactionData, setUserTransactionData] =
+        useState<Array<TransactionIF>>();
+
+    const { userTransactionsByPool } = useContext(GraphDataContext);
+
+    useEffect(() => {
+        if (userTransactionsByPool) {
+            setUserTransactionData(userTransactionsByPool.changes);
+        }
+    }, [userTransactionsByPool]);
+
     useEffect(() => {
         setIsLoading(true);
     }, [period, isDenomBase]);
@@ -193,24 +208,26 @@ function TradeCandleStickChart(props: propsIF) {
         poolPriceDisplay !== undefined && poolPriceDisplay > 0,
     ]);
 
-    useEffect(() => {
-        if (unparsedCandleData === undefined) {
-            clearLiquidityData();
-        }
-    }, [baseTokenAddress + quoteTokenAddress]);
+    // temporarily commented to prevent unexpected scaling of liquidity curve after pool change
 
-    const clearLiquidityData = () => {
-        if (liquidityData) {
-            liquidityData.liqAskData = [];
-            liquidityData.liqBidData = [];
-            liquidityData.depthLiqBidData = [];
-            liquidityData.depthLiqAskData = [];
-            liquidityData.topBoundary = 0;
-            liquidityData.lowBoundary = 0;
-            liquidityData.liqTransitionPointforCurve = 0;
-            liquidityData.liqTransitionPointforDepth = 0;
-        }
-    };
+    // useEffect(() => {
+    //     if (unparsedCandleData === undefined) {
+    //         clearLiquidityData();
+    //     }
+    // }, [baseTokenAddress + quoteTokenAddress]);
+
+    // const clearLiquidityData = () => {
+    //     if (liquidityData) {
+    //         liquidityData.liqAskData = [];
+    //         liquidityData.liqBidData = [];
+    //         liquidityData.depthLiqBidData = [];
+    //         liquidityData.depthLiqAskData = [];
+    //         liquidityData.topBoundary = 0;
+    //         liquidityData.lowBoundary = 0;
+    //         liquidityData.liqTransitionPointforCurve = 0;
+    //         liquidityData.liqTransitionPointforDepth = 0;
+    //     }
+    // };
 
     // Parse liquidtiy data
     const liquidityData: liquidityChartData | undefined = useMemo(() => {
@@ -538,7 +555,7 @@ function TradeCandleStickChart(props: propsIF) {
             setIsLoading(true);
             return undefined;
         }
-    }, [liqBoundary]);
+    }, [liqBoundary, baseTokenAddress + quoteTokenAddress]);
 
     useEffect(() => {
         if (unparsedCandleData) {
@@ -769,16 +786,17 @@ function TradeCandleStickChart(props: propsIF) {
         }
     }, [period, diffHashSig(unparsedCandleData)]);
 
-    // If the last candle is displayed, chart scale according to default values when switch pool
-    useEffect(() => {
-        if (candleScale.isShowLatestCandle) {
-            const timer = setTimeout(() => {
-                resetChart();
-            }, 300);
+    // // If the last candle is displayed, chart scale according to default values when switch pool
+    // useEffect(() => {
+    //     if (candleScale.isShowLatestCandle) {
+    //         const timer = setTimeout(() => {
+    //             console.log('resetting chart');
+    //             resetChart();
+    //         }, 300);
 
-            return () => clearTimeout(timer);
-        }
-    }, [tokenPair]);
+    //         return () => clearTimeout(timer);
+    //     }
+    // }, [baseTokenAddress + quoteTokenAddress]);
 
     const resetChart = () => {
         if (scaleData && unparsedCandleData) {
@@ -883,6 +901,7 @@ function TradeCandleStickChart(props: propsIF) {
                         candleTime={chartSettings.candleTime.global}
                         unparsedData={candleData}
                         updateURL={updateURL}
+                        userTransactionData={userTransactionData}
                     />
                 ) : (
                     <Spinner size={100} bg='var(--dark2)' centered />

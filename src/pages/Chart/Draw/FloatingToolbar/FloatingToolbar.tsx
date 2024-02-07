@@ -1028,7 +1028,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                         floatingDiv.getBoundingClientRect().width / 2 +
                         yAxis.getBoundingClientRect().width / 2,
                 );
-            setDivTop(divTopLocal);
+            setDivTop(divTopLocal - 40);
         }
     }, [
         floatingDivRef.current === null,
