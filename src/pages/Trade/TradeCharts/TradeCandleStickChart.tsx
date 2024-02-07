@@ -555,7 +555,7 @@ function TradeCandleStickChart(props: propsIF) {
             setIsLoading(true);
             return undefined;
         }
-    }, [liqBoundary]);
+    }, [liqBoundary, baseTokenAddress + quoteTokenAddress]);
 
     useEffect(() => {
         if (unparsedCandleData) {
