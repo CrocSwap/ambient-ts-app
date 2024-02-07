@@ -1,5 +1,5 @@
-import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 import { PositionIF } from '../../types';
+import { ambientPosSlot, concPosSlot } from './getSlot';
 
 // fn to get the position hash for a position
 export function getPositionHash(

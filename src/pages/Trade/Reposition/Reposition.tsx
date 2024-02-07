@@ -1,11 +1,7 @@
 // START: Import React and Dongles
 import { useContext, useEffect, useMemo, useState, memo } from 'react';
 import { useLocation, useParams, Navigate } from 'react-router-dom';
-import {
-    CrocPositionView,
-    CrocReposition,
-    toDisplayPrice,
-} from '@crocswap-libs/sdk';
+import { CrocReposition, toDisplayPrice } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
 import RepositionHeader from '../../../components/Trade/Reposition/RepositionHeader/RepositionHeader';
@@ -142,8 +138,11 @@ function Reposition() {
 
     const updateConcLiq = async () => {
         if (!crocEnv || !position) return;
-        const pool = crocEnv.pool(position.base, position.quote);
-        const pos = new CrocPositionView(pool, position.user);
+        const pos = crocEnv.positions(
+            position.base,
+            position.quote,
+            position.user,
+        );
 
         const liquidity = (
             await pos.queryRangePos(position.bidTick, position.askTick)

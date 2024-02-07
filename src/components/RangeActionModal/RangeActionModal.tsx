@@ -10,7 +10,6 @@ import {
     RangeModalAction,
 } from '../../ambient-utils/types';
 import { BigNumber } from 'ethers';
-import { CrocPositionView } from '@crocswap-libs/sdk';
 import Button from '../Form/Button';
 import RangeActionSettings from './RangeActionSettings/RangeActionSettings';
 import ExtraControls from './RangeActionExtraControls/RangeActionExtraControls';
@@ -153,8 +152,11 @@ function RangeActionModal(props: propsIF) {
     const updateLiq = async () => {
         try {
             if (!crocEnv || !position) return;
-            const pool = crocEnv.pool(position.base, position.quote);
-            const pos = new CrocPositionView(pool, position.user);
+            const pos = crocEnv.positions(
+                position.base,
+                position.quote,
+                position.user,
+            );
 
             const liqBigNum = isAmbient
                 ? (await pos.queryAmbient()).seeds
