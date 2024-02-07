@@ -4,6 +4,7 @@ interface DataLoadingContextIF {
     isConnectedUserTxDataLoading: boolean;
     isConnectedUserOrderDataLoading: boolean;
     isConnectedUserPoolOrderDataLoading: boolean;
+    isConnectedUserPoolTxDataLoading: boolean;
     isConnectedUserRangeDataLoading: boolean;
     isConnectedUserPoolRangeDataLoading: boolean;
     isLookupUserTxDataLoading: boolean;
@@ -37,6 +38,10 @@ export const DataLoadingContextProvider = (props: {
     const [
         isConnectedUserPoolOrderDataLoading,
         setIsConnectedUserPoolOrderDataLoading,
+    ] = useState(true);
+    const [
+        isConnectedUserPoolTxDataLoading,
+        setIsConnectedUserPoolTxDataLoading,
     ] = useState(true);
     const [
         isConnectedUserRangeDataLoading,
@@ -83,6 +88,9 @@ export const DataLoadingContextProvider = (props: {
             case 'isConnectedUserPoolOrderDataLoading':
                 setIsConnectedUserPoolOrderDataLoading(loadingStatus);
                 break;
+            case 'isConnectedUserPoolTxDataLoading':
+                setIsConnectedUserPoolTxDataLoading(loadingStatus);
+                break;
             case 'isConnectedUserRangeDataLoading':
                 setIsConnectedUserRangeDataLoading(loadingStatus);
                 break;
@@ -117,6 +125,7 @@ export const DataLoadingContextProvider = (props: {
         isConnectedUserTxDataLoading,
         isConnectedUserOrderDataLoading,
         isConnectedUserPoolOrderDataLoading,
+        isConnectedUserPoolTxDataLoading,
         isConnectedUserRangeDataLoading,
         isConnectedUserPoolRangeDataLoading,
         isLookupUserTxDataLoading,

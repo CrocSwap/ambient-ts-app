@@ -8,7 +8,6 @@ import { RiCloseFill } from 'react-icons/ri';
 import styles from './Modal.module.css';
 import GlobalModalPortal from '../../GlobalModalPortal';
 import { GLOBAL_MODAL_COMPONENT_ID } from '../../../ambient-utils/constants';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { Container } from '../../../styled/Common';
 
 // interface for React functional component
@@ -88,14 +87,12 @@ export default function Modal(props: ModalPropsIF) {
 
     const footerOrNull = !footer ? null : footerJSX;
 
-    const desktopView = useMediaQuery('(min-width: 720px)');
-
     return (
         <GlobalModalPortal>
             <aside
                 id={GLOBAL_MODAL_COMPONENT_ID}
                 className={styles.outside_modal}
-                onMouseDown={desktopView ? onClose : undefined}
+                onMouseDown={onClose}
                 role='dialog'
                 aria-modal='true'
             >

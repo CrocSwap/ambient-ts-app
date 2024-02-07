@@ -43,27 +43,27 @@ export const correctStyleForData = (
                 style: item.getHours() === 0 && item.getMinutes() === 0,
             };
         });
-    } else if (!_filteredMinute(startDate, endDate, data, 0)) {
+    } else if (!filteredMinute(startDate, endDate, data, 0)) {
         data = data.map((item: any) => {
             return { date: item, style: item.getMinutes() === 0 };
         });
-    } else if (!_filteredMinute(startDate, endDate, data, 5)) {
+    } else if (!filteredMinute(startDate, endDate, data, 5)) {
         data = data.map((item: any) => {
             return { date: item, style: true };
         });
-    } else if (!_filteredMinute(startDate, endDate, data, 10)) {
+    } else if (!filteredMinute(startDate, endDate, data, 10)) {
         data = data.map((item: any) => {
             return { date: item, style: item.getMinutes() === 10 };
         });
-    } else if (!_filteredMinute(startDate, endDate, data, 15)) {
+    } else if (!filteredMinute(startDate, endDate, data, 15)) {
         data = data.map((item: any) => {
             return { date: item, style: item.getMinutes() === 15 };
         });
-    } else if (!_filteredMinute(startDate, endDate, data, 30)) {
+    } else if (!filteredMinute(startDate, endDate, data, 30)) {
         data = data.map((item: any) => {
             return { date: item, style: item.getMinutes() === 30 };
         });
-    } else if (!_filteredMinute(startDate, endDate, data, 45)) {
+    } else if (!filteredMinute(startDate, endDate, data, 45)) {
         data = data.map((item: any) => {
             return { date: item, style: item.getMinutes() === 45 };
         });
@@ -73,7 +73,17 @@ export const correctStyleForData = (
         });
     }
 
-    return data.sort((a: any, b: any) => a.date.getTime() - b.date.getTime());
+    return data
+        .sort((a: any, b: any) => a.date.getTime() - b.date.getTime())
+        .reduce((acc: xAxisTick[], d: xAxisTick) => {
+            const sameTime = acc.find((d1: xAxisTick) => {
+                return d1.date.getTime() === d.date.getTime();
+            });
+            if (!sameTime) {
+                acc.push(d);
+            }
+            return acc;
+        }, []);
 };
 
 const addFirstDayMonth = (data: any[]) => {
@@ -134,7 +144,7 @@ const filteredHour = (startDate: Date, endDate: Date, data: any) => {
     );
 };
 
-const _filteredMinute = (
+const filteredMinute = (
     startDate: Date,
     endDate: Date,
     data: any,

@@ -1,7 +1,6 @@
 import { useContext, useEffect, useRef, useState, useMemo } from 'react';
 import {
     chartItemStates,
-    defaultCandleBandwith,
     renderCanvasArray,
     scaleData,
     setCanvasResolution,
@@ -12,6 +11,7 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { CandleDataIF } from '../../../ambient-utils/types';
 import { ChartContext } from '../../../contexts/ChartContext';
+import { defaultCandleBandwith } from '../ChartUtils/chartConstants';
 
 interface candlePropsIF {
     chartItemStates: chartItemStates;
@@ -23,6 +23,8 @@ interface candlePropsIF {
     data: CandleDataIF[];
     period: number;
     lastCandleData: CandleDataIF;
+    prevlastCandleTime: number;
+    setPrevLastCandleTime: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export default function CandleChart(props: candlePropsIF) {
@@ -35,13 +37,13 @@ export default function CandleChart(props: candlePropsIF) {
         data,
         period,
         lastCandleData,
+        prevlastCandleTime,
+        setPrevLastCandleTime,
     } = props;
     const d3CanvasCandle = useRef<HTMLCanvasElement | null>(null);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [candlestick, setCandlestick] = useState<any>();
-
-    const [isFirstRender, setIsFirstRender] = useState(true);
     const selectedCandleColor = '#E480FF';
     const crocCandleLightColor = '#CDC1FF';
     const crocCandleBorderLightColor = '#CDC1FF';
@@ -65,22 +67,24 @@ export default function CandleChart(props: candlePropsIF) {
 
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('re-rending chart');
-        if (tradeTableState === 'Expanded' || isFirstRender) return;
+        if (tradeTableState === 'Expanded') return;
         if (data && data.length > 0 && scaleData) {
             if (!showLatest) {
                 const domainLeft = scaleData?.xScale.domain()[0];
                 const domainRight = scaleData?.xScale.domain()[1];
+
+                const diff =
+                    (lastCandleData.time - prevlastCandleTime) / period;
+
+                setPrevLastCandleTime(lastCandleData.time);
+
                 scaleData?.xScale.domain([
-                    domainLeft + period * 1000,
-                    domainRight + period * 1000,
+                    domainLeft + diff * period * 1000,
+                    domainRight + diff * period * 1000,
                 ]);
             }
         }
     }, [tradeTableState, lastCandleData?.time]);
-
-    useEffect(() => {
-        setIsFirstRender(false);
-    }, []);
 
     useEffect(() => {
         renderCanvasArray([d3CanvasCandle]);

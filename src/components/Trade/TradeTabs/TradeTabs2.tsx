@@ -8,7 +8,6 @@ import {
     memo,
 } from 'react';
 
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import Transactions from './Transactions/Transactions';
 import Orders from './Orders/Orders';
 import moment from 'moment';
@@ -74,7 +73,7 @@ function TradeTabs2(props: propsIF) {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
     const { chartSettings, tradeTableState } = useContext(ChartContext);
-    const { setChangesByUser } = useContext(GraphDataContext);
+    const { setTransactionsByUser } = useContext(GraphDataContext);
     const candleTime = chartSettings.candleTime.global;
 
     const {
@@ -96,22 +95,16 @@ function TradeTabs2(props: propsIF) {
 
     const { tokens } = useContext(TokenContext);
 
-    const {
-        showAllData,
-        setShowAllData,
-        setCurrentPositionActive,
-        setCurrentTxActiveInTransactions,
-        outsideControl,
-        selectedOutsideTab,
-    } = useContext(TradeTableContext);
+    const { showAllData, setShowAllData, outsideControl, selectedOutsideTab } =
+        useContext(TradeTableContext);
 
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     const { isUserConnected, userAddress } = useContext(UserDataContext);
-    const { positionsByUser, limitOrdersByUser, changesByUser } =
+    const { positionsByUser, limitOrdersByUser, userTransactionsByPool } =
         useContext(GraphDataContext);
 
-    const userChanges = changesByUser?.changes;
+    const userChanges = userTransactionsByPool?.changes;
     const userLimitOrders = limitOrdersByUser?.limitOrders;
     const userPositions = positionsByUser?.positions;
 
@@ -124,17 +117,6 @@ function TradeTabs2(props: propsIF) {
 
     const selectedBaseAddress = baseToken.address;
     const selectedQuoteAddress = quoteToken.address;
-
-    const userChangesMatchingTokenSelection = userChanges.filter(
-        (userChange) => {
-            return (
-                userChange.base.toLowerCase() ===
-                    selectedBaseAddress.toLowerCase() &&
-                userChange.quote.toLowerCase() ===
-                    selectedQuoteAddress.toLowerCase()
-            );
-        },
-    );
 
     const userLimitOrdersMatchingTokenSelection = userLimitOrders.filter(
         (userLimitOrder) => {
@@ -189,15 +171,12 @@ function TradeTabs2(props: propsIF) {
                     (!isUserConnected && !isCandleSelected) ||
                     (!isCandleSelected &&
                         !showAllData &&
-                        userChangesMatchingTokenSelection.length < 1)
+                        userChanges.length < 1)
                 ) {
                     setShowAllData(true);
-                } else if (userChangesMatchingTokenSelection.length < 1) {
+                } else if (userChanges.length < 1) {
                     return;
-                } else if (
-                    showAllData &&
-                    userChangesMatchingTokenSelection.length >= 1
-                ) {
+                } else if (showAllData && userChanges.length >= 1) {
                     setShowAllData(false);
                 }
             } else if (
@@ -251,7 +230,7 @@ function TradeTabs2(props: propsIF) {
         selectedInsideTab,
         selectedOutsideTab,
         showAllData,
-        diffHashSigTxs(userChangesMatchingTokenSelection),
+        diffHashSigTxs(userChanges),
         diffHashSigLimits(userLimitOrders),
         diffHashSigPostions(userPositionsMatchingTokenSelection),
     ]);
@@ -286,7 +265,7 @@ function TradeTabs2(props: propsIF) {
                 })
                     .then((updatedTransactions) => {
                         if (updatedTransactions) {
-                            setChangesByUser({
+                            setTransactionsByUser({
                                 dataReceived: true,
                                 changes: updatedTransactions,
                             });
@@ -307,6 +286,7 @@ function TradeTabs2(props: propsIF) {
     ]);
 
     // -------------------------------DATA-----------------------------------------
+
     // Props for <Ranges/> React Element
     const rangesProps = {
         notOnTradeRoute: false,
@@ -382,11 +362,6 @@ function TradeTabs2(props: propsIF) {
     // -------------------------------END OF DATA-----------------------------------------
     const tabComponentRef = useRef<HTMLDivElement>(null);
 
-    const clickOutsideHandler = () => {
-        setCurrentTxActiveInTransactions('');
-        setCurrentPositionActive('');
-    };
-
     const clearButtonOrNull = isCandleSelected ? (
         <ClearButton onClick={() => unselectCandle()}>Clear</ClearButton>
     ) : null;
@@ -451,15 +426,13 @@ function TradeTabs2(props: propsIF) {
         </FlexContainer>
     );
 
-    useOnClickOutside(tabComponentRef, clickOutsideHandler);
-
     return (
         <FlexContainer
             ref={tabComponentRef}
             fullWidth
             fullHeight
             padding='8px'
-            style={{ position: 'relative' }}
+            style={{ position: 'relative', zIndex: 21 }}
         >
             <FlexContainer
                 flexDirection='column'

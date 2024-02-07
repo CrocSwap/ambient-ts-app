@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any  */
+
 import { TokenIF } from './TokenIF';
 
 export interface TokenListIF {

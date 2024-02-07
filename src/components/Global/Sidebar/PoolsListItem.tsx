@@ -1,5 +1,8 @@
 import { PoolIF } from '../../../ambient-utils/types';
-import { PoolStatsFn } from '../../../ambient-utils/dataLayer';
+import {
+    PoolStatsFn,
+    getMoneynessRank,
+} from '../../../ambient-utils/dataLayer';
 import { Link, useLocation } from 'react-router-dom';
 import { usePoolStats } from '../../../App/hooks/usePoolStats';
 import { useContext, useMemo } from 'react';
@@ -38,6 +41,13 @@ export default function PoolsListItem(props: propsIF) {
         cachedFetchTokenPrice,
         crocEnv,
     );
+
+    const isBaseTokenMoneynessGreaterOrEqual =
+        pool.base.address && pool.quote.address
+            ? getMoneynessRank(pool.base.symbol) -
+                  getMoneynessRank(pool.quote.symbol) >=
+              0
+            : false;
 
     const { pathname } = useLocation();
 
@@ -87,18 +97,28 @@ export default function PoolsListItem(props: propsIF) {
             numCols={3}
             color='text2'
         >
-            {[`${pool.base.symbol} / ${pool.quote.symbol}`, volume, tvl].map(
-                (item, idx) => (
-                    <FlexContainer
-                        key={idx}
-                        justifyContent='center'
-                        alignItems='center'
-                        padding='4px'
-                    >
-                        {item}
-                    </FlexContainer>
-                ),
-            )}
+            {[
+                `${
+                    isBaseTokenMoneynessGreaterOrEqual
+                        ? pool.quote.symbol
+                        : pool.base.symbol
+                } / ${
+                    isBaseTokenMoneynessGreaterOrEqual
+                        ? pool.base.symbol
+                        : pool.quote.symbol
+                }`,
+                volume,
+                tvl,
+            ].map((item, idx) => (
+                <FlexContainer
+                    key={idx}
+                    justifyContent='center'
+                    alignItems='center'
+                    padding='4px'
+                >
+                    {item}
+                </FlexContainer>
+            ))}
         </ItemContainer>
     );
 }
