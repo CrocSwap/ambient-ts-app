@@ -1,12 +1,10 @@
 /* eslint-disable no-irregular-whitespace */
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { TransactionIF, CandleDataIF } from '../../../../ambient-utils/types';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { Dispatch, useState, useEffect, useRef, useContext, memo } from 'react';
 
 import { Pagination } from '@mui/material';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
-import TransactionRow from './TransactionsTable/TransactionRow';
 import { useSortedTxs } from '../useSortedTxs';
 import NoTableData from '../NoTableData/NoTableData';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
@@ -33,6 +31,8 @@ import { FlexContainer, Text } from '../../../../styled/Common';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import TableRows from '../TableRows';
 
 interface propsIF {
     filter?: CandleDataIF | undefined;
@@ -92,10 +92,12 @@ function Transactions(props: propsIF) {
     // NOTE: this is done to improve rendering speed for this page.
 
     const dataLoadingStatus = useContext(DataLoadingContext);
-    const { changesByUser, changesByPool } = useContext(GraphDataContext);
-    const { transactionsByType, pendingTransactions } = useAppSelector(
-        (state) => state.receiptData,
-    );
+    const {
+        userTransactionsByPool,
+        transactionsByPool,
+        unindexedNonFailedSessionTransactionHashes,
+    } = useContext(GraphDataContext);
+    const { transactionsByType } = useContext(ReceiptContext);
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     const selectedBaseAddress = baseToken.address;
@@ -115,26 +117,16 @@ function Transactions(props: propsIF) {
             setTransactionData(activeAccountTransactionData || []);
         else if (!showAllData)
             setTransactionData(
-                changesByUser.changes.filter(
+                userTransactionsByPool.changes.filter(
                     (tx) =>
-                        tx.base.toLowerCase() ===
-                            baseToken.address.toLowerCase() &&
-                        tx.quote.toLowerCase() ===
-                            quoteToken.address.toLowerCase() &&
-                        tx.changeType !== 'fill' &&
-                        tx.changeType !== 'cross',
+                        tx.changeType !== 'fill' && tx.changeType !== 'cross',
                 ),
             );
         else {
             setTransactionData(
-                changesByPool.changes.filter(
+                transactionsByPool.changes.filter(
                     (tx) =>
-                        tx.base.toLowerCase() ===
-                            baseToken.address.toLowerCase() &&
-                        tx.quote.toLowerCase() ===
-                            quoteToken.address.toLowerCase() &&
-                        tx.changeType !== 'fill' &&
-                        tx.changeType !== 'cross',
+                        tx.changeType !== 'fill' && tx.changeType !== 'cross',
                 ),
             );
         }
@@ -142,8 +134,8 @@ function Transactions(props: propsIF) {
         showAllData,
         isCandleSelected,
         activeAccountTransactionData,
-        changesByUser,
-        changesByPool,
+        userTransactionsByPool,
+        transactionsByPool,
     ]);
 
     useEffect(() => {
@@ -158,22 +150,22 @@ function Transactions(props: propsIF) {
         else if (isCandleSelected) {
             setIsLoading(dataLoadingStatus.isCandleDataLoading);
         } else if (!showAllData)
-            setIsLoading(dataLoadingStatus.isConnectedUserTxDataLoading);
+            setIsLoading(dataLoadingStatus.isConnectedUserPoolTxDataLoading);
         else setIsLoading(dataLoadingStatus.isPoolTxDataLoading);
     }, [
         isCandleSelected,
         showAllData,
         connectedAccountActive,
         dataLoadingStatus.isConnectedUserTxDataLoading,
+        dataLoadingStatus.isConnectedUserPoolTxDataLoading,
         dataLoadingStatus.isLookupUserTxDataLoading,
         dataLoadingStatus.isPoolTxDataLoading,
         dataLoadingStatus.isCandleDataLoading,
     ]);
 
-    const relevantTransactionsByType = transactionsByType.filter(
+    const unindexedNonFailedTransactions = transactionsByType.filter(
         (tx) =>
-            tx.txAction &&
-            pendingTransactions.includes(tx.txHash) &&
+            unindexedNonFailedSessionTransactionHashes.includes(tx.txHash) &&
             tx.txDetails?.baseAddress.toLowerCase() ===
                 baseToken.address.toLowerCase() &&
             tx.txDetails?.quoteAddress.toLowerCase() ===
@@ -184,8 +176,7 @@ function Transactions(props: propsIF) {
     const shouldDisplayNoTableData =
         !isLoading &&
         !transactionData.length &&
-        (relevantTransactionsByType.length === 0 ||
-            pendingTransactions.length === 0);
+        unindexedNonFailedSessionTransactionHashes.length === 0;
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
         useSortedTxs('time', transactionData);
@@ -373,14 +364,14 @@ function Transactions(props: propsIF) {
             alignRight: true,
         },
         {
-            name: isAccountView ? <></> : `${baseTokenSymbol}ㅤㅤ`,
+            name: isAccountView ? <></> : `${baseTokenSymbol}`,
             show: tableView === 'large',
             slug: baseTokenSymbol,
             sortable: false,
             alignRight: true,
         },
         {
-            name: isAccountView ? <></> : `${quoteTokenSymbol}ㅤㅤ`, // invisible character added to offset token logo
+            name: isAccountView ? <></> : `${quoteTokenSymbol}`,
             show: tableView === 'large',
             slug: quoteTokenSymbol,
             sortable: false,
@@ -503,17 +494,6 @@ function Transactions(props: propsIF) {
             </FlexContainer>
         );
 
-    const currentRowItemContent = () =>
-        _DATA.currentData.map((tx, idx) => (
-            <TransactionRow
-                key={idx}
-                idForDOM={`tx_row_${idx}`}
-                tx={tx}
-                tableView={tableView}
-                isAccountView={isAccountView}
-            />
-        ));
-
     const handleKeyDownViewTransaction = (
         event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
     ) => {
@@ -558,8 +538,8 @@ function Transactions(props: propsIF) {
         <div onKeyDown={handleKeyDownViewTransaction}>
             <ul ref={listRef} id='current_row_scroll'>
                 {!isAccountView &&
-                    pendingTransactions.length > 0 &&
-                    relevantTransactionsByType.reverse().map((tx, idx) => {
+                    unindexedNonFailedTransactions.length > 0 &&
+                    unindexedNonFailedTransactions.reverse().map((tx, idx) => {
                         if (tx.txAction !== 'Reposition')
                             return (
                                 <TransactionRowPlaceholder
@@ -657,7 +637,12 @@ function Transactions(props: propsIF) {
                             </>
                         );
                     })}
-                {currentRowItemContent()}
+                <TableRows
+                    type='Transaction'
+                    data={_DATA.currentData}
+                    tableView={tableView}
+                    isAccountView={isAccountView}
+                />
             </ul>
             {showViewMoreButton && (
                 <FlexContainer

@@ -10,7 +10,6 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { BigNumber } from 'ethers';
 import { FaGasPump } from 'react-icons/fa';
 import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
@@ -33,19 +32,15 @@ import {
     isTransactionFailedError,
     isTransactionReplacedError,
 } from '../../../../utils/TransactionError';
-import {
-    addPendingTx,
-    addReceipt,
-    addTransactionByType,
-    removePendingTx,
-    updateTransactionHash,
-} from '../../../../utils/state/receiptDataSlice';
+
 import CurrencySelector from '../../../Form/CurrencySelector';
 import {
     NUM_GWEI_IN_WEI,
     GAS_DROPS_ESTIMATE_TRANSFER_NATIVE,
     GAS_DROPS_ESTIMATE_TRANSFER_ERC20,
 } from '../../../../ambient-utils/constants/';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -70,10 +65,16 @@ export default function Transfer(props: propsIF) {
         setTokenModalOpen,
     } = props;
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const { gasPriceInGwei } = useContext(ChainDataContext);
-
-    const dispatch = useAppDispatch();
+    const {
+        addPendingTx,
+        addReceipt,
+        addTransactionByType,
+        removePendingTx,
+        updateTransactionHash,
+    } = useContext(ReceiptContext);
 
     const selectedTokenDecimals = selectedToken.decimals;
 
@@ -196,15 +197,14 @@ export default function Transfer(props: propsIF) {
                 const tx = await crocEnv
                     .token(selectedToken.address)
                     .transfer(transferQtyDisplay, resolvedAddress);
-                dispatch(addPendingTx(tx?.hash));
+                addPendingTx(tx?.hash);
                 if (tx?.hash)
-                    dispatch(
-                        addTransactionByType({
-                            txHash: tx.hash,
-                            txType: 'Transfer',
-                            txDescription: `Transfer ${selectedToken.symbol}`,
-                        }),
-                    );
+                    addTransactionByType({
+                        userAddress: userAddress || '',
+                        txHash: tx.hash,
+                        txType: 'Transfer',
+                        txDescription: `Transfer ${selectedToken.symbol}`,
+                    });
                 let receipt;
                 try {
                     if (tx) receipt = await tx.wait();
@@ -215,16 +215,14 @@ export default function Transfer(props: propsIF) {
                     // in their client, but we now have the updated info
                     if (isTransactionReplacedError(error)) {
                         IS_LOCAL_ENV && console.debug('repriced');
-                        dispatch(removePendingTx(error.hash));
+                        removePendingTx(error.hash);
 
                         const newTransactionHash = error.replacement.hash;
-                        dispatch(addPendingTx(newTransactionHash));
+                        addPendingTx(newTransactionHash);
 
-                        dispatch(
-                            updateTransactionHash({
-                                oldHash: error.hash,
-                                newHash: error.replacement.hash,
-                            }),
+                        updateTransactionHash(
+                            error.hash,
+                            error.replacement.hash,
                         );
                         IS_LOCAL_ENV && console.debug({ newTransactionHash });
                         receipt = error.receipt;
@@ -235,8 +233,8 @@ export default function Transfer(props: propsIF) {
                 }
 
                 if (receipt) {
-                    dispatch(addReceipt(JSON.stringify(receipt)));
-                    dispatch(removePendingTx(receipt.transactionHash));
+                    addReceipt(JSON.stringify(receipt));
+                    removePendingTx(receipt.transactionHash);
                     resetTransferQty();
                 }
             } catch (error) {

@@ -5,6 +5,7 @@ import { ChartContext } from './ChartContext';
 import { useSimulatedIsPoolInitialized } from '../App/hooks/useSimulatedIsPoolInitialized';
 import { UserDataContext } from './UserDataContext';
 import { DataLoadingContext } from './DataLoadingContext';
+import { linkGenMethodsIF, useLinkGen } from '../utils/hooks/useLinkGen';
 
 // 54 is the height of the trade table header
 export const TRADE_TABLE_HEADER_HEIGHT = 54;
@@ -16,6 +17,8 @@ interface TradeTableContextIF {
     setCurrentPositionActive: (val: string) => void;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: (val: string) => void;
+    currentLimitOrderActive: string;
+    setCurrentLimitOrderActive: (val: string) => void;
     toggleTradeTable: () => void;
     toggleTradeTableCollapse: () => void;
     showAllData: boolean;
@@ -48,6 +51,7 @@ export const TradeTableContextProvider = (props: {
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] =
         useState('');
     const [currentPositionActive, setCurrentPositionActive] = useState('');
+    const [currentLimitOrderActive, setCurrentLimitOrderActive] = useState('');
 
     const [isTradeTableMinimized, setIsTradeTableMinimized] = useState(false);
 
@@ -79,6 +83,8 @@ export const TradeTableContextProvider = (props: {
         setCurrentTxActiveInTransactions,
         currentPositionActive,
         setCurrentPositionActive,
+        currentLimitOrderActive,
+        setCurrentLimitOrderActive,
         // chartHeight is a minimum of 4 when closed since the resizable selector is 4px in height
         toggleTradeTable: () => {
             if (
@@ -157,14 +163,27 @@ export const TradeTableContextProvider = (props: {
         }
     }
 
+    const linkGenCurrent: linkGenMethodsIF = useLinkGen();
+
     useEffect(() => {
-        if (
-            !currentTxActiveInTransactions &&
-            !currentPositionActive &&
-            location.pathname.includes('/trade')
-        )
-            toggleTradeTabBasedOnRoute();
-    }, [location.pathname]);
+        if (location.pathname.includes('/trade')) toggleTradeTabBasedOnRoute();
+        switch (linkGenCurrent.currentPage) {
+            case 'market':
+                setCurrentPositionActive('');
+                setCurrentLimitOrderActive('');
+                break;
+            case 'limit':
+                setCurrentTxActiveInTransactions('');
+                setCurrentPositionActive('');
+                break;
+            case 'pool':
+                setCurrentTxActiveInTransactions('');
+                setCurrentLimitOrderActive('');
+                break;
+            default:
+                break;
+        }
+    }, [linkGenCurrent.currentPage]);
 
     const resetTable = () => {
         if (

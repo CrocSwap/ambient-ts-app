@@ -1,7 +1,5 @@
 import { useContext, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { useAppDispatch } from './reduxToolkit';
-import { setLimitTick } from '../state/tradeDataSlice';
 import { ethers } from 'ethers';
 import { fetchContractDetails } from '../../ambient-utils/api';
 import { useProvider, useSwitchNetwork } from 'wagmi';
@@ -39,7 +37,7 @@ export const useUrlParams = (
     provider?: ethers.providers.Provider,
 ): urlParamsMethodsIF => {
     const { params } = useParams();
-    const { setTokenA, setTokenB } = useContext(TradeDataContext);
+    const { setTokenA, setTokenB, setLimitTick } = useContext(TradeDataContext);
 
     // this is used for updating the URL bar
     // also for when params need to be re-parsed because the page has changed
@@ -71,8 +69,6 @@ export const useUrlParams = (
         // return array of required URL params
         return paramsForPage;
     }, [linkGenCurrent.currentPage]);
-
-    const dispatch = useAppDispatch();
 
     const { switchNetwork } = useSwitchNetwork();
 
@@ -290,7 +286,7 @@ export const useUrlParams = (
             }
 
             processOptParam('limitTick', async (tick: string) => {
-                dispatch(setLimitTick(parseInt(tick)));
+                setLimitTick(parseInt(tick));
             });
         } catch (error) {
             console.error({ error });

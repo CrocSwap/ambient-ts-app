@@ -1,15 +1,15 @@
 import { Dispatch, SetStateAction } from 'react';
 import { scaleData } from './chartUtils';
 import * as d3 from 'd3';
-import { candleDomain } from '../../../utils/state/tradeDataSlice';
+import { CandleDomainIF } from '../../../ambient-utils/types';
 
 const maxNumCandlesForZoom = 2000;
 
 export class Zoom {
-    setCandleDomains: Dispatch<SetStateAction<candleDomain>>;
+    setCandleDomains: Dispatch<SetStateAction<CandleDomainIF>>;
     period: number;
     constructor(
-        setCandleDomains: Dispatch<SetStateAction<candleDomain>>,
+        setCandleDomains: Dispatch<SetStateAction<CandleDomainIF>>,
         period: number,
     ) {
         this.setCandleDomains = setCandleDomains;
@@ -17,7 +17,7 @@ export class Zoom {
     }
 
     private isNegativeZero(value: number) {
-        return value === 0 && 1 / value === -Infinity;
+        return Object.is(value, -0);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,13 +35,16 @@ export class Zoom {
         firstCandleDate: number,
         lastCandleDate: number,
     ) {
+        const eventDeltaX = event.deltaX;
         const isTouchPad = this.isTouchPad(event);
-
+        const isZeroNegative = this.isNegativeZero(eventDeltaX);
         const zoomSpeedFactor = 0.5; // smaller number is faster
 
+        const checkTouchPadZeroNegative = isZeroNegative && isTouchPad;
+
         const dx =
-            Math.abs(event.deltaX) != 0
-                ? -event.deltaX / zoomSpeedFactor
+            Math.abs(eventDeltaX) != 0
+                ? -eventDeltaX / zoomSpeedFactor
                 : event.deltaY / zoomSpeedFactor;
 
         const domainX = scaleData?.xScale.domain();
@@ -96,6 +99,7 @@ export class Zoom {
                     firstCandleDate,
                     lastCandleDate,
                     lastTime,
+                    checkTouchPadZeroNegative,
                 );
             }
         } else {
@@ -115,6 +119,7 @@ export class Zoom {
                         firstCandleDate,
                         lastCandleDate,
                         lastTime,
+                        checkTouchPadZeroNegative,
                     );
                 } else {
                     this.wheelWithPressAltKey(
@@ -211,8 +216,9 @@ export class Zoom {
         firstCandleDate: number,
         lastCandleDate: number,
         lastTime: number,
+        checkTouchPadZeroNegative: boolean,
     ) {
-        if (deltaX > 0) {
+        if (deltaX > 0 || checkTouchPadZeroNegative) {
             this.getNewCandleDataLeft(firstTime - deltaX, firstCandleDate);
         } else {
             if (lastCandleDate) {
@@ -234,7 +240,7 @@ export class Zoom {
             lastDomainDate = nowDate;
         }
 
-        // update candle domainif dont have last data
+        // update candle domain if dont have last data
         if (lastCandleTime < snappedTime) {
             const candleDomain = {
                 lastCandleDate: lastDomainDate,
@@ -359,6 +365,7 @@ export class Zoom {
             firstCandleDate,
             lastCandleDate,
             lastTime,
+            false,
         );
     }
 
@@ -395,6 +402,7 @@ export class Zoom {
             firstCandleDate,
             lastCandleDate,
             lastTime,
+            false,
         );
     }
 

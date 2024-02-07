@@ -1,8 +1,3 @@
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
-import { setLimitTick } from '../../../../utils/state/tradeDataSlice';
 import { pinTickLower, pinTickUpper } from '@crocswap-libs/sdk';
 import { ChangeEvent, Dispatch, SetStateAction, useContext } from 'react';
 import { HiPlus, HiMinus } from 'react-icons/hi';
@@ -43,21 +38,20 @@ export default function LimitRate(props: propsIF) {
         updateURL,
     } = props;
 
-    const dispatch = useAppDispatch();
     const {
         chainData: { gridSize },
     } = useContext(CrocEnvContext);
     const { pool } = useContext(PoolContext);
     const { showOrderPulseAnimation } = useContext(TradeTableContext);
 
-    const { limitTick } = useAppSelector((state) => state.tradeData);
     const isPoolInitialized = useSimulatedIsPoolInitialized();
-    const { isDenomBase } = useContext(TradeDataContext);
+    const { isDenomBase, setLimitTick, limitTick } =
+        useContext(TradeDataContext);
 
     const increaseTick = (): void => {
         if (limitTick !== undefined) {
             const newLimitTick: number = limitTick + gridSize;
-            dispatch(setLimitTick(newLimitTick));
+            setLimitTick(newLimitTick);
             updateURL({ update: [['limitTick', newLimitTick]] });
             setPriceInputFieldBlurred(true);
         }
@@ -66,7 +60,7 @@ export default function LimitRate(props: propsIF) {
     const decreaseTick = (): void => {
         if (limitTick !== undefined) {
             const newLimitTick: number = limitTick - gridSize;
-            dispatch(setLimitTick(newLimitTick));
+            setLimitTick(newLimitTick);
             updateURL({ update: [['limitTick', newLimitTick]] });
             setPriceInputFieldBlurred(true);
         }
@@ -84,7 +78,7 @@ export default function LimitRate(props: propsIF) {
                 const pinnedTick: number = isSellTokenBase
                     ? pinTickLower(limit, gridSize)
                     : pinTickUpper(limit, gridSize);
-                dispatch(setLimitTick(pinnedTick));
+                setLimitTick(pinnedTick);
                 updateURL({ update: [['limitTick', pinnedTick]] });
             }
         }

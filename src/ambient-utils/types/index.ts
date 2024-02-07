@@ -28,3 +28,8 @@ export * from './NetworkIF';
 export * from './ScaleDataIF';
 
 export * from './TradeTableDataRow';
+
+export enum RecordType {
+    Position = 'PositionIF',
+    LimitOrder = 'LimitOrderIF',
+}
