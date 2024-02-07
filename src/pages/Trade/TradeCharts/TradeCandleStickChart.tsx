@@ -208,27 +208,26 @@ function TradeCandleStickChart(props: propsIF) {
         poolPriceDisplay !== undefined && poolPriceDisplay > 0,
     ]);
 
-    useEffect(() => {
-        if (unparsedCandleData === undefined) {
-            clearLiquidityData();
-        }
-    }, [
-        baseTokenAddress + quoteTokenAddress,
-        unparsedCandleData === undefined,
-    ]);
+    // temporarily commented to prevent unexpected scaling of liquidity curve after pool change
 
-    const clearLiquidityData = () => {
-        if (liquidityData) {
-            liquidityData.liqAskData = [];
-            liquidityData.liqBidData = [];
-            liquidityData.depthLiqBidData = [];
-            liquidityData.depthLiqAskData = [];
-            liquidityData.topBoundary = 0;
-            liquidityData.lowBoundary = 0;
-            liquidityData.liqTransitionPointforCurve = 0;
-            liquidityData.liqTransitionPointforDepth = 0;
-        }
-    };
+    // useEffect(() => {
+    //     if (unparsedCandleData === undefined) {
+    //         clearLiquidityData();
+    //     }
+    // }, [baseTokenAddress + quoteTokenAddress]);
+
+    // const clearLiquidityData = () => {
+    //     if (liquidityData) {
+    //         liquidityData.liqAskData = [];
+    //         liquidityData.liqBidData = [];
+    //         liquidityData.depthLiqBidData = [];
+    //         liquidityData.depthLiqAskData = [];
+    //         liquidityData.topBoundary = 0;
+    //         liquidityData.lowBoundary = 0;
+    //         liquidityData.liqTransitionPointforCurve = 0;
+    //         liquidityData.liqTransitionPointforDepth = 0;
+    //     }
+    // };
 
     // Parse liquidtiy data
     const liquidityData: liquidityChartData | undefined = useMemo(() => {
