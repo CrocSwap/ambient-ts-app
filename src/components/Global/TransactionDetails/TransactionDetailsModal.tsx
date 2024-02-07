@@ -1,19 +1,20 @@
 import styles from './TransactionDetailsModal.module.css';
-import { useState, useRef, useContext, useEffect } from 'react';
-import printDomToImage from '../../../utils/functions/printDomToImage';
+import { useState, useRef, useContext, useEffect, memo } from 'react';
 import TransactionDetailsHeader from './TransactionDetailsHeader/TransactionDetailsHeader';
 import TransactionDetailsPriceInfo from './TransactionDetailsPriceInfo/TransactionDetailsPriceInfo';
 import TransactionDetailsGraph from './TransactionDetailsGraph/TransactionDetailsGraph';
-import { TransactionIF } from '../../../utils/interfaces/exports';
+import { TransactionIF, PositionServerIF } from '../../../ambient-utils/types';
 import TransactionDetailsSimplify from './TransactionDetailsSimplify/TransactionDetailsSimplify';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import modalBackground from '../../../assets/images/backgrounds/background.png';
-import { GRAPHCACHE_SMALL_URL } from '../../../constants';
+import { GCGO_OVERRIDE_URL } from '../../../ambient-utils/constants';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
-import { getPositionData } from '../../../App/functions/getPositionData';
+import {
+    getPositionData,
+    printDomToImage,
+} from '../../../ambient-utils/dataLayer';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import Modal from '../Modal/Modal';
@@ -25,7 +26,7 @@ interface propsIF {
     onClose: () => void;
 }
 
-export default function TransactionDetailsModal(props: propsIF) {
+function TransactionDetailsModal(props: propsIF) {
     const { tx, isBaseTokenMoneynessGreaterOrEqual, isAccountView, onClose } =
         props;
     const {
@@ -42,6 +43,8 @@ export default function TransactionDetailsModal(props: propsIF) {
     const { lastBlockNumber } = useContext(ChainDataContext);
     const {
         crocEnv,
+        activeNetwork,
+        provider,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
@@ -52,8 +55,9 @@ export default function TransactionDetailsModal(props: propsIF) {
     >(1.01);
 
     useEffect(() => {
-        const positionStatsCacheEndpoint =
-            GRAPHCACHE_SMALL_URL + '/position_stats?';
+        const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
+            ? GCGO_OVERRIDE_URL + '/position_stats?'
+            : activeNetwork.graphCacheUrl + '/position_stats?';
 
         fetch(
             positionStatsCacheEndpoint +
@@ -70,21 +74,25 @@ export default function TransactionDetailsModal(props: propsIF) {
         )
             .then((response) => response?.json())
             .then(async (json) => {
-                if (!crocEnv || !json?.data) {
+                if (!crocEnv || !provider || !json?.data) {
                     return;
                 }
+                // temporarily skip ENS fetch
+                const skipENSFetch = true;
 
                 const positionPayload = json?.data as PositionServerIF;
                 const positionStats = await getPositionData(
                     positionPayload,
                     tokens.tokenUniv,
                     crocEnv,
+                    provider,
                     chainId,
                     lastBlockNumber,
                     cachedFetchTokenPrice,
                     cachedQuerySpotPrice,
                     cachedTokenDetails,
                     cachedEnsResolve,
+                    skipENSFetch,
                 );
 
                 setUpdatedPositionApy(
@@ -94,7 +102,7 @@ export default function TransactionDetailsModal(props: propsIF) {
                 );
             })
             .catch(console.error);
-    }, [lastBlockNumber, crocEnv, chainId]);
+    }, [lastBlockNumber, !!crocEnv, !!provider, chainId]);
 
     const [showSettings, setShowSettings] = useState(false);
     const [showShareComponent, setShowShareComponent] = useState(true);
@@ -179,3 +187,5 @@ export default function TransactionDetailsModal(props: propsIF) {
         </Modal>
     );
 }
+
+export default memo(TransactionDetailsModal);

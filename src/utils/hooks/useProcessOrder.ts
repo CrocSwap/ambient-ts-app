@@ -1,12 +1,17 @@
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { useState, useEffect, useMemo } from 'react';
-import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
-import trimString from '../../utils/functions/trimString';
-import { LimitOrderIF } from '../interfaces/exports';
-import { getMoneynessRank } from '../functions/getMoneynessRank';
+import { useState, useEffect, useMemo, useContext } from 'react';
+import {
+    getChainExplorer,
+    getUnicodeCharacter,
+    trimString,
+    getMoneynessRank,
+    getElapsedTime,
+    diffHashSig,
+    getFormattedNumber,
+    uriToHttp,
+} from '../../ambient-utils/dataLayer';
+import { LimitOrderIF } from '../../ambient-utils/types';
 
 import {
-    concPosSlot,
     priceHalfAboveTick,
     priceHalfBelowTick,
     toDisplayPrice,
@@ -14,23 +19,24 @@ import {
 
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import moment from 'moment';
-import { getChainExplorer } from '../data/chains';
-import { getElapsedTime } from '../../App/functions/getElapsedTime';
-import { diffHashSig } from '../functions/diffHashSig';
-import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
-import uriToHttp from '../functions/uriToHttp';
 import { getAddress } from 'ethers/lib/utils.js';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { useFetchBatch } from '../../App/hooks/useFetchBatch';
+import { UserDataContext } from '../../contexts/UserDataContext';
+import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
     account = '',
     isAccountView = false,
 ) => {
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
+    const { ensName: ensNameConnectedUser } = useContext(UserDataContext);
+
     const blockExplorer = getChainExplorer(limitOrder.chainId);
 
-    const selectedBaseToken = tradeData.baseToken.address.toLowerCase();
-    const selectedQuoteToken = tradeData.quoteToken.address.toLowerCase();
+    const selectedBaseToken = baseToken.address.toLowerCase();
+    const selectedQuoteToken = quoteToken.address.toLowerCase();
 
     const baseTokenSymbol = limitOrder.baseSymbol;
     const quoteTokenSymbol = limitOrder.quoteSymbol;
@@ -43,33 +49,34 @@ export const useProcessOrder = (
 
     const isOwnerActiveAccount =
         limitOrder.user.toLowerCase() === account?.toLowerCase();
-    const isDenomBase = tradeData.isDenomBase;
 
-    const ownerId = limitOrder.ensResolution
-        ? limitOrder.ensResolution
-        : limitOrder.user
-        ? getAddress(limitOrder.user)
-        : '';
+    /* eslint-disable-next-line camelcase */
+    const body = { config_path: 'ens_address', address: limitOrder.user };
+    const { data, error } = useFetchBatch<'ens_address'>(body);
 
-    const ensName = limitOrder.ensResolution ? limitOrder.ensResolution : null;
+    let ensAddress = null;
+    if (data && !error) {
+        // prevent showing ens address if it is the same as the connected user due to async issue when switching tables
+        ensAddress =
+            data.ens_address !== ensNameConnectedUser
+                ? data.ens_address
+                : undefined;
+    }
+
+    const ownerId = ensAddress || getAddress(limitOrder.user);
+    const ensName = ensAddress || limitOrder.ensResolution || null;
 
     const isOrderFilled = limitOrder.claimableLiq > 0;
 
-    const posHash =
-        limitOrder.user &&
-        limitOrder.base &&
-        limitOrder.quote &&
-        limitOrder.bidTick &&
-        limitOrder.askTick
-            ? concPosSlot(
-                  limitOrder.user,
-                  limitOrder.base,
-                  limitOrder.quote,
-                  limitOrder.bidTick,
-                  limitOrder.askTick,
-                  limitOrder.poolIdx,
-              ).toString()
-            : '…';
+    const posHash = getPositionHash(undefined, {
+        isPositionTypeAmbient: false,
+        user: limitOrder.user ?? '',
+        baseAddress: limitOrder.base ?? '',
+        quoteAddress: limitOrder.quote ?? '',
+        poolIdx: limitOrder.poolIdx ?? 0,
+        bidTick: limitOrder.bidTick ?? 0,
+        askTick: limitOrder.askTick ?? 0,
+    });
 
     const posHashTruncated = trimString(posHash ?? '', 9, 0, '…');
 
@@ -91,12 +98,8 @@ export const useProcessOrder = (
 
     const isBaseTokenMoneynessGreaterOrEqual = useMemo(
         () =>
-            getMoneynessRank(
-                limitOrder.base.toLowerCase() + '_' + limitOrder.chainId,
-            ) -
-                getMoneynessRank(
-                    limitOrder.quote.toLowerCase() + '_' + limitOrder.chainId,
-                ) >=
+            getMoneynessRank(limitOrder.baseSymbol) -
+                getMoneynessRank(limitOrder.quoteSymbol) >=
             0,
         [limitOrder.base, limitOrder.base, limitOrder.chainId],
     );
@@ -210,7 +213,7 @@ export const useProcessOrder = (
 
     const usdValue = getFormattedNumber({
         value: usdValueNum,
-        isUSD: true,
+        prefix: '$',
     });
 
     // -----------------------------------------------------------------------------------------
@@ -244,7 +247,7 @@ export const useProcessOrder = (
         ? ensName.length > 16
             ? trimString(ensName, 11, 3, '…')
             : ensName
-        : trimString(ownerId, 5, 4, '…');
+        : trimString(ownerId, 6, 4, '…');
 
     const userNameToDisplay = isOwnerActiveAccount
         ? 'You'

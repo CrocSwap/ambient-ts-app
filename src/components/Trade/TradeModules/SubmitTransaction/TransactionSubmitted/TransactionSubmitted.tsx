@@ -2,13 +2,21 @@ import styles from './TransactionSubmitted.module.css';
 import Animation from '../../../../Global/Animation/Animation';
 import completed from '../../../../../assets/animations/completed.json';
 import addTokenToWallet from './addTokenToWallet';
-import Button from '../../../../Global/Button/Button';
+import Button from '../../../../Form/Button';
 import { FiExternalLink } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
-import { getChainExplorer } from '../../../../../utils/data/chains';
+import { getChainExplorer } from '../../../../../ambient-utils/dataLayer';
 
 interface PropsIF {
-    type: 'Swap' | 'Limit' | 'Range' | 'Reposition';
+    type:
+        | 'Swap'
+        | 'Limit'
+        | 'Range'
+        | 'Reposition'
+        | 'Remove'
+        | 'Harvest'
+        | 'Claim'
+        | 'Reset';
     hash: string;
     tokenBAddress: string;
     tokenBSymbol: string;
@@ -16,6 +24,7 @@ interface PropsIF {
     tokenBImage: string;
     chainId: string | number;
     isConfirmed: boolean;
+    isTransactionFailed: boolean;
     noAnimation?: boolean;
 }
 
@@ -30,6 +39,7 @@ export default function TransactionSubmitted(props: PropsIF) {
         noAnimation,
         chainId,
         isConfirmed,
+        isTransactionFailed,
     } = props;
 
     const blockExplorer = getChainExplorer(chainId);
@@ -49,12 +59,12 @@ export default function TransactionSubmitted(props: PropsIF) {
 
     const addToMetaMaskButton = (
         <Button
+            idForDOM='import_token_B_into_wallet_button'
             flat
             title={`Import ${tokenBSymbol} into Connected Wallet`}
-            // action={props.onClickFn}
             action={handleAddToMetaMask}
             disabled={false}
-        ></Button>
+        />
     );
 
     const etherscanButton = (
@@ -63,9 +73,9 @@ export default function TransactionSubmitted(props: PropsIF) {
             target='_blank'
             rel='noreferrer'
             className={styles.view_etherscan}
-            aria-label='view on etherscan'
+            aria-label='view on block explorer'
         >
-            View on Etherscan
+            View on Block Explorer
             <FiExternalLink size={18} color='var(--text1)' />
         </a>
     );
@@ -89,19 +99,67 @@ export default function TransactionSubmitted(props: PropsIF) {
 
             <h2 style={{ marginBottom: '15px' }}>
                 {type === 'Limit'
-                    ? `Limit Transaction ${
-                          isConfirmed ? 'Confirmed' : 'Successfully Submitted'
+                    ? `Limit Order ${
+                          isTransactionFailed
+                              ? 'Failed'
+                              : isConfirmed
+                              ? 'Success!'
+                              : 'Submitted'
                       }`
                     : type === 'Range'
-                    ? `Pool Transaction ${
-                          isConfirmed ? 'Confirmed' : 'Successfully Submitted'
+                    ? `Pool ${
+                          isTransactionFailed
+                              ? 'Failed'
+                              : isConfirmed
+                              ? 'Success!'
+                              : 'Submitted'
                       }`
                     : type === 'Reposition'
                     ? `Reposition ${
-                          isConfirmed ? 'Confirmed' : 'Successfully Submitted'
+                          isTransactionFailed
+                              ? 'Failed'
+                              : isConfirmed
+                              ? 'Success!'
+                              : 'Submitted'
                       }`
-                    : `Swap Transaction ${
-                          isConfirmed ? 'Confirmed' : 'Successfully Submitted'
+                    : type === 'Harvest'
+                    ? `Harvest ${
+                          isTransactionFailed
+                              ? 'Failed'
+                              : isConfirmed
+                              ? 'Success!'
+                              : 'Submitted'
+                      }`
+                    : type === 'Reset'
+                    ? `Reset ${
+                          isTransactionFailed
+                              ? 'Failed'
+                              : isConfirmed
+                              ? 'Success!'
+                              : 'Submitted'
+                      }`
+                    : type === 'Remove'
+                    ? `Removal ${
+                          isTransactionFailed
+                              ? 'Failed'
+                              : isConfirmed
+                              ? 'Success!'
+                              : 'Submitted'
+                      }`
+                    : type === 'Claim'
+                    ? `Claim ${
+                          isTransactionFailed
+                              ? 'Failed'
+                              : isConfirmed
+                              ? 'Success!'
+                              : 'Submitted'
+                      }`
+                    : `Swap ${
+                          isTransactionFailed
+                              ? 'Failed'
+                              : isConfirmed
+                              ? 'Success!'
+                              : 'Submitted'
                       }`}
             </h2>
             <div

@@ -1,11 +1,12 @@
 import { useContext } from 'react';
 import { TokenContext } from '../../../contexts/TokenContext';
-import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
+
 import OpenOrderStatus from '../../Global/OpenOrderStatus/OpenOrderStatus';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import styles from './LimitActionTokenHeader.module.css';
-import { TokenIF } from '../../../utils/interfaces/exports';
+import { TokenIF } from '../../../ambient-utils/types';
+import { uriToHttp } from '../../../ambient-utils/dataLayer';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface propsIF {
     isOrderFilled: boolean;
@@ -27,15 +28,14 @@ export default function LimitActionTokenHeader(props: propsIF) {
         quoteTokenSymbol,
         baseTokenLogoURI,
         quoteTokenLogoURI,
-        isDenomBase,
         baseTokenAddress,
         quoteTokenAddress,
         isLimitOrderPartiallyFilled,
         fillPercentage,
     } = props;
 
-    const dispatch = useAppDispatch();
     const { tokens } = useContext(TokenContext);
+    const { toggleDidUserFlipDenom } = useContext(TradeDataContext);
     const baseToken: TokenIF | undefined =
         tokens.getTokenByAddress(baseTokenAddress);
     const quoteToken: TokenIF | undefined =
@@ -46,24 +46,23 @@ export default function LimitActionTokenHeader(props: propsIF) {
             <div
                 className={styles.token_info}
                 onClick={() => {
-                    dispatch(toggleDidUserFlipDenom());
+                    toggleDidUserFlipDenom();
                 }}
             >
                 <TokenIcon
-                    token={isDenomBase ? baseToken : quoteToken}
-                    src={isDenomBase ? baseTokenLogoURI : quoteTokenLogoURI}
-                    alt={quoteTokenSymbol}
-                    size='2xl'
-                />
-                <TokenIcon
-                    token={isDenomBase ? quoteToken : baseToken}
-                    src={isDenomBase ? quoteTokenLogoURI : baseTokenLogoURI}
+                    token={baseToken}
+                    src={uriToHttp(baseTokenLogoURI)}
                     alt={baseTokenSymbol}
                     size='2xl'
                 />
+                <TokenIcon
+                    token={quoteToken}
+                    src={uriToHttp(quoteTokenLogoURI)}
+                    alt={quoteTokenSymbol}
+                    size='2xl'
+                />
                 <span>
-                    {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /
-                    {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
+                    {baseTokenSymbol} /{quoteTokenSymbol}
                 </span>
             </div>
             <OpenOrderStatus

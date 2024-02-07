@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect, useMemo } from 'react';
-import { useDispatch } from 'react-redux';
 import {
     dexBalanceMethodsIF,
     useExchangePrefs,
@@ -7,13 +6,11 @@ import {
 import { favePoolsMethodsIF, useFavePools } from '../App/hooks/useFavePools';
 import { skipConfirmIF, useSkipConfirm } from '../App/hooks/useSkipConfirm';
 import { SlippageMethodsIF, useSlippage } from '../App/hooks/useSlippage';
-import { IS_LOCAL_ENV } from '../constants';
-import { slippage } from '../utils/data/slippage';
-import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
-import { useAppSelector } from '../utils/hooks/reduxToolkit';
-import { setDenomInBase } from '../utils/state/tradeDataSlice';
+import { IS_LOCAL_ENV, slippage } from '../ambient-utils/constants';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
+import { TradeDataContext } from './TradeDataContext';
+import { getMoneynessRankByAddr } from '../ambient-utils/dataLayer';
 
 interface UserPreferenceIF {
     favePools: favePoolsMethodsIF;
@@ -44,9 +41,8 @@ export const UserPreferenceContextProvider = (props: {
         quoteToken: { address: quoteTokenAddress },
     } = useContext(TradeTokenContext);
 
-    const tradeData = useAppSelector((state) => state.tradeData);
-
-    const dispatch = useDispatch();
+    const { tokenA, tokenB, setDenomInBase, isDenomBase, didUserFlipDenom } =
+        useContext(TradeDataContext);
 
     const userPreferencesProps = {
         favePools: useFavePools(),
@@ -71,19 +67,17 @@ export const UserPreferenceContextProvider = (props: {
         [...Object.values(userPreferencesProps)],
     );
 
-    const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(
-        () =>
-            baseTokenAddress && quoteTokenAddress
-                ? getMoneynessRank(
-                      baseTokenAddress.toLowerCase() + '_' + chainId,
-                  ) -
-                      getMoneynessRank(
-                          quoteTokenAddress.toLowerCase() + '_' + chainId,
-                      ) >=
-                  0
-                : false,
-        [baseTokenAddress, quoteTokenAddress, chainId],
-    );
+    const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(() => {
+        if (baseTokenAddress && quoteTokenAddress) {
+            return (
+                getMoneynessRankByAddr(baseTokenAddress) -
+                    getMoneynessRankByAddr(quoteTokenAddress) >=
+                0
+            );
+        }
+        return false;
+    }, [baseTokenAddress, quoteTokenAddress, chainId]);
+
     function updateDenomIsInBase() {
         // we need to know if the denom token is base or quote
         // currently the denom token is the cheaper one by default
@@ -93,26 +87,26 @@ export const UserPreferenceContextProvider = (props: {
         // if pool price is > 0.1 then denom token will be base (also cheaper one)
         // then reverse if didUserToggleDenom === true
 
-        const isDenomInBase = isBaseTokenMoneynessGreaterOrEqual
-            ? tradeData.didUserFlipDenom
-            : !tradeData.didUserFlipDenom;
+        const _isDenomInBase = isBaseTokenMoneynessGreaterOrEqual
+            ? didUserFlipDenom
+            : !didUserFlipDenom;
 
-        return isDenomInBase;
+        return _isDenomInBase;
     }
     useEffect(() => {
-        const isDenomBase = updateDenomIsInBase();
-        if (isDenomBase !== undefined) {
-            if (tradeData.isDenomBase !== isDenomBase) {
+        const _isDenomBase = updateDenomIsInBase();
+        if (_isDenomBase !== undefined) {
+            if (isDenomBase !== _isDenomBase) {
                 IS_LOCAL_ENV && console.debug('denomination changed');
-                dispatch(setDenomInBase(isDenomBase));
+                setDenomInBase(_isDenomBase);
             }
         }
     }, [
-        tradeData.didUserFlipDenom,
-        tradeData.tokenA.address,
-        tradeData.tokenA.chainId,
-        tradeData.tokenB.address,
-        tradeData.tokenB.chainId,
+        didUserFlipDenom,
+        tokenA.address,
+        tokenA.chainId,
+        tokenB.address,
+        tokenB.chainId,
         isBaseTokenMoneynessGreaterOrEqual,
     ]);
     /* ------------------------------------------ END USER PREFERENCES CONTEXT ------------------------------------------ */

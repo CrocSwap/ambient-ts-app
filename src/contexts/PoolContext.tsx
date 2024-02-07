@@ -6,18 +6,19 @@ import React, {
     useMemo,
     useState,
 } from 'react';
-import { useAccount } from 'wagmi';
-import { estimateFrom24HrAmbientApr } from '../App/functions/fetchAprEst';
+import { estimateFrom24HrAmbientApr } from '../ambient-utils/api';
 import { usePoolPricing } from '../App/hooks/usePoolPricing';
-import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
 import { usePoolList } from '../App/hooks/usePoolList';
-import { PoolIF, PoolStatIF } from '../utils/interfaces/exports';
+import { PoolIF, PoolStatIF } from '../ambient-utils/types';
 import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
+import { UserDataContext } from './UserDataContext';
+import { TradeDataContext } from './TradeDataContext';
+import { ReceiptContext } from './ReceiptContext';
 
 interface PoolContextIF {
     poolList: PoolIF[];
@@ -38,7 +39,8 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
-    const { crocEnv, chainData } = useContext(CrocEnvContext);
+    const { crocEnv, provider, chainData, activeNetwork } =
+        useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const {
         baseToken: { address: baseTokenAddress, decimals: baseTokenDecimals },
@@ -48,25 +50,22 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         },
     } = useContext(TradeTokenContext);
 
-    const poolList: PoolIF[] = usePoolList(crocEnv);
-
-    const { tradeData, receiptData, userData } = useAppSelector(
-        (state) => state,
+    const { sessionReceipts } = useContext(ReceiptContext);
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
+    const { isUserConnected } = useContext(UserDataContext);
+    const poolList: PoolIF[] = usePoolList(
+        activeNetwork.graphCacheUrl,
+        crocEnv,
     );
-    const { isConnected } = useAccount();
 
     const pool = useMemo(
-        () =>
-            crocEnv?.pool(
-                tradeData.baseToken.address,
-                tradeData.quoteToken.address,
-            ),
-        [crocEnv, tradeData.baseToken.address, tradeData.quoteToken.address],
+        () => crocEnv?.pool(baseToken.address, quoteToken.address),
+        [crocEnv, baseToken.address, quoteToken.address],
     );
 
     const poolArg: PoolIF = {
-        base: tradeData.baseToken,
-        quote: tradeData.quoteToken,
+        base: baseToken,
+        quote: quoteToken,
         chainId: chainData.chainId,
         poolIdx: chainData.poolIndex,
     };
@@ -89,9 +88,8 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         baseTokenDecimals,
         quoteTokenDecimals,
         chainData,
-        receiptCount: receiptData.sessionReceipts.length,
-        isUserLoggedIn: isConnected,
-        isUserIdle: userData.isUserIdle,
+        receiptCount: sessionReceipts.length,
+        isUserLoggedIn: !!isUserConnected,
         lastBlockNumber,
         isServerEnabled,
         cachedQuerySpotPrice,
@@ -112,7 +110,6 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
     // Asynchronously query the APY and volatility estimates from the backend
     useEffect(() => {
         (async () => {
-            const provider = (await crocEnv?.context)?.provider;
             if (
                 crocEnv &&
                 provider &&
@@ -124,6 +121,7 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
                     baseTokenAddress,
                     quoteTokenAddress,
                     crocEnv,
+                    provider,
                     lastBlockNumber,
                 );
 
@@ -136,7 +134,8 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         quoteTokenAddress,
         chainData.chainId,
         chainData.poolIndex,
-        crocEnv,
+        !!crocEnv,
+        !!provider,
     ]);
 
     return (

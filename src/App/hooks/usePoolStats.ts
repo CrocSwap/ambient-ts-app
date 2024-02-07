@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
-import { PoolIF } from '../../utils/interfaces/exports';
-import { PoolStatsFn } from '../functions/getPoolStats';
+import { useContext, useEffect, useState } from 'react';
+import { PoolIF } from '../../ambient-utils/types';
+import { PoolStatsFn, getFormattedNumber } from '../../ambient-utils/dataLayer';
+import { TokenPriceFn } from '../../ambient-utils/api';
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { TokenPriceFn } from '../functions/fetchTokenPrice';
-import { getFormattedNumber } from '../functions/getFormattedNumber';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../../ambient-utils/constants';
 
 export const usePoolStats = (
     pool: PoolIF,
@@ -15,6 +16,8 @@ export const usePoolStats = (
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
     const [poolTvl, setPoolTvl] = useState<string | undefined>();
 
+    const { activeNetwork } = useContext(CrocEnvContext);
+
     const fetchPoolStats = () => {
         (async () => {
             if (!crocEnv) {
@@ -25,8 +28,9 @@ export const usePoolStats = (
                 pool.base.address,
                 pool.quote.address,
                 pool.poolIdx,
-                Math.floor(Date.now() / 60000),
+                Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
                 crocEnv,
+                activeNetwork.graphCacheUrl,
                 cachedFetchTokenPrice,
             );
             const volume = poolStatsFresh?.volumeTotalUsd; // display the total volume for all time

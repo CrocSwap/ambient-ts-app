@@ -7,8 +7,8 @@ import { RiCloseFill } from 'react-icons/ri';
 // START: Import Local Files
 import styles from './Modal.module.css';
 import GlobalModalPortal from '../../GlobalModalPortal';
-import { GLOBAL_MODAL_COMPONENT_ID } from '../../../constants';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { GLOBAL_MODAL_COMPONENT_ID } from '../../../ambient-utils/constants';
+import { Container } from '../../../styled/Common';
 
 // interface for React functional component
 interface ModalPropsIF {
@@ -87,14 +87,12 @@ export default function Modal(props: ModalPropsIF) {
 
     const footerOrNull = !footer ? null : footerJSX;
 
-    const desktopView = useMediaQuery('(min-width: 720px)');
-
     return (
         <GlobalModalPortal>
             <aside
                 id={GLOBAL_MODAL_COMPONENT_ID}
                 className={styles.outside_modal}
-                onMouseDown={desktopView ? onClose : undefined}
+                onMouseDown={onClose}
                 role='dialog'
                 aria-modal='true'
             >
@@ -110,7 +108,7 @@ export default function Modal(props: ModalPropsIF) {
                     tabIndex={0}
                     aria-label={`${title} modal`}
                 >
-                    <div>
+                    <Container boxShadow='gradient'>
                         {headerJSX}
                         <section
                             className={styles.modal_content}
@@ -121,7 +119,7 @@ export default function Modal(props: ModalPropsIF) {
                             {children}
                         </section>
                         {footerOrNull}
-                    </div>
+                    </Container>
                 </motion.div>
             </aside>
         </GlobalModalPortal>

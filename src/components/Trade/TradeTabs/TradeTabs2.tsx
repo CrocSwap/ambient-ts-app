@@ -8,11 +8,6 @@ import {
     memo,
 } from 'react';
 
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../utils/hooks/reduxToolkit';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import Transactions from './Transactions/Transactions';
 import Orders from './Orders/Orders';
 import moment from 'moment';
@@ -24,8 +19,7 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import Ranges from './Ranges/Ranges';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
-import { setChangesByUser } from '../../../utils/state/graphDataSlice';
-import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
+import { fetchUserRecentChanges } from '../../../ambient-utils/api';
 import Leaderboard from './Ranges/Leaderboard';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -36,22 +30,25 @@ import {
     diffHashSigLimits,
     diffHashSigPostions,
     diffHashSigTxs,
-} from '../../../utils/functions/diffHashSig';
+} from '../../../ambient-utils/dataLayer';
 import { CandleContext } from '../../../contexts/CandleContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { ChartContext } from '../../../contexts/ChartContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { CandleData } from '../../../App/functions/fetchCandleSeries';
+import { CandleDataIF } from '../../../ambient-utils/types';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { FlexContainer } from '../../../styled/Common';
 import { ClearButton } from '../../../styled/Components/TransactionTable';
 import TableInfo from '../TableInfo/TableInfo';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 interface propsIF {
-    filter: CandleData | undefined;
-    setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
+    filter: CandleDataIF | undefined;
+    setTransactionFilter: Dispatch<SetStateAction<CandleDataIF | undefined>>;
     changeState: (
         isOpen: boolean | undefined,
-        candleData: CandleData | undefined,
+        candleData: CandleDataIF | undefined,
     ) => void;
     selectedDate: number | undefined;
     setSelectedDate: Dispatch<number | undefined>;
@@ -76,7 +73,7 @@ function TradeTabs2(props: propsIF) {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
     const { chartSettings, tradeTableState } = useContext(ChartContext);
-
+    const { setTransactionsByUser } = useContext(GraphDataContext);
     const candleTime = chartSettings.candleTime.global;
 
     const {
@@ -89,6 +86,8 @@ function TradeTabs2(props: propsIF) {
 
     const {
         crocEnv,
+        activeNetwork,
+        provider,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
@@ -96,50 +95,36 @@ function TradeTabs2(props: propsIF) {
 
     const { tokens } = useContext(TokenContext);
 
-    const {
-        showAllData,
-        setShowAllData,
-        setCurrentPositionActive,
-        setCurrentTxActiveInTransactions,
-        outsideControl,
-        selectedOutsideTab,
-    } = useContext(TradeTableContext);
+    const { showAllData, setShowAllData, outsideControl, selectedOutsideTab } =
+        useContext(TradeTableContext);
 
-    const graphData = useAppSelector((state) => state?.graphData);
-    const tradeData = useAppSelector((state) => state?.tradeData);
-    const { isLoggedIn: isUserConnected, addressCurrent: userAddress } =
-        useAppSelector((state) => state.userData);
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
 
-    const userChanges = graphData?.changesByUser?.changes;
-    const userLimitOrders = graphData?.limitOrdersByUser?.limitOrders;
-    const userPositions = graphData?.positionsByUser?.positions;
+    const { isUserConnected, userAddress } = useContext(UserDataContext);
+    const { positionsByUser, limitOrdersByUser, userTransactionsByPool } =
+        useContext(GraphDataContext);
 
-    const userPositionsDataReceived = graphData?.positionsByUser.dataReceived;
+    const userChanges = userTransactionsByPool?.changes;
+    const userLimitOrders = limitOrdersByUser?.limitOrders;
+    const userPositions = positionsByUser?.positions;
+
+    const userPositionsDataReceived = positionsByUser.dataReceived;
 
     const [selectedInsideTab, setSelectedInsideTab] = useState<number>(0);
 
     const [hasUserSelectedViewAll, setHasUserSelectedViewAll] =
         useState<boolean>(false);
 
-    const selectedBase = tradeData.baseToken.address;
-    const selectedQuote = tradeData.quoteToken.address;
-
-    const userChangesMatchingTokenSelection = userChanges.filter(
-        (userChange) => {
-            return (
-                userChange.base.toLowerCase() === selectedBase.toLowerCase() &&
-                userChange.quote.toLowerCase() === selectedQuote.toLowerCase()
-            );
-        },
-    );
+    const selectedBaseAddress = baseToken.address;
+    const selectedQuoteAddress = quoteToken.address;
 
     const userLimitOrdersMatchingTokenSelection = userLimitOrders.filter(
         (userLimitOrder) => {
             return (
                 userLimitOrder.base.toLowerCase() ===
-                    selectedBase.toLowerCase() &&
+                    selectedBaseAddress.toLowerCase() &&
                 userLimitOrder.quote.toLowerCase() ===
-                    selectedQuote.toLowerCase()
+                    selectedQuoteAddress.toLowerCase()
             );
         },
     );
@@ -148,9 +133,9 @@ function TradeTabs2(props: propsIF) {
         (userPosition) => {
             return (
                 userPosition.base.toLowerCase() ===
-                    selectedBase.toLowerCase() &&
+                    selectedBaseAddress.toLowerCase() &&
                 userPosition.quote.toLowerCase() ===
-                    selectedQuote.toLowerCase() &&
+                    selectedQuoteAddress.toLowerCase() &&
                 userPosition.positionLiq !== 0
             );
         },
@@ -159,7 +144,12 @@ function TradeTabs2(props: propsIF) {
     useEffect(() => {
         setHasInitialized(false);
         setHasUserSelectedViewAll(false);
-    }, [userAddress, isUserConnected, selectedBase, selectedQuote]);
+    }, [
+        userAddress,
+        isUserConnected,
+        selectedBaseAddress,
+        selectedQuoteAddress,
+    ]);
 
     // Wait 2 seconds before refreshing to give cache server time to sync from
     // last block
@@ -181,15 +171,12 @@ function TradeTabs2(props: propsIF) {
                     (!isUserConnected && !isCandleSelected) ||
                     (!isCandleSelected &&
                         !showAllData &&
-                        userChangesMatchingTokenSelection.length < 1)
+                        userChanges.length < 1)
                 ) {
                     setShowAllData(true);
-                } else if (userChangesMatchingTokenSelection.length < 1) {
+                } else if (userChanges.length < 1) {
                     return;
-                } else if (
-                    showAllData &&
-                    userChangesMatchingTokenSelection.length >= 1
-                ) {
+                } else if (showAllData && userChanges.length >= 1) {
                     setShowAllData(false);
                 }
             } else if (
@@ -243,15 +230,19 @@ function TradeTabs2(props: propsIF) {
         selectedInsideTab,
         selectedOutsideTab,
         showAllData,
-        diffHashSigTxs(userChangesMatchingTokenSelection),
+        diffHashSigTxs(userChanges),
         diffHashSigLimits(userLimitOrders),
         diffHashSigPostions(userPositionsMatchingTokenSelection),
     ]);
 
-    const dispatch = useAppDispatch();
-
     useEffect(() => {
-        if (userAddress && isServerEnabled && !showAllData && crocEnv) {
+        if (
+            userAddress &&
+            isServerEnabled &&
+            !showAllData &&
+            crocEnv &&
+            provider
+        ) {
             try {
                 fetchUserRecentChanges({
                     tokenList: tokens.tokenUniv,
@@ -264,6 +255,8 @@ function TradeTabs2(props: propsIF) {
                     ensResolution: true,
                     n: 100, // fetch last 100 changes,
                     crocEnv,
+                    graphCacheUrl: activeNetwork.graphCacheUrl,
+                    provider,
                     lastBlockNumber,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -272,12 +265,10 @@ function TradeTabs2(props: propsIF) {
                 })
                     .then((updatedTransactions) => {
                         if (updatedTransactions) {
-                            dispatch(
-                                setChangesByUser({
-                                    dataReceived: true,
-                                    changes: updatedTransactions,
-                                }),
-                            );
+                            setTransactionsByUser({
+                                dataReceived: true,
+                                changes: updatedTransactions,
+                            });
                         }
                     })
                     .catch(console.error);
@@ -285,9 +276,17 @@ function TradeTabs2(props: propsIF) {
                 console.error;
             }
         }
-    }, [isServerEnabled, userAddress, showAllData, lastBlockNumWait]);
+    }, [
+        isServerEnabled,
+        userAddress,
+        showAllData,
+        lastBlockNumWait,
+        !!crocEnv,
+        !!provider,
+    ]);
 
     // -------------------------------DATA-----------------------------------------
+
     // Props for <Ranges/> React Element
     const rangesProps = {
         notOnTradeRoute: false,
@@ -340,7 +339,7 @@ function TradeTabs2(props: propsIF) {
                   showRightSideOption: true,
               },
               {
-                  label: 'Ranges',
+                  label: 'Liquidity',
                   content: <Ranges {...rangesProps} />,
                   icon: rangePositionsImage,
                   showRightSideOption: true,
@@ -362,11 +361,6 @@ function TradeTabs2(props: propsIF) {
 
     // -------------------------------END OF DATA-----------------------------------------
     const tabComponentRef = useRef<HTMLDivElement>(null);
-
-    const clickOutsideHandler = () => {
-        setCurrentTxActiveInTransactions('');
-        setCurrentPositionActive('');
-    };
 
     const clearButtonOrNull = isCandleSelected ? (
         <ClearButton onClick={() => unselectCandle()}>Clear</ClearButton>
@@ -432,15 +426,13 @@ function TradeTabs2(props: propsIF) {
         </FlexContainer>
     );
 
-    useOnClickOutside(tabComponentRef, clickOutsideHandler);
-
     return (
         <FlexContainer
             ref={tabComponentRef}
             fullWidth
             fullHeight
             padding='8px'
-            style={{ position: 'relative' }}
+            style={{ position: 'relative', zIndex: 21 }}
         >
             <FlexContainer
                 flexDirection='column'

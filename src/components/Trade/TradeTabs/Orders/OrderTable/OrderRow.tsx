@@ -1,39 +1,51 @@
 import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
 import OrdersMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
-import OrderDetailsModal from '../../../../OrderDetails/OrderDetailsModal/OrderDetailsModal';
-import { memo, useContext, useEffect, useRef } from 'react';
-import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
-import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
+import {
+    Dispatch,
+    SetStateAction,
+    memo,
+    useContext,
+    useEffect,
+    useRef,
+} from 'react';
+import {
+    LimitModalAction,
+    LimitOrderIF,
+} from '../../../../../ambient-utils/types';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { orderRowConstants } from '../orderRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
-import { useModal } from '../../../../Global/Modal/useModal';
 import { OrderRow as OrderRowStyled } from '../../../../../styled/Components/TransactionTable';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
 interface propsIF {
     limitOrder: LimitOrderIF;
     isAccountView: boolean;
     tableView: 'small' | 'medium' | 'large';
+    openDetailsModal: () => void;
+    openActionModal: () => void;
+    setLimitModalAction: Dispatch<SetStateAction<LimitModalAction>>;
 }
 
 function OrderRow(props: propsIF) {
-    const { tableView, limitOrder, isAccountView } = props;
+    const {
+        tableView,
+        limitOrder,
+        isAccountView,
+        openDetailsModal,
+        openActionModal,
+        setLimitModalAction,
+    } = props;
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
-    const {
-        showAllData: showAllDataSelection,
-        currentPositionActive,
-        setCurrentPositionActive,
-    } = useContext(TradeTableContext);
+    const { showAllData: showAllDataSelection, currentLimitOrderActive } =
+        useContext(TradeTableContext);
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
 
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
 
     const {
         posHash,
@@ -68,9 +80,6 @@ function OrderRow(props: propsIF) {
         expectedPositionLiqQuote,
     } = useProcessOrder(limitOrder, userAddress, isAccountView);
 
-    const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
-        useModal();
-
     const orderMenuProps = {
         isOwnerActiveAccount: isOwnerActiveAccount,
         isOrderFilled: isOrderFilled,
@@ -103,31 +112,26 @@ function OrderRow(props: propsIF) {
             : 'text1';
 
     const orderDomId =
-        limitOrder.limitOrderId === currentPositionActive
+        limitOrder.limitOrderId === currentLimitOrderActive
             ? `order-${limitOrder.limitOrderId}`
             : '';
 
     const activePositionRef = useRef(null);
 
-    const clickOutsideHandler = () => {
-        setCurrentPositionActive('');
-    };
-    useOnClickOutside(activePositionRef, clickOutsideHandler);
-
     function scrollToDiv() {
         const element = document.getElementById(orderDomId);
         element?.scrollIntoView({
             behavior: 'smooth',
-            block: 'end',
+            block: 'start',
             inline: 'nearest',
         });
     }
 
     useEffect(() => {
-        limitOrder.limitOrderId === currentPositionActive
+        limitOrder.limitOrderId === currentLimitOrderActive
             ? scrollToDiv()
             : null;
-    }, [currentPositionActive]);
+    }, [currentLimitOrderActive]);
 
     const [_, copy] = useCopyToClipboard();
 
@@ -220,14 +224,6 @@ function OrderRow(props: propsIF) {
         statusDisplay,
     } = orderRowConstants(orderRowConstantsProps);
 
-    function handleRowClick() {
-        if (limitOrder.limitOrderId === currentPositionActive) {
-            return;
-        }
-        setCurrentPositionActive('');
-        openDetailsModal();
-    }
-
     const handleKeyPress: React.KeyboardEventHandler<HTMLDivElement> = (
         event,
     ) => {
@@ -243,11 +239,11 @@ function OrderRow(props: propsIF) {
             <OrderRowStyled
                 size={tableView}
                 account={isAccountView}
-                active={limitOrder.limitOrderId === currentPositionActive}
+                active={limitOrder.limitOrderId === currentLimitOrderActive}
                 user={userNameToDisplay === 'You' && showAllData}
                 id={orderDomId}
-                onClick={handleRowClick}
-                ref={currentPositionActive ? activePositionRef : null}
+                onClick={openDetailsModal}
+                ref={currentLimitOrderActive ? activePositionRef : null}
                 tabIndex={0}
                 onKeyDown={handleKeyPress}
             >
@@ -272,24 +268,15 @@ function OrderRow(props: propsIF) {
                     <OrdersMenu
                         limitOrder={limitOrder}
                         {...orderMenuProps}
-                        isBaseTokenMoneynessGreaterOrEqual={
-                            isBaseTokenMoneynessGreaterOrEqual
-                        }
                         isAccountView={isAccountView}
                         handleAccountClick={handleAccountClick}
+                        openDetailsModal={openDetailsModal}
+                        openActionModal={openActionModal}
+                        setLimitModalAction={setLimitModalAction}
+                        tableView={tableView}
                     />
                 </div>
             </OrderRowStyled>
-            {isDetailsModalOpen && (
-                <OrderDetailsModal
-                    limitOrder={limitOrder}
-                    isBaseTokenMoneynessGreaterOrEqual={
-                        isBaseTokenMoneynessGreaterOrEqual
-                    }
-                    isAccountView={isAccountView}
-                    onClose={closeDetailsModal}
-                />
-            )}
         </>
     );
 }

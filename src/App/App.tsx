@@ -28,7 +28,7 @@ import SidebarFooter from '../components/Global/Sidebar/SidebarFooter/SidebarFoo
 
 /** * **** Import Local Files *******/
 import './App.css';
-import { IS_LOCAL_ENV } from '../constants';
+import { IS_LOCAL_ENV } from '../ambient-utils/constants';
 import ChatPanel from '../components/Chat/ChatPanel';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
@@ -45,6 +45,7 @@ import SwitchNetwork from '../components/Global/SwitchNetworkAlert/SwitchNetwork
 import Explore from '../pages/Explore/Explore';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
+import ExampleForm from '../pages/InitPool/FormExample';
 
 /** ***** React Function *******/
 export default function App() {
@@ -61,19 +62,26 @@ export default function App() {
         theme: { selected: selectedTheme },
         wagmiModal: { isOpen: isWagmiModalOpen },
     } = useContext(AppStateContext);
-    const { isChainSupported, defaultUrlParams } = useContext(CrocEnvContext);
+    const { isWalletChainSupported, defaultUrlParams } =
+        useContext(CrocEnvContext);
     const { isFullScreen: fullScreenChart } = useContext(ChartContext);
     const {
         sidebar: { isOpen: isSidebarOpen, toggle: toggleSidebar },
     } = useContext(SidebarContext);
 
-    // Take away margin from left if we are on homepage or swap
-    const swapBodyStyle = currentLocation.startsWith('/swap')
-        ? 'swap-body'
-        : null;
+    const smallScreen = useMediaQuery('(max-width: 500px)');
 
-    // Show sidebar on all pages except for home, swap, chat and 404
-    const sidebarRender = currentLocation !== '/' &&
+    // Take away margin from left if we are on homepage or swap
+    const swapBodyStyle =
+        currentLocation.startsWith('/swap') && !smallScreen
+            ? 'swap-body'
+            : null;
+
+    // Show sidebar on all pages except for home, swap, chat, and 404
+    const sidebarRender = smallScreen ? (
+        <Sidebar />
+    ) : (
+        currentLocation !== '/' &&
         currentLocation !== '/swap' &&
         currentLocation !== '/404' &&
         currentLocation !== '/terms' &&
@@ -83,22 +91,24 @@ export default function App() {
         !fullScreenChart && (
             // isChainSupported &&
             <Sidebar />
-        );
+        )
+    );
 
     const sidebarDislayStyle = isSidebarOpen
         ? 'sidebar_content_layout'
         : 'sidebar_content_layout_close';
 
-    const showSidebarOrNullStyle =
-        currentLocation == '/' ||
-        currentLocation == '/swap' ||
-        currentLocation == '/404' ||
-        currentLocation == '/terms' ||
-        currentLocation == '/privacy' ||
-        currentLocation.includes('/chat') ||
-        currentLocation.startsWith('/swap')
-            ? 'hide_sidebar'
-            : sidebarDislayStyle;
+    const showSidebarOrNullStyle = smallScreen
+        ? sidebarDislayStyle
+        : currentLocation == '/' ||
+          currentLocation == '/swap' ||
+          currentLocation == '/404' ||
+          currentLocation == '/terms' ||
+          currentLocation == '/privacy' ||
+          currentLocation.includes('/chat') ||
+          currentLocation.startsWith('/swap')
+        ? 'hide_sidebar'
+        : sidebarDislayStyle;
 
     const containerStyle = currentLocation.includes('trade')
         ? 'content-container-trade'
@@ -146,7 +156,7 @@ export default function App() {
             }
         }
     }, [isEscapePressed]);
-    const showMobileVersion = useMediaQuery('(max-width: 600px)');
+    const showMobileVersion = useMediaQuery('(max-width: 500px)');
 
     return (
         <>
@@ -155,13 +165,14 @@ export default function App() {
                 className={containerStyle}
                 data-theme={selectedTheme}
             >
-                {!isChainSupported && <SwitchNetwork />}
+                {!isWalletChainSupported && <SwitchNetwork />}
                 <AppOverlay />
                 <PageHeader />
                 <section
                     className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
                 >
-                    {!currentLocation.startsWith('/swap') && sidebarRender}
+                    {(!currentLocation.startsWith('/swap') || smallScreen) &&
+                        sidebarRender}
                     <Routes>
                         <Route index element={<Home />} />
                         <Route
@@ -234,7 +245,6 @@ export default function App() {
                                 <ChatPanel isFullScreen={true} appPage={true} />
                             }
                         />
-
                         <Route
                             path='chat/:params'
                             element={
@@ -247,7 +257,6 @@ export default function App() {
                             path='account/:address'
                             element={<Portfolio />}
                         />
-
                         <Route
                             path='swap'
                             element={
@@ -260,6 +269,12 @@ export default function App() {
                         <Route path='privacy' element={<PrivacyPolicy />} />
                         {IS_LOCAL_ENV && (
                             <Route path='testpage' element={<TestPage />} />
+                        )}
+                        {IS_LOCAL_ENV && (
+                            <Route
+                                path='template/form'
+                                element={<ExampleForm />}
+                            />
                         )}
                         <Route path='/:address' element={<Portfolio />} />
                         <Route path='/404' element={<NotFound />} />

@@ -2,14 +2,14 @@
 import { useState, ReactNode, useEffect, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 // START: Import Local Files
-import { useAccount } from 'wagmi';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { IS_LOCAL_ENV } from '../../../constants';
+import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 import { sidebarMethodsIF } from '../../hooks/useSidebar';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import { ConnectWalletButton } from '../../../components/Global/Button/ConnectWalletButton';
 import { FlexContainer, Text } from '../../../styled/Common';
 import { AccordionHeader, ArrowIcon } from '../../../styled/Components/Sidebar';
+import Button from '../../../components/Form/Button';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -38,7 +38,7 @@ export default function SidebarAccordion(props: propsIF) {
     const {
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
-    const { isConnected } = useAccount();
+    const { isUserConnected } = useContext(UserDataContext);
     const isTopPools = item.name === 'Top Pools';
 
     const [isOpen, setIsOpen] = useState(isTopPools);
@@ -89,7 +89,7 @@ export default function SidebarAccordion(props: propsIF) {
     }, [props.openAllDefault, isDefaultOverridden]);
 
     const accordionContentToShow =
-        !isConnected &&
+        !isUserConnected &&
         !shouldDisplayContentWhenUserNotLoggedIn &&
         sidebar.isOpen ? (
             <motion.div
@@ -116,12 +116,20 @@ export default function SidebarAccordion(props: propsIF) {
                     <p>
                         Your recent {item.name.toLowerCase()} will display here.
                     </p>
-                    <ConnectWalletButton onClick={openWagmiModal} thin />
+                    <Button
+                        idForDOM={`connect_wallet_button_in_sidebar_${item.name}`}
+                        action={openWagmiModal}
+                        flat
+                        thin
+                        title='Connect Wallet'
+                    />
                 </FlexContainer>
             </motion.div>
         ) : (
             sidebar.isOpen && openStateContent
         );
+
+    // TODO: remove unnecessary wrapper inside `<AccordionHeader />`
 
     return (
         <FlexContainer
@@ -134,6 +142,9 @@ export default function SidebarAccordion(props: propsIF) {
                 open={sidebar.isOpen}
             >
                 <FlexContainer
+                    id={`sidebar_header_${item.name
+                        .replaceAll(' ', '_')
+                        .toLowerCase()}`}
                     flexDirection='row'
                     alignItems='center'
                     justifyContent={!sidebar.isOpen ? 'center' : 'flex-start'}

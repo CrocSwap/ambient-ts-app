@@ -1,20 +1,17 @@
 import { useContext, useEffect, useRef, useState, useMemo } from 'react';
 import {
     chartItemStates,
-    defaultCandleBandwith,
     renderCanvasArray,
     scaleData,
     setCanvasResolution,
 } from '../ChartUtils/chartUtils';
-import { IS_LOCAL_ENV } from '../../../constants';
-import {
-    diffHashSig,
-    diffHashSigScaleData,
-} from '../../../utils/functions/diffHashSig';
+import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
+import { diffHashSigScaleData } from '../../../ambient-utils/dataLayer';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { CandleData } from '../../../App/functions/fetchCandleSeries';
+import { CandleDataIF } from '../../../ambient-utils/types';
 import { ChartContext } from '../../../contexts/ChartContext';
+import { defaultCandleBandwith } from '../ChartUtils/chartConstants';
 
 interface candlePropsIF {
     chartItemStates: chartItemStates;
@@ -23,14 +20,15 @@ interface candlePropsIF {
     selectedDate: number | undefined;
     showLatest: boolean | undefined;
     denomInBase: boolean;
-    data: CandleData[];
+    data: CandleDataIF[];
     period: number;
-    lastCandleData: CandleData;
+    lastCandleData: CandleDataIF;
+    prevlastCandleTime: number;
+    setPrevLastCandleTime: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export default function CandleChart(props: candlePropsIF) {
     const {
-        chartItemStates,
         setBandwidth,
         scaleData,
         selectedDate,
@@ -39,6 +37,8 @@ export default function CandleChart(props: candlePropsIF) {
         data,
         period,
         lastCandleData,
+        prevlastCandleTime,
+        setPrevLastCandleTime,
     } = props;
     const d3CanvasCandle = useRef<HTMLCanvasElement | null>(null);
 
@@ -73,13 +73,18 @@ export default function CandleChart(props: candlePropsIF) {
                 const domainLeft = scaleData?.xScale.domain()[0];
                 const domainRight = scaleData?.xScale.domain()[1];
 
+                const diff =
+                    (lastCandleData.time - prevlastCandleTime) / period;
+
+                setPrevLastCandleTime(lastCandleData.time);
+
                 scaleData?.xScale.domain([
-                    domainLeft + period * 1000,
-                    domainRight + period * 1000,
+                    domainLeft + diff * period * 1000,
+                    domainRight + diff * period * 1000,
                 ]);
             }
         }
-    }, [diffHashSig(chartItemStates), tradeTableState, lastCandleData]);
+    }, [tradeTableState, lastCandleData?.time]);
 
     useEffect(() => {
         renderCanvasArray([d3CanvasCandle]);
@@ -91,23 +96,23 @@ export default function CandleChart(props: candlePropsIF) {
                 .autoBandwidth(d3fc.seriesCanvasCandlestick())
                 .xScale(scaleData?.xScale)
                 .yScale(scaleData?.yScale)
-                .crossValue((d: CandleData) => d.time * 1000)
-                .highValue((d: CandleData) =>
+                .crossValue((d: CandleDataIF) => d.time * 1000)
+                .highValue((d: CandleDataIF) =>
                     denomInBase
                         ? d.invMinPriceExclMEVDecimalCorrected
                         : d.maxPriceExclMEVDecimalCorrected,
                 )
-                .lowValue((d: CandleData) =>
+                .lowValue((d: CandleDataIF) =>
                     denomInBase
                         ? d.invMaxPriceExclMEVDecimalCorrected
                         : d.minPriceExclMEVDecimalCorrected,
                 )
-                .openValue((d: CandleData) =>
+                .openValue((d: CandleDataIF) =>
                     denomInBase
                         ? d.invPriceOpenExclMEVDecimalCorrected
                         : d.priceOpenExclMEVDecimalCorrected,
                 )
-                .closeValue((d: CandleData) =>
+                .closeValue((d: CandleDataIF) =>
                     denomInBase
                         ? d.invPriceCloseExclMEVDecimalCorrected
                         : d.priceCloseExclMEVDecimalCorrected,
@@ -120,7 +125,7 @@ export default function CandleChart(props: candlePropsIF) {
     useEffect(() => {
         if (candlestick) {
             candlestick.decorate(
-                (context: CanvasRenderingContext2D, d: CandleData) => {
+                (context: CanvasRenderingContext2D, d: CandleDataIF) => {
                     const nowDate = new Date();
 
                     const close = denomInBase

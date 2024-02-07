@@ -14,18 +14,12 @@ import {
     useEffect,
     useContext,
 } from 'react';
-import { TokenIF } from '../../../utils/interfaces/exports';
 import { BigNumber } from 'ethers';
-import { fetchEnsAddress } from '../../../App/functions/fetchAddress';
+import { fetchEnsAddress } from '../../../ambient-utils/api';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../utils/hooks/reduxToolkit';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { setTokenBalance } from '../../../utils/state/userDataSlice';
 
 import { FlexContainer } from '../../../styled/Common';
 
@@ -35,6 +29,9 @@ import {
     PortfolioMotionContainer,
     PortfolioMotionSubContainer,
 } from '../../../styled/Components/Portfolio';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface propsIF {
     fullLayoutActive: boolean;
@@ -53,16 +50,13 @@ export default function ExchangeBalance(props: propsIF) {
 
     const { mainnetProvider } = useContext(CrocEnvContext);
 
-    const selectedToken: TokenIF = useAppSelector(
-        (state) => state.soloTokenData.token,
-    );
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
-    const dispatchRTK = useAppDispatch();
+    const { soloToken: selectedToken } = useContext(TradeDataContext);
+
+    const { userAddress } = useContext(UserDataContext);
 
     const { crocEnv } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
+    const { setTokenBalance } = useContext(TokenBalanceContext);
 
     const [tokenAllowance, setTokenAllowance] = useState<string>('');
     const [recheckTokenAllowance, setRecheckTokenAllowance] =
@@ -98,12 +92,11 @@ export default function ExchangeBalance(props: propsIF) {
 
                 .then((bal: BigNumber) => {
                     setTokenWalletBalance(bal.toString());
-                    dispatchRTK(
-                        setTokenBalance({
-                            tokenAddress: selectedToken.address,
-                            walletBalance: bal.toString(),
-                        }),
-                    );
+
+                    setTokenBalance({
+                        tokenAddress: selectedToken.address,
+                        walletBalance: bal.toString(),
+                    });
                 })
                 .catch(console.error);
 
@@ -112,12 +105,11 @@ export default function ExchangeBalance(props: propsIF) {
                 .balance(userAddress)
                 .then((bal: BigNumber) => {
                     setTokenDexBalance(bal.toString());
-                    dispatchRTK(
-                        setTokenBalance({
-                            tokenAddress: selectedToken.address,
-                            dexBalance: bal.toString(),
-                        }),
-                    );
+
+                    setTokenBalance({
+                        tokenAddress: selectedToken.address,
+                        dexBalance: bal.toString(),
+                    });
                 })
                 .catch(console.error);
         }
@@ -191,15 +183,10 @@ export default function ExchangeBalance(props: propsIF) {
                 sendToAddress &&
                 isSendToAddressHex &&
                 sendToAddress.length === 42 &&
-                sendToAddress.startsWith('0x') &&
-                mainnetProvider
+                sendToAddress.startsWith('0x')
             ) {
                 try {
-                    const ensName = await fetchEnsAddress(
-                        mainnetProvider,
-                        sendToAddress,
-                        '0x1',
-                    );
+                    const ensName = await fetchEnsAddress(sendToAddress);
                     if (ensName) {
                         setSecondaryEnsName(ensName);
                     } else setSecondaryEnsName(undefined);
@@ -265,6 +252,7 @@ export default function ExchangeBalance(props: propsIF) {
 
     const exchangeControl = (
         <PortfolioControlContainer
+            id='portfolio_sidebar_toggle'
             onClick={() => setFullLayoutActive(!fullLayoutActive)}
         >
             <IconWithTooltip title='Exchange Balance' placement='bottom'>
@@ -292,7 +280,7 @@ export default function ExchangeBalance(props: propsIF) {
                 background='dark1'
                 rounded
                 fullHeight
-                desktop={{ maxWidth: '400px%' }}
+                xl={{ maxWidth: '400px' }}
             >
                 <PortfolioMotionSubContainer
                     fullHeight
@@ -323,8 +311,8 @@ export default function ExchangeBalance(props: propsIF) {
                 {(!fullLayoutActive || columnView || isModalView) && (
                     <PortfolioInfoText>
                         Collateral deposited into the Ambient Finance exchange
-                        can be traded at lower gas costs. Collateral can be
-                        withdrawn at any time.
+                        can be traded at lower gas costs and withdrawn at any
+                        time.
                     </PortfolioInfoText>
                 )}
             </PortfolioMotionContainer>

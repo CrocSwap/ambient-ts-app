@@ -3,6 +3,7 @@
     width: 100%;
     height: 100%;
     color: var(--text2);
+    position: relative;
 }
 
 text {
@@ -18,7 +19,7 @@ text.market {
 d3fc-canvas,
 d3fc-svg {
     overflow: hidden;
-    grid-column: 2;
+    grid-column: 3;
     grid-row: 3;
 }
 
@@ -27,8 +28,9 @@ d3fc-svg {
     height: 100%;
     overflow: hidden;
     display: grid;
-    grid-template-columns: auto 1fr auto minmax(1em, max-content);
+    grid-template-columns: 1% auto 1fr auto minmax(1em, max-content);
     grid-template-rows: minmax(0em, max-content) auto 1fr auto;
+    transition: all 600ms ease-in-out;
 }
 
 text.crossHairText {
@@ -51,35 +53,35 @@ text.y_axis {
 }
 
 .domain,
-.tick > path,
+.tick>path,
 .gridline-y,
 .gridline-x {
     stroke: var(--text2);
     stroke-opacity: 0.1;
 }
 
-.annotation-line > .line {
+.annotation-line>.line {
     stroke: var(--text2);
     stroke-width: 3;
     stroke-dasharray: 16 16;
     border: 2px dashed var(--text2);
 }
 
-.annotation-line > .order_sell {
+.annotation-line>.order_sell {
     stroke: var(--accent2);
     stroke-width: 3;
     stroke-dasharray: 16 16;
     border: 2px dashed var(--accent2);
 }
 
-.annotation-line > .order_buy {
+.annotation-line>.order_buy {
     stroke: var(--accent1);
     stroke-width: 3;
     stroke-dasharray: 16 16;
     border: 2px dashed var(--accent1);
 }
 
-.annotation-line>.marketLine {
+.annotation-line > .marketLine {
     stroke: var(--text2);
     stroke-width: 1;
     stroke-dasharray: 4 2;
@@ -87,7 +89,7 @@ text.y_axis {
     border: 2px dashed var(--text2);
 }
 
-.annotation-line > .ghostline {
+.annotation-line>.ghostline {
     stroke: var(--text2);
     stroke-width: 1;
     stroke-opacity: 0.5;
@@ -205,12 +207,12 @@ div.tooltip {
 .value_title {
     flex-grow: 8 !important;
     font-weight: 500;
-    font-size: 12px;
+    font-size: var(--body-size);
 }
 
 .value {
     font-weight: 500;
-    font-size: 12px;
+    font-size: var(--body-size);
 }
 
 .crosshair {
@@ -237,7 +239,37 @@ label {
     color: rgba(204, 204, 204, 0.63);
     padding-left: 7px;
     padding-top: 2px;
-    font-size: 12px;
+    font-size: var(--body-size);
+}
+
+.orderHistoryTooltip-enter {
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+.orderHistoryTooltip-enter-active {
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.orderHistoryTooltip-exit {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.orderHistoryTooltip-exit-active {
+    opacity: 0;
+    transform: translateX(100%);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.orderHistoryHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    color: #f0f0f8;
+    font-size: 16px;
 }
 
 .lastCandleDiv {
@@ -304,14 +336,12 @@ label {
 }
 
 @media only screen and (max-width: 700px) {
-
     .popup {
         font-size: medium;
         width: 80%;
         top: 49%;
     }
 }
-
 
 @media (max-width: 800px) and (min-width: 500px) {
     .chart_grid {
@@ -331,7 +361,7 @@ label {
 #tvl_chart {
     display: grid;
     grid-template-rows: 0px auto 1fr auto;
-    grid-template-columns: auto 1fr auto minmax(1em, max-content);
+    grid-template-columns: 1% auto 1fr auto minmax(1em, max-content);
     height: 20%;
     min-height: 3rem;
 }

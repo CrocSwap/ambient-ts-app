@@ -1,19 +1,22 @@
-import { PositionIF } from '../../../../utils/interfaces/exports';
+import { PositionIF } from '../../../../ambient-utils/types';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useContext } from 'react';
 import {
     useLinkGen,
     linkGenMethodsIF,
+    poolParamsIF,
 } from '../../../../utils/hooks/useLinkGen';
-import { getFormattedNumber } from '../../../functions/getFormattedNumber';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import {
+    getFormattedNumber,
+    getUnicodeCharacter,
+} from '../../../../ambient-utils/dataLayer';
 import { FlexContainer, GridContainer, Text } from '../../../../styled/Common';
 import {
     Results,
     ResultsContainer,
 } from '../../../../styled/Components/Sidebar';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     searchedPositions: PositionIF[];
@@ -25,7 +28,7 @@ interface PositionLiPropsIF {
 
 function PositionLI(props: PositionLiPropsIF) {
     const { position, handleClick } = props;
-    const { isDenomBase } = useAppSelector((state) => state.tradeData);
+    const { isDenomBase } = useContext(TradeDataContext);
 
     const getRangeDisplay = (position: PositionIF, isDenomBase: boolean) => {
         const baseTokenCharacter = position?.baseSymbol
@@ -51,6 +54,7 @@ function PositionLI(props: PositionLiPropsIF) {
     // fn to generate human-readable version of total position value
     const positionValue = getFormattedNumber({
         value: position.totalValueUSD,
+        prefix: '$',
     });
 
     return (
@@ -69,7 +73,7 @@ function PositionLI(props: PositionLiPropsIF) {
                     : `${position?.quoteSymbol} / ${position?.baseSymbol}`}
             </p>
             <p style={{ textAlign: 'center' }}>{rangeDisplay}</p>
-            <p style={{ textAlign: 'center' }}>{'$' + positionValue}</p>
+            <p style={{ textAlign: 'center' }}>{positionValue}</p>
         </Results>
     );
 }
@@ -93,13 +97,17 @@ export default function PositionsSearchResults(props: propsIF) {
     const handleClick = (position: PositionIF): void => {
         setOutsideControl(true);
         setSelectedOutsideTab(2);
-        setCurrentPositionActive(position.lastMintTx);
+        setCurrentPositionActive(position.positionId);
         setShowAllData(false);
-        linkGenPool.navigate({
+        const { base, quote } = position;
+        // URL params for link to pool page
+        const poolLinkParams: poolParamsIF = {
             chain: chainId,
-            tokenA: position.base,
-            tokenB: position.quote,
-        });
+            tokenA: base,
+            tokenB: quote,
+        };
+        // navigate user to `/trade/pool` with defined URL params
+        linkGenPool.navigate(poolLinkParams);
     };
 
     return (
@@ -110,7 +118,7 @@ export default function PositionsSearchResults(props: propsIF) {
             gap={8}
         >
             <Text fontWeight='500' fontSize='body' color='accent5'>
-                My Range Positions
+                My Liquidity Positions
             </Text>
             {searchedPositions.length ? (
                 <FlexContainer flexDirection='column' fullWidth>

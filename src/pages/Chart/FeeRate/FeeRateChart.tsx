@@ -4,15 +4,15 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import '../Chart.css';
 import { scaleData, setCanvasResolution } from '../ChartUtils/chartUtils';
-import { CandleData } from '../../../App/functions/fetchCandleSeries';
+import { CandleDataIF } from '../../../ambient-utils/types';
 import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
 import {
     diffHashSig,
     diffHashSigScaleData,
-} from '../../../utils/functions/diffHashSig';
+} from '../../../ambient-utils/dataLayer';
 
 interface FreeRateData {
-    feeData: Array<CandleData>;
+    feeData: Array<CandleDataIF>;
     period: number;
     subChartValues: any;
     crosshairForSubChart: any;
@@ -33,6 +33,8 @@ interface FreeRateData {
     isChartZoom: boolean;
     firstCandleData: any;
     lastCandleData: any;
+    isToolbarOpen: boolean;
+    toolbarWidth: number;
 }
 
 function FeeRateChart(props: FreeRateData) {
@@ -57,6 +59,8 @@ function FeeRateChart(props: FreeRateData) {
         render,
         firstCandleData,
         lastCandleData,
+        isToolbarOpen,
+        toolbarWidth,
     } = props;
 
     const d3Yaxis = useRef<HTMLCanvasElement | null>(null);
@@ -383,7 +387,14 @@ function FeeRateChart(props: FreeRateData) {
     );
 
     return (
-        <div id='fee_rate_chart' data-testid={'chart'}>
+        <div
+            id='fee_rate_chart'
+            data-testid={'chart'}
+            style={{
+                gridTemplateColumns:
+                    toolbarWidth + 'px auto 1fr auto minmax(1em, max-content)',
+            }}
+        >
             <d3fc-canvas
                 id='d3PlotFeeRate'
                 ref={d3CanvasArea}
@@ -396,7 +407,13 @@ function FeeRateChart(props: FreeRateData) {
                 className='d3CanvasCrosshair'
             ></d3fc-canvas>
 
-            <label style={{ position: 'absolute', left: '0%' }}>
+            <label
+                style={{
+                    paddingLeft: isToolbarOpen ? '38px' : '9px',
+                    gridColumnStart: '3',
+                    gridColumnEnd: '3',
+                }}
+            >
                 Fee Rate:{' '}
                 {subChartValues.filter(
                     (value: any) => value.name === 'feeRate',
@@ -408,12 +425,13 @@ function FeeRateChart(props: FreeRateData) {
                       ).toFixed(2) + '%'
                     : '-'}
             </label>
+
             <d3fc-canvas
                 className='y-axis-canvas'
                 ref={d3Yaxis}
                 style={{
                     width: yAxisWidth,
-                    gridColumn: 4,
+                    gridColumn: 5,
                     gridRow: 3,
                 }}
             ></d3fc-canvas>

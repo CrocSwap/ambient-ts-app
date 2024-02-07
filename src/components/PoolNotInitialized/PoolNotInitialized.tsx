@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
-import uriToHttp from '../../utils/functions/uriToHttp';
+import { uriToHttp } from '../../ambient-utils/dataLayer';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../ambient-utils/types';
 import TokenIcon from '../Global/TokenIcon/TokenIcon';
 import styles from './PoolNotInitialized.module.css';
 
@@ -23,6 +23,7 @@ export const PoolNotInitalized = (props: PropsIF) => {
                     <div className={styles.pool_not_init_inner}>
                         <h2>This pool has not been initialized.</h2>
                         <h3>Do you want to initialize it?</h3>
+
                         <Link
                             to={linkGenInitPool.getFullURL({
                                 chain: chainId,

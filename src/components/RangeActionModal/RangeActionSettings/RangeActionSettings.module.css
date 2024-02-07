@@ -26,7 +26,7 @@
     display: flex;
     justify-content: center;
     background-color: var(--dark2);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     height: 40px;
     /* border: 1px solid var(--text3); */
     padding: 0.5rem;
@@ -43,9 +43,9 @@
 .slippage_content input {
     height: 100%;
     border: 0px;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     background: none;
-    font-size: 16px;
+    font-size: var(--header-size);
     width: auto;
     outline: none;
     color: rgb(255, 255, 255);
@@ -75,7 +75,7 @@
     color: var(--text2);
 
     padding: 0.5rem 1rem;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 
     /* border: solid 1px transparent;
   background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)),

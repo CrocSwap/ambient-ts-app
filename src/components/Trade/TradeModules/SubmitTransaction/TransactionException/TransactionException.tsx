@@ -1,25 +1,41 @@
 import styles from './TransactionException.module.css';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
-import { ZERO_ADDRESS } from '../../../../../constants';
+import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
 import DividerDark from '../../../../Global/DividerDark/DividerDark';
+import { useContext } from 'react';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import { RangeContext } from '../../../../../contexts/RangeContext';
 
-export default function TransactionException() {
+interface propsIF {
+    txErrorMessage: string;
+}
+
+export default function TransactionException(props: propsIF) {
+    const { txErrorMessage } = props;
     const rangeModuleActive = location.pathname.includes('/trade/pool');
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const { isTokenAPrimaryRange } = useContext(RangeContext);
+    const { tokenA, tokenB } = useContext(TradeDataContext);
 
-    const isEthSecondary =
-        (tradeData.isTokenAPrimaryRange &&
-            tradeData.tokenB.address === ZERO_ADDRESS) ||
-        (!tradeData.isTokenAPrimaryRange &&
-            tradeData.tokenA.address === ZERO_ADDRESS);
+    const isNativeTokenSecondary =
+        (isTokenAPrimaryRange && tokenB.address === ZERO_ADDRESS) ||
+        (!isTokenAPrimaryRange && tokenA.address === ZERO_ADDRESS);
 
-    const primaryTokenSymbol = tradeData.isTokenAPrimaryRange
-        ? tradeData.tokenA.symbol
-        : tradeData.tokenB.symbol;
+    const primaryTokenSymbol = isTokenAPrimaryRange
+        ? tokenA.symbol
+        : tokenB.symbol;
+
+    const formattedErrorMessage =
+        'Error Message: ' + txErrorMessage?.replace('err: ', '');
+
+    const suggestionToCheckWalletETHBalance = (
+        <p>
+            Please verify that the native token (e.g. ETH) balance in your
+            wallet is sufficient to cover the cost of gas.
+        </p>
+    );
 
     return (
         <div className={styles.removal_pending}>
-            {rangeModuleActive && isEthSecondary ? (
+            {rangeModuleActive && isNativeTokenSecondary ? (
                 <>
                     <p>
                         A preliminary simulation of your transaction has failed.
@@ -27,13 +43,13 @@ export default function TransactionException() {
                     </p>
                     <DividerDark />
                     <p>
-                        This may have occurred due to an insufficient ETH
-                        balance to cover potential slippage.
+                        This may have occurred due to an insufficient native
+                        token (e.g. ETH) balance to cover potential slippage.
                     </p>
                     <DividerDark />
                     <p>
-                        Please try entering a specific amount of ETH, rather
-                        than
+                        Please try entering a specific amount of the native
+                        token, rather than
                         {' ' + primaryTokenSymbol}.
                     </p>
                 </>
@@ -44,9 +60,16 @@ export default function TransactionException() {
                         We apologize for this inconvenience.
                     </p>
                     <DividerDark />
-                    <p>
-                        Please check your wallet for notifications or try again.
-                    </p>
+                    <p>{formattedErrorMessage}</p>
+                    <DividerDark />
+                    {!txErrorMessage ? (
+                        suggestionToCheckWalletETHBalance
+                    ) : (
+                        <p>
+                            Please check your wallet for notifications or try
+                            again.
+                        </p>
+                    )}
                 </>
             )}
         </div>

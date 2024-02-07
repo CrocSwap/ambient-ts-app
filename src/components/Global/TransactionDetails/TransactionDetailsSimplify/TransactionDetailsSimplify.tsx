@@ -1,34 +1,26 @@
-import TooltipComponent from '../../TooltipComponent/TooltipComponent';
-import { TransactionIF } from '../../../../utils/interfaces/exports';
+import { TransactionIF } from '../../../../ambient-utils/types';
 import { RiExternalLinkLine } from 'react-icons/ri';
 
 import styles from './TransactionDetailsSimplify.module.css';
 import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
-import { ZERO_ADDRESS } from '../../../../constants';
+import { ZERO_ADDRESS } from '../../../../ambient-utils/constants';
 import moment from 'moment';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { useContext } from 'react';
+import { memo, useContext } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { useMediaQuery } from '@material-ui/core';
-
-interface ItemRowPropsIF {
-    title: string;
-    // eslint-disable-next-line
-    content: any;
-    explanation: string;
-}
+import { UserDataContext } from '../../../../contexts/UserDataContext';
+import InfoRow from '../../InfoRow';
 
 interface TransactionDetailsSimplifyPropsIF {
     tx: TransactionIF;
     isAccountView: boolean;
 }
-export default function TransactionDetailsSimplify(
-    props: TransactionDetailsSimplifyPropsIF,
-) {
+
+// TODO: refactor to using styled-components
+function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
     const { tx, isAccountView } = props;
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+
+    const { userAddress } = useContext(UserDataContext);
 
     const {
         ensName,
@@ -68,6 +60,8 @@ export default function TransactionDetailsSimplify(
     const isBuy = tx.isBid || tx.isBuy;
 
     const isSwap = tx.entityType === 'swap' || tx.entityType === 'limitOrder';
+    const isLimitRemoval =
+        tx.entityType === 'limitOrder' && tx.changeType === 'burn';
 
     function handleOpenWallet() {
         const walletUrl = isOwnerActiveAccount
@@ -174,6 +168,7 @@ export default function TransactionDetailsSimplify(
             ? 'Claim from Limit'
             : 'Market';
 
+    console.log({ quoteQuantityDisplay, estimatedQuoteFlowDisplay });
     // Create a data array for the info and map through it here
     const infoContent = [
         {
@@ -223,28 +218,35 @@ export default function TransactionDetailsSimplify(
         },
 
         {
-            title: isSwap ? 'From Qty ' : 'Token 1 Qty',
+            title: isLimitRemoval
+                ? 'From Qty Removed '
+                : isSwap
+                ? 'From Qty '
+                : 'Token 1 Qty',
             content: (
                 <div style={{ cursor: 'default' }}>
                     {isBuy
                         ? `${
                               tx.entityType !== 'limitOrder' ||
                               tx.changeType === 'burn' ||
-                              tx.changeType === 'mint'
+                              tx.changeType === 'mint' ||
+                              isLimitRemoval
                                   ? baseQuantityDisplay
                                   : estimatedBaseFlowDisplay || '0.00'
                           } ${baseTokenSymbol}`
                         : `${
                               tx.entityType !== 'limitOrder' ||
                               tx.changeType === 'burn' ||
-                              tx.changeType === 'mint'
+                              tx.changeType === 'mint' ||
+                              isLimitRemoval
                                   ? quoteQuantityDisplay
                                   : estimatedQuoteFlowDisplay || '0.00'
                           } ${quoteTokenSymbol}`}
                 </div>
             ),
-            explanation:
-                'The quantity of the sell token (scaled by its decimals value)',
+            explanation: `The quantity of the sell token ${
+                isLimitRemoval ? 'removed ' : ''
+            }`,
         },
 
         {
@@ -260,26 +262,33 @@ export default function TransactionDetailsSimplify(
         },
 
         {
-            title: isSwap ? 'To Qty ' : 'Token 2 Qty ',
+            title: isLimitRemoval
+                ? 'To Token Claimed '
+                : isSwap
+                ? 'To Qty '
+                : 'Token 2 Qty ',
             content: (
                 <div style={{ cursor: 'default' }}>
                     {!isBuy
                         ? `${
                               tx.entityType !== 'limitOrder' ||
-                              tx.changeType === 'recover'
+                              tx.changeType === 'recover' ||
+                              isLimitRemoval
                                   ? baseQuantityDisplay
                                   : estimatedBaseFlowDisplay || '0.00'
                           } ${baseTokenSymbol}`
                         : `${
                               tx.entityType !== 'limitOrder' ||
-                              tx.changeType === 'recover'
+                              tx.changeType === 'recover' ||
+                              isLimitRemoval
                                   ? quoteQuantityDisplay
                                   : estimatedQuoteFlowDisplay || '0.00'
                           } ${quoteTokenSymbol}`}
                 </div>
             ),
-            explanation:
-                'The quantity of the to/buy token (scaled by its decimals value)',
+            explanation: `The quantity of the to/buy token ${
+                isLimitRemoval ? 'claimed ' : ''
+            }`,
         },
         {
             title: isSwap ? 'Price ' : 'Low Price Boundary',
@@ -308,60 +317,41 @@ export default function TransactionDetailsSimplify(
                 ? 'The transaction price'
                 : 'The low price boundary',
         },
-
-        // {
-        //     title: 'Liquidity Provider Fee ',
-        //     content: 'liquidity fee',
-        //     explanation: 'this is explanation',
-        // },
-
-        // { title: 'Network Fee ', content: 'network fee', explanation: 'this is explanation' },
+        ...(isSwap
+            ? [
+                  {
+                      title: 'Value ',
+                      content: (
+                          <div style={{ cursor: 'default' }}>{usdValue}</div>
+                      ),
+                      explanation:
+                          'The approximate US dollar value of the transaction',
+                  },
+              ]
+            : [
+                  {
+                      title: 'High Price Boundary',
+                      content: isAccountView
+                          ? isBaseTokenMoneynessGreaterOrEqual
+                              ? `1 ${quoteTokenSymbol} = ${truncatedHighDisplayPriceDenomByMoneyness} ${baseTokenSymbol}`
+                              : `1 ${baseTokenSymbol} = ${truncatedHighDisplayPriceDenomByMoneyness} ${quoteTokenSymbol}`
+                          : isAmbient
+                          ? '∞'
+                          : isDenomBase
+                          ? `1 ${baseTokenSymbol} = ${truncatedHighDisplayPrice} ${quoteTokenSymbol}`
+                          : `1 ${quoteTokenSymbol} = ${truncatedHighDisplayPrice} ${baseTokenSymbol}`,
+                      explanation: 'The high price boundary',
+                  },
+                  {
+                      title: 'Value ',
+                      content: (
+                          <div style={{ cursor: 'default' }}>{usdValue}</div>
+                      ),
+                      explanation:
+                          'The approximate US dollar value of the transaction',
+                  },
+              ]),
     ];
-
-    if (isSwap) {
-        infoContent.push({
-            title: 'Value ',
-            content: <div style={{ cursor: 'default' }}>{usdValue}</div>,
-            explanation: 'The appoximate US dollar value of the transaction',
-        });
-    } else {
-        infoContent.push(
-            {
-                title: 'High Price Boundary',
-                content: isAccountView
-                    ? isBaseTokenMoneynessGreaterOrEqual
-                        ? `1 ${quoteTokenSymbol} = ${truncatedHighDisplayPriceDenomByMoneyness} ${baseTokenSymbol}`
-                        : `1 ${baseTokenSymbol} = ${truncatedHighDisplayPriceDenomByMoneyness} ${quoteTokenSymbol}`
-                    : isAmbient
-                    ? '∞'
-                    : isDenomBase
-                    ? `1 ${baseTokenSymbol} = ${truncatedHighDisplayPrice} ${quoteTokenSymbol}`
-                    : `1 ${quoteTokenSymbol} = ${truncatedHighDisplayPrice} ${baseTokenSymbol}`,
-                explanation: 'The high price boundary',
-            },
-            {
-                title: 'Value ',
-                content: <div style={{ cursor: 'default' }}>{usdValue}</div>,
-                explanation:
-                    'The appoximate US dollar value of the transaction',
-            },
-        );
-    }
-
-    function InfoRow(props: ItemRowPropsIF) {
-        const { title, content, explanation } = props;
-
-        return (
-            <div className={styles.info_row_container}>
-                <div className={styles.title_container}>
-                    <p>{title}</p>
-                    <TooltipComponent title={explanation} placement={'right'} />
-                </div>
-
-                <div>{content}</div>
-            </div>
-        );
-    }
 
     return (
         <div className={styles.tx_details_container}>
@@ -378,3 +368,5 @@ export default function TransactionDetailsSimplify(
         </div>
     );
 }
+
+export default memo(TransactionDetailsSimplify);

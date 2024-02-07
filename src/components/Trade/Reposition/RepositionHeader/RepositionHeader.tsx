@@ -9,10 +9,7 @@ import TransactionSettingsModal from '../../../Global/TransactionSettingsModal/T
 
 // START: Import Local Files
 import styles from './RepositionHeader.module.css';
-import trimString from '../../../../utils/functions/trimString';
 import { useRepoExitPath } from './useRepoExitPath';
-import { setAdvancedMode } from '../../../../utils/state/tradeDataSlice';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
 import { useModal } from '../../../Global/Modal/useModal';
@@ -27,8 +24,11 @@ interface propsIF {
 function RepositionHeader(props: propsIF) {
     const { setRangeWidthPercentage, positionHash, resetTxHash } = props;
 
-    const { setSimpleRangeWidth, setCurrentRangeInReposition } =
-        useContext(RangeContext);
+    const {
+        setSimpleRangeWidth,
+        setCurrentRangeInReposition,
+        setAdvancedMode,
+    } = useContext(RangeContext);
     const { bypassConfirmRepo, repoSlippage } = useContext(
         UserPreferenceContext,
     );
@@ -36,7 +36,6 @@ function RepositionHeader(props: propsIF) {
     const [isOpen, openModal, closeModal] = useModal();
 
     const navigate = useNavigate();
-    const dispatch = useAppDispatch();
 
     // navpath for when user clicks the exit button
     const exitPath = useRepoExitPath();
@@ -57,14 +56,11 @@ function RepositionHeader(props: propsIF) {
                     alt='settings'
                     onClick={openModal}
                 />
-                <p className={styles.title}>
-                    {' '}
-                    Reposition: {trimString(positionHash, 5, 4, '…')}
-                </p>
+                <p className={styles.title}> Reposition: {positionHash}</p>
                 <VscClose
                     className={styles.close_icon}
                     onClick={() => {
-                        dispatch(setAdvancedMode(false));
+                        setAdvancedMode(false);
                         setRangeWidthPercentage(10);
                         setSimpleRangeWidth(10);
                         navigate(exitPath, { replace: true });

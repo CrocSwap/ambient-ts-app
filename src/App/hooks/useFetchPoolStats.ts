@@ -4,16 +4,17 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 
-import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
+import {
+    getUnicodeCharacter,
+    getMoneynessRank,
+    getFormattedNumber,
+} from '../../ambient-utils/dataLayer';
+import { estimateFrom24HrRangeApr } from '../../ambient-utils/api';
 import { sortBaseQuoteTokens, toDisplayPrice } from '@crocswap-libs/sdk';
-import { getMoneynessRank } from '../../utils/functions/getMoneynessRank';
-import { getFormattedNumber } from '../functions/getFormattedNumber';
-import { estimateFrom24HrRangeApr } from '../functions/fetchAprEst';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { get24hChange } from '../functions/getPoolStats';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
-import { PoolIF } from '../../utils/interfaces/PoolIF';
-import { PoolStatIF } from '../../utils/interfaces/PoolStatIF';
+import { PoolIF, PoolStatIF } from '../../ambient-utils/types';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../../ambient-utils/constants';
 
 const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
     const {
@@ -23,9 +24,12 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         cachedPoolStatsFetch,
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
+        cachedGet24hChange,
     } = useContext(CachedDataContext);
     const {
         crocEnv,
+        activeNetwork,
+        provider,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
@@ -73,16 +77,8 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
 
                     const isBaseTokenMoneynessGreaterOrEqual =
                         pool.base.address && pool.quote.address
-                            ? getMoneynessRank(
-                                  pool.base.address.toLowerCase() +
-                                      '_' +
-                                      chainId,
-                              ) -
-                                  getMoneynessRank(
-                                      pool.quote.address.toLowerCase() +
-                                          '_' +
-                                          chainId,
-                                  ) >=
+                            ? getMoneynessRank(pool.base.symbol) -
+                                  getMoneynessRank(pool.quote.symbol) >=
                               0
                             : false;
 
@@ -163,7 +159,8 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                 chainId &&
                 lastBlockNumber &&
                 shouldInvertDisplay !== undefined &&
-                crocEnv
+                crocEnv &&
+                provider
             ) {
                 const RANGE_WIDTH = 0.1;
 
@@ -172,6 +169,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                     pool.base.address,
                     pool.quote.address,
                     crocEnv,
+                    provider,
                     lastBlockNumber,
                 );
 
@@ -180,8 +178,9 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                     pool.base.address,
                     pool.quote.address,
                     poolIndex,
-                    Math.floor(Date.now() / 60000),
+                    Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
                     crocEnv,
+                    activeNetwork.graphCacheUrl,
                     cachedFetchTokenPrice,
                 );
 
@@ -224,12 +223,14 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                 }
 
                 try {
-                    const priceChangeResult = await get24hChange(
+                    const priceChangeResult = await cachedGet24hChange(
                         chainId,
                         baseAddr,
                         quoteAddr,
                         poolIndex,
                         shouldInvertDisplay,
+                        activeNetwork.graphCacheUrl,
+                        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
                     );
 
                     if (!priceChangeResult) {
@@ -293,7 +294,8 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         isServerEnabled,
         shouldInvertDisplay,
         lastBlockNumber,
-        crocEnv,
+        !!crocEnv,
+        !!provider,
         poolIndex,
     ]);
 

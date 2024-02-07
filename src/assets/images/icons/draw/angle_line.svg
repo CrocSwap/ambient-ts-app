@@ -1,0 +1,22 @@
+<svg width="24" height="24" id="e3XnprNQkMS1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+    viewBox="0 0 24 24" shape-rendering="geometricPrecision" text-rendering="geometricPrecision">
+    <g clip-path="url(#e3XnprNQkMS7)">
+        <g>
+            <path
+                d="M18.6667,7.23811c1.052,0,1.9048-.85279,1.9048-1.90476s-.8528-1.90476-1.9048-1.90476-1.9047.85279-1.9047,1.90476.8528,1.90476,1.9047,1.90476Z"
+                fill="none" stroke="#424345" stroke-linecap="round" stroke-linejoin="round" />
+            <path
+                d="M5.33323,20.5714c1.05197,0,1.90476-.8528,1.90476-1.9047s-.85279-1.9048-1.90476-1.9048-1.90476.8528-1.90476,1.9048.85279,1.9047,1.90476,1.9047Z"
+                fill="none" stroke="#424345" stroke-linecap="round" stroke-linejoin="round" />
+            <line x1="17.1155" y1="6.63926" x2="6.63933" y2="17.1154" fill="none" stroke="#424345" />
+        </g>
+        <clipPath id="e3XnprNQkMS7">
+            <rect width="20" height="20" rx="0" ry="0" transform="translate(2 2)" fill="#fff" />
+        </clipPath>
+    </g>
+    <line x1="-5.247864" y1="0" x2="5.247865" y2="0" transform="translate(12.4859 18.6667)"
+        fill="none" stroke="#424345" stroke-width="0.8" />
+    <path d="M5.33323,4.080939c-1.721308,2.474025-.936484,3.787207.062382,5.089881"
+        transform="matrix(-.696741 0.265113-.37617-.988606 17.767616 21.270645)" fill="none"
+        stroke="#424345" stroke-width="0.8" />
+</svg>

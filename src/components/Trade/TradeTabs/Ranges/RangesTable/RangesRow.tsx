@@ -1,17 +1,24 @@
-import { useEffect, useRef, useContext, memo } from 'react';
-import { PositionIF } from '../../../../../utils/interfaces/exports';
+import {
+    useEffect,
+    useRef,
+    useContext,
+    memo,
+    Dispatch,
+    SetStateAction,
+} from 'react';
+import {
+    PositionIF,
+    RangeModalAction,
+} from '../../../../../ambient-utils/types';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
 import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
-import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import rangeRowConstants from '../rangeRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { RangeContext } from '../../../../../contexts/RangeContext';
-import { useModal } from '../../../../Global/Modal/useModal';
-import RangeDetailsModal from '../../../../RangeDetails/RangeDetailsModal/RangeDetailsModal';
 import { RangeRow as RangeRowStyled } from '../../../../../styled/Components/TransactionTable';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
 
 interface propsIF {
     position: PositionIF;
@@ -19,31 +26,35 @@ interface propsIF {
     isAccountView: boolean;
     isLeaderboard?: boolean;
     tableView: 'small' | 'medium' | 'large';
+    openDetailsModal: () => void;
+    openActionModal: () => void;
+    setRangeModalAction: Dispatch<SetStateAction<RangeModalAction>>;
 }
 
 function RangesRow(props: propsIF) {
-    const { tableView, position, isAccountView, isLeaderboard } = props;
+    const {
+        tableView,
+        position,
+        isAccountView,
+        isLeaderboard,
+        rank,
+        openDetailsModal,
+        openActionModal,
+        setRangeModalAction,
+    } = props;
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
-    const {
-        showAllData: showAllDataSelection,
-        currentPositionActive,
-        setCurrentPositionActive,
-    } = useContext(TradeTableContext);
+    const { showAllData: showAllDataSelection, currentPositionActive } =
+        useContext(TradeTableContext);
 
     const { currentRangeInReposition, currentRangeInAdd } =
         useContext(RangeContext);
 
-    const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
-        useModal();
-
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
 
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
 
     const {
         posHash,
@@ -77,24 +88,11 @@ function RangesRow(props: propsIF) {
     } = useProcessRange(position, userAddress, isAccountView);
 
     const rangeDetailsProps = {
-        poolIdx: position.poolIdx,
         isPositionInRange: isPositionInRange,
         isAmbient: isAmbient,
-        user: position.user,
-        bidTick: position.bidTick,
-        askTick: position.askTick,
-        baseTokenSymbol: position.baseSymbol,
-        baseTokenDecimals: position.baseDecimals,
-        quoteTokenSymbol: position.quoteSymbol,
-        quoteTokenDecimals: position.quoteDecimals,
         lowRangeDisplay: ambientOrMin,
         highRangeDisplay: ambientOrMax,
-        baseTokenLogoURI: position.baseTokenLogoURI,
-        quoteTokenLogoURI: position.quoteTokenLogoURI,
         isDenomBase: isDenomBase,
-        baseTokenAddress: props.position.base,
-        quoteTokenAddress: props.position.quote,
-        positionApy: position.apy,
         minRangeDenomByMoneyness: minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness: maxRangeDenomByMoneyness,
     };
@@ -105,13 +103,13 @@ function RangesRow(props: propsIF) {
         isPositionEmpty: isPositionEmpty,
         positionData: position,
         position: position,
-        isAccountView: props.isAccountView,
+        isAccountView: isAccountView,
         isPositionInRange: isPositionInRange,
     };
 
     const positionDomId =
-        position.firstMintTx === currentPositionActive
-            ? `position-${position.firstMintTx}`
+        position.positionId === currentPositionActive
+            ? `position-${position.positionId}`
             : '';
 
     const activePositionRef = useRef(null);
@@ -124,16 +122,11 @@ function RangesRow(props: propsIF) {
         ? baseTokenCharacter
         : quoteTokenCharacter;
 
-    const clickOutsideHandler = () => {
-        setCurrentPositionActive('');
-    };
-    useOnClickOutside(activePositionRef, clickOutsideHandler);
-
     function scrollToDiv() {
         const element = document.getElementById(positionDomId);
         element?.scrollIntoView({
             behavior: 'smooth',
-            block: 'end',
+            block: 'start',
             inline: 'nearest',
         });
     }
@@ -150,7 +143,7 @@ function RangesRow(props: propsIF) {
     }
 
     useEffect(() => {
-        position.firstMintTx === currentPositionActive ? scrollToDiv() : null;
+        position.positionId === currentPositionActive ? scrollToDiv() : null;
     }, [currentPositionActive]);
 
     const usernameColor: 'text1' | 'accent1' | 'accent2' =
@@ -203,7 +196,7 @@ function RangesRow(props: propsIF) {
         baseTokenSymbol,
         quoteTokenSymbol,
         isLeaderboard,
-        rank: props.rank,
+        rank,
         elapsedTimeString,
         maxRangeDenomByMoneyness,
         isAccountView,
@@ -237,14 +230,6 @@ function RangesRow(props: propsIF) {
         rangeDisplay,
     } = rangeRowConstants(rangeRowConstantsProps);
 
-    function handleRowClick() {
-        if (position.firstMintTx === currentPositionActive) {
-            return;
-        }
-        setCurrentPositionActive('');
-        openDetailsModal();
-    }
-
     return (
         <>
             <RangeRowStyled
@@ -252,12 +237,12 @@ function RangesRow(props: propsIF) {
                 account={isAccountView}
                 leaderboard={isLeaderboard}
                 active={
-                    position.firstMintTx === currentPositionActive ||
+                    position.positionId === currentPositionActive ||
                     position.positionId === currentRangeInReposition ||
                     position.positionId === currentRangeInAdd
                 }
                 user={userNameToDisplay === 'You' && showAllData}
-                onClick={handleRowClick}
+                onClick={openDetailsModal}
                 id={positionDomId}
                 ref={currentPositionActive ? activePositionRef : null}
             >
@@ -286,20 +271,13 @@ function RangesRow(props: propsIF) {
                         isEmpty={position.totalValueUSD === 0}
                         handleAccountClick={handleAccountClick}
                         isAccountView={isAccountView}
+                        openDetailsModal={openDetailsModal}
+                        openActionModal={openActionModal}
+                        setRangeModalAction={setRangeModalAction}
+                        tableView={tableView}
                     />
                 </div>
             </RangeRowStyled>
-            {isDetailsModalOpen && (
-                <RangeDetailsModal
-                    position={position}
-                    {...rangeDetailsProps}
-                    isBaseTokenMoneynessGreaterOrEqual={
-                        isBaseTokenMoneynessGreaterOrEqual
-                    }
-                    isAccountView={isAccountView}
-                    onClose={closeDetailsModal}
-                />
-            )}
         </>
     );
 }

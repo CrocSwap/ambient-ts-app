@@ -1,9 +1,9 @@
 import { useContext } from 'react';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { PoolContext } from '../../../../contexts/PoolContext';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import TradeConfirmationSkeleton from '../../TradeModules/TradeConfirmationSkeleton';
 import { FlexContainer, Text } from '../../../../styled/Common';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     initiateLimitOrderMethod: () => Promise<void>;
@@ -12,12 +12,15 @@ interface propsIF {
     insideTickDisplayPrice: number;
     newLimitOrderTransactionHash: string;
     txErrorCode: string;
+    txErrorMessage: string;
     showConfirmation: boolean;
     resetConfirmation: () => void;
     startDisplayPrice: number;
     middleDisplayPrice: number;
     endDisplayPrice: number;
     onClose: () => void;
+    limitAllowed: boolean;
+    limitButtonErrorMessage: string;
 }
 
 export default function ConfirmLimitModal(props: propsIF) {
@@ -25,6 +28,7 @@ export default function ConfirmLimitModal(props: propsIF) {
         initiateLimitOrderMethod,
         newLimitOrderTransactionHash,
         txErrorCode,
+        txErrorMessage,
         resetConfirmation,
         showConfirmation,
         startDisplayPrice,
@@ -33,6 +37,8 @@ export default function ConfirmLimitModal(props: propsIF) {
         tokenAInputQty,
         tokenBInputQty,
         onClose = () => null,
+        limitAllowed,
+        limitButtonErrorMessage,
     } = props;
 
     const { poolPriceDisplay } = useContext(PoolContext);
@@ -43,7 +49,7 @@ export default function ConfirmLimitModal(props: propsIF) {
         isDenomBase,
         baseToken: { symbol: baseTokenSymbol },
         quoteToken: { symbol: quoteTokenSymbol },
-    } = useAppSelector((state) => state.tradeData);
+    } = useContext(TradeDataContext);
 
     const displayPoolPriceWithDenom =
         isDenomBase && poolPriceDisplay
@@ -52,13 +58,6 @@ export default function ConfirmLimitModal(props: propsIF) {
 
     const displayPoolPriceString = getFormattedNumber({
         value: displayPoolPriceWithDenom,
-    });
-
-    const localeSellString = getFormattedNumber({
-        value: parseFloat(tokenAInputQty),
-    });
-    const localeBuyString = getFormattedNumber({
-        value: parseFloat(tokenBInputQty),
     });
 
     const startPriceString = getFormattedNumber({
@@ -134,13 +133,17 @@ export default function ConfirmLimitModal(props: propsIF) {
             extraNotes={extraNotes}
             transactionHash={newLimitOrderTransactionHash}
             txErrorCode={txErrorCode}
+            txErrorMessage={txErrorMessage}
             statusText={
                 !showConfirmation
-                    ? 'Submit Limit Order'
-                    : `Submitting Limit Order to Swap ${localeSellString} ${tokenA.symbol} for ${localeBuyString} ${tokenB.symbol}`
+                    ? limitAllowed
+                        ? 'Submit Limit Order'
+                        : limitButtonErrorMessage
+                    : `Submitting Limit Order to Swap ${tokenAInputQty} ${tokenA.symbol} for ${tokenBInputQty} ${tokenB.symbol}`
             }
             showConfirmation={showConfirmation}
             resetConfirmation={resetConfirmation}
+            isAllowed={limitAllowed}
         />
     );
 }

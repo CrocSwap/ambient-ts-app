@@ -1,20 +1,22 @@
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
-import { OptionButton } from '../../../../Global/Button/OptionButton';
+import { Chip } from '../../../../Form/Chip';
 import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
 import { FiExternalLink } from 'react-icons/fi';
-import { getPinnedPriceValuesFromTicks } from '../../../../../pages/Trade/Range/rangeFunctions';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
-import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
-import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
-import { useAccount } from 'wagmi';
-import trimString from '../../../../../utils/functions/trimString';
+import {
+    trimString,
+    getUnicodeCharacter,
+    getPinnedPriceValuesFromTicks,
+} from '../../../../../ambient-utils/dataLayer';
 import {
     RangeRow,
     RowItem,
 } from '../../../../../styled/Components/TransactionTable';
 import { FlexContainer } from '../../../../../styled/Common';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import { getPositionHash } from '../../../../../ambient-utils/dataLayer/functions/getPositionHash';
 
 interface PropsIF {
     transaction: {
@@ -47,7 +49,7 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
 
-    const { isDenomBase } = useAppSelector((state) => state.tradeData);
+    const { isDenomBase } = useContext(TradeDataContext);
 
     const baseTokenCharacter = transaction?.details?.baseSymbol
         ? getUnicodeCharacter(transaction.details.baseSymbol)
@@ -60,22 +62,14 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
         ? baseTokenCharacter
         : quoteTokenCharacter;
 
-    const pinnedDisplayPrices =
-        transaction.details?.baseTokenDecimals &&
-        transaction.details?.quoteTokenDecimals &&
-        transaction.details?.lowTick &&
-        transaction.details?.highTick &&
-        transaction.details?.gridSize
-            ? getPinnedPriceValuesFromTicks(
-                  isDenomBase,
-                  transaction.details.baseTokenDecimals,
-                  transaction.details.quoteTokenDecimals,
-                  transaction.details.lowTick,
-                  transaction.details.highTick,
-                  transaction.details.gridSize,
-              )
-            : undefined;
-
+    const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+        isDenomBase,
+        transaction?.details?.baseTokenDecimals ?? 0,
+        transaction?.details?.quoteTokenDecimals ?? 0,
+        transaction?.details?.lowTick ?? 0,
+        transaction?.details?.highTick ?? 0,
+        transaction?.details?.gridSize ?? 0,
+    );
     const isAmbient =
         transaction.details?.isAmbient ||
         (transaction.details?.lowTick === 0 &&
@@ -83,35 +77,28 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
 
     // -------------------------------POSITION HASH------------------------
 
-    const { address: userAddress } = useAccount();
+    const { userAddress } = useContext(UserDataContext);
 
-    let posHash;
-    if (isAmbient) {
-        posHash = ambientPosSlot(
-            userAddress ?? '',
-            transaction.details?.baseAddress ?? '',
-            transaction.details?.quoteAddress ?? '',
-            transaction.details?.poolIdx ?? 0,
-        );
-    } else {
-        posHash = transaction.details
-            ? concPosSlot(
-                  userAddress ?? '',
-                  transaction.details?.baseAddress ?? '',
-                  transaction.details?.quoteAddress ?? '',
-                  transaction.details?.lowTick ?? 0,
-                  transaction.details?.highTick ?? 0,
-                  transaction.details?.poolIdx ?? 0,
-              ).toString()
-            : '…';
-    }
+    const posHash = getPositionHash(undefined, {
+        isPositionTypeAmbient: isAmbient,
+        user: userAddress ?? '',
+        baseAddress: transaction.details?.baseAddress ?? '',
+        quoteAddress: transaction.details?.quoteAddress ?? '',
+        poolIdx: transaction.details?.poolIdx ?? 0,
+        bidTick: transaction.details?.lowTick ?? 0,
+        askTick: transaction.details?.highTick ?? 0,
+    });
 
     const id = (
         <RowItem font='roboto'>
             {trimString(posHash.toString(), 9, 0, '…')}
         </RowItem>
     );
-    const wallet = <p>you</p>;
+    const wallet = (
+        <RowItem style={{ textTransform: 'lowercase' }}>
+            <p>you</p>
+        </RowItem>
+    );
     // TODO: use media queries and standardized styles
     return (
         <>
@@ -189,7 +176,7 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
                 {
                     <FlexContainer
                         justifyContent='flex-start'
-                        padding='0 0 0 8px'
+                        padding='0 0 0 18px'
                     >
                         <RangeStatus
                             isInRange={false}
@@ -201,24 +188,22 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
                 }
                 <FlexContainer justifyContent='flex-end' data-label='menu'>
                     <FlexContainer fullWidth justifyContent='flex-end'>
-                        <OptionButton
+                        <Chip
                             ariaLabel='Explorer'
                             onClick={() =>
                                 window.open(
                                     `${blockExplorer}tx/${transaction.hash}`,
                                 )
                             }
-                            content={
-                                <>
-                                    Explorer
-                                    <FiExternalLink
-                                        size={15}
-                                        color='white'
-                                        style={{ marginLeft: '.5rem' }}
-                                    />
-                                </>
-                            }
-                        />
+                        >
+                            {' '}
+                            Explorer
+                            <FiExternalLink
+                                size={15}
+                                color='white'
+                                style={{ marginLeft: '.5rem' }}
+                            />
+                        </Chip>
                     </FlexContainer>
                 </FlexContainer>
             </RangeRow>

@@ -1,11 +1,14 @@
 import { CrocImpact } from '@crocswap-libs/sdk';
 import { useContext, useState, useEffect, memo } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useProvider } from 'wagmi';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
-import { getPriceImpactString } from '../../../App/functions/swap/getPriceImpactString';
-import { useTradeData } from '../../../App/hooks/useTradeData';
-import Button from '../../../components/Global/Button/Button';
+import {
+    getFormattedNumber,
+    getPriceImpactString,
+    isStablePair,
+    getTxReceipt,
+    performSwap,
+} from '../../../ambient-utils/dataLayer';
+import Button from '../../../components/Form/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import TooltipComponent from '../../../components/Global/TooltipComponent/TooltipComponent';
 import ConfirmSwapModal from '../../../components/Swap/ConfirmSwapModal/ConfirmSwapModal';
@@ -14,7 +17,7 @@ import SwapTokenInput from '../../../components/Swap/SwapTokenInput/SwapTokenInp
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../ambient-utils/constants';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
@@ -23,25 +26,29 @@ import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { FlexContainer } from '../../../styled/Common';
 import { WarningContainer } from '../../../styled/Components/TradeModules';
-import { isStablePair } from '../../../utils/data/stablePairs';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../utils/hooks/reduxToolkit';
-import { useUrlParams } from '../../../utils/hooks/useUrlParams';
-import {
-    addPendingTx,
-    addTransactionByType,
-    removePendingTx,
-    addReceipt,
-    updateTransactionHash,
-} from '../../../utils/state/receiptDataSlice';
+
 import {
     TransactionError,
     isTransactionReplacedError,
     isTransactionFailedError,
 } from '../../../utils/TransactionError';
 import { swapTutorialSteps } from '../../../utils/tutorial/Swap';
+import { useApprove } from '../../../App/functions/approve';
+import { useUrlParams } from '../../../utils/hooks/useUrlParams';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import {
+    GAS_DROPS_ESTIMATE_SWAP_FROM_DEX,
+    GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_DEX,
+    GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_WALLET,
+    GAS_DROPS_ESTIMATE_SWAP_NATIVE,
+    GAS_DROPS_ESTIMATE_SWAP_TO_FROM_DEX,
+    NUM_GWEI_IN_WEI,
+    SWAP_BUFFER_MULTIPLIER_MAINNET,
+    SWAP_BUFFER_MULTIPLIER_SCROLL,
+} from '../../../ambient-utils/constants/';
+import { ReceiptContext } from '../../../contexts/ReceiptContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -53,49 +60,47 @@ function Swap(props: propsIF) {
         crocEnv,
         chainData: { chainId, poolIndex },
         ethMainnetUsdPrice,
+        provider,
     } = useContext(CrocEnvContext);
+    const { userAddress } = useContext(UserDataContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { poolPriceDisplay, isPoolInitialized } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
+
     const {
-        isTokenABase: isSellTokenBase,
-        setRecheckTokenAApproval,
         tokenAAllowance,
-        baseToken: {
-            balance: baseTokenBalance,
-            dexBalance: baseTokenDexBalance,
-        },
-        quoteToken: {
-            balance: quoteTokenBalance,
-            dexBalance: quoteTokenDexBalance,
-        },
+        tokenABalance,
+        tokenADexBalance,
+        isTokenABase: isSellTokenBase,
     } = useContext(TradeTokenContext);
     const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
         UserPreferenceContext,
     );
+    const {
+        addPendingTx,
+        addReceipt,
+        addTransactionByType,
+        removePendingTx,
+        updateTransactionHash,
+    } = useContext(ReceiptContext);
 
-    const dispatch = useAppDispatch();
-    const provider = useProvider();
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
+    !pathname.includes('/trade') && useUrlParams(tokens, chainId, provider);
     const [isModalOpen, openModal, closeModal] = useModal();
     // use URL pathway to determine if user is in swap or market page
     // depending on location we pull data on the tx in progress differently
+    // TODO: confirm this doesn't break data that needs to be different when on trade page
+    const { liquidityFee } = useContext(GraphDataContext);
     const {
-        tradeData: {
-            tokenA,
-            tokenB,
-            baseToken,
-            quoteToken,
-            isTokenAPrimary,
-            primaryQuantity,
-            isDenomBase,
-            liquidityFee,
-        },
-    } = pathname.includes('/trade')
-        ? useTradeData()
-        : useAppSelector((state) => state);
-    useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
+        tokenA,
+        tokenB,
+        baseToken,
+        quoteToken,
+        isTokenAPrimary,
+        isDenomBase,
+        primaryQuantity,
+    } = useContext(TradeDataContext);
 
     const [sellQtyString, setSellQtyString] = useState<string>(
         isTokenAPrimary ? primaryQuantity : '',
@@ -112,7 +117,6 @@ function Swap(props: propsIF) {
     const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
     const [isLiquidityInsufficient, setIsLiquidityInsufficient] =
         useState<boolean>(false);
-    const [isApprovalPending, setIsApprovalPending] = useState(false);
     // hooks to track whether user will use dex or wallet funds in transaction, this is
     // ... abstracted away from the central hook because the hook manages preference
     // ... and does not consider whether dex balance is sufficient
@@ -123,6 +127,7 @@ function Swap(props: propsIF) {
 
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
+    const [txErrorMessage, setTxErrorMessage] = useState('');
     const [swapButtonErrorMessage, setSwapButtonErrorMessage] =
         useState<string>('');
 
@@ -131,17 +136,9 @@ function Swap(props: propsIF) {
         string | undefined
     >();
 
-    const tokenABalance = isSellTokenBase
-        ? baseTokenBalance
-        : quoteTokenBalance;
-    const tokenADexBalance = isSellTokenBase
-        ? baseTokenDexBalance
-        : quoteTokenDexBalance;
-
     const slippageTolerancePercentage = isStablePair(
         tokenA.address,
         tokenB.address,
-        chainId,
     )
         ? swapSlippage.stable
         : swapSlippage.volatile;
@@ -169,6 +166,10 @@ function Swap(props: propsIF) {
             ? tokenASurplusMinusTokenARemainderNum * -1
             : 0
         : parseFloat(sellQtyString || '0');
+
+    const isTokenAWalletBalanceSufficient =
+        parseFloat(tokenABalance) >= tokenAQtyCoveredByWalletBalance;
+
     const isTokenAAllowanceSufficient =
         parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
 
@@ -186,6 +187,22 @@ function Swap(props: propsIF) {
         },
     );
 
+    const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
+
+    const [
+        amountToReduceNativeTokenQtyMainnet,
+        setAmountToReduceNativeTokenQtyMainnet,
+    ] = useState<number>(0.001);
+    const [
+        amountToReduceNativeTokenQtyScroll,
+        setAmountToReduceNativeTokenQtyScroll,
+    ] = useState<number>(0.0003);
+
+    const amountToReduceNativeTokenQty =
+        chainId === '0x82750' || chainId === '0x8274f'
+            ? amountToReduceNativeTokenQtyScroll
+            : amountToReduceNativeTokenQtyMainnet;
+
     useEffect(() => {
         if (isSellLoading || isBuyLoading) {
             setSwapAllowed(false);
@@ -193,12 +210,12 @@ function Swap(props: propsIF) {
         } else if (isPoolInitialized === false) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Pool Not Initialized');
-        } else if (isNaN(parseFloat(sellQtyString))) {
-            setSwapAllowed(false);
-            setSwapButtonErrorMessage('Enter an Amount');
         } else if (isLiquidityInsufficient) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Liquidity Insufficient');
+        } else if (isNaN(parseFloat(sellQtyString))) {
+            setSwapAllowed(false);
+            setSwapButtonErrorMessage('Enter an Amount');
         } else if (parseFloat(sellQtyString) <= 0) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Enter an Amount');
@@ -216,6 +233,15 @@ function Swap(props: propsIF) {
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage(
                     `${tokenA.symbol} Amount Exceeds ${balanceLabel} Balance`,
+                );
+            } else if (
+                isSellTokenNativeToken &&
+                tokenAQtyCoveredByWalletBalance + amountToReduceNativeTokenQty >
+                    parseFloat(tokenABalance) + 0.0000000001 // offset to account for floating point math inconsistencies
+            ) {
+                setSwapAllowed(false);
+                setSwapButtonErrorMessage(
+                    'Wallet Balance Insufficient to Cover Gas',
                 );
             } else {
                 setSwapAllowed(true);
@@ -235,35 +261,58 @@ function Swap(props: propsIF) {
         isWithdrawFromDexChecked,
         isBuyLoading,
         isSellLoading,
+        isSellTokenNativeToken,
+        tokenABalance,
+        tokenAQtyCoveredByWalletBalance,
+        amountToReduceNativeTokenQty,
     ]);
 
     useEffect(() => {
         setNewSwapTransactionHash('');
     }, [baseToken.address + quoteToken.address]);
 
-    const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
-
     // calculate price of gas for swap
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const averageSwapCostInGasDrops = isSellTokenNativeToken
-                ? 100000
+                ? GAS_DROPS_ESTIMATE_SWAP_NATIVE
                 : isWithdrawFromDexChecked
                 ? isTokenADexSurplusSufficient
                     ? isSaveAsDexSurplusChecked
-                        ? 92000
-                        : 97000
+                        ? GAS_DROPS_ESTIMATE_SWAP_TO_FROM_DEX
+                        : GAS_DROPS_ESTIMATE_SWAP_FROM_DEX
                     : isSaveAsDexSurplusChecked
-                    ? 105000
-                    : 110000
+                    ? GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_DEX
+                    : GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_WALLET
                 : isSaveAsDexSurplusChecked
-                ? 105000
-                : 110000;
+                ? GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_DEX
+                : GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_WALLET;
+
+            const costOfMainnetSwapInETH =
+                gasPriceInGwei * averageSwapCostInGasDrops * NUM_GWEI_IN_WEI;
+
+            setAmountToReduceNativeTokenQtyMainnet(
+                SWAP_BUFFER_MULTIPLIER_MAINNET * costOfMainnetSwapInETH,
+            );
+
+            const costOfScrollSwapInETH =
+                gasPriceInGwei * averageSwapCostInGasDrops * NUM_GWEI_IN_WEI;
+
+            // IS_LOCAL_ENV &&
+            //     console.log({
+            //         gasPriceInGwei,
+            //         costOfScrollSwapInETH,
+            //         amountToReduceNativeTokenQtyScroll,
+            //     });
+
+            setAmountToReduceNativeTokenQtyScroll(
+                SWAP_BUFFER_MULTIPLIER_SCROLL * costOfScrollSwapInETH,
+            );
 
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 averageSwapCostInGasDrops *
-                1e-9 *
+                NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice;
 
             setSwapGasPriceinDollars(
@@ -289,6 +338,7 @@ function Swap(props: propsIF) {
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setTxErrorCode('');
+        setTxErrorMessage('');
         setNewSwapTransactionHash('');
     };
 
@@ -298,9 +348,6 @@ function Swap(props: propsIF) {
         setShowConfirmation(true);
         if (!crocEnv) return;
 
-        const sellTokenAddress = tokenA.address;
-        const buyTokenAddress = tokenB.address;
-
         const qty = isTokenAPrimary
             ? sellQtyString.replaceAll(',', '')
             : buyQtyString.replaceAll(',', '');
@@ -309,80 +356,83 @@ function Swap(props: propsIF) {
 
         let tx;
         try {
-            const plan = isQtySell
-                ? crocEnv.sell(sellTokenAddress, qty).for(buyTokenAddress, {
-                      slippage: slippageTolerancePercentage / 100,
-                  })
-                : crocEnv.buy(buyTokenAddress, qty).with(sellTokenAddress, {
-                      slippage: slippageTolerancePercentage / 100,
-                  });
-            tx = await plan.swap({
-                surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked],
+            const sellTokenAddress = tokenA.address;
+            const buyTokenAddress = tokenB.address;
+
+            tx = await performSwap({
+                crocEnv,
+                isQtySell,
+                qty,
+                buyTokenAddress,
+                sellTokenAddress,
+                slippageTolerancePercentage,
+                isWithdrawFromDexChecked,
+                isSaveAsDexSurplusChecked,
             });
 
             setNewSwapTransactionHash(tx?.hash);
-            dispatch(addPendingTx(tx?.hash));
-            if (tx.hash)
-                dispatch(
-                    addTransactionByType({
-                        txHash: tx.hash,
-                        txAction:
-                            buyTokenAddress.toLowerCase() ===
-                            quoteToken.address.toLowerCase()
-                                ? 'Buy'
-                                : 'Sell',
-                        txType: 'Market',
-                        txDescription: `Swap ${tokenA.symbol}→${tokenB.symbol}`,
-                        txDetails: {
-                            baseAddress: baseToken.address,
-                            quoteAddress: quoteToken.address,
-                            poolIdx: poolIndex,
-                            baseSymbol: baseToken.symbol,
-                            quoteSymbol: quoteToken.symbol,
-                            isBid: isSellTokenBase,
-                        },
-                    }),
-                );
+            addPendingTx(tx?.hash);
+
+            if (tx.hash) {
+                addTransactionByType({
+                    userAddress: userAddress || '',
+                    txHash: tx.hash,
+                    txAction:
+                        buyTokenAddress.toLowerCase() ===
+                        quoteToken.address.toLowerCase()
+                            ? 'Buy'
+                            : 'Sell',
+                    txType: 'Market',
+                    txDescription: `Swap ${tokenA.symbol}→${tokenB.symbol}`,
+                    txDetails: {
+                        baseAddress: baseToken.address,
+                        quoteAddress: quoteToken.address,
+                        poolIdx: poolIndex,
+                        baseSymbol: baseToken.symbol,
+                        quoteSymbol: quoteToken.symbol,
+                        isBid: isSellTokenBase,
+                    },
+                });
+            }
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
             console.error({ error });
             setTxErrorCode(error?.code);
+            setTxErrorMessage(error?.data?.message);
         }
 
-        let receipt;
-        try {
-            if (tx) receipt = await tx.wait();
-        } catch (e) {
-            const error = e as TransactionError;
-            console.error({ error });
-            // The user used "speed up" or something similar
-            // in their client, but we now have the updated info
-            if (isTransactionReplacedError(error)) {
-                IS_LOCAL_ENV && console.debug('repriced');
-                dispatch(removePendingTx(error.hash));
+        if (tx) {
+            let receipt;
+            try {
+                receipt = await getTxReceipt(tx);
+            } catch (e) {
+                const error = e as TransactionError;
+                console.error({ error });
+                // The user used "speed up" or something similar
+                // in their client, but we now have the updated info
+                if (isTransactionReplacedError(error)) {
+                    IS_LOCAL_ENV && console.debug('repriced');
+                    removePendingTx(error.hash);
 
-                const newTransactionHash = error.replacement.hash;
-                dispatch(addPendingTx(newTransactionHash));
+                    const newTransactionHash = error.replacement.hash;
 
-                dispatch(
-                    updateTransactionHash({
-                        oldHash: error.hash,
-                        newHash: error.replacement.hash,
-                    }),
-                );
-                setNewSwapTransactionHash(newTransactionHash);
-                IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                receipt = error.receipt;
-            } else if (isTransactionFailedError(error)) {
-                receipt = error.receipt;
+                    addPendingTx(newTransactionHash);
+                    updateTransactionHash(error.hash, error.replacement.hash);
+                    setNewSwapTransactionHash(newTransactionHash);
+
+                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
+                    receipt = error.receipt;
+                } else if (isTransactionFailedError(error)) {
+                    receipt = error.receipt;
+                }
             }
-        }
 
-        if (receipt) {
-            dispatch(addReceipt(JSON.stringify(receipt)));
-            dispatch(removePendingTx(receipt.transactionHash));
+            if (receipt) {
+                addReceipt(JSON.stringify(receipt));
+                removePendingTx(receipt.transactionHash);
+            }
         }
     }
 
@@ -396,61 +446,7 @@ function Swap(props: propsIF) {
         closeModal();
     };
 
-    const approve = async (tokenAddress: string, tokenSymbol: string) => {
-        if (!crocEnv) return;
-        try {
-            setIsApprovalPending(true);
-            const tx = await crocEnv.token(tokenAddress).approve();
-            if (tx) dispatch(addPendingTx(tx?.hash));
-            if (tx?.hash)
-                dispatch(
-                    addTransactionByType({
-                        txHash: tx.hash,
-                        txType: 'Approve',
-                        txDescription: `Approval of ${tokenSymbol}`,
-                    }),
-                );
-            let receipt;
-            try {
-                if (tx) receipt = await tx.wait();
-            } catch (e) {
-                const error = e as TransactionError;
-                console.error({ error });
-                // The user used "speed up" or something similar
-                // in their client, but we now have the updated info
-                if (isTransactionReplacedError(error)) {
-                    IS_LOCAL_ENV && console.debug('repriced');
-                    dispatch(removePendingTx(error.hash));
-
-                    const newTransactionHash = error.replacement.hash;
-                    dispatch(addPendingTx(newTransactionHash));
-
-                    dispatch(
-                        updateTransactionHash({
-                            oldHash: error.hash,
-                            newHash: error.replacement.hash,
-                        }),
-                    );
-                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                    receipt = error.receipt;
-                } else if (isTransactionFailedError(error)) {
-                    receipt = error.receipt;
-                }
-            }
-            if (receipt) {
-                dispatch(addReceipt(JSON.stringify(receipt)));
-                dispatch(removePendingTx(receipt.transactionHash));
-            }
-        } catch (error) {
-            if (error.reason === 'sending a transaction requires a signer') {
-                location.reload();
-            }
-            console.error({ error });
-        } finally {
-            setIsApprovalPending(false);
-            setRecheckTokenAApproval(true);
-        }
-    };
+    const { approve, isApprovalPending } = useApprove();
 
     const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
         if (tokenAorB === 'A') {
@@ -477,7 +473,7 @@ function Swap(props: propsIF) {
             color='other-red'
             padding='4px 8px'
         >
-            <div>Current Pool Liquidity is Insufficient for this Swap</div>
+            <div>Pool Liquidity is Insufficient for this Swap</div>
             <TooltipComponent
                 title='Current Pool Liquidity is Insufficient for this Swap'
                 placement='bottom'
@@ -514,6 +510,7 @@ function Swap(props: propsIF) {
 
     return (
         <TradeModuleSkeleton
+            chainId={chainId}
             isSwapPage={!isOnTradeRoute}
             header={
                 <TradeModuleHeader
@@ -525,6 +522,7 @@ function Swap(props: propsIF) {
             }
             input={
                 <SwapTokenInput
+                    isLiquidityInsufficient={isLiquidityInsufficient}
                     setIsLiquidityInsufficient={setIsLiquidityInsufficient}
                     slippageTolerancePercentage={slippageTolerancePercentage}
                     setPriceImpact={setPriceImpact}
@@ -532,16 +530,23 @@ function Swap(props: propsIF) {
                         value: sellQtyString,
                         set: setSellQtyString,
                     }}
-                    buyQtyString={{ value: buyQtyString, set: setBuyQtyString }}
+                    buyQtyString={{
+                        value: buyQtyString,
+                        set: setBuyQtyString,
+                    }}
                     isSellLoading={{
                         value: isSellLoading,
                         set: setIsSellLoading,
                     }}
-                    isBuyLoading={{ value: isBuyLoading, set: setIsBuyLoading }}
+                    isBuyLoading={{
+                        value: isBuyLoading,
+                        set: setIsBuyLoading,
+                    }}
                     isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     setSwapAllowed={setSwapAllowed}
                     toggleDexSelection={toggleDexSelection}
+                    amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
                 />
             }
             transactionDetails={
@@ -568,6 +573,7 @@ function Swap(props: propsIF) {
                         initiateSwapMethod={initiateSwap}
                         newSwapTransactionHash={newSwapTransactionHash}
                         txErrorCode={txErrorCode}
+                        txErrorMessage={txErrorMessage}
                         showConfirmation={showConfirmation}
                         resetConfirmation={resetConfirmation}
                         slippageTolerancePercentage={
@@ -578,6 +584,7 @@ function Swap(props: propsIF) {
                         sellQtyString={sellQtyString}
                         buyQtyString={buyQtyString}
                         isTokenAPrimary={isTokenAPrimary}
+                        priceImpactWarning={priceImpactWarning}
                     />
                 ) : (
                     <></>
@@ -585,6 +592,7 @@ function Swap(props: propsIF) {
             }
             button={
                 <Button
+                    idForDOM='confirm_swap_button'
                     title={
                         areBothAckd
                             ? bypassConfirmSwap.isEnabled
@@ -620,6 +628,7 @@ function Swap(props: propsIF) {
                         type='Swap'
                         newTransactionHash={newSwapTransactionHash}
                         txErrorCode={txErrorCode}
+                        txErrorMessage={txErrorMessage}
                         resetConfirmation={resetConfirmation}
                         sendTransaction={initiateSwap}
                         transactionPendingDisplayString={`Swapping ${sellQtyString} ${tokenA.symbol} for ${buyQtyString} ${tokenB.symbol}`}
@@ -628,10 +637,12 @@ function Swap(props: propsIF) {
             }
             approveButton={
                 isPoolInitialized &&
+                isTokenAWalletBalanceSufficient &&
                 !isTokenAAllowanceSufficient &&
                 parseFloat(sellQtyString) > 0 &&
                 sellQtyString !== 'Infinity' ? (
                     <Button
+                        idForDOM='approve_token_a_for_swap_module'
                         title={
                             !isApprovalPending
                                 ? `Approve ${tokenA.symbol}`
@@ -648,7 +659,9 @@ function Swap(props: propsIF) {
             warnings={
                 priceImpactWarning || liquidityInsufficientWarning ? (
                     <>
-                        {priceImpactWarning && priceImpactWarning}
+                        {priceImpactWarning &&
+                            sellQtyString !== '' &&
+                            priceImpactWarning}
                         {liquidityInsufficientWarning &&
                             liquidityInsufficientWarning}
                     </>

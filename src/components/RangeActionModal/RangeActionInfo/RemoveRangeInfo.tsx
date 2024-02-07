@@ -1,9 +1,18 @@
 import styles from './RangeActionInfo.module.css';
 import Row from '../../Global/Row/Row';
 import DividerDark from '../../Global/DividerDark/DividerDark';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import {
+    getFormattedNumber,
+    uriToHttp,
+} from '../../../ambient-utils/dataLayer';
+import TokenIcon from '../../Global/TokenIcon/TokenIcon';
+import { useContext } from 'react';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { TokenIF } from '../../../ambient-utils/types';
 
 interface IRemoveRangeInfoProps {
+    baseTokenAddress: string;
+    quoteTokenAddress: string;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
     baseTokenLogoURI: string;
@@ -20,6 +29,8 @@ interface IRemoveRangeInfoProps {
 
 export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
     const {
+        baseTokenAddress,
+        quoteTokenAddress,
         baseTokenSymbol,
         quoteTokenSymbol,
         baseTokenLogoURI,
@@ -32,6 +43,12 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
         quoteRemovalNum,
         isAmbient,
     } = props;
+
+    const { tokens } = useContext(TokenContext);
+    const baseToken: TokenIF | undefined =
+        tokens.getTokenByAddress(baseTokenAddress);
+    const quoteToken: TokenIF | undefined =
+        tokens.getTokenByAddress(quoteTokenAddress);
 
     const liqBaseDisplay = getFormattedNumber({
         value: posLiqBaseDecimalCorrected,
@@ -59,7 +76,12 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
                 <span>{baseTokenSymbol} Rewards Earned</span>
                 <div className={styles.token_price}>
                     {feeLiqBaseDisplay !== undefined ? feeLiqBaseDisplay : '…'}
-                    <img src={baseTokenLogoURI} alt='' />
+                    <TokenIcon
+                        token={baseToken}
+                        src={uriToHttp(baseTokenLogoURI)}
+                        alt={baseTokenSymbol}
+                        size='xs'
+                    />
                 </div>
             </Row>
             {/*  */}
@@ -69,7 +91,12 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
                     {feeLiqQuoteDisplay !== undefined
                         ? feeLiqQuoteDisplay
                         : '…'}
-                    <img src={quoteTokenLogoURI} alt='' />
+                    <TokenIcon
+                        token={quoteToken}
+                        src={uriToHttp(quoteTokenLogoURI)}
+                        alt={quoteTokenSymbol}
+                        size='xs'
+                    />
                 </div>
             </Row>
         </>
@@ -91,7 +118,12 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
                     <span>Pooled {baseTokenSymbol}</span>
                     <div className={styles.token_price}>
                         {liqBaseDisplay !== undefined ? liqBaseDisplay : '…'}
-                        <img src={baseTokenLogoURI} alt='' />
+                        <TokenIcon
+                            token={baseToken}
+                            src={uriToHttp(baseTokenLogoURI)}
+                            alt={baseTokenSymbol}
+                            size='xs'
+                        />
                     </div>
                 </Row>
                 {/*  */}
@@ -99,7 +131,12 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
                     <span>Pooled {quoteTokenSymbol}</span>
                     <div className={styles.token_price}>
                         {liqQuoteDisplay !== undefined ? liqQuoteDisplay : '…'}
-                        <img src={quoteTokenLogoURI} alt='' />
+                        <TokenIcon
+                            token={quoteToken}
+                            src={uriToHttp(quoteTokenLogoURI)}
+                            alt={quoteTokenSymbol}
+                            size='xs'
+                        />
                     </div>
                 </Row>
                 {/*  */}
@@ -111,7 +148,12 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
                         {baseRemovalString !== undefined
                             ? baseRemovalString
                             : '…'}
-                        <img src={baseTokenLogoURI} alt='' />
+                        <TokenIcon
+                            token={baseToken}
+                            src={uriToHttp(baseTokenLogoURI)}
+                            alt={baseTokenSymbol}
+                            size='xs'
+                        />
                     </div>
                 </Row>
                 <Row>
@@ -120,7 +162,12 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
                         {quoteRemovalString !== undefined
                             ? quoteRemovalString
                             : '…'}
-                        <img src={quoteTokenLogoURI} alt='' />
+                        <TokenIcon
+                            token={quoteToken}
+                            src={uriToHttp(quoteTokenLogoURI)}
+                            alt={quoteTokenSymbol}
+                            size='xs'
+                        />
                     </div>
                 </Row>
             </div>

@@ -1,20 +1,23 @@
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
-import { OptionButton } from '../../../../Global/Button/OptionButton';
+import { Chip } from '../../../../Form/Chip';
 import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus';
 import { FiExternalLink } from 'react-icons/fi';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
-import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
-import trimString from '../../../../../utils/functions/trimString';
-import { concPosSlot, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
-import { useAccount } from 'wagmi';
-import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
+import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
+import {
+    getFormattedNumber,
+    getUnicodeCharacter,
+    trimString,
+} from '../../../../../ambient-utils/dataLayer';
 import {
     OrderRow,
     RowItem,
 } from '../../../../../styled/Components/TransactionTable';
 import { FlexContainer } from '../../../../../styled/Common';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import { getPositionHash } from '../../../../../ambient-utils/dataLayer/functions/getPositionHash';
 
 interface PropsIF {
     transaction: {
@@ -46,12 +49,12 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
     const { transaction, tableView } = props;
 
     const { showAllData } = useContext(TradeTableContext);
-    const { address: userAddress } = useAccount();
+    const { userAddress } = useContext(UserDataContext);
     const {
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
 
-    const { isDenomBase } = useAppSelector((state) => state.tradeData);
+    const { isDenomBase } = useContext(TradeDataContext);
 
     const baseTokenCharacter = transaction.baseSymbol
         ? getUnicodeCharacter(transaction.baseSymbol)
@@ -68,19 +71,20 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
         ? quoteTokenCharacter
         : baseTokenCharacter;
 
-    const posHash = concPosSlot(
-        userAddress ?? '',
-        transaction.details?.baseAddress ?? '',
-        transaction.details?.quoteAddress ?? '',
-        transaction.details?.lowTick ?? 0,
-        transaction.details?.highTick ?? 0,
-        transaction.details?.poolIdx ?? 0,
-    ).toString();
+    const posHash = getPositionHash(undefined, {
+        isPositionTypeAmbient: false,
+        user: userAddress ?? '',
+        baseAddress: transaction.details?.baseAddress ?? '',
+        quoteAddress: transaction.details?.quoteAddress ?? '',
+        poolIdx: transaction.details?.poolIdx ?? 0,
+        bidTick: transaction.details?.lowTick ?? 0,
+        askTick: transaction.details?.highTick ?? 0,
+    });
 
     const limitPrice =
         transaction.details &&
-        transaction.details.lowTick &&
-        transaction.details.highTick
+        transaction.details.lowTick !== undefined &&
+        transaction.details.highTick !== undefined
             ? transaction.details.isBid === true
                 ? tickToPrice(transaction.details.lowTick)
                 : tickToPrice(transaction.details.highTick)
@@ -107,7 +111,11 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
             {trimString(posHash.toString(), 9, 0, '…')}
         </RowItem>
     );
-    const wallet = <p>you</p>;
+    const wallet = (
+        <RowItem style={{ textTransform: 'lowercase' }}>
+            <p>you</p>
+        </RowItem>
+    );
     // TODO: use media queries and standardized styles
     return (
         <>
@@ -196,24 +204,21 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
                 )}
                 <FlexContainer justifyContent='flex-end' data-label='menu'>
                     <FlexContainer fullWidth justifyContent='flex-end'>
-                        <OptionButton
+                        <Chip
                             ariaLabel='Explorer'
                             onClick={() =>
                                 window.open(
                                     `${blockExplorer}tx/${transaction.hash}`,
                                 )
                             }
-                            content={
-                                <>
-                                    Explorer
-                                    <FiExternalLink
-                                        size={15}
-                                        color='white'
-                                        style={{ marginLeft: '.5rem' }}
-                                    />
-                                </>
-                            }
-                        />
+                        >
+                            Explorer
+                            <FiExternalLink
+                                size={15}
+                                color='white'
+                                style={{ marginLeft: '.5rem' }}
+                            />
+                        </Chip>
                     </FlexContainer>
                 </FlexContainer>
             </OrderRow>

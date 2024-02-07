@@ -1,74 +1,65 @@
 import PriceInfo from '.././PriceInfo/PriceInfo';
 import styles from './RangeDetailsModal.module.css';
-import { useContext, useEffect, useRef, useState } from 'react';
-import printDomToImage from '../../../utils/functions/printDomToImage';
-import { PositionIF } from '../../../utils/interfaces/exports';
+import { memo, useContext, useEffect, useRef, useState } from 'react';
+import { PositionIF, PositionServerIF } from '../../../ambient-utils/types';
 import RangeDetailsHeader from '.././RangeDetailsHeader/RangeDetailsHeader';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import RangeDetailsSimplify from '.././RangeDetailsSimplify/RangeDetailsSimplify';
 import TransactionDetailsGraph from '../../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
 import { useProcessRange } from '../../../utils/hooks/useProcessRange';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { GRAPHCACHE_SMALL_URL } from '../../../constants';
+import { GCGO_OVERRIDE_URL } from '../../../ambient-utils/constants';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
-import { getPositionData } from '../../../App/functions/getPositionData';
+import {
+    getPositionData,
+    getFormattedNumber,
+    printDomToImage,
+} from '../../../ambient-utils/dataLayer';
 import { TokenContext } from '../../../contexts/TokenContext';
 import modalBackground from '../../../assets/images/backgrounds/background.png';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import Modal from '../../Global/Modal/Modal';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface propsIF {
     position: PositionIF;
-    user: string;
-    bidTick: number;
-    askTick: number;
-    isAmbient: boolean;
-    baseTokenSymbol: string;
-    quoteTokenSymbol: string;
-    lowRangeDisplay: string;
-    highRangeDisplay: string;
-    isDenomBase: boolean;
-    baseTokenLogoURI: string;
-    quoteTokenLogoURI: string;
-    baseTokenAddress: string;
-    quoteTokenAddress: string;
-    positionApy: number;
     isAccountView: boolean;
-    isBaseTokenMoneynessGreaterOrEqual: boolean;
-    minRangeDenomByMoneyness: string;
-    maxRangeDenomByMoneyness: string;
     onClose: () => void;
 }
 
-export default function RangeDetailsModal(props: propsIF) {
+function RangeDetailsModal(props: propsIF) {
     const [showShareComponent, setShowShareComponent] = useState(true);
+    const { isDenomBase } = useContext(TradeDataContext);
+
+    const { position, isAccountView, onClose } = props;
 
     const {
-        baseTokenAddress,
-        quoteTokenAddress,
-        baseTokenLogoURI,
-        quoteTokenLogoURI,
-        lowRangeDisplay,
-        highRangeDisplay,
+        base: baseTokenAddress,
+        quote: quoteTokenAddress,
+        baseTokenLogoURI: baseTokenLogoURI,
+        quoteTokenLogoURI: quoteTokenLogoURI,
+        baseSymbol: baseTokenSymbol,
+        quoteSymbol: quoteTokenSymbol,
         user,
         bidTick,
         askTick,
-        position,
-        positionApy,
+        apy: positionApy,
+    } = position;
+
+    const { userAddress } = useContext(UserDataContext);
+
+    const {
+        posHash,
         isAmbient,
-        isAccountView,
         isBaseTokenMoneynessGreaterOrEqual,
         minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness,
-        onClose,
-    } = props;
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+        ambientOrMin: lowRangeDisplay,
+        ambientOrMax: highRangeDisplay,
+    } = useProcessRange(position, userAddress);
+
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
@@ -80,6 +71,7 @@ export default function RangeDetailsModal(props: propsIF) {
     } = useContext(CachedDataContext);
     const {
         chainData: { chainId, poolIndex },
+        provider,
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
 
@@ -120,9 +112,7 @@ export default function RangeDetailsModal(props: propsIF) {
         number | undefined
     >(positionApy);
 
-    const { crocEnv } = useContext(CrocEnvContext);
-
-    const { posHash } = useProcessRange(position, userAddress);
+    const { crocEnv, activeNetwork } = useContext(CrocEnvContext);
 
     const [_, copy] = useCopyToClipboard();
 
@@ -132,8 +122,9 @@ export default function RangeDetailsModal(props: propsIF) {
     }
 
     useEffect(() => {
-        const positionStatsCacheEndpoint =
-            GRAPHCACHE_SMALL_URL + '/position_stats?';
+        const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
+            ? GCGO_OVERRIDE_URL + '/position_stats?'
+            : activeNetwork.graphCacheUrl + '/position_stats?';
 
         if (position.positionType) {
             fetch(
@@ -151,7 +142,7 @@ export default function RangeDetailsModal(props: propsIF) {
             )
                 .then((response) => response?.json())
                 .then(async (json) => {
-                    if (!crocEnv || !json?.data) {
+                    if (!crocEnv || !provider || !json?.data) {
                         setBaseCollateralDisplay(undefined);
                         setQuoteCollateralDisplay(undefined);
                         setUsdValue(undefined);
@@ -159,18 +150,21 @@ export default function RangeDetailsModal(props: propsIF) {
                         setQuoteFeesDisplay(undefined);
                         return;
                     }
-
+                    // temporarily skip ENS fetch
+                    const skipENSFetch = true;
                     const positionPayload = json?.data as PositionServerIF;
                     const positionStats = await getPositionData(
                         positionPayload,
                         tokens.tokenUniv,
                         crocEnv,
+                        provider,
                         chainId,
                         lastBlockNumber,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
                         cachedEnsResolve,
+                        skipENSFetch,
                     );
                     const liqBaseNum =
                         positionStats.positionLiqBaseDecimalCorrected;
@@ -190,7 +184,7 @@ export default function RangeDetailsModal(props: propsIF) {
                     setUsdValue(
                         getFormattedNumber({
                             value: position.totalValueUSD,
-                            isUSD: true,
+                            prefix: '$',
                         }),
                     );
 
@@ -219,7 +213,7 @@ export default function RangeDetailsModal(props: propsIF) {
                 })
                 .catch(console.error);
         }
-    }, [lastBlockNumber, crocEnv, chainId]);
+    }, [lastBlockNumber, !!crocEnv, !!provider, chainId]);
 
     const shareComponent = (
         <div ref={detailsRef} className={styles.main_outer_container}>
@@ -235,9 +229,9 @@ export default function RangeDetailsModal(props: propsIF) {
                         quoteFeesDisplay={quoteFeesDisplay}
                         baseTokenLogoURI={baseTokenLogoURI}
                         quoteTokenLogoURI={quoteTokenLogoURI}
-                        baseTokenSymbol={props.baseTokenSymbol}
-                        quoteTokenSymbol={props.quoteTokenSymbol}
-                        isDenomBase={props.isDenomBase}
+                        baseTokenSymbol={baseTokenSymbol}
+                        quoteTokenSymbol={quoteTokenSymbol}
+                        isDenomBase={isDenomBase}
                         isAmbient={isAmbient}
                         positionApy={updatedPositionApy}
                         minRangeDenomByMoneyness={minRangeDenomByMoneyness}
@@ -286,3 +280,5 @@ export default function RangeDetailsModal(props: propsIF) {
         </Modal>
     );
 }
+
+export default memo(RangeDetailsModal);

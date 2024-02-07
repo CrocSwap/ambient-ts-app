@@ -1,19 +1,22 @@
 import { useContext } from 'react';
-import { LimitOrderIF } from '../../../../utils/interfaces/exports';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import { LimitOrderIF } from '../../../../ambient-utils/types';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import {
     useLinkGen,
     linkGenMethodsIF,
+    limitParamsIF,
 } from '../../../../utils/hooks/useLinkGen';
-import { getFormattedNumber } from '../../../functions/getFormattedNumber';
+import {
+    getFormattedNumber,
+    getUnicodeCharacter,
+} from '../../../../ambient-utils/dataLayer';
 import { FlexContainer, GridContainer, Text } from '../../../../styled/Common';
 import {
     Results,
     ResultsContainer,
 } from '../../../../styled/Components/Sidebar';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     searchedLimitOrders: LimitOrderIF[];
@@ -25,7 +28,7 @@ interface limitOrderPropsIF {
 
 function LimitOrderLI(props: limitOrderPropsIF) {
     const { limitOrder, handleClick } = props;
-    const { isDenomBase } = useAppSelector((state) => state.tradeData);
+    const { isDenomBase } = useContext(TradeDataContext);
 
     const symbols = {
         base: limitOrder.baseSymbol
@@ -44,6 +47,7 @@ function LimitOrderLI(props: limitOrderPropsIF) {
     });
     const valueUSD = getFormattedNumber({
         value: limitOrder.totalValueUSD,
+        prefix: '$',
     });
 
     return (
@@ -72,7 +76,7 @@ export default function OrdersSearchResults(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const {
-        setCurrentPositionActive,
+        setCurrentLimitOrderActive,
         setShowAllData,
         setOutsideControl,
         setSelectedOutsideTab,
@@ -84,13 +88,18 @@ export default function OrdersSearchResults(props: propsIF) {
     const handleClick = (limitOrder: LimitOrderIF): void => {
         setOutsideControl(true);
         setSelectedOutsideTab(1);
-        setCurrentPositionActive(limitOrder.limitOrderId);
+        setCurrentLimitOrderActive(limitOrder.limitOrderId);
         setShowAllData(false);
-        linkGenLimit.navigate({
+        const { base, quote, isBid, bidTick, askTick } = limitOrder;
+        // URL params for link to limit page
+        const limitLinkParams: limitParamsIF = {
             chain: chainId,
-            tokenA: limitOrder.base,
-            tokenB: limitOrder.quote,
-        });
+            tokenA: base,
+            tokenB: quote,
+            limitTick: isBid ? bidTick : askTick,
+        };
+        // navigate user to limit page with URL params defined above
+        linkGenLimit.navigate(limitLinkParams);
     };
 
     return (
@@ -146,7 +155,7 @@ export default function OrdersSearchResults(props: propsIF) {
                     fontSize='body'
                     color='text2'
                 >
-                    No Orders Found
+                    No Limit Orders Found
                 </FlexContainer>
             )}
         </FlexContainer>

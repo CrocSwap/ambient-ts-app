@@ -1,18 +1,18 @@
 import styles from './ReceiptDisplay.module.css';
 import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
 import { MdErrorOutline } from 'react-icons/md';
-import trimString from '../../../../utils/functions/trimString';
+import {
+    trimString,
+    getChainExplorer,
+} from '../../../../ambient-utils/dataLayer';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { motion } from 'framer-motion';
 import { VscClose } from 'react-icons/vsc';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { removeReceipt } from '../../../../utils/state/receiptDataSlice';
-import { getChainExplorer } from '../../../../utils/data/chains';
 import { useContext, useEffect, useState } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import Spinner from '../../Spinner/Spinner';
-import { useProvider } from 'wagmi';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 
 interface ReceiptDisplayPropsIF {
     status: 'successful' | 'failed' | 'pending';
@@ -25,10 +25,11 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
     const { status, hash, txBlockNumber, txType } = props;
     const {
         chainData: { chainId },
-        crocEnv,
+        provider,
     } = useContext(CrocEnvContext);
 
     const { cachedFetchBlockTime } = useContext(CachedDataContext);
+    const { removeReceipt } = useContext(ReceiptContext);
 
     const pending = <Spinner size={30} bg={'var(--dark2)'} weight={2} />;
     const failed = <MdErrorOutline size={30} color='#7371fc ' />;
@@ -56,16 +57,12 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
     const blockExplorer = getChainExplorer(chainId);
     const EtherscanTx = `${blockExplorer}tx/${hash}`;
 
-    const dispatch = useAppDispatch();
-
     const [blockTime, setBlockTime] = useState<number | undefined>();
-
-    const provider = useProvider();
 
     useEffect(() => {
         (async () => {
             const blockTime =
-                crocEnv && txBlockNumber
+                provider && txBlockNumber
                     ? await cachedFetchBlockTime(provider, txBlockNumber)
                     : undefined;
             if (blockTime) setBlockTime(blockTime);
@@ -129,7 +126,7 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
                         >
                             <VscClose
                                 onClick={() => {
-                                    dispatch(removeReceipt(hash));
+                                    removeReceipt(hash);
                                 }}
                                 size={20}
                             />
@@ -146,7 +143,7 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
                         target='_blank'
                         rel='noreferrer'
                         tabIndex={0}
-                        aria-label='View on Etherscan'
+                        aria-label='View on Block Explorer'
                     >
                         <RiExternalLinkLine size={20} color='#7371fc ' />
                     </a>

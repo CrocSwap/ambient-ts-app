@@ -1,7 +1,9 @@
-import { PoolIF } from '../../../utils/interfaces/exports';
-import { PoolStatsFn } from '../../../App/functions/getPoolStats';
+import { PoolIF } from '../../../ambient-utils/types';
+import {
+    PoolStatsFn,
+    getMoneynessRank,
+} from '../../../ambient-utils/dataLayer';
 import { Link, useLocation } from 'react-router-dom';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { usePoolStats } from '../../../App/hooks/usePoolStats';
 import { useContext, useMemo } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -11,9 +13,10 @@ import {
     linkGenMethodsIF,
     pageNames,
 } from '../../../utils/hooks/useLinkGen';
-import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
+import { TokenPriceFn } from '../../../ambient-utils/api';
 import { ItemContainer } from '../../../styled/Components/Sidebar';
 import { FlexContainer } from '../../../styled/Common';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface propsIF {
     pool: PoolIF;
@@ -39,6 +42,13 @@ export default function PoolsListItem(props: propsIF) {
         crocEnv,
     );
 
+    const isBaseTokenMoneynessGreaterOrEqual =
+        pool.base.address && pool.quote.address
+            ? getMoneynessRank(pool.base.symbol) -
+                  getMoneynessRank(pool.quote.symbol) >=
+              0
+            : false;
+
     const { pathname } = useLocation();
 
     const navTarget = useMemo<pageNames>(() => {
@@ -62,7 +72,7 @@ export default function PoolsListItem(props: propsIF) {
         return output as pageNames;
     }, [pathname]);
 
-    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB } = useContext(TradeDataContext);
 
     // hook to generate navigation actions with pre-loaded path
     const linkGenMarket: linkGenMethodsIF = useLinkGen(navTarget);
@@ -87,18 +97,28 @@ export default function PoolsListItem(props: propsIF) {
             numCols={3}
             color='text2'
         >
-            {[`${pool.base.symbol} / ${pool.quote.symbol}`, volume, tvl].map(
-                (item, idx) => (
-                    <FlexContainer
-                        key={idx}
-                        justifyContent='center'
-                        alignItems='center'
-                        padding='4px'
-                    >
-                        {item}
-                    </FlexContainer>
-                ),
-            )}
+            {[
+                `${
+                    isBaseTokenMoneynessGreaterOrEqual
+                        ? pool.quote.symbol
+                        : pool.base.symbol
+                } / ${
+                    isBaseTokenMoneynessGreaterOrEqual
+                        ? pool.base.symbol
+                        : pool.quote.symbol
+                }`,
+                volume,
+                tvl,
+            ].map((item, idx) => (
+                <FlexContainer
+                    key={idx}
+                    justifyContent='center'
+                    alignItems='center'
+                    padding='4px'
+                >
+                    {item}
+                </FlexContainer>
+            ))}
         </ItemContainer>
     );
 }

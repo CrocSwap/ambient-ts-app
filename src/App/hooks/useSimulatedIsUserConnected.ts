@@ -1,11 +1,9 @@
-import { useEffect, useState } from 'react';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { useContext, useEffect, useState } from 'react';
+import { UserDataContext } from '../../contexts/UserDataContext';
 
 // Custom hook to simulate isUserConnected for the first 2 seconds
 export const useSimulatedIsUserConnected = () => {
-    const { isLoggedIn: isUserConnected } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { isUserConnected } = useContext(UserDataContext);
     const [simulatedIsUserConnected, setSimulatedIsUserConnected] =
         useState(true);
 

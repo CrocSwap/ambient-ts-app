@@ -1,17 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { HiOutlineExternalLink } from 'react-icons/hi';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
-import trimString from '../../../../utils/functions/trimString';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import {
-    PositionIF,
-    TransactionIF,
-} from '../../../../utils/interfaces/exports';
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
+import { HiOutlineExternalLink } from 'react-icons/hi';
+import {
+    trimString,
+    getFormattedNumber,
+    getUnicodeCharacter,
+} from '../../../../ambient-utils/dataLayer';
+import { PositionIF, TransactionIF } from '../../../../ambient-utils/types';
 import styles from './PositionBox.module.css';
 import { motion } from 'framer-motion';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     message: string;
@@ -37,11 +43,12 @@ export default function PositionBox(props: propsIF) {
     const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<
         string | undefined
     >();
-    const tradeData = useAppSelector((state) => state.tradeData);
-    const graphData = useAppSelector((state) => state?.graphData);
+    const { isDenomBase } = useContext(TradeDataContext);
+    const { positionsByPool, transactionsByPool } =
+        useContext(GraphDataContext);
 
-    const transactionsData = graphData?.changesByPool?.changes;
-    const positionData = graphData?.positionsByPool?.positions;
+    const transactionsData = transactionsByPool.changes;
+    const positionData = positionsByPool.positions;
 
     const [minPrice, setMinPrice] = useState<string | undefined>();
     const [maxPrice, setMaxPrice] = useState<string | undefined>();
@@ -90,8 +97,8 @@ export default function PositionBox(props: propsIF) {
     const sideType =
         position &&
         (position.entityType === 'swap' || position.entityType === 'limitOrder'
-            ? (tradeData.isDenomBase && !position.isBuy) ||
-              (!tradeData.isDenomBase && position.isBuy)
+            ? (isDenomBase && !position.isBuy) ||
+              (!isDenomBase && position.isBuy)
                 ? 'Buy'
                 : 'Sell'
             : position.changeType === 'burn'
@@ -143,7 +150,7 @@ export default function PositionBox(props: propsIF) {
                         value: invPriceDecimalCorrected,
                     });
 
-                    const truncatedDisplayPrice = tradeData.isDenomBase
+                    const truncatedDisplayPrice = isDenomBase
                         ? (position.quoteSymbol
                               ? getUnicodeCharacter(position.quoteSymbol)
                               : '') + invertedPriceTruncated

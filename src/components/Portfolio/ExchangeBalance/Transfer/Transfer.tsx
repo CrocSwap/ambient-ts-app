@@ -1,8 +1,7 @@
 import { toDisplayQty } from '@crocswap-libs/sdk';
-import { TokenIF } from '../../../../utils/interfaces/exports';
-import Button from '../../../Global/Button/Button';
+import { TokenIF } from '../../../../ambient-utils/types';
+import Button from '../../../Form/Button';
 import TransferAddressInput from './TransferAddressInput';
-// import { defaultTokens } from '../../../../utils/data/defaultTokens';
 import {
     Dispatch,
     SetStateAction,
@@ -11,13 +10,15 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-// import { setToken } from '../../../../utils/state/temp';
 import { BigNumber } from 'ethers';
 import { FaGasPump } from 'react-icons/fa';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import useDebounce from '../../../../App/hooks/useDebounce';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
+import {
+    IS_LOCAL_ENV,
+    ZERO_ADDRESS,
+    checkBlacklist,
+} from '../../../../ambient-utils/constants';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { FlexContainer, Text } from '../../../../styled/Common';
@@ -31,15 +32,15 @@ import {
     isTransactionFailedError,
     isTransactionReplacedError,
 } from '../../../../utils/TransactionError';
-import { checkBlacklist } from '../../../../utils/data/blacklist';
+
+import CurrencySelector from '../../../Form/CurrencySelector';
 import {
-    addPendingTx,
-    addReceipt,
-    addTransactionByType,
-    removePendingTx,
-    updateTransactionHash,
-} from '../../../../utils/state/receiptDataSlice';
-import CurrencySelector from '../CurrencySelector';
+    NUM_GWEI_IN_WEI,
+    GAS_DROPS_ESTIMATE_TRANSFER_NATIVE,
+    GAS_DROPS_ESTIMATE_TRANSFER_ERC20,
+} from '../../../../ambient-utils/constants/';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -64,10 +65,16 @@ export default function Transfer(props: propsIF) {
         setTokenModalOpen,
     } = props;
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const { gasPriceInGwei } = useContext(ChainDataContext);
-
-    const dispatch = useAppDispatch();
+    const {
+        addPendingTx,
+        addReceipt,
+        addTransactionByType,
+        removePendingTx,
+        updateTransactionHash,
+    } = useContext(ReceiptContext);
 
     const selectedTokenDecimals = selectedToken.decimals;
 
@@ -190,15 +197,14 @@ export default function Transfer(props: propsIF) {
                 const tx = await crocEnv
                     .token(selectedToken.address)
                     .transfer(transferQtyDisplay, resolvedAddress);
-                dispatch(addPendingTx(tx?.hash));
+                addPendingTx(tx?.hash);
                 if (tx?.hash)
-                    dispatch(
-                        addTransactionByType({
-                            txHash: tx.hash,
-                            txType: 'Transfer',
-                            txDescription: `Transfer ${selectedToken.symbol}`,
-                        }),
-                    );
+                    addTransactionByType({
+                        userAddress: userAddress || '',
+                        txHash: tx.hash,
+                        txType: 'Transfer',
+                        txDescription: `Transfer ${selectedToken.symbol}`,
+                    });
                 let receipt;
                 try {
                     if (tx) receipt = await tx.wait();
@@ -209,16 +215,14 @@ export default function Transfer(props: propsIF) {
                     // in their client, but we now have the updated info
                     if (isTransactionReplacedError(error)) {
                         IS_LOCAL_ENV && console.debug('repriced');
-                        dispatch(removePendingTx(error.hash));
+                        removePendingTx(error.hash);
 
                         const newTransactionHash = error.replacement.hash;
-                        dispatch(addPendingTx(newTransactionHash));
+                        addPendingTx(newTransactionHash);
 
-                        dispatch(
-                            updateTransactionHash({
-                                oldHash: error.hash,
-                                newHash: error.replacement.hash,
-                            }),
+                        updateTransactionHash(
+                            error.hash,
+                            error.replacement.hash,
                         );
                         IS_LOCAL_ENV && console.debug({ newTransactionHash });
                         receipt = error.receipt;
@@ -229,8 +233,8 @@ export default function Transfer(props: propsIF) {
                 }
 
                 if (receipt) {
-                    dispatch(addReceipt(JSON.stringify(receipt)));
-                    dispatch(removePendingTx(receipt.transactionHash));
+                    addReceipt(JSON.stringify(receipt));
+                    removePendingTx(receipt.transactionHash);
                     resetTransferQty();
                 }
             } catch (error) {
@@ -294,20 +298,16 @@ export default function Transfer(props: propsIF) {
 
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
-    const averageGasUnitsForEthTransferInGasDrops = 45000;
-    const averageGasUnitsForErc20TransferInGasDrops = 45000;
-    const gweiInWei = 1e-9;
-
     // calculate price of gas for exchange balance transfer
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                gweiInWei *
+                NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice *
                 (isTokenEth
-                    ? averageGasUnitsForEthTransferInGasDrops
-                    : averageGasUnitsForErc20TransferInGasDrops);
+                    ? GAS_DROPS_ESTIMATE_TRANSFER_NATIVE
+                    : GAS_DROPS_ESTIMATE_TRANSFER_ERC20);
 
             setTransferGasPriceinDollars(
                 getFormattedNumber({
@@ -345,18 +345,21 @@ export default function Transfer(props: propsIF) {
                         <MaxButton onClick={handleBalanceClick}>Max</MaxButton>
                     )}
                 </FlexContainer>
-                <GasPump>
-                    <SVGContainer>
-                        <FaGasPump size={12} />{' '}
-                    </SVGContainer>
-                    {transferGasPriceinDollars
-                        ? transferGasPriceinDollars
-                        : '…'}
-                </GasPump>
+                {
+                    <GasPump>
+                        <SVGContainer>
+                            <FaGasPump size={12} />{' '}
+                        </SVGContainer>
+                        {transferGasPriceinDollars
+                            ? transferGasPriceinDollars
+                            : '…'}
+                    </GasPump>
+                }
             </FlexContainer>
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}
             <Button
+                idForDOM='transfer_tokens_button'
                 title={buttonMessage}
                 action={transferFn}
                 disabled={isButtonDisabled}

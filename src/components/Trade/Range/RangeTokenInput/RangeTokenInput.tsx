@@ -1,44 +1,40 @@
 import { Dispatch, SetStateAction, useContext, useEffect, memo } from 'react';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
-import { ZERO_ADDRESS } from '../../../../constants';
+import {
+    getFormattedNumber,
+    calculateSecondaryDepositQty,
+} from '../../../../ambient-utils/dataLayer';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
-import { calculateSecondaryDepositQty } from '../../../../utils/functions/calculateSecondaryDepositQty';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
 import {
     linkGenMethodsIF,
+    poolParamsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
-import {
-    setPrimaryQuantityRange,
-    setIsTokenAPrimaryRange,
-    setRangeTicksCopied,
-    setIsTokenAPrimary,
-} from '../../../../utils/state/tradeDataSlice';
-import TokenInput from '../../../Global/TokenInput/TokenInput';
+import TokenInputWithWalletBalance from '../../../Form/TokenInputWithWalletBalance';
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
 import { formatTokenInput } from '../../../../utils/numbers';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { InputDisabledText } from '../../../../styled/Components/TradeModules';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { RangeContext } from '../../../../contexts/RangeContext';
 
 interface propsIF {
+    hidePlus?: boolean;
     tokenAInputQty: { value: string; set: Dispatch<SetStateAction<string>> };
     tokenBInputQty: { value: string; set: Dispatch<SetStateAction<string>> };
     isAmbient: boolean;
     depositSkew: number;
+    poolPriceNonDisplay: number;
     isOutOfRange: boolean;
     isWithdrawFromDexChecked: { tokenA: boolean; tokenB: boolean };
     isInputDisabled: { tokenA: boolean; tokenB: boolean };
-    handleButtonMessage: {
-        tokenA: (tokenAmount: string) => void;
-        tokenB: (tokenAmount: string) => void;
-    };
     toggleDexSelection: (tokenAorB: 'A' | 'B') => void;
+    reverseTokens?: () => void;
+    isMintLiqEnabled?: boolean;
+    isInitPage?: boolean;
+    amountToReduceNativeTokenQty: number;
 }
 
 function RangeTokenInput(props: propsIF) {
@@ -47,6 +43,7 @@ function RangeTokenInput(props: propsIF) {
         tokenBInputQty: { value: tokenBInputQty, set: setTokenBInputQty },
         isAmbient,
         depositSkew,
+        poolPriceNonDisplay,
         isOutOfRange,
         isWithdrawFromDexChecked: {
             tokenA: isWithdrawTokenAFromDexChecked,
@@ -56,73 +53,51 @@ function RangeTokenInput(props: propsIF) {
             tokenA: isTokenAInputDisabled,
             tokenB: isTokenBInputDisabled,
         },
-        handleButtonMessage: {
-            tokenA: handleTokenAButtonMessage,
-            tokenB: handleTokenBButtonMessage,
-        },
         toggleDexSelection,
+        hidePlus,
+        reverseTokens,
+        isMintLiqEnabled = true,
+        isInitPage,
+        amountToReduceNativeTokenQty,
     } = props;
 
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { isPoolInitialized } = useContext(PoolContext);
     const {
-        baseToken: {
-            address: baseTokenAddress,
-            balance: baseTokenBalance,
-            dexBalance: baseTokenDexBalance,
-        },
-        quoteToken: {
-            balance: quoteTokenBalance,
-            dexBalance: quoteTokenDexBalance,
-        },
+        tokenABalance,
+        tokenBBalance,
+        tokenADexBalance,
+        tokenBDexBalance,
+        isTokenABase,
+        isTokenAEth,
+        isTokenBEth,
     } = useContext(TradeTokenContext);
     const { showRangePulseAnimation } = useContext(TradeTableContext);
-
-    const dispatch = useAppDispatch();
+    const {
+        isTokenAPrimaryRange,
+        rangeTicksCopied,
+        setIsTokenAPrimaryRange,
+        setPrimaryQuantityRange,
+        setRangeTicksCopied,
+    } = useContext(RangeContext);
     // hook to generate navigation actions with pre-loaded path
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
-    const { isLoggedIn: isUserConnected } = useAppSelector(
-        (state) => state.userData,
-    );
-    const {
-        tokenA,
-        tokenB,
-        isTokenAPrimary,
-        isTokenAPrimaryRange,
-        poolPriceNonDisplay,
-        rangeTicksCopied,
-    } = useAppSelector((state) => state.tradeData);
 
-    const isTokenABase = tokenA.address === baseTokenAddress;
-    const isTokenAEth = tokenA.address === ZERO_ADDRESS;
-    const isTokenBEth = tokenB.address === ZERO_ADDRESS;
+    const { isUserConnected } = useContext(UserDataContext);
 
-    const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
-    const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
-    const tokenADexBalance = isTokenABase
-        ? baseTokenDexBalance
-        : quoteTokenDexBalance;
-    const tokenBDexBalance = isTokenABase
-        ? quoteTokenDexBalance
-        : baseTokenDexBalance;
-
+    const { tokenA, tokenB, isTokenAPrimary, setIsTokenAPrimary } =
+        useContext(TradeDataContext);
     useEffect(() => {
-        if (isPoolInitialized) {
+        if (poolPriceNonDisplay) {
             updateTokenQty();
         }
-    }, [isPoolInitialized, depositSkew, tokenA.address]);
-
-    useEffect(() => {
-        handleTokenAButtonMessage(tokenAInputQty);
-        handleTokenBButtonMessage(tokenBInputQty);
-    }, [isWithdrawTokenAFromDexChecked, isWithdrawTokenBFromDexChecked]);
+    }, [poolPriceNonDisplay, depositSkew, tokenA.address]);
 
     const resetTokenQuantities = () => {
         setTokenAInputQty('');
         setTokenBInputQty('');
-        dispatch(setPrimaryQuantityRange(''));
+        setPrimaryQuantityRange('');
     };
 
     const setTokenQtyValue = (inputValue: string, primaryToken: 'A' | 'B') => {
@@ -155,42 +130,40 @@ function RangeTokenInput(props: propsIF) {
             setTokenAInputQty(truncatedTokenQty);
             setTokenBInputQty(inputValue);
         }
-
-        handleTokenAButtonMessage(
-            primaryToken === 'A' ? inputValue : truncatedTokenQty,
-        );
-        handleTokenBButtonMessage(
-            primaryToken === 'A' ? truncatedTokenQty : inputValue,
-        );
     };
 
-    const reverseTokens = (): void => {
-        resetTokenQuantities();
-        dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
-        dispatch(setIsTokenAPrimary(!isTokenAPrimary));
-        if (!rangeTicksCopied) {
-            linkGenPool.navigate({
-                chain: chainId,
-                tokenA: tokenB.address,
-                tokenB: tokenA.address,
-            });
-        }
-        if (rangeTicksCopied) dispatch(setRangeTicksCopied(false));
-    };
+    const reverseTokensLocal = reverseTokens
+        ? reverseTokens
+        : (): void => {
+              resetTokenQuantities();
+              setIsTokenAPrimaryRange(!isTokenAPrimaryRange);
+              setIsTokenAPrimary(!isTokenAPrimary);
+              if (!rangeTicksCopied && !isInitPage) {
+                  // URL params for link to pool page
+                  const poolLinkParams: poolParamsIF = {
+                      chain: chainId,
+                      tokenA: tokenB.address,
+                      tokenB: tokenA.address,
+                  };
+                  // navigate user to pool page with URL params defined above
+                  linkGenPool.navigate(poolLinkParams);
+              }
+              if (rangeTicksCopied) setRangeTicksCopied(false);
+          };
 
     const handleTokenAChangeEvent = (value: string) => {
         const inputStr = formatTokenInput(value, tokenA);
 
-        dispatch(setIsTokenAPrimaryRange(true));
-        dispatch(setPrimaryQuantityRange(inputStr));
+        setIsTokenAPrimaryRange(true);
+        setPrimaryQuantityRange(inputStr);
         setTokenQtyValue(value, 'A');
     };
 
     const handleTokenBChangeEvent = (value: string) => {
         const inputStr = formatTokenInput(value, tokenB);
 
-        dispatch(setIsTokenAPrimaryRange(false));
-        dispatch(setPrimaryQuantityRange(inputStr));
+        setIsTokenAPrimaryRange(false);
+        setPrimaryQuantityRange(inputStr);
         setTokenQtyValue(value, 'B');
     };
 
@@ -217,7 +190,7 @@ function RangeTokenInput(props: propsIF) {
 
     return (
         <FlexContainer flexDirection='column' gap={8}>
-            <TokenInput
+            <TokenInputWithWalletBalance
                 fieldId='range_A'
                 tokenAorB='A'
                 token={tokenA}
@@ -228,30 +201,34 @@ function RangeTokenInput(props: propsIF) {
                 isDexSelected={isWithdrawTokenAFromDexChecked}
                 showPulseAnimation={showRangePulseAnimation}
                 handleTokenInputEvent={handleTokenAChangeEvent}
-                reverseTokens={reverseTokens}
+                reverseTokens={reverseTokensLocal}
                 handleToggleDexSelection={() => toggleDexSelection('A')}
                 parseTokenInput={(val: string, isMax?: boolean) => {
                     setTokenAInputQty(formatTokenInput(val, tokenA, isMax));
                 }}
                 showWallet={isUserConnected}
                 disabledContent={
-                    isTokenAInputDisabled ? disabledContent : undefined
+                    isTokenAInputDisabled && isMintLiqEnabled
+                        ? disabledContent
+                        : undefined
                 }
+                amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
             />
-            <FlexContainer
-                fullWidth
-                justifyContent='center'
-                alignItems='center'
-                padding='0 0 8px 0'
-            >
-                <img
-                    style={{ cursor: 'default !important' }}
-                    src={tokenArrow}
-                    height={28}
-                    alt='plus sign'
-                />
-            </FlexContainer>
-            <TokenInput
+            {!hidePlus && (
+                <FlexContainer
+                    fullWidth
+                    justifyContent='center'
+                    alignItems='center'
+                >
+                    <img
+                        style={{ cursor: 'default !important' }}
+                        src={tokenArrow}
+                        height={28}
+                        alt='plus sign'
+                    />
+                </FlexContainer>
+            )}
+            <TokenInputWithWalletBalance
                 fieldId='range_B'
                 tokenAorB='B'
                 token={tokenB}
@@ -262,15 +239,18 @@ function RangeTokenInput(props: propsIF) {
                 isDexSelected={isWithdrawTokenBFromDexChecked}
                 showPulseAnimation={showRangePulseAnimation}
                 handleTokenInputEvent={handleTokenBChangeEvent}
-                reverseTokens={reverseTokens}
+                reverseTokens={reverseTokensLocal}
                 handleToggleDexSelection={() => toggleDexSelection('B')}
                 parseTokenInput={(val: string, isMax?: boolean) => {
                     setTokenBInputQty(formatTokenInput(val, tokenB, isMax));
                 }}
                 showWallet={isUserConnected}
                 disabledContent={
-                    isTokenBInputDisabled ? disabledContent : undefined
+                    isTokenBInputDisabled && isMintLiqEnabled
+                        ? disabledContent
+                        : undefined
                 }
+                amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
                 isWithdraw
             />
         </FlexContainer>

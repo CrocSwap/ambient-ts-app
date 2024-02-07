@@ -6,27 +6,23 @@ import {
     SetStateAction,
     useContext,
 } from 'react';
-import { TokenIF } from '../../../utils/interfaces/exports';
+import { TokenIF } from '../../../ambient-utils/types';
 import TokenSelect from '../TokenSelect/TokenSelect';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../utils/hooks/reduxToolkit';
 import styles from './SoloTokenSelectModal.module.css';
 import SoloTokenImport from './SoloTokenImport';
-import { setSoloToken } from '../../../utils/state/soloTokenDataSlice';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { useProvider } from 'wagmi';
 import { ethers } from 'ethers';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { handleWETH } from '../../../utils/data/handleWETH';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../ambient-utils/constants';
 import Modal from '../Modal/Modal';
-import removeWrappedNative from '../../../utils/functions/removeWrappedNative';
+import {
+    removeWrappedNative,
+    isWethToken,
+} from '../../../ambient-utils/dataLayer';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
-import { wrappedNatives } from '../../../utils/data/wrappedNatives';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface propsIF {
     showSoloSelectTokenButtons: boolean;
@@ -35,6 +31,8 @@ interface propsIF {
     tokenAorB: 'A' | 'B' | null;
     reverseTokens?: () => void;
     onClose: () => void;
+
+    noModal?: boolean;
 }
 
 export const SoloTokenSelectModal = (props: propsIF) => {
@@ -50,6 +48,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     const { cachedTokenDetails } = useContext(CachedDataContext);
     const {
         chainData: { chainId },
+        provider,
     } = useContext(CrocEnvContext);
 
     const {
@@ -63,26 +62,19 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         getRecentTokens,
     } = useContext(TokenContext);
 
-    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
-
-    // instance of hook used to retrieve data from RTK
-    const dispatch = useAppDispatch();
+    const { tokenA, tokenB, setSoloToken } = useContext(TradeDataContext);
 
     // hook to generate a navigation action for when modal is closed
     // no arg ➡ hook will infer destination from current URL path
     const linkGenAny: linkGenMethodsIF = useLinkGen();
-
-    const provider = useProvider();
 
     // fn to respond to a user clicking to select a token
     const chooseToken = (tkn: TokenIF, isCustom: boolean): void => {
         if (isCustom) {
             tokens.acknowledge(tkn);
         }
-        // dispatch token data object to RTK
-        if (isSingleToken) {
-            dispatch(setSoloToken(tkn));
-        }
+
+        if (isSingleToken) setSoloToken(tkn);
 
         // array of recent tokens from App.tsx (current session only)
         const recentTokens = getRecentTokens();
@@ -251,6 +243,8 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     // arbitrary limit on number of tokens to display in DOM for performance
     const MAX_TOKEN_COUNT = 300;
 
+    const WETH_WARNING = ' Ambient uses Native Ether (ETH) to lower gas costs.';
+
     return (
         <Modal title='Select Token' onClose={clearInputFieldAndCloseModal}>
             <section className={styles.container}>
@@ -280,23 +274,22 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                     )}
                 </div>
                 <div style={{ padding: '1rem' }}>
-                    {handleWETH.check(validatedInput) && (
+                    {isWethToken(validatedInput) && (
                         <WarningBox
                             title=''
-                            details={handleWETH.message}
+                            details={WETH_WARNING}
                             noBackground
                             button={
                                 <button
                                     onClick={() => {
                                         try {
-                                            chooseToken(
+                                            const wethToken =
                                                 tokens.getTokenByAddress(
-                                                    wrappedNatives.get(
-                                                        chainId,
-                                                    ) as string,
-                                                ) as TokenIF,
-                                                false,
-                                            );
+                                                    validatedInput,
+                                                );
+                                            if (wethToken) {
+                                                chooseToken(wethToken, false);
+                                            }
                                         } catch (err) {
                                             IS_LOCAL_ENV && console.warn(err);
                                             onClose();
@@ -309,7 +302,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                         />
                     )}
                 </div>
-                {handleWETH.check(validatedInput) &&
+                {isWethToken(validatedInput) &&
                     [tokens.getTokenByAddress(ZERO_ADDRESS) as TokenIF].map(
                         (token: TokenIF) => (
                             <TokenSelect
@@ -324,14 +317,16 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                     <div className={styles.scrollable_container}>
                         {removeWrappedNative(chainId, outputTokens)
                             .slice(0, MAX_TOKEN_COUNT)
-                            .map((token: TokenIF) => (
-                                <TokenSelect
-                                    key={JSON.stringify(token)}
-                                    token={token}
-                                    chooseToken={chooseToken}
-                                    fromListsText=''
-                                />
-                            ))}
+                            .map((token: TokenIF) => {
+                                return (
+                                    <TokenSelect
+                                        key={JSON.stringify(token)}
+                                        token={token}
+                                        chooseToken={chooseToken}
+                                        fromListsText=''
+                                    />
+                                );
+                            })}
                     </div>
                 ) : (
                     <SoloTokenImport

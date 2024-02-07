@@ -1,16 +1,15 @@
 import { FaMinus, FaPlus } from 'react-icons/fa';
 import { ChangeEvent, FocusEventHandler, memo, useContext } from 'react';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
-import { exponentialNumRegEx } from '../../../../../utils/regex/exports';
+import { exponentialNumRegEx } from '../../../../../ambient-utils/dataLayer';
 import { FlexContainer, Text } from '../../../../../styled/Common';
 import {
     PriceInputButton,
     PriceInputContainer,
-    PulseAnimationContainer,
     PriceInput as PriceInputStyled,
 } from '../../../../../styled/Components/TradeModules';
 
-interface priceInputProps {
+interface propsIF {
     disable?: boolean;
     fieldId: string | number;
     title: string;
@@ -21,7 +20,12 @@ interface priceInputProps {
     decreaseTick: () => void;
 }
 
-function PriceInput(props: priceInputProps) {
+// this component is only used for min and max prices for a range position in
+// ... advanced mode of the Range module, for some reason its value is set from
+// ... a `useEffect()` hook in Range.tsx, I have not yet determined if there's
+// ... a good reason to handle this with a side effect
+
+function PriceInput(props: propsIF) {
     const {
         disable,
         fieldId,
@@ -53,12 +57,15 @@ function PriceInput(props: priceInputProps) {
             </Text>
             <PriceInputContainer>
                 <PriceInputButton
+                    id={`decrease_${fieldId}_price_button`}
                     onClick={decreaseTick}
                     aria-label={`decrease tick of ${fieldId} price.`}
                 >
                     <FaMinus size={16} />
                 </PriceInputButton>
-                <PulseAnimationContainer showPulse={showRangePulseAnimation}>
+                <FlexContainer
+                    animation={showRangePulseAnimation ? 'pulse' : ''}
+                >
                     <PriceInputStyled
                         id={`${fieldId}-price-input-quantity`}
                         type='text'
@@ -76,8 +83,9 @@ function PriceInput(props: priceInputProps) {
                         disabled={disable}
                         aria-label={`${fieldId} price input quantity.`}
                     />
-                </PulseAnimationContainer>
+                </FlexContainer>
                 <PriceInputButton
+                    id={`increase_${fieldId}_price_button`}
                     onClick={increaseTick}
                     aria-label={`increase tick of ${fieldId} price.`}
                 >
@@ -85,6 +93,7 @@ function PriceInput(props: priceInputProps) {
                 </PriceInputButton>
             </PriceInputContainer>
             <Text
+                id={`${fieldId}_price_of_range_advanced`}
                 fontSize='header2'
                 color='accent5'
                 tabIndex={0}

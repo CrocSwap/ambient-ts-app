@@ -10,41 +10,47 @@ import {
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
 
-// import candleStikPlaceholder from '../../../assets/images/charts/candlestick.png';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { IS_LOCAL_ENV } from '../../../constants';
+import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 import {
     diffHashSig,
     diffHashSigLiquidity,
-} from '../../../utils/functions/diffHashSig';
+    getPinnedPriceValuesFromTicks,
+} from '../../../ambient-utils/dataLayer';
 import { CandleContext } from '../../../contexts/CandleContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ChartContext } from '../../../contexts/ChartContext';
-import { candleScale } from '../../../utils/state/tradeDataSlice';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import Spinner from '../../../components/Global/Spinner/Spinner';
 import { LiquidityDataLocal } from './TradeCharts';
-import { CandleData } from '../../../App/functions/fetchCandleSeries';
+import {
+    CandleDataIF,
+    CandleScaleIF,
+    TransactionIF,
+} from '../../../ambient-utils/types';
 import {
     chartItemStates,
+    getInitialDisplayCandleCount,
     liquidityChartData,
     scaleData,
 } from '../../Chart/ChartUtils/chartUtils';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { updatesIF } from '../../../utils/hooks/useUrlParams';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { xAxisBuffer } from '../../Chart/ChartUtils/chartConstants';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface propsIF {
     changeState: (
         isOpen: boolean | undefined,
-        candleData: CandleData | undefined,
+        candleData: CandleDataIF | undefined,
     ) => void;
     chartItemStates: chartItemStates;
-    setCurrentData: Dispatch<SetStateAction<CandleData | undefined>>;
+    setCurrentData: Dispatch<SetStateAction<CandleDataIF | undefined>>;
     setCurrentVolumeData: Dispatch<SetStateAction<number | undefined>>;
     selectedDate: number | undefined;
     setSelectedDate: Dispatch<number | undefined>;
@@ -57,17 +63,29 @@ interface propsIF {
     showLatest: boolean | undefined;
     setShowLatest: Dispatch<SetStateAction<boolean>>;
     setShowTooltip: Dispatch<SetStateAction<boolean>>;
-
     setIsLoading: Dispatch<SetStateAction<boolean>>;
     isLoading: boolean;
+    updateURL: (changes: updatesIF) => void;
 }
 
 function TradeCandleStickChart(props: propsIF) {
-    const { selectedDate, setSelectedDate, isLoading, setIsLoading } = props;
+    const {
+        selectedDate,
+        setSelectedDate,
+        isLoading,
+        setIsLoading,
+        updateURL,
+    } = props;
 
-    const { candleData, isFetchingCandle, isCandleDataNull, setCandleScale } =
-        useContext(CandleContext);
-    const { chartSettings } = useContext(ChartContext);
+    const {
+        candleData,
+        isFetchingCandle,
+        isCandleDataNull,
+        setCandleScale,
+        candleScale,
+    } = useContext(CandleContext);
+    const { chartSettings, isChangeScaleChart, setSelectedDrawnShape } =
+        useContext(ChartContext);
     const { chainData } = useContext(CrocEnvContext);
     const { poolPriceDisplay: poolPriceWithoutDenom, isPoolInitialized } =
         useContext(PoolContext);
@@ -99,38 +117,33 @@ function TradeCandleStickChart(props: propsIF) {
         undefined,
     );
 
-    const tradeData = useAppSelector((state) => state.tradeData);
-    const { liquidityData: unparsedLiquidityData } = useAppSelector(
-        (state) => state.graphData,
-    );
+    const { tokenA, tokenB, isDenomBase, poolPriceNonDisplay } =
+        useContext(TradeDataContext);
+
+    const { liquidityData: unparsedLiquidityData } =
+        useContext(GraphDataContext);
 
     const tokenPair = useMemo(
         () => ({
-            dataTokenA: tradeData.tokenA,
-            dataTokenB: tradeData.tokenB,
+            dataTokenA: tokenA,
+            dataTokenB: tokenB,
         }),
-        [
-            tradeData.tokenB.address,
-            tradeData.tokenB.chainId,
-            tradeData.tokenA.address,
-            tradeData.tokenA.chainId,
-        ],
+        [tokenB.address, tokenB.chainId, tokenA.address, tokenA.chainId],
     );
-    const { poolPriceNonDisplay } = tradeData;
 
-    const denominationsInBase = tradeData.isDenomBase;
+    // TODO: could probably be determined from the isTokenABase in context?
     const isTokenABase = tokenPair?.dataTokenA.address === baseTokenAddress;
 
     const poolPriceDisplay = poolPriceWithoutDenom
-        ? denominationsInBase && poolPriceWithoutDenom
+        ? isDenomBase && poolPriceWithoutDenom
             ? 1 / poolPriceWithoutDenom
             : poolPriceWithoutDenom ?? 0
         : 0;
 
-    const tokenA = tokenPair.dataTokenA;
-    const tokenB = tokenPair.dataTokenB;
-    const tokenADecimals = tokenA.decimals;
-    const tokenBDecimals = tokenB.decimals;
+    const _tokenA = tokenPair.dataTokenA;
+    const _tokenB = tokenPair.dataTokenB;
+    const tokenADecimals = _tokenA.decimals;
+    const tokenBDecimals = _tokenB.decimals;
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
 
@@ -141,9 +154,24 @@ function TradeCandleStickChart(props: propsIF) {
 
     const mobileView = useMediaQuery('(max-width: 600px)');
 
+    const [userTransactionData, setUserTransactionData] =
+        useState<Array<TransactionIF>>();
+
+    const { userTransactionsByPool } = useContext(GraphDataContext);
+
+    useEffect(() => {
+        if (userTransactionsByPool) {
+            setUserTransactionData(userTransactionsByPool.changes);
+        }
+    }, [userTransactionsByPool]);
+
     useEffect(() => {
         setIsLoading(true);
-    }, [period, denominationsInBase]);
+    }, [period, isDenomBase]);
+
+    useEffect(() => {
+        setSelectedDrawnShape(undefined);
+    }, [period, tokenPair]);
 
     useEffect(() => {
         if (unparsedLiquidityData !== undefined) {
@@ -152,7 +180,7 @@ function TradeCandleStickChart(props: propsIF) {
 
             const liqBoundaryData = unparsedLiquidityData.ranges.find(
                 (liq: any) => {
-                    return denominationsInBase
+                    return isDenomBase
                         ? liq.upperBoundInvPriceDecimalCorrected <
                               barThreshold &&
                               liq.lowerBoundInvPriceDecimalCorrected !== '-inf'
@@ -163,7 +191,7 @@ function TradeCandleStickChart(props: propsIF) {
 
             const liqBoundaryArg =
                 liqBoundaryData !== undefined
-                    ? denominationsInBase
+                    ? isDenomBase
                         ? liqBoundaryData.lowerBoundInvPriceDecimalCorrected
                         : liqBoundaryData.lowerBoundPriceDecimalCorrected
                     : barThreshold;
@@ -176,7 +204,7 @@ function TradeCandleStickChart(props: propsIF) {
         }
     }, [
         diffHashSigLiquidity(unparsedLiquidityData),
-        denominationsInBase,
+        isDenomBase,
         poolPriceDisplay !== undefined && poolPriceDisplay > 0,
     ]);
 
@@ -227,7 +255,7 @@ function TradeCandleStickChart(props: propsIF) {
             const highTick = currentPoolPriceTick + 100 * 101;
 
             const rangeBoundary = getPinnedPriceValuesFromTicks(
-                denominationsInBase,
+                isDenomBase,
                 baseTokenDecimals,
                 quoteTokenDecimals,
                 lowTick,
@@ -283,7 +311,7 @@ function TradeCandleStickChart(props: propsIF) {
 
             const depthAskRight = Math.max(
                 ...unparsedLiquidityData.ranges.map((o: any) => {
-                    const price = denominationsInBase
+                    const price = isDenomBase
                         ? o.upperBoundInvPriceDecimalCorrected
                         : o.upperBoundPriceDecimalCorrected;
                     if (price > barThreshold / 10 && price < limitBoundary) {
@@ -313,11 +341,11 @@ function TradeCandleStickChart(props: propsIF) {
             let liqBoundaryDepth = liqBoundary;
 
             unparsedLiquidityData.ranges.map((data: any) => {
-                const liqUpperPrices = denominationsInBase
+                const liqUpperPrices = isDenomBase
                     ? data.upperBoundInvPriceDecimalCorrected
                     : data.lowerBoundPriceDecimalCorrected;
 
-                const liqLowerPrices = denominationsInBase
+                const liqLowerPrices = isDenomBase
                     ? data.lowerBoundInvPriceDecimalCorrected
                     : data.upperBoundPriceDecimalCorrected;
 
@@ -363,7 +391,7 @@ function TradeCandleStickChart(props: propsIF) {
                     }
                 }
 
-                if (!denominationsInBase) {
+                if (!isDenomBase) {
                     if (
                         data.cumAskLiq !== undefined &&
                         data.cumAskLiq !== '0' &&
@@ -490,9 +518,7 @@ function TradeCandleStickChart(props: propsIF) {
                 depthLiqAskData.push({
                     activeLiq:
                         depthLiqAskData[
-                            !denominationsInBase
-                                ? 0
-                                : depthLiqAskData.length - 1
+                            !isDenomBase ? 0 : depthLiqAskData.length - 1
                         ]?.activeLiq,
                     liqPrices: 0,
                     deltaAverageUSD: 0,
@@ -592,10 +618,10 @@ function TradeCandleStickChart(props: propsIF) {
                 .accessors([
                     (d: any) => {
                         return (
-                            denominationsInBase
+                            isDenomBase
                                 ? d.invMinPriceExclMEVDecimalCorrected
                                 : d.maxPriceExclMEVDecimalCorrected,
-                            denominationsInBase
+                            isDenomBase
                                 ? d.invMaxPriceExclMEVDecimalCorrected
                                 : d.minPriceExclMEVDecimalCorrected
                         );
@@ -657,69 +683,100 @@ function TradeCandleStickChart(props: propsIF) {
                 prevFirsCandle &&
                 firtCandleTimeState
             ) {
-                const domain = scaleData.xScale.domain();
+                const isShowLatestCandle = candleScale?.isShowLatestCandle;
+                // If the last candle is displayed, chart scale according to default values when switch timeframe
+                if (isShowLatestCandle) {
+                    resetChart();
+                } else {
+                    const domain = scaleData.xScale.domain();
 
-                const diffDomain = Math.abs(domain[1] - domain[0]);
-                const factorDomain = diffDomain / (prevPeriod * 1000);
+                    const diffDomain = Math.abs(domain[1] - domain[0]);
+                    const factorDomain = diffDomain / (prevPeriod * 1000);
 
-                const domainCenter =
-                    Math.max(domain[1], domain[0]) - diffDomain / 2;
+                    const domainCenter =
+                        Math.max(domain[1], domain[0]) - diffDomain / 2;
 
-                const newDiffDomain = period * 1000 * factorDomain;
+                    const newDiffDomain = period * 1000 * factorDomain;
 
-                const d1 = domainCenter + newDiffDomain / 2;
-                const d0 = domainCenter - newDiffDomain / 2;
+                    const d1 = domainCenter + newDiffDomain / 2;
+                    const d0 = domainCenter - newDiffDomain / 2;
 
-                const domainRight =
-                    domain[1] < Date.now()
-                        ? d1
-                        : Date.now() + (newDiffDomain / 10) * 3;
-                const domainLeft =
-                    domain[1] < Date.now()
-                        ? d0
-                        : Date.now() - (newDiffDomain / 10) * 7;
+                    const domainRight =
+                        domain[1] < Date.now()
+                            ? d1
+                            : Date.now() + (newDiffDomain / 10) * 3;
+                    const domainLeft =
+                        domain[1] < Date.now()
+                            ? d0
+                            : Date.now() - (newDiffDomain / 10) * 7;
 
-                const fethcingCandles =
-                    domainRight > Date.now() ? Date.now() : domainRight;
+                    const fethcingCandles =
+                        domainRight > Date.now() ? Date.now() : domainRight;
+                    const nowDate = Date.now();
 
-                scaleData.xScale.domain([domainLeft, domainRight]);
+                    const snapDiff = nowDate % (period * 1000);
+                    const snappedTime = nowDate + (period * 1000 - snapDiff);
 
-                const minDate = 1657868400; // 15 July 2022
+                    const isShowLatestCandle =
+                        domainLeft < snappedTime && snappedTime < domainRight;
 
-                let firstTime = Math.floor(fethcingCandles / 1000);
+                    const minDate = 1657868400; // 15 July 2022
 
-                if (firstTime > minDate && fethcingCandles > domainLeft) {
-                    let nCandles = Math.floor(
-                        (fethcingCandles - domainLeft) / (period * 1000),
-                    );
+                    let firstTime = Math.floor(fethcingCandles / 1000);
 
-                    if (nCandles < 139) {
-                        const nDiffFirstTime = Math.floor(
-                            (Date.now() - firstTime * 1000) / (period * 1000),
+                    if (
+                        firstTime > minDate &&
+                        fethcingCandles > domainLeft &&
+                        isChangeScaleChart &&
+                        !isShowLatestCandle
+                    ) {
+                        scaleData.xScale.domain([domainLeft, domainRight]);
+
+                        let nCandles = Math.floor(
+                            (fethcingCandles - domainLeft) / (period * 1000),
                         );
 
-                        const tempFirstTime =
-                            firstTime + period * nDiffFirstTime;
-                        if (nDiffFirstTime < 139 && nCandles > 5) {
-                            firstTime = tempFirstTime;
-                            nCandles = nCandles + (nDiffFirstTime + 100);
-                        } else {
-                            firstTime = firstTime + period * 100;
-                            nCandles = 200;
-                        }
-                    }
+                        if (nCandles < 139) {
+                            const nDiffFirstTime = Math.floor(
+                                (Date.now() - firstTime * 1000) /
+                                    (period * 1000),
+                            );
 
-                    setCandleScale((prev: candleScale) => {
-                        return {
-                            isFetchForTimeframe: !prev.isFetchForTimeframe,
-                            lastCandleDate: firstTime,
-                            nCandles: nCandles,
-                            isShowLatestCandle: false,
-                        };
-                    });
-                } else {
-                    // resets the graph if the calculated domain is less than the value with min time
-                    resetChart();
+                            const tempFirstTime =
+                                firstTime + period * nDiffFirstTime;
+                            if (nDiffFirstTime < 139 && nCandles > 5) {
+                                firstTime = tempFirstTime;
+                                nCandles = nCandles + (nDiffFirstTime + 100);
+                            } else {
+                                const nowDateSeconds = Math.floor(
+                                    nowDate / 1000,
+                                );
+                                firstTime = firstTime + period * 100;
+
+                                if (firstTime > nowDateSeconds) {
+                                    firstTime = nowDateSeconds;
+                                }
+                                nCandles =
+                                    Math.floor(
+                                        Math.abs(
+                                            firstTime - domainLeft / 1000,
+                                        ) / period,
+                                    ) + 10;
+                            }
+                        }
+
+                        setCandleScale((prev: CandleScaleIF) => {
+                            return {
+                                isFetchForTimeframe: !prev.isFetchForTimeframe,
+                                lastCandleDate: firstTime,
+                                nCandles: nCandles,
+                                isShowLatestCandle: false,
+                            };
+                        });
+                    } else {
+                        // resets the graph if the calculated domain is less than the value with min time
+                        resetChart();
+                    }
                 }
             }
             setPrevFirsCandle(() => firtCandleTimeState);
@@ -727,37 +784,51 @@ function TradeCandleStickChart(props: propsIF) {
         }
     }, [period, diffHashSig(unparsedCandleData)]);
 
+    // If the last candle is displayed, chart scale according to default values when switch pool
+    useEffect(() => {
+        if (candleScale.isShowLatestCandle) {
+            const timer = setTimeout(() => {
+                resetChart();
+            }, 300);
+
+            return () => clearTimeout(timer);
+        }
+    }, [baseTokenAddress + quoteTokenAddress]);
+
     const resetChart = () => {
-        const nowDate = Date.now();
+        if (scaleData && unparsedCandleData) {
+            const localInitialDisplayCandleCount =
+                getInitialDisplayCandleCount(mobileView);
+            const nowDate = Date.now();
 
-        const snapDiff = nowDate % (period * 1000);
+            const snapDiff = nowDate % (period * 1000);
+            const snappedTime = nowDate + (period * 1000 - snapDiff);
 
-        const snappedTime =
-            nowDate -
-            (snapDiff > period * 1000 - snapDiff
-                ? -1 * (period * 1000 - snapDiff)
-                : snapDiff);
+            const centerX = snappedTime;
+            const diff =
+                (localInitialDisplayCandleCount * period * 1000) / xAxisBuffer;
 
-        const minDomain = snappedTime - 100 * 1000 * period;
-        const maxDomain = snappedTime + 39 * 1000 * period;
+            scaleData?.xScale.domain([
+                centerX - diff * xAxisBuffer,
+                centerX + diff * (1 - xAxisBuffer),
+            ]);
 
-        scaleData?.xScale.domain([minDomain, maxDomain]);
-
-        setCandleScale((prev: candleScale) => {
-            return {
-                isFetchForTimeframe: !prev.isFetchForTimeframe,
-                lastCandleDate: undefined,
-                nCandles: 200,
-                isShowLatestCandle: true,
-            };
-        });
+            setCandleScale((prev: CandleScaleIF) => {
+                return {
+                    isFetchForTimeframe: !prev.isFetchForTimeframe,
+                    lastCandleDate: undefined,
+                    nCandles: 200,
+                    isShowLatestCandle: true,
+                };
+            });
+        }
     };
     // resetting Chart
     useEffect(() => {
-        if (isCandleDataNull && scaleData) {
+        if (scaleData) {
             resetChart();
         }
-    }, [isCandleDataNull]);
+    }, [isCandleDataNull, scaleData === undefined]);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -801,7 +872,7 @@ function TradeCandleStickChart(props: propsIF) {
                         isTokenABase={isTokenABase}
                         liquidityData={liquidityData}
                         changeState={props.changeState}
-                        denomInBase={denominationsInBase}
+                        denomInBase={isDenomBase}
                         chartItemStates={props.chartItemStates}
                         setCurrentData={props.setCurrentData}
                         setCurrentVolumeData={props.setCurrentVolumeData}
@@ -826,6 +897,8 @@ function TradeCandleStickChart(props: propsIF) {
                         liquidityDepthScale={liquidityDepthScale}
                         candleTime={chartSettings.candleTime.global}
                         unparsedData={candleData}
+                        updateURL={updateURL}
+                        userTransactionData={userTransactionData}
                     />
                 ) : (
                     <Spinner size={100} bg='var(--dark2)' centered />

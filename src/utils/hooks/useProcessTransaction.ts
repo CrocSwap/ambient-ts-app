@@ -1,12 +1,13 @@
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
-import trimString from '../../utils/functions/trimString';
-import { getMoneynessRank } from '../functions/getMoneynessRank';
-import { TransactionIF } from '../../utils/interfaces/exports';
-import { getChainExplorer } from '../data/chains';
+import {
+    getChainExplorer,
+    getUnicodeCharacter,
+    trimString,
+    getMoneynessRank,
+    getElapsedTime,
+    getFormattedNumber,
+} from '../../ambient-utils/dataLayer';
+import { TransactionIF } from '../../ambient-utils/types';
 import moment from 'moment';
-import { getElapsedTime } from '../../App/functions/getElapsedTime';
-import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { getAddress } from 'ethers/lib/utils.js';
 import {
     toDisplayPrice,
@@ -14,26 +15,44 @@ import {
     priceHalfBelowTick,
 } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { useContext } from 'react';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { useFetchBatch } from '../../App/hooks/useFetchBatch';
+import { UserDataContext } from '../../contexts/UserDataContext';
 
 export const useProcessTransaction = (
     tx: TransactionIF,
     account = '',
     isAccountView = false,
 ) => {
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB, isDenomBase } = useContext(TradeDataContext);
+    const { ensName: ensNameConnectedUser } = useContext(UserDataContext);
     const blockExplorer = getChainExplorer(tx.chainId);
 
-    const isDenomBase = tradeData.isDenomBase;
-
     const txHash = tx.txHash;
+
+    // TODO: clarify if this should also preferentially show ENS address
     const ownerId = tx.user ? getAddress(tx.user) : '';
 
-    const ensName = tx.ensResolution ? tx.ensResolution : null;
     const isOwnerActiveAccount =
         ownerId.toLowerCase() === account?.toLowerCase();
 
-    const tokenAAddress = tradeData.tokenA.address;
-    const tokenBAddress = tradeData.tokenB.address;
+    /* eslint-disable-next-line camelcase */
+    const body = { config_path: 'ens_address', address: tx.user };
+    const { data, error } = useFetchBatch<'ens_address'>(body);
+
+    let ensAddress = null;
+    if (data && !error) {
+        // prevent showing ens address if it is the same as the connected user due to async issue when switching tables
+        ensAddress =
+            data.ens_address !== ensNameConnectedUser
+                ? data.ens_address
+                : undefined;
+    }
+    const ensName = ensAddress || tx.ensResolution || null;
+
+    const tokenAAddress = tokenA.address;
+    const tokenBAddress = tokenB.address;
 
     const transactionBaseAddressLowerCase = tx.base.toLowerCase();
     const transactionQuoteAddressLowerCase = tx.quote.toLowerCase();
@@ -42,9 +61,7 @@ export const useProcessTransaction = (
     const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
 
     const isBaseTokenMoneynessGreaterOrEqual =
-        getMoneynessRank(tx.base.toLowerCase() + '_' + tx.chainId) -
-            getMoneynessRank(tx.quote.toLowerCase() + '_' + tx.chainId) >=
-        0;
+        getMoneynessRank(tx.baseSymbol) - getMoneynessRank(tx.quoteSymbol) >= 0;
 
     const baseTokenSymbol = tx.baseSymbol;
     const quoteTokenSymbol = tx.quoteSymbol;
@@ -303,12 +320,12 @@ export const useProcessTransaction = (
 
     const usdValueString = getFormattedNumber({
         value: usdValueNum,
-        isUSD: true,
+        prefix: '$',
     });
 
     const totalFlowUSD = getFormattedNumber({
         value: totalFlowAbsNum,
-        isUSD: true,
+        prefix: '$',
     });
 
     // --------------------------------------------------------
@@ -327,7 +344,7 @@ export const useProcessTransaction = (
         ? ensName.length > 16
             ? trimString(ensName, 11, 3, '…')
             : ensName
-        : trimString(ownerId, 5, 4, '…');
+        : trimString(ownerId, 6, 4, '…');
 
     const txHashTruncated = trimString(txHash, 9, 0, '…');
 

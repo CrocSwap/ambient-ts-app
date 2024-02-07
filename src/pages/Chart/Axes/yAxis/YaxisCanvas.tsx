@@ -1,7 +1,13 @@
-import { useEffect, useRef, useState, MouseEvent, memo } from 'react';
+import {
+    useEffect,
+    useRef,
+    useState,
+    MouseEvent,
+    memo,
+    useContext,
+} from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useLocation } from 'react-router-dom';
 import {
     formatAmountChartData,
@@ -12,19 +18,22 @@ import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
 import {
     diffHashSig,
     diffHashSigScaleData,
-} from '../../../../utils/functions/diffHashSig';
+    getFormattedNumber,
+} from '../../../../ambient-utils/dataLayer';
 import {
     crosshair,
     fillLiqAdvanced,
+    getXandYLocationForChart,
     lineValue,
     liquidityChartData,
     renderCanvasArray,
     renderSubchartCrCanvas,
     scaleData,
+    selectedDrawnData,
     setCanvasResolution,
     standardDeviation,
 } from '../../ChartUtils/chartUtils';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { RangeContext } from '../../../../contexts/RangeContext';
 
 interface yAxisIF {
     scaleData: scaleData | undefined;
@@ -60,6 +69,8 @@ interface yAxisIF {
     simpleRangeWidth: number;
     poolPriceDisplay: number;
     isChartZoom: boolean;
+    isUpdatingShape: boolean;
+    selectedDrawnShape: selectedDrawnData | undefined;
 }
 
 type yLabel = {
@@ -100,6 +111,8 @@ function YAxisCanvas(props: yAxisIF) {
         simpleRangeWidth,
         poolPriceDisplay,
         isChartZoom,
+        selectedDrawnShape,
+        isUpdatingShape,
     } = props;
 
     const d3Yaxis = useRef<HTMLInputElement | null>(null);
@@ -114,7 +127,7 @@ function YAxisCanvas(props: yAxisIF) {
 
     const [yAxisCanvasWidth, setYaxisCanvasWidth] = useState(70);
 
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const { advancedMode } = useContext(RangeContext);
 
     const location = useLocation();
 
@@ -263,6 +276,7 @@ function YAxisCanvas(props: yAxisIF) {
 
         if (canvas !== null) {
             const height = canvas.height;
+            const width = canvas.width;
 
             const factor = height < 500 ? 5 : height.toString().length * 2;
 
@@ -386,7 +400,7 @@ function YAxisCanvas(props: yAxisIF) {
                         : liqTransitionPointforDepth
                     : poolPriceDisplay;
 
-                if (simpleRangeWidth !== 100 || tradeData.advancedMode) {
+                if (simpleRangeWidth !== 100 || advancedMode) {
                     const isScientificlowTick = low.toString().includes('e');
 
                     let lowTick = getFormattedNumber({
@@ -473,12 +487,14 @@ function YAxisCanvas(props: yAxisIF) {
                 const { isSameLocation, sameLocationData } =
                     sameLocationLimit();
 
-                const isScientificLimitTick = limit.toString().includes('e');
-
                 let limitTick = getFormattedNumber({
                     value: limit,
                     abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
                 }).replace(',', '');
+
+                const isScientificLimitTick = limitTick
+                    .toString()
+                    .includes('e');
 
                 let limitSubString = undefined;
 
@@ -530,7 +546,73 @@ function YAxisCanvas(props: yAxisIF) {
                 );
             }
 
-            if (crosshairActive === 'chart') {
+            if (selectedDrawnShape) {
+                const shapeData = selectedDrawnShape.data;
+
+                shapeData.data.forEach((data) => {
+                    const shapeDataWithDenom =
+                        data.denomInBase === denomInBase ? data.y : 1 / data.y;
+
+                    const isScientificShapeTick = shapeDataWithDenom
+                        .toString()
+                        .includes('e');
+
+                    let shapePointSubString = undefined;
+                    const shapePoint =
+                        data.denomInBase === denomInBase
+                            ? Number(data.y.toString())
+                            : 1 / Number(data.y.toString());
+
+                    let shapePointTick = getFormattedNumber({
+                        value: shapePoint,
+                        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                    }).replace(',', '');
+                    if (isScientificShapeTick) {
+                        const splitNumber = data.y.toString().split('e');
+
+                        shapePointSubString =
+                            Math.abs(Number(splitNumber[1])) -
+                            (splitNumber.includes('.') ? 2 : 1);
+
+                        const textScientificArray = shapePointTick.split('0.0');
+                        shapePointTick = textScientificArray[1].slice(1, 4);
+                    }
+
+                    const secondPointInDenom =
+                        shapeData.data[1].denomInBase === denomInBase
+                            ? shapeData.data[1].y
+                            : 1 / shapeData.data[1].y;
+                    const firstPointInDenom =
+                        shapeData.data[0].denomInBase === denomInBase
+                            ? shapeData.data[0].y
+                            : 1 / shapeData.data[0].y;
+
+                    const rectHeight =
+                        yScale(secondPointInDenom) - yScale(firstPointInDenom);
+
+                    context.fillStyle = 'rgba(115, 113, 252, 0.075)';
+                    context.fillRect(
+                        0,
+                        yScale(firstPointInDenom),
+                        width,
+                        rectHeight,
+                    );
+
+                    createRectLabel(
+                        context,
+                        yScale(shapePoint),
+                        X,
+                        'rgba(115, 113, 252, 1)',
+                        'white',
+                        shapePointTick,
+                        undefined,
+                        yAxisCanvasWidth,
+                        shapePointSubString,
+                    );
+                });
+            }
+
+            if (crosshairActive === 'chart' && !isUpdatingShape) {
                 const isScientificCrTick = crosshairData[0].y
                     .toString()
                     .includes('e');
@@ -749,7 +831,7 @@ function YAxisCanvas(props: yAxisIF) {
                             }
                         }
                     });
-                    if (tradeData.advancedMode && liquidityData) {
+                    if (advancedMode && liquidityData) {
                         const liqAllBidPrices = liquidityData?.liqBidData.map(
                             (liqData: LiquidityDataLocal) => liqData.liqPrices,
                         );
@@ -774,13 +856,20 @@ function YAxisCanvas(props: yAxisIF) {
                 })
                 .filter((event) => {
                     const isWheel = event.type === 'wheel';
+                    const { offsetY } = getXandYLocationForChart(
+                        event,
+                        rectCanvas,
+                    );
 
                     const isLabel =
                         yAxisLabels?.find((element: yLabel) => {
-                            return (
-                                event.offsetY > element?.y &&
-                                event.offsetY < element?.y + element?.height
-                            );
+                            if (offsetY !== undefined) {
+                                return (
+                                    offsetY > element?.y &&
+                                    offsetY < element?.y + element?.height
+                                );
+                            }
+                            return false;
                         }) !== undefined;
 
                     return !isLabel || isWheel;
@@ -794,6 +883,7 @@ function YAxisCanvas(props: yAxisIF) {
         diffHashSigScaleData(scaleData, 'y'),
         liquidityData?.liqBidData,
         isChartZoom,
+        isLineDrag,
     ]);
 
     useEffect(() => {
@@ -806,12 +896,13 @@ function YAxisCanvas(props: yAxisIF) {
                 d3.select(d3Yaxis.current).on('.drag', null);
             }
             if (
-                location.pathname.includes('pool') ||
-                location.pathname.includes('reposition')
+                (location.pathname.includes('pool') ||
+                    location.pathname.includes('reposition')) &&
+                !isLineDrag
             ) {
                 d3.select(d3Yaxis.current).call(dragRange);
             }
-            if (location.pathname.includes('/limit')) {
+            if (location.pathname.includes('/limit') && !isLineDrag) {
                 d3.select(d3Yaxis.current).call(dragLimit);
             }
             renderCanvasArray([d3Yaxis]);
@@ -864,6 +955,8 @@ function YAxisCanvas(props: yAxisIF) {
         checkLimitOrder,
         location,
         crosshairActive,
+        selectedDrawnShape,
+        isUpdatingShape,
     ]);
 
     function addYaxisLabel(y: number) {
@@ -886,7 +979,7 @@ function YAxisCanvas(props: yAxisIF) {
         d3.select(d3Yaxis.current).on('mouseover', () => {
             setCrosshairActive('none');
         });
-    }, [denomInBase, liqMode, location.pathname, tradeData.advancedMode]);
+    }, [denomInBase, liqMode, location.pathname, advancedMode]);
 
     return (
         <d3fc-canvas
@@ -895,7 +988,7 @@ function YAxisCanvas(props: yAxisIF) {
             ref={d3Yaxis}
             style={{
                 width: yAxisWidth,
-                gridColumn: 4,
+                gridColumn: 5,
                 gridRow: 3,
             }}
         ></d3fc-canvas>

@@ -1,12 +1,12 @@
 import SidebarLimitOrdersCard from './SidebarLimitOrdersCard';
 import { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
-import { LimitOrderIF } from '../../../../utils/interfaces/exports';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { LimitOrderIF } from '../../../../ambient-utils/types';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import {
+    limitParamsIF,
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
@@ -16,6 +16,7 @@ import {
     ItemsContainer,
     ViewMoreFlex,
 } from '../../../../styled/Components/Sidebar';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 interface propsIF {
     limitOrderByUser?: LimitOrderIF[];
@@ -24,15 +25,13 @@ interface propsIF {
 export default function SidebarLimitOrders(props: propsIF) {
     const { limitOrderByUser } = props;
 
-    const { isLoggedIn: isUserConnected } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { isUserConnected } = useContext(UserDataContext);
 
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const {
-        setCurrentPositionActive,
+        setCurrentLimitOrderActive,
         setShowAllData,
         setOutsideControl,
         setSelectedOutsideTab,
@@ -59,13 +58,18 @@ export default function SidebarLimitOrders(props: propsIF) {
     const handleLimitOrderClick = (limitOrder: LimitOrderIF) => {
         setOutsideControl(true);
         setSelectedOutsideTab(1);
-        setCurrentPositionActive(limitOrder.limitOrderId);
+        setCurrentLimitOrderActive(limitOrder.limitOrderId);
         setShowAllData(false);
-        linkGenLimit.navigate({
+        const { base, quote, isBid, bidTick, askTick } = limitOrder;
+        // URL params for link to limit page
+        const limitLinkParams: limitParamsIF = {
             chain: chainId,
-            tokenA: limitOrder.base,
-            tokenB: limitOrder.quote,
-        });
+            tokenA: base,
+            tokenB: quote,
+            limitTick: isBid ? bidTick : askTick,
+        };
+        // navigate user to limit page with URL params defined above
+        linkGenLimit.navigate(limitLinkParams);
     };
 
     const handleViewMoreClick = () => {

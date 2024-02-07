@@ -1,6 +1,6 @@
 import { Results } from '../../../../../styled/Components/Sidebar';
-import { TransactionIF } from '../../../../../utils/interfaces/exports';
-import { getFormattedNumber } from '../../../../functions/getFormattedNumber';
+import { TransactionIF } from '../../../../../ambient-utils/types';
+import { getFormattedNumber } from '../../../../../ambient-utils/dataLayer';
 import { EntityType, getTxType } from '../../../../functions/getTxType';
 
 interface propsIF {
@@ -15,7 +15,10 @@ export default function TxLI(props: propsIF) {
     const txType = getTxType(tx.entityType as EntityType);
 
     // value of transaction in human-readable format
-    const txValue = getFormattedNumber({ value: tx.totalValueUSD });
+    const txValue = getFormattedNumber({
+        value: tx.totalValueUSD,
+        prefix: '$',
+    });
 
     // TODO:   @Junior  please refactor the top-level element of this JSX return
     // TODO:   @Junior  ... to return an <li> element, and refactor parent to

@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
-import { TokenIF } from '../../utils/interfaces/exports';
+import { TokenIF } from '../../ambient-utils/types';
 import { tokenMethodsIF } from './useTokens';
-import { tokenListURIs } from '../../utils/data/tokenListURIs';
-import { ZERO_ADDRESS } from '../../constants';
-import { USDC } from '../../utils/tokens/exports';
-import removeWrappedNative from '../../utils/functions/removeWrappedNative';
+import { ZERO_ADDRESS, tokenListURIs } from '../../ambient-utils/constants';
+import {
+    removeWrappedNative,
+    isUsdcToken,
+} from '../../ambient-utils/dataLayer';
 
 export const useTokenSearch = (
     chainId: string,
@@ -181,15 +182,9 @@ export const useTokenSearch = (
                     // declare an output variable
                     let priority: number;
                     // canonical token addresses to assign probability
-                    const addresses = {
-                        nativeToken: ZERO_ADDRESS,
-                        USDC: USDC[
-                            chainId.toLowerCase() as keyof typeof USDC
-                        ].toLowerCase(),
-                    };
                     if (tknAddress === ZERO_ADDRESS) {
                         priority = 100;
-                    } else if (tknAddress === addresses.USDC) {
+                    } else if (isUsdcToken(tknAddress)) {
                         priority = 90;
                     } else if (
                         walletTknAddresses.includes(tkn.address.toLowerCase())

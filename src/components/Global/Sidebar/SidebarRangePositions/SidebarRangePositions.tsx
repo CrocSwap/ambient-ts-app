@@ -1,7 +1,6 @@
 import SidebarRangePositionsCard from './SidebarRangePositionsCard';
-import { PositionIF } from '../../../../utils/interfaces/exports';
+import { PositionIF } from '../../../../ambient-utils/types';
 import { useLocation } from 'react-router-dom';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
@@ -9,6 +8,7 @@ import { useContext } from 'react';
 import {
     useLinkGen,
     linkGenMethodsIF,
+    poolParamsIF,
 } from '../../../../utils/hooks/useLinkGen';
 import { FlexContainer } from '../../../../styled/Common';
 import {
@@ -16,6 +16,7 @@ import {
     RangeHeaderGrid,
     ViewMoreFlex,
 } from '../../../../styled/Components/Sidebar';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 interface propsIF {
     userPositions?: PositionIF[];
@@ -36,9 +37,7 @@ export default function SidebarRangePositions(props: propsIF) {
     const {
         sidebar: { close: closeSidebar },
     } = useContext(SidebarContext);
-    const { isLoggedIn: isUserConnected } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { isUserConnected } = useContext(UserDataContext);
 
     const location = useLocation();
 
@@ -59,13 +58,16 @@ export default function SidebarRangePositions(props: propsIF) {
     const handleRangePositionClick = (pos: PositionIF): void => {
         setOutsideControl(true);
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
-        setCurrentPositionActive(pos.firstMintTx);
+        setCurrentPositionActive(pos.positionId);
         setShowAllData(false);
-        linkGenPool.navigate({
+        // URL params for link to pool page
+        const poolLinkParams: poolParamsIF = {
             chain: chainId,
             tokenA: pos.base,
             tokenB: pos.quote,
-        });
+        };
+        // navigate user to pool page with URL params defined above
+        linkGenPool.navigate(poolLinkParams);
     };
 
     const handleViewMoreClick = () => {

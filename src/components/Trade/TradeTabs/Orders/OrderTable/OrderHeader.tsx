@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useMemo } from 'react';
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
-import { IS_LOCAL_ENV } from '../../../../../constants';
+import { IS_LOCAL_ENV } from '../../../../../ambient-utils/constants';
 import { LimitSortType } from '../../useSortedLimits';
 import { FlexContainer, Text } from '../../../../../styled/Common';
 

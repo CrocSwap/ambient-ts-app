@@ -1,9 +1,6 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { ZERO_ADDRESS } from '../../../../constants';
-import { testTokenMap } from '../../../../utils/data/testTokenMap';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 import './TransactionDetailsGraph.css';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
@@ -13,13 +10,15 @@ import {
     formatPoolPriceAxis,
 } from '../../../../utils/numbers';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import { fetchCandleSeriesCroc } from '../../../../App/functions/fetchCandleSeries';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
+import { fetchCandleSeriesCroc } from '../../../../ambient-utils/api';
 import moment from 'moment';
 import {
     renderCanvasArray,
     setCanvasResolution,
 } from '../../../../pages/Chart/ChartUtils/chartUtils';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { useMediaQuery } from '@material-ui/core';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -38,7 +37,7 @@ export default function TransactionDetailsGraph(
         isBaseTokenMoneynessGreaterOrEqual,
         isAccountView,
     } = props;
-    const { chainData, crocEnv } = useContext(CrocEnvContext);
+    const { chainData, crocEnv, activeNetwork } = useContext(CrocEnvContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const oneHourMiliseconds = 60 * 60 * 1000;
 
@@ -47,32 +46,10 @@ export default function TransactionDetailsGraph(
             ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
             : true;
 
-    // const tradeData = useAppSelector((state) => state.tradeData);
-
     const baseTokenAddress = tx.base;
     const quoteTokenAddress = tx.quote;
 
-    const chainId = tx.chainId;
-
-    const tradeData = useAppSelector((state) => state.tradeData);
-    const denominationsInBase = tradeData.isDenomBase;
-
-    const mainnetBaseTokenAddress =
-        chainId === '0x1'
-            ? baseTokenAddress
-            : baseTokenAddress === ZERO_ADDRESS
-            ? baseTokenAddress
-            : testTokenMap
-                  .get(baseTokenAddress.toLowerCase() + '_' + chainId)
-                  ?.split('_')[0];
-    const mainnetQuoteTokenAddress =
-        chainId === '0x1'
-            ? quoteTokenAddress
-            : quoteTokenAddress === ZERO_ADDRESS
-            ? quoteTokenAddress
-            : testTokenMap
-                  .get(quoteTokenAddress.toLowerCase() + '_' + chainId)
-                  ?.split('_')[0];
+    const { isDenomBase } = useContext(TradeDataContext);
 
     const [graphData, setGraphData] = useState<any>();
 
@@ -113,15 +90,14 @@ export default function TransactionDetailsGraph(
         chainData &&
         isServerEnabled &&
         baseTokenAddress &&
-        quoteTokenAddress &&
-        mainnetBaseTokenAddress &&
-        mainnetQuoteTokenAddress
+        quoteTokenAddress
     );
 
     const [isDataEmpty, setIsDataEmpty] = useState(false);
     const [isDataLoading, setIsDataLoading] = useState(false);
     const [isDataTakingTooLongToFetch, setIsDataTakingTooLongToFetch] =
         useState(false);
+    const mobileView = useMediaQuery('(min-width: 800px)');
 
     useEffect(() => {
         let timeoutId: NodeJS.Timeout;
@@ -202,6 +178,7 @@ export default function TransactionDetailsGraph(
                         const graphData = await fetchCandleSeriesCroc(
                             fetchEnabled,
                             chainData,
+                            activeNetwork.graphCacheUrl,
                             period,
                             baseTokenAddress,
                             quoteTokenAddress,
@@ -242,7 +219,7 @@ export default function TransactionDetailsGraph(
                 .mainValue((d: any) =>
                     (
                         !isAccountView
-                            ? denominationsInBase
+                            ? isDenomBase
                             : !isBaseTokenMoneynessGreaterOrEqual
                     )
                         ? d.invPriceCloseExclMEVDecimalCorrected
@@ -401,7 +378,7 @@ export default function TransactionDetailsGraph(
         }
     }, [
         scaleData,
-        denominationsInBase,
+        isDenomBase,
         isAccountView,
         !isBaseTokenMoneynessGreaterOrEqual,
     ]);
@@ -414,7 +391,7 @@ export default function TransactionDetailsGraph(
                     (d: any) =>
                         (
                             !isAccountView
-                                ? denominationsInBase
+                                ? isDenomBase
                                 : !isBaseTokenMoneynessGreaterOrEqual
                         )
                             ? d.invPriceCloseExclMEVDecimalCorrected
@@ -445,14 +422,14 @@ export default function TransactionDetailsGraph(
                     const lowBoundary = Math.min(
                         (
                             !isAccountView
-                                ? denominationsInBase
+                                ? isDenomBase
                                 : !isBaseTokenMoneynessGreaterOrEqual
                         )
                             ? tx.askTickInvPriceDecimalCorrected
                             : tx.askTickPriceDecimalCorrected,
                         (
                             !isAccountView
-                                ? denominationsInBase
+                                ? isDenomBase
                                 : !isBaseTokenMoneynessGreaterOrEqual
                         )
                             ? tx.bidTickInvPriceDecimalCorrected
@@ -461,14 +438,14 @@ export default function TransactionDetailsGraph(
                     const topBoundary = Math.max(
                         (
                             !isAccountView
-                                ? denominationsInBase
+                                ? isDenomBase
                                 : !isBaseTokenMoneynessGreaterOrEqual
                         )
                             ? tx.askTickInvPriceDecimalCorrected
                             : tx.askTickPriceDecimalCorrected,
                         (
                             !isAccountView
-                                ? denominationsInBase
+                                ? isDenomBase
                                 : !isBaseTokenMoneynessGreaterOrEqual
                         )
                             ? tx.bidTickInvPriceDecimalCorrected
@@ -495,14 +472,14 @@ export default function TransactionDetailsGraph(
                     const lowBoundary = Math.min(
                         (
                             !isAccountView
-                                ? denominationsInBase
+                                ? isDenomBase
                                 : !isBaseTokenMoneynessGreaterOrEqual
                         )
                             ? tx.askTickInvPriceDecimalCorrected
                             : tx.askTickPriceDecimalCorrected,
                         (
                             !isAccountView
-                                ? denominationsInBase
+                                ? isDenomBase
                                 : !isBaseTokenMoneynessGreaterOrEqual
                         )
                             ? tx.bidTickInvPriceDecimalCorrected
@@ -511,14 +488,14 @@ export default function TransactionDetailsGraph(
                     const topBoundary = Math.max(
                         (
                             !isAccountView
-                                ? denominationsInBase
+                                ? isDenomBase
                                 : !isBaseTokenMoneynessGreaterOrEqual
                         )
                             ? tx.askTickInvPriceDecimalCorrected
                             : tx.askTickPriceDecimalCorrected,
                         (
                             !isAccountView
-                                ? denominationsInBase
+                                ? isDenomBase
                                 : !isBaseTokenMoneynessGreaterOrEqual
                         )
                             ? tx.bidTickInvPriceDecimalCorrected
@@ -607,7 +584,10 @@ export default function TransactionDetailsGraph(
             context.textBaseline = 'top';
             context.fillStyle = 'rgba(189,189,189,0.6)';
             context.font = '10px Lexend Deca';
-            const tickTempValues = scaleData.xScale.ticks(7);
+
+            const factor = mobileView ? 7 : 5;
+
+            const tickTempValues = scaleData.xScale.ticks(factor);
 
             tickTempValues.map((tick: any) => {
                 if (
@@ -687,8 +667,10 @@ export default function TransactionDetailsGraph(
         if (canvas !== null) {
             const height = canvas.height;
 
-            const factor = height < 500 ? 6 : height.toString().length * 2;
-
+            let factor = height < 500 ? 6 : height.toString().length * 2;
+            if (!mobileView) {
+                factor = 5;
+            }
             context.stroke();
             context.textAlign = 'center';
             context.textBaseline = 'middle';
@@ -920,14 +902,14 @@ export default function TransactionDetailsGraph(
                                 horizontalBandData[0] = [
                                     (
                                         !isAccountView
-                                            ? denominationsInBase
+                                            ? isDenomBase
                                             : !isBaseTokenMoneynessGreaterOrEqual
                                     )
                                         ? tx.bidTickInvPriceDecimalCorrected
                                         : tx.bidTickPriceDecimalCorrected,
                                     (
                                         !isAccountView
-                                            ? denominationsInBase
+                                            ? isDenomBase
                                             : !isBaseTokenMoneynessGreaterOrEqual
                                     )
                                         ? tx.askTickInvPriceDecimalCorrected
@@ -951,7 +933,7 @@ export default function TransactionDetailsGraph(
                                                 : tx.txTime * 1000,
                                             y: (
                                                 !isAccountView
-                                                    ? denominationsInBase
+                                                    ? isDenomBase
                                                     : !isBaseTokenMoneynessGreaterOrEqual
                                             )
                                                 ? tx.askTickInvPriceDecimalCorrected
@@ -964,7 +946,7 @@ export default function TransactionDetailsGraph(
                                     {
                                         y: (
                                             !isAccountView
-                                                ? denominationsInBase
+                                                ? isDenomBase
                                                 : !isBaseTokenMoneynessGreaterOrEqual
                                         )
                                             ? tx.askTickInvPriceDecimalCorrected
@@ -991,7 +973,7 @@ export default function TransactionDetailsGraph(
                             if (tx.positionType !== 'ambient') {
                                 const bidLine = (
                                     !isAccountView
-                                        ? denominationsInBase
+                                        ? isDenomBase
                                         : !isBaseTokenMoneynessGreaterOrEqual
                                 )
                                     ? tx.bidTickInvPriceDecimalCorrected
@@ -999,7 +981,7 @@ export default function TransactionDetailsGraph(
 
                                 const askLine = (
                                     !isAccountView
-                                        ? denominationsInBase
+                                        ? isDenomBase
                                         : !isBaseTokenMoneynessGreaterOrEqual
                                 )
                                     ? tx.askTickInvPriceDecimalCorrected
@@ -1037,7 +1019,7 @@ export default function TransactionDetailsGraph(
                                         x: tx.txTime * 1000,
                                         y: (
                                             !isAccountView
-                                                ? denominationsInBase
+                                                ? isDenomBase
                                                 : !isBaseTokenMoneynessGreaterOrEqual
                                         )
                                             ? tx.swapInvPriceDecimalCorrected
@@ -1067,12 +1049,13 @@ export default function TransactionDetailsGraph(
 
     const chartRender = (
         <div
-            className='main_layout_chart'
+            className='transaction_details_graph'
             ref={graphMainDiv}
             data-testid={'chart'}
             style={{
                 height: '100%',
                 width: '100%',
+                padding: '3px',
             }}
         >
             <div
@@ -1092,7 +1075,7 @@ export default function TransactionDetailsGraph(
                 <d3fc-canvas
                     className='y-axis'
                     ref={d3Yaxis}
-                    style={{ width: '10%' }}
+                    style={{ width: mobileView ? '10%' : '15%' }}
                 ></d3fc-canvas>
             </div>
             <d3fc-canvas

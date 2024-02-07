@@ -1,11 +1,12 @@
 import styles from './ConfirmRepositionModal.module.css';
-import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+import { PositionIF } from '../../../../ambient-utils/types';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import SelectedRange from '../../Range/ConfirmRangeModal/SelectedRange/SelectedRange';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
-import uriToHttp from '../../../../utils/functions/uriToHttp';
+import { uriToHttp } from '../../../../ambient-utils/dataLayer';
 import TradeConfirmationSkeleton from '../../TradeModules/TradeConfirmationSkeleton';
+import { useContext, useState } from 'react';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     position: PositionIF;
@@ -14,6 +15,7 @@ interface propsIF {
     showConfirmation: boolean;
     resetConfirmation: () => void;
     txErrorCode: string;
+    txErrorMessage: string;
     minPriceDisplay: string;
     maxPriceDisplay: string;
     currentBaseQtyDisplayTruncated: string;
@@ -42,6 +44,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
         newRepositionTransactionHash,
         resetConfirmation,
         txErrorCode,
+        txErrorMessage,
         currentBaseQtyDisplayTruncated,
         currentQuoteQtyDisplayTruncated,
         newBaseQtyDisplay,
@@ -51,9 +54,15 @@ export default function ConfirmRepositionModal(props: propsIF) {
         onClose,
     } = props;
 
-    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB, isDenomBase } = useContext(TradeDataContext);
+
     const baseToken = isTokenABase ? tokenA : tokenB;
     const quoteToken = isTokenABase ? tokenB : tokenA;
+
+    const [
+        isDenomBaseLocalToRepositionConfirm,
+        setIsDenomBaseocalToRepositionConfirm,
+    ] = useState(isDenomBase);
 
     const tokenAmountDisplay = (
         <section className={styles.fee_tier_display}>
@@ -142,6 +151,8 @@ export default function ConfirmRepositionModal(props: propsIF) {
             {tokenAmountDisplay}
             {isAmbient || (
                 <SelectedRange
+                    isDenomBase={isDenomBaseLocalToRepositionConfirm}
+                    setIsDenomBase={setIsDenomBaseocalToRepositionConfirm}
                     isTokenABase={isTokenABase}
                     isAmbient={isAmbient}
                     pinnedMinPriceDisplayTruncatedInBase={
@@ -168,13 +179,14 @@ export default function ConfirmRepositionModal(props: propsIF) {
             tokenB={{ token: tokenB }}
             transactionHash={newRepositionTransactionHash}
             txErrorCode={txErrorCode}
+            txErrorMessage={txErrorMessage}
             showConfirmation={showConfirmation}
             statusText={
                 !showConfirmation
                     ? isPositionInRange
                         ? 'Position Currently In Range'
                         : 'Send Reposition'
-                    : 'Repositioning'
+                    : `Repositioning ${tokenA.symbol} and ${tokenB.symbol}`
             }
             initiate={onSend}
             resetConfirmation={resetConfirmation}

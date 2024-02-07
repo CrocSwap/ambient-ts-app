@@ -3,12 +3,10 @@ import { useEffect, useState, useContext, memo, useRef } from 'react';
 
 // START: Import Local Files
 import { Pagination } from '@mui/material';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
-import { PositionIF } from '../../../../utils/interfaces/exports';
+import { PositionIF } from '../../../../ambient-utils/types';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
-import RangesRow from './RangesTable/RangesRow';
 import NoTableData from '../NoTableData/NoTableData';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
@@ -25,6 +23,12 @@ import {
     ViewMoreButton,
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import TableRows from '../TableRows';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -51,22 +55,29 @@ function Ranges(props: propsIF) {
     const {
         chainData: { poolIndex },
     } = useContext(CrocEnvContext);
+
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
     const isTradeTableExpanded =
         !isAccountView && tradeTableState === 'Expanded';
 
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
-    const graphData = useAppSelector((state) => state?.graphData);
-    const tradeData = useAppSelector((state) => state.tradeData);
-    const { transactionsByType, pendingTransactions } = useAppSelector(
-        (state) => state.receiptData,
-    );
+    const { userAddress } = useContext(UserDataContext);
 
-    const baseTokenAddress = tradeData.baseToken.address;
-    const quoteTokenAddress = tradeData.quoteToken.address;
+    const {
+        userPositionsByPool,
+        positionsByPool,
+        unindexedNonFailedSessionPositionUpdates,
+    } = useContext(GraphDataContext);
+    const dataLoadingStatus = useContext(DataLoadingContext);
+
+    const { transactionsByType } = useContext(ReceiptContext);
+
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
+
+    const baseTokenSymbol = baseToken.symbol;
+    const quoteTokenSymbol = quoteToken.symbol;
+    const baseTokenAddress = baseToken.address;
+    const quoteTokenAddress = quoteToken.address;
 
     const [rangeData, setRangeData] = useState<PositionIF[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -80,63 +91,59 @@ function Ranges(props: propsIF) {
         if (isAccountView) setRangeData(activeAccountPositionData || []);
         else if (!showAllData)
             setRangeData(
-                graphData?.userPositionsByPool?.positions.filter(
-                    (position) =>
-                        position.base.toLowerCase() ===
-                            baseTokenAddress.toLowerCase() &&
-                        position.quote.toLowerCase() ===
-                            quoteTokenAddress.toLowerCase() &&
-                        position.positionLiq != 0,
+                userPositionsByPool?.positions.filter(
+                    (position) => position.positionLiq != 0,
                 ),
             );
         else {
-            setRangeData(graphData?.positionsByPool.positions);
+            setRangeData(positionsByPool.positions);
         }
     }, [
         showAllData,
         isAccountView,
         activeAccountPositionData,
-        graphData?.positionsByPool,
-        graphData?.userPositionsByPool,
+        positionsByPool,
+        userPositionsByPool,
     ]);
 
     useEffect(() => {
         if (isAccountView && connectedAccountActive)
-            setIsLoading(
-                graphData?.dataLoadingStatus.isConnectedUserRangeDataLoading,
-            );
+            setIsLoading(dataLoadingStatus.isConnectedUserRangeDataLoading);
         else if (isAccountView)
-            setIsLoading(
-                graphData?.dataLoadingStatus.isLookupUserRangeDataLoading,
-            );
+            setIsLoading(dataLoadingStatus.isLookupUserRangeDataLoading);
         else if (!showAllData)
-            setIsLoading(
-                graphData?.dataLoadingStatus
-                    .isConnectedUserPoolRangeDataLoading,
-            );
-        else setIsLoading(graphData?.dataLoadingStatus.isPoolRangeDataLoading);
+            setIsLoading(dataLoadingStatus.isConnectedUserPoolRangeDataLoading);
+        else setIsLoading(dataLoadingStatus.isPoolRangeDataLoading);
     }, [
         showAllData,
         isAccountView,
         connectedAccountActive,
-        graphData?.dataLoadingStatus.isConnectedUserRangeDataLoading,
-        graphData?.dataLoadingStatus.isConnectedUserPoolRangeDataLoading,
-        graphData?.dataLoadingStatus.isLookupUserRangeDataLoading,
-        graphData?.dataLoadingStatus.isPoolRangeDataLoading,
+        dataLoadingStatus.isConnectedUserRangeDataLoading,
+        dataLoadingStatus.isConnectedUserPoolRangeDataLoading,
+        dataLoadingStatus.isLookupUserRangeDataLoading,
+        dataLoadingStatus.isPoolRangeDataLoading,
     ]);
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =
         useSortedPositions('time', rangeData);
 
     // TODO: Use these as media width constants
-    const isSmallScreen = useMediaQuery('(max-width: 600px)');
-    const isLargeScreen = useMediaQuery('(min-width: 1600px)');
+    const isSmallScreen = useMediaQuery('(max-width: 700px)');
+    const isLargeScreen = useMediaQuery('(min-width: 2000px)');
+    const isLargeScreenAccount = useMediaQuery('(min-width: 1600px)');
 
     const tableView =
-        isSmallScreen || (isAccountView && !isLargeScreen && isSidebarOpen)
+        isSmallScreen ||
+        (isAccountView &&
+            connectedAccountActive &&
+            !isLargeScreenAccount &&
+            isSidebarOpen)
             ? 'small'
             : (!isSmallScreen && !isLargeScreen) ||
-              (isAccountView && isLargeScreen && isSidebarOpen)
+              (isAccountView &&
+                  connectedAccountActive &&
+                  isLargeScreenAccount &&
+                  isSidebarOpen)
             ? 'medium'
             : 'large';
 
@@ -190,8 +197,9 @@ function Ranges(props: propsIF) {
                 alignItems='center'
                 justifyContent='center'
                 gap={isSmallScreen ? 4 : 8}
-                margin='16px auto'
+                margin={isSmallScreen ? 'auto' : '16px auto'}
                 background='dark1'
+                flexDirection={isSmallScreen ? 'column' : 'row'}
             >
                 <RowsPerPageDropdown
                     rowsPerPage={rowsPerPage}
@@ -219,9 +227,6 @@ function Ranges(props: propsIF) {
                 )}
             </FlexContainer>
         );
-
-    const quoteTokenSymbol = tradeData.quoteToken?.symbol;
-    const baseTokenSymbol = tradeData.baseToken?.symbol;
 
     // Changed this to have the sort icon be inline with the last row rather than under it
     const walID = (
@@ -340,6 +345,7 @@ function Ranges(props: propsIF) {
             slug: 'apr',
             sortable: true,
             alignRight: true,
+            rightPadding: 8,
         },
         {
             name: 'Status',
@@ -347,6 +353,7 @@ function Ranges(props: propsIF) {
             show: true,
             slug: 'status',
             sortable: true,
+            leftPadding: 8,
         },
 
         {
@@ -372,23 +379,6 @@ function Ranges(props: propsIF) {
             ))}
         </RangeRowStyled>
     );
-    const sortedRowItemContent = sortedPositions.map((position, idx) => (
-        <RangesRow
-            key={idx}
-            position={position}
-            isAccountView={isAccountView}
-            tableView={tableView}
-        />
-    ));
-
-    const currentRowItemContent = _DATA.currentData.map((position, idx) => (
-        <RangesRow
-            key={idx}
-            position={position}
-            isAccountView={isAccountView}
-            tableView={tableView}
-        />
-    ));
 
     useEffect(() => {
         if (_DATA.currentData.length && !isTradeTableExpanded) {
@@ -400,28 +390,28 @@ function Ranges(props: propsIF) {
 
     const relevantTransactionsByType = transactionsByType.filter(
         (tx) =>
-            tx.txAction &&
-            tx.txDetails &&
-            tx.txType === 'Range' &&
-            pendingTransactions.includes(tx.txHash) &&
+            unindexedNonFailedSessionPositionUpdates.some(
+                (update) => update.txHash === tx.txHash,
+            ) &&
+            tx.userAddress.toLowerCase() ===
+                (userAddress || '').toLowerCase() &&
             tx.txDetails?.baseAddress.toLowerCase() ===
-                tradeData.baseToken.address.toLowerCase() &&
+                baseToken.address.toLowerCase() &&
             tx.txDetails?.quoteAddress.toLowerCase() ===
-                tradeData.quoteToken.address.toLowerCase() &&
+                quoteToken.address.toLowerCase() &&
             tx.txDetails?.poolIdx === poolIndex,
     );
 
     const shouldDisplayNoTableData =
         !isLoading &&
         !rangeData.length &&
-        (relevantTransactionsByType.length === 0 ||
-            pendingTransactions.length === 0);
+        unindexedNonFailedSessionPositionUpdates.length === 0;
 
     const rangeDataOrNull = !shouldDisplayNoTableData ? (
         <div>
-            <ul ref={listRef}>
+            <ul ref={listRef} id='current_row_scroll'>
                 {!isAccountView &&
-                    pendingTransactions.length > 0 &&
+                    relevantTransactionsByType.length > 0 &&
                     relevantTransactionsByType.reverse().map((tx, idx) => (
                         <RangesRowPlaceholder
                             key={idx}
@@ -434,14 +424,19 @@ function Ranges(props: propsIF) {
                             tableView={tableView}
                         />
                     ))}
-                {currentRowItemContent}
+                <TableRows
+                    type='Range'
+                    data={_DATA.currentData}
+                    isAccountView={isAccountView}
+                    tableView={tableView}
+                />
             </ul>
             {
                 // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
                 // TODO (#1804): we should instead be adding results to RTK
                 !isTradeTableExpanded &&
                     !props.isAccountView &&
-                    sortedRowItemContent.length > NUM_RANGES_WHEN_COLLAPSED && (
+                    sortedPositions.length > NUM_RANGES_WHEN_COLLAPSED && (
                         <FlexContainer
                             justifyContent='center'
                             alignItems='center'
@@ -455,11 +450,11 @@ function Ranges(props: propsIF) {
             }
         </div>
     ) : (
-        <NoTableData type='ranges' isAccountView={isAccountView} />
+        <NoTableData type='liquidity' isAccountView={isAccountView} />
     );
 
     return (
-        <FlexContainer flexDirection='column' fullHeight>
+        <FlexContainer flexDirection='column' fullHeight={!isSmallScreen}>
             <div>{headerColumnsDisplay}</div>
 
             <div style={{ flex: 1, overflow: 'auto' }}>

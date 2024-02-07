@@ -11,12 +11,12 @@ import {
 import {
     diffHashSig,
     diffHashSigScaleData,
-} from '../../../utils/functions/diffHashSig';
-import { CandleData } from '../../../App/functions/fetchCandleSeries';
+} from '../../../ambient-utils/dataLayer';
+import { CandleDataIF } from '../../../ambient-utils/types';
 import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
 
 interface TvlData {
-    tvlData: Array<CandleData>;
+    tvlData: Array<CandleDataIF>;
     period: number;
     subChartValues: any;
     crosshairForSubChart: any;
@@ -33,10 +33,12 @@ interface TvlData {
     xAxisActiveTooltip: string;
     zoomBase: any;
     mainZoom: any;
-    firstCandleData: CandleData;
-    lastCandleData: CandleData;
+    firstCandleData: CandleDataIF;
+    lastCandleData: CandleDataIF;
     isChartZoom: boolean;
     setIsChartZoom: React.Dispatch<React.SetStateAction<boolean>>;
+    isToolbarOpen: boolean;
+    toolbarWidth: number;
 }
 
 function TvlChart(props: TvlData) {
@@ -61,6 +63,8 @@ function TvlChart(props: TvlData) {
         setIsChartZoom,
         zoomBase,
         render,
+        isToolbarOpen,
+        toolbarWidth,
     } = props;
 
     // const tvlMainDiv = useRef(null);
@@ -515,7 +519,14 @@ function TvlChart(props: TvlData) {
     }, [crosshairActive]);
 
     return (
-        <div id='tvl_chart' data-testid={'chart'}>
+        <div
+            id='tvl_chart'
+            data-testid={'chart'}
+            style={{
+                gridTemplateColumns:
+                    toolbarWidth + 'px auto 1fr auto minmax(1em, max-content)',
+            }}
+        >
             <d3fc-canvas
                 id='d3PlotTvl'
                 ref={d3CanvasArea}
@@ -528,7 +539,13 @@ function TvlChart(props: TvlData) {
                 className='d3CanvasCrosshair'
             ></d3fc-canvas>
 
-            <label style={{ position: 'absolute', left: '0%' }}>
+            <label
+                style={{
+                    paddingLeft: isToolbarOpen ? '38px' : '9px',
+                    gridColumnStart: '3',
+                    gridColumnEnd: '3',
+                }}
+            >
                 TVL:{' '}
                 {formatDollarAmountAxis(
                     subChartValues.filter(
@@ -542,7 +559,7 @@ function TvlChart(props: TvlData) {
                 ref={d3Yaxis}
                 style={{
                     width: yAxisWidth,
-                    gridColumn: 4,
+                    gridColumn: 5,
                     gridRow: 3,
                 }}
             ></d3fc-canvas>

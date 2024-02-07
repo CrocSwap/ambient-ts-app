@@ -9,6 +9,7 @@ import {
     ReactElement,
     useContext,
 } from 'react';
+// eslint-disable-next-line
 import { motion, AnimateSharedLayout } from 'framer-motion';
 
 // START: Import Local Files
@@ -149,6 +150,9 @@ export default function TabComponent(props: TabPropsIF) {
                 {data.map((item) => (
                     <li
                         key={item.label}
+                        id={`${item.label
+                            .replaceAll(' ', '_')
+                            .toLowerCase()}_tab_clickable`}
                         className={
                             item.label === selectedTab.label
                                 ? styles.selected
@@ -206,57 +210,54 @@ export default function TabComponent(props: TabPropsIF) {
             className={`${styles.tab_ul} ${styles.desktop_tabs}`}
             aria-label='Navigation Tabs'
         >
-            {data.map((item) => {
-                return (
-                    <li
-                        key={item.label}
-                        className={
-                            item.label === selectedTab.label
-                                ? styles.selected
-                                : styles.non_selected
-                        }
-                        onClick={() => {
-                            handleSelectedTab(item);
-                            item.onClick?.();
-                        }}
-                        role='tablist'
-                        aria-describedby={
-                            item.label === selectedTab.label
-                                ? 'current-tab'
-                                : ''
-                        }
-                    >
-                        {item.icon
-                            ? handleMobileMenuIcon(item.icon, item.label)
-                            : null}
-                        {mobileView && (
-                            <button
-                                className={`${styles.item_label} ${
-                                    item.label === selectedTab.label
-                                        ? styles.selected
-                                        : ''
-                                }`}
-                                onClick={() => handleSelectedTab(item)}
-                                role='tab'
-                                aria-selected={item.label === selectedTab.label}
+            {data.map((item) => (
+                <li
+                    key={item.label}
+                    id={`${item.label
+                        .replaceAll(' ', '_')
+                        .toLowerCase()}_tab_clickable`}
+                    className={
+                        item.label === selectedTab.label
+                            ? styles.selected
+                            : styles.non_selected
+                    }
+                    onClick={() => {
+                        handleSelectedTab(item);
+                        item.onClick?.();
+                    }}
+                    role='tablist'
+                    aria-describedby={
+                        item.label === selectedTab.label ? 'current-tab' : ''
+                    }
+                >
+                    {item.icon
+                        ? handleMobileMenuIcon(item.icon, item.label)
+                        : null}
+                    {mobileView && (
+                        <button
+                            className={`${styles.item_label} ${
+                                item.label === selectedTab.label
+                                    ? styles.selected
+                                    : ''
+                            }`}
+                            onClick={() => handleSelectedTab(item)}
+                            role='tab'
+                            aria-selected={item.label === selectedTab.label}
+                        >
+                            {' '}
+                            {item.label}
+                        </button>
+                    )}
 
-                                // tabIndex={item.label === selectedTab.label ? 0 : -1}
-                            >
-                                {' '}
-                                {item.label}
-                            </button>
-                        )}
-
-                        {item.label === selectedTab.label && (
-                            <motion.div
-                                className={styles.underline}
-                                layoutId='underline'
-                                role='presentation'
-                            />
-                        )}
-                    </li>
-                );
-            })}
+                    {item.label === selectedTab.label && (
+                        <motion.div
+                            className={styles.underline}
+                            layoutId='underline'
+                            role='presentation'
+                        />
+                    )}
+                </li>
+            ))}
         </ul>
     );
 
@@ -275,9 +276,9 @@ export default function TabComponent(props: TabPropsIF) {
             aria-label=''
         >
             <nav className={`${styles.tab_nav} ${tabAlignStyle}`}>
-                <AnimateSharedLayout>
-                    {rightTabOptions ? tabsWithRightOption : fullTabs}
-                </AnimateSharedLayout>
+                {/* <AnimateSharedLayout> */}
+                {rightTabOptions ? tabsWithRightOption : fullTabs}
+                {/* </AnimateSharedLayout> */}
             </nav>
             <div className={styles.main_tab_content}>
                 <AnimateSharedLayout>

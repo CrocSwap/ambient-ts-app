@@ -1,25 +1,17 @@
 import styles from './RangeDetailsSimplify.module.css';
-import { PositionIF } from '../../../utils/interfaces/exports';
+import { PositionIF } from '../../../ambient-utils/types';
 import { useProcessRange } from '../../../utils/hooks/useProcessRange';
-import { ZERO_ADDRESS } from '../../../constants';
+import { ZERO_ADDRESS } from '../../../ambient-utils/constants';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import moment from 'moment';
-// import Apy from '../../Global/Tabs/Apy/Apy';
-import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
-import { useContext } from 'react';
+import { memo, useContext } from 'react';
 import { FiCopy } from 'react-icons/fi';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useMediaQuery } from '@material-ui/core';
-
-interface ItemRowPropsIF {
-    title: string;
-    // eslint-disable-next-line
-    content: any;
-    explanation: string;
-}
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import InfoRow from '../../Global/InfoRow';
 
 interface RangeDetailsSimplifyPropsIF {
     position: PositionIF;
@@ -28,9 +20,9 @@ interface RangeDetailsSimplifyPropsIF {
     isAccountView: boolean;
     updatedPositionApy: number | undefined;
 }
-export default function RangeDetailsSimplify(
-    props: RangeDetailsSimplifyPropsIF,
-) {
+
+// TODO: refactor to using styled-components
+function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
     const {
         position,
         baseFeesDisplay,
@@ -38,9 +30,7 @@ export default function RangeDetailsSimplify(
         isAccountView,
         updatedPositionApy,
     } = props;
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
 
     const {
         ensName,
@@ -89,12 +79,6 @@ export default function RangeDetailsSimplify(
             : `/account/${ownerId}`;
         window.open(walletUrl);
     }
-    // function handleOpenExplorer() {
-    //     if (posHash && blockExplorer) {
-    //         const explorerUrl = `${blockExplorer}tx/${posHash}`;
-    //         window.open(explorerUrl);
-    //     }
-    // }
 
     const aprAmountString = updatedPositionApy
         ? updatedPositionApy >= 1000
@@ -208,17 +192,12 @@ export default function RangeDetailsSimplify(
             content: walletContent,
             explanation: 'The account of the position owner',
         },
-
-        // { title: 'Add Transaction ', content: txContent, explanation: 'this is explanation' },
-        // { title: 'Remove Transaction ', content: txContent, explanation: 'this is explanation' },
-
         {
             title: 'Add Time ',
             content: submissionTime,
             explanation:
                 'The time the owner first added a range at these prices',
         },
-        // { title: 'Remove Time ', content: 'remove time', explanation: 'this is explanation' },
         {
             title: 'Status ',
             content: status,
@@ -240,8 +219,7 @@ export default function RangeDetailsSimplify(
         {
             title: 'Token 1 Qty ',
             content: baseDisplayFrontend + ' ' + baseTokenSymbol,
-            explanation:
-                'The quantity of token #1 in the token pair (scaled by its decimals value)',
+            explanation: 'The quantity of token #1 in the token pair',
         },
 
         {
@@ -259,8 +237,7 @@ export default function RangeDetailsSimplify(
         {
             title: 'Token 2 Qty ',
             content: quoteDisplayFrontend + ' ' + quoteTokenSymbol,
-            explanation:
-                'The quantity of token #2 in the token pair (scaled by its decimals value)',
+            explanation: 'The quantity of token #2 in the token pair',
         },
         {
             title: 'Range Min ',
@@ -296,72 +273,42 @@ export default function RangeDetailsSimplify(
         },
         {
             title: 'APR',
-            content: aprAmountString,
+            content: aprAmountString || '',
             explanation:
-                'The estimated APR of the position based on rewards eaned',
+                'The estimated APR of the position based on rewards earned',
         },
-
-        // {
-        //     title: 'Token 1 Total Rewards Earned ',
-        //     content: 'T1 rewards eaned',
-        //     explanation: 'this is explanation',
-        // },
-        // {
-        //     title: 'Token 2 Total Rewards Earned ',
-        //     content: 'T2 rewards eaned',
-        //     explanation: 'this is explanation',
-        // },
         {
             title: 'Value ',
             content: '$' + usdValue,
-            explanation: 'The appoximate US dollar value of the limit order',
+            explanation: 'The approximate US dollar value of the limit order',
         },
-
-        // { title: 'Time in Pool ', content: 'Time in Pool', explanation: 'this is explanation' },
-
-        // { title: 'Network Fee ', content: 'network fee', explanation: 'this is explanation' },
+        ...(!isAmbient
+            ? [
+                  {
+                      title: 'Token 1 Unclaimed Rewards ',
+                      content: baseFeesDisplay + ' ' + baseTokenSymbol,
+                      explanation: 'Token #1 unclaimed rewards',
+                  },
+                  {
+                      title: 'Token 2 Unclaimed Rewards ',
+                      content: quoteFeesDisplay + ' ' + quoteTokenSymbol,
+                      explanation: 'Token #2 unclaimed rewards',
+                  },
+                  {
+                      title: 'Low Tick ',
+                      content: position.bidTick.toString(),
+                      explanation:
+                          'The low price boundary represented in a geometric scale',
+                  },
+                  {
+                      title: 'High Tick ',
+                      content: position.askTick.toString(),
+                      explanation:
+                          'The high price boundary represented in a geometric scale',
+                  },
+              ]
+            : []),
     ];
-
-    if (!isAmbient) {
-        infoContent.push(
-            {
-                title: 'Token 1 Unclaimed Rewards ',
-                content: baseFeesDisplay + ' ' + baseTokenSymbol,
-                explanation: 'Token #1 unclaimed rewards',
-            },
-            {
-                title: 'Token 2 Unclaimed Rewards ',
-                content: quoteFeesDisplay + ' ' + quoteTokenSymbol,
-                explanation: 'Token #2 unclaimed rewards',
-            },
-            {
-                title: 'Low Tick ',
-                content: position.bidTick.toString(),
-                explanation:
-                    'The low price boundary represented in a geometric scale',
-            },
-            {
-                title: 'High Tick ',
-                content: position.askTick.toString(),
-                explanation:
-                    'The high price boundary represented in a geometric scale',
-            },
-        );
-    }
-
-    function InfoRow(props: ItemRowPropsIF) {
-        const { title, content, explanation } = props;
-
-        return (
-            <div className={styles.info_row_container}>
-                <div className={styles.title_container}>
-                    <p>{title}</p>
-                    <TooltipComponent title={explanation} placement={'right'} />
-                </div>
-                <div>{content}</div>
-            </div>
-        );
-    }
 
     return (
         <div className={styles.tx_details_container}>
@@ -395,3 +342,5 @@ export default function RangeDetailsSimplify(
         </div>
     );
 }
+
+export default memo(RangeDetailsSimplify);

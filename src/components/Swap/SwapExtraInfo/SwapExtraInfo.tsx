@@ -1,10 +1,12 @@
 import { memo, useContext } from 'react';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { CrocImpact } from '@crocswap-libs/sdk';
 import { PoolContext } from '../../../contexts/PoolContext';
-import { getPriceImpactString } from '../../../App/functions/swap/getPriceImpactString';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import {
+    getFormattedNumber,
+    getPriceImpactString,
+} from '../../../ambient-utils/dataLayer';
 import { ExtraInfo } from '../../Trade/TradeModules/ExtraInfo/ExtraInfo';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface propsIF {
     priceImpact: CrocImpact | undefined;
@@ -28,11 +30,10 @@ function SwapExtraInfo(props: propsIF) {
 
     const { poolPriceDisplay } = useContext(PoolContext);
 
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
 
-    const isDenomBase = tradeData.isDenomBase;
-    const baseTokenSymbol = tradeData.baseToken.symbol;
-    const quoteTokenSymbol = tradeData.quoteToken.symbol;
+    const baseTokenSymbol = baseToken.symbol;
+    const quoteTokenSymbol = quoteToken.symbol;
 
     const displayPriceWithDenom =
         isDenomBase && poolPriceDisplay
@@ -49,30 +50,40 @@ function SwapExtraInfo(props: propsIF) {
 
     const finalPriceString = getFormattedNumber({ value: finalPriceWithDenom });
 
-    const priceImpactNum = !priceImpact?.percentChange
-        ? undefined
-        : Math.abs(priceImpact.percentChange) * 100;
+    // prevent swaps with a price impact in excess of -99.99% or 1 million percent
+    const priceImpactNum =
+        !priceImpact?.percentChange ||
+        priceImpact.percentChange < -0.9999 ||
+        priceImpact.percentChange > 10000
+            ? undefined
+            : Math.abs(priceImpact.percentChange) * 100;
 
     const extraInfo = [
         {
             title: 'Avg. Rate',
             tooltipTitle:
                 'Expected Conversion Rate After Price Impact and Provider Fee',
-            data: isDenomBase
-                ? `${getFormattedNumber({
-                      value: effectivePriceWithDenom,
-                  })} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                : `${getFormattedNumber({
-                      value: effectivePriceWithDenom,
-                  })} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+            data:
+                priceImpactNum !== undefined
+                    ? isDenomBase
+                        ? `${getFormattedNumber({
+                              value: effectivePriceWithDenom,
+                          })} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                        : `${getFormattedNumber({
+                              value: effectivePriceWithDenom,
+                          })} ${baseTokenSymbol} per ${quoteTokenSymbol}`
+                    : '...',
             placement: 'bottom',
         },
         {
             title: 'Final Price',
             tooltipTitle: 'Expected Pool Price After Swap',
-            data: isDenomBase
-                ? `${finalPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                : `${finalPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+            data:
+                priceImpactNum !== undefined
+                    ? isDenomBase
+                        ? `${finalPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                        : `${finalPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`
+                    : '...',
             placement: 'bottom',
         },
         {

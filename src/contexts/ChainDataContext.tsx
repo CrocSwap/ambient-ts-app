@@ -3,25 +3,24 @@ import React, {
     SetStateAction,
     Dispatch,
     useEffect,
-    useMemo,
     useState,
     useContext,
 } from 'react';
 import useWebSocket from 'react-use-websocket';
-import { useAccount } from 'wagmi';
 import {
     IS_LOCAL_ENV,
     SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
-} from '../constants';
-import isJsonString from '../utils/functions/isJsonString';
-import { useAppDispatch } from '../utils/hooks/reduxToolkit';
-import { TokenIF } from '../utils/interfaces/TokenIF';
-import { setLastBlock } from '../utils/state/graphDataSlice';
-import { setTokenBalances } from '../utils/state/userDataSlice';
+    supportedNetworks,
+} from '../ambient-utils/constants';
+import { isJsonString } from '../ambient-utils/dataLayer';
+import { TokenIF } from '../ambient-utils/types';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
 import { Client } from '@covalenthq/client-sdk';
+import { UserDataContext } from './UserDataContext';
+import { TokenBalanceContext } from './TokenBalanceContext';
+import { fetchBlockNumber } from '../ambient-utils/api';
 
 interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
@@ -38,26 +37,20 @@ export const ChainDataContext = createContext<ChainDataContextIF>(
 export const ChainDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
+    const { setTokenBalances } = useContext(TokenBalanceContext);
+
+    const { chainData, activeNetwork, crocEnv, provider } =
+        useContext(CrocEnvContext);
     const { cachedFetchTokenBalances, cachedTokenDetails } =
         useContext(CachedDataContext);
-    const { chainData, crocEnv } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
 
     const client = new Client(process.env.REACT_APP_COVALENT_API_KEY || '');
 
-    const dispatch = useAppDispatch();
-    const { address: userAddress, isConnected } = useAccount();
+    const { userAddress, isUserConnected } = useContext(UserDataContext);
 
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
-
-    const chainDataContext = {
-        lastBlockNumber,
-        setLastBlockNumber,
-        gasPriceInGwei,
-        setGasPriceinGwei,
-        client,
-    };
 
     async function pollBlockNum(): Promise<void> {
         // if default RPC is Infura, use key from env variable
@@ -67,31 +60,14 @@ export const ChainDataContextProvider = (props: {
                 ? chainData.nodeUrl.slice(0, -32) +
                   process.env.REACT_APP_INFURA_KEY
                 : chainData.nodeUrl;
-
-        return fetch(nodeUrl, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                jsonrpc: '2.0',
-                method: 'eth_blockNumber',
-                params: [],
-                id: 'app-blockNum-sub', // Arbitary string (see JSON-RPC spec)
-            }),
-        })
-            .then((response) => response?.json())
-            .then((json) => json?.result)
-            .then(parseInt)
-            .then((blockNum) => {
-                if (blockNum > lastBlockNumber) {
-                    setLastBlockNumber(blockNum);
-                    dispatch(setLastBlock(blockNum));
-                }
-            })
-            .catch(console.error);
+        try {
+            const lastBlockNumber = await fetchBlockNumber(nodeUrl);
+            if (lastBlockNumber > 0) setLastBlockNumber(lastBlockNumber);
+        } catch (error) {
+            console.error({ error });
+        }
     }
+
     const BLOCK_NUM_POLL_MS = 2000;
     useEffect(() => {
         (async () => {
@@ -137,49 +113,48 @@ export const ChainDataContextProvider = (props: {
                     const newBlockNum = parseInt(lastBlockNumberHex);
                     if (lastBlockNumber !== newBlockNum) {
                         setLastBlockNumber(parseInt(lastBlockNumberHex));
-                        dispatch(setLastBlock(parseInt(lastBlockNumberHex)));
                     }
                 }
             }
         }
     }, [lastNewHeadMessage]);
 
+    const fetchGasPrice = async () => {
+        const newGasPrice = await supportedNetworks[
+            chainData.chainId
+        ].getGasPriceInGwei(provider);
+        if (gasPriceInGwei !== newGasPrice) {
+            setGasPriceinGwei(newGasPrice);
+        }
+    };
+
     useEffect(() => {
-        fetch(
-            'https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=KNJM7A9ST1Q1EESYXPPQITIP7I8EFSY456',
-        )
-            .then((response) => response.json())
-            .then((response) => {
-                if (response.result.ProposeGasPrice) {
-                    const newGasPrice = parseInt(
-                        response.result.ProposeGasPrice,
-                    );
-                    if (gasPriceInGwei !== newGasPrice) {
-                        setGasPriceinGwei(newGasPrice);
-                    }
-                }
-            })
-            .catch(console.error);
+        fetchGasPrice();
     }, [lastBlockNumber]);
 
-    // prevents useEffect below from triggering every block update
-    const everyEigthBlock = useMemo(
-        () => Math.floor(lastBlockNumber / 8),
-        [lastBlockNumber],
-    );
+    // used to trigger token balance refreshes every 5 minutes
+    const everyFiveMinutes = Math.floor(Date.now() / 300000);
+
     useEffect(() => {
         (async () => {
             IS_LOCAL_ENV &&
                 console.debug('fetching native token and erc20 token balances');
-            if (crocEnv && isConnected && userAddress && chainData.chainId) {
+            if (
+                crocEnv &&
+                isUserConnected &&
+                userAddress &&
+                chainData.chainId &&
+                client
+            ) {
                 try {
                     const tokenBalances: TokenIF[] =
                         await cachedFetchTokenBalances(
                             userAddress,
                             chainData.chainId,
-                            everyEigthBlock,
+                            everyFiveMinutes,
                             cachedTokenDetails,
                             crocEnv,
+                            activeNetwork.graphCacheUrl,
                             client,
                         );
                     const tokensWithLogos = tokenBalances.map((token) => {
@@ -191,14 +166,30 @@ export const ChainDataContextProvider = (props: {
                         return newToken;
                     });
 
-                    dispatch(setTokenBalances(tokensWithLogos));
+                    setTokenBalances(tokensWithLogos);
                 } catch (error) {
-                    dispatch(setTokenBalances([]));
+                    setTokenBalances([]);
                     console.error({ error });
                 }
             }
         })();
-    }, [crocEnv, isConnected, userAddress, chainData.chainId, everyEigthBlock]);
+    }, [
+        crocEnv,
+        isUserConnected,
+        userAddress,
+        chainData.chainId,
+        everyFiveMinutes,
+        client !== undefined,
+        activeNetwork.graphCacheUrl,
+    ]);
+
+    const chainDataContext = {
+        lastBlockNumber,
+        setLastBlockNumber,
+        gasPriceInGwei,
+        setGasPriceinGwei,
+        client,
+    };
 
     return (
         <ChainDataContext.Provider value={chainDataContext}>

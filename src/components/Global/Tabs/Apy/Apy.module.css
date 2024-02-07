@@ -42,7 +42,7 @@
 /* Desktop screen Sizes */
 @media only screen and (min-width: 768px) {
     .apr p {
-        /* font-size: 12px;
+        /* font-size: var(--body-size);
         line-height: 16px; */
     }
 }
@@ -50,7 +50,7 @@
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1200px) {
     .apr p {
-        /* font-size: 18px;
+        /*     font-size: var(--header2-size);
         line-height: 22px; */
     }
 }

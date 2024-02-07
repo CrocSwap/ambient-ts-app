@@ -4,15 +4,15 @@ import { motion } from 'framer-motion';
 import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
 import { AiOutlineLine } from 'react-icons/ai';
 
-import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
+import { TokenIF, TransactionIF } from '../../../../ambient-utils/types';
 import { useLocation } from 'react-router-dom';
 import { DefaultTooltip } from '../../StyledTooltip/StyledTooltip';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../../TokenIcon/TokenIcon';
-import uriToHttp from '../../../../utils/functions/uriToHttp';
+import { uriToHttp } from '../../../../ambient-utils/dataLayer';
 import Apy from '../../Tabs/Apy/Apy';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { useContext } from 'react';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 type ItemIF = {
     slug: string;
@@ -28,9 +28,7 @@ interface propsIF {
 
 export default function TransactionDetailsPriceInfo(props: propsIF) {
     const { tx, controlItems, positionApy } = props;
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
 
     const { tokens } = useContext(TokenContext);
 
@@ -125,7 +123,11 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             ? tx.changeType === 'mint'
                 ? 'Add to Range'
                 : 'Remove from Range'
-            : 'Limit'
+            : tx.changeType === 'burn'
+            ? 'Limit Removal'
+            : tx.changeType === 'recover'
+            ? 'Limit Claim'
+            : 'Limit Mint'
         : '...';
 
     const txTypeContent = (
@@ -148,10 +150,14 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             <p>
                 {tx.entityType === 'liqchange'
                     ? tx.quoteSymbol + ': '
+                    : tx.changeType === 'burn'
+                    ? tx.quoteSymbol + ' Claimed: '
                     : 'Buy: '}
             </p>
             <div>
-                {tx.entityType !== 'limitOrder' || tx.changeType === 'recover'
+                {tx.entityType !== 'limitOrder' ||
+                tx.changeType === 'recover' ||
+                tx.changeType === 'burn'
                     ? quoteQuantityDisplay
                     : estimatedQuoteFlowDisplay || '0.00'}
                 <TokenIcon
@@ -168,6 +174,8 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             <p>
                 {tx.entityType === 'liqchange'
                     ? tx.baseSymbol + ': '
+                    : tx.changeType === 'burn'
+                    ? tx.baseSymbol + ' Removed: '
                     : 'Sell: '}
             </p>
             <div>
@@ -197,11 +205,17 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
     const buyBaseRow = (
         <Row>
             <p>
-                {tx.entityType === 'liqchange' ? tx.baseSymbol + ': ' : 'Buy: '}
+                {tx.entityType === 'liqchange'
+                    ? tx.baseSymbol + ': '
+                    : tx.changeType === 'burn'
+                    ? tx.baseSymbol + ' Claimed: '
+                    : 'Buy: '}
             </p>
 
             <div>
-                {tx.entityType !== 'limitOrder' || tx.changeType === 'recover'
+                {tx.entityType !== 'limitOrder' ||
+                tx.changeType === 'recover' ||
+                tx.changeType === 'burn'
                     ? baseQuantityDisplay
                     : estimatedBaseFlowDisplay || '0.00'}
                 <TokenIcon
@@ -219,6 +233,8 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             <p>
                 {tx.entityType === 'liqchange'
                     ? tx.quoteSymbol + ': '
+                    : tx.changeType === 'burn'
+                    ? tx.quoteSymbol + ' Removed: '
                     : 'Sell: '}
             </p>
             <div>
@@ -247,7 +263,13 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
 
     const PriceDisplay = (
         <div className={styles.min_max_price}>
-            <p>{tx.entityType === 'liqchange' ? 'Price Range' : 'Price'}</p>
+            <p>
+                {tx.entityType === 'liqchange'
+                    ? 'Price Range'
+                    : tx.entityType === 'limitOrder'
+                    ? 'Limit Price'
+                    : 'Price'}
+            </p>
             {isAmbient ? (
                 <span className={styles.min_price}>
                     {'0'}

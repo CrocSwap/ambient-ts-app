@@ -1,44 +1,48 @@
 import { ChainSpec, CrocEnv, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
-import { GRAPHCACHE_SMALL_URL } from '../../constants';
-import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
-import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { LimitOrderServerIF } from '../../utils/interfaces/LimitOrderIF';
 import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
+import {
+    GCGO_OVERRIDE_URL,
+    CACHE_UPDATE_FREQ_IN_MS,
+} from '../../ambient-utils/constants';
+import {
+    LimitOrderServerIF,
     PositionIF,
     PositionServerIF,
-} from '../../utils/interfaces/PositionIF';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
+    TokenIF,
+    TransactionServerIF,
+} from '../../ambient-utils/types';
 import {
-    setChangesByPool,
-    setDataLoadingStatus,
-    setLeaderboardByPool,
-    setLimitOrdersByPool,
-    setLiquidity,
-    setLiquidityPending,
-    setPositionsByPool,
-    setUserLimitOrdersByPool,
-    setUserPositionsByPool,
-} from '../../utils/state/graphDataSlice';
+    TokenPriceFn,
+    FetchAddrFn,
+    FetchContractDetailsFn,
+    fetchPoolRecentChanges,
+    fetchPoolLiquidity,
+} from '../../ambient-utils/api';
 import {
-    setAdvancedHighTick,
-    setAdvancedLowTick,
-    setAdvancedMode,
-    setLiquidityFee,
-} from '../../utils/state/tradeDataSlice';
-import { FetchAddrFn } from '../functions/fetchAddress';
-import { FetchContractDetailsFn } from '../functions/fetchContractDetails';
-import { fetchPoolRecentChanges } from '../functions/fetchPoolRecentChanges';
-import { TokenPriceFn } from '../functions/fetchTokenPrice';
-import { getLimitOrderData } from '../functions/getLimitOrderData';
-import { fetchPoolLiquidity } from '../functions/fetchPoolLiquidity';
-import { getPositionData } from '../functions/getPositionData';
-import { SpotPriceFn } from '../functions/querySpotPrice';
+    SpotPriceFn,
+    getLimitOrderData,
+    getPositionData,
+    getTransactionData,
+} from '../../ambient-utils/dataLayer';
 import useDebounce from './useDebounce';
-import { getLiquidityFee } from '../functions/getPoolStats';
+import { Provider } from '@ethersproject/providers';
+import { DataLoadingContext } from '../../contexts/DataLoadingContext';
+import { GraphDataContext } from '../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { RangeContext } from '../../contexts/RangeContext';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 
 interface PoolParamsHookIF {
     crocEnv?: CrocEnv;
+    graphCacheUrl: string;
+    provider?: Provider;
     pathname: string;
     chainData: ChainSpec;
     userAddress: `0x${string}` | undefined;
@@ -56,19 +60,31 @@ interface PoolParamsHookIF {
 
 // Hooks to update metadata and volume/TVL/liquidity curves on a per-pool basis
 export function usePoolMetadata(props: PoolParamsHookIF) {
-    const dispatch = useAppDispatch();
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB, baseToken, quoteToken } =
+        useContext(TradeDataContext);
+    const { setDataLoadingStatus } = useContext(DataLoadingContext);
+    const {
+        setUserPositionsByPool,
+        setUserTransactionsByPool,
+        setPositionsByPool,
+        setLeaderboardByPool,
+        setTransactionsByPool,
+        setLimitOrdersByPool,
+        setUserLimitOrdersByPool,
+        setLiquidity,
+        setLiquidityPending,
+        setLiquidityFee,
+    } = useContext(GraphDataContext);
 
+    const { cachedGetLiquidityFee } = useContext(CachedDataContext);
+
+    const { setAdvancedLowTick, setAdvancedHighTick, setAdvancedMode } =
+        useContext(RangeContext);
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
 
     const [baseTokenDecimals, setBaseTokenDecimals] = useState<number>(0);
     const [quoteTokenDecimals, setQuoteTokenDecimals] = useState<number>(0);
-
-    const [mainnetBaseTokenAddress, setMainnetBaseTokenAddress] =
-        useState<string>('');
-    const [mainnetQuoteTokenAddress, setMainnetQuoteTokenAddress] =
-        useState<string>('');
 
     const [isTokenABase, setIsTokenABase] = useState<boolean>(false);
 
@@ -77,10 +93,10 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         props.pathname.includes('highTick');
 
     // hook to sync token addresses in RTK to token addresses in RTK
-    const rtkMatchesParams = useMemo(() => {
+    const contextMatchesParams = useMemo(() => {
         let matching = false;
-        const rtkTokenA = tradeData.tokenA.address;
-        const rtkTokenB = tradeData.tokenB.address;
+        const tokenAAddress = tokenA.address;
+        const tokenBAddress = tokenB.address;
         const { pathname } = location;
         if (pathname.includes('tokenA') && pathname.includes('tokenB')) {
             const getAddrFromParams = (token: string) => {
@@ -91,8 +107,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             const addrTokenA = getAddrFromParams('tokenA');
             const addrTokenB = getAddrFromParams('tokenB');
             if (
-                addrTokenA.toLowerCase() === rtkTokenA.toLowerCase() &&
-                addrTokenB.toLowerCase() === rtkTokenB.toLowerCase()
+                addrTokenA.toLowerCase() === tokenAAddress.toLowerCase() &&
+                addrTokenB.toLowerCase() === tokenBAddress.toLowerCase()
             ) {
                 matching = true;
             }
@@ -100,10 +116,10 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         return matching;
     }, [
         props.pathname,
-        tradeData.tokenA.address,
-        tradeData.tokenA.chainId,
-        tradeData.tokenB.address,
-        tradeData.tokenB.chainId,
+        tokenA.address,
+        tokenA.chainId,
+        tokenB.address,
+        tokenB.chainId,
     ]);
 
     // Wait 2 seconds before refreshing to give cache server time to sync from
@@ -112,16 +128,16 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
     // Token and range housekeeping when switching pairs
     useEffect(() => {
-        if (rtkMatchesParams && props.crocEnv) {
+        if (contextMatchesParams && props.crocEnv) {
             if (!ticksInParams) {
-                dispatch(setAdvancedLowTick(0));
-                dispatch(setAdvancedHighTick(0));
-                dispatch(setAdvancedMode(false));
+                setAdvancedLowTick(0);
+                setAdvancedHighTick(0);
+                setAdvancedMode(false);
                 props.setSimpleRangeWidth(10);
             }
 
-            const tokenAAddress = tradeData.tokenA.address;
-            const tokenBAddress = tradeData.tokenB.address;
+            const tokenAAddress = tokenA.address;
+            const tokenBAddress = tokenB.address;
 
             if (tokenAAddress && tokenBAddress) {
                 const sortedTokens = sortBaseQuoteTokens(
@@ -129,45 +145,23 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     tokenBAddress,
                 );
 
-                const { token: tokenAMainnetEquivalent } = getMainnetEquivalent(
-                    tokenAAddress,
-                    props.chainData.chainId,
-                );
-                const { token: tokenBMainnetEquivalent } = getMainnetEquivalent(
-                    tokenBAddress,
-                    props.chainData.chainId,
-                );
-
-                if (tokenAMainnetEquivalent && tokenBMainnetEquivalent) {
-                    const sortedMainnetTokens = sortBaseQuoteTokens(
-                        tokenAMainnetEquivalent,
-                        tokenBMainnetEquivalent,
-                    );
-
-                    setMainnetBaseTokenAddress(sortedMainnetTokens[0]);
-                    setMainnetQuoteTokenAddress(sortedMainnetTokens[1]);
-                } else {
-                    setMainnetBaseTokenAddress('');
-                    setMainnetQuoteTokenAddress('');
-                }
-
                 setBaseTokenAddress(sortedTokens[0]);
                 setQuoteTokenAddress(sortedTokens[1]);
-                if (tradeData.tokenA.address === sortedTokens[0]) {
+                if (tokenA.address === sortedTokens[0]) {
                     setIsTokenABase(true);
-                    setBaseTokenDecimals(tradeData.tokenA.decimals);
-                    setQuoteTokenDecimals(tradeData.tokenB.decimals);
+                    setBaseTokenDecimals(tokenA.decimals);
+                    setQuoteTokenDecimals(tokenB.decimals);
                 } else {
                     setIsTokenABase(false);
-                    setBaseTokenDecimals(tradeData.tokenB.decimals);
-                    setQuoteTokenDecimals(tradeData.tokenA.decimals);
+                    setBaseTokenDecimals(tokenB.decimals);
+                    setQuoteTokenDecimals(tokenA.decimals);
                 }
             }
         }
     }, [
-        rtkMatchesParams,
-        tradeData.tokenA.address,
-        tradeData.tokenB.address,
+        contextMatchesParams,
+        tokenA.address,
+        tokenB.address,
         quoteTokenAddress,
         props.chainData.chainId,
         props.chainData.poolIndex,
@@ -178,44 +172,37 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
     // Reset loading states when token values change
     useEffect(() => {
-        dispatch(
-            setDataLoadingStatus({
-                datasetName: 'poolRangeData',
-                loadingStatus: true,
-            }),
-        );
-        dispatch(
-            setDataLoadingStatus({
-                datasetName: 'poolTxData',
-                loadingStatus: true,
-            }),
-        );
-        dispatch(
-            setDataLoadingStatus({
-                datasetName: 'poolOrderData',
-                loadingStatus: true,
-            }),
-        );
-        dispatch(
-            setDataLoadingStatus({
-                datasetName: 'connectedUserPoolRangeData',
-                loadingStatus: true,
-            }),
-        );
-        dispatch(
-            setDataLoadingStatus({
-                datasetName: 'connectedUserPoolOrderData',
-                loadingStatus: true,
-            }),
-        );
-    }, [tradeData.baseToken.address, tradeData.quoteToken.address]);
+        setDataLoadingStatus({
+            datasetName: 'isPoolRangeDataLoading',
+            loadingStatus: true,
+        });
+        setDataLoadingStatus({
+            datasetName: 'isPoolTxDataLoading',
+            loadingStatus: true,
+        });
+        setDataLoadingStatus({
+            datasetName: 'isPoolOrderDataLoading',
+            loadingStatus: true,
+        });
+        setDataLoadingStatus({
+            datasetName: 'isConnectedUserRangeDataLoading',
+            loadingStatus: true,
+        });
+        setDataLoadingStatus({
+            datasetName: 'isConnectedUserPoolOrderDataLoading',
+            loadingStatus: true,
+        });
+    }, [baseToken.address, quoteToken.address]);
 
-    // Sets up the asynchronous queries to TVL, volume and liquidity curve and translates
-    // to equivalent mainnet tokens so the chart renders mainnet data even in testnet
+    // Sets up the asynchronous queries to TVL, volume and liquidity curve
     useEffect(() => {
-        if (rtkMatchesParams && props.crocEnv) {
-            const tokenAAddress = tradeData.tokenA.address;
-            const tokenBAddress = tradeData.tokenB.address;
+        if (
+            contextMatchesParams &&
+            props.crocEnv &&
+            props.provider !== undefined
+        ) {
+            const tokenAAddress = tokenA.address;
+            const tokenBAddress = tokenB.address;
 
             if (tokenAAddress && tokenBAddress) {
                 const sortedTokens = sortBaseQuoteTokens(
@@ -225,21 +212,24 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
                 // retrieve pool liquidity provider fee
                 if (props.isServerEnabled) {
-                    getLiquidityFee(
+                    cachedGetLiquidityFee(
                         sortedTokens[0],
                         sortedTokens[1],
                         props.chainData.poolIndex,
                         props.chainData.chainId,
+                        props.graphCacheUrl,
+                        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
                     )
                         .then((liquidityFeeNum) => {
                             if (liquidityFeeNum)
-                                dispatch(setLiquidityFee(liquidityFeeNum));
+                                setLiquidityFee(liquidityFeeNum);
                         })
                         .catch(console.error);
 
                     // retrieve pool_positions
-                    const allPositionsCacheEndpoint =
-                        GRAPHCACHE_SMALL_URL + '/pool_positions?';
+                    const allPositionsCacheEndpoint = GCGO_OVERRIDE_URL
+                        ? GCGO_OVERRIDE_URL + '/pool_positions?'
+                        : props.graphCacheUrl + '/pool_positions?';
                     fetch(
                         allPositionsCacheEndpoint +
                             new URLSearchParams({
@@ -259,7 +249,9 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .then((json) => {
                             const poolPositions = json.data;
                             const crocEnv = props.crocEnv;
-                            if (poolPositions && crocEnv) {
+                            const provider = props.provider;
+                            const skipENSFetch = true;
+                            if (poolPositions && crocEnv && provider) {
                                 Promise.all(
                                     poolPositions.map(
                                         (position: PositionServerIF) => {
@@ -267,51 +259,47 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                 position,
                                                 props.searchableTokens,
                                                 crocEnv,
+                                                provider,
                                                 props.chainData.chainId,
                                                 props.lastBlockNumber,
                                                 props.cachedFetchTokenPrice,
                                                 props.cachedQuerySpotPrice,
                                                 props.cachedTokenDetails,
                                                 props.cachedEnsResolve,
+                                                skipENSFetch,
                                             );
                                         },
                                     ),
                                 )
                                     .then((updatedPositions) => {
-                                        dispatch(
-                                            setPositionsByPool({
-                                                dataReceived: true,
-                                                positions: updatedPositions,
-                                            }),
-                                        );
-                                        dispatch(
-                                            setDataLoadingStatus({
-                                                datasetName: 'poolRangeData',
-                                                loadingStatus: false,
-                                            }),
-                                        );
+                                        setPositionsByPool({
+                                            dataReceived: true,
+                                            positions: updatedPositions,
+                                        });
+                                        setDataLoadingStatus({
+                                            datasetName:
+                                                'isPoolRangeDataLoading',
+                                            loadingStatus: false,
+                                        });
                                     })
                                     .catch(console.error);
                             } else {
-                                dispatch(
-                                    setPositionsByPool({
-                                        dataReceived: false,
-                                        positions: [],
-                                    }),
-                                );
-                                dispatch(
-                                    setDataLoadingStatus({
-                                        datasetName: 'poolRangeData',
-                                        loadingStatus: false,
-                                    }),
-                                );
+                                setPositionsByPool({
+                                    dataReceived: false,
+                                    positions: [],
+                                });
+                                setDataLoadingStatus({
+                                    datasetName: 'isPoolRangeDataLoading',
+                                    loadingStatus: false,
+                                });
                             }
                         })
                         .catch(console.error);
 
                     // retrieve positions for leaderboard
-                    const poolPositionsCacheEndpoint =
-                        GRAPHCACHE_SMALL_URL + '/pool_position_apy_leaders?';
+                    const poolPositionsCacheEndpoint = GCGO_OVERRIDE_URL
+                        ? GCGO_OVERRIDE_URL + '/pool_position_apy_leaders?'
+                        : props.graphCacheUrl + '/pool_position_apy_leaders?';
                     fetch(
                         poolPositionsCacheEndpoint +
                             new URLSearchParams({
@@ -331,9 +319,11 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .then((response) => response.json())
                         .then((json) => {
                             const leaderboardPositions = json.data;
-
                             const crocEnv = props.crocEnv;
-                            if (leaderboardPositions && crocEnv) {
+                            const provider = props.provider;
+                            const skipENSFetch = true;
+
+                            if (leaderboardPositions && crocEnv && provider) {
                                 Promise.all(
                                     leaderboardPositions.map(
                                         (position: PositionServerIF) => {
@@ -341,12 +331,14 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                 position,
                                                 props.searchableTokens,
                                                 crocEnv,
+                                                provider,
                                                 props.chainData.chainId,
                                                 props.lastBlockNumber,
                                                 props.cachedFetchTokenPrice,
                                                 props.cachedQuerySpotPrice,
                                                 props.cachedTokenDetails,
                                                 props.cachedEnsResolve,
+                                                skipENSFetch,
                                             );
                                         },
                                     ),
@@ -366,12 +358,10 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                             )
                                             .slice(0, 10);
 
-                                        dispatch(
-                                            setLeaderboardByPool({
-                                                dataReceived: true,
-                                                positions: top10Positions,
-                                            }),
-                                        );
+                                        setLeaderboardByPool({
+                                            dataReceived: true,
+                                            positions: top10Positions,
+                                        });
                                     })
                                     .catch(console.error);
                             }
@@ -392,6 +382,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         ensResolution: true,
                         n: 200,
                         crocEnv: props.crocEnv,
+                        graphCacheUrl: props.graphCacheUrl,
+                        provider: props.provider,
                         lastBlockNumber: props.lastBlockNumber,
                         cachedFetchTokenPrice: props.cachedFetchTokenPrice,
                         cachedQuerySpotPrice: props.cachedQuerySpotPrice,
@@ -400,25 +392,22 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     })
                         .then((poolChangesJsonData) => {
                             if (poolChangesJsonData) {
-                                dispatch(
-                                    setChangesByPool({
-                                        dataReceived: true,
-                                        changes: poolChangesJsonData,
-                                    }),
-                                );
-                                dispatch(
-                                    setDataLoadingStatus({
-                                        datasetName: 'poolTxData',
-                                        loadingStatus: false,
-                                    }),
-                                );
+                                setTransactionsByPool({
+                                    dataReceived: true,
+                                    changes: poolChangesJsonData,
+                                });
+                                setDataLoadingStatus({
+                                    datasetName: 'isPoolTxDataLoading',
+                                    loadingStatus: false,
+                                });
                             }
                         })
                         .catch(console.error);
 
                     // retrieve pool limit order states
-                    const poolLimitOrderStatesCacheEndpoint =
-                        GRAPHCACHE_SMALL_URL + '/pool_limit_orders?';
+                    const poolLimitOrderStatesCacheEndpoint = GCGO_OVERRIDE_URL
+                        ? GCGO_OVERRIDE_URL + '/pool_limit_orders?'
+                        : props.graphCacheUrl + '/pool_limit_orders?';
 
                     fetch(
                         poolLimitOrderStatesCacheEndpoint +
@@ -434,7 +423,9 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .then((json) => {
                             const poolLimitOrderStates = json?.data;
                             const crocEnv = props.crocEnv;
-                            if (poolLimitOrderStates && crocEnv) {
+                            const provider = props.provider;
+                            const skipENSFetch = true;
+                            if (poolLimitOrderStates && crocEnv && provider) {
                                 Promise.all(
                                     poolLimitOrderStates.map(
                                         (limitOrder: LimitOrderServerIF) => {
@@ -442,50 +433,116 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                 limitOrder,
                                                 props.searchableTokens,
                                                 crocEnv,
+                                                provider,
                                                 props.chainData.chainId,
                                                 props.lastBlockNumber,
                                                 props.cachedFetchTokenPrice,
                                                 props.cachedQuerySpotPrice,
                                                 props.cachedTokenDetails,
                                                 props.cachedEnsResolve,
+                                                skipENSFetch,
                                             );
                                         },
                                     ),
                                 ).then((updatedLimitOrderStates) => {
-                                    dispatch(
-                                        setLimitOrdersByPool({
-                                            dataReceived: true,
-                                            limitOrders:
-                                                updatedLimitOrderStates,
-                                        }),
-                                    );
-                                    dispatch(
-                                        setDataLoadingStatus({
-                                            datasetName: 'poolOrderData',
-                                            loadingStatus: false,
-                                        }),
-                                    );
+                                    setLimitOrdersByPool({
+                                        dataReceived: true,
+                                        limitOrders: updatedLimitOrderStates,
+                                    });
+                                    setDataLoadingStatus({
+                                        datasetName: 'isPoolOrderDataLoading',
+                                        loadingStatus: false,
+                                    });
                                 });
                             } else {
-                                dispatch(
-                                    setLimitOrdersByPool({
-                                        dataReceived: false,
-                                        limitOrders: [],
-                                    }),
-                                );
-                                dispatch(
-                                    setDataLoadingStatus({
-                                        datasetName: 'poolOrderData',
-                                        loadingStatus: false,
-                                    }),
-                                );
+                                setLimitOrdersByPool({
+                                    dataReceived: false,
+                                    limitOrders: [],
+                                });
+                                setDataLoadingStatus({
+                                    datasetName: 'isPoolOrderDataLoading',
+                                    loadingStatus: false,
+                                });
                             }
                         })
                         .catch(console.error);
                     if (props.userAddress) {
                         // retrieve user_pool_positions
-                        const userPoolPositionsCacheEndpoint =
-                            GRAPHCACHE_SMALL_URL + '/user_pool_positions?';
+                        const userPoolTransactionsCacheEndpoint =
+                            GCGO_OVERRIDE_URL
+                                ? GCGO_OVERRIDE_URL + '/user_pool_txs?'
+                                : props.graphCacheUrl + '/user_pool_txs?';
+                        fetch(
+                            userPoolTransactionsCacheEndpoint +
+                                new URLSearchParams({
+                                    user: props.userAddress,
+                                    base: sortedTokens[0].toLowerCase(),
+                                    quote: sortedTokens[1].toLowerCase(),
+                                    poolIdx:
+                                        props.chainData.poolIndex.toString(),
+                                    chainId: props.chainData.chainId,
+                                }),
+                        )
+                            .then((response) => response.json())
+                            .then((json) => {
+                                const userPoolTransactions = json.data;
+                                const crocEnv = props.crocEnv;
+                                const provider = props.provider;
+                                const skipENSFetch = true;
+                                if (
+                                    userPoolTransactions &&
+                                    crocEnv &&
+                                    provider
+                                ) {
+                                    Promise.all(
+                                        userPoolTransactions.map(
+                                            (position: TransactionServerIF) => {
+                                                return getTransactionData(
+                                                    position,
+                                                    props.searchableTokens,
+                                                    crocEnv,
+                                                    provider,
+                                                    props.chainData.chainId,
+                                                    props.lastBlockNumber,
+                                                    props.cachedFetchTokenPrice,
+                                                    props.cachedQuerySpotPrice,
+                                                    props.cachedTokenDetails,
+                                                    props.cachedEnsResolve,
+                                                    skipENSFetch,
+                                                );
+                                            },
+                                        ),
+                                    )
+                                        .then((updatedTransactions) => {
+                                            setUserTransactionsByPool({
+                                                dataReceived: true,
+                                                changes: updatedTransactions,
+                                            });
+                                            setDataLoadingStatus({
+                                                datasetName:
+                                                    'isConnectedUserPoolTxDataLoading',
+                                                loadingStatus: false,
+                                            });
+                                        })
+                                        .catch(console.error);
+                                } else {
+                                    setUserTransactionsByPool({
+                                        dataReceived: false,
+                                        changes: [],
+                                    });
+                                    setDataLoadingStatus({
+                                        datasetName:
+                                            'isConnectedUserPoolTxDataLoading',
+                                        loadingStatus: false,
+                                    });
+                                }
+                            })
+                            .catch(console.error);
+
+                        // retrieve user_pool_positions
+                        const userPoolPositionsCacheEndpoint = GCGO_OVERRIDE_URL
+                            ? GCGO_OVERRIDE_URL + '/user_pool_positions?'
+                            : props.graphCacheUrl + '/user_pool_positions?';
                         fetch(
                             userPoolPositionsCacheEndpoint +
                                 new URLSearchParams({
@@ -501,7 +558,10 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                             .then((json) => {
                                 const userPoolPositions = json.data;
                                 const crocEnv = props.crocEnv;
-                                if (userPoolPositions && crocEnv) {
+                                const provider = props.provider;
+                                const skipENSFetch = true;
+
+                                if (userPoolPositions && crocEnv && provider) {
                                     Promise.all(
                                         userPoolPositions.map(
                                             (position: PositionServerIF) => {
@@ -509,53 +569,50 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                     position,
                                                     props.searchableTokens,
                                                     crocEnv,
+                                                    provider,
                                                     props.chainData.chainId,
                                                     props.lastBlockNumber,
                                                     props.cachedFetchTokenPrice,
                                                     props.cachedQuerySpotPrice,
                                                     props.cachedTokenDetails,
                                                     props.cachedEnsResolve,
+                                                    skipENSFetch,
                                                 );
                                             },
                                         ),
                                     )
                                         .then((updatedPositions) => {
-                                            dispatch(
-                                                setUserPositionsByPool({
-                                                    dataReceived: true,
-                                                    positions: updatedPositions,
-                                                }),
-                                            );
-                                            dispatch(
-                                                setDataLoadingStatus({
-                                                    datasetName:
-                                                        'connectedUserPoolRangeData',
-                                                    loadingStatus: false,
-                                                }),
-                                            );
+                                            setUserPositionsByPool({
+                                                dataReceived: true,
+                                                positions: updatedPositions,
+                                            });
+                                            setDataLoadingStatus({
+                                                datasetName:
+                                                    'isConnectedUserPoolRangeDataLoading',
+                                                loadingStatus: false,
+                                            });
                                         })
                                         .catch(console.error);
                                 } else {
-                                    dispatch(
-                                        setUserPositionsByPool({
-                                            dataReceived: false,
-                                            positions: [],
-                                        }),
-                                    );
-                                    dispatch(
-                                        setDataLoadingStatus({
-                                            datasetName:
-                                                'connectedUserPoolRangeData',
-                                            loadingStatus: false,
-                                        }),
-                                    );
+                                    setUserPositionsByPool({
+                                        dataReceived: false,
+                                        positions: [],
+                                    });
+                                    setDataLoadingStatus({
+                                        datasetName:
+                                            'isConnectedUserPoolRangeDataLoading',
+                                        loadingStatus: false,
+                                    });
                                 }
                             })
                             .catch(console.error);
 
                         // retrieve user_pool_limit_orders
                         const userPoolLimitOrdersCacheEndpoint =
-                            GRAPHCACHE_SMALL_URL + '/user_pool_limit_orders?';
+                            GCGO_OVERRIDE_URL
+                                ? GCGO_OVERRIDE_URL + '/user_pool_limit_orders?'
+                                : props.graphCacheUrl +
+                                  '/user_pool_limit_orders?';
                         fetch(
                             userPoolLimitOrdersCacheEndpoint +
                                 new URLSearchParams({
@@ -571,7 +628,13 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                             .then((json) => {
                                 const userPoolLimitOrderStates = json?.data;
                                 const crocEnv = props.crocEnv;
-                                if (userPoolLimitOrderStates && crocEnv) {
+                                const provider = props.provider;
+                                const skipENSFetch = true;
+                                if (
+                                    userPoolLimitOrderStates &&
+                                    crocEnv &&
+                                    provider
+                                ) {
                                     Promise.all(
                                         userPoolLimitOrderStates.map(
                                             (
@@ -581,46 +644,40 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                     limitOrder,
                                                     props.searchableTokens,
                                                     crocEnv,
+                                                    provider,
                                                     props.chainData.chainId,
                                                     props.lastBlockNumber,
                                                     props.cachedFetchTokenPrice,
                                                     props.cachedQuerySpotPrice,
                                                     props.cachedTokenDetails,
                                                     props.cachedEnsResolve,
+                                                    skipENSFetch,
                                                 );
                                             },
                                         ),
                                     ).then((updatedLimitOrderStates) => {
-                                        dispatch(
-                                            setUserLimitOrdersByPool({
-                                                dataReceived: true,
-                                                limitOrders:
-                                                    updatedLimitOrderStates,
-                                            }),
-                                        );
-
-                                        dispatch(
-                                            setDataLoadingStatus({
-                                                datasetName:
-                                                    'connectedUserPoolOrderData',
-                                                loadingStatus: false,
-                                            }),
-                                        );
-                                    });
-                                } else {
-                                    dispatch(
                                         setUserLimitOrdersByPool({
-                                            dataReceived: false,
-                                            limitOrders: [],
-                                        }),
-                                    );
-                                    dispatch(
+                                            dataReceived: true,
+                                            limitOrders:
+                                                updatedLimitOrderStates,
+                                        });
+
                                         setDataLoadingStatus({
                                             datasetName:
-                                                'connectedUserPoolOrderData',
+                                                'isConnectedUserPoolOrderDataLoading',
                                             loadingStatus: false,
-                                        }),
-                                    );
+                                        });
+                                    });
+                                } else {
+                                    setUserLimitOrdersByPool({
+                                        dataReceived: false,
+                                        limitOrders: [],
+                                    });
+                                    setDataLoadingStatus({
+                                        datasetName:
+                                            'isConnectedUserPoolOrderDataLoading',
+                                        loadingStatus: false,
+                                    });
                                 }
                             })
                             .catch(console.error);
@@ -631,15 +688,16 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
     }, [
         props.userAddress,
         props.receiptCount,
-        rtkMatchesParams,
-        tradeData.tokenA.address,
-        tradeData.tokenB.address,
+        contextMatchesParams,
+        tokenA.address,
+        tokenB.address,
         quoteTokenAddress,
         props.chainData.chainId,
         props.chainData.poolIndex,
         props.searchableTokens,
         lastBlockNumWait,
         !!props.crocEnv,
+        !!props.provider,
     ]);
 
     useEffect(() => {
@@ -652,7 +710,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         };
 
         // Set the pending data before making the request
-        dispatch(setLiquidityPending(request));
+        setLiquidityPending(request);
 
         const crocEnv = props.crocEnv;
         if (
@@ -669,11 +727,12 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                 quoteTokenAddress.toLowerCase(),
                 props.chainData.poolIndex,
                 crocEnv,
+                props.graphCacheUrl,
                 props.cachedFetchTokenPrice,
             )
                 .then((liqCurve) => {
                     if (liqCurve) {
-                        dispatch(setLiquidity(liqCurve));
+                        setLiquidity(liqCurve);
                     }
                 })
                 .catch(console.error);
@@ -687,12 +746,11 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
     ]);
 
     return {
+        contextMatchesParams,
         baseTokenAddress,
         quoteTokenAddress,
         baseTokenDecimals, // Token contract decimals
         quoteTokenDecimals, // Token contract decimals
-        mainnetBaseTokenAddress, // The mainnet equivalent base token (if testnet)
-        mainnetQuoteTokenAddress, // The mainnet euquivalent quote token
         isTokenABase, // True if the base token is the first token in the panel (e.g. sell token on swap)
     };
 }

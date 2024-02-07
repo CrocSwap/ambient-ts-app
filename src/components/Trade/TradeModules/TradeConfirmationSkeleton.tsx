@@ -2,13 +2,12 @@
 import { useContext, useState } from 'react';
 
 // START: Import JSX Components
-import Button from '../../Global/Button/Button';
+import Button from '../../Form/Button';
 
 // START: Import Other Local Files
-import { TokenIF } from '../../../utils/interfaces/exports';
+import { TokenIF } from '../../../ambient-utils/types';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
-import uriToHttp from '../../../utils/functions/uriToHttp';
+import { uriToHttp } from '../../../ambient-utils/dataLayer';
 import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
@@ -27,6 +26,7 @@ interface propsIF {
     tokenB: { token: TokenIF; quantity?: string };
     transactionHash: string;
     txErrorCode: string;
+    txErrorMessage: string;
     showConfirmation: boolean;
     statusText: string;
     onClose?: () => void;
@@ -36,6 +36,8 @@ interface propsIF {
     transactionDetails?: React.ReactNode;
     acknowledgeUpdate?: React.ReactNode;
     extraNotes?: React.ReactNode;
+    priceImpactWarning?: JSX.Element | undefined;
+    isAllowed?: boolean;
 }
 
 export default function TradeConfirmationSkeleton(props: propsIF) {
@@ -48,12 +50,15 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         transactionDetails,
         transactionHash,
         txErrorCode,
+        txErrorMessage,
         statusText,
         showConfirmation,
         resetConfirmation,
         poolTokenDisplay,
         acknowledgeUpdate,
         extraNotes,
+        priceImpactWarning,
+        isAllowed,
     } = props;
 
     const {
@@ -66,21 +71,11 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
     const [skipFutureConfirmation, setSkipFutureConfirmation] =
         useState<boolean>(false);
 
-    const formattedTokenAQuantity = getFormattedNumber({
-        value: tokenAQuantity ? parseFloat(tokenAQuantity) : undefined,
-        abbrevThreshold: 1000000000,
-    });
-
-    const formattedTokenBQuantity = getFormattedNumber({
-        value: tokenBQuantity ? parseFloat(tokenBQuantity) : undefined,
-        abbrevThreshold: 1000000000,
-    });
-
     const tokenDisplay = (
         <>
             <ConfirmationQuantityContainer>
                 <Text fontSize='header2' color='text1'>
-                    {formattedTokenAQuantity}
+                    {tokenAQuantity}
                 </Text>
                 <FlexContainer
                     alignItems='center'
@@ -107,7 +102,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
             </FlexContainer>
             <ConfirmationQuantityContainer>
                 <Text fontSize='header2' color='text1'>
-                    {formattedTokenBQuantity}
+                    {tokenBQuantity}
                 </Text>
                 <FlexContainer
                     alignItems='center'
@@ -137,7 +132,6 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                 flexDirection='column'
                 padding='16px'
                 gap={8}
-                background='dark1'
                 aria-label='Transaction Confirmation modal'
             >
                 {type === 'Swap' || type === 'Limit'
@@ -152,6 +146,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                         {transactionDetails}
                     </ConfirmationDetailsContainer>
                 )}
+                {priceImpactWarning}
                 {extraNotes && extraNotes}
                 <footer>
                     {!showConfirmation ? (
@@ -164,6 +159,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                                     }
                                 />
                                 <Button
+                                    idForDOM='set_skip_confirmation_button'
                                     title={statusText}
                                     action={() => {
                                         // if this modal is launched we can infer user wants confirmation
@@ -178,7 +174,10 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                                         initiate();
                                     }}
                                     flat
-                                    disabled={!!acknowledgeUpdate}
+                                    disabled={
+                                        isAllowed === false ||
+                                        !!acknowledgeUpdate
+                                    }
                                 />
                             </>
                         ) : (
@@ -189,6 +188,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                             type={type}
                             newTransactionHash={transactionHash}
                             txErrorCode={txErrorCode}
+                            txErrorMessage={txErrorMessage}
                             resetConfirmation={resetConfirmation}
                             sendTransaction={initiate}
                             transactionPendingDisplayString={statusText}

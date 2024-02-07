@@ -1,14 +1,11 @@
 import { ChainSpec, CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
-import { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import {
-    setDidUserFlipDenom,
-    setLimitTick,
-    setPoolPriceNonDisplay,
-    setPrimaryQuantityRange,
-} from '../../utils/state/tradeDataSlice';
-import { get24hChange } from '../functions/getPoolStats';
-import { SpotPriceFn } from '../functions/querySpotPrice';
+import { useContext, useEffect, useState } from 'react';
+import { SpotPriceFn } from '../../ambient-utils/dataLayer';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { RangeContext } from '../../contexts/RangeContext';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../../ambient-utils/constants';
 
 interface PoolPricingPropsIF {
     crocEnv?: CrocEnv;
@@ -20,7 +17,6 @@ interface PoolPricingPropsIF {
     chainData: ChainSpec;
     receiptCount: number;
     isUserLoggedIn: boolean;
-    isUserIdle: boolean;
     lastBlockNumber: number;
     isServerEnabled: boolean;
     cachedQuerySpotPrice: SpotPriceFn;
@@ -28,8 +24,17 @@ interface PoolPricingPropsIF {
 
 /* Hooks to pull the pricing data for a given pool, including spot price and 24-hour direction change */
 export function usePoolPricing(props: PoolPricingPropsIF) {
-    const dispatch = useAppDispatch();
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const {
+        isDenomBase,
+        setDidUserFlipDenom,
+        poolPriceNonDisplay,
+        setPoolPriceNonDisplay,
+        setLimitTick,
+    } = useContext(TradeDataContext);
+    const { setPrimaryQuantityRange } = useContext(RangeContext);
+    const { activeNetwork } = useContext(CrocEnvContext);
+
+    const { cachedGet24hChange } = useContext(CachedDataContext);
 
     // value for whether a pool exists on current chain and token pair
     // ... true => pool exists
@@ -77,12 +82,12 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
     useEffect(() => {
         setPoolPriceDisplay(0);
         setIsPoolInitialized(undefined);
-        dispatch(setPrimaryQuantityRange(''));
+        setPrimaryQuantityRange('');
         setPoolPriceDisplay(undefined);
-        dispatch(setDidUserFlipDenom(false)); // reset so a new token pair is re-evaluated for price > 1
+        setDidUserFlipDenom(false); // reset so a new token pair is re-evaluated for price > 1
         setPoolPriceChangePercent(undefined);
         if (!props.pathname.includes('limitTick')) {
-            dispatch(setLimitTick(undefined));
+            setLimitTick(undefined);
         }
     }, [
         props.baseTokenAddress,
@@ -124,7 +129,6 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
     // useEffect to asyncronously query spot price when tokens change and block updates
     useEffect(() => {
         if (
-            !props.isUserIdle &&
             props.crocEnv &&
             props.baseTokenAddress &&
             props.quoteTokenAddress &&
@@ -141,20 +145,19 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
                         setPoolPriceDisplay(newDisplayPrice);
                     }
                 }
-                if (spotPrice && spotPrice !== tradeData.poolPriceNonDisplay) {
-                    dispatch(setPoolPriceNonDisplay(spotPrice));
+                if (spotPrice && spotPrice !== poolPriceNonDisplay) {
+                    setPoolPriceNonDisplay(spotPrice);
                 }
             })();
         }
     }, [
-        props.isUserIdle,
         props.lastBlockNumber,
         props.baseTokenAddress,
         props.quoteTokenAddress,
         props.baseTokenDecimals,
         props.quoteTokenDecimals,
         !!props.crocEnv,
-        tradeData.poolPriceNonDisplay === 0,
+        poolPriceNonDisplay === 0,
         props.isUserLoggedIn,
     ]);
 
@@ -167,12 +170,14 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
                 props.quoteTokenAddress
             ) {
                 try {
-                    const priceChangeResult = await get24hChange(
+                    const priceChangeResult = await cachedGet24hChange(
                         props.chainData.chainId,
                         props.baseTokenAddress,
                         props.quoteTokenAddress,
                         props.chainData.poolIndex,
-                        tradeData.isDenomBase,
+                        isDenomBase,
+                        activeNetwork.graphCacheUrl,
+                        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
                     );
 
                     if (!priceChangeResult) {
@@ -214,7 +219,7 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
         })();
     }, [
         props.isServerEnabled,
-        tradeData.isDenomBase,
+        isDenomBase,
         props.baseTokenAddress,
         props.quoteTokenAddress,
         props.lastBlockNumber,

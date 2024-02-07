@@ -1,15 +1,23 @@
+import { useContext } from 'react';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import Row from '../../Global/Row/Row';
 import styles from './LimitActionInfo.module.css';
+import { TokenContext } from '../../../contexts/TokenContext';
+import TokenIcon from '../../Global/TokenIcon/TokenIcon';
+import { uriToHttp } from '../../../ambient-utils/dataLayer';
+import { TokenIF } from '../../../ambient-utils/types';
 
 interface ILimitActionInfoProps {
     type: 'Remove' | 'Claim';
     usdValue: string;
     tokenQuantity: string | undefined;
-    tokenQuantityLogo: string;
+    tokenQuantityAddress: string;
     limitOrderPrice: string | undefined;
-    limitOrderPriceLogo: string;
+    limitOrderPriceAddress: string;
     receivingAmount: string | undefined;
-    receivingAmountLogo: string;
+    receivingAmountAddress: string;
+    claimableAmount?: string | undefined;
+    claimableAmountAddress?: string;
     networkFee: string | undefined;
 }
 
@@ -18,13 +26,35 @@ export default function LimitActionInfo(props: ILimitActionInfoProps) {
         type,
         usdValue,
         tokenQuantity,
-        tokenQuantityLogo,
+        tokenQuantityAddress,
         limitOrderPrice,
-        limitOrderPriceLogo,
+        limitOrderPriceAddress,
         receivingAmount,
-        receivingAmountLogo,
+        receivingAmountAddress,
         networkFee,
+        claimableAmount,
+        claimableAmountAddress,
     } = props;
+
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+
+    const { tokens } = useContext(TokenContext);
+    const tokenQuantityToken: TokenIF | undefined =
+        tokens.getTokenByAddress(tokenQuantityAddress);
+    const limitOrderPriceToken: TokenIF | undefined = tokens.getTokenByAddress(
+        limitOrderPriceAddress,
+    );
+    const receivingAmountToken: TokenIF | undefined = tokens.getTokenByAddress(
+        receivingAmountAddress,
+    );
+    const claimableAmountToken: TokenIF | undefined = claimableAmountAddress
+        ? tokens.getTokenByAddress(claimableAmountAddress)
+        : undefined;
+
+    const isLimitOrderPartiallyFilled =
+        claimableAmount !== undefined && claimableAmount !== '0';
 
     return (
         <div className={styles.row}>
@@ -37,10 +67,20 @@ export default function LimitActionInfo(props: ILimitActionInfoProps) {
                 </div>
                 <div className={styles.info_container}>
                     <Row>
-                        <span>Token Quantity</span>
+                        <span>
+                            {type === 'Remove' ? 'Unconverted ' : 'Original '}
+                            Token Quantity
+                        </span>
                         <div className={styles.align_center}>
                             <p className={styles.info_text}>{tokenQuantity}</p>
-                            <img src={tokenQuantityLogo} alt='' width='15px' />
+                            <TokenIcon
+                                token={tokenQuantityToken}
+                                src={uriToHttp(
+                                    tokenQuantityToken?.logoURI ?? '',
+                                )}
+                                alt={tokenQuantityToken?.symbol ?? '?'}
+                                size='xs'
+                            />
                         </div>
                     </Row>
                     <Row>
@@ -49,10 +89,13 @@ export default function LimitActionInfo(props: ILimitActionInfoProps) {
                             <p className={styles.info_text}>
                                 {limitOrderPrice}
                             </p>
-                            <img
-                                src={limitOrderPriceLogo}
-                                alt=''
-                                width='15px'
+                            <TokenIcon
+                                token={limitOrderPriceToken}
+                                src={uriToHttp(
+                                    limitOrderPriceToken?.logoURI ?? '',
+                                )}
+                                alt={limitOrderPriceToken?.symbol ?? '?'}
+                                size='xs'
                             />
                         </div>
                     </Row>
@@ -61,28 +104,53 @@ export default function LimitActionInfo(props: ILimitActionInfoProps) {
                     <Row>
                         <span>
                             {type === 'Remove'
-                                ? 'Return Quantity'
+                                ? isLimitOrderPartiallyFilled
+                                    ? 'Return Quantities'
+                                    : 'Return Quantity'
                                 : 'Claimable Amount'}{' '}
                         </span>
                         <div className={styles.align_center}>
                             <p className={styles.info_text}>
                                 {receivingAmount}
                             </p>
-                            <img
-                                src={receivingAmountLogo}
-                                alt=''
-                                width='15px'
+                            <TokenIcon
+                                token={receivingAmountToken}
+                                src={uriToHttp(
+                                    receivingAmountToken?.logoURI ?? '',
+                                )}
+                                alt={receivingAmountToken?.symbol ?? '?'}
+                                size='xs'
                             />
                         </div>
                     </Row>
+                    {type === 'Remove' && isLimitOrderPartiallyFilled ? (
+                        <Row>
+                            <span></span>
+                            <div className={styles.align_center}>
+                                <p className={styles.info_text}>
+                                    {claimableAmount}
+                                </p>
+                                <TokenIcon
+                                    token={claimableAmountToken}
+                                    src={uriToHttp(
+                                        claimableAmountToken?.logoURI ?? '',
+                                    )}
+                                    alt={claimableAmountToken?.symbol ?? '?'}
+                                    size='xs'
+                                />
+                            </div>
+                        </Row>
+                    ) : undefined}
                 </div>
             </div>
-            <div className={styles.network_fee_container}>
-                <div>
-                    <span>Network Fee</span>
+            {chainId === '0x1' && (
+                <div className={styles.network_fee_container}>
+                    <div>
+                        <span>Network Fee</span>
+                    </div>
+                    <span>{networkFee ? '~' + networkFee : '...'}</span>
                 </div>
-                <span>~{networkFee}</span>
-            </div>
+            )}
         </div>
     );
 }

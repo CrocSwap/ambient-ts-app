@@ -1,14 +1,15 @@
 import styles from './ExchangeCard.module.css';
-import { testTokenMap } from '../../../../../utils/data/testTokenMap';
-import { TokenIF } from '../../../../../utils/interfaces/exports';
+import { TokenIF } from '../../../../../ambient-utils/types';
 import { useContext, useEffect, useState } from 'react';
-import { ZERO_ADDRESS } from '../../../../../constants';
+import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
-import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
-import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
-import uriToHttp from '../../../../../utils/functions/uriToHttp';
+import { TokenPriceFn } from '../../../../../ambient-utils/api';
+import {
+    getFormattedNumber,
+    uriToHttp,
+} from '../../../../../ambient-utils/dataLayer';
 import TokenIcon from '../../../TokenIcon/TokenIcon';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 
@@ -25,9 +26,8 @@ export default function ExchangeCard(props: propsIF) {
 
     const {
         chainData: { chainId },
+        crocEnv,
     } = useContext(CrocEnvContext);
-
-    const tokenMapKey: string = token?.address + '_' + chainId;
 
     const tokenFromMap = token?.address
         ? getTokenByAddress(token.address)
@@ -49,18 +49,13 @@ export default function ExchangeCard(props: propsIF) {
 
     useEffect(() => {
         (async () => {
+            if (!crocEnv) return;
             try {
-                const tokenAddress = tokenMapKey.split('_')[0];
-                const chain = tokenMapKey.split('_')[1];
-                const isChainMainnet = chain === '0x1';
-                const mainnetAddress =
-                    isChainMainnet && tokenAddress !== ZERO_ADDRESS
-                        ? tokenMapKey.split('_')[0]
-                        : testTokenMap.get(tokenMapKey)?.split('_')[0];
-                if (mainnetAddress) {
+                if (tokenFromMap?.symbol) {
                     const price = await cachedFetchTokenPrice(
-                        mainnetAddress,
-                        '0x1',
+                        tokenFromMap.address,
+                        chainId,
+                        crocEnv,
                     );
                     if (price) setTokenPrice(price);
                 }
@@ -68,7 +63,7 @@ export default function ExchangeCard(props: propsIF) {
                 console.error(err);
             }
         })();
-    }, [tokenMapKey]);
+    }, [crocEnv, token?.address, chainId]);
 
     const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 

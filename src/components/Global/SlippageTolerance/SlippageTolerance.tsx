@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, KeyboardEvent } from 'react';
 import { useSlippageInput } from '../../../utils/hooks/useSlippageInput';
 import styles from './SlippageTolerance.module.css';
-import { OptionButton } from '../Button/OptionButton';
+import { Chip } from '../../Form/Chip';
 
 interface propsIF {
     persistedSlippage: number;
@@ -18,6 +18,9 @@ export default function SlippageTolerance(props: propsIF) {
         persistedSlippage,
         setCurrentSlippage,
     );
+
+    // type derived from preset values received in props
+    type presetValues = typeof presets[number];
 
     return (
         <div className={styles.slippage_tolerance_container}>
@@ -37,14 +40,21 @@ export default function SlippageTolerance(props: propsIF) {
                             aria-label='Enter Slippage Tolerance'
                         />
                     </div>
-                    {presets.map((preset: number) => (
-                        <OptionButton
-                            key={`slippage-preset-button-${preset}`}
-                            onClick={() => takeNewSlippage(preset)}
-                            ariaLabel={`set slippage to ${preset}% `}
-                            content={`${preset}%`}
-                        />
-                    ))}
+                    {presets.map((preset: presetValues) => {
+                        // convert preset value to a human-readable string
+                        const humanReadable: string = preset + '%';
+                        // generate preset buttons
+                        return (
+                            <Chip
+                                key={preset.toString()}
+                                id={`slippage-preset-button-${humanReadable}`}
+                                onClick={() => takeNewSlippage(preset)}
+                                ariaLabel={`set slippage to ${humanReadable}`}
+                            >
+                                {humanReadable}
+                            </Chip>
+                        );
+                    })}
                 </div>
             </div>
         </div>

@@ -34,19 +34,15 @@ export const PrimaryHeader = styled.header<PrimaryHeaderProps>`
 `;
 
 // Define the styles for LogoContainer
+// inline block prevents clickable area from expanding larger than content
 export const LogoContainer = styled(Link)`
-    width: 100%;
-    display: flex;
+    display: inline-block;
     flex-direction: row;
     gap: 8px;
     align-items: center;
 
     &:focus-visible img {
-        box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
-            0px 0px 21px rgba(205, 193, 255, 0.2),
-            0px 0px 12px rgba(205, 193, 255, 0.2),
-            0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
-            0px 0px 2px rgba(205, 193, 255, 0.2);
+        box-shadow: var(--glow-light-box-shadow);
     }
 
     @media only screen and (min-width: 800px) {
@@ -150,7 +146,7 @@ const NavigationLinkStyles = css`
 
     &.active:focus-visible,
     &:focus-visible {
-        border: 1px solid var(--text2);
+        border: var(--grey-light-border);
     }
 
     &:hover:after,
@@ -178,43 +174,7 @@ export const UnderlinedMotionDiv = styled(motion.div)`
     right: 0;
     height: 1px;
     background: var(--text1);
-    box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
-        0px 0px 21px rgba(205, 193, 255, 0.2),
-        0px 0px 12px rgba(205, 193, 255, 0.2),
-        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
-        0px 0px 2px rgba(205, 193, 255, 0.2);
-`;
-
-interface AuthenticateButtonProps {
-    desktopScreen: boolean;
-}
-
-export const AuthenticateButton = styled.button<AuthenticateButtonProps>`
-    cursor: pointer;
-    background: var(--accent1);
-    border: none;
-    outline: none;
-    color: var(--dark2);
-    font-weight: 300;
-    font-size: var(--header2-size);
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 4px;
-
-    border-radius: var(--border-radius);
-    width: 155px;
-    height: 28px;
-    transition: box-shadow var(--animation-speed) ease-in-out;
-
-    ${({ desktopScreen }) => desktopScreen && 'width: 140px;'}
-
-    &:hover,
-    &:focus-visible {
-        box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
-            0px 0px 21px rgba(205, 193, 255, 0.2),
-            0px 0px 12px rgba(205, 193, 255, 0.2),
-            0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
-            0px 0px 2px rgba(205, 193, 255, 0.2);
-    }
+    box-shadow: var(--glow-light-box-shadow);
 `;
 
 // WalletDropdown
@@ -349,7 +309,7 @@ export const TitleGradientButton = styled.button`
     border: none;
     background: var(--dark2);
     padding: 7.5px 12px 7.5px 6px;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -358,11 +318,7 @@ export const TitleGradientButton = styled.button`
 
     &:hover,
     &:focus-visible {
-        box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
-            0px 0px 21px rgba(205, 193, 255, 0.2),
-            0px 0px 12px rgba(205, 193, 255, 0.2),
-            0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
-            0px 0px 2px rgba(205, 193, 255, 0.2);
+        box-shadow: var(--glow-light-box-shadow);
     }
 
     p {
@@ -404,7 +360,7 @@ export const StyledExchangeBalanceDropdown = styled.div`
         width: auto;
         height: auto;
         background: transparent;
-        border-radius: 4px;
+        border-radius: var(--border-radius);
     }
 `;
 
@@ -414,13 +370,12 @@ export const NavbarDropdown = styled.div`
     position: absolute;
     top: 60px;
     width: 240px;
-    height: 376px;
+    height: auto;
     transform: translateX(-45%);
     border: none;
     padding: 1rem;
     overflow: hidden;
     transition: all var(--animation-speed) ease;
-
     background: var(--dark2);
     border-radius: var(--border-radius);
     box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.25);
@@ -520,7 +475,7 @@ export const NavItemIconButton = styled(FlexContainer)<IconButtonProps>`
     background-color: var(--dark2);
     border-radius: ${(props) => (props.square ? '4px' : '50%')};
     padding: 5px;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
     cursor: pointer;
 
     &:hover,
@@ -542,7 +497,7 @@ export const DropdownMenuContainer = styled(FlexContainer)`
     z-index: 99999;
     background-color: var(--dark2);
     padding: 0 4px;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     height: 31px;
 `;
 
@@ -574,11 +529,13 @@ export const NetworkItem = styled(motion.li)`
     &:hover {
         backdrop-filter: blur(16.5px);
         -webkit-backdrop-filter: blur(16.5px);
-        border-radius: 4px;
+        border-radius: var(--border-radius);
     }
 `;
 
-export const ChainNameStatus = styled.div`
+export const ChainNameStatus = styled.div<{ active: boolean }>`
+    display: flex;
+    align-items: center;
     padding: 0.6rem 0;
     font-size: var(--header2-size);
     width: 100%;
@@ -594,4 +551,7 @@ export const ChainNameStatus = styled.div`
         margin-right: 0.5em;
         vertical-align: middle;
     }
+
+    border-bottom: ${(props) =>
+        props.active ? '1px solid var(--accent1)' : ''};
 `;
