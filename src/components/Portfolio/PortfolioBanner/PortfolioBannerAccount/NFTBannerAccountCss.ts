@@ -29,11 +29,25 @@ const NFTBannerAccountContainer = styled.div`
 `;
 
 const NFTBannerHeader = styled.div`
-    width: 350px;
+    display: flex;
+
     height: 40px;
 
+    margin: 10px;
+
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
 `;
 
-export { NFTBannerAccountContainer, NFTBannerHeader };
+const NFTDisplay = styled.div`
+    padding: 10px;
+    justifycontent: space-evenly;
+
+    alignitems: center;
+    gap: 10px;
+
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+`;
+
+export { NFTBannerAccountContainer, NFTBannerHeader, NFTDisplay };
