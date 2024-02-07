@@ -134,7 +134,12 @@ export default function PortfolioBannerAccount(
                 </FlexContainer>
             </FlexContainer>
 
-            {showNFTPage && <NFTBannerAccount></NFTBannerAccount>}
+            {showNFTPage && (
+                <NFTBannerAccount
+                    setShowNFTPage={setShowNFTPage}
+                    showNFTPage={showNFTPage}
+                />
+            )}
         </PortfolioBannerMainContainer>
     );
 }

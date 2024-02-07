@@ -1,37 +1,56 @@
-import { useContext, useEffect } from 'react';
-import { NFTBannerAccountContainer } from './NFTBannerAccountCss';
+import { useContext, useEffect, useState } from 'react';
 import {
-    NftTokenContractBalanceItemIF,
-    TokenBalanceContext,
-} from '../../../../contexts/TokenBalanceContext';
+    NFTBannerAccountContainer,
+    NFTBannerHeader,
+} from './NFTBannerAccountCss';
+import { TokenBalanceContext } from '../../../../contexts/TokenBalanceContext';
 
-export default function NFTBannerAccount() {
+interface NFTBannerAccountProps {
+    showNFTPage: boolean;
+    setShowNFTPage: React.Dispatch<boolean>;
+}
+
+export default function NFTBannerAccount(props: NFTBannerAccountProps) {
+    const { setShowNFTPage } = props;
+
     const { NFTData } = useContext(TokenBalanceContext);
 
+    const [nftArray, setNftArray] = useState<any[]>([]);
+
     useEffect(() => {
-        NFTData?.forEach((item: NftTokenContractBalanceItemIF) => {
-            console.log(item.nftData);
+        const nftArray: any[] = [];
+        NFTData?.map((item) => {
+            const nftData = Object.values(item.nftData);
+            nftData.map((element) => {
+                nftArray.push(element);
+            });
         });
+        setNftArray(() => nftArray);
     }, [NFTData]);
 
     return (
         <NFTBannerAccountContainer>
-            {NFTData && (
+            <NFTBannerHeader onClick={() => setShowNFTPage(false)}>
+                <div>NFTs</div>
+                <div> </div>
+            </NFTBannerHeader>
+            {NFTData && nftArray && (
                 <div
                     style={{
                         padding: '10px',
-                        display: 'flex',
                         justifyContent: 'space-evenly',
                         alignItems: 'center',
                         gap: '10px',
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(4, 1fr)',
                     }}
                 >
-                    {NFTData.map((item, index) => (
+                    {nftArray.map((item: any, index: number) => (
                         <img
                             key={index}
                             alt='NFT'
                             style={{ width: '75px', height: '75px' }}
-                            src={item.nftData[0].external_data.image}
+                            src={item.external_data.image}
                         ></img>
                     ))}
                 </div>

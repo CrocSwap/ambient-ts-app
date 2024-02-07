@@ -10,7 +10,7 @@ export interface NftTokenContractBalanceItemIF {
     contractTickerSymbol: string;
     isSpam: boolean;
     lastTransferedAt: any;
-    nftData: any;
+    nftData: Array<any>;
     supportsErc: Array<string>;
     type: string;
 }

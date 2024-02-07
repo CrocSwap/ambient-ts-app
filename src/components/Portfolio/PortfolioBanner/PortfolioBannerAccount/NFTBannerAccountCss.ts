@@ -6,9 +6,8 @@ const NFTBannerAccountContainer = styled.div`
     position: absolute;
 
     width: 350px;
-    height: 250px;
+    height: 300px;
 
-    padding: 16px;
     gap: 16px;
 
     top: 30%;
@@ -24,6 +23,17 @@ const NFTBannerAccountContainer = styled.div`
     background: #0d1117;
 
     z-index: 5;
+
+    overflow-y: auto;
+    overflow-x: hidden;
 `;
 
-export { NFTBannerAccountContainer };
+const NFTBannerHeader = styled.div`
+    width: 350px;
+    height: 40px;
+
+    align-items: center;
+    justify-content: center;
+`;
+
+export { NFTBannerAccountContainer, NFTBannerHeader };
