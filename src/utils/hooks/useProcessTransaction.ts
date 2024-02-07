@@ -18,6 +18,7 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useContext } from 'react';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { useFetchBatch } from '../../App/hooks/useFetchBatch';
+import { UserDataContext } from '../../contexts/UserDataContext';
 
 export const useProcessTransaction = (
     tx: TransactionIF,
@@ -25,6 +26,7 @@ export const useProcessTransaction = (
     isAccountView = false,
 ) => {
     const { tokenA, tokenB, isDenomBase } = useContext(TradeDataContext);
+    const { ensName: ensNameConnectedUser } = useContext(UserDataContext);
     const blockExplorer = getChainExplorer(tx.chainId);
 
     const txHash = tx.txHash;
@@ -32,18 +34,22 @@ export const useProcessTransaction = (
     // TODO: clarify if this should also preferentially show ENS address
     const ownerId = tx.user ? getAddress(tx.user) : '';
 
+    const isOwnerActiveAccount =
+        ownerId.toLowerCase() === account?.toLowerCase();
+
     /* eslint-disable-next-line camelcase */
     const body = { config_path: 'ens_address', address: tx.user };
     const { data, error } = useFetchBatch<'ens_address'>(body);
 
     let ensAddress = null;
     if (data && !error) {
-        ensAddress = data.ens_address;
+        // prevent showing ens address if it is the same as the connected user due to async issue when switching tables
+        ensAddress =
+            data.ens_address !== ensNameConnectedUser
+                ? data.ens_address
+                : undefined;
     }
     const ensName = ensAddress || tx.ensResolution || null;
-
-    const isOwnerActiveAccount =
-        ownerId.toLowerCase() === account?.toLowerCase();
 
     const tokenAAddress = tokenA.address;
     const tokenBAddress = tokenB.address;
@@ -314,12 +320,12 @@ export const useProcessTransaction = (
 
     const usdValueString = getFormattedNumber({
         value: usdValueNum,
-        isUSD: true,
+        prefix: '$',
     });
 
     const totalFlowUSD = getFormattedNumber({
         value: totalFlowAbsNum,
-        isUSD: true,
+        prefix: '$',
     });
 
     // --------------------------------------------------------

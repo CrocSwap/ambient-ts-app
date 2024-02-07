@@ -90,7 +90,7 @@ body {
 }
 
 footer {
-    /* To make page 100vh, turn off footer position sticky and turn on absolute then style the footer based on route. */
+    /* To make page 100vh, turn off the footer position sticky and turn on absolute then style the footer based on route. */
     /* position: absolute;
   position: sticky;
   right: 0;

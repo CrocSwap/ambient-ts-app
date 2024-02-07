@@ -11,11 +11,11 @@ import {
     diffHashSig,
     diffHashSigScaleData,
 } from '../../../ambient-utils/dataLayer';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { formatAmountWithoutDigit } from '../../../utils/numbers';
 import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
 import {
+    getXandYLocationForChart,
     lineValue,
     liquidityChartData,
     renderCanvasArray,
@@ -48,6 +48,7 @@ interface liquidityPropsIF {
     isActiveDragOrZoom: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mainCanvasBoundingClientRect: any;
+    setLiqMaxActiveLiq: React.Dispatch<number | undefined>;
 }
 
 type nearestLiquidity = {
@@ -60,11 +61,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     const d3CanvasLiqHover = useRef<HTMLCanvasElement | null>(null);
     const { pool: pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
-    const tradeData = useAppSelector((state) => state.tradeData);
     const { advancedMode } = useContext(RangeContext);
-    const { isDenomBase } = useContext(TradeDataContext);
-
-    const { poolPriceNonDisplay } = tradeData;
+    const { isDenomBase, poolPriceNonDisplay } = useContext(TradeDataContext);
 
     const poolPriceDisplay = poolPriceWithoutDenom
         ? isDenomBase && poolPriceWithoutDenom
@@ -117,6 +115,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         mouseLeaveEvent,
         isActiveDragOrZoom,
         mainCanvasBoundingClientRect,
+        setLiqMaxActiveLiq,
     } = props;
 
     const currentPoolPriceTick =
@@ -142,6 +141,92 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         liquidityData?.depthLiqBidData,
         liquidityData?.topBoundary,
     ]);
+
+    const findLiqNearest = (
+        liqDataAll: LiquidityDataLocal[],
+    ): nearestLiquidity => {
+        if (scaleData !== undefined) {
+            const point = scaleData?.yScale.domain()[0];
+
+            if (point == undefined) return { min: undefined, max: undefined };
+            if (liqDataAll) {
+                const tempLiqData = liqDataAll;
+
+                const sortLiqaData = tempLiqData.sort(function (a, b) {
+                    return a.liqPrices - b.liqPrices;
+                });
+
+                if (!sortLiqaData || sortLiqaData.length === 0)
+                    return { min: undefined, max: undefined };
+                const closestMin = sortLiqaData.reduce(function (prev, curr) {
+                    return Math.abs(
+                        curr.liqPrices - scaleData?.yScale.domain()[0],
+                    ) < Math.abs(prev.liqPrices - scaleData?.yScale.domain()[0])
+                        ? curr
+                        : prev;
+                });
+
+                const closestMax = sortLiqaData.reduce(function (prev, curr) {
+                    return Math.abs(
+                        curr.liqPrices - scaleData?.yScale.domain()[1],
+                    ) < Math.abs(prev.liqPrices - scaleData?.yScale.domain()[1])
+                        ? curr
+                        : prev;
+                });
+
+                if (closestMin !== undefined && closestMin !== undefined) {
+                    return {
+                        min: closestMin.liqPrices ? closestMin.liqPrices : 0,
+                        max: closestMax.liqPrices,
+                    };
+                } else {
+                    return { min: 0, max: 0 };
+                }
+            }
+        }
+        return { min: undefined, max: undefined };
+    };
+
+    const liqMaxActiveLiq = useMemo<number | undefined>(() => {
+        if (scaleData && liquidityDepthScale && liquidityScale) {
+            const allData =
+                liqMode === 'curve'
+                    ? liqDataBid.concat(liqDataAsk)
+                    : liqDataDepthBid.concat(liqDataDepthAsk);
+
+            if (!allData || allData.length === 0) return;
+            const { min }: { min: number | undefined } = findLiqNearest(
+                allData,
+            ) as nearestLiquidity;
+
+            if (min !== undefined) {
+                let filteredAllData = allData.filter(
+                    (item: LiquidityDataLocal) =>
+                        min <= item.liqPrices &&
+                        item.liqPrices <= scaleData?.yScale.domain()[1],
+                );
+
+                if (
+                    filteredAllData === undefined ||
+                    filteredAllData.length === 0
+                ) {
+                    filteredAllData = allData.filter(
+                        (item: LiquidityDataLocal) => min <= item.liqPrices,
+                    );
+                }
+
+                const liqMaxActiveLiq = d3.max(
+                    filteredAllData,
+                    function (d: LiquidityDataLocal) {
+                        return d.activeLiq;
+                    },
+                );
+
+                return liqMaxActiveLiq;
+            }
+        }
+        return undefined;
+    }, [liqDataBid, liqDataAsk, liqMode, diffHashSigScaleData(scaleData, 'y')]);
 
     const [liquidityMouseMoveActive, setLiquidityMouseMoveActive] =
         useState<string>('none');
@@ -286,151 +371,73 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         }
     };
 
-    const findLiqNearest = (
-        liqDataAll: LiquidityDataLocal[],
-    ): nearestLiquidity => {
-        if (scaleData !== undefined) {
-            const point = scaleData?.yScale.domain()[0];
-
-            if (point == undefined) return { min: undefined, max: undefined };
-            if (liqDataAll) {
-                const tempLiqData = liqDataAll;
-
-                const sortLiqaData = tempLiqData.sort(function (a, b) {
-                    return a.liqPrices - b.liqPrices;
-                });
-
-                if (!sortLiqaData || sortLiqaData.length === 0)
-                    return { min: undefined, max: undefined };
-                const closestMin = sortLiqaData.reduce(function (prev, curr) {
-                    return Math.abs(
-                        curr.liqPrices - scaleData?.yScale.domain()[0],
-                    ) < Math.abs(prev.liqPrices - scaleData?.yScale.domain()[0])
-                        ? curr
-                        : prev;
-                });
-
-                const closestMax = sortLiqaData.reduce(function (prev, curr) {
-                    return Math.abs(
-                        curr.liqPrices - scaleData?.yScale.domain()[1],
-                    ) < Math.abs(prev.liqPrices - scaleData?.yScale.domain()[1])
-                        ? curr
-                        : prev;
-                });
-
-                if (closestMin !== undefined && closestMin !== undefined) {
-                    return {
-                        min: closestMin.liqPrices ? closestMin.liqPrices : 0,
-                        max: closestMax.liqPrices,
-                    };
-                } else {
-                    return { min: 0, max: 0 };
-                }
-            }
-        }
-        return { min: undefined, max: undefined };
-    };
-
     const liqDataHover = (event: MouseEvent<HTMLDivElement>) => {
         if (
             scaleData !== undefined &&
             liquidityDepthScale !== undefined &&
             liquidityScale !== undefined
         ) {
-            const allData =
-                liqMode === 'curve'
-                    ? liqDataBid.concat(liqDataAsk)
-                    : liqDataDepthBid.concat(liqDataDepthAsk);
+            const canvas = d3
+                .select(d3CanvasLiq.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
 
-            if (!allData || allData.length === 0) return;
-            const { min }: { min: number | undefined } = findLiqNearest(
-                allData,
-            ) as nearestLiquidity;
+            const rect = canvas.getBoundingClientRect();
 
-            if (min !== undefined) {
-                let filteredAllData = allData.filter(
-                    (item: LiquidityDataLocal) =>
-                        min <= item.liqPrices &&
-                        item.liqPrices <= scaleData?.yScale.domain()[1],
-                );
+            const { offsetX, offsetY } = getXandYLocationForChart(event, rect);
 
+            const currentDataY = scaleData?.yScale.invert(offsetY);
+            const currentDataX =
+                liqMode === 'depth'
+                    ? liquidityDepthScale.invert(offsetX)
+                    : liquidityScale.invert(offsetX);
+
+            const bidMinBoudnary = d3.min(
+                liqDataBid,
+                (d: LiquidityDataLocal) => d.liqPrices,
+            );
+            const bidMaxBoudnary = d3.max(
+                liqDataBid,
+                (d: LiquidityDataLocal) => d.liqPrices,
+            );
+
+            const askMinBoudnary = d3.min(
+                liqDataAsk,
+                (d: LiquidityDataLocal) => d.liqPrices,
+            );
+            const askMaxBoudnary = d3.max(
+                liqDataAsk,
+                (d: LiquidityDataLocal) => d.liqPrices,
+            );
+
+            if (liqMaxActiveLiq && currentDataX <= liqMaxActiveLiq) {
                 if (
-                    filteredAllData === undefined ||
-                    filteredAllData.length === 0
+                    bidMinBoudnary !== undefined &&
+                    bidMaxBoudnary !== undefined
                 ) {
-                    filteredAllData = allData.filter(
-                        (item: LiquidityDataLocal) => min <= item.liqPrices,
-                    );
-                }
-
-                const liqMaxActiveLiq = d3.max(
-                    filteredAllData,
-                    function (d: LiquidityDataLocal) {
-                        return d.activeLiq;
-                    },
-                );
-
-                const canvas = d3
-                    .select(d3CanvasLiq.current)
-                    .select('canvas')
-                    .node() as HTMLCanvasElement;
-
-                const rect = canvas.getBoundingClientRect();
-
-                const x = event.clientX - rect.left;
-                const y = event.clientY - rect.top;
-                const currentDataY = scaleData?.yScale.invert(y);
-                const currentDataX =
-                    liqMode === 'depth'
-                        ? liquidityDepthScale.invert(x)
-                        : liquidityScale.invert(x);
-
-                const bidMinBoudnary = d3.min(
-                    liqDataBid,
-                    (d: LiquidityDataLocal) => d.liqPrices,
-                );
-                const bidMaxBoudnary = d3.max(
-                    liqDataBid,
-                    (d: LiquidityDataLocal) => d.liqPrices,
-                );
-
-                const askMinBoudnary = d3.min(
-                    liqDataAsk,
-                    (d: LiquidityDataLocal) => d.liqPrices,
-                );
-                const askMaxBoudnary = d3.max(
-                    liqDataAsk,
-                    (d: LiquidityDataLocal) => d.liqPrices,
-                );
-                if (liqMaxActiveLiq && currentDataX <= liqMaxActiveLiq) {
                     if (
-                        bidMinBoudnary !== undefined &&
-                        bidMaxBoudnary !== undefined
+                        bidMinBoudnary < currentDataY &&
+                        currentDataY < bidMaxBoudnary
+                    ) {
+                        setLiquidityMouseMoveActive('bid');
+                        bidAreaFunc(event);
+                    } else if (
+                        askMinBoudnary !== undefined &&
+                        askMaxBoudnary !== undefined
                     ) {
                         if (
-                            bidMinBoudnary < currentDataY &&
-                            currentDataY < bidMaxBoudnary
+                            askMinBoudnary < currentDataY &&
+                            currentDataY < askMaxBoudnary
                         ) {
-                            setLiquidityMouseMoveActive('bid');
-                            bidAreaFunc(event);
-                        } else if (
-                            askMinBoudnary !== undefined &&
-                            askMaxBoudnary !== undefined
-                        ) {
-                            if (
-                                askMinBoudnary < currentDataY &&
-                                currentDataY < askMaxBoudnary
-                            ) {
-                                setLiquidityMouseMoveActive('ask');
-                                askAreaFunc(event);
-                            }
+                            setLiquidityMouseMoveActive('ask');
+                            askAreaFunc(event);
                         }
                     }
-                } else {
-                    if (liquidityMouseMoveActive !== 'none') {
-                        liqTooltip?.style('visibility', 'hidden');
-                        setLiquidityMouseMoveActive('none');
-                    }
+                }
+            } else {
+                if (liquidityMouseMoveActive !== 'none') {
+                    liqTooltip?.style('visibility', 'hidden');
+                    setLiquidityMouseMoveActive('none');
                 }
             }
         }
@@ -520,8 +527,10 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                     setCanvasResolution(canvas);
                     if (liquidityMouseMoveActive !== 'none' && scaleData) {
                         const rectCanvas = canvas.getBoundingClientRect();
-                        const offsetY =
-                            chartMousemoveEvent.clientY - rectCanvas.top;
+                        const { offsetY } = getXandYLocationForChart(
+                            chartMousemoveEvent,
+                            rectCanvas,
+                        );
 
                         if (liquidityMouseMoveActive === 'ask') {
                             clipCanvas(
@@ -644,7 +653,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         liquidityData?.liqBidData,
     ]);
 
-    const bidAreaFunc = (event: MouseEvent) => {
+    const bidAreaFunc = (event: MouseEvent<HTMLDivElement>) => {
         if (scaleData) {
             const canvas = d3
                 .select(d3CanvasLiq.current)
@@ -652,11 +661,11 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                 .node() as HTMLCanvasElement;
 
             const rect = canvas.getBoundingClientRect();
-            const leftSpaceRelativeToMainCanvas =
-                mainCanvasBoundingClientRect.left;
-            const offsetY = event.clientY - rect.top;
-            const offsetX = event.clientX - leftSpaceRelativeToMainCanvas;
-
+            const { offsetX } = getXandYLocationForChart(
+                event,
+                mainCanvasBoundingClientRect,
+            );
+            const { offsetY } = getXandYLocationForChart(event, rect);
             currentPriceData[0] = {
                 value: poolPriceDisplay !== undefined ? poolPriceDisplay : 0,
             };
@@ -705,13 +714,13 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                         'visibility',
                         percentage !== '0.0' ? 'visible' : 'hidden',
                     )
-                    .style('top', event.pageY - 80 + 'px')
+                    .style('top', offsetY - 20 + 'px')
                     .style('left', offsetX - 80 + 'px');
             }
         }
     };
 
-    const askAreaFunc = (event: MouseEvent) => {
+    const askAreaFunc = (event: MouseEvent<HTMLDivElement>) => {
         if (scaleData) {
             const canvas = d3
                 .select(d3CanvasLiq.current)
@@ -719,10 +728,12 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                 .node() as HTMLCanvasElement;
 
             const rect = canvas.getBoundingClientRect();
-            const leftSpaceRelativeToMainCanvas =
-                mainCanvasBoundingClientRect.left;
-            const offsetY = event.clientY - rect.top;
-            const offsetX = event.clientX - leftSpaceRelativeToMainCanvas;
+
+            const { offsetX } = getXandYLocationForChart(
+                event,
+                mainCanvasBoundingClientRect,
+            );
+            const { offsetY } = getXandYLocationForChart(event, rect);
 
             currentPriceData[0] = {
                 value: poolPriceDisplay !== undefined ? poolPriceDisplay : 0,
@@ -770,13 +781,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                         'visibility',
                         percentage !== '0.0' ? 'visible' : 'hidden',
                     )
-                    .style(
-                        'top',
-                        event.pageY -
-                            mainCanvasBoundingClientRect.top +
-                            50 +
-                            'px',
-                    )
+                    .style('top', offsetY - 20 + 'px')
                     .style('left', offsetX - 80 + 'px');
             }
         }
@@ -812,11 +817,32 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     ]);
 
     useEffect(() => {
+        if (liquidityDepthScale && liquidityScale && liqMaxActiveLiq) {
+            const liqMaxActiveLiqX =
+                liqMode === 'depth'
+                    ? liquidityDepthScale(liqMaxActiveLiq)
+                    : liquidityScale(liqMaxActiveLiq);
+
+            setLiqMaxActiveLiq(liqMaxActiveLiqX * 8);
+        }
+    }, [
+        liqMaxActiveLiq,
+        liquidityDepthScale?.domain(),
+        liquidityScale?.domain(),
+        liqMode,
+    ]);
+
+    useEffect(() => {
         if (chartMousemoveEvent && liqMode !== 'none') {
             liqDataHover(chartMousemoveEvent);
             renderCanvasArray([d3CanvasLiqHover]);
         }
-    }, [chartMousemoveEvent, mainCanvasBoundingClientRect, liqMode]);
+    }, [
+        chartMousemoveEvent,
+        mainCanvasBoundingClientRect,
+        liqMode,
+        liqMaxActiveLiq,
+    ]);
 
     useEffect(() => {
         if (liquidityMouseMoveActive !== 'none') {

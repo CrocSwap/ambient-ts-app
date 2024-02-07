@@ -1,9 +1,5 @@
 // START: Import Local Files
 import styles from './RangePriceInfo.module.css';
-// import truncateDecimals from '../../../../ambient-utils/dataLayer';
-// import makeCurrentPrice from './makeCurrentPrice';
-
-// import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import { memo, useContext, useEffect, useMemo, useState } from 'react';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import {

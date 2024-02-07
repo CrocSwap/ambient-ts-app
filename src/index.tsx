@@ -1,8 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { store } from './utils/state/store';
-import { Provider } from 'react-redux';
 import './index.css';
 import App from './App/App';
 import './i18n/config';
@@ -42,7 +40,7 @@ if (!doReload) {
             infuraProvider({
                 apiKey:
                     process.env.REACT_APP_INFURA_KEY ||
-                    '360ea5fda45b4a22883de8522ebd639e', // croc labs #2
+                    '360ea5fda45b4a22883de8522ebd639e', // croc labs #2 // TODO Marking this in the codebase
             }),
 
             jsonRpcProvider({
@@ -103,21 +101,19 @@ if (!doReload) {
     root.render(
         <React.StrictMode>
             <WagmiConfig client={client}>
-                <Provider store={store}>
-                    <BrowserRouter>
-                        <GlobalContexts>
-                            <StyleSheetManager
-                                shouldForwardProp={(propName) =>
-                                    isValidProp(propName)
-                                }
-                            >
-                                <App />
-                            </StyleSheetManager>
+                <BrowserRouter>
+                    <GlobalContexts>
+                        <StyleSheetManager
+                            shouldForwardProp={(propName) =>
+                                isValidProp(propName)
+                            }
+                        >
+                            <App />
+                        </StyleSheetManager>
 
-                            <div id={GLOBAL_MODAL_PORTAL_ID} />
-                        </GlobalContexts>
-                    </BrowserRouter>
-                </Provider>
+                        <div id={GLOBAL_MODAL_PORTAL_ID} />
+                    </GlobalContexts>
+                </BrowserRouter>
             </WagmiConfig>
         </React.StrictMode>,
     );

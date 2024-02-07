@@ -54,16 +54,16 @@ export default function PoolRow(props: propsIF) {
                 </FlexContainer>
             </TableCell>
             <TableCell hidden sm left>
-                <p>{pool.name}</p>
+                <p style={{ textTransform: 'none' }}>{pool.name}</p>
             </TableCell>
             <TableCell hidden sm>
                 <p>{pool.displayPrice ?? '...'}</p>
             </TableCell>
             <TableCell>
-                <p>{!pool.tvl || pool.tvl < 0 ? '...' : pool.tvlStr}</p>
+                <p>{pool.volumeStr || '...'}</p>
             </TableCell>
             <TableCell>
-                <p>{pool.volumeStr || '...'}</p>
+                <p>{!pool.tvl || pool.tvl < 0 ? '...' : pool.tvlStr}</p>
             </TableCell>
             <TableCell hidden lg>
                 <p

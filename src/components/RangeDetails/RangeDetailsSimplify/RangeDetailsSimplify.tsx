@@ -219,8 +219,7 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
         {
             title: 'Token 1 Qty ',
             content: baseDisplayFrontend + ' ' + baseTokenSymbol,
-            explanation:
-                'The quantity of token #1 in the token pair (scaled by its decimals value)',
+            explanation: 'The quantity of token #1 in the token pair',
         },
 
         {
@@ -238,8 +237,7 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
         {
             title: 'Token 2 Qty ',
             content: quoteDisplayFrontend + ' ' + quoteTokenSymbol,
-            explanation:
-                'The quantity of token #2 in the token pair (scaled by its decimals value)',
+            explanation: 'The quantity of token #2 in the token pair',
         },
         {
             title: 'Range Min ',

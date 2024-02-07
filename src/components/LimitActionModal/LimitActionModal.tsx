@@ -2,16 +2,9 @@ import { BigNumber } from 'ethers';
 import { useState, useEffect, useContext } from 'react';
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
 import { LimitOrderIF } from '../../ambient-utils/types';
-import {
-    addPendingTx,
-    addTransactionByType,
-    removePendingTx,
-    addReceipt,
-    updateTransactionHash,
-} from '../../utils/state/receiptDataSlice';
+
 import {
     TransactionError,
     isTransactionReplacedError,
@@ -22,7 +15,6 @@ import LimitActionSettings from './LimitActionSettings/LimitActionSettings';
 import LimitActionTokenHeader from './LimitActionTokenHeader/LimitActionTokenHeader';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { getFormattedNumber } from '../../ambient-utils/dataLayer';
-import { CrocPositionView } from '@crocswap-libs/sdk';
 import ModalHeader from '../Global/ModalHeader/ModalHeader';
 import { LimitActionType } from '../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import Modal from '../Global/Modal/Modal';
@@ -35,18 +27,28 @@ import {
     NUM_GWEI_IN_WEI,
     GAS_DROPS_ESTIMATE_LIMIT_CLAIM,
 } from '../../ambient-utils/constants/';
+import { ReceiptContext } from '../../contexts/ReceiptContext';
+import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
     type: LimitActionType;
-    isOpen: boolean;
     onClose: () => void;
     isAccountView: boolean;
 }
 
 export default function LimitActionModal(props: propsIF) {
-    const { limitOrder, type, isOpen, onClose, isAccountView } = props;
+    const { limitOrder, type, onClose, isAccountView } = props;
     const { userAddress } = useContext(UserDataContext);
+
+    const {
+        addPendingTx,
+        addReceipt,
+        addTransactionByType,
+        addPositionUpdate,
+        removePendingTx,
+        updateTransactionHash,
+    } = useContext(ReceiptContext);
 
     const {
         baseTokenSymbol,
@@ -95,16 +97,25 @@ export default function LimitActionModal(props: propsIF) {
     };
 
     useEffect(() => {
-        if (!showConfirmation || !isOpen) {
+        if (!showConfirmation) {
             resetConfirmation();
         }
-    }, [txErrorCode, isOpen]);
+    }, [txErrorCode]);
+
+    const closeModal = () => {
+        resetConfirmation();
+        onClose();
+    };
 
     const updateLiq = async () => {
         try {
             if (!crocEnv || !limitOrder) return;
-            const pool = crocEnv.pool(limitOrder.base, limitOrder.quote);
-            const pos = new CrocPositionView(pool, limitOrder.user);
+            // const pos = new CrocPositionView(pool, limitOrder.user);
+            const pos = crocEnv.positions(
+                limitOrder.base,
+                limitOrder.quote,
+                limitOrder.user,
+            );
 
             const liqBigNum = (
                 await pos.queryKnockoutLivePos(
@@ -124,8 +135,6 @@ export default function LimitActionModal(props: propsIF) {
             updateLiq();
         }
     }, [crocEnv, lastBlockNumber, limitOrder?.limitOrderId]);
-
-    const dispatch = useAppDispatch();
 
     const averageGasUnitsForHarvestTxInGasDrops =
         type === 'Remove'
@@ -149,6 +158,16 @@ export default function LimitActionModal(props: propsIF) {
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
+    const posHash = getPositionHash(undefined, {
+        isPositionTypeAmbient: false,
+        user: userAddress ?? '',
+        baseAddress: limitOrder.base,
+        quoteAddress: limitOrder.quote,
+        poolIdx: poolIndex,
+        bidTick: limitOrder.bidTick,
+        askTick: limitOrder.askTick,
+    });
+
     const removeFn = async () => {
         if (!currentLiquidity) return;
         if (crocEnv) {
@@ -164,58 +183,68 @@ export default function LimitActionModal(props: propsIF) {
                         .atLimit(limitOrder.base, limitOrder.bidTick)
                         .burnLiq(currentLiquidity);
                     setNewTxHash(tx.hash);
-                    dispatch(addPendingTx(tx?.hash));
-                    if (tx?.hash)
-                        dispatch(
-                            addTransactionByType({
-                                txHash: tx.hash,
-                                txAction: 'Remove',
-                                txType: 'Limit',
-                                txDescription: `Remove ${limitOrder.baseSymbol}→${limitOrder.quoteSymbol} Limit`,
-                                txDetails: {
-                                    baseAddress: limitOrder.base,
-                                    quoteAddress: limitOrder.quote,
-                                    poolIdx: poolIndex,
-                                    baseSymbol: limitOrder.baseSymbol,
-                                    quoteSymbol: limitOrder.quoteSymbol,
-                                    baseTokenDecimals: limitOrder.baseDecimals,
-                                    quoteTokenDecimals:
-                                        limitOrder.quoteDecimals,
-                                    lowTick: limitOrder.bidTick,
-                                    highTick: limitOrder.askTick,
-                                    isBid: limitOrder.isBid,
-                                },
-                            }),
-                        );
+                    addPendingTx(tx?.hash);
+                    if (tx?.hash) {
+                        addTransactionByType({
+                            userAddress: userAddress || '',
+                            txHash: tx.hash,
+                            txAction: 'Remove',
+                            txType: 'Limit',
+                            txDescription: `Remove ${limitOrder.baseSymbol}→${limitOrder.quoteSymbol} Limit`,
+                            txDetails: {
+                                baseAddress: limitOrder.base,
+                                quoteAddress: limitOrder.quote,
+                                poolIdx: poolIndex,
+                                baseSymbol: limitOrder.baseSymbol,
+                                quoteSymbol: limitOrder.quoteSymbol,
+                                baseTokenDecimals: limitOrder.baseDecimals,
+                                quoteTokenDecimals: limitOrder.quoteDecimals,
+                                lowTick: limitOrder.bidTick,
+                                highTick: limitOrder.askTick,
+                                isBid: limitOrder.isBid,
+                            },
+                        });
+                        addPositionUpdate({
+                            txHash: tx.hash,
+                            positionID: posHash,
+                            isLimit: true,
+                            unixTimeAdded: Math.floor(Date.now() / 1000),
+                        });
+                    }
                 } else {
                     tx = await crocEnv
                         .buy(limitOrder.base, 0)
                         .atLimit(limitOrder.quote, limitOrder.askTick)
                         .burnLiq(currentLiquidity);
                     setNewTxHash(tx.hash);
-                    dispatch(addPendingTx(tx?.hash));
-                    if (tx?.hash)
-                        dispatch(
-                            addTransactionByType({
-                                txHash: tx.hash,
-                                txAction: 'Remove',
-                                txType: 'Limit',
-                                txDescription: `Remove ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol} Limit`,
-                                txDetails: {
-                                    baseAddress: limitOrder.base,
-                                    quoteAddress: limitOrder.quote,
-                                    poolIdx: poolIndex,
-                                    baseSymbol: limitOrder.baseSymbol,
-                                    quoteSymbol: limitOrder.quoteSymbol,
-                                    baseTokenDecimals: limitOrder.baseDecimals,
-                                    quoteTokenDecimals:
-                                        limitOrder.quoteDecimals,
-                                    lowTick: limitOrder.bidTick,
-                                    highTick: limitOrder.askTick,
-                                    isBid: limitOrder.isBid,
-                                },
-                            }),
-                        );
+                    addPendingTx(tx?.hash);
+                    if (tx?.hash) {
+                        addTransactionByType({
+                            userAddress: userAddress || '',
+                            txHash: tx.hash,
+                            txAction: 'Remove',
+                            txType: 'Limit',
+                            txDescription: `Remove ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol} Limit`,
+                            txDetails: {
+                                baseAddress: limitOrder.base,
+                                quoteAddress: limitOrder.quote,
+                                poolIdx: poolIndex,
+                                baseSymbol: limitOrder.baseSymbol,
+                                quoteSymbol: limitOrder.quoteSymbol,
+                                baseTokenDecimals: limitOrder.baseDecimals,
+                                quoteTokenDecimals: limitOrder.quoteDecimals,
+                                lowTick: limitOrder.bidTick,
+                                highTick: limitOrder.askTick,
+                                isBid: limitOrder.isBid,
+                            },
+                        });
+                        addPositionUpdate({
+                            txHash: tx.hash,
+                            positionID: posHash,
+                            isLimit: true,
+                            unixTimeAdded: Math.floor(Date.now() / 1000),
+                        });
+                    }
                 }
             } catch (error) {
                 console.error({ error });
@@ -239,15 +268,16 @@ export default function LimitActionModal(props: propsIF) {
                 // in their client, but we now have the updated info
                 if (isTransactionReplacedError(error)) {
                     IS_LOCAL_ENV && 'repriced';
-                    dispatch(removePendingTx(error.hash));
+                    removePendingTx(error.hash);
                     const newTransactionHash = error.replacement.hash;
-                    dispatch(addPendingTx(newTransactionHash));
-                    dispatch(
-                        updateTransactionHash({
-                            oldHash: error.hash,
-                            newHash: error.replacement.hash,
-                        }),
-                    );
+                    addPendingTx(newTransactionHash);
+                    addPositionUpdate({
+                        txHash: newTransactionHash,
+                        positionID: posHash,
+                        isLimit: true,
+                        unixTimeAdded: Math.floor(Date.now() / 1000),
+                    });
+                    updateTransactionHash(error.hash, error.replacement.hash);
                     setNewTxHash(newTransactionHash);
                     IS_LOCAL_ENV && { newTransactionHash };
                     receipt = error.receipt;
@@ -258,8 +288,18 @@ export default function LimitActionModal(props: propsIF) {
             }
 
             if (receipt) {
-                dispatch(addReceipt(JSON.stringify(receipt)));
-                dispatch(removePendingTx(receipt.transactionHash));
+                addReceipt(JSON.stringify(receipt));
+                removePendingTx(receipt.transactionHash);
+                if (receipt.status === 1) {
+                    // track removals separately to identify limit mints that were subsequently removed
+                    addPositionUpdate({
+                        positionID: posHash,
+                        isLimit: true,
+                        isFullRemoval: true,
+                        txHash: receipt.transactionHash,
+                        unixTimeReceipt: Math.floor(Date.now() / 1000),
+                    });
+                }
             }
         }
     };
@@ -284,58 +324,68 @@ export default function LimitActionModal(props: propsIF) {
                         .atLimit(limitOrder.base, limitOrder.bidTick)
                         .recoverPost(claimablePivotTime, { surplus: false });
                     setNewTxHash(tx.hash);
-                    dispatch(addPendingTx(tx?.hash));
-                    if (tx?.hash)
-                        dispatch(
-                            addTransactionByType({
-                                txHash: tx.hash,
-                                txAction: 'Claim',
-                                txType: 'Limit',
-                                txDescription: `Claim Limit ${limitOrder.baseSymbol}→${limitOrder.quoteSymbol}`,
-                                txDetails: {
-                                    baseAddress: limitOrder.base,
-                                    quoteAddress: limitOrder.quote,
-                                    poolIdx: poolIndex,
-                                    baseSymbol: limitOrder.baseSymbol,
-                                    quoteSymbol: limitOrder.quoteSymbol,
-                                    baseTokenDecimals: limitOrder.baseDecimals,
-                                    quoteTokenDecimals:
-                                        limitOrder.quoteDecimals,
-                                    lowTick: limitOrder.bidTick,
-                                    highTick: limitOrder.askTick,
-                                    isBid: limitOrder.isBid,
-                                },
-                            }),
-                        );
+                    addPendingTx(tx?.hash);
+                    if (tx?.hash) {
+                        addTransactionByType({
+                            userAddress: userAddress || '',
+                            txHash: tx.hash,
+                            txAction: 'Claim',
+                            txType: 'Limit',
+                            txDescription: `Claim Limit ${limitOrder.baseSymbol}→${limitOrder.quoteSymbol}`,
+                            txDetails: {
+                                baseAddress: limitOrder.base,
+                                quoteAddress: limitOrder.quote,
+                                poolIdx: poolIndex,
+                                baseSymbol: limitOrder.baseSymbol,
+                                quoteSymbol: limitOrder.quoteSymbol,
+                                baseTokenDecimals: limitOrder.baseDecimals,
+                                quoteTokenDecimals: limitOrder.quoteDecimals,
+                                lowTick: limitOrder.bidTick,
+                                highTick: limitOrder.askTick,
+                                isBid: limitOrder.isBid,
+                            },
+                        });
+                        addPositionUpdate({
+                            txHash: tx.hash,
+                            positionID: posHash,
+                            isLimit: true,
+                            unixTimeAdded: Math.floor(Date.now() / 1000),
+                        });
+                    }
                 } else {
                     tx = await crocEnv
                         .buy(limitOrder.base, 0)
                         .atLimit(limitOrder.quote, limitOrder.askTick)
                         .recoverPost(claimablePivotTime, { surplus: false });
                     setNewTxHash(tx.hash);
-                    dispatch(addPendingTx(tx?.hash));
-                    if (tx?.hash)
-                        dispatch(
-                            addTransactionByType({
-                                txHash: tx.hash,
-                                txAction: 'Claim',
-                                txType: 'Limit',
-                                txDescription: `Claim Limit ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol}`,
-                                txDetails: {
-                                    baseAddress: limitOrder.base,
-                                    quoteAddress: limitOrder.quote,
-                                    poolIdx: poolIndex,
-                                    baseSymbol: limitOrder.baseSymbol,
-                                    quoteSymbol: limitOrder.quoteSymbol,
-                                    baseTokenDecimals: limitOrder.baseDecimals,
-                                    quoteTokenDecimals:
-                                        limitOrder.quoteDecimals,
-                                    lowTick: limitOrder.bidTick,
-                                    highTick: limitOrder.askTick,
-                                    isBid: limitOrder.isBid,
-                                },
-                            }),
-                        );
+                    addPendingTx(tx?.hash);
+                    if (tx?.hash) {
+                        addTransactionByType({
+                            userAddress: userAddress || '',
+                            txHash: tx.hash,
+                            txAction: 'Claim',
+                            txType: 'Limit',
+                            txDescription: `Claim Limit ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol}`,
+                            txDetails: {
+                                baseAddress: limitOrder.base,
+                                quoteAddress: limitOrder.quote,
+                                poolIdx: poolIndex,
+                                baseSymbol: limitOrder.baseSymbol,
+                                quoteSymbol: limitOrder.quoteSymbol,
+                                baseTokenDecimals: limitOrder.baseDecimals,
+                                quoteTokenDecimals: limitOrder.quoteDecimals,
+                                lowTick: limitOrder.bidTick,
+                                highTick: limitOrder.askTick,
+                                isBid: limitOrder.isBid,
+                            },
+                        });
+                        addPositionUpdate({
+                            txHash: tx.hash,
+                            positionID: posHash,
+                            isLimit: true,
+                            unixTimeAdded: Math.floor(Date.now() / 1000),
+                        });
+                    }
                 }
             } catch (error) {
                 console.error({ error });
@@ -358,15 +408,16 @@ export default function LimitActionModal(props: propsIF) {
                 // in their client, but we now have the updated info
                 if (isTransactionReplacedError(error)) {
                     IS_LOCAL_ENV && console.debug('repriced');
-                    dispatch(removePendingTx(error.hash));
+                    removePendingTx(error.hash);
                     const newTransactionHash = error.replacement.hash;
-                    dispatch(addPendingTx(newTransactionHash));
-                    dispatch(
-                        updateTransactionHash({
-                            oldHash: error.hash,
-                            newHash: error.replacement.hash,
-                        }),
-                    );
+                    addPendingTx(newTransactionHash);
+                    addPositionUpdate({
+                        txHash: newTransactionHash,
+                        positionID: posHash,
+                        isLimit: true,
+                        unixTimeAdded: Math.floor(Date.now() / 1000),
+                    });
+                    updateTransactionHash(error.hash, error.replacement.hash);
                     setNewTxHash(newTransactionHash);
                     IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
@@ -377,8 +428,18 @@ export default function LimitActionModal(props: propsIF) {
             }
 
             if (receipt) {
-                dispatch(addReceipt(JSON.stringify(receipt)));
-                dispatch(removePendingTx(receipt.transactionHash));
+                addReceipt(JSON.stringify(receipt));
+                removePendingTx(receipt.transactionHash);
+                if (receipt.status === 1) {
+                    // track claims separately to identify limit mints that were subsequently removed
+                    addPositionUpdate({
+                        positionID: posHash,
+                        isLimit: true,
+                        isFullRemoval: true,
+                        txHash: receipt.transactionHash,
+                        unixTimeReceipt: Math.floor(Date.now() / 1000),
+                    });
+                }
             }
         }
     };
@@ -408,6 +469,12 @@ export default function LimitActionModal(props: propsIF) {
                   receivingAmountAddress: limitOrder.isBid
                       ? baseTokenAddress
                       : quoteTokenAddress,
+                  claimableAmount: limitOrder.isBid
+                      ? quoteDisplay
+                      : baseDisplay,
+                  claimableAmountAddress: limitOrder.isBid
+                      ? quoteTokenAddress
+                      : baseTokenAddress,
                   networkFee,
               }
             : {
@@ -443,8 +510,8 @@ export default function LimitActionModal(props: propsIF) {
             onBackClick={resetConfirmation}
         />
     ) : (
-        <Modal usingCustomHeader onClose={onClose}>
-            <ModalHeader title={`${type} Limit Order`} onClose={onClose} />
+        <Modal usingCustomHeader onClose={closeModal}>
+            <ModalHeader title={`${type} Limit Order`} onClose={closeModal} />
             <div className={styles.main_content_container}>
                 <LimitActionTokenHeader
                     isDenomBase={isDenomBase}
@@ -462,7 +529,7 @@ export default function LimitActionModal(props: propsIF) {
                     <LimitActionInfo {...limitInfoProps} />
                     {showConfirmation ? (
                         <SubmitTransaction
-                            type='Limit'
+                            type={type === 'Remove' ? 'Remove' : 'Claim'}
                             newTransactionHash={newTxHash}
                             txErrorCode={txErrorCode}
                             txErrorMessage={txErrorMessage}

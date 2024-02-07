@@ -7,7 +7,6 @@ import styles from './NoChartData.module.css';
 import { FiRefreshCcw } from 'react-icons/fi';
 import { useContext, useState } from 'react';
 import { CandleContext } from '../../contexts/CandleContext';
-import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
 
 interface PropsIF {
@@ -16,13 +15,19 @@ interface PropsIF {
     tokenB: TokenIF;
     isCandleDataNull: boolean;
     isTableExpanded: boolean;
+    isPoolInitialized: boolean;
 }
 
 export const NoChartData = (props: PropsIF) => {
-    const { chainId, tokenA, tokenB, isCandleDataNull, isTableExpanded } =
-        props;
+    const {
+        chainId,
+        tokenA,
+        tokenB,
+        isCandleDataNull,
+        isTableExpanded,
+        isPoolInitialized,
+    } = props;
     const { setIsManualCandleFetchRequested } = useContext(CandleContext);
-    const isPoolInitialized = useSimulatedIsPoolInitialized();
     const { toggleTradeTable } = useContext(TradeTableContext);
 
     const linkGenInitPool: linkGenMethodsIF = useLinkGen('initpool');
