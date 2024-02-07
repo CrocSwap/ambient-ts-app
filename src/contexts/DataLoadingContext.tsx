@@ -69,6 +69,7 @@ export const DataLoadingContextProvider = (props: {
     };
     const resetConnectedUserDataLoadingStatus = () => {
         setIsConnectedUserTxDataLoading(true);
+        setIsConnectedUserPoolTxDataLoading(true);
         setIsConnectedUserOrderDataLoading(true);
         setIsConnectedUserRangeDataLoading(true);
     };
