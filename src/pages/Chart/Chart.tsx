@@ -4724,6 +4724,7 @@ export default function Chart(props: propsIF) {
     }, [userTransactionData]);
 
     const handleCardClick = (tx: TransactionIF): void => {
+        setSelectedDate(undefined);
         setOutsideControl(true);
         setSelectedOutsideTab(0);
         setShowAllData(false);
