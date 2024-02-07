@@ -184,7 +184,7 @@ function RangeDetailsModal(props: propsIF) {
                     setUsdValue(
                         getFormattedNumber({
                             value: position.totalValueUSD,
-                            isUSD: true,
+                            prefix: '$',
                         }),
                     );
 

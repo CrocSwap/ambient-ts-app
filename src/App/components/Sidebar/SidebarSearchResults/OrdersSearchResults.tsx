@@ -47,6 +47,7 @@ function LimitOrderLI(props: limitOrderPropsIF) {
     });
     const valueUSD = getFormattedNumber({
         value: limitOrder.totalValueUSD,
+        prefix: '$',
     });
 
     return (

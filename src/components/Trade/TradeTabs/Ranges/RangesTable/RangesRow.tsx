@@ -126,7 +126,7 @@ function RangesRow(props: propsIF) {
         const element = document.getElementById(positionDomId);
         element?.scrollIntoView({
             behavior: 'smooth',
-            block: 'end',
+            block: 'start',
             inline: 'nearest',
         });
     }
@@ -274,6 +274,7 @@ function RangesRow(props: propsIF) {
                         openDetailsModal={openDetailsModal}
                         openActionModal={openActionModal}
                         setRangeModalAction={setRangeModalAction}
+                        tableView={tableView}
                     />
                 </div>
             </RangeRowStyled>

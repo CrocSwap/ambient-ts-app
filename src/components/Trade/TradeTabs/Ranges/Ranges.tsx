@@ -63,12 +63,14 @@ function Ranges(props: propsIF) {
 
     const { userAddress } = useContext(UserDataContext);
 
-    const { userPositionsByPool, positionsByPool } =
-        useContext(GraphDataContext);
+    const {
+        userPositionsByPool,
+        positionsByPool,
+        unindexedNonFailedSessionPositionUpdates,
+    } = useContext(GraphDataContext);
     const dataLoadingStatus = useContext(DataLoadingContext);
 
-    const { transactionsByType, pendingTransactions } =
-        useContext(ReceiptContext);
+    const { transactionsByType } = useContext(ReceiptContext);
 
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
@@ -126,14 +128,22 @@ function Ranges(props: propsIF) {
         useSortedPositions('time', rangeData);
 
     // TODO: Use these as media width constants
-    const isSmallScreen = useMediaQuery('(max-width: 600px)');
-    const isLargeScreen = useMediaQuery('(min-width: 1600px)');
+    const isSmallScreen = useMediaQuery('(max-width: 700px)');
+    const isLargeScreen = useMediaQuery('(min-width: 2000px)');
+    const isLargeScreenAccount = useMediaQuery('(min-width: 1600px)');
 
     const tableView =
-        isSmallScreen || (isAccountView && !isLargeScreen && isSidebarOpen)
+        isSmallScreen ||
+        (isAccountView &&
+            connectedAccountActive &&
+            !isLargeScreenAccount &&
+            isSidebarOpen)
             ? 'small'
             : (!isSmallScreen && !isLargeScreen) ||
-              (isAccountView && isLargeScreen && isSidebarOpen)
+              (isAccountView &&
+                  connectedAccountActive &&
+                  isLargeScreenAccount &&
+                  isSidebarOpen)
             ? 'medium'
             : 'large';
 
@@ -335,6 +345,7 @@ function Ranges(props: propsIF) {
             slug: 'apr',
             sortable: true,
             alignRight: true,
+            rightPadding: 8,
         },
         {
             name: 'Status',
@@ -342,6 +353,7 @@ function Ranges(props: propsIF) {
             show: true,
             slug: 'status',
             sortable: true,
+            leftPadding: 8,
         },
 
         {
@@ -378,10 +390,11 @@ function Ranges(props: propsIF) {
 
     const relevantTransactionsByType = transactionsByType.filter(
         (tx) =>
-            tx.txAction &&
-            tx.txDetails &&
-            tx.txType === 'Range' &&
-            pendingTransactions.includes(tx.txHash) &&
+            unindexedNonFailedSessionPositionUpdates.some(
+                (update) => update.txHash === tx.txHash,
+            ) &&
+            tx.userAddress.toLowerCase() ===
+                (userAddress || '').toLowerCase() &&
             tx.txDetails?.baseAddress.toLowerCase() ===
                 baseToken.address.toLowerCase() &&
             tx.txDetails?.quoteAddress.toLowerCase() ===
@@ -392,14 +405,13 @@ function Ranges(props: propsIF) {
     const shouldDisplayNoTableData =
         !isLoading &&
         !rangeData.length &&
-        (relevantTransactionsByType.length === 0 ||
-            pendingTransactions.length === 0);
+        unindexedNonFailedSessionPositionUpdates.length === 0;
 
     const rangeDataOrNull = !shouldDisplayNoTableData ? (
         <div>
             <ul ref={listRef} id='current_row_scroll'>
                 {!isAccountView &&
-                    pendingTransactions.length > 0 &&
+                    relevantTransactionsByType.length > 0 &&
                     relevantTransactionsByType.reverse().map((tx, idx) => (
                         <RangesRowPlaceholder
                             key={idx}

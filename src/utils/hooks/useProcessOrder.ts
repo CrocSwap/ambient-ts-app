@@ -12,7 +12,6 @@ import {
 import { LimitOrderIF } from '../../ambient-utils/types';
 
 import {
-    concPosSlot,
     priceHalfAboveTick,
     priceHalfBelowTick,
     toDisplayPrice,
@@ -24,6 +23,7 @@ import { getAddress } from 'ethers/lib/utils.js';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { useFetchBatch } from '../../App/hooks/useFetchBatch';
 import { UserDataContext } from '../../contexts/UserDataContext';
+import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
@@ -68,14 +68,16 @@ export const useProcessOrder = (
 
     const isOrderFilled = limitOrder.claimableLiq > 0;
 
-    const posHash = concPosSlot(
-        limitOrder.user ?? '',
-        limitOrder.base ?? '',
-        limitOrder.quote ?? '',
-        limitOrder.bidTick ?? '',
-        limitOrder.askTick ?? '',
-        limitOrder.poolIdx ?? '',
-    ).toString();
+    const posHash = getPositionHash(undefined, {
+        isPositionTypeAmbient: false,
+        user: limitOrder.user ?? '',
+        baseAddress: limitOrder.base ?? '',
+        quoteAddress: limitOrder.quote ?? '',
+        poolIdx: limitOrder.poolIdx ?? 0,
+        bidTick: limitOrder.bidTick ?? 0,
+        askTick: limitOrder.askTick ?? 0,
+    });
+
     const posHashTruncated = trimString(posHash ?? '', 9, 0, '…');
 
     const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<
@@ -211,7 +213,7 @@ export const useProcessOrder = (
 
     const usdValue = getFormattedNumber({
         value: usdValueNum,
-        isUSD: true,
+        prefix: '$',
     });
 
     // -----------------------------------------------------------------------------------------

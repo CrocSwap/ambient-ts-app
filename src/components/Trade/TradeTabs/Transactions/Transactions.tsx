@@ -92,10 +92,12 @@ function Transactions(props: propsIF) {
     // NOTE: this is done to improve rendering speed for this page.
 
     const dataLoadingStatus = useContext(DataLoadingContext);
-    const { userTransactionsByPool, transactionsByPool } =
-        useContext(GraphDataContext);
-    const { transactionsByType, pendingTransactions } =
-        useContext(ReceiptContext);
+    const {
+        userTransactionsByPool,
+        transactionsByPool,
+        unindexedNonFailedSessionTransactionHashes,
+    } = useContext(GraphDataContext);
+    const { transactionsByType } = useContext(ReceiptContext);
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     const selectedBaseAddress = baseToken.address;
@@ -117,24 +119,14 @@ function Transactions(props: propsIF) {
             setTransactionData(
                 userTransactionsByPool.changes.filter(
                     (tx) =>
-                        tx.base.toLowerCase() ===
-                            baseToken.address.toLowerCase() &&
-                        tx.quote.toLowerCase() ===
-                            quoteToken.address.toLowerCase() &&
-                        tx.changeType !== 'fill' &&
-                        tx.changeType !== 'cross',
+                        tx.changeType !== 'fill' && tx.changeType !== 'cross',
                 ),
             );
         else {
             setTransactionData(
                 transactionsByPool.changes.filter(
                     (tx) =>
-                        tx.base.toLowerCase() ===
-                            baseToken.address.toLowerCase() &&
-                        tx.quote.toLowerCase() ===
-                            quoteToken.address.toLowerCase() &&
-                        tx.changeType !== 'fill' &&
-                        tx.changeType !== 'cross',
+                        tx.changeType !== 'fill' && tx.changeType !== 'cross',
                 ),
             );
         }
@@ -171,10 +163,9 @@ function Transactions(props: propsIF) {
         dataLoadingStatus.isCandleDataLoading,
     ]);
 
-    const relevantTransactionsByType = transactionsByType.filter(
+    const unindexedNonFailedTransactions = transactionsByType.filter(
         (tx) =>
-            tx.txAction &&
-            pendingTransactions.includes(tx.txHash) &&
+            unindexedNonFailedSessionTransactionHashes.includes(tx.txHash) &&
             tx.txDetails?.baseAddress.toLowerCase() ===
                 baseToken.address.toLowerCase() &&
             tx.txDetails?.quoteAddress.toLowerCase() ===
@@ -185,8 +176,7 @@ function Transactions(props: propsIF) {
     const shouldDisplayNoTableData =
         !isLoading &&
         !transactionData.length &&
-        (relevantTransactionsByType.length === 0 ||
-            pendingTransactions.length === 0);
+        unindexedNonFailedSessionTransactionHashes.length === 0;
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
         useSortedTxs('time', transactionData);
@@ -374,14 +364,14 @@ function Transactions(props: propsIF) {
             alignRight: true,
         },
         {
-            name: isAccountView ? <></> : `${baseTokenSymbol}ㅤㅤ`,
+            name: isAccountView ? <></> : `${baseTokenSymbol}`,
             show: tableView === 'large',
             slug: baseTokenSymbol,
             sortable: false,
             alignRight: true,
         },
         {
-            name: isAccountView ? <></> : `${quoteTokenSymbol}ㅤㅤ`, // invisible character added to offset token logo
+            name: isAccountView ? <></> : `${quoteTokenSymbol}`,
             show: tableView === 'large',
             slug: quoteTokenSymbol,
             sortable: false,
@@ -548,8 +538,8 @@ function Transactions(props: propsIF) {
         <div onKeyDown={handleKeyDownViewTransaction}>
             <ul ref={listRef} id='current_row_scroll'>
                 {!isAccountView &&
-                    pendingTransactions.length > 0 &&
-                    relevantTransactionsByType.reverse().map((tx, idx) => {
+                    unindexedNonFailedTransactions.length > 0 &&
+                    unindexedNonFailedTransactions.reverse().map((tx, idx) => {
                         if (tx.txAction !== 'Reposition')
                             return (
                                 <TransactionRowPlaceholder

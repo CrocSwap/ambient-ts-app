@@ -123,7 +123,11 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             ? tx.changeType === 'mint'
                 ? 'Add to Range'
                 : 'Remove from Range'
-            : 'Limit'
+            : tx.changeType === 'burn'
+            ? 'Limit Removal'
+            : tx.changeType === 'recover'
+            ? 'Limit Claim'
+            : 'Limit Mint'
         : '...';
 
     const txTypeContent = (
@@ -146,10 +150,14 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             <p>
                 {tx.entityType === 'liqchange'
                     ? tx.quoteSymbol + ': '
+                    : tx.changeType === 'burn'
+                    ? tx.quoteSymbol + ' Claimed: '
                     : 'Buy: '}
             </p>
             <div>
-                {tx.entityType !== 'limitOrder' || tx.changeType === 'recover'
+                {tx.entityType !== 'limitOrder' ||
+                tx.changeType === 'recover' ||
+                tx.changeType === 'burn'
                     ? quoteQuantityDisplay
                     : estimatedQuoteFlowDisplay || '0.00'}
                 <TokenIcon
@@ -166,6 +174,8 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             <p>
                 {tx.entityType === 'liqchange'
                     ? tx.baseSymbol + ': '
+                    : tx.changeType === 'burn'
+                    ? tx.baseSymbol + ' Removed: '
                     : 'Sell: '}
             </p>
             <div>
@@ -195,11 +205,17 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
     const buyBaseRow = (
         <Row>
             <p>
-                {tx.entityType === 'liqchange' ? tx.baseSymbol + ': ' : 'Buy: '}
+                {tx.entityType === 'liqchange'
+                    ? tx.baseSymbol + ': '
+                    : tx.changeType === 'burn'
+                    ? tx.baseSymbol + ' Claimed: '
+                    : 'Buy: '}
             </p>
 
             <div>
-                {tx.entityType !== 'limitOrder' || tx.changeType === 'recover'
+                {tx.entityType !== 'limitOrder' ||
+                tx.changeType === 'recover' ||
+                tx.changeType === 'burn'
                     ? baseQuantityDisplay
                     : estimatedBaseFlowDisplay || '0.00'}
                 <TokenIcon
@@ -217,6 +233,8 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             <p>
                 {tx.entityType === 'liqchange'
                     ? tx.quoteSymbol + ': '
+                    : tx.changeType === 'burn'
+                    ? tx.quoteSymbol + ' Removed: '
                     : 'Sell: '}
             </p>
             <div>
@@ -245,7 +263,13 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
 
     const PriceDisplay = (
         <div className={styles.min_max_price}>
-            <p>{tx.entityType === 'liqchange' ? 'Price Range' : 'Price'}</p>
+            <p>
+                {tx.entityType === 'liqchange'
+                    ? 'Price Range'
+                    : tx.entityType === 'limitOrder'
+                    ? 'Limit Price'
+                    : 'Price'}
+            </p>
             {isAmbient ? (
                 <span className={styles.min_price}>
                     {'0'}

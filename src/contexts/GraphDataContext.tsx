@@ -17,6 +17,8 @@ import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
 import { UserDataContext } from './UserDataContext';
 import { DataLoadingContext } from './DataLoadingContext';
+import { PositionUpdateIF, ReceiptContext } from './ReceiptContext';
+import { getPositionHash } from '../ambient-utils/dataLayer/functions/getPositionHash';
 
 interface Changes {
     dataReceived: boolean;
@@ -51,6 +53,9 @@ interface GraphDataContextIF {
     limitOrdersByUser: LimitOrdersByUser;
     transactionsByUser: Changes;
     userTransactionsByPool: Changes;
+    unindexedNonFailedSessionTransactionHashes: string[];
+    unindexedNonFailedSessionPositionUpdates: PositionUpdateIF[];
+    unindexedNonFailedSessionLimitOrderUpdates: PositionUpdateIF[];
     transactionsByPool: Changes;
     userPositionsByPool: PositionsByPool;
     positionsByPool: PositionsByPool;
@@ -158,6 +163,9 @@ export const GraphDataContextProvider = (props: {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
 
+    const { pendingTransactions, sessionReceipts, sessionPositionUpdates } =
+        useContext(ReceiptContext);
+
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const {
         cachedQuerySpotPrice,
@@ -187,6 +195,7 @@ export const GraphDataContextProvider = (props: {
             dataReceived: false,
             changes: [],
         });
+        setSessionTransactionHashes([]);
     };
 
     const setLiquidity = (liqData: LiquidityDataIF) => {
@@ -219,9 +228,118 @@ export const GraphDataContextProvider = (props: {
         setLiquidityData(undefined);
     };
 
+    const [sessionTransactionHashes, setSessionTransactionHashes] =
+        React.useState<string[]>([]);
+
     useEffect(() => {
         resetUserGraphData();
     }, [isUserConnected, userAddress]);
+
+    const userTxByPoolHashArray = userTransactionsByPool.changes.map(
+        (change) => change.txHash,
+    );
+
+    const userPositionsByPoolIndexUpdateArray: PositionUpdateIF[] =
+        userPositionsByPool.positions.map((position) => {
+            return {
+                positionID: getPositionHash(position),
+                isLimit: false,
+                unixTimeIndexed: position.latestUpdateTime,
+            };
+        });
+
+    const userLimitOrdersByPoolIndexUpdateArray: PositionUpdateIF[] =
+        userLimitOrdersByPool.limitOrders.map((limitOrder) => {
+            const posHash = getPositionHash(undefined, {
+                isPositionTypeAmbient: false,
+                user: limitOrder.user,
+                baseAddress: limitOrder.base,
+                quoteAddress: limitOrder.quote,
+                poolIdx: limitOrder.poolIdx,
+                bidTick: limitOrder.bidTick,
+                askTick: limitOrder.askTick,
+            });
+            return {
+                positionID: posHash,
+                isLimit: true,
+                unixTimeIndexed: limitOrder.latestUpdateTime,
+            };
+        });
+
+    useEffect(() => {
+        for (let i = 0; i < pendingTransactions.length; i++) {
+            const pendingTx = pendingTransactions[i];
+            setSessionTransactionHashes((prev) => {
+                if (!prev.includes(pendingTx)) {
+                    return [pendingTx, ...prev];
+                } else return prev;
+            });
+        }
+    }, [pendingTransactions]);
+
+    const unindexedSessionTransactionHashes = sessionTransactionHashes.filter(
+        (tx) => !userTxByPoolHashArray.includes(tx),
+    );
+
+    const failedSessionTransactionHashes = sessionReceipts
+        .filter((r) => JSON.parse(r).status === 0)
+        .map((r) => JSON.parse(r).transactionHash);
+
+    // transaction hashes for subsequently fully removed positions
+    const removedPositionUpdateTxHashes = sessionPositionUpdates
+        .filter((pos1) =>
+            sessionPositionUpdates.some((pos2) => {
+                return (
+                    pos1.positionID === pos2.positionID &&
+                    pos2.isFullRemoval &&
+                    (pos2.unixTimeReceipt || 0) > (pos1.unixTimeAdded || 0)
+                );
+            }),
+        )
+        .map((removedTx) => removedTx.txHash);
+
+    const unindexedNonFailedSessionTransactionHashes =
+        unindexedSessionTransactionHashes.filter(
+            (tx) => !failedSessionTransactionHashes.includes(tx),
+        );
+
+    const unindexedNonFailedSessionPositionUpdates =
+        sessionPositionUpdates.filter(
+            (positionUpdate) =>
+                positionUpdate.isLimit === false &&
+                !failedSessionTransactionHashes.includes(
+                    positionUpdate.txHash,
+                ) &&
+                !removedPositionUpdateTxHashes.includes(
+                    positionUpdate.txHash,
+                ) &&
+                !userPositionsByPoolIndexUpdateArray.some(
+                    (userPositionIndexUpdate) =>
+                        userPositionIndexUpdate.positionID ===
+                            positionUpdate.positionID &&
+                        (userPositionIndexUpdate.unixTimeIndexed || 0) >
+                            (positionUpdate.unixTimeAdded || 0),
+                ),
+        );
+
+    const unindexedNonFailedSessionLimitOrderUpdates =
+        sessionPositionUpdates.filter(
+            (positionUpdate) =>
+                positionUpdate.isLimit === true &&
+                !failedSessionTransactionHashes.includes(
+                    positionUpdate.txHash,
+                ) &&
+                !removedPositionUpdateTxHashes.includes(
+                    positionUpdate.txHash,
+                ) &&
+                !userLimitOrdersByPoolIndexUpdateArray.some(
+                    (userPositionIndexUpdate) =>
+                        userPositionIndexUpdate.positionID ===
+                            positionUpdate.positionID &&
+                        (userPositionIndexUpdate.unixTimeIndexed || 0) >
+                            (positionUpdate.unixTimeAdded || 0),
+                ),
+        );
 
     // Wait 2 seconds before refreshing to give cache server time to sync from
     // last block
@@ -401,6 +519,9 @@ export const GraphDataContextProvider = (props: {
         transactionsByUser,
         userPositionsByPool,
         userTransactionsByPool,
+        unindexedNonFailedSessionTransactionHashes,
+        unindexedNonFailedSessionPositionUpdates,
+        unindexedNonFailedSessionLimitOrderUpdates,
         resetUserGraphData,
         setTransactionsByUser,
         setUserPositionsByPool,

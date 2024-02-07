@@ -5,6 +5,7 @@ import { ChartContext } from './ChartContext';
 import { useSimulatedIsPoolInitialized } from '../App/hooks/useSimulatedIsPoolInitialized';
 import { UserDataContext } from './UserDataContext';
 import { DataLoadingContext } from './DataLoadingContext';
+import { linkGenMethodsIF, useLinkGen } from '../utils/hooks/useLinkGen';
 
 // 54 is the height of the trade table header
 export const TRADE_TABLE_HEADER_HEIGHT = 54;
@@ -162,14 +163,27 @@ export const TradeTableContextProvider = (props: {
         }
     }
 
+    const linkGenCurrent: linkGenMethodsIF = useLinkGen();
+
     useEffect(() => {
-        if (
-            !currentTxActiveInTransactions &&
-            !currentPositionActive &&
-            location.pathname.includes('/trade')
-        )
-            toggleTradeTabBasedOnRoute();
-    }, [location.pathname]);
+        if (location.pathname.includes('/trade')) toggleTradeTabBasedOnRoute();
+        switch (linkGenCurrent.currentPage) {
+            case 'market':
+                setCurrentPositionActive('');
+                setCurrentLimitOrderActive('');
+                break;
+            case 'limit':
+                setCurrentTxActiveInTransactions('');
+                setCurrentPositionActive('');
+                break;
+            case 'pool':
+                setCurrentTxActiveInTransactions('');
+                setCurrentLimitOrderActive('');
+                break;
+            default:
+                break;
+        }
+    }, [linkGenCurrent.currentPage]);
 
     const resetTable = () => {
         if (
