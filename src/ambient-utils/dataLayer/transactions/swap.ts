@@ -32,7 +32,10 @@ export async function performSwap(params: PerformSwapParams) {
           });
 
     const tx = await plan.swap({
-        surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked],
+        settlement: {
+            sellDexSurplus: isWithdrawFromDexChecked,
+            buyDexSurplus: isSaveAsDexSurplusChecked,
+        },
     });
 
     return tx;

@@ -785,13 +785,11 @@ export default function Chart(props: propsIF) {
             domainMax = domainMax < minDate ? minDate : domainMax;
 
             const nowDate = Date.now();
-
             const snapDiff = nowDate % (period * 1000);
             const snappedTime = nowDate + (period * 1000 - snapDiff);
 
             const isShowLatestCandle =
-                xDomain[0] < snappedTime * 1000 &&
-                snappedTime * 1000 < xDomain[1];
+                xDomain[0] < snappedTime && snappedTime < xDomain[1];
 
             setCandleScale((prev: CandleScaleIF) => {
                 return {
