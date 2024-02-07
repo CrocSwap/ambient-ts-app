@@ -1633,6 +1633,7 @@ export default function InitPool() {
 
                     if (tx?.hash) {
                         addTransactionByType({
+                            userAddress: userAddress || '',
                             txHash: tx.hash,
                             txType: 'Withdraw',
                             txDescription: `Withdrawal of ${erc20TokenWithDexBalance.symbol}`,

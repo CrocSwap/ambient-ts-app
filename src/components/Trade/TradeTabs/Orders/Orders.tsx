@@ -57,13 +57,15 @@ function Orders(props: propsIF) {
     const isTradeTableExpanded =
         !isAccountView && tradeTableState === 'Expanded';
 
-    const { userLimitOrdersByPool, limitOrdersByPool } =
-        useContext(GraphDataContext);
+    const {
+        userLimitOrdersByPool,
+        limitOrdersByPool,
+        unindexedNonFailedSessionLimitOrderUpdates,
+    } = useContext(GraphDataContext);
     const dataLoadingStatus = useContext(DataLoadingContext);
     const { userAddress } = useContext(UserDataContext);
 
-    const { transactionsByType, pendingTransactions } =
-        useContext(ReceiptContext);
+    const { transactionsByType } = useContext(ReceiptContext);
 
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
@@ -115,9 +117,11 @@ function Orders(props: propsIF) {
 
     const relevantTransactionsByType = transactionsByType.filter(
         (tx) =>
-            tx.txAction &&
-            tx.txType === 'Limit' &&
-            pendingTransactions.includes(tx.txHash) &&
+            unindexedNonFailedSessionLimitOrderUpdates.some(
+                (update) => update.txHash === tx.txHash,
+            ) &&
+            tx.userAddress.toLowerCase() ===
+                (userAddress || '').toLowerCase() &&
             tx.txDetails?.baseAddress.toLowerCase() ===
                 baseToken.address.toLowerCase() &&
             tx.txDetails?.quoteAddress.toLowerCase() ===
@@ -128,8 +132,7 @@ function Orders(props: propsIF) {
     const shouldDisplayNoTableData =
         !isLoading &&
         !limitOrderData.length &&
-        (relevantTransactionsByType.length === 0 ||
-            pendingTransactions.length === 0);
+        unindexedNonFailedSessionLimitOrderUpdates.length === 0;
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] =
         useSortedLimits('time', limitOrderData);
@@ -427,7 +430,7 @@ function Orders(props: propsIF) {
         <div onKeyDown={handleKeyDownViewOrder}>
             <ul ref={listRef} id='current_row_scroll'>
                 {!isAccountView &&
-                    pendingTransactions.length > 0 &&
+                    relevantTransactionsByType.length > 0 &&
                     relevantTransactionsByType.reverse().map((tx, idx) => (
                         <OrderRowPlaceholder
                             key={idx}

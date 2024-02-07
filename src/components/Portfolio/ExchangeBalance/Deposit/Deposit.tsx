@@ -264,6 +264,7 @@ export default function Deposit(props: propsIF) {
                 addPendingTx(tx?.hash);
                 if (tx?.hash)
                     addTransactionByType({
+                        userAddress: userAddress || '',
                         txHash: tx.hash,
                         txType: 'Deposit',
                         txDescription: `Deposit ${selectedToken.symbol}`,
