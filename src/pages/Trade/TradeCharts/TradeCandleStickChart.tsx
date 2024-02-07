@@ -26,7 +26,11 @@ import { ChartContext } from '../../../contexts/ChartContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import Spinner from '../../../components/Global/Spinner/Spinner';
 import { LiquidityDataLocal } from './TradeCharts';
-import { CandleDataIF, CandleScaleIF } from '../../../ambient-utils/types';
+import {
+    CandleDataIF,
+    CandleScaleIF,
+    TransactionIF,
+} from '../../../ambient-utils/types';
 import {
     chartItemStates,
     getInitialDisplayCandleCount,
@@ -149,6 +153,20 @@ function TradeCandleStickChart(props: propsIF) {
             : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
     const mobileView = useMediaQuery('(max-width: 600px)');
+
+    const [userTransactionData, setUserTransactionData] =
+        useState<Array<TransactionIF>>();
+
+    const { userTransactionsByPool } = useContext(GraphDataContext);
+
+    useEffect(() => {
+        if (
+            userTransactionsByPool &&
+            userTransactionsByPool.changes.length > 0
+        ) {
+            setUserTransactionData(userTransactionsByPool.changes);
+        }
+    }, [userTransactionsByPool]);
 
     useEffect(() => {
         setIsLoading(true);
@@ -883,6 +901,7 @@ function TradeCandleStickChart(props: propsIF) {
                         candleTime={chartSettings.candleTime.global}
                         unparsedData={candleData}
                         updateURL={updateURL}
+                        userTransactionData={userTransactionData}
                     />
                 ) : (
                     <Spinner size={100} bg='var(--dark2)' centered />
