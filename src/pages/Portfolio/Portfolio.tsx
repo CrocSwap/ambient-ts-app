@@ -10,11 +10,11 @@ import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileS
 
 // START: Import Other Local Files
 import { TokenIF } from '../../ambient-utils/types';
-import { fetchEnsAddress } from '../../ambient-utils/api';
+import { fetchEnsAddress, fetchUserXpData } from '../../ambient-utils/api';
 import { Navigate, useParams } from 'react-router-dom';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { diffHashSig } from '../../ambient-utils/dataLayer';
+import { diffHashSig, trimString } from '../../ambient-utils/dataLayer';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { TokenContext } from '../../contexts/TokenContext';
@@ -26,11 +26,23 @@ import {
     PortfolioTabsContainer,
 } from '../../styled/Components/Portfolio';
 import { FlexContainer, Text } from '../../styled/Common';
-import { UserDataContext } from '../../contexts/UserDataContext';
+import { UserDataContext, UserXpDataIF } from '../../contexts/UserDataContext';
+import Level from '../Level/Level';
 
-function Portfolio() {
-    const { userAddress, setResolvedAddressInContext, ensName } =
-        useContext(UserDataContext);
+interface PortfolioPropsIF {
+    isLevelsPage?: boolean;
+    isRanksPage?: boolean;
+    isViewMoreActive?: boolean;
+}
+
+function Portfolio(props: PortfolioPropsIF) {
+    const {
+        userAddress,
+        setResolvedAddressInContext,
+        ensName,
+        setSecondaryEnsInContext,
+    } = useContext(UserDataContext);
+    const { isLevelsPage, isRanksPage, isViewMoreActive } = props;
 
     const isUserConnected = useSimulatedIsUserConnected();
 
@@ -104,17 +116,43 @@ function Portfolio() {
                 try {
                     const ensName = await fetchEnsAddress(addressFromParams);
 
-                    if (ensName) setSecondaryEnsName(ensName);
-                    else setSecondaryEnsName('');
+                    if (ensName) {
+                        setSecondaryEnsName(ensName);
+                        setSecondaryEnsInContext(ensName);
+                    } else {
+                        setSecondaryEnsName('');
+                        setSecondaryEnsInContext('');
+                    }
                 } catch (error) {
                     setSecondaryEnsName('');
+                    setSecondaryEnsInContext('');
                     console.error({ error });
                 }
             } else if (addressFromParams && isAddressEns) {
                 setSecondaryEnsName(addressFromParams);
+                setSecondaryEnsInContext(addressFromParams);
             }
         })();
     }, [addressFromParams, isAddressEns]);
+
+    const [resolvedUserXp, setResolvedUserXp] = useState<UserXpDataIF>({
+        dataReceived: false,
+        data: undefined,
+    });
+
+    // fetch xp data for resolved address if not connected user account
+    useEffect(() => {
+        if (!connectedAccountActive && resolvedAddress) {
+            fetchUserXpData({ user: resolvedAddress }).then(
+                (resolvedUserXp) => {
+                    setResolvedUserXp({
+                        dataReceived: true,
+                        data: resolvedUserXp,
+                    });
+                },
+            );
+        }
+    }, [connectedAccountActive, resolvedAddress]);
 
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
     const exchangeBalanceComponent = (
@@ -268,6 +306,24 @@ function Portfolio() {
         resolvedAddress: resolvedAddress ?? '',
         setShowProfileSettings: setShowProfileSettings,
         connectedAccountActive: connectedAccountActive,
+        resolvedUserXp: resolvedUserXp,
+    };
+
+    const levelsProps = {
+        ensName: connectedAccountActive
+            ? ensName ?? ''
+            : secondaryEnsName
+            ? secondaryEnsName
+            : '',
+        resolvedAddress: resolvedAddress ?? '',
+        ensNameAvailable: ensName !== '',
+        truncatedAccountAddress: connectedAccountActive
+            ? trimString(userAddress ?? '', 6, 6, '…')
+            : trimString(resolvedAddress ?? '', 6, 6, '…'),
+        connectedAccountActive: connectedAccountActive,
+        isDisplayRank: isRanksPage,
+        resolvedUserXp,
+        isViewMoreActive,
     };
 
     const profileSettingsProps = {
@@ -304,8 +360,8 @@ function Portfolio() {
             {contentToRenderOnMobile}
         </FlexContainer>
     );
-
-    if (showActiveMobileComponent) return mobilePortfolio;
+    if (showActiveMobileComponent && !isLevelsPage) return mobilePortfolio;
+    if (isLevelsPage) return <Level {...levelsProps} />;
 
     return (
         <PortfolioContainer

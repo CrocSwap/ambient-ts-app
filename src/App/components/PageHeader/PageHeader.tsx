@@ -1,4 +1,10 @@
-import { useEffect, useState, memo, useContext, useCallback } from 'react';
+import React, {
+    useEffect,
+    useState,
+    memo,
+    useContext,
+    useCallback,
+} from 'react';
 import { useLocation } from 'react-router-dom';
 import { AnimateSharedLayout } from 'framer-motion';
 import Account from './Account/Account';
@@ -289,6 +295,7 @@ const PageHeader = function () {
             locationPathname === linkDestination
         );
     }
+
     const routeDisplay = (
         <AnimateSharedLayout>
             <PrimaryNavigation
@@ -318,7 +325,6 @@ const PageHeader = function () {
             </PrimaryNavigation>
         </AnimateSharedLayout>
     );
-
     // ----------------------------END OF NAVIGATION FUNCTIONALITY-------------------------------------
     const [show, handleShow] = useState(false);
 
@@ -368,16 +374,21 @@ const PageHeader = function () {
                             gap={8}
                             overflow='visible'
                         >
-                            <FlexContainer fontSize='body' color={'orange'}>
-                                {APP_ENVIRONMENT !== 'production' ? (
-                                    <FlexContainer alignItems='center' gap={4}>
-                                        {`${BRANCH_NAME} - v${appVersion}`}
-                                        {APP_ENVIRONMENT !== 'testnet' && (
-                                            <BiGitBranch color='yellow' />
-                                        )}
-                                    </FlexContainer>
-                                ) : null}
-                            </FlexContainer>
+                            {desktopScreen && (
+                                <FlexContainer fontSize='body' color={'orange'}>
+                                    {APP_ENVIRONMENT !== 'production' ? (
+                                        <FlexContainer
+                                            alignItems='center'
+                                            gap={4}
+                                        >
+                                            {`${BRANCH_NAME} - v${appVersion}`}
+                                            {APP_ENVIRONMENT !== 'testnet' && (
+                                                <BiGitBranch color='yellow' />
+                                            )}
+                                        </FlexContainer>
+                                    ) : null}
+                                </FlexContainer>
+                            )}
                             <NetworkSelector switchNetwork={switchNetwork} />
                             {!isUserConnected && connectWagmiButton}
                             <Account {...accountProps} />

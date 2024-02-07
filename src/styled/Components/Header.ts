@@ -15,6 +15,10 @@ interface PrimaryHeaderProps {
     fixed: boolean;
 }
 
+interface LevelButtonProps {
+    large?: boolean;
+}
+
 // Define the styles for PrimaryHeader
 export const PrimaryHeader = styled.header<PrimaryHeaderProps>`
     width: 100%;
@@ -30,6 +34,9 @@ export const PrimaryHeader = styled.header<PrimaryHeaderProps>`
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         padding: 0 16px;
+    }
+    @media only screen and (max-width: 600px) {
+        padding: 0 1rem;
     }
 `;
 
@@ -300,6 +307,59 @@ export const WalletWrapper = styled(FlexContainer)`
     opacity: 1;
     bottom: 85px;
     pointer-events: auto;
+
+    @media (max-width: 500px) {
+        width: 300px;
+        right: -50px;
+    }
+`;
+export const LevelWrapper = styled(FlexContainer)`
+    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: 0px 45px 30px rgba(0, 0, 0, 0.5);
+    background: var(--dark2);
+    position: absolute;
+    top: 50px;
+    width: auto;
+    min-width: 350px;
+    right: 15px;
+    z-index: 9999;
+    padding: 8px 1rem;
+    border: 1px solid var(--accent1);
+
+    opacity: 1;
+    bottom: 85px;
+    pointer-events: auto;
+
+    display: flex;
+    flex-direction: column;
+    height: 150px;
+    gap: 8px;
+    border-radius: 4px;
+
+    @media (max-width: 500px) {
+        right: -70px;
+    }
+`;
+export const AccountDropdownWrapper = styled(FlexContainer)`
+    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: 0px 45px 30px rgba(0, 0, 0, 0.5);
+    background: var(--dark2);
+    position: absolute;
+    top: 30px;
+    width: 147px;
+    right: 0px;
+    z-index: 9999;
+    padding: 8px 1rem;
+
+    opacity: 1;
+    bottom: 85px;
+    pointer-events: auto;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    height: 136px;
+    gap: 8px;
 `;
 
 // Account
@@ -331,6 +391,22 @@ export const TitleGradientButton = styled.button`
     }
 `;
 
+export const LevelButton = styled.button<LevelButtonProps>`
+    outline: none;
+    border: none;
+    background: var(--accent1);
+    width: ${(props) => (props.large ? '40px' : '24px')};
+    height: ${(props) => (props.large ? '40px' : '24px')};
+    border-radius: 50%;
+    padding: 4px 3px 4px 4px;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text1);
+`;
 export const WalletName = styled.p`
     min-width: 80px;
 
