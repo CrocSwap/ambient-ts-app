@@ -38,7 +38,6 @@ export const useAppChain = (): {
     // due to where this code is instantiated we can't use param tools
     function getChainFromURL(): string | null {
         const { pathname } = window.location;
-        console.log({ pathname });
         let rawURL = pathname;
         let templateURL = '';
         if (rawURL.length && rawURL.includes('chain')) {
@@ -80,7 +79,7 @@ export const useAppChain = (): {
     // memoized and validated chain ID from the connected wallet
     const chainInWalletValidated = useRef<string | null>(getChainFromWallet());
 
-    // // trigger chain switch in wallet when chain in URL changes
+    // trigger chain switch in wallet when chain in URL changes
     useEffect(() => {
         if (chainInURLValidated && switchNetwork) {
             if (activeNetwork.chainId !== chainInURLValidated) {
