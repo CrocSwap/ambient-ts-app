@@ -80,18 +80,18 @@ export const useAppChain = (): {
     // memoized and validated chain ID from the connected wallet
     const chainInWalletValidated = useRef<string | null>(getChainFromWallet());
 
-    // trigger chain switch in wallet when chain in URL changes
-    useEffect(() => {
-        console.log({ chainInURLValidated, activeNetwork });
-        alert('stop');
-        if (chainInURLValidated && switchNetwork) {
-            if (activeNetwork.chainId !== chainInURLValidated) {
-                console.log({ chainInURLValidated });
-                alert('stop');
-                switchNetwork(parseInt(chainInURLValidated));
-            }
-        }
-    }, [switchNetwork === undefined]);
+    // // trigger chain switch in wallet when chain in URL changes
+    // useEffect(() => {
+    //     console.log({ chainInURLValidated, activeNetwork });
+    //     alert('stop');
+    //     if (chainInURLValidated && switchNetwork) {
+    //         if (activeNetwork.chainId !== chainInURLValidated) {
+    //             console.log({ chainInURLValidated });
+    //             alert('stop');
+    //             switchNetwork(parseInt(chainInURLValidated));
+    //         }
+    //     }
+    // }, [switchNetwork === undefined]);
 
     // listen for the wallet to change in connected wallet and process that change in the app
     useEffect(() => {
