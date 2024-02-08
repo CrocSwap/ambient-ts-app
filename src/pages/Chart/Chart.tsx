@@ -64,6 +64,7 @@ import {
     calculateFibRetracement,
     calculateFibRetracementBandAreas,
     chartItemStates,
+    checkShowLatestCandle,
     crosshair,
     fillLiqAdvanced,
     findSnapTime,
@@ -405,16 +406,16 @@ export default function Chart(props: propsIF) {
                 isFakeData: false,
             }));
 
-        const nowDate = Date.now();
-
-        const snapDiff = nowDate % (period * 1000);
-        const snappedTime = nowDate + (period * 1000 - snapDiff);
+        const isShowLatestCandle = checkShowLatestCandle(
+            period,
+            scaleData?.xScale,
+        );
 
         if (
             poolPriceWithoutDenom &&
             data &&
             data.length > 0 &&
-            data[0].time + period === snappedTime / 1000
+            isShowLatestCandle
         ) {
             const closePriceWithDenom =
                 data[0].invPriceCloseExclMEVDecimalCorrected;
@@ -848,19 +849,10 @@ export default function Chart(props: propsIF) {
 
             domainMax = domainMax < minDate ? minDate : domainMax;
 
-            // const nowDate = Date.now();
-
-            // const snapDiff = nowDate % (period * 1000);
-            // const snappedTime = nowDate + (period * 1000 - snapDiff);
-
-            // const isShowLatestCandle =
-            //     xDomain[0] < snappedTime * 1000 &&
-            //     snappedTime * 1000 < xDomain[1];
-
-            // reverting to previous logic until Proven team can confirm fix
-            const isShowLatestCandle =
-                xDomain[0] < lastCandleData?.time * 1000 &&
-                lastCandleData?.time * 1000 < xDomain[1];
+            const isShowLatestCandle = checkShowLatestCandle(
+                period,
+                scaleData?.xScale,
+            );
 
             setCandleScale((prev: CandleScaleIF) => {
                 return {
