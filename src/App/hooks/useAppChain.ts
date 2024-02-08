@@ -114,6 +114,13 @@ export const useAppChain = (): {
                         // if no, navigate to index page
                         // first part seems unnecessary but appears to help stability
                         const { pathname } = window.location;
+
+                        const isPathENS = pathname.slice(1)?.endsWith('.eth');
+                        const isPathHex =
+                            pathname.slice(1)?.startsWith('0x') &&
+                            pathname.slice(1)?.length == 42;
+                        const isPathUserAddress = isPathENS || isPathHex;
+
                         if (chainInURLValidated === incomingChainFromWallet) {
                             // generate params chain manually and navigate user
                             let templateURL = pathname;
@@ -136,6 +143,8 @@ export const useAppChain = (): {
                                 linkGenCurrent.navigate(
                                     `chain=${incomingChainFromWallet}`,
                                 );
+                            } else if (isPathUserAddress) {
+                                window.location.reload();
                             } else {
                                 linkGenCurrent.navigate();
                             }
