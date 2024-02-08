@@ -15,7 +15,6 @@ import LimitActionSettings from './LimitActionSettings/LimitActionSettings';
 import LimitActionTokenHeader from './LimitActionTokenHeader/LimitActionTokenHeader';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { getFormattedNumber } from '../../ambient-utils/dataLayer';
-import { CrocPositionView } from '@crocswap-libs/sdk';
 import ModalHeader from '../Global/ModalHeader/ModalHeader';
 import { LimitActionType } from '../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import Modal from '../Global/Modal/Modal';
@@ -111,8 +110,12 @@ export default function LimitActionModal(props: propsIF) {
     const updateLiq = async () => {
         try {
             if (!crocEnv || !limitOrder) return;
-            const pool = crocEnv.pool(limitOrder.base, limitOrder.quote);
-            const pos = new CrocPositionView(pool, limitOrder.user);
+            // const pos = new CrocPositionView(pool, limitOrder.user);
+            const pos = crocEnv.positions(
+                limitOrder.base,
+                limitOrder.quote,
+                limitOrder.user,
+            );
 
             const liqBigNum = (
                 await pos.queryKnockoutLivePos(
@@ -466,6 +469,12 @@ export default function LimitActionModal(props: propsIF) {
                   receivingAmountAddress: limitOrder.isBid
                       ? baseTokenAddress
                       : quoteTokenAddress,
+                  claimableAmount: limitOrder.isBid
+                      ? quoteDisplay
+                      : baseDisplay,
+                  claimableAmountAddress: limitOrder.isBid
+                      ? quoteTokenAddress
+                      : baseTokenAddress,
                   networkFee,
               }
             : {

@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useMemo } from 'react';
-import { TokenIF } from '../ambient-utils/types';
-import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
+import { NetworkIF, TokenIF } from '../ambient-utils/types';
+import { ChainSpec, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { getDefaultChainId } from '../ambient-utils/dataLayer';
 import { getDefaultPairForChain, goerliETH } from '../ambient-utils/constants';
 import { useAppChain } from '../App/hooks/useAppChain';
@@ -10,6 +10,7 @@ export interface TradeDataContextIF {
     tokenB: TokenIF;
     baseToken: TokenIF;
     quoteToken: TokenIF;
+    areDefaultTokensUpdatedForChain: boolean;
     isTokenABase: boolean;
     isDenomBase: boolean;
     didUserFlipDenom: boolean;
@@ -42,6 +43,10 @@ export interface TradeDataContextIF {
     deactivateConfirmation: () => void;
     isConfirmationActive: boolean;
     activeModule: string | null;
+    chainData: ChainSpec;
+    isWalletChainSupported: boolean;
+    activeNetwork: NetworkIF;
+    chooseNetwork: (network: NetworkIF) => void;
 }
 
 export const TradeDataContext = createContext<TradeDataContextIF>(
@@ -60,6 +65,10 @@ export const TradeDataContextProvider = (props: {
 }) => {
     const [tokenA, setTokenA] = React.useState<TokenIF>(dfltTokenA);
     const [tokenB, setTokenB] = React.useState<TokenIF>(dfltTokenB);
+    const [
+        areDefaultTokensUpdatedForChain,
+        setAreDefaultTokensUpdatedForChain,
+    ] = React.useState<boolean>(false);
     const [isDenomBase, setDenomInBase] = React.useState<boolean>(true);
     // TODO: this can likely be refactored out
     const [didUserFlipDenom, setDidUserFlipDenom] =
@@ -99,7 +108,8 @@ export const TradeDataContextProvider = (props: {
     // TODO: this part feels suspicious
     // Why should we be handling the app chain in a hook
     // rather than a context?
-    const { chainData } = useAppChain();
+    const { chainData, isWalletChainSupported, activeNetwork, chooseNetwork } =
+        useAppChain();
     useEffect(() => {
         if (tokenA.chainId !== parseInt(chainData.chainId)) {
             const [_tokenA, _tokenB] = getDefaultPairForChain(
@@ -108,6 +118,7 @@ export const TradeDataContextProvider = (props: {
             setTokenA(_tokenA);
             setTokenB(_tokenB);
         }
+        setAreDefaultTokensUpdatedForChain(true);
     }, [chainData.chainId]);
 
     const [soloToken, setSoloToken] = React.useState(goerliETH);
@@ -152,6 +163,7 @@ export const TradeDataContextProvider = (props: {
         slippageTolerance,
         setTokenA,
         setTokenB,
+        areDefaultTokensUpdatedForChain,
         setDenomInBase,
         setIsTokenAPrimary,
         setDisableReverseTokens,
@@ -167,6 +179,10 @@ export const TradeDataContextProvider = (props: {
         deactivateConfirmation,
         isConfirmationActive,
         activeModule,
+        chainData,
+        isWalletChainSupported,
+        activeNetwork,
+        chooseNetwork,
     };
 
     return (

@@ -103,6 +103,7 @@ function Swap(props: propsIF) {
         isDenomBase,
         primaryQuantity,
         activateConfirmation,
+        areDefaultTokensUpdatedForChain,
     } = useContext(TradeDataContext);
 
     const [sellQtyString, setSellQtyString] = useState<string>(
@@ -180,7 +181,10 @@ function Swap(props: propsIF) {
     const needConfirmTokenA = !tokens.verify(tokenA.address);
     const needConfirmTokenB = !tokens.verify(tokenB.address);
     // value showing if no acknowledgement is necessary
-    const areBothAckd: boolean = !needConfirmTokenA && !needConfirmTokenB;
+    const areBothAckd: boolean =
+        areDefaultTokensUpdatedForChain &&
+        !needConfirmTokenA &&
+        !needConfirmTokenB;
 
     const liquidityProviderFeeString = (liquidityFee * 100).toLocaleString(
         'en-US',
