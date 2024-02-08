@@ -51,34 +51,33 @@ export default function PointsHistoryDisplay(props: PropsIF) {
                 }`}
                 style={{ height: !isViewMoreActive ? '101px' : '400px' }}
             >
-                {(isViewMoreActive
-                    ? [...pointsData, ...pointsData, ...pointsData]
-                    : pointsData
-                ).map((data) => (
-                    <React.Fragment key={data?.date + data?.addedPoints}>
-                        <Text
-                            fontSize={!desktopScreen ? 'body' : 'header2'}
-                            color='text1'
-                            style={{ textAlign: 'end' }}
-                        >
-                            {data?.date}
-                        </Text>
-                        <Text
-                            fontSize={!desktopScreen ? 'body' : 'header2'}
-                            color='text1'
-                            style={{ textAlign: 'end' }}
-                        >
-                            {data?.addedPoints}
-                        </Text>
-                        <Text
-                            fontSize={!desktopScreen ? 'body' : 'header2'}
-                            color='text1'
-                            style={{ textAlign: 'end' }}
-                        >
-                            {data?.retroPoints}
-                        </Text>
-                    </React.Fragment>
-                ))}
+                {(isViewMoreActive ? pointsData : pointsData.slice(0, 10)).map(
+                    (data) => (
+                        <React.Fragment key={data?.date + data?.addedPoints}>
+                            <Text
+                                fontSize={!desktopScreen ? 'body' : 'header2'}
+                                color='text1'
+                                style={{ textAlign: 'end' }}
+                            >
+                                {data?.date}
+                            </Text>
+                            <Text
+                                fontSize={!desktopScreen ? 'body' : 'header2'}
+                                color='text1'
+                                style={{ textAlign: 'end' }}
+                            >
+                                {data?.addedPoints}
+                            </Text>
+                            <Text
+                                fontSize={!desktopScreen ? 'body' : 'header2'}
+                                color='text1'
+                                style={{ textAlign: 'end' }}
+                            >
+                                {data?.retroPoints}
+                            </Text>
+                        </React.Fragment>
+                    ),
+                )}
             </div>
             {pointsData.length > 5 && (
                 <Link

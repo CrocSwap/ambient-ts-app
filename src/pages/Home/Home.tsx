@@ -15,7 +15,6 @@ import { lookupChainId } from '../../ambient-utils/dataLayer';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { Text } from '../../styled/Common';
 import styled from 'styled-components';
-
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 export default function Home() {
