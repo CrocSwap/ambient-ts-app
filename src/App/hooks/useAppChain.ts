@@ -82,10 +82,14 @@ export const useAppChain = (): {
 
     // trigger chain switch in wallet when chain in URL changes
     useEffect(() => {
+        console.log({ chainInURLValidated, activeNetwork });
+        alert('stop');
         if (chainInURLValidated && switchNetwork) {
-            console.log({ chainInURLValidated });
-            alert('stop');
-            switchNetwork(parseInt(chainInURLValidated));
+            if (activeNetwork.chainId !== chainInURLValidated) {
+                console.log({ chainInURLValidated });
+                alert('stop');
+                switchNetwork(parseInt(chainInURLValidated));
+            }
         }
     }, [switchNetwork === undefined]);
 
@@ -152,7 +156,7 @@ export const useAppChain = (): {
                 chainInWalletValidated.current = incomingChainFromWallet;
             }
         }
-    }, [chainNetwork?.id]);
+    }, [chainNetwork?.id, chainInWalletValidated.current]);
 
     const defaultChain = getDefaultChainId();
 
@@ -173,6 +177,8 @@ export const useAppChain = (): {
     // logic to update `activeNetwork` when the connected wallet changes networks
     // this doesn't kick in if the user does not have a connected wallet
     useEffect(() => {
+        console.log(chainInWalletValidated.current);
+        alert('stop');
         // see if there is a connected wallet with a valid network
         if (chainInWalletValidated.current) {
             // find network metaData for validated wallet
@@ -181,7 +187,7 @@ export const useAppChain = (): {
             // if found, update local state with retrieved metadata
             chainMetadata && setActiveNetwork(chainMetadata);
         }
-    }, [chainInWalletValidated.current]);
+    }, [chainInWalletValidated.current !== null]);
 
     // fn to allow user to manually switch chains in the app because everything
     // ... else in this file responds to changes in the browser environment
