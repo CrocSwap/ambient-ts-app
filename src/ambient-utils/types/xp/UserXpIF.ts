@@ -1,8 +1,8 @@
 export interface XpSnapshotServerIF {
     addedPoints: number;
     retroPoints: number;
-    cumulativePoints: number;
     snapshotUnixTime: number;
+    cumulativePoints?: number;
 }
 
 export interface UserXpServerIF {
@@ -19,7 +19,7 @@ export interface UserXpServerIF {
 export interface XpSnapshotIF {
     addedPoints: number;
     retroPoints: number;
-    cumulativePoints: number;
+    cumulativePoints?: number;
     level: number;
     snapshotUnixTime: number;
 }
