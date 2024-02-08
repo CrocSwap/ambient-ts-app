@@ -185,6 +185,11 @@ export const useAppChain = (): {
         localStorage.setItem(CHAIN_LS_KEY, network.chainId);
         const { pathname } = window.location;
         setActiveNetwork(network);
+        const isPathENS = pathname.slice(1)?.endsWith('.eth');
+        const isPathHex =
+            pathname.slice(1)?.startsWith('0x') &&
+            pathname.slice(1)?.length == 42;
+        const isPathUserAddress = isPathENS || isPathHex;
         if (
             linkGenCurrent.currentPage === 'initpool' ||
             linkGenCurrent.currentPage === 'reposition'
@@ -192,6 +197,8 @@ export const useAppChain = (): {
             linkGenPool.navigate(`chain=${network.chainId}`);
         } else if (pathname.includes('chain')) {
             linkGenCurrent.navigate(`chain=${network.chainId}`);
+        } else if (isPathUserAddress) {
+            window.location.reload();
         } else {
             linkGenCurrent.navigate();
         }
