@@ -1703,10 +1703,6 @@ export default function Chart(props: propsIF) {
                                 : 'Max';
                     }
                 })
-
-                .filter(() => {
-                    return !isConfirmationActive;
-                })
                 .on('drag', function (event) {
                     const { offsetY } = getXandYLocationForChartDrag(
                         event,
@@ -4263,81 +4259,66 @@ export default function Chart(props: propsIF) {
             // Define the 'onClickCanvas' event handler for canvas clicks
             const onClickCanvas = (event: PointerEvent) => {
                 // If the candle or volume click
-                const { isHoverCandleOrVolumeData, nearest } =
-                    candleOrVolumeDataHoverStatus(event.offsetX, event.offsetY);
-                selectedDateEvent(isHoverCandleOrVolumeData, nearest);
+                const offsetX = event.offsetX;
+                const offsetY = event.offsetY;
 
-                setSelectedDrawnShape(undefined);
-                // Check if the location pathname includes 'pool' or 'reposition' and handle the click event.
+                let isOrderHistorySelected = undefined;
+                if (showSwap) {
+                    isOrderHistorySelected = orderHistoryHoverStatus(
+                        event.offsetX,
+                        event.offsetY,
+                        true,
+                    );
+                }
 
                 if (
-                    (location.pathname.includes('pool') ||
-                        location.pathname.includes('reposition')) &&
-                    scaleData !== undefined &&
-                    !isHoverCandleOrVolumeData &&
-                    !isConfirmationActive
+                    isOrderHistorySelected === undefined ||
+                    isOrderHistorySelected.order === undefined
                 ) {
-                    onClickRange(event);
-                    const offsetX = event.offsetX;
-                    const offsetY = event.offsetY;
+                    const { isHoverCandleOrVolumeData, nearest } =
+                        candleOrVolumeDataHoverStatus(offsetX, offsetY);
 
-                    let isOrderHistorySelected = undefined;
-                    if (showSwap) {
-                        isOrderHistorySelected = orderHistoryHoverStatus(
-                            event.offsetX,
-                            event.offsetY,
-                            true,
-                        );
-                    }
+                    selectedDateEvent(isHoverCandleOrVolumeData, nearest);
+
+                    setSelectedDrawnShape(undefined);
+                    // Check if the location pathname includes 'pool' or 'reposition' and handle the click event.
 
                     if (
-                        isOrderHistorySelected === undefined ||
-                        isOrderHistorySelected.order === undefined
+                        (location.pathname.includes('pool') ||
+                            location.pathname.includes('reposition')) &&
+                        scaleData !== undefined &&
+                        !isHoverCandleOrVolumeData &&
+                        !isConfirmationActive
                     ) {
-                        const { isHoverCandleOrVolumeData, nearest } =
-                            candleOrVolumeDataHoverStatus(offsetX, offsetY);
-
-                        selectedDateEvent(isHoverCandleOrVolumeData, nearest);
-
-                        setSelectedDrawnShape(undefined);
-                        // Check if the location pathname includes 'pool' or 'reposition' and handle the click event.
-
-                        if (
-                            (location.pathname.includes('pool') ||
-                                location.pathname.includes('reposition')) &&
-                            scaleData !== undefined &&
-                            !isHoverCandleOrVolumeData
-                        ) {
-                            onClickRange(event);
-                        }
-
-                        // Check if the location pathname includes '/limit' and handle the click event.
-                        if (
-                            location.pathname.includes('/limit') &&
-                            scaleData !== undefined &&
-                            !isHoverCandleOrVolumeData
-                        ) {
-                            let newLimitValue = scaleData?.yScale.invert(
-                                event.offsetY,
-                            );
-
-                            if (newLimitValue < 0) newLimitValue = 0;
-
-                            const { noGoZoneMin, noGoZoneMax } =
-                                getNoZoneData();
-
-                            if (
-                                !(
-                                    newLimitValue > noGoZoneMin &&
-                                    newLimitValue < noGoZoneMax
-                                )
-                            ) {
-                                onBlurLimitRate(limit, newLimitValue);
-                            }
-                        }
-
-                        setSelectedOrderTooltipPlacement(() => undefined);
+                        onClickRange(event);
                     }
+
+                    // Check if the location pathname includes '/limit' and handle the click event.
+                    if (
+                        location.pathname.includes('/limit') &&
+                        scaleData !== undefined &&
+                        !isHoverCandleOrVolumeData &&
+                        !isConfirmationActive
+                    ) {
+                        let newLimitValue = scaleData?.yScale.invert(
+                            event.offsetY,
+                        );
+
+                        if (newLimitValue < 0) newLimitValue = 0;
+
+                        const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
+
+                        if (
+                            !(
+                                newLimitValue > noGoZoneMin &&
+                                newLimitValue < noGoZoneMax
+                            )
+                        ) {
+                            onBlurLimitRate(limit, newLimitValue);
+                        }
+                    }
+
+                    setSelectedOrderTooltipPlacement(() => undefined);
                 }
             };
             d3.select(d3CanvasMain.current).on(
@@ -4417,6 +4398,7 @@ export default function Chart(props: propsIF) {
         isSelectedOrderHistory,
         selectedOrderHistory,
         showSwap,
+        isConfirmationActive,
     ]);
 
     function checkLineLocation(
