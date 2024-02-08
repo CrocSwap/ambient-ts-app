@@ -9,6 +9,12 @@ const circleStrokeColor = '#7371fc';
 const circleFillColor = '#8A8AFF';
 const selectedCircleFillColor = 'wheat';
 
+const circleOrderSellStrokeColor = '#8A8AFF';
+const circleOrderBuyStrokeColor = '#CDC1FF';
+const circleOrderSellFillColor = 'rgba(115, 113, 252, 0.3)';
+const circleOrderBuyFillColor = 'rgba(205, 193, 255, 0.3)';
+// const howeredCircleFillColor = 'wheat';
+
 export function createCircle(
     xScale: any,
     yScale: any,
@@ -17,6 +23,7 @@ export function createCircle(
     denomInBase: boolean,
     isSelected = false,
     isTransparent = false,
+    isBuy: boolean | undefined = undefined,
 ) {
     return d3fc
         .seriesCanvasPoint()
@@ -29,17 +36,28 @@ export function createCircle(
         .size(size)
         .type(d3.symbolCircle)
         .decorate((context: any) => {
-            context.strokeStyle = circleStrokeColor;
+            context.strokeStyle =
+                isBuy !== undefined
+                    ? isBuy
+                        ? circleOrderBuyStrokeColor
+                        : circleOrderSellStrokeColor
+                    : circleStrokeColor;
+
             context.fillStyle = isTransparent
                 ? 'transparent'
                 : isSelected
                 ? selectedCircleFillColor
+                : isBuy !== undefined
+                ? isBuy
+                    ? circleOrderBuyFillColor
+                    : circleOrderSellFillColor
                 : circleFillColor;
+
             context.lineWidth = lineWidth;
         });
 }
 
-export function checkCricleLocation(
+export function checkCircleLocation(
     element: drawDataHistory,
     mouseX: number,
     mouseY: number,
