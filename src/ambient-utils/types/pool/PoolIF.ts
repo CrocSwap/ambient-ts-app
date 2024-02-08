@@ -6,4 +6,5 @@ export interface PoolIF {
     quote: TokenIF;
     chainId: string;
     poolIdx: number;
+    isBaseTokenMoneynessGreaterOrEqual?: boolean;
 }
