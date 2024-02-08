@@ -2,7 +2,10 @@ import { useContext, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { fetchContractDetails } from '../../ambient-utils/api';
-import { useProvider, useSwitchNetwork } from 'wagmi';
+import {
+    useProvider,
+    //  useSwitchNetwork
+} from 'wagmi';
 import { tokenMethodsIF } from '../../App/hooks/useTokens';
 import { pageNames, linkGenMethodsIF, useLinkGen } from './useLinkGen';
 import { TokenIF } from '../../ambient-utils/types';
@@ -70,7 +73,7 @@ export const useUrlParams = (
         return paramsForPage;
     }, [linkGenCurrent.currentPage]);
 
-    const { switchNetwork } = useSwitchNetwork();
+    // const { switchNetwork } = useSwitchNetwork();
 
     // map of all params in the current URL string
     const urlParamMap = useMemo<Map<validParamsType, string>>(() => {
@@ -273,9 +276,11 @@ export const useUrlParams = (
         try {
             const chainToUse = urlParamMap.get('chain') || dfltChainId;
 
-            if (urlParamMap.has('chain')) {
-                switchNetwork && switchNetwork(parseInt(chainToUse));
-            }
+            // if (urlParamMap.has('chain')) {
+            // console.log('switch network');
+            // alert('switch network');
+            // switchNetwork && switchNetwork(parseInt(chainToUse));
+            // }
 
             const tokenA = urlParamMap.get('tokenA');
             const tokenB = urlParamMap.get('tokenB');

@@ -1,10 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import {
-    useNetwork,
-    //  useSwitchNetwork
-} from 'wagmi';
+import { useNetwork, useSwitchNetwork } from 'wagmi';
 import {
     getDefaultChainId,
     validateChainId,
@@ -23,7 +20,7 @@ export const useAppChain = (): {
 } => {
     // metadata on chain authenticated in connected wallet
     const { chain: chainNetwork, chains: chns } = useNetwork();
-    // const { switchNetwork } = useSwitchNetwork();
+    const { switchNetwork } = useSwitchNetwork();
 
     // hook to generate navigation actions with pre-loaded path
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
@@ -84,17 +81,13 @@ export const useAppChain = (): {
     const chainInWalletValidated = useRef<string | null>(getChainFromWallet());
 
     // // trigger chain switch in wallet when chain in URL changes
-    // useEffect(() => {
-    //     console.log({ chainInURLValidated, activeNetwork });
-    //     alert('stop');
-    //     if (chainInURLValidated && switchNetwork) {
-    //         if (activeNetwork.chainId !== chainInURLValidated) {
-    //             console.log({ chainInURLValidated });
-    //             alert('stop');
-    //             switchNetwork(parseInt(chainInURLValidated));
-    //         }
-    //     }
-    // }, [switchNetwork === undefined]);
+    useEffect(() => {
+        if (chainInURLValidated && switchNetwork) {
+            if (activeNetwork.chainId !== chainInURLValidated) {
+                switchNetwork(parseInt(chainInURLValidated));
+            }
+        }
+    }, [switchNetwork === undefined]);
 
     // listen for the wallet to change in connected wallet and process that change in the app
     useEffect(() => {
@@ -180,8 +173,6 @@ export const useAppChain = (): {
     // logic to update `activeNetwork` when the connected wallet changes networks
     // this doesn't kick in if the user does not have a connected wallet
     useEffect(() => {
-        console.log(chainInWalletValidated.current);
-        alert('stop');
         // see if there is a connected wallet with a valid network
         if (chainInWalletValidated.current) {
             // find network metaData for validated wallet
@@ -197,8 +188,7 @@ export const useAppChain = (): {
     function chooseNetwork(network: NetworkIF): void {
         localStorage.setItem(CHAIN_LS_KEY, network.chainId);
         const { pathname } = window.location;
-        console.log({ pathname });
-        alert('stop');
+
         setActiveNetwork(network);
         if (
             linkGenCurrent.currentPage === 'initpool' ||
