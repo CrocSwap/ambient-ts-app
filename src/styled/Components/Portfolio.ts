@@ -176,6 +176,14 @@ export const PortfolioBannerRectangleContainer = styled.div`
         flex-shrink: 0;
     }
 `;
+export const PortfolioBannerLevelContainer = styled.div`
+    display: flex;
+    background: rgba(23, 29, 39, 0.7);
+    border-radius: 8px;
+    backdrop-filter: 10px;
+    padding: 4px 8px;
+    height: auto;
+`;
 
 export const PortfolioContainer = styled(FlexContainer)`
     transition: var(--transition);

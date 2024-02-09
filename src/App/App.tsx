@@ -1,5 +1,5 @@
 /** ***** Import React and Dongles *******/
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
     Routes,
     Route,
@@ -46,6 +46,7 @@ import Explore from '../pages/Explore/Explore';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
 import ExampleForm from '../pages/InitPool/FormExample';
+import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
 
 /** ***** React Function *******/
 export default function App() {
@@ -61,6 +62,7 @@ export default function App() {
         },
         theme: { selected: selectedTheme },
         wagmiModal: { isOpen: isWagmiModalOpen },
+        appHeaderDropdown,
     } = useContext(AppStateContext);
     const { isWalletChainSupported, defaultUrlParams } =
         useContext(CrocEnvContext);
@@ -157,6 +159,7 @@ export default function App() {
         }
     }, [isEscapePressed]);
     const showMobileVersion = useMediaQuery('(max-width: 500px)');
+    const [showPointSystemPopup, setShowPointSystemPopup] = useState(true);
 
     return (
         <>
@@ -166,8 +169,18 @@ export default function App() {
                 data-theme={selectedTheme}
             >
                 {!isWalletChainSupported && <SwitchNetwork />}
+                {showPointSystemPopup && (
+                    <PointSystemPopup
+                        showPointSystemPopup={showPointSystemPopup}
+                        setShowPointSystemPopup={setShowPointSystemPopup}
+                    />
+                )}
                 <AppOverlay />
                 <PageHeader />
+                <div
+                    className={appHeaderDropdown.isActive ? 'app_blur' : ''}
+                    onClick={() => appHeaderDropdown.setIsActive(false)}
+                />
                 <section
                     className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
                 >
@@ -254,8 +267,26 @@ export default function App() {
                         <Route path='initpool/:params' element={<InitPool />} />
                         <Route path='account' element={<Portfolio />} />
                         <Route
+                            path='xp-leaderboard'
+                            element={<Portfolio isLevelsPage isRanksPage />}
+                        />
+                        <Route
+                            path='account/xp'
+                            element={<Portfolio isLevelsPage />}
+                        />
+                        <Route
+                            path='account/xp/history'
+                            element={
+                                <Portfolio isLevelsPage isViewMoreActive />
+                            }
+                        />
+                        <Route
                             path='account/:address'
                             element={<Portfolio />}
+                        />
+                        <Route
+                            path='account/:address/xp'
+                            element={<Portfolio isLevelsPage />}
                         />
                         <Route
                             path='swap'
@@ -277,6 +308,10 @@ export default function App() {
                             />
                         )}
                         <Route path='/:address' element={<Portfolio />} />
+                        <Route
+                            path='/:address/xp'
+                            element={<Portfolio isLevelsPage />}
+                        />
                         <Route path='/404' element={<NotFound />} />
                         <Route
                             path='*'

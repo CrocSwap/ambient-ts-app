@@ -6,19 +6,33 @@ import PortfolioBannerAccount from './PortfolioBannerAccount/PortfolioBannerAcco
 
 // START: Import Other Local Files
 import { trimString } from '../../../ambient-utils/dataLayer';
-import { PortfolioBannerRectangleContainer } from '../../../styled/Components/Portfolio';
+import {
+    PortfolioBannerLevelContainer,
+    PortfolioBannerRectangleContainer,
+} from '../../../styled/Components/Portfolio';
 import accountImage from '../../../assets/images/backgrounds/account_image.svg';
-import { UserDataContext } from '../../../contexts/UserDataContext';
+import {
+    UserDataContext,
+    UserXpDataIF,
+} from '../../../contexts/UserDataContext';
 import { useContext } from 'react';
+import UserLevelDisplay from '../../Global/LevelsCard/UserLevelDisplay';
 interface propsIF {
     ensName: string;
     resolvedAddress: string;
     connectedAccountActive: boolean;
+    resolvedUserXp: UserXpDataIF;
 }
 
 export default function PortfolioBanner(props: propsIF) {
-    const { ensName, resolvedAddress, connectedAccountActive } = props;
-    const { userAddress } = useContext(UserDataContext);
+    const { ensName, resolvedAddress, connectedAccountActive, resolvedUserXp } =
+        props;
+    const { userAddress, connectedUserXp } = useContext(UserDataContext);
+
+    const xpData =
+        connectedAccountActive || location.pathname === '/account/xp'
+            ? connectedUserXp
+            : resolvedUserXp;
 
     const ensNameAvailable = ensName !== '';
 
@@ -39,6 +53,8 @@ export default function PortfolioBanner(props: propsIF) {
             ? myJazzicon
             : null;
 
+    const userLink = ensName ?? userAddress;
+
     return (
         <PortfolioBannerRectangleContainer
             style={{ backgroundImage: `url(${accountImage})` }}
@@ -50,6 +66,13 @@ export default function PortfolioBanner(props: propsIF) {
                 truncatedAccountAddress={truncatedAccountAddress}
                 jazziconsToDisplay={jazziconsToDisplay}
             />
+            <PortfolioBannerLevelContainer>
+                <UserLevelDisplay
+                    currentLevel={xpData?.data?.currentLevel}
+                    globalPoints={xpData?.data?.globalPoints}
+                    user={userLink}
+                />
+            </PortfolioBannerLevelContainer>
         </PortfolioBannerRectangleContainer>
     );
 }

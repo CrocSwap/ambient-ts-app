@@ -17,6 +17,11 @@ import {
 
 interface AppStateContextIF {
     appOverlay: { isActive: boolean; setIsActive: (val: boolean) => void };
+    appHeaderDropdown: {
+        isActive: boolean;
+        setIsActive: (val: boolean) => void;
+    };
+
     globalPopup: globalPopupMethodsIF;
     snackbar: snackbarMethodsIF;
     tutorial: { isActive: boolean; setIsActive: (val: boolean) => void };
@@ -49,6 +54,7 @@ export const AppStateContextProvider = (props: {
 }) => {
     const [theme, setTheme] = useState<'dark' | 'light'>('dark');
     const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
+    const [isAppHeaderDropdown, setIsAppHeaderDropdown] = useState(false);
     const [isTutorialMode, setIsTutorialMode] = useState(false);
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isChatEnabled, setIsChatEnabled] = useState(CHAT_ENABLED);
@@ -89,6 +95,10 @@ export const AppStateContextProvider = (props: {
                 isActive: isAppOverlayActive,
                 setIsActive: setIsAppOverlayActive,
             },
+            appHeaderDropdown: {
+                isActive: isAppHeaderDropdown,
+                setIsActive: setIsAppHeaderDropdown,
+            },
             globalPopup,
             snackbar,
             tutorial: {
@@ -128,6 +138,8 @@ export const AppStateContextProvider = (props: {
             isWagmiModalOpenWallet,
             openWagmiModalWallet,
             closeWagmiModalWallet,
+            isAppHeaderDropdown,
+            setIsAppHeaderDropdown,
         ],
     );
 

@@ -717,6 +717,8 @@ function Reposition() {
                                         : handleModalOpen
                                 }
                                 disabled={
+                                    userAddress?.toLowerCase() !==
+                                        position.user.toLowerCase() ||
                                     isRepositionSent ||
                                     isPositionInRange ||
                                     isCurrentPositionEmptyOrLoading
