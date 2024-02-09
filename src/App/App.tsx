@@ -28,7 +28,10 @@ import SidebarFooter from '../components/Global/Sidebar/SidebarFooter/SidebarFoo
 
 /** * **** Import Local Files *******/
 import './App.css';
-import { IS_LOCAL_ENV } from '../ambient-utils/constants';
+import {
+    DEFAULT_CTA_DISMISSAL_DURATION_MINUTES,
+    IS_LOCAL_ENV,
+} from '../ambient-utils/constants';
 import ChatPanel from '../components/Chat/ChatPanel';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
@@ -47,6 +50,10 @@ import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
 import ExampleForm from '../pages/InitPool/FormExample';
 import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
+import {
+    getCtaDismissalsFromLocalStorage,
+    saveCtaDismissalToLocalStorage,
+} from './functions/localStorage';
 
 /** ***** React Function *******/
 export default function App() {
@@ -159,7 +166,21 @@ export default function App() {
         }
     }, [isEscapePressed]);
     const showMobileVersion = useMediaQuery('(max-width: 500px)');
-    const [showPointSystemPopup, setShowPointSystemPopup] = useState(true);
+
+    const pointsModalDismissalDuration =
+        DEFAULT_CTA_DISMISSAL_DURATION_MINUTES || 1;
+
+    const [showPointSystemPopup, setShowPointSystemPopup] = useState(
+        (getCtaDismissalsFromLocalStorage().find(
+            (x) => x.ctaId === 'points_modal_cta',
+        )?.unixTimeOfDismissal || 0) <
+            Math.floor(Date.now() / 1000 - 60 * pointsModalDismissalDuration),
+    );
+
+    const dismissPointSystemPopup = () => {
+        setShowPointSystemPopup(false);
+        saveCtaDismissalToLocalStorage({ ctaId: 'points_modal_cta' });
+    };
 
     return (
         <>
@@ -172,7 +193,7 @@ export default function App() {
                 {showPointSystemPopup && (
                     <PointSystemPopup
                         showPointSystemPopup={showPointSystemPopup}
-                        setShowPointSystemPopup={setShowPointSystemPopup}
+                        dismissPointSystemPopup={dismissPointSystemPopup}
                     />
                 )}
                 <AppOverlay />
@@ -275,6 +296,12 @@ export default function App() {
                             element={<Portfolio isLevelsPage />}
                         />
                         <Route
+                            path='account/:address/xp/history'
+                            element={
+                                <Portfolio isLevelsPage isViewMoreActive />
+                            }
+                        />
+                        <Route
                             path='account/xp/history'
                             element={
                                 <Portfolio isLevelsPage isViewMoreActive />
@@ -311,6 +338,12 @@ export default function App() {
                         <Route
                             path='/:address/xp'
                             element={<Portfolio isLevelsPage />}
+                        />
+                        <Route
+                            path='/:address/xp/history'
+                            element={
+                                <Portfolio isLevelsPage isViewMoreActive />
+                            }
                         />
                         <Route path='/404' element={<NotFound />} />
                         <Route

@@ -26,11 +26,10 @@ interface LevelsCardPropsIF {
         retroPoints: string;
     }[];
     jazziconsToDisplay: JSX.Element | null;
-    ensNameToDisplay: string;
-    addressToDisplay: string | undefined;
+    truncatedAccountAddressOrEnsName: string;
     pointsRemainingToNextLevel: number | undefined;
-    ensName: string;
     isViewMoreActive?: boolean;
+    connectedAccountActive: boolean;
 }
 
 export default function LevelsCard(props: LevelsCardPropsIF) {
@@ -42,12 +41,11 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
         progressPercentage,
         pointsData,
         jazziconsToDisplay,
-        ensNameToDisplay,
-        addressToDisplay,
+        truncatedAccountAddressOrEnsName,
         pointsRemainingToNextLevel,
         resolvedAddress,
-        ensName,
         isViewMoreActive,
+        connectedAccountActive,
     } = props;
     const { userAddress } = useContext(UserDataContext);
     const [_, copy] = useCopyToClipboard();
@@ -108,7 +106,7 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
                 <FlexContainer flexDirection='row' gap={16}>
                     <Link to={userLink}>
                         <Text fontSize='header2' color='text1'>
-                            {ensName ? ensName : ensNameToDisplay}
+                            {truncatedAccountAddressOrEnsName}
                         </Text>
                     </Link>
 
@@ -128,7 +126,12 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
                         Wallet Address:
                     </Text>
                     <Text fontSize='body' color='text2'>
-                        {trimString(addressToDisplay ?? '', 6, 4, '…')}
+                        {trimString(
+                            resolvedAddress || (userAddress ?? ''),
+                            6,
+                            4,
+                            '…',
+                        )}
                     </Text>
                 </FlexContainer>
             </FlexContainer>
@@ -143,6 +146,7 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
                 pointsData={pointsData}
                 hideLevelCardScroll={hideLevelCardScroll}
                 isViewMoreActive={isViewMoreActive}
+                connectedAccountActive={connectedAccountActive}
                 // setIsViewMoreActive={setIsViewMoreActive}
             />
             <Link to='/xp-leaderboard' className={styles.link}>
@@ -216,6 +220,7 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
                 pointsData={pointsData}
                 hideLevelCardScroll={hideLevelCardScroll}
                 isViewMoreActive={isViewMoreActive}
+                connectedAccountActive={connectedAccountActive}
                 // setIsViewMoreActive={setIsViewMoreActive}
             />
 

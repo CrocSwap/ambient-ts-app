@@ -14,11 +14,19 @@ interface PropsIF {
     hideLevelCardScroll: boolean;
     full?: boolean;
     isViewMoreActive?: boolean;
+    connectedAccountActive: boolean;
 }
 export default function PointsHistoryDisplay(props: PropsIF) {
     const desktopScreen = useMediaQuery('(min-width: 500px)');
 
-    const { pointsData, hideLevelCardScroll, isViewMoreActive } = props;
+    const {
+        pointsData,
+        hideLevelCardScroll,
+        isViewMoreActive,
+        connectedAccountActive,
+    } = props;
+
+    const { pathname } = window.location;
 
     const pointsHistoryDisplay = (
         <div className={`${styles.point_history_container} `}>
@@ -82,7 +90,13 @@ export default function PointsHistoryDisplay(props: PropsIF) {
             {pointsData.length > 5 && (
                 <Link
                     to={
-                        isViewMoreActive ? '/account/xp' : '/account/xp/history'
+                        connectedAccountActive
+                            ? isViewMoreActive
+                                ? '/account/xp'
+                                : '/account/xp/history'
+                            : isViewMoreActive
+                            ? pathname.replace('/history', '')
+                            : pathname + '/history'
                     }
                     className={styles.view_more_link}
                 >
