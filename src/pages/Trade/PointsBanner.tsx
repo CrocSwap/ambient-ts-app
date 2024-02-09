@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import styles from './PointsBanner.module.css';
 import { UserDataContext } from '../../contexts/UserDataContext';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { MdClose } from 'react-icons/md';
 import { SidebarContext } from '../../contexts/SidebarContext';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
@@ -63,7 +63,14 @@ export default function PointsBanner(props: propsIF) {
                             {promptText}
                         </p>
                         <div className={styles.right_side_buttons}>
-                            {isUserConnected || (
+                            {isUserConnected ? (
+                                <Link
+                                    className={styles.connect_button}
+                                    to='/account/xp'
+                                >
+                                    View Points
+                                </Link>
+                            ) : (
                                 <button
                                     onClick={() => connectWallet()}
                                     className={styles.connect_button}
