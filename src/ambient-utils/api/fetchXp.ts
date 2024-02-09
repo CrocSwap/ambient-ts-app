@@ -395,7 +395,7 @@ export const fetchXpLeadersData = async (
             globalPoints: 122794,
         },
         {
-            userAddress: 'farmer.eth',
+            userAddress: 'harvest.eth',
             weeklyPoints: 7119,
             weeklyRank: 6,
             globalPoints: 114102,
@@ -407,7 +407,7 @@ export const fetchXpLeadersData = async (
             globalPoints: 5348,
         },
         {
-            userAddress: 'harvest.eth',
+            userAddress: '0xabc.eth',
             weeklyPoints: 2256,
             weeklyRank: 8,
             globalPoints: 17659,
@@ -584,7 +584,7 @@ export const fetchXpLeadersData = async (
             globalPoints: 65279,
         },
         {
-            userAddress: 'farmer.eth',
+            userAddress: 'harvest.eth',
             chainPoints: 62637,
             chainRank: 6,
             chainId: '0x1',
@@ -605,7 +605,7 @@ export const fetchXpLeadersData = async (
             globalPoints: 54984,
         },
         {
-            userAddress: 'harvest.eth',
+            userAddress: '0xabc.eth',
             chainPoints: 52299,
             chainRank: 9,
             chainId: '0x1',

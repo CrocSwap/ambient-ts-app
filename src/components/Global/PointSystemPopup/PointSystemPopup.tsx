@@ -19,6 +19,8 @@ export default function PointSystemPopup(props: PropsIF) {
     const location = useLocation();
     const currentLocation = location.pathname.includes('/trade')
         ? '/trade'
+        : location.pathname.includes('/xp')
+        ? '/xp'
         : location.pathname;
     const {
         wagmiModal: { open: openWagmiModal },
@@ -52,14 +54,7 @@ export default function PointSystemPopup(props: PropsIF) {
         dismissPointSystemPopup({ ctaId: 'points_modal_cta' });
     };
     // Any location we won't to exclude the popup from goes here
-    const excludedLocations = [
-        '/404',
-        '/terms',
-        '/privacy',
-        '/trade',
-        '/account/xp',
-        '/xp-leaderboard',
-    ];
+    const excludedLocations = ['/404', '/terms', '/privacy', '/trade', '/xp'];
 
     if (excludedLocations.includes(currentLocation) || !isEnabledLocally)
         return null;
