@@ -1,0 +1,23 @@
+.points_banner {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    border: 2px solid purple;
+    border-radius: 4px;
+}
+
+.left_side {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.right_side {
+    display: flex;
+    flex-direction: row;
+}
+
+.right_side_content {
+    justify-content: center;
+}
