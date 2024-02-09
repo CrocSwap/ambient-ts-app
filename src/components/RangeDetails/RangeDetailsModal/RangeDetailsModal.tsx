@@ -216,7 +216,11 @@ function RangeDetailsModal(props: propsIF) {
     }, [lastBlockNumber, !!crocEnv, !!provider, chainId]);
 
     const shareComponent = (
-        <div ref={detailsRef} className={styles.main_outer_container}>
+        <div
+            ref={detailsRef}
+            className={styles.main_outer_container}
+            style={{ height: 'auto' }}
+        >
             <div className={styles.main_content}>
                 <div className={styles.left_container}>
                     <PriceInfo

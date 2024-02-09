@@ -27,6 +27,14 @@ interface propsIF {
     baseTokenAddress: string;
     quoteTokenAddress: string;
 }
+interface BlastReward {
+    amount: number;
+    logo: React.ReactNode;
+}
+
+interface BlastRewardsData {
+    [key: string]: BlastReward;
+}
 
 export default function PriceInfo(props: propsIF) {
     const {
@@ -156,31 +164,31 @@ export default function PriceInfo(props: propsIF) {
         </div>
     );
 
-    const exampleChain1 = 'BLAST';
-    const exampleChain2 = 'AMBI';
-    const exampleChain1Earned = '5,762.60';
-    const exampleChain2Earned = '5,762.60';
     const showEarnedRewards = true;
+
+    const blastRewards: BlastRewardsData = {
+        'BLAST points': { amount: 5762.6, logo: blastLogo },
+        'AMBI points': { amount: 39.99, logo: ambiLogo },
+        ETH: { amount: 0.566, logo: baseTokenLogoDisplay },
+        USDC: { amount: 150.66, logo: quoteTokenLogoDisplay },
+        TOKEN: { amount: 1004444, logo: baseTokenLogoDisplay },
+    };
 
     const rewardsContent = (
         <section>
             <span className={styles.divider} />
             <div>Rewards:</div>
-            <div>
-                <p>{`Earned ${exampleChain1}`}</p>
-                <p>
-                    {exampleChain1Earned}
-                    {blastLogo}
-                </p>
-            </div>
-
-            <div>
-                <p>{`Earned ${exampleChain2}`}</p>
-                <p>
-                    {exampleChain2Earned}
-                    {ambiLogo}
-                </p>
-            </div>
+            {Object.entries(blastRewards).map(([rewardType, reward]) => (
+                <div key={rewardType}>
+                    <p key={rewardType}>{rewardType}</p>
+                    <p>
+                        {reward.amount.toLocaleString('en-US', {
+                            maximumFractionDigits: 2,
+                        })}
+                        {reward.logo}
+                    </p>
+                </div>
+            ))}
         </section>
     );
 
