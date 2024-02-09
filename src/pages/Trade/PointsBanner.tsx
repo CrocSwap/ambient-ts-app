@@ -4,6 +4,8 @@ import styles from './PointsBanner.module.css';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { useNavigate } from 'react-router-dom';
 import { MdClose } from 'react-icons/md';
+import { SidebarContext } from '../../contexts/SidebarContext';
+import useMediaQuery from '../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     dismissElem: () => void;
@@ -11,6 +13,14 @@ interface propsIF {
 
 export default function PointsBanner(props: propsIF) {
     const { dismissElem } = props;
+
+    const {
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(SidebarContext);
+    const isSmallScreen = useMediaQuery('(max-width: 1280px)') || isSidebarOpen;
+
+    console.log({ isSmallScreen });
+    console.log({ isSidebarOpen });
 
     // hook to allow navigation on click to leaderboard
     // @Junior feel free to change the DOM to a `<Link />` element
@@ -40,31 +50,40 @@ export default function PointsBanner(props: propsIF) {
 
     return (
         <aside className={styles.points_banner}>
-            <p className={styles.left_side}>ambient points</p>
-            <div className={styles.right_side}>
-                <div className={styles.right_side_content}>
-                    <p>{promptText}</p>
-                    <div className={styles.right_side_buttons}>
-                        {isUserConnected || (
+            <section className={styles.points_banner_container}>
+                <p
+                    className={styles.left_side}
+                    style={{ fontSize: isSmallScreen ? '30px' : '50px' }}
+                >
+                    ambient points
+                </p>
+                <div className={styles.right_side}>
+                    <div className={styles.right_side_content}>
+                        <p className={isSmallScreen && styles.small_text}>
+                            {promptText}
+                        </p>
+                        <div className={styles.right_side_buttons}>
+                            {isUserConnected || (
+                                <button
+                                    onClick={() => connectWallet()}
+                                    className={styles.connect_button}
+                                >
+                                    Connect Wallet
+                                </button>
+                            )}
                             <button
-                                onClick={() => connectWallet()}
-                                className={styles.connect_button}
+                                onClick={() => goToLeaderboard()}
+                                className={styles.leaderboard_link}
                             >
-                                Connect Wallet
+                                View Leaderboard
                             </button>
-                        )}
-                        <button
-                            onClick={() => goToLeaderboard()}
-                            className={styles.leaderboard_link}
-                        >
-                            View Leaderboard
-                        </button>
+                        </div>
                     </div>
+                    <button onClick={dismissElem} className={styles.close_icon}>
+                        <MdClose size={30} />
+                    </button>
                 </div>
-                <button onClick={dismissElem} className={styles.close_icon}>
-                    <MdClose size={30} />
-                </button>
-            </div>
+            </section>
         </aside>
     );
 }
