@@ -12,11 +12,9 @@ import { FiRefreshCcw } from 'react-icons/fi';
 import { XpLeadersContext } from '../../contexts/XpLeadersContext';
 
 interface LevelPropsIF {
-    ensName: string;
     resolvedAddress: string;
     connectedAccountActive: boolean;
-    ensNameAvailable: boolean;
-    truncatedAccountAddress: string;
+    truncatedAccountAddressOrEnsName: string;
     isLevelOnly?: boolean;
     isDisplayRank?: boolean;
     resolvedUserXp?: UserXpDataIF;
@@ -25,11 +23,9 @@ interface LevelPropsIF {
 }
 export default function Level(props: LevelPropsIF) {
     const {
-        ensName,
         resolvedAddress,
         connectedAccountActive,
-        ensNameAvailable,
-        truncatedAccountAddress,
+        truncatedAccountAddressOrEnsName,
         isLevelOnly,
         isDisplayRank,
         resolvedUserXp,
@@ -38,16 +34,6 @@ export default function Level(props: LevelPropsIF) {
     } = props;
     const { userAddress, connectedUserXp } = useContext(UserDataContext);
     const { xpLeaders } = useContext(XpLeadersContext);
-
-    const ensNameToDisplay = ensNameAvailable
-        ? ensName
-        : truncatedAccountAddress;
-
-    const addressToDisplay = resolvedAddress
-        ? resolvedAddress
-        : ensNameAvailable
-        ? truncatedAccountAddress
-        : userAddress;
 
     const jazziconsSeed = resolvedAddress
         ? resolvedAddress.toLowerCase()
@@ -147,13 +133,12 @@ export default function Level(props: LevelPropsIF) {
         progressPercentage,
         pointsData,
         jazziconsToDisplay,
-        ensNameToDisplay,
-        addressToDisplay,
         resolvedAddress,
         pointsRemainingToNextLevel: xpData?.data?.pointsRemainingToNextLevel,
-        ensName: ensName,
         isViewMoreActive,
         setIsViewMoreActive,
+        truncatedAccountAddressOrEnsName: truncatedAccountAddressOrEnsName,
+        connectedAccountActive,
     };
 
     if (isLevelOnly)
@@ -161,7 +146,7 @@ export default function Level(props: LevelPropsIF) {
             <LevelDisplay
                 currentLevel={currentLevel}
                 globalPoints={globalPoints}
-                user={ensName ?? addressToDisplay}
+                user={truncatedAccountAddressOrEnsName}
             />
         );
     // LEADERBOARD

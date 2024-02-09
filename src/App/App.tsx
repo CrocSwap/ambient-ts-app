@@ -296,6 +296,12 @@ export default function App() {
                             element={<Portfolio isLevelsPage />}
                         />
                         <Route
+                            path='account/:address/xp/history'
+                            element={
+                                <Portfolio isLevelsPage isViewMoreActive />
+                            }
+                        />
+                        <Route
                             path='account/xp/history'
                             element={
                                 <Portfolio isLevelsPage isViewMoreActive />
@@ -332,6 +338,12 @@ export default function App() {
                         <Route
                             path='/:address/xp'
                             element={<Portfolio isLevelsPage />}
+                        />
+                        <Route
+                            path='/:address/xp/history'
+                            element={
+                                <Portfolio isLevelsPage isViewMoreActive />
+                            }
                         />
                         <Route path='/404' element={<NotFound />} />
                         <Route

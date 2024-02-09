@@ -24,16 +24,16 @@ export default function RankRow(props: PropsIF) {
     }
 
     function goToLevelsPage(): void {
-        navigate(`/account/${data.userAddress}/xp`);
+        navigate(`/${data.userAddress}/xp`);
     }
 
     /* eslint-disable-next-line camelcase */
     const body = { config_path: 'ens_address', address: data.userAddress };
-    const { data: fetcBatchData, error } = useFetchBatch<'ens_address'>(body);
+    const { data: fetchBatchData, error } = useFetchBatch<'ens_address'>(body);
 
     let ensAddress = null;
-    if (fetcBatchData && !error) {
-        ensAddress = fetcBatchData.ens_address;
+    if (fetchBatchData && !error) {
+        ensAddress = fetchBatchData.ens_address;
     }
     // -------------------
 
