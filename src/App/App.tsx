@@ -47,6 +47,11 @@ import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
 import ExampleForm from '../pages/InitPool/FormExample';
 import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
+import {
+    MINUTES_BETWEEN_POINTS_CTA_DISMISSALS,
+    getCtaDismissalsFromLocalStorage,
+    saveCtaDismissalToLocalStorage,
+} from './functions/localStorage';
 
 /** ***** React Function *******/
 export default function App() {
@@ -159,7 +164,20 @@ export default function App() {
         }
     }, [isEscapePressed]);
     const showMobileVersion = useMediaQuery('(max-width: 500px)');
-    const [showPointSystemPopup, setShowPointSystemPopup] = useState(true);
+
+    const [showPointSystemPopup, setShowPointSystemPopup] = useState(
+        (getCtaDismissalsFromLocalStorage().find(
+            (x) => x.ctaId === 'points_modal_cta',
+        )?.unixTimeOfDismissal || 0) <
+            Math.floor(
+                Date.now() / 1000 - 60 * MINUTES_BETWEEN_POINTS_CTA_DISMISSALS,
+            ),
+    );
+
+    const dismissPointSystemPopup = () => {
+        setShowPointSystemPopup(false);
+        saveCtaDismissalToLocalStorage({ ctaId: 'points_modal_cta' });
+    };
 
     return (
         <>
@@ -172,7 +190,7 @@ export default function App() {
                 {showPointSystemPopup && (
                     <PointSystemPopup
                         showPointSystemPopup={showPointSystemPopup}
-                        setShowPointSystemPopup={setShowPointSystemPopup}
+                        dismissPointSystemPopup={dismissPointSystemPopup}
                     />
                 )}
                 <AppOverlay />

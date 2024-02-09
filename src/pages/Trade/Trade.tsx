@@ -43,6 +43,11 @@ import { PoolContext } from '../../contexts/PoolContext';
 import { MdAutoGraph } from 'react-icons/md';
 import ChartToolbar from '../Chart/Draw/Toolbar/Toolbar';
 import PointsBanner from './PointsBanner';
+import {
+    MINUTES_BETWEEN_POINTS_CTA_DISMISSALS,
+    getCtaDismissalsFromLocalStorage,
+    saveCtaDismissalToLocalStorage,
+} from '../../App/functions/localStorage';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -261,9 +266,22 @@ function Trade() {
         </MainSection>
     );
 
-    const [showPtsBanner, setShowPtsBanner] = useState<boolean>(true);
+    const [showPtsBanner, setShowPtsBanner] = useState<boolean>(
+        (getCtaDismissalsFromLocalStorage().find(
+            (x) => x.ctaId === 'points_banner_cta',
+            //  do not show points banner if dismissed in last 1 minute
+        )?.unixTimeOfDismissal || 0) <
+            Math.floor(
+                Date.now() / 1000 - 60 * MINUTES_BETWEEN_POINTS_CTA_DISMISSALS,
+            ),
+    );
 
     if (showActiveMobileComponent) return mobileTrade;
+
+    const dismissBannerPopup = () => {
+        setShowPtsBanner(false);
+        saveCtaDismissalToLocalStorage({ ctaId: 'points_banner_cta' });
+    };
 
     return (
         <>
@@ -277,9 +295,7 @@ function Trade() {
                     ref={canvasRef}
                 >
                     {showPtsBanner && (
-                        <PointsBanner
-                            dismissElem={() => setShowPtsBanner(false)}
-                        />
+                        <PointsBanner dismissElem={dismissBannerPopup} />
                     )}
                     <TradeChartsHeader tradePage />
                     {/* This div acts as a parent to maintain a min/max for the resizable element below */}
