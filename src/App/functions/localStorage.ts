@@ -1,5 +1,3 @@
-export const MINUTES_BETWEEN_POINTS_CTA_DISMISSALS = 1;
-
 // function to get current dismissals from local storage
 export function getCtaDismissalsFromLocalStorage(): {
     ctaId: string;

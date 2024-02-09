@@ -28,7 +28,10 @@ import SidebarFooter from '../components/Global/Sidebar/SidebarFooter/SidebarFoo
 
 /** * **** Import Local Files *******/
 import './App.css';
-import { IS_LOCAL_ENV } from '../ambient-utils/constants';
+import {
+    DEFAULT_CTA_DISMISSAL_DURATION_MINUTES,
+    IS_LOCAL_ENV,
+} from '../ambient-utils/constants';
 import ChatPanel from '../components/Chat/ChatPanel';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
@@ -48,7 +51,6 @@ import { FlexContainer } from '../styled/Common';
 import ExampleForm from '../pages/InitPool/FormExample';
 import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
 import {
-    MINUTES_BETWEEN_POINTS_CTA_DISMISSALS,
     getCtaDismissalsFromLocalStorage,
     saveCtaDismissalToLocalStorage,
 } from './functions/localStorage';
@@ -165,13 +167,14 @@ export default function App() {
     }, [isEscapePressed]);
     const showMobileVersion = useMediaQuery('(max-width: 500px)');
 
+    const pointsModalDismissalDuration =
+        DEFAULT_CTA_DISMISSAL_DURATION_MINUTES || 1;
+
     const [showPointSystemPopup, setShowPointSystemPopup] = useState(
         (getCtaDismissalsFromLocalStorage().find(
             (x) => x.ctaId === 'points_modal_cta',
         )?.unixTimeOfDismissal || 0) <
-            Math.floor(
-                Date.now() / 1000 - 60 * MINUTES_BETWEEN_POINTS_CTA_DISMISSALS,
-            ),
+            Math.floor(Date.now() / 1000 - 60 * pointsModalDismissalDuration),
     );
 
     const dismissPointSystemPopup = () => {
