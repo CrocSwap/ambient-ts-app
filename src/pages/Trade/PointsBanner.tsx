@@ -3,6 +3,7 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import styles from './PointsBanner.module.css';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { useNavigate } from 'react-router-dom';
+import { MdClose } from 'react-icons/md';
 
 interface propsIF {
     dismissElem: () => void;
@@ -45,16 +46,24 @@ export default function PointsBanner(props: propsIF) {
                     <p>{promptText}</p>
                     <div className={styles.right_side_buttons}>
                         {isUserConnected || (
-                            <button onClick={() => connectWallet()}>
+                            <button
+                                onClick={() => connectWallet()}
+                                className={styles.connect_button}
+                            >
                                 Connect Wallet
                             </button>
                         )}
-                        <button onClick={() => goToLeaderboard()}>
+                        <button
+                            onClick={() => goToLeaderboard()}
+                            className={styles.leaderboard_link}
+                        >
                             View Leaderboard
                         </button>
                     </div>
                 </div>
-                <button onClick={dismissElem}>X</button>
+                <button onClick={dismissElem} className={styles.close_icon}>
+                    <MdClose size={30} />
+                </button>
             </div>
         </aside>
     );

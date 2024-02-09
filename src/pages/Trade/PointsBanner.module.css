@@ -1,16 +1,31 @@
 .points_banner {
+    position: relative;
+    height: 100px;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     justify-content: space-between;
-    border: 2px solid purple;
-    border-radius: 4px;
+    align-items: center;
+    border-radius: 16px;
+    border: 1px solid var(--accent1, #7371FC);
+    padding: 0px 64px 0px 32px;
+
+    
+
 }
 
 .left_side {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+
+font-family: "Lexend Exa";
+font-size: 30px;
+font-style: normal;
+font-weight: 300;
+line-height: normal;
+
+background: linear-gradient(90deg, #7371FC 0.01%, #CDC1FF 49.48%, #7371FC 99.99%);
+background-clip: text;
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
 }
 
 .right_side {
@@ -18,6 +33,81 @@
     flex-direction: row;
 }
 
+.right_side p{
+    font-family: "Lexend Deca";
+font-size: var(--header2-size);
+font-weight: 300;
+line-height: var(--header2-lh);
+letter-spacing: -0.36px;
+}
+
 .right_side_content {
+    display: flex;
     justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 8px;
+    
+}
+
+.right_side_buttons{
+    gap: 32px;
+    display: flex;
+    flex-direction: row;
+}
+.connect_button, .leaderboard_link{
+    display: flex;
+padding: 5px 16px;
+border-radius: 50px;
+
+text-align: center;
+font-family: "Lexend Deca";
+font-size: var(--body-size);
+font-weight: 300;
+line-height: var(--body-lh);
+letter-spacing: -0.48px;
+cursor: pointer;
+outline: none;
+border: none;
+transition: all var(--animation-speed) ease-in-out;
+}
+
+.connect_button{
+    background: var(--accent1, #7371FC);;
+    color: var(--dark1, #0D1117);
+
+}
+
+.connect_button:hover{
+    background: var(--dark1, #0D1117);
+    color: var(--accent1, #7371FC);
+    border: 1px solid var(--accent1, #7371FC);
+}
+.leaderboard_link{
+    background: var(--dark1, #0D1117);
+    color: var(--accent1, #7371FC);
+    border: 1px solid var(--accent1, #7371FC);
+
+
+}
+.leaderboard_link:hover{
+    background: var(--accent1, #7371FC);;
+    color: var(--dark1, #0D1117);
+}
+
+.close_icon{
+    background-color: transparent;
+    outline: none;
+    border: none;
+    position: absolute;
+right: 17px;
+
+top: 10px;
+}
+
+@media only screen and (min-width: 1280px) {
+.left_side{
+
+    font-size: 50px;
+}
 }
