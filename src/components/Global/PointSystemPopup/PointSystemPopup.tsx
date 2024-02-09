@@ -10,12 +10,18 @@ import { UserDataContext } from '../../../contexts/UserDataContext';
 
 interface PropsIF {
     showPointSystemPopup: boolean;
-    setShowPointSystemPopup: React.Dispatch<React.SetStateAction<boolean>>;
+    dismissPointSystemPopup(ctaDismissal: { ctaId: string }): void;
 }
 
 export default function PointSystemPopup(props: PropsIF) {
+    const { dismissPointSystemPopup } = props;
+
     const location = useLocation();
-    const currentLocation = location.pathname;
+    const currentLocation = location.pathname.includes('/trade')
+        ? '/trade'
+        : location.pathname.includes('/xp')
+        ? '/xp'
+        : location.pathname;
     const {
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
@@ -25,11 +31,9 @@ export default function PointSystemPopup(props: PropsIF) {
             ? process.env.REACT_APP_POINT_SYSTEM_POPUP_ENABLED === 'true'
             : true;
 
-    const { setShowPointSystemPopup } = props;
-
     const escFunction = useCallback((event: KeyboardEvent) => {
         if (event.key === 'Escape') {
-            setShowPointSystemPopup(false);
+            dismissPointSystemPopup({ ctaId: 'points_modal_cta' });
         }
     }, []);
 
@@ -41,14 +45,16 @@ export default function PointSystemPopup(props: PropsIF) {
     }, []);
     const popupModal = useRef<HTMLDivElement>(null);
 
-    useOnClickOutside(popupModal, () => setShowPointSystemPopup(false));
+    useOnClickOutside(popupModal, () =>
+        dismissPointSystemPopup({ ctaId: 'points_modal_cta' }),
+    );
 
     const handleConnectButtonClick = () => {
         openWagmiModal();
-        setShowPointSystemPopup(false);
+        dismissPointSystemPopup({ ctaId: 'points_modal_cta' });
     };
     // Any location we won't to exclude the popup from goes here
-    const excludedLocations = ['/404', '/terms', '/privacy'];
+    const excludedLocations = ['/404', '/terms', '/privacy', '/trade', '/xp'];
 
     if (excludedLocations.includes(currentLocation) || !isEnabledLocally)
         return null;
@@ -59,7 +65,11 @@ export default function PointSystemPopup(props: PropsIF) {
                     <VscClose
                         size={24}
                         color='var(--text2)'
-                        onClick={() => setShowPointSystemPopup(false)}
+                        onClick={() =>
+                            dismissPointSystemPopup({
+                                ctaId: 'points_modal_cta',
+                            })
+                        }
                     />
                 </header>
                 <section className={styles.modal_content}>
@@ -89,7 +99,9 @@ export default function PointSystemPopup(props: PropsIF) {
                                         className={styles.connect_button}
                                         to='/account/xp'
                                         onClick={() =>
-                                            setShowPointSystemPopup(false)
+                                            dismissPointSystemPopup({
+                                                ctaId: 'points_modal_cta',
+                                            })
                                         }
                                     >
                                         View Points
@@ -107,7 +119,9 @@ export default function PointSystemPopup(props: PropsIF) {
                                     className={styles.leaderboard_link}
                                     to='/xp-leaderboard'
                                     onClick={() =>
-                                        setShowPointSystemPopup(false)
+                                        dismissPointSystemPopup({
+                                            ctaId: 'points_modal_cta',
+                                        })
                                     }
                                 >
                                     View Leaderboard

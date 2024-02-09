@@ -42,6 +42,12 @@ import ContentContainer from '../../components/Global/ContentContainer/ContentCo
 import { PoolContext } from '../../contexts/PoolContext';
 import { MdAutoGraph } from 'react-icons/md';
 import ChartToolbar from '../Chart/Draw/Toolbar/Toolbar';
+import PointsBanner from './PointsBanner';
+import {
+    getCtaDismissalsFromLocalStorage,
+    saveCtaDismissalToLocalStorage,
+} from '../../App/functions/localStorage';
+import { DEFAULT_CTA_DISMISSAL_DURATION_MINUTES } from '../../ambient-utils/constants';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -260,7 +266,23 @@ function Trade() {
         </MainSection>
     );
 
+    const pointsBannerDismissalDuration =
+        DEFAULT_CTA_DISMISSAL_DURATION_MINUTES || 1;
+
+    const [showPtsBanner, setShowPtsBanner] = useState<boolean>(
+        (getCtaDismissalsFromLocalStorage().find(
+            (x) => x.ctaId === 'points_banner_cta',
+            //  do not show points banner if dismissed in last 1 minute
+        )?.unixTimeOfDismissal || 0) <
+            Math.floor(Date.now() / 1000 - 60 * pointsBannerDismissalDuration),
+    );
+
     if (showActiveMobileComponent) return mobileTrade;
+
+    const dismissBannerPopup = () => {
+        setShowPtsBanner(false);
+        saveCtaDismissalToLocalStorage({ ctaId: 'points_banner_cta' });
+    };
 
     return (
         <>
@@ -273,6 +295,9 @@ function Trade() {
                     style={{ height: 'calc(100vh - 56px)' }}
                     ref={canvasRef}
                 >
+                    {showPtsBanner && (
+                        <PointsBanner dismissElem={dismissBannerPopup} />
+                    )}
                     <TradeChartsHeader tradePage />
                     {/* This div acts as a parent to maintain a min/max for the resizable element below */}
                     <FlexContainer

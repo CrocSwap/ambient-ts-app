@@ -309,17 +309,17 @@ function Portfolio(props: PortfolioPropsIF) {
         resolvedUserXp: resolvedUserXp,
     };
 
+    const truncatedAccountAddressOrEnsName = connectedAccountActive
+        ? ensName
+            ? ensName
+            : trimString(userAddress ?? '', 6, 6, '…')
+        : secondaryEnsName
+        ? secondaryEnsName
+        : trimString(resolvedAddress ?? '', 6, 6, '…');
+
     const levelsProps = {
-        ensName: connectedAccountActive
-            ? ensName ?? ''
-            : secondaryEnsName
-            ? secondaryEnsName
-            : '',
         resolvedAddress: resolvedAddress ?? '',
-        ensNameAvailable: ensName !== '',
-        truncatedAccountAddress: connectedAccountActive
-            ? trimString(userAddress ?? '', 6, 6, '…')
-            : trimString(resolvedAddress ?? '', 6, 6, '…'),
+        truncatedAccountAddressOrEnsName: truncatedAccountAddressOrEnsName,
         connectedAccountActive: connectedAccountActive,
         isDisplayRank: isRanksPage,
         resolvedUserXp,
