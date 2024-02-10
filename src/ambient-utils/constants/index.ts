@@ -98,6 +98,9 @@ export const NETWORK_ACCESS = process.env.NETWORK_ACCESS || 'disabled';
 export const CACHE_UPDATE_FREQ_IN_MS = 60000; // 1 minute
 
 export const DEFAULT_CTA_DISMISSAL_DURATION_MINUTES = process.env
-    .DEFAULT_CTA_DISMISSAL_DURATION_MINUTES
-    ? parseFloat(process.env.DEFAULT_CTA_DISMISSAL_DURATION_MINUTES)
+    .REACT_APP_DEFAULT_CTA_DISMISSAL_DURATION_MINUTES
+    ? parseFloat(process.env.REACT_APP_DEFAULT_CTA_DISMISSAL_DURATION_MINUTES)
     : undefined;
+
+export const USE_MOCK_XP_DATA =
+    process.env.REACT_APP_USE_MOCK_XP_DATA?.toLowerCase() === 'true';

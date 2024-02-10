@@ -18,9 +18,9 @@ import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
 import { Client } from '@covalenthq/client-sdk';
-import { UserDataContext } from './UserDataContext';
+import { UserDataContext, UserXpDataIF } from './UserDataContext';
 import { TokenBalanceContext } from './TokenBalanceContext';
-import { fetchBlockNumber } from '../ambient-utils/api';
+import { fetchBlockNumber, fetchUserXpData } from '../ambient-utils/api';
 
 interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
@@ -28,6 +28,7 @@ interface ChainDataContextIF {
     lastBlockNumber: number;
     setLastBlockNumber: Dispatch<SetStateAction<number>>;
     client: Client;
+    connectedUserXp: UserXpDataIF;
 }
 
 export const ChainDataContext = createContext<ChainDataContextIF>(
@@ -183,10 +184,35 @@ export const ChainDataContextProvider = (props: {
         activeNetwork.graphCacheUrl,
     ]);
 
+    const [connectedUserXp, setConnectedUserXp] = React.useState<UserXpDataIF>({
+        dataReceived: false,
+        data: undefined,
+    });
+
+    React.useEffect(() => {
+        if (userAddress) {
+            fetchUserXpData({
+                user: userAddress,
+                chainId: chainData.chainId,
+            }).then((data) => {
+                setConnectedUserXp({
+                    dataReceived: true,
+                    data: data ? data : undefined,
+                });
+            });
+        } else {
+            setConnectedUserXp({
+                dataReceived: false,
+                data: undefined,
+            });
+        }
+    }, [userAddress]);
+
     const chainDataContext = {
         lastBlockNumber,
         setLastBlockNumber,
         gasPriceInGwei,
+        connectedUserXp,
         setGasPriceinGwei,
         client,
     };

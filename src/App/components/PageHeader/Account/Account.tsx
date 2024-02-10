@@ -22,6 +22,7 @@ import {
 import { FlexContainer } from '../../../../styled/Common';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import LevelDropdown from './LevelDropdown/LevelDropdown';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 // TODO: use user context instead of UseAccount
 interface propsIF {
     accountAddress: string;
@@ -38,7 +39,9 @@ export default function Account(props: propsIF) {
         appHeaderDropdown,
     } = useContext(AppStateContext);
 
-    const { isUserConnected, connectedUserXp } = useContext(UserDataContext);
+    const { isUserConnected } = useContext(UserDataContext);
+
+    const { connectedUserXp } = useContext(ChainDataContext);
 
     const [_, copy] = useCopyToClipboard();
 

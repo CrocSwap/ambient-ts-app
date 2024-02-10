@@ -1,8 +1,12 @@
+import { USE_MOCK_XP_DATA } from '../constants';
 import { UserXpIF, UserXpServerIF, XpSnapshotServerIF } from '../types';
 
 interface argsIF {
     user: string;
+    chainId: string;
 }
+
+const USE_MOCK_DATA = USE_MOCK_XP_DATA ?? true;
 
 // function to convert level to xp
 export const levelToXp = (level: number) => {
@@ -55,23 +59,26 @@ function mapUserXpResponseToUserXp(userXp: UserXpServerIF): UserXpIF {
 }
 
 export const fetchUserXpData = async (args: argsIF) => {
-    const { user } = args;
-    console.log(`Fetching Xp for ${user}`);
+    const { user, chainId } = args;
+    console.log(`Fetching Xp for ${user} on chain ${chainId}...`);
 
-    // const userXpEndpoint = 'https://ambindexer.net/xp?'
+    const userXpEndpoint = 'https://ambindexer.bus.bz/xp/user?';
 
-    // const userXp = fetch(
-    //     userXpEndpoint +
-    //         new URLSearchParams({
-    //             user: user,
-    //         }),
-    // )
-    //     .then((response) => response?.json())
-    //     .then((parsedResponse) => mapUserXpResponseToUserXp(parsedResponse))
-    //     .catch(console.error);
+    const userXpFetchData = fetch(
+        userXpEndpoint +
+            new URLSearchParams({
+                user: user,
+                chainId: chainId || '',
+            }),
+    )
+        .then((response) => response?.json())
+        .then((parsedResponse) =>
+            mapUserXpResponseToUserXp(parsedResponse.data),
+        )
+        .catch(console.error);
 
     // fake user data
-    const userXpServerMockData: UserXpServerIF = {
+    const userXpMockData: UserXpServerIF = {
         userAddress: user,
         globalPoints: 60518,
         globalRank: 7,
@@ -186,7 +193,9 @@ export const fetchUserXpData = async (args: argsIF) => {
         ],
     };
 
-    const userXp = mapUserXpResponseToUserXp(userXpServerMockData);
+    const userXp = USE_MOCK_DATA
+        ? mapUserXpResponseToUserXp(userXpMockData)
+        : userXpFetchData;
     return userXp;
 };
 
@@ -196,22 +205,22 @@ export const fetchXpLeadersData = async (
 ) => {
     console.log({ chainId });
 
-    // const xpLeadersEndpoint = 'https://ambindexer.bus.bz/xp/leaderboard?';
+    const xpLeadersEndpoint = 'https://ambindexer.bus.bz/xp/leaderboard?';
 
-    // const xpLeaders = fetch(
-    //     xpLeadersEndpoint +
-    //         new URLSearchParams({
-    //             leaderboardType: leaderboardType,
-    //             chainId: chainId || '',
-    //         }),
-    // )
-    //     .then((response) => response?.json())
-    //     .then((parsedResponse) =>
-    //         parsedResponse.data.map((userXp: UserXpIF) =>
-    //             mapUserXpResponseToUserXp(userXp),
-    //         ),
-    //     )
-    //     .catch(console.error);
+    const xpLeaderFetchData = fetch(
+        xpLeadersEndpoint +
+            new URLSearchParams({
+                leaderboardType: leaderboardType,
+                chainId: chainId || '',
+            }),
+    )
+        .then((response) => response?.json())
+        .then((parsedResponse) =>
+            parsedResponse.data.map((userXp: UserXpIF) =>
+                mapUserXpResponseToUserXp(userXp),
+            ),
+        )
+        .catch(console.error);
 
     // fake data
     const xpGlobalLeadersMockServerData: Array<UserXpServerIF> = [
@@ -765,7 +774,7 @@ export const fetchXpLeadersData = async (
         },
     ];
 
-    const xpLeaders =
+    const xpLeadersMockData =
         leaderboardType === 'byWeek'
             ? xpWeeklyLeadersMockServerData.map((userXp) =>
                   mapUserXpResponseToUserXp(userXp),
@@ -777,6 +786,8 @@ export const fetchXpLeadersData = async (
             : xpGlobalLeadersMockServerData.map((userXp) =>
                   mapUserXpResponseToUserXp(userXp),
               );
+
+    const xpLeaders = USE_MOCK_DATA ? xpLeadersMockData : xpLeaderFetchData;
 
     return xpLeaders;
 };

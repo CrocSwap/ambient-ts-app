@@ -10,6 +10,7 @@ import { FlexContainer, Text } from '../../styled/Common';
 import { progressToNextLevel } from '../../ambient-utils/api';
 import { FiRefreshCcw } from 'react-icons/fi';
 import { XpLeadersContext } from '../../contexts/XpLeadersContext';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
 
 interface LevelPropsIF {
     resolvedAddress: string;
@@ -32,7 +33,8 @@ export default function Level(props: LevelPropsIF) {
         isViewMoreActive,
         setIsViewMoreActive,
     } = props;
-    const { userAddress, connectedUserXp } = useContext(UserDataContext);
+    const { userAddress } = useContext(UserDataContext);
+    const { connectedUserXp } = useContext(ChainDataContext);
     const { xpLeaders } = useContext(XpLeadersContext);
 
     const jazziconsSeed = resolvedAddress
