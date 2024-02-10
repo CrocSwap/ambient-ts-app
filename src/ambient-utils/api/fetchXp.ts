@@ -195,7 +195,8 @@ export const fetchXpLeadersData = async (
     chainId?: string,
 ) => {
     console.log({ chainId });
-    // const xpLeadersEndpoint = 'https://ambindexer.net/xp?';
+
+    // const xpLeadersEndpoint = 'https://ambindexer.bus.bz/xp/leaderboard?';
 
     // const xpLeaders = fetch(
     //     xpLeadersEndpoint +
@@ -205,7 +206,11 @@ export const fetchXpLeadersData = async (
     //         }),
     // )
     //     .then((response) => response?.json())
-
+    //     .then((parsedResponse) =>
+    //         parsedResponse.data.map((userXp: UserXpIF) =>
+    //             mapUserXpResponseToUserXp(userXp),
+    //         ),
+    //     )
     //     .catch(console.error);
 
     // fake data
