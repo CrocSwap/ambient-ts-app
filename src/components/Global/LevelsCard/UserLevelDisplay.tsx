@@ -22,12 +22,13 @@ export default function UserLevelDisplay(props: Props) {
     const isglobalPointsLong =
         globalPoints && globalPoints.toString().length > 6;
 
-    const globalPointsString = globalPoints
-        ? globalPoints.toLocaleString('en-US', {
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 0,
-          })
-        : '...';
+    const globalPointsString =
+        globalPoints !== undefined
+            ? globalPoints.toLocaleString('en-US', {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+              })
+            : '...';
 
     const linkToNavigateTo = user
         ? `/account/${user}/xp`

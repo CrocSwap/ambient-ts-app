@@ -120,6 +120,8 @@ export const useAppChain = (): {
                             pathname.slice(1)?.startsWith('0x') &&
                             pathname.slice(1)?.length == 42;
                         const isPathUserAddress = isPathENS || isPathHex;
+                        const isPathUserXpOrLeaderboard =
+                            pathname.includes('/xp');
 
                         if (chainInURLValidated === incomingChainFromWallet) {
                             // generate params chain manually and navigate user
@@ -143,7 +145,10 @@ export const useAppChain = (): {
                                 linkGenCurrent.navigate(
                                     `chain=${incomingChainFromWallet}`,
                                 );
-                            } else if (isPathUserAddress) {
+                            } else if (
+                                isPathUserAddress ||
+                                isPathUserXpOrLeaderboard
+                            ) {
                                 window.location.reload();
                             } else {
                                 linkGenCurrent.navigate();
@@ -203,6 +208,7 @@ export const useAppChain = (): {
             pathname.slice(1)?.startsWith('0x') &&
             pathname.slice(1)?.length == 42;
         const isPathUserAddress = isPathENS || isPathHex;
+        const isPathUserXpOrLeaderboard = pathname.includes('/xp');
         if (
             linkGenCurrent.currentPage === 'initpool' ||
             linkGenCurrent.currentPage === 'reposition'
@@ -212,7 +218,7 @@ export const useAppChain = (): {
             linkGenSwap.navigate(`chain=${network.chainId}`);
         } else if (pathname.includes('chain')) {
             linkGenCurrent.navigate(`chain=${network.chainId}`);
-        } else if (isPathUserAddress) {
+        } else if (isPathUserAddress || isPathUserXpOrLeaderboard) {
             window.location.reload();
         } else {
             linkGenCurrent.navigate();
