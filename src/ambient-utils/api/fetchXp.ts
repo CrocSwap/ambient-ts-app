@@ -6,7 +6,7 @@ interface argsIF {
     chainId: string;
 }
 
-const USE_MOCK_DATA = USE_MOCK_XP_DATA ?? true;
+const USE_MOCK_DATA = USE_MOCK_XP_DATA !== undefined ? USE_MOCK_XP_DATA : true;
 
 // function to convert level to xp
 export const levelToXp = (level: number) => {

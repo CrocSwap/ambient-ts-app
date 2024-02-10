@@ -102,5 +102,6 @@ export const DEFAULT_CTA_DISMISSAL_DURATION_MINUTES = process.env
     ? parseFloat(process.env.REACT_APP_DEFAULT_CTA_DISMISSAL_DURATION_MINUTES)
     : undefined;
 
-export const USE_MOCK_XP_DATA =
-    process.env.REACT_APP_USE_MOCK_XP_DATA?.toLowerCase() === 'true';
+export const USE_MOCK_XP_DATA = process.env.REACT_APP_USE_MOCK_XP_DATA
+    ? process.env.REACT_APP_USE_MOCK_XP_DATA?.toLowerCase() === 'true'
+    : undefined;
