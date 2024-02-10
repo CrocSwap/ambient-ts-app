@@ -8,7 +8,7 @@ import { jsNumberForAddress } from 'react-jazzicon';
 import RankTable from './RankTable/RankTable';
 import { FlexContainer, Text } from '../../styled/Common';
 import { progressToNextLevel } from '../../ambient-utils/api';
-import { FiRefreshCcw } from 'react-icons/fi';
+// import { FiRefreshCcw } from 'react-icons/fi';
 import { XpLeadersContext } from '../../contexts/XpLeadersContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import {
@@ -165,14 +165,14 @@ export default function Level(props: LevelPropsIF) {
     }, [selectedXpLeaderboardType]);
 
     const [isLeaderboardLoading, setIsLeaderboardLoading] = useState(false);
-    const handleLeaderboardRefresh = () => {
-        setIsLeaderboardLoading(true);
-        xpLeaders.getXpLeaders(selectedXpLeaderboardType);
+    // const handleLeaderboardRefresh = () => {
+    //     setIsLeaderboardLoading(true);
+    //     xpLeaders.getXpLeaders(selectedXpLeaderboardType);
 
-        setTimeout(() => {
-            setIsLeaderboardLoading(false);
-        }, 500);
-    };
+    //     setTimeout(() => {
+    //         setIsLeaderboardLoading(false);
+    //     }, 500);
+    // };
     const handleOptionClick = (timeFrame: string) => {
         setSelectedXpLeaderboardType(timeFrame);
         saveLeaderboardSelectionToLocalStorage(timeFrame);
@@ -227,12 +227,12 @@ export default function Level(props: LevelPropsIF) {
                                 ))}
                             </FlexContainer>
 
-                            <div
+                            {/* <div
                                 className={styles.refresh_button}
                                 onClick={handleLeaderboardRefresh}
                             >
                                 <FiRefreshCcw />
-                            </div>
+                            </div> */}
                         </FlexContainer>
                     </FlexContainer>
 
