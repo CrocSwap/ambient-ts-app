@@ -11,6 +11,10 @@ import { progressToNextLevel } from '../../ambient-utils/api';
 import { FiRefreshCcw } from 'react-icons/fi';
 import { XpLeadersContext } from '../../contexts/XpLeadersContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
+import {
+    getLeaderboardSelectionFromLocalStorage,
+    saveLeaderboardSelectionToLocalStorage,
+} from '../../App/functions/localStorage';
 
 interface LevelPropsIF {
     resolvedAddress: string;
@@ -152,8 +156,9 @@ export default function Level(props: LevelPropsIF) {
             />
         );
     // LEADERBOARD
-    const [selectedXpLeaderboardType, setSelectedXpLeaderboardType] =
-        useState('Global');
+    const [selectedXpLeaderboardType, setSelectedXpLeaderboardType] = useState(
+        getLeaderboardSelectionFromLocalStorage(),
+    );
 
     useEffect(() => {
         xpLeaders.getXpLeaders(selectedXpLeaderboardType);
@@ -170,6 +175,7 @@ export default function Level(props: LevelPropsIF) {
     };
     const handleOptionClick = (timeFrame: string) => {
         setSelectedXpLeaderboardType(timeFrame);
+        saveLeaderboardSelectionToLocalStorage(timeFrame);
         setIsLeaderboardLoading(true);
 
         setTimeout(() => {
