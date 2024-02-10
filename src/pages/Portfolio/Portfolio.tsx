@@ -143,11 +143,11 @@ function Portfolio(props: PortfolioPropsIF) {
     // fetch xp data for resolved address if not connected user account
     useEffect(() => {
         if (!connectedAccountActive && resolvedAddress) {
-            fetchUserXpData({ user: resolvedAddress }).then(
+            fetchUserXpData({ user: resolvedAddress, chainId: chainId }).then(
                 (resolvedUserXp) => {
                     setResolvedUserXp({
                         dataReceived: true,
-                        data: resolvedUserXp,
+                        data: resolvedUserXp ? resolvedUserXp : undefined,
                     });
                 },
             );

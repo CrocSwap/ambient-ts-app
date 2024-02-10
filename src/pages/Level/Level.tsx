@@ -8,8 +8,13 @@ import { jsNumberForAddress } from 'react-jazzicon';
 import RankTable from './RankTable/RankTable';
 import { FlexContainer, Text } from '../../styled/Common';
 import { progressToNextLevel } from '../../ambient-utils/api';
-import { FiRefreshCcw } from 'react-icons/fi';
+// import { FiRefreshCcw } from 'react-icons/fi';
 import { XpLeadersContext } from '../../contexts/XpLeadersContext';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
+import {
+    getLeaderboardSelectionFromLocalStorage,
+    saveLeaderboardSelectionToLocalStorage,
+} from '../../App/functions/localStorage';
 
 interface LevelPropsIF {
     resolvedAddress: string;
@@ -32,7 +37,8 @@ export default function Level(props: LevelPropsIF) {
         isViewMoreActive,
         setIsViewMoreActive,
     } = props;
-    const { userAddress, connectedUserXp } = useContext(UserDataContext);
+    const { userAddress } = useContext(UserDataContext);
+    const { connectedUserXp } = useContext(ChainDataContext);
     const { xpLeaders } = useContext(XpLeadersContext);
 
     const jazziconsSeed = resolvedAddress
@@ -150,24 +156,26 @@ export default function Level(props: LevelPropsIF) {
             />
         );
     // LEADERBOARD
-    const [selectedXpLeaderboardType, setSelectedXpLeaderboardType] =
-        useState('Global');
+    const [selectedXpLeaderboardType, setSelectedXpLeaderboardType] = useState(
+        getLeaderboardSelectionFromLocalStorage(),
+    );
 
     useEffect(() => {
         xpLeaders.getXpLeaders(selectedXpLeaderboardType);
     }, [selectedXpLeaderboardType]);
 
     const [isLeaderboardLoading, setIsLeaderboardLoading] = useState(false);
-    const handleLeaderboardRefresh = () => {
-        setIsLeaderboardLoading(true);
-        xpLeaders.getXpLeaders(selectedXpLeaderboardType);
+    // const handleLeaderboardRefresh = () => {
+    //     setIsLeaderboardLoading(true);
+    //     xpLeaders.getXpLeaders(selectedXpLeaderboardType);
 
-        setTimeout(() => {
-            setIsLeaderboardLoading(false);
-        }, 500);
-    };
+    //     setTimeout(() => {
+    //         setIsLeaderboardLoading(false);
+    //     }, 500);
+    // };
     const handleOptionClick = (timeFrame: string) => {
         setSelectedXpLeaderboardType(timeFrame);
+        saveLeaderboardSelectionToLocalStorage(timeFrame);
         setIsLeaderboardLoading(true);
 
         setTimeout(() => {
@@ -219,12 +227,12 @@ export default function Level(props: LevelPropsIF) {
                                 ))}
                             </FlexContainer>
 
-                            <div
+                            {/* <div
                                 className={styles.refresh_button}
                                 onClick={handleLeaderboardRefresh}
                             >
                                 <FiRefreshCcw />
-                            </div>
+                            </div> */}
                         </FlexContainer>
                     </FlexContainer>
 

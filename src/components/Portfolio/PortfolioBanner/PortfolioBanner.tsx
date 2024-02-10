@@ -17,6 +17,7 @@ import {
 } from '../../../contexts/UserDataContext';
 import { useContext } from 'react';
 import UserLevelDisplay from '../../Global/LevelsCard/UserLevelDisplay';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 interface propsIF {
     ensName: string;
     resolvedAddress: string;
@@ -27,7 +28,8 @@ interface propsIF {
 export default function PortfolioBanner(props: propsIF) {
     const { ensName, resolvedAddress, connectedAccountActive, resolvedUserXp } =
         props;
-    const { userAddress, connectedUserXp } = useContext(UserDataContext);
+    const { userAddress } = useContext(UserDataContext);
+    const { connectedUserXp } = useContext(ChainDataContext);
 
     const xpData =
         connectedAccountActive || location.pathname === '/account/xp'

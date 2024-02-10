@@ -34,3 +34,18 @@ export function saveCtaDismissalToLocalStorage(ctaDismissal: {
         localStorage.setItem('cta_dismissals', JSON.stringify(parsedData));
     }
 }
+
+export function getLeaderboardSelectionFromLocalStorage(): string {
+    const storedData = localStorage.getItem('leaderboard_selection');
+    if (storedData) {
+        return storedData;
+    } else {
+        return 'Global';
+    }
+}
+
+export function saveLeaderboardSelectionToLocalStorage(
+    leaderboardType: string,
+) {
+    localStorage.setItem('leaderboard_selection', leaderboardType);
+}
