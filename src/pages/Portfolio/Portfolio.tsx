@@ -9,8 +9,12 @@ import Button from '../../components/Form/Button';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 
 // START: Import Other Local Files
-import { TokenIF } from '../../ambient-utils/types';
-import { fetchEnsAddress, fetchUserXpData } from '../../ambient-utils/api';
+import { BlastRewardsDataIF, TokenIF } from '../../ambient-utils/types';
+import {
+    fetchEnsAddress,
+    fetchUserXpData,
+    fetchBlastRewardsData,
+} from '../../ambient-utils/api';
 import { Navigate, useParams } from 'react-router-dom';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
@@ -139,6 +143,8 @@ function Portfolio(props: PortfolioPropsIF) {
         dataReceived: false,
         data: undefined,
     });
+    const [resolvedBlastRewards, setResolvedBlastRewards] =
+        useState<BlastRewardsDataIF>();
 
     // fetch xp data for resolved address if not connected user account
     useEffect(() => {
@@ -149,6 +155,11 @@ function Portfolio(props: PortfolioPropsIF) {
                         dataReceived: true,
                         data: resolvedUserXp ? resolvedUserXp : undefined,
                     });
+                },
+            );
+            fetchBlastRewardsData({ user: resolvedAddress }).then(
+                (resolvedBlastRewards) => {
+                    setResolvedBlastRewards(resolvedBlastRewards ?? undefined);
                 },
             );
         }
@@ -307,6 +318,7 @@ function Portfolio(props: PortfolioPropsIF) {
         setShowProfileSettings: setShowProfileSettings,
         connectedAccountActive: connectedAccountActive,
         resolvedUserXp: resolvedUserXp,
+        resolvedBlastRewards: resolvedBlastRewards,
     };
 
     const truncatedAccountAddressOrEnsName = connectedAccountActive
@@ -323,6 +335,7 @@ function Portfolio(props: PortfolioPropsIF) {
         connectedAccountActive: connectedAccountActive,
         isDisplayRank: isRanksPage,
         resolvedUserXp,
+        resolvedBlastRewards,
         isViewMoreActive,
     };
 

@@ -13,14 +13,18 @@ import {
     supportedNetworks,
 } from '../ambient-utils/constants';
 import { isJsonString } from '../ambient-utils/dataLayer';
-import { TokenIF } from '../ambient-utils/types';
+import { BlastRewardsDataIF, TokenIF } from '../ambient-utils/types';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
 import { Client } from '@covalenthq/client-sdk';
 import { UserDataContext, UserXpDataIF } from './UserDataContext';
 import { TokenBalanceContext } from './TokenBalanceContext';
-import { fetchBlockNumber, fetchUserXpData } from '../ambient-utils/api';
+import {
+    fetchBlockNumber,
+    fetchUserXpData,
+    fetchBlastRewardsData,
+} from '../ambient-utils/api';
 
 interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
@@ -29,6 +33,7 @@ interface ChainDataContextIF {
     setLastBlockNumber: Dispatch<SetStateAction<number>>;
     client: Client;
     connectedUserXp: UserXpDataIF;
+    connectedBlastRewards: BlastRewardsDataIF | undefined;
 }
 
 export const ChainDataContext = createContext<ChainDataContextIF>(
@@ -189,6 +194,9 @@ export const ChainDataContextProvider = (props: {
         data: undefined,
     });
 
+    const [connectedBlastRewards, setConnectedBlastRewards] =
+        React.useState<BlastRewardsDataIF>();
+
     React.useEffect(() => {
         if (userAddress) {
             fetchUserXpData({
@@ -200,11 +208,18 @@ export const ChainDataContextProvider = (props: {
                     data: data ? data : undefined,
                 });
             });
+
+            fetchBlastRewardsData({
+                user: userAddress,
+            }).then((data) => {
+                setConnectedBlastRewards(data ?? undefined);
+            });
         } else {
             setConnectedUserXp({
                 dataReceived: false,
                 data: undefined,
             });
+            setConnectedBlastRewards(undefined);
         }
     }, [userAddress]);
 
@@ -213,6 +228,7 @@ export const ChainDataContextProvider = (props: {
         setLastBlockNumber,
         gasPriceInGwei,
         connectedUserXp,
+        connectedBlastRewards,
         setGasPriceinGwei,
         client,
     };

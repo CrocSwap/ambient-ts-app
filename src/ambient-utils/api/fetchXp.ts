@@ -797,7 +797,9 @@ export const fetchXpLeadersData = async (
     return xpLeaders;
 };
 
-export const fetchBlastRewardsData = async (args: argsIF) => {
+export const fetchBlastRewardsData = async (
+    args: Pick<argsIF, 'user'>,
+): Promise<void | BlastRewardsDataIF> => {
     const { user } = args;
     console.log(`Fetching Blast Rewards for ${user}...`);
 
