@@ -160,28 +160,40 @@ export default function PriceInfo(props: propsIF) {
     const showEarnedRewards = true;
 
     const blastRewards: BlastRewardsDataIF = {
-        'BLAST points': { amount: 5762.6, logo: blastLogo },
-        'AMBI points': { amount: 39.99, logo: ambiLogo },
-        ETH: { amount: 0.566, logo: baseTokenLogoDisplay },
-        USDC: { amount: 150.66, logo: quoteTokenLogoDisplay },
-        TOKEN: { amount: 1004444, logo: baseTokenLogoDisplay },
+        'BLAST points': 5762.6,
+        'AMBI points': 39.99,
+        ETH: 0.566,
+        USDC: 150.66,
+        TOKEN: 1004444,
     };
 
     const rewardsContent = (
         <section>
             <span className={styles.divider} />
             <div>Rewards:</div>
-            {Object.entries(blastRewards).map(([rewardType, reward]) => (
-                <div key={rewardType}>
-                    <p key={rewardType}>{rewardType}</p>
-                    <p>
-                        {reward.amount.toLocaleString('en-US', {
-                            maximumFractionDigits: 2,
-                        })}
-                        {reward.logo}
-                    </p>
-                </div>
-            ))}
+            {Object.entries(blastRewards).map(([rewardType, reward]) => {
+                // TODO: proper map of logos for each reward type
+                const logo =
+                    rewardType === 'BLAST points'
+                        ? blastLogo
+                        : rewardType === 'AMBI points'
+                        ? ambiLogo
+                        : rewardType === 'ETH'
+                        ? baseTokenLogoDisplay
+                        : rewardType === 'USDC'
+                        ? quoteTokenLogoDisplay
+                        : rewardType === 'TOKEN'
+                        ? baseTokenLogoDisplay
+                        : ambiLogo;
+                return (
+                    <BlastRewardRow
+                        key={rewardType}
+                        rewardType={rewardType}
+                        reward={reward}
+                        logo={logo}
+                    />
+                );
+            })}
         </section>
     );
 
@@ -232,6 +244,23 @@ export default function PriceInfo(props: propsIF) {
         </div>
     );
 }
+
+const BlastRewardRow = (props: {
+    rewardType: string;
+    reward: number;
+    logo: JSX.Element;
+}) => {
+    const { rewardType, reward, logo } = props;
+    return (
+        <div>
+            <p>{rewardType}</p>
+            <p>
+                {reward.toLocaleString('en-US', { maximumFractionDigits: 2 })}
+                {logo}
+            </p>
+        </div>
+    );
+};
 
 const blastLogo = (
     <svg

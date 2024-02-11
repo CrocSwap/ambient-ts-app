@@ -1,8 +1,5 @@
-export interface BlastRewardIF {
-    amount: number;
-    logo: React.ReactNode;
-}
-
 export interface BlastRewardsDataIF {
-    [key: string]: BlastRewardIF;
+    'BLAST points': number;
+    'AMBI points': number;
+    [key: string]: number;
 }
