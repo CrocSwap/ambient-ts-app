@@ -17,9 +17,7 @@ export default function PointSystemPopup(props: PropsIF) {
     const { dismissPointSystemPopup } = props;
 
     const location = useLocation();
-    const currentLocation = location.pathname.includes('/trade')
-        ? '/trade'
-        : location.pathname.includes('/xp')
+    const currentLocation = location.pathname.includes('/xp')
         ? '/xp'
         : location.pathname;
     const {
