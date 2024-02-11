@@ -6,6 +6,7 @@ import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import { TokenIF } from '../../../ambient-utils/types';
 import { useContext } from 'react';
 import { TokenContext } from '../../../contexts/TokenContext';
+import { BlastRewardsDataIF } from '../../../ambient-utils/types/xp';
 
 interface propsIF {
     usdValue: string;
@@ -26,14 +27,6 @@ interface propsIF {
     maxRangeDenomByMoneyness: string;
     baseTokenAddress: string;
     quoteTokenAddress: string;
-}
-interface BlastReward {
-    amount: number;
-    logo: React.ReactNode;
-}
-
-interface BlastRewardsData {
-    [key: string]: BlastReward;
 }
 
 export default function PriceInfo(props: propsIF) {
@@ -166,7 +159,7 @@ export default function PriceInfo(props: propsIF) {
 
     const showEarnedRewards = true;
 
-    const blastRewards: BlastRewardsData = {
+    const blastRewards: BlastRewardsDataIF = {
         'BLAST points': { amount: 5762.6, logo: blastLogo },
         'AMBI points': { amount: 39.99, logo: ambiLogo },
         ETH: { amount: 0.566, logo: baseTokenLogoDisplay },
