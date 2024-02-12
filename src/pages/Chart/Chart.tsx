@@ -388,6 +388,7 @@ export default function Chart(props: propsIF) {
         useState<d3.ScaleLinear<number, number>>();
 
     const mobileView = useMediaQuery('(max-width: 600px)');
+    const smallScreen = useMediaQuery('(max-width: 500px)');
 
     const drawSettings = useDrawSettings();
 
@@ -518,7 +519,7 @@ export default function Chart(props: propsIF) {
     });
 
     const toolbarWidth = isToolbarOpen
-        ? 40 - (mobileView ? 0 : 4)
+        ? 40 - (mobileView ? 0 : smallScreen ? 4 : 25)
         : 9 - (mobileView ? 0 : 4);
 
     const [prevlastCandleTime, setPrevLastCandleTime] = useState<number>(
