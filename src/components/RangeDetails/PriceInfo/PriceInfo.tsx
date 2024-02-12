@@ -80,6 +80,14 @@ export default function PriceInfo(props: propsIF) {
             size='xs'
         />
     );
+    const unknownTokenLogoDisplay = (
+        <TokenIcon
+            token={undefined}
+            src={undefined}
+            alt={undefined}
+            size='xs'
+        />
+    );
 
     const totalValue = (
         <div className={styles.value_content}>
@@ -182,12 +190,35 @@ export default function PriceInfo(props: propsIF) {
         return minPlusBlock;
     };
 
+    const getBlastMockTokens = () => {
+        const min = 200;
+        const minPlusBlock =
+            min +
+            ((lastBlockNumber - initialBlock + 1) * blastRandomMultiplier) / 10;
+        return minPlusBlock;
+    };
+
+    const getAmbiMockTokens = () => {
+        const min = 20;
+        const minPlusBlock =
+            min +
+            ((lastBlockNumber - initialBlock + 1) * ambiRandomMultiplier) / 10;
+        return minPlusBlock;
+    };
+
+    const getArbitraryTokenMockTokens = () => {
+        const min = 1004444;
+        const minPlusBlock =
+            min + (lastBlockNumber - initialBlock + 1) * ambiRandomMultiplier;
+        return minPlusBlock;
+    };
+
     const blastRewards: BlastRewardsDataIF = {
+        BLAST: getBlastMockTokens().toFixed(2),
         'BLAST points': getBlastMockPoints().toFixed(2),
+        AMBI: getAmbiMockTokens().toFixed(2),
         'AMBI points': getAmbiMockPoints().toFixed(2),
-        ETH: '0.566',
-        USDC: '150.66',
-        TOKEN: '1004444',
+        TOKEN: getArbitraryTokenMockTokens().toFixed(2),
     };
 
     const rewardsContent = (
@@ -199,14 +230,14 @@ export default function PriceInfo(props: propsIF) {
                 const logo =
                     rewardType === 'BLAST points'
                         ? blastLogo
+                        : rewardType === 'BLAST'
+                        ? blastLogo
                         : rewardType === 'AMBI points'
                         ? ambiLogo
-                        : rewardType === 'ETH'
-                        ? baseTokenLogoDisplay
-                        : rewardType === 'USDC'
-                        ? quoteTokenLogoDisplay
+                        : rewardType === 'AMBI'
+                        ? ambiLogo
                         : rewardType === 'TOKEN'
-                        ? baseTokenLogoDisplay
+                        ? unknownTokenLogoDisplay
                         : ambiLogo;
                 return (
                     <BlastRewardRow
@@ -271,7 +302,7 @@ export default function PriceInfo(props: propsIF) {
 const BlastRewardRow = (props: {
     rewardType: string;
     reward: string;
-    logo: JSX.Element;
+    logo: JSX.Element | undefined;
 }) => {
     const { rewardType, reward, logo } = props;
     return (
