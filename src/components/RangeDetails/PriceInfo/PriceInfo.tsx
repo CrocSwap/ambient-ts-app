@@ -4,7 +4,7 @@ import Apy from '../../Global/Tabs/Apy/Apy';
 import { useLocation } from 'react-router-dom';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import { TokenIF } from '../../../ambient-utils/types';
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { BlastRewardsDataIF } from '../../../ambient-utils/types/xp';
 
@@ -27,7 +27,11 @@ interface propsIF {
     maxRangeDenomByMoneyness: string;
     baseTokenAddress: string;
     quoteTokenAddress: string;
+    lastBlockNumber: number;
 }
+
+const blastRandomMultiplier = Math.random();
+const ambiRandomMultiplier = Math.random();
 
 export default function PriceInfo(props: propsIF) {
     const {
@@ -49,6 +53,7 @@ export default function PriceInfo(props: propsIF) {
         maxRangeDenomByMoneyness,
         baseTokenAddress,
         quoteTokenAddress,
+        lastBlockNumber,
     } = props;
 
     const { pathname } = useLocation();
@@ -159,12 +164,30 @@ export default function PriceInfo(props: propsIF) {
 
     const showEarnedRewards = true;
 
+    const initialBlock = useMemo(() => lastBlockNumber, []);
+
+    const getBlastMockPoints = () => {
+        const min = 1000;
+        const minPlusBlock =
+            min +
+            ((lastBlockNumber - initialBlock + 1) * blastRandomMultiplier) / 15;
+        return minPlusBlock;
+    };
+
+    const getAmbiMockPoints = () => {
+        const min = 100;
+        const minPlusBlock =
+            min +
+            ((lastBlockNumber - initialBlock + 1) * ambiRandomMultiplier) / 15;
+        return minPlusBlock;
+    };
+
     const blastRewards: BlastRewardsDataIF = {
-        'BLAST points': 5762.6,
-        'AMBI points': 39.99,
-        ETH: 0.566,
-        USDC: 150.66,
-        TOKEN: 1004444,
+        'BLAST points': getBlastMockPoints().toFixed(2),
+        'AMBI points': getAmbiMockPoints().toFixed(2),
+        ETH: '0.566',
+        USDC: '150.66',
+        TOKEN: '1004444',
     };
 
     const rewardsContent = (
@@ -247,7 +270,7 @@ export default function PriceInfo(props: propsIF) {
 
 const BlastRewardRow = (props: {
     rewardType: string;
-    reward: number;
+    reward: string;
     logo: JSX.Element;
 }) => {
     const { rewardType, reward, logo } = props;
@@ -255,7 +278,7 @@ const BlastRewardRow = (props: {
         <div>
             <p>{rewardType}</p>
             <p>
-                {reward.toLocaleString('en-US', { maximumFractionDigits: 2 })}
+                {reward}
                 {logo}
             </p>
         </div>

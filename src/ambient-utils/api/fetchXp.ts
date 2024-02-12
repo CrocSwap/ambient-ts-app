@@ -815,11 +815,11 @@ export const fetchBlastRewardsData = async (
 
     // fake data
     const blastRewardsMockData: BlastRewardsDataIF = {
-        'BLAST points': 5762.6,
-        'AMBI points': 39.99,
-        ETH: 0.566,
-        USDC: 150.66,
-        TOKEN: 1004444,
+        'BLAST points': '5762.6',
+        'AMBI points': '39.99',
+        ETH: '0.566',
+        USDC: '150.66',
+        TOKEN: '1004444',
     };
 
     // const blastRewards = USE_MOCK_DATA

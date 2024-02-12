@@ -242,6 +242,7 @@ function RangeDetailsModal(props: propsIF) {
                         maxRangeDenomByMoneyness={maxRangeDenomByMoneyness}
                         baseTokenAddress={baseTokenAddress}
                         quoteTokenAddress={quoteTokenAddress}
+                        lastBlockNumber={lastBlockNumber}
                     />
                 </div>
                 <div className={styles.right_container}>

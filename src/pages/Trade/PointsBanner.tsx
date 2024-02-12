@@ -19,8 +19,8 @@ export default function PointsBanner(props: propsIF) {
     } = useContext(SidebarContext);
     const isSmallScreen = useMediaQuery('(max-width: 1280px)') || isSidebarOpen;
 
-    console.log({ isSmallScreen });
-    console.log({ isSidebarOpen });
+    // console.log({ isSmallScreen });
+    // console.log({ isSidebarOpen });
 
     // hook to allow navigation on click to leaderboard
     // @Junior feel free to change the DOM to a `<Link />` element
