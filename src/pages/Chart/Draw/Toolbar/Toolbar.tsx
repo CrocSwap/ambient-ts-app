@@ -54,7 +54,6 @@ interface undoRedoButtonList {
 }
 
 function ChartToolbar() {
-    // const mobileView = useMediaQuery('(max-width: 600px)');
     const mobileView = useMediaQuery('(max-width: 1200px)');
     const smallScreen = useMediaQuery('(max-width: 500px)');
 
@@ -263,14 +262,6 @@ function ChartToolbar() {
             }, 200);
         }
     };
-
-    useEffect(() => {
-        chartContainerOptions &&
-            console.log(
-                chartContainerOptions.top,
-                chartContainerOptions.top - 57,
-            );
-    }, [chartContainerOptions]);
 
     return chartContainerOptions && chartContainerOptions.top !== 0 ? (
         <ToolbarContainer
