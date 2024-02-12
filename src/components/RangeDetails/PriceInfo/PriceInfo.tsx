@@ -7,6 +7,7 @@ import { TokenIF } from '../../../ambient-utils/types';
 import { useContext, useMemo } from 'react';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { BlastRewardsDataIF } from '../../../ambient-utils/types/xp';
+import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 
 interface propsIF {
     usdValue: string;
@@ -175,50 +176,74 @@ export default function PriceInfo(props: propsIF) {
     const initialBlock = useMemo(() => lastBlockNumber, []);
 
     const getBlastMockPoints = () => {
-        const min = 1000;
+        const min = 0;
         const minPlusBlock =
             min +
-            ((lastBlockNumber - initialBlock + 1) * blastRandomMultiplier) / 15;
+            ((lastBlockNumber - initialBlock + 1) * blastRandomMultiplier) /
+                1500;
         return minPlusBlock;
     };
 
     const getAmbiMockPoints = () => {
-        const min = 100;
+        const min = 0;
         const minPlusBlock =
             min +
-            ((lastBlockNumber - initialBlock + 1) * ambiRandomMultiplier) / 15;
+            ((lastBlockNumber - initialBlock + 1) * ambiRandomMultiplier) /
+                2500;
         return minPlusBlock;
     };
 
-    const getBlastMockTokens = () => {
-        const min = 200;
+    const getBaseMockTokens = () => {
+        const min = 0;
         const minPlusBlock =
             min +
-            ((lastBlockNumber - initialBlock + 1) * blastRandomMultiplier) / 10;
+            ((lastBlockNumber - initialBlock + 1) * blastRandomMultiplier) /
+                10000;
         return minPlusBlock;
     };
 
-    const getAmbiMockTokens = () => {
-        const min = 20;
+    const getQuoteMockTokens = () => {
+        const min = 0;
         const minPlusBlock =
             min +
-            ((lastBlockNumber - initialBlock + 1) * ambiRandomMultiplier) / 10;
+            ((lastBlockNumber - initialBlock + 1) * ambiRandomMultiplier) /
+                5000;
         return minPlusBlock;
     };
 
     const getArbitraryTokenMockTokens = () => {
-        const min = 1004444;
+        const min = 0;
         const minPlusBlock =
             min + (lastBlockNumber - initialBlock + 1) * ambiRandomMultiplier;
         return minPlusBlock;
     };
 
     const blastRewards: BlastRewardsDataIF = {
-        BLAST: getBlastMockTokens().toFixed(2),
-        'BLAST points': getBlastMockPoints().toFixed(2),
-        AMBI: getAmbiMockTokens().toFixed(2),
-        'AMBI points': getAmbiMockPoints().toFixed(2),
-        TOKEN: getArbitraryTokenMockTokens().toFixed(2),
+        'BLAST points': getFormattedNumber({
+            value: getBlastMockPoints(),
+            zeroDisplay: '0',
+            abbrevThreshold: 1000000000,
+        }),
+        'AMBI points': getFormattedNumber({
+            value: getAmbiMockPoints(),
+            zeroDisplay: '0',
+            abbrevThreshold: 1000000000,
+        }),
+        BASE: getFormattedNumber({
+            value: getBaseMockTokens(),
+            zeroDisplay: '0',
+            abbrevThreshold: 1000000000,
+        }),
+        QUOTE: getFormattedNumber({
+            value: getQuoteMockTokens(),
+            zeroDisplay: '0',
+            abbrevThreshold: 1000000000,
+        }),
+        TOKEN: getFormattedNumber({
+            value: getArbitraryTokenMockTokens(),
+            zeroDisplay: '0',
+            abbrevThreshold: 1000000000,
+        }),
     };
 
     const rewardsContent = (
@@ -230,19 +255,25 @@ export default function PriceInfo(props: propsIF) {
                 const logo =
                     rewardType === 'BLAST points'
                         ? blastLogo
-                        : rewardType === 'BLAST'
-                        ? blastLogo
                         : rewardType === 'AMBI points'
                         ? ambiLogo
-                        : rewardType === 'AMBI'
-                        ? ambiLogo
+                        : rewardType === 'BASE'
+                        ? baseTokenLogoDisplay
+                        : rewardType === 'QUOTE'
+                        ? quoteTokenLogoDisplay
                         : rewardType === 'TOKEN'
                         ? unknownTokenLogoDisplay
                         : ambiLogo;
                 return (
                     <BlastRewardRow
                         key={rewardType}
-                        rewardType={rewardType}
+                        rewardType={
+                            rewardType === 'BASE'
+                                ? baseTokenSymbol + ' yield'
+                                : rewardType === 'QUOTE'
+                                ? quoteTokenSymbol + ' yield'
+                                : rewardType
+                        }
                         reward={reward}
                         logo={logo}
                     />
