@@ -43,6 +43,7 @@ import TableInfo from '../TableInfo/TableInfo';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { DataLoadingContext } from '../../../contexts/DataLoadingContext';
 interface propsIF {
     filter: CandleDataIF | undefined;
     setTransactionFilter: Dispatch<SetStateAction<CandleDataIF | undefined>>;
@@ -83,6 +84,7 @@ function TradeTabs2(props: propsIF) {
         cachedEnsResolve,
     } = useContext(CachedDataContext);
     const { isCandleSelected } = useContext(CandleContext);
+    const dataLoadingStatus = useContext(DataLoadingContext);
 
     const {
         crocEnv,
@@ -107,8 +109,6 @@ function TradeTabs2(props: propsIF) {
     const userChanges = userTransactionsByPool?.changes;
     const userLimitOrders = limitOrdersByUser?.limitOrders;
     const userPositions = positionsByUser?.positions;
-
-    const userPositionsDataReceived = positionsByUser.dataReceived;
 
     const [selectedInsideTab, setSelectedInsideTab] = useState<number>(0);
 
@@ -156,26 +156,25 @@ function TradeTabs2(props: propsIF) {
     const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
 
     useEffect(() => {
-        if (
-            !hasInitialized &&
-            !hasUserSelectedViewAll &&
-            userPositionsDataReceived
-        ) {
+        if (!hasInitialized && !hasUserSelectedViewAll) {
             if (
                 (outsideControl && selectedOutsideTab === 0) ||
                 (!outsideControl && selectedInsideTab === 0)
             ) {
-                if (isCandleSelected) {
-                    setShowAllData(false);
-                } else if (
-                    (!isUserConnected && !isCandleSelected) ||
-                    (!isCandleSelected &&
-                        !showAllData &&
-                        userChanges.length < 1)
-                ) {
+                if (!isUserConnected) {
                     setShowAllData(true);
-                } else if (userChanges.length < 1) {
+                } else if (
+                    !showAllData &&
+                    dataLoadingStatus.isConnectedUserPoolTxDataLoading
+                ) {
                     return;
+                } else if (
+                    showAllData &&
+                    dataLoadingStatus.isPoolTxDataLoading
+                ) {
+                    return;
+                } else if (!showAllData && userChanges.length < 1) {
+                    setShowAllData(true);
                 } else if (showAllData && userChanges.length >= 1) {
                     setShowAllData(false);
                 }
@@ -183,6 +182,9 @@ function TradeTabs2(props: propsIF) {
                 (outsideControl && selectedOutsideTab === 1) ||
                 (!outsideControl && selectedInsideTab === 1)
             ) {
+                if (dataLoadingStatus.isConnectedUserPoolOrderDataLoading)
+                    return;
+
                 if (
                     !isUserConnected ||
                     (!isCandleSelected &&
@@ -202,6 +204,8 @@ function TradeTabs2(props: propsIF) {
                 (outsideControl && selectedOutsideTab === 2) ||
                 (!outsideControl && selectedInsideTab === 2)
             ) {
+                if (dataLoadingStatus.isConnectedUserPoolRangeDataLoading)
+                    return;
                 if (
                     !isUserConnected ||
                     (!isCandleSelected &&
@@ -221,7 +225,7 @@ function TradeTabs2(props: propsIF) {
             setHasInitialized(true);
         }
     }, [
-        userPositionsDataReceived,
+        dataLoadingStatus,
         hasUserSelectedViewAll,
         isUserConnected,
         hasInitialized,
