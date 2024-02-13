@@ -293,8 +293,8 @@ const BlastRewardRow = (props: {
 const blastLogo = (
     <svg
         xmlns='http://www.w3.org/2000/svg'
-        width='20'
-        height='14'
+        width='15'
+        height='15'
         viewBox='0 0 20 14'
         fill='none'
     >
@@ -312,8 +312,8 @@ const blastLogo = (
 const ambiLogo = (
     <svg
         xmlns='http://www.w3.org/2000/svg'
-        width='14'
-        height='12'
+        width='15'
+        height='15'
         viewBox='0 0 14 12'
         fill='none'
     >
