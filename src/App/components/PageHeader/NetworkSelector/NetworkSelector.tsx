@@ -1,7 +1,6 @@
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+// import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownMenu2';
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
-import { getSupportedChainIds } from '../../../../ambient-utils/dataLayer';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import {
@@ -42,9 +41,34 @@ export default function NetworkSelector(props: propsIF) {
     const chainParam = searchParams.get('chain');
     const networkParam = searchParams.get('network');
 
-    const chains: ChainSpec[] = getSupportedChainIds().map((chain: string) =>
-        lookupChain(chain),
-    );
+    // const chains: ChainSpec[] = getSupportedChainIds().map((chain: string) =>
+    //     lookupChain(chain),
+    // );
+
+    // temporarily hardcoded mock blast chain data
+    const chains = [
+        {
+            nodeUrl: 'https://rpc.scroll.io',
+            addrs: {
+                dex: '0xaaaaAAAACB71BF2C8CaE522EA5fa455571A74106',
+                query: '0x62223e90605845Cf5CC6DAE6E0de4CDA130d6DDf',
+                impact: '0xc2c301759B5e0C385a38e678014868A33E2F3ae3',
+            },
+            poolIndex: 420,
+            isTestNet: false,
+            chainId: '0x82750',
+            gridSize: 4,
+            proxyPaths: {
+                cold: 3,
+                long: 130,
+                liq: 128,
+            },
+            blockExplorer: 'https://scrollscan.com/',
+            displayName: 'Blast',
+            logoUrl:
+                'https://deploy-preview-3380--ambient-finance.netlify.app/blast_logo.jpeg',
+        },
+    ];
 
     // organize chain data into a hashmap for easier access in the file
     const chainMap = new Map();
@@ -95,7 +119,7 @@ export default function NetworkSelector(props: propsIF) {
         </NetworkItem>
     );
 
-    // JSX element to select scroll network
+    // temporary hardcoded mock blast network data
     const scrollNetwork: JSX.Element = (
         <NetworkItem
             id='scroll_network_selector'
@@ -106,19 +130,55 @@ export default function NetworkSelector(props: propsIF) {
             tabIndex={0}
         >
             <ChainNameStatus tabIndex={0} active={chainId === '0x82750'}>
-                <img
-                    src={scrollLogo}
-                    alt='scroll network'
+                <svg
+                    xmlns='http://www.w3.org/2000/svg'
                     width='21px'
                     height='21px'
-                    style={{ borderRadius: '50%' }}
-                />
+                    viewBox='0 0 20 14'
+                    fill='none'
+                >
+                    <path
+                        d='M15.7589 6.99084L18.9128 5.41927L20 2.08235L17.8256 0.5H3.34769L0 2.98654H17.0183L16.1141 5.78525H9.28956L8.63294 7.83045H15.4575L13.5414 13.7185L16.7384 12.1362L17.8794 8.60548L15.7374 7.0339L15.7589 6.99084Z'
+                        fill='#FCFC03'
+                    />
+                    <path
+                        d='M4.81162 11.1889L6.78148 5.05331L4.59633 3.41714L1.31323 13.7185H13.5414L14.3595 11.1889H4.81162Z'
+                        fill='#FCFC03'
+                    />
+                </svg>
+
                 <Text color={chainId === '0x82750' ? 'accent1' : 'white'}>
-                    Scroll
+                    {' Blast'}
                 </Text>
             </ChainNameStatus>
         </NetworkItem>
     );
+
+    // // JSX element to select scroll network
+    // const scrollNetwork: JSX.Element = (
+    //     <NetworkItem
+    //         id='scroll_network_selector'
+    //         onClick={() => handleClick(chainMap.get('0x82750'))}
+    //         key='scroll'
+    //         custom={0}
+    //         variants={ItemEnterAnimation}
+    //         tabIndex={0}
+    //     >
+    //         <ChainNameStatus tabIndex={0} active={chainId === '0x82750'}>
+
+    //             <img
+    //                 src={scrollLogo}
+    //                 alt='scroll network'
+    //                 width='21px'
+    //                 height='21px'
+    //                 style={{ borderRadius: '50%' }}
+    //             />
+    //             <Text color={chainId === '0x82750' ? 'accent1' : 'white'}>
+    //                 {'Scroll'}
+    //             </Text>
+    //         </ChainNameStatus>
+    //     </NetworkItem>
+    // );
 
     // JSX element to select canto network (external link)
     const cantoNetwork: JSX.Element = (
@@ -207,8 +267,11 @@ export default function NetworkSelector(props: propsIF) {
                 <DropdownMenu2
                     marginTop={'50px'}
                     titleWidth={'80px'}
-                    title={lookupChain(chainId).displayName}
-                    logo={lookupChain(chainId).logoUrl}
+                    title={'Blast'}
+                    // title={lookupChain(chainId).displayName}
+                    logo={
+                        'https://deploy-preview-3380--ambient-finance.netlify.app/blast_logo.jpeg'
+                    }
                 >
                     <MenuContent
                         tabIndex={0}
