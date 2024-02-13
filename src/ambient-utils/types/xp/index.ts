@@ -1,3 +1,3 @@
 export * from './UserXpIF';
 export * from './XpLeaderboardIF';
-export * from './BlastRewardsIF';
+export * from './PositionRewardsIF';

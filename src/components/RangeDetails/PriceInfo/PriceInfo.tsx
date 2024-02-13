@@ -6,7 +6,7 @@ import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import { TokenIF } from '../../../ambient-utils/types';
 import { useContext, useMemo } from 'react';
 import { TokenContext } from '../../../contexts/TokenContext';
-import { BlastRewardsDataIF } from '../../../ambient-utils/types/xp';
+import { PositionRewardsDataIF } from '../../../ambient-utils/types/xp';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 
 interface propsIF {
@@ -218,7 +218,7 @@ export default function PriceInfo(props: propsIF) {
         return minPlusBlock;
     };
 
-    const blastRewards: BlastRewardsDataIF = {
+    const blastRewards: PositionRewardsDataIF = {
         BLAST: getFormattedNumber({
             value: getBlastMockPoints(),
             zeroDisplay: '0',

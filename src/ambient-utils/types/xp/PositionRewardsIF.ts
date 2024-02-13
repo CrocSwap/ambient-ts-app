@@ -1,4 +1,4 @@
-export interface BlastRewardsDataIF {
+export interface PositionRewardsDataIF {
     __BASE__: string;
     __QUOTE__: string;
 

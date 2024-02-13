@@ -1,6 +1,6 @@
 import { USE_MOCK_XP_DATA } from '../constants';
 import {
-    BlastRewardsDataIF,
+    PositionRewardsDataIF,
     UserXpIF,
     UserXpServerIF,
     XpSnapshotServerIF,
@@ -795,38 +795,4 @@ export const fetchXpLeadersData = async (
     const xpLeaders = USE_MOCK_DATA ? xpLeadersMockData : xpLeaderFetchData;
 
     return xpLeaders;
-};
-
-export const fetchBlastRewardsData = async (
-    args: Pick<argsIF, 'user'>,
-): Promise<void | BlastRewardsDataIF> => {
-    const { user } = args;
-    console.log(`Fetching Blast Rewards for ${user}...`);
-
-    // // TODO: replace with actual endpoint
-    // const blastRewardsEndpoint = 'https://TODO:ENDPOINT?';
-
-    // // const blastRewardsFetchData = fetch(
-    // //     blastRewardsEndpoint + new URLSearchParams({ user: user }),
-    // // )
-    // //     .then((response) => response?.json())
-    // //     .then((parsedResponse) => parsedResponse.data as BlastRewardsDataIF)
-    // //     .catch(console.error);
-
-    // fake data
-    const blastRewardsMockData: BlastRewardsDataIF = {
-        __BASE__: '0.566',
-        __QUOTE__: '150.66',
-
-        BLAST: '5762.6',
-        AMBI: '39.99',
-        TOKEN: '1004444',
-    };
-
-    // const blastRewards = USE_MOCK_DATA
-    //     ? blastRewardsMockData
-    //     : blastRewardsFetchData;
-    const blastRewards = blastRewardsMockData;
-
-    return blastRewards;
 };
