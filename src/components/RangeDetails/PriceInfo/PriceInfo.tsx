@@ -28,12 +28,8 @@ interface propsIF {
     maxRangeDenomByMoneyness: string;
     baseTokenAddress: string;
     quoteTokenAddress: string;
-    lastBlockNumber: number;
     positionId: string;
 }
-
-const blastRandomMultiplier = Math.random();
-const ambiRandomMultiplier = Math.random();
 
 export default function PriceInfo(props: propsIF) {
     const {
@@ -55,7 +51,6 @@ export default function PriceInfo(props: propsIF) {
         maxRangeDenomByMoneyness,
         baseTokenAddress,
         quoteTokenAddress,
-        lastBlockNumber,
         positionId,
     } = props;
 

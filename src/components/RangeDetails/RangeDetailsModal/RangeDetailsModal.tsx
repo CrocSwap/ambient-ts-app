@@ -242,7 +242,6 @@ function RangeDetailsModal(props: propsIF) {
                         maxRangeDenomByMoneyness={maxRangeDenomByMoneyness}
                         baseTokenAddress={baseTokenAddress}
                         quoteTokenAddress={quoteTokenAddress}
-                        lastBlockNumber={lastBlockNumber}
                         positionId={posHash}
                     />
                 </div>
