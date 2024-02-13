@@ -177,7 +177,7 @@ export default function PriceInfo(props: propsIF) {
 
             __BASE__: '…',
             __QUOTE__: '…',
-            TOKEN: '…',
+            'TOKEN yield': '…',
         });
 
     useEffect(() => {
@@ -204,7 +204,7 @@ export default function PriceInfo(props: propsIF) {
                         ? baseTokenLogoDisplay
                         : rewardType === '__QUOTE__'
                         ? quoteTokenLogoDisplay
-                        : rewardType === 'TOKEN'
+                        : rewardType === 'TOKEN yield'
                         ? unknownTokenLogoDisplay
                         : ambiLogo;
                 return (

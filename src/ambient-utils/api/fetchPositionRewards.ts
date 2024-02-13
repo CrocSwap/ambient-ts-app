@@ -100,7 +100,7 @@ const getMockPositionRewards = (): PositionRewardsDataIF => {
             zeroDisplay: '0',
             abbrevThreshold: 1000000000,
         }),
-        TOKEN: getFormattedNumber({
+        'TOKEN yield': getFormattedNumber({
             value: tokenPoints,
             zeroDisplay: '0',
             abbrevThreshold: 1000000000,
