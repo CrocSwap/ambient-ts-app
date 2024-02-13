@@ -74,7 +74,8 @@
 
 @media only screen and (min-width: 768px) {
     .outer_container {
-        height: 562px;
+        min-height: 562px;
+        height: auto;
         width: 1000px;
 
         display: grid;

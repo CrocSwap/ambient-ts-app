@@ -16,9 +16,36 @@
     
     
     border-radius: 16px;
+
     
     
     
+    
+}
+
+.points_banner_small{
+    position: relative;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.50) 0%, rgba(0, 0, 0, 0.50) 100%), url('../../assets/images/backgrounds/pointSystemBg.png'), lightgray 50% / cover ;
+
+
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+   
+    height: 300px;
+    width: 350px;
+   
+    border-radius: 16px;
+    border: 1px solid var(--accent1, #7371FC);
+    
+    
+    border-radius: 16px;
+    position: absolute;
+right: 14px;
+
+bottom: 65px;
+z-index: 999999;
 }
 
 .points_banner_container{
@@ -31,6 +58,7 @@
     align-items: center;
     padding: 0px 64px 0px 32px;
 }
+
 .left_side {
 font-size: 50px;
 font-family: "Lexend Exa";
