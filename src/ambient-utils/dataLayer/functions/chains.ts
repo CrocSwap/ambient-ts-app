@@ -9,9 +9,11 @@ export function validateChainId(chainIdToValidate: string): boolean {
 // Lists the chain IDs that app should be supported by network selectors and the like
 export function getSupportedChainIds(): Array<string> {
     if (process.env.REACT_APP_CHAIN_IDS) {
-        return process.env.REACT_APP_CHAIN_IDS.split(',');
+        return ['0x82750'];
+        // return process.env.REACT_APP_CHAIN_IDS.split(',');
     } else {
-        return DFLT_SUPPORTED_CHAINS;
+        return ['0x82750'];
+        // return DFLT_SUPPORTED_CHAINS;
     }
 }
 
@@ -44,4 +46,4 @@ export function getChainExplorer(chainId: string | number): string {
 
 const PLACEHOLDER_BLOCK_EXPLORER = 'https://etherscan.io/';
 
-const DFLT_SUPPORTED_CHAINS = Object.keys(supportedNetworks);
+// const DFLT_SUPPORTED_CHAINS = Object.keys(supportedNetworks);
