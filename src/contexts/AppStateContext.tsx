@@ -13,7 +13,12 @@ import {
 import {
     CHAT_ENABLED,
     CACHE_UPDATE_FREQ_IN_MS,
+    DEFAULT_CTA_DISMISSAL_DURATION_MINUTES,
 } from '../ambient-utils/constants';
+import {
+    getCtaDismissalsFromLocalStorage,
+    saveCtaDismissalToLocalStorage,
+} from '../App/functions/localStorage';
 
 interface AppStateContextIF {
     appOverlay: { isActive: boolean; setIsActive: (val: boolean) => void };
@@ -43,6 +48,8 @@ interface AppStateContextIF {
         open: () => void;
         close: () => void;
     };
+    showPointSystemPopup: boolean;
+    dismissPointSystemPopup: () => void;
 }
 
 export const AppStateContext = createContext<AppStateContextIF>(
@@ -89,6 +96,21 @@ export const AppStateContextProvider = (props: {
         closeWagmiModalWallet,
     ] = useModal();
 
+    const pointsModalDismissalDuration =
+        DEFAULT_CTA_DISMISSAL_DURATION_MINUTES || 1;
+
+    const [showPointSystemPopup, setShowPointSystemPopup] = useState(
+        (getCtaDismissalsFromLocalStorage().find(
+            (x) => x.ctaId === 'points_modal_cta',
+        )?.unixTimeOfDismissal || 0) <
+            Math.floor(Date.now() / 1000 - 60 * pointsModalDismissalDuration),
+    );
+
+    const dismissPointSystemPopup = () => {
+        setShowPointSystemPopup(false);
+        saveCtaDismissalToLocalStorage({ ctaId: 'points_modal_cta' });
+    };
+
     const appStateContext = useMemo(
         () => ({
             appOverlay: {
@@ -120,6 +142,8 @@ export const AppStateContextProvider = (props: {
                 open: openWagmiModalWallet,
                 close: closeWagmiModalWallet,
             },
+            showPointSystemPopup,
+            dismissPointSystemPopup,
         }),
         [
             // Dependency list includes the memoized use*() values from above and any primitives
@@ -140,6 +164,8 @@ export const AppStateContextProvider = (props: {
             closeWagmiModalWallet,
             isAppHeaderDropdown,
             setIsAppHeaderDropdown,
+            showPointSystemPopup,
+            dismissPointSystemPopup,
         ],
     );
 

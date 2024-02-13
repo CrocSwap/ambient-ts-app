@@ -48,6 +48,7 @@ import {
     saveCtaDismissalToLocalStorage,
 } from '../../App/functions/localStorage';
 import { DEFAULT_CTA_DISMISSAL_DURATION_MINUTES } from '../../ambient-utils/constants';
+import { AppStateContext } from '../../contexts/AppStateContext';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -73,6 +74,8 @@ function Trade() {
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const { tokens } = useContext(TokenContext);
+
+    const { showPointSystemPopup } = useContext(AppStateContext);
     const {
         setOutsideControl,
         setSelectedOutsideTab,
@@ -269,9 +272,17 @@ function Trade() {
     const pointsBannerDismissalDuration =
         DEFAULT_CTA_DISMISSAL_DURATION_MINUTES || 1;
 
-    const [showPtsBanner, setShowPtsBanner] = useState<boolean>(
+    const [showTopPtsBanner, setShowTopPtsBanner] = useState<boolean>(
         (getCtaDismissalsFromLocalStorage().find(
-            (x) => x.ctaId === 'points_banner_cta',
+            (x) => x.ctaId === 'top_points_banner_cta',
+            //  do not show points banner if dismissed in last 1 minute
+        )?.unixTimeOfDismissal || 0) <
+            Math.floor(Date.now() / 1000 - 60 * pointsBannerDismissalDuration),
+    );
+
+    const [showSidePtsBanner, setShowSidePtsBanner] = useState<boolean>(
+        (getCtaDismissalsFromLocalStorage().find(
+            (x) => x.ctaId === 'side_points_banner_cta',
             //  do not show points banner if dismissed in last 1 minute
         )?.unixTimeOfDismissal || 0) <
             Math.floor(Date.now() / 1000 - 60 * pointsBannerDismissalDuration),
@@ -279,9 +290,14 @@ function Trade() {
 
     if (showActiveMobileComponent) return mobileTrade;
 
-    const dismissBannerPopup = () => {
-        setShowPtsBanner(false);
-        saveCtaDismissalToLocalStorage({ ctaId: 'points_banner_cta' });
+    const dismissTopBannerPopup = () => {
+        setShowTopPtsBanner(false);
+        saveCtaDismissalToLocalStorage({ ctaId: 'top_points_banner_cta' });
+    };
+
+    const dismissSideBannerPopup = () => {
+        setShowSidePtsBanner(false);
+        saveCtaDismissalToLocalStorage({ ctaId: 'side_points_banner_cta' });
     };
 
     return (
@@ -295,12 +311,12 @@ function Trade() {
                     style={{ height: 'calc(100vh - 56px)' }}
                     ref={canvasRef}
                 >
-                    {showPtsBanner && (
-                        <PointsBanner dismissElem={dismissBannerPopup} />
+                    {showTopPtsBanner && (
+                        <PointsBanner dismissElem={dismissTopBannerPopup} />
                     )}
-                    {showPtsBanner && (
+                    {!showPointSystemPopup && showSidePtsBanner && (
                         <PointsBanner
-                            dismissElem={dismissBannerPopup}
+                            dismissElem={dismissSideBannerPopup}
                             smallCard
                         />
                     )}
