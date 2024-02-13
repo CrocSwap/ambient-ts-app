@@ -43,11 +43,7 @@ import { PoolContext } from '../../contexts/PoolContext';
 import { MdAutoGraph } from 'react-icons/md';
 import ChartToolbar from '../Chart/Draw/Toolbar/Toolbar';
 import PointsBanner from './PointsBanner';
-import {
-    getCtaDismissalsFromLocalStorage,
-    saveCtaDismissalToLocalStorage,
-} from '../../App/functions/localStorage';
-import { DEFAULT_CTA_DISMISSAL_DURATION_MINUTES } from '../../ambient-utils/constants';
+
 import { AppStateContext } from '../../contexts/AppStateContext';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
@@ -75,7 +71,13 @@ function Trade() {
 
     const { tokens } = useContext(TokenContext);
 
-    const { showPointSystemPopup } = useContext(AppStateContext);
+    const {
+        showPointSystemPopup,
+        showTopPtsBanner,
+        dismissTopBannerPopup,
+        showSidePtsBanner,
+        dismissSideBannerPopup,
+    } = useContext(AppStateContext);
     const {
         setOutsideControl,
         setSelectedOutsideTab,
@@ -269,36 +271,7 @@ function Trade() {
         </MainSection>
     );
 
-    const pointsBannerDismissalDuration =
-        DEFAULT_CTA_DISMISSAL_DURATION_MINUTES || 1;
-
-    const [showTopPtsBanner, setShowTopPtsBanner] = useState<boolean>(
-        (getCtaDismissalsFromLocalStorage().find(
-            (x) => x.ctaId === 'top_points_banner_cta',
-            //  do not show points banner if dismissed in last 1 minute
-        )?.unixTimeOfDismissal || 0) <
-            Math.floor(Date.now() / 1000 - 60 * pointsBannerDismissalDuration),
-    );
-
-    const [showSidePtsBanner, setShowSidePtsBanner] = useState<boolean>(
-        (getCtaDismissalsFromLocalStorage().find(
-            (x) => x.ctaId === 'side_points_banner_cta',
-            //  do not show points banner if dismissed in last 1 minute
-        )?.unixTimeOfDismissal || 0) <
-            Math.floor(Date.now() / 1000 - 60 * pointsBannerDismissalDuration),
-    );
-
     if (showActiveMobileComponent) return mobileTrade;
-
-    const dismissTopBannerPopup = () => {
-        setShowTopPtsBanner(false);
-        saveCtaDismissalToLocalStorage({ ctaId: 'top_points_banner_cta' });
-    };
-
-    const dismissSideBannerPopup = () => {
-        setShowSidePtsBanner(false);
-        saveCtaDismissalToLocalStorage({ ctaId: 'side_points_banner_cta' });
-    };
 
     return (
         <>

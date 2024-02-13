@@ -20,9 +20,6 @@ export default function PointsBanner(props: propsIF) {
     } = useContext(SidebarContext);
     const isSmallScreen = useMediaQuery('(max-width: 1280px)') || isSidebarOpen;
 
-    console.log({ isSmallScreen });
-    console.log({ isSidebarOpen });
-
     // hook to allow navigation on click to leaderboard
     // @Junior feel free to change the DOM to a `<Link />` element
     const navigate = useNavigate();
@@ -47,6 +44,8 @@ export default function PointsBanner(props: propsIF) {
     // text to display above the action buttons
     const promptText: string = isUserConnected
         ? 'Check your ambient points here'
+        : smallCard
+        ? 'Connect wallet to check your points'
         : 'Connect wallet to check your ambient points';
 
     return (
