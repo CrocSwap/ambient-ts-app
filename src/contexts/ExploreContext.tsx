@@ -10,12 +10,19 @@ import {
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { CrocEnvContext } from './CrocEnvContext';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../ambient-utils/constants';
+import ambientTokenList from '../ambient-utils/constants/ambient-token-list.json';
 
 export interface ExploreContextIF {
     pools: {
         retrievedAt: number | null;
         all: PoolDataIF[];
-        getAll: (poolList: PoolIF[], crocEnv: CrocEnv, chainId: string) => void;
+        getLimited(poolList: PoolIF[], crocEnv: CrocEnv, chainId: string): void;
+        getExtra: (
+            poolList: PoolIF[],
+            crocEnv: CrocEnv,
+            chainId: string,
+        ) => void;
+        resetPoolData: () => void;
         autopoll: {
             allowed: boolean;
             enable: () => void;
@@ -174,19 +181,71 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     }
 
     // meta function to apply pool data get fn to an array of pools
-    function getAllPoolData(
+    function getLimitedPoolData(
         poolList: PoolIF[],
         crocEnv: CrocEnv,
         chainId: string,
     ): void {
-        setAllPools([]);
         setRetrievedAt(null);
-        const allPoolData = poolList.map((pool: PoolIF) =>
+        const ambientTokens = ambientTokenList.tokens;
+        const limitedPoolList = poolList.filter((pool) => {
+            const baseToken = ambientTokens.find(
+                (token) =>
+                    token.address.toLowerCase() ===
+                    pool.base.address.toLowerCase(),
+            );
+            const quoteToken = ambientTokens.find(
+                (token) =>
+                    token.address.toLowerCase() ===
+                    pool.quote.address.toLowerCase(),
+            );
+            return baseToken && quoteToken;
+        });
+        const limitedPoolData = limitedPoolList.map((pool: PoolIF) =>
             getPoolData(pool, crocEnv, chainId),
         );
-        Promise.all(allPoolData)
+
+        Promise.all(limitedPoolData)
             .then((results: PoolDataIF[]) => {
                 setAllPools(results);
+                setRetrievedAt(Date.now());
+            })
+            .catch((err) => {
+                console.warn(err);
+                // re-enable autopolling to attempt more data fetches
+                enableAutopollPools();
+                setRetrievedAt(null);
+            });
+    }
+
+    // meta function to apply pool data get fn to an array of pools
+    function getExtraPoolData(
+        poolList: PoolIF[],
+        crocEnv: CrocEnv,
+        chainId: string,
+    ): void {
+        setRetrievedAt(null);
+        const ambientTokens = ambientTokenList.tokens;
+        const extraPoolList = poolList.filter((pool) => {
+            const baseToken = ambientTokens.find(
+                (token) =>
+                    token.address.toLowerCase() ===
+                    pool.base.address.toLowerCase(),
+            );
+            const quoteToken = ambientTokens.find(
+                (token) =>
+                    token.address.toLowerCase() ===
+                    pool.quote.address.toLowerCase(),
+            );
+            return !(baseToken && quoteToken);
+        });
+
+        const extraPoolData = extraPoolList.map((pool: PoolIF) =>
+            getPoolData(pool, crocEnv, chainId),
+        );
+        Promise.all(extraPoolData)
+            .then((results: PoolDataIF[]) => {
+                setAllPools((prev) => [...prev, ...results]);
                 setRetrievedAt(Date.now());
             })
             .catch((err) => {
@@ -210,7 +269,12 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         pools: {
             retrievedAt,
             all: allPools,
-            getAll: getAllPoolData,
+            getLimited: getLimitedPoolData,
+            getExtra: getExtraPoolData,
+            resetPoolData: () => {
+                setAllPools([]);
+                setRetrievedAt(null);
+            },
             autopoll: {
                 allowed: allowAutopollPools.current,
                 enable: () => enableAutopollPools(),

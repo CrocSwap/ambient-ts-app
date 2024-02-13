@@ -23,14 +23,27 @@ export default function Explore() {
         lastBlockNumber,
     );
 
-    // fn wrapper to get pools
-    const getPools = async (): Promise<void> => {
-        // make sure crocEnv exists and pool metadata is present
+    const getLimitedPools = async (): Promise<void> => {
         if (crocEnv && poolList.length) {
+            pools.getLimited(poolList, crocEnv, chainData.chainId);
+        }
+    };
+
+    const getAllPools = async (): Promise<void> => {
+        // make sure crocEnv exists and pool metadata is present
+        // prevent rapid-fire of requests to infura
+        if (crocEnv && poolList.length && pools.autopoll.allowed) {
             // clear text in DOM for time since last update
             timeSince.reset();
+            pools.resetPoolData();
             // use metadata to get expanded pool data
-            pools.getAll(poolList, crocEnv, chainData.chainId);
+            console.log('getting limited pools');
+            getLimitedPools().then(() => {
+                setTimeout(async () => {
+                    console.log('getting extra pools');
+                    pools.getExtra(poolList, crocEnv, chainData.chainId);
+                }, 3000);
+            });
             // disable autopolling of infura
             pools.autopoll.disable();
         }
@@ -38,9 +51,10 @@ export default function Explore() {
 
     // get expanded pool metadata
     useEffect(() => {
-        // prevent rapid-fire of requests to infura
-        pools.autopoll.allowed && getPools();
-    }, [crocEnv, chainData.chainId, poolList.length]);
+        if (crocEnv !== undefined && poolList.length > 0) {
+            getAllPools();
+        }
+    }, [crocEnv, poolList.length]);
 
     return (
         <Section>
@@ -51,7 +65,12 @@ export default function Explore() {
                     {/* Above line was commented to temporarily remove 'Last Updated: ' timestamp */}
                     {/* Refer to issue #2737 */}
 
-                    <RefreshButton onClick={() => getPools()}>
+                    <RefreshButton
+                        onClick={() => {
+                            pools.autopoll.enable();
+                            getAllPools();
+                        }}
+                    >
                         <RefreshIcon />
                     </RefreshButton>
                 </Refresh>
