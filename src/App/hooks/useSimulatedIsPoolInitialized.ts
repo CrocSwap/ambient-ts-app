@@ -14,7 +14,7 @@ export const useSimulatedIsPoolInitialized = () => {
         // Simulate the pool initialization for the first 2 seconds
         const timeoutId = setTimeout(() => {
             setSimulatedIsPoolInitialized(false);
-        }, 2000);
+        }, 5000);
 
         // Clean up the timeout when the component unmounts
         return () => clearTimeout(timeoutId);
