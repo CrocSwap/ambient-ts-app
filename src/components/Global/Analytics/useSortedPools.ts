@@ -13,7 +13,9 @@ export interface SortedPoolMethodsIF {
 }
 
 // hook to sort pools in the Explore module
-export const useSortedPools = (allPools: PoolDataIF[]): SortedPoolMethodsIF => {
+export const useSortedPools = (
+    allPools: Array<PoolDataIF>,
+): SortedPoolMethodsIF => {
     // default sort values (`null` will sort by TVL)
     const DEFAULT_SORT: sortType = 'volume';
     const DEFAULT_DIRECTION: directionType = 'ascending';

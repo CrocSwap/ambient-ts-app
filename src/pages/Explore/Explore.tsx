@@ -5,23 +5,13 @@ import { ExploreContext } from '../../contexts/ExploreContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
 import styled from 'styled-components/macro';
-import { useTimeElapsed, useTimeElapsedIF } from './useTimeElapsed';
-import { ChainDataContext } from '../../contexts/ChainDataContext';
 
 export default function Explore() {
     const { crocEnv, chainData } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
     // metadata only
     const { poolList } = useContext(PoolContext);
     // full expanded data set
     const { pools } = useContext(ExploreContext);
-
-    // hook to produce human-readable time since fetch for DOM
-    const timeSince: useTimeElapsedIF = useTimeElapsed(
-        pools.all.length,
-        pools.retrievedAt,
-        lastBlockNumber,
-    );
 
     const getLimitedPools = async (): Promise<void> => {
         if (crocEnv && poolList.length) {
@@ -31,21 +21,13 @@ export default function Explore() {
 
     const getAllPools = async (): Promise<void> => {
         // make sure crocEnv exists and pool metadata is present
-        // prevent rapid-fire of requests to infura
-        if (crocEnv && poolList.length && pools.autopoll.allowed) {
+        if (crocEnv && poolList.length) {
             // clear text in DOM for time since last update
-            timeSince.reset();
             pools.resetPoolData();
             // use metadata to get expanded pool data
-            console.log('getting limited pools');
             getLimitedPools().then(() => {
-                setTimeout(async () => {
-                    console.log('getting extra pools');
-                    pools.getExtra(poolList, crocEnv, chainData.chainId);
-                }, 3000);
+                pools.getExtra(poolList, crocEnv, chainData.chainId);
             });
-            // disable autopolling of infura
-            pools.autopoll.disable();
         }
     };
 
@@ -61,13 +43,8 @@ export default function Explore() {
             <MainWrapper>
                 <TitleText>Top Pools on Ambient</TitleText>
                 <Refresh>
-                    {/* <RefreshText>{timeSince.value}</RefreshText> */}
-                    {/* Above line was commented to temporarily remove 'Last Updated: ' timestamp */}
-                    {/* Refer to issue #2737 */}
-
                     <RefreshButton
                         onClick={() => {
-                            pools.autopoll.enable();
                             getAllPools();
                         }}
                     >
