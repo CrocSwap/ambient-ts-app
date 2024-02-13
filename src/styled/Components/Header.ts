@@ -395,8 +395,8 @@ export const LevelButton = styled.button<LevelButtonProps>`
     outline: none;
     border: none;
     background: var(--accent1);
-    width: ${(props) => (props.large ? '40px' : '24px')};
-    height: ${(props) => (props.large ? '40px' : '24px')};
+    width: ${(props) => (props.large ? '40px' : '30px')};
+    height: ${(props) => (props.large ? '40px' : '30px')};
     border-radius: 50%;
     padding: 4px 3px 4px 4px;
     justify-content: center;
@@ -548,6 +548,8 @@ interface IconButtonProps {
 
 export const NavItemIconButton = styled(FlexContainer)<IconButtonProps>`
     height: ${buttonSize};
+    width: 30px;
+    height: 30px;
     background-color: var(--dark2);
     border-radius: ${(props) => (props.square ? '4px' : '50%')};
     padding: 5px;

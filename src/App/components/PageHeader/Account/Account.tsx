@@ -148,7 +148,7 @@ export default function Account(props: propsIF) {
                     } else appHeaderDropdown.setIsActive(false);
                 }}
                 aria-label={ariaLabel}
-                large={formattedXpLevel.length >= 2}
+                large={false}
             >
                 {currentLevel !== undefined &&
                 currentLevel?.toString()?.length >= 2
