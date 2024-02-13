@@ -72,7 +72,6 @@ function Trade() {
     const { tokens } = useContext(TokenContext);
 
     const {
-        showPointSystemPopup,
         showTopPtsBanner,
         dismissTopBannerPopup,
         showSidePtsBanner,
@@ -287,7 +286,7 @@ function Trade() {
                     {showTopPtsBanner && (
                         <PointsBanner dismissElem={dismissTopBannerPopup} />
                     )}
-                    {!showPointSystemPopup && showSidePtsBanner && (
+                    {showSidePtsBanner && (
                         <PointsBanner
                             dismissElem={dismissSideBannerPopup}
                             smallCard

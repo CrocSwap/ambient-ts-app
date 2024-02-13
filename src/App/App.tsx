@@ -65,7 +65,6 @@ export default function App() {
         appHeaderDropdown,
         showPointSystemPopup,
         dismissPointSystemPopup,
-        dismissSideBannerPopup,
     } = useContext(AppStateContext);
     const { isWalletChainSupported, defaultUrlParams } =
         useContext(CrocEnvContext);
@@ -340,12 +339,7 @@ export default function App() {
                     currentLocation !== '/terms' &&
                     currentLocation !== '/privacy' &&
                     !currentLocation.includes('/chat') &&
-                    isChatEnabled && (
-                        <ChatPanel
-                            isFullScreen={false}
-                            dismissSideBannerPopup={dismissSideBannerPopup}
-                        />
-                    )}
+                    isChatEnabled && <ChatPanel isFullScreen={false} />}
                 {showMobileVersion && currentLocation !== '/' && (
                     <SidebarFooter />
                 )}
