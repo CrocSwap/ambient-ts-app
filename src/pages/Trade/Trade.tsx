@@ -298,6 +298,12 @@ function Trade() {
                     {showPtsBanner && (
                         <PointsBanner dismissElem={dismissBannerPopup} />
                     )}
+                    {showPtsBanner && (
+                        <PointsBanner
+                            dismissElem={dismissBannerPopup}
+                            smallCard
+                        />
+                    )}
                     <TradeChartsHeader tradePage />
                     {/* This div acts as a parent to maintain a min/max for the resizable element below */}
                     <FlexContainer

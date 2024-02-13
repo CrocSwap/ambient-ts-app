@@ -9,10 +9,11 @@ import useMediaQuery from '../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     dismissElem: () => void;
+    smallCard?: boolean;
 }
 
 export default function PointsBanner(props: propsIF) {
-    const { dismissElem } = props;
+    const { dismissElem, smallCard } = props;
 
     const {
         sidebar: { isOpen: isSidebarOpen },
@@ -49,8 +50,19 @@ export default function PointsBanner(props: propsIF) {
         : 'Connect wallet to check your ambient points';
 
     return (
-        <aside className={styles.points_banner}>
-            <section className={styles.points_banner_container}>
+        <aside
+            className={
+                smallCard ? styles.points_banner_small : styles.points_banner
+            }
+        >
+            <section
+                className={styles.points_banner_container}
+                style={{
+                    flexDirection: smallCard ? 'column' : 'row',
+                    padding: smallCard ? '32px 0' : ' 0px 64px 0px 32px',
+                    textAlign: smallCard ? 'center' : 'justify',
+                }}
+            >
                 <p
                     className={styles.left_side}
                     style={{ fontSize: isSmallScreen ? '30px' : '50px' }}
