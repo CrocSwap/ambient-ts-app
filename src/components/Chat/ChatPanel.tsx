@@ -20,10 +20,11 @@ import { TradeDataContext } from '../../contexts/TradeDataContext';
 interface propsIF {
     isFullScreen: boolean;
     appPage?: boolean;
+    dismissSideBannerPopup?: () => void;
 }
 
 function ChatPanel(props: propsIF) {
-    const { isFullScreen } = props;
+    const { isFullScreen, dismissSideBannerPopup } = props;
     const {
         chat: {
             isEnabled: isChatEnabled,
@@ -74,6 +75,7 @@ function ChatPanel(props: propsIF) {
     function openChatPanel(e: KeyboardEvent) {
         if (e.code === 'KeyC' && e.ctrlKey && e.altKey) {
             setIsChatOpen(!isChatOpen);
+            dismissSideBannerPopup && dismissSideBannerPopup();
         }
     }
 
@@ -237,7 +239,10 @@ function ChatPanel(props: propsIF) {
     const header = (
         <div
             className={styles.chat_header}
-            onClick={() => setIsChatOpen(!isChatOpen)}
+            onClick={() => {
+                setIsChatOpen(!isChatOpen);
+                dismissSideBannerPopup && dismissSideBannerPopup();
+            }}
         >
             <h2 className={styles.chat_title}>Trollbox</h2>
             <section style={{ paddingRight: '10px' }}>
