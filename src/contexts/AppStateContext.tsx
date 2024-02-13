@@ -103,6 +103,9 @@ export const AppStateContextProvider = (props: {
     const pointsModalDismissalDuration =
         DEFAULT_CTA_DISMISSAL_DURATION_MINUTES || 1;
 
+    const pointsBannerDismissalDuration =
+        DEFAULT_CTA_DISMISSAL_DURATION_MINUTES || 1;
+
     const [showPointSystemPopup, setShowPointSystemPopup] = useState(
         (getCtaDismissalsFromLocalStorage().find(
             (x) => x.ctaId === 'points_modal_cta',
@@ -114,9 +117,6 @@ export const AppStateContextProvider = (props: {
         setShowPointSystemPopup(false);
         saveCtaDismissalToLocalStorage({ ctaId: 'points_modal_cta' });
     };
-
-    const pointsBannerDismissalDuration =
-        DEFAULT_CTA_DISMISSAL_DURATION_MINUTES || 0;
 
     const [showTopPtsBanner, setShowTopPtsBanner] = useState<boolean>(
         (getCtaDismissalsFromLocalStorage().find(
