@@ -62,7 +62,7 @@ const getMockPositionRewards = (): PositionRewardsDataIF => {
     const ambiMultiplier = 1 / 1000;
     const blastMultiplier = 1 / 1200;
     const tokenMultiplier = 1 / 22;
-    const baseMultiplier = 1 / 1100000;
+    const baseMultiplier = 1 / 1400000;
     const quoteMultiplier = 1 / 2000;
 
     // increase points by seconds since start of day (assuming doug doesn't record demo through midnight)
