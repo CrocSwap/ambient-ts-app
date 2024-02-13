@@ -1,5 +1,8 @@
 export interface BlastRewardsDataIF {
-    'BLAST points': string;
-    'AMBI points': string;
+    __BASE__: string;
+    __QUOTE__: string;
+
+    BLAST: string;
+    AMBI: string;
     [key: string]: string;
 }

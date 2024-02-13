@@ -219,22 +219,22 @@ export default function PriceInfo(props: propsIF) {
     };
 
     const blastRewards: BlastRewardsDataIF = {
-        'BLAST points': getFormattedNumber({
+        BLAST: getFormattedNumber({
             value: getBlastMockPoints(),
             zeroDisplay: '0',
             abbrevThreshold: 1000000000,
         }),
-        'AMBI points': getFormattedNumber({
+        AMBI: getFormattedNumber({
             value: getAmbiMockPoints(),
             zeroDisplay: '0',
             abbrevThreshold: 1000000000,
         }),
-        BASE: getFormattedNumber({
+        __BASE__: getFormattedNumber({
             value: getBaseMockTokens(),
             zeroDisplay: '0',
             abbrevThreshold: 1000000000,
         }),
-        QUOTE: getFormattedNumber({
+        __QUOTE__: getFormattedNumber({
             value: getQuoteMockTokens(),
             zeroDisplay: '0',
             abbrevThreshold: 1000000000,
@@ -251,15 +251,14 @@ export default function PriceInfo(props: propsIF) {
             <span className={styles.divider} />
             <div>Rewards:</div>
             {Object.entries(blastRewards).map(([rewardType, reward]) => {
-                // TODO: proper map of logos for each reward type
                 const logo =
-                    rewardType === 'BLAST points'
+                    rewardType === 'BLAST'
                         ? blastLogo
-                        : rewardType === 'AMBI points'
+                        : rewardType === 'AMBI'
                         ? ambiLogo
-                        : rewardType === 'BASE'
+                        : rewardType === '__BASE__'
                         ? baseTokenLogoDisplay
-                        : rewardType === 'QUOTE'
+                        : rewardType === '__QUOTE__'
                         ? quoteTokenLogoDisplay
                         : rewardType === 'TOKEN'
                         ? unknownTokenLogoDisplay
@@ -268,9 +267,9 @@ export default function PriceInfo(props: propsIF) {
                     <BlastRewardRow
                         key={rewardType}
                         rewardType={
-                            rewardType === 'BASE'
+                            rewardType === '__BASE__'
                                 ? baseTokenSymbol + ' yield'
-                                : rewardType === 'QUOTE'
+                                : rewardType === '__QUOTE__'
                                 ? quoteTokenSymbol + ' yield'
                                 : rewardType
                         }
