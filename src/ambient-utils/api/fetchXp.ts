@@ -1,10 +1,5 @@
 import { USE_MOCK_XP_DATA } from '../constants';
-import {
-    PositionRewardsDataIF,
-    UserXpIF,
-    UserXpServerIF,
-    XpSnapshotServerIF,
-} from '../types';
+import { UserXpIF, UserXpServerIF, XpSnapshotServerIF } from '../types';
 
 interface argsIF {
     user: string;

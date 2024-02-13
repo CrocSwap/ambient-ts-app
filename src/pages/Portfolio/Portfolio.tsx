@@ -9,7 +9,7 @@ import Button from '../../components/Form/Button';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 
 // START: Import Other Local Files
-import { PositionRewardsDataIF, TokenIF } from '../../ambient-utils/types';
+import { TokenIF } from '../../ambient-utils/types';
 import { fetchEnsAddress, fetchUserXpData } from '../../ambient-utils/api';
 import { Navigate, useParams } from 'react-router-dom';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
