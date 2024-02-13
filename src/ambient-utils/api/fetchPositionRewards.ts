@@ -34,26 +34,24 @@ function mapPositionRewardsResponseToPositionRewards(
 export const fetchPositionRewardsData = async (args: argsIF) => {
     const { positionId } = args;
     console.log(`Fetching Xp for positionId ${positionId}...`);
-    return getMockPositionRewards(positionId);
 
-    // TODO: uncomment when we have a real endpoint
-    // if (USE_MOCK_DATA) {
-    //     return getMockPositionRewards(positionId);
-    // }
+    if (USE_MOCK_DATA) {
+        return getMockPositionRewards(positionId);
+    }
 
-    // const positionRewardsEndpoint = 'https://ambindexer.bus.bz/xp/position?';
+    const positionRewardsEndpoint = 'https://ambindexer.bus.bz/xp/position?';
 
-    // const positionRewardsFetchData = fetch(
-    //     positionRewardsEndpoint +
-    //         new URLSearchParams({ pos: `pos_${positionId}` }),
-    // )
-    //     .then((response) => response?.json())
-    //     .then((parsedResponse) =>
-    //         mapPositionRewardsResponseToPositionRewards(parsedResponse.data),
-    //     )
-    //     .catch(console.error);
+    const positionRewardsFetchData = fetch(
+        positionRewardsEndpoint +
+            new URLSearchParams({ pos: `pos_${positionId}` }),
+    )
+        .then((response) => response?.json())
+        .then((parsedResponse) =>
+            mapPositionRewardsResponseToPositionRewards(parsedResponse.data),
+        )
+        .catch(console.error);
 
-    // return positionRewardsFetchData;
+    return positionRewardsFetchData;
 };
 
 const getMockPositionRewards = (positionId: string): PositionRewardsDataIF => {
