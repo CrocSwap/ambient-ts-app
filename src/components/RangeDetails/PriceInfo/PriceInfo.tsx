@@ -172,12 +172,12 @@ export default function PriceInfo(props: propsIF) {
 
     const [positionRewards, setPositionRewards] =
         useState<PositionRewardsDataIF>({
-            BLAST: '0',
-            AMBI: '0',
+            BLAST: '…',
+            AMBI: '…',
 
-            __BASE__: '0',
-            __QUOTE__: '0',
-            TOKEN: '0',
+            __BASE__: '…',
+            __QUOTE__: '…',
+            TOKEN: '…',
         });
 
     useEffect(() => {

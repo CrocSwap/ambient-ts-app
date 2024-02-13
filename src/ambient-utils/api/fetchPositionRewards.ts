@@ -42,8 +42,7 @@ export const fetchPositionRewardsData = async (args: argsIF) => {
     const positionRewardsEndpoint = 'https://ambindexer.bus.bz/xp/position?';
 
     const positionRewardsFetchData = fetch(
-        positionRewardsEndpoint +
-            new URLSearchParams({ pos: `pos_${positionId}` }),
+        positionRewardsEndpoint + new URLSearchParams({ pos: `${positionId}` }),
     )
         .then((response) => response?.json())
         .then((parsedResponse) =>

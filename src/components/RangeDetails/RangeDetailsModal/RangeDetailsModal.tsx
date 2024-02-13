@@ -52,6 +52,7 @@ function RangeDetailsModal(props: propsIF) {
 
     const {
         posHash,
+        serverPositionId,
         isAmbient,
         isBaseTokenMoneynessGreaterOrEqual,
         minRangeDenomByMoneyness,
@@ -242,7 +243,7 @@ function RangeDetailsModal(props: propsIF) {
                         maxRangeDenomByMoneyness={maxRangeDenomByMoneyness}
                         baseTokenAddress={baseTokenAddress}
                         quoteTokenAddress={quoteTokenAddress}
-                        positionId={posHash}
+                        positionId={serverPositionId}
                     />
                 </div>
                 <div className={styles.right_container}>

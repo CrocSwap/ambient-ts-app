@@ -252,6 +252,8 @@ export const getPositionData = async (
 
     newPosition.apy = position.aprEst * 100;
 
+    newPosition.serverPositionId = position.positionId;
+
     return newPosition;
 };
 

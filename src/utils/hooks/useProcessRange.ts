@@ -90,6 +90,7 @@ export const useProcessRange = (
     // -------------------------------POSITION HASH------------------------
 
     const posHash = getPositionHash(position);
+    const serverPositionId = position.serverPositionId;
 
     // -----------------------------POSITIONS RANGE--------------------
     let isPositionInRange = position.isPositionInRange;
@@ -229,6 +230,7 @@ export const useProcessRange = (
         // wallet and id data
         ownerId: position.user,
         posHash,
+        serverPositionId,
         ensName,
         userMatchesConnectedAccount,
         posHashTruncated,
