@@ -243,6 +243,7 @@ function RangeDetailsModal(props: propsIF) {
                         baseTokenAddress={baseTokenAddress}
                         quoteTokenAddress={quoteTokenAddress}
                         lastBlockNumber={lastBlockNumber}
+                        positionId={posHash}
                     />
                 </div>
                 <div className={styles.right_container}>

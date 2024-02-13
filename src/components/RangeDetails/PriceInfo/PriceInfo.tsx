@@ -4,10 +4,10 @@ import Apy from '../../Global/Tabs/Apy/Apy';
 import { useLocation } from 'react-router-dom';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import { TokenIF } from '../../../ambient-utils/types';
-import { useContext, useMemo } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { PositionRewardsDataIF } from '../../../ambient-utils/types/xp';
-import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
+import { fetchPositionRewardsData } from '../../../ambient-utils/api/fetchPositionRewards';
 
 interface propsIF {
     usdValue: string;
@@ -29,6 +29,7 @@ interface propsIF {
     baseTokenAddress: string;
     quoteTokenAddress: string;
     lastBlockNumber: number;
+    positionId: string;
 }
 
 const blastRandomMultiplier = Math.random();
@@ -55,6 +56,7 @@ export default function PriceInfo(props: propsIF) {
         baseTokenAddress,
         quoteTokenAddress,
         lastBlockNumber,
+        positionId,
     } = props;
 
     const { pathname } = useLocation();
@@ -173,84 +175,31 @@ export default function PriceInfo(props: propsIF) {
 
     const showEarnedRewards = true;
 
-    const initialBlock = useMemo(() => lastBlockNumber, []);
+    const [positionRewards, setPositionRewards] =
+        useState<PositionRewardsDataIF>({
+            __BASE__: '0',
+            __QUOTE__: '0',
 
-    const getBlastMockPoints = () => {
-        const min = 0;
-        const minPlusBlock =
-            min +
-            ((lastBlockNumber - initialBlock + 1) * blastRandomMultiplier) /
-                1500;
-        return minPlusBlock;
-    };
+            AMBI: '0',
+            BLAST: '0',
+            TOKEN: '0',
+        });
 
-    const getAmbiMockPoints = () => {
-        const min = 0;
-        const minPlusBlock =
-            min +
-            ((lastBlockNumber - initialBlock + 1) * ambiRandomMultiplier) /
-                2500;
-        return minPlusBlock;
-    };
-
-    const getBaseMockTokens = () => {
-        const min = 0;
-        const minPlusBlock =
-            min +
-            ((lastBlockNumber - initialBlock + 1) * blastRandomMultiplier) /
-                10000;
-        return minPlusBlock;
-    };
-
-    const getQuoteMockTokens = () => {
-        const min = 0;
-        const minPlusBlock =
-            min +
-            ((lastBlockNumber - initialBlock + 1) * ambiRandomMultiplier) /
-                5000;
-        return minPlusBlock;
-    };
-
-    const getArbitraryTokenMockTokens = () => {
-        const min = 0;
-        const minPlusBlock =
-            min + (lastBlockNumber - initialBlock + 1) * ambiRandomMultiplier;
-        return minPlusBlock;
-    };
-
-    const blastRewards: PositionRewardsDataIF = {
-        BLAST: getFormattedNumber({
-            value: getBlastMockPoints(),
-            zeroDisplay: '0',
-            abbrevThreshold: 1000000000,
-        }),
-        AMBI: getFormattedNumber({
-            value: getAmbiMockPoints(),
-            zeroDisplay: '0',
-            abbrevThreshold: 1000000000,
-        }),
-        __BASE__: getFormattedNumber({
-            value: getBaseMockTokens(),
-            zeroDisplay: '0',
-            abbrevThreshold: 1000000000,
-        }),
-        __QUOTE__: getFormattedNumber({
-            value: getQuoteMockTokens(),
-            zeroDisplay: '0',
-            abbrevThreshold: 1000000000,
-        }),
-        TOKEN: getFormattedNumber({
-            value: getArbitraryTokenMockTokens(),
-            zeroDisplay: '0',
-            abbrevThreshold: 1000000000,
-        }),
-    };
+    useEffect(() => {
+        // update every 2 seconds
+        const interval = setInterval(() => {
+            fetchPositionRewardsData({ positionId }).then((rewards) => {
+                rewards && setPositionRewards(rewards);
+            });
+        }, 2000);
+        return () => clearInterval(interval);
+    }, []);
 
     const rewardsContent = (
         <section>
             <span className={styles.divider} />
             <div>Rewards:</div>
-            {Object.entries(blastRewards).map(([rewardType, reward]) => {
+            {Object.entries(positionRewards).map(([rewardType, reward]) => {
                 const logo =
                     rewardType === 'BLAST'
                         ? blastLogo
