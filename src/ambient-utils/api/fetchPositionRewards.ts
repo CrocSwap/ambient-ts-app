@@ -81,18 +81,13 @@ const getMockPositionRewards = (positionId: string): PositionRewardsDataIF => {
     const quotePoints = secondsSinceStartOfDay * quoteMultiplier;
 
     return {
-        AMBI: getFormattedNumber({
-            value: ambiPoints,
-            zeroDisplay: '0',
-            abbrevThreshold: 1000000000,
-        }),
         BLAST: getFormattedNumber({
             value: blastPoints,
             zeroDisplay: '0',
             abbrevThreshold: 1000000000,
         }),
-        TOKEN: getFormattedNumber({
-            value: tokenPoints,
+        AMBI: getFormattedNumber({
+            value: ambiPoints,
             zeroDisplay: '0',
             abbrevThreshold: 1000000000,
         }),
@@ -103,6 +98,11 @@ const getMockPositionRewards = (positionId: string): PositionRewardsDataIF => {
         }),
         __QUOTE__: getFormattedNumber({
             value: quotePoints,
+            zeroDisplay: '0',
+            abbrevThreshold: 1000000000,
+        }),
+        TOKEN: getFormattedNumber({
+            value: tokenPoints,
             zeroDisplay: '0',
             abbrevThreshold: 1000000000,
         }),
