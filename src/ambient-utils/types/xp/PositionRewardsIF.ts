@@ -7,7 +7,7 @@ export interface PositionRewardsDataIF {
     __BASE__: string;
     __QUOTE__: string;
 
-    BLAST: string;
-    AMBI: string;
+    'BLAST points': string;
+    'AMBI points': string;
     [key: string]: string;
 }

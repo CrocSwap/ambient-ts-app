@@ -11,6 +11,9 @@ const USE_MOCK_DATA =
         ? USE_MOCK_POSITION_REWARDS_DATA
         : true;
 
+const initialSeconds = Math.floor(new Date().valueOf() / 1000);
+const randomNum = Math.random();
+
 function mapPositionRewardsResponseToPositionRewards(
     positionRewards: PositionRewardsServerIF,
 ): PositionRewardsDataIF {
@@ -36,7 +39,7 @@ export const fetchPositionRewardsData = async (args: argsIF) => {
     console.log(`Fetching Xp for positionId ${positionId}...`);
 
     if (USE_MOCK_DATA) {
-        return getMockPositionRewards(positionId);
+        return getMockPositionRewards();
     }
 
     const positionRewardsEndpoint = 'https://ambindexer.bus.bz/xp/position?';
@@ -53,39 +56,36 @@ export const fetchPositionRewardsData = async (args: argsIF) => {
     return positionRewardsFetchData;
 };
 
-const getMockPositionRewards = (positionId: string): PositionRewardsDataIF => {
+const getMockPositionRewards = (): PositionRewardsDataIF => {
     // deterministically generate multipliers within 0.00420 - 0.0069 based on positionId kek
-    const ambiMultiplier =
-        (parseInt(positionId.slice(4, 8), 16) / 0xffff) * 0.0027 + 0.0042;
-    const blastMultiplier =
-        (parseInt(positionId.slice(8, 12), 16) / 0xffff) * 0.0027 + 0.0042;
-    const tokenMultiplier =
-        (parseInt(positionId.slice(12, 16), 16) / 0xffff) * 0.0027 + 0.0042;
-    const baseMultiplier =
-        (parseInt(positionId.slice(16, 20), 16) / 0xffff) * 0.0027 + 0.0042;
-    const quoteMultiplier =
-        (parseInt(positionId.slice(20, 24), 16) / 0xffff) * 0.0027 + 0.0042;
+    // (parseInt(positionId.slice(4, 8), 16) / 0xffff) * 0.0027 + 0.0042;
+    const ambiMultiplier = 1 / 1000;
+    const blastMultiplier = 1 / 1200;
+    const tokenMultiplier = 1 / 22;
+    const baseMultiplier = 1 / 1100000;
+    const quoteMultiplier = 1 / 2000;
 
     // increase points by seconds since start of day (assuming doug doesn't record demo through midnight)
     const now = new Date();
-    const startOfDay = new Date(now.toISOString().split('T')[0]);
-    const secondsSinceStartOfDay = Math.floor(
-        (now.valueOf() - startOfDay.valueOf()) / 1000,
-    );
+    // const startOfDay = new Date(now.toISOString().split('T')[0]);
+    const secondsElapsed = Math.floor(now.valueOf() / 1000) - initialSeconds;
+    // const secondsSinceStartOfDay = Math.floor(
+    //     (now.valueOf() - startOfDay.valueOf()) / 1000,
+    // );
 
-    const ambiPoints = secondsSinceStartOfDay * ambiMultiplier;
-    const blastPoints = secondsSinceStartOfDay * blastMultiplier;
-    const tokenPoints = secondsSinceStartOfDay * tokenMultiplier;
-    const basePoints = secondsSinceStartOfDay * baseMultiplier;
-    const quotePoints = secondsSinceStartOfDay * quoteMultiplier;
+    const ambiPoints = secondsElapsed * randomNum * ambiMultiplier;
+    const blastPoints = secondsElapsed * randomNum * blastMultiplier;
+    const tokenPoints = secondsElapsed * randomNum * tokenMultiplier;
+    const basePoints = secondsElapsed * randomNum * baseMultiplier;
+    const quotePoints = secondsElapsed * randomNum * quoteMultiplier;
 
     return {
-        BLAST: getFormattedNumber({
+        'BLAST points': getFormattedNumber({
             value: blastPoints,
             zeroDisplay: '0',
             abbrevThreshold: 1000000000,
         }),
-        AMBI: getFormattedNumber({
+        'AMBI points': getFormattedNumber({
             value: ambiPoints,
             zeroDisplay: '0',
             abbrevThreshold: 1000000000,

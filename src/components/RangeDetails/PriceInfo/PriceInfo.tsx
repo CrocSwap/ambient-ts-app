@@ -172,8 +172,8 @@ export default function PriceInfo(props: propsIF) {
 
     const [positionRewards, setPositionRewards] =
         useState<PositionRewardsDataIF>({
-            BLAST: '…',
-            AMBI: '…',
+            'BLAST points': '…',
+            'AMBI points': '…',
 
             __BASE__: '…',
             __QUOTE__: '…',
@@ -196,9 +196,9 @@ export default function PriceInfo(props: propsIF) {
             <div>Rewards:</div>
             {Object.entries(positionRewards).map(([rewardType, reward]) => {
                 const logo =
-                    rewardType === 'BLAST'
+                    rewardType === 'BLAST points' || rewardType === 'BLAST'
                         ? blastLogo
-                        : rewardType === 'AMBI'
+                        : rewardType === 'AMBI points' || rewardType === 'AMBI'
                         ? ambiLogo
                         : rewardType === '__BASE__'
                         ? baseTokenLogoDisplay
