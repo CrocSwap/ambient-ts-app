@@ -211,10 +211,10 @@ function Swap(props: propsIF) {
 
     const activeTxHash = useRef<string>('');
 
-    // reset activeTxHash when the pair changes
+    // reset activeTxHash when the pair changes or user updates quantity
     useEffect(() => {
         activeTxHash.current = '';
-    }, [tokenA.address + tokenB.address]);
+    }, [tokenA.address + tokenB.address, primaryQuantity]);
 
     useEffect(() => {
         if (isSellLoading || isBuyLoading) {
@@ -425,7 +425,6 @@ function Swap(props: propsIF) {
             console.error({ error });
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.data?.message);
-            activeTxHash.current = '';
         }
 
         if (tx) {
