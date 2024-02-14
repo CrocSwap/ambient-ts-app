@@ -45,6 +45,8 @@ export default function PointsBanner(props: propsIF) {
     // text to display above the action buttons
     const promptText: string = isUserConnected
         ? 'Check your ambient points here'
+        : smallCard
+        ? 'Connect wallet to check your points'
         : 'Connect wallet to check your ambient points';
 
     return (
