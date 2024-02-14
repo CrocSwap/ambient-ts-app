@@ -182,7 +182,7 @@ function Transactions(props: propsIF) {
     );
 
     // TODO: Use these as media width constants
-    const isSmallScreen = useMediaQuery('(max-width: 600px)');
+    const isSmallScreen = useMediaQuery('(max-width: 800px)');
     const isLargeScreen = useMediaQuery('(min-width: 1600px)');
 
     const tableView =

@@ -1,6 +1,5 @@
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
-import { NavLink } from 'react-router-dom';
 import { LimitOrderIF, TokenIF } from '../../../../ambient-utils/types';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import moment from 'moment';
@@ -252,12 +251,26 @@ export const orderRowConstants = (props: propsIF) => {
     const tokenPair = (
         <div
             className='base_color'
-            data-label='tokens'
             onClick={(event) => event.stopPropagation()}
         >
-            <NavLink to={linkGenLimit.getFullURL(limitLinkParams)}>
-                {baseTokenSymbol} / {quoteTokenSymbol}
-            </NavLink>
+            <RowItem hover>
+                <a
+                    href={linkGenLimit.getFullURL(limitLinkParams)}
+                    target='_blank'
+                    rel='noreferrer'
+                >
+                    <div>
+                        <span>
+                            {baseTokenSymbol} / {quoteTokenSymbol}
+                        </span>
+                        <FiExternalLink
+                            size={10}
+                            color='white'
+                            style={{ marginLeft: '.5rem' }}
+                        />
+                    </div>
+                </a>
+            </RowItem>
         </div>
     );
 
