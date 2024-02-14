@@ -6,8 +6,7 @@
             rgba(0, 0, 0, 0.5) 0%,
             rgba(0, 0, 0, 0.5) 100%
         ),
-        url('../../assets/images/backgrounds/pointSystemBg.png'),
-        lightgray 50% / cover;
+        url('../../assets/images/backgrounds/pointSystemBg.png');
 
     -webkit-background-size: cover;
     -moz-background-size: cover;
@@ -15,11 +14,9 @@
     background-size: cover;
 
     height: 100px;
-
+    margin-top: 5px;
     border-radius: 16px;
     border: 1px solid var(--accent1, #7371fc);
-
-    border-radius: 16px;
 }
 
 .points_banner_small {
@@ -84,13 +81,13 @@
     flex-direction: row;
 }
 
-.right_side p{
-    font-family: "Lexend Deca";
-font-size: var(--header2-size);
-font-weight: 300;
-line-height: var(--header2-lh);
-letter-spacing: -0.36px;
-text-align: center;
+.right_side p {
+    font-family: 'Lexend Deca';
+    font-size: var(--header2-size);
+    font-weight: 300;
+    line-height: var(--header2-lh);
+    letter-spacing: -0.36px;
+    text-align: center;
 }
 
 .right_side_content {
