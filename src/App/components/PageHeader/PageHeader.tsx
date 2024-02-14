@@ -12,8 +12,8 @@ import NetworkSelector from './NetworkSelector/NetworkSelector';
 import logo from '../../../assets/images/logos/logo_mark.svg';
 import mainLogo from '../../../assets/images/logos/large.svg';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
-import { BiGitBranch } from 'react-icons/bi';
-import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../ambient-utils/constants';
+// import { BiGitBranch } from 'react-icons/bi';
+// import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../ambient-utils/constants';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { AppStateContext } from '../../../contexts/AppStateContext';
@@ -46,7 +46,7 @@ import {
 } from '../../../styled/Components/Header';
 import { FlexContainer } from '../../../styled/Common';
 import Button from '../../../components/Form/Button';
-import { version as appVersion } from '../../../../package.json';
+// import { version as appVersion } from '../../../../package.json';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { useSwitchNetwork } from 'wagmi';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
@@ -374,7 +374,7 @@ const PageHeader = function () {
                             gap={8}
                             overflow='visible'
                         >
-                            {desktopScreen && (
+                            {/* {desktopScreen && (
                                 <FlexContainer fontSize='body' color={'orange'}>
                                     {APP_ENVIRONMENT !== 'production' ? (
                                         <FlexContainer
@@ -388,7 +388,7 @@ const PageHeader = function () {
                                         </FlexContainer>
                                     ) : null}
                                 </FlexContainer>
-                            )}
+                            )} */}
                             <NetworkSelector switchNetwork={switchNetwork} />
                             {!isUserConnected && connectWagmiButton}
                             <Account {...accountProps} />
