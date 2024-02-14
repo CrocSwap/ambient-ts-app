@@ -107,21 +107,21 @@ export const ReceiptContextProvider = (props: {
     };
 
     const removePendingTx = (pendingTx: string) => {
-        const updatedPendingTransactions = pendingTransactions.filter(
-            (p) => p !== pendingTx,
+        setPendingTransactions((pendingTransactions) =>
+            pendingTransactions.filter((p) => p !== pendingTx),
         );
-        setPendingTransactions(updatedPendingTransactions);
     };
 
     const removeReceipt = (txHash: string) => {
         removePendingTx(txHash);
 
-        const updatedReceipts = sessionReceipts.filter(
-            (r) =>
-                JSON.parse(r).transactionHash.toLowerCase() !==
-                txHash.toLowerCase(),
+        setSessionReceipts((sessionReceipts) =>
+            sessionReceipts.filter(
+                (r) =>
+                    JSON.parse(r).transactionHash.toLowerCase() !==
+                    txHash.toLowerCase(),
+            ),
         );
-        setSessionReceipts(updatedReceipts);
     };
 
     const resetReceiptData = () => {
