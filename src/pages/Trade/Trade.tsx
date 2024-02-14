@@ -71,12 +71,8 @@ function Trade() {
 
     const { tokens } = useContext(TokenContext);
 
-    const {
-        showTopPtsBanner,
-        dismissTopBannerPopup,
-        showSidePtsBanner,
-        dismissSideBannerPopup,
-    } = useContext(AppStateContext);
+    const { showTopPtsBanner, dismissTopBannerPopup } =
+        useContext(AppStateContext);
     const {
         setOutsideControl,
         setSelectedOutsideTab,
@@ -286,12 +282,7 @@ function Trade() {
                     {showTopPtsBanner && (
                         <PointsBanner dismissElem={dismissTopBannerPopup} />
                     )}
-                    {showSidePtsBanner && (
-                        <PointsBanner
-                            dismissElem={dismissSideBannerPopup}
-                            smallCard
-                        />
-                    )}
+
                     <TradeChartsHeader tradePage />
                     {/* This div acts as a parent to maintain a min/max for the resizable element below */}
                     <FlexContainer
