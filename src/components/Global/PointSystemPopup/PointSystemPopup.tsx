@@ -7,6 +7,8 @@ import { useCallback, useContext, useEffect, useRef } from 'react';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import ambientXblastLogo from '../../../assets/images/logos/ambientXBlast.svg';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface PropsIF {
     showPointSystemPopup: boolean;
@@ -15,6 +17,7 @@ interface PropsIF {
 
 export default function PointSystemPopup(props: PropsIF) {
     const { dismissPointSystemPopup } = props;
+    const isSmallScreen = useMediaQuery('(max-width: 1400px)');
 
     const location = useLocation();
     const currentLocation = location.pathname.includes('/xp')
@@ -54,7 +57,11 @@ export default function PointSystemPopup(props: PropsIF) {
     // Any location we won't to exclude the popup from goes here
     const excludedLocations = ['/404', '/terms', '/privacy', '/trade', '/xp'];
 
-    if (excludedLocations.includes(currentLocation) || !isEnabledLocally)
+    if (
+        excludedLocations.includes(currentLocation) ||
+        !isEnabledLocally ||
+        isSmallScreen
+    )
         return null;
     return (
         <div className={styles.outside_modal} role='dialog' aria-modal='true'>
@@ -72,10 +79,14 @@ export default function PointSystemPopup(props: PropsIF) {
                 </header>
                 <section className={styles.modal_content}>
                     <FlexContainer flexDirection='column' gap={87}>
-                        <FlexContainer flexDirection='column' gap={10}>
-                            <h2 className={styles.main_text}>ambient points</h2>
-                            <p className={styles.sub_text}>now live!</p>
+                        <FlexContainer
+                            flexDirection='row'
+                            gap={10}
+                            alignItems='center'
+                        >
+                            <img src={ambientXblastLogo} alt='' width='800px' />
                         </FlexContainer>
+                        <p className={styles.sub_text}>system now live!</p>
 
                         <FlexContainer
                             flexDirection='column'

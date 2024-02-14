@@ -85,6 +85,7 @@ font-size: var(--header2-size);
 font-weight: 300;
 line-height: var(--header2-lh);
 letter-spacing: -0.36px;
+text-align: center;
 }
 
 .right_side_content {
