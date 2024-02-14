@@ -5,53 +5,49 @@ import { ExploreContext } from '../../contexts/ExploreContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
 import styled from 'styled-components/macro';
-import { useTimeElapsed, useTimeElapsedIF } from './useTimeElapsed';
-import { ChainDataContext } from '../../contexts/ChainDataContext';
 
 export default function Explore() {
     const { crocEnv, chainData } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
     // metadata only
     const { poolList } = useContext(PoolContext);
     // full expanded data set
     const { pools } = useContext(ExploreContext);
 
-    // hook to produce human-readable time since fetch for DOM
-    const timeSince: useTimeElapsedIF = useTimeElapsed(
-        pools.all.length,
-        pools.retrievedAt,
-        lastBlockNumber,
-    );
+    const getLimitedPools = async (): Promise<void> => {
+        if (crocEnv && poolList.length) {
+            pools.getLimited(poolList, crocEnv, chainData.chainId);
+        }
+    };
 
-    // fn wrapper to get pools
-    const getPools = async (): Promise<void> => {
+    const getAllPools = async (): Promise<void> => {
         // make sure crocEnv exists and pool metadata is present
         if (crocEnv && poolList.length) {
             // clear text in DOM for time since last update
-            timeSince.reset();
+            pools.resetPoolData();
             // use metadata to get expanded pool data
-            pools.getAll(poolList, crocEnv, chainData.chainId);
-            // disable autopolling of infura
-            pools.autopoll.disable();
+            getLimitedPools().then(() => {
+                pools.getExtra(poolList, crocEnv, chainData.chainId);
+            });
         }
     };
 
     // get expanded pool metadata
     useEffect(() => {
-        // prevent rapid-fire of requests to infura
-        pools.autopoll.allowed && getPools();
-    }, [crocEnv, chainData.chainId, poolList.length]);
+        if (crocEnv !== undefined && poolList.length > 0) {
+            getAllPools();
+        }
+    }, [crocEnv, poolList.length]);
 
     return (
         <Section>
             <MainWrapper>
                 <TitleText>Top Pools on Ambient</TitleText>
                 <Refresh>
-                    {/* <RefreshText>{timeSince.value}</RefreshText> */}
-                    {/* Above line was commented to temporarily remove 'Last Updated: ' timestamp */}
-                    {/* Refer to issue #2737 */}
-
-                    <RefreshButton onClick={() => getPools()}>
+                    <RefreshButton
+                        onClick={() => {
+                            getAllPools();
+                        }}
+                    >
                         <RefreshIcon />
                     </RefreshButton>
                 </Refresh>
@@ -63,7 +59,7 @@ export default function Explore() {
 
 const Section = styled.section`
     background: var(--dark2);
-    height: calc(100vh - 56px);
+    height: calc(100vh - 120px);
     padding: 16px;
     display: flex;
     flex-direction: column;
