@@ -182,7 +182,8 @@ export default function Level(props: LevelPropsIF) {
             setIsLeaderboardLoading(false);
         }, 500);
     };
-    const xpLeaderboardTypes = ['Global', 'Weekly', 'Chain'];
+    const xpLeaderboardTypes = ['Global', 'Weekly'];
+    // const xpLeaderboardTypes = ['Global', 'Weekly', 'Chain'];
 
     if (isDisplayRank) {
         return (
