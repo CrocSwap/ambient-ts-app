@@ -6,7 +6,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { MdClose } from 'react-icons/md';
 import { SidebarContext } from '../../contexts/SidebarContext';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
-
+import blastLogo from '../../assets/images/logos/blast_logo.svg';
+import { FlexContainer, Text } from '../../styled/Common';
 interface propsIF {
     dismissElem: () => void;
     smallCard?: boolean;
@@ -18,7 +19,7 @@ export default function PointsBanner(props: propsIF) {
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
-    const isSmallScreen = useMediaQuery('(max-width: 1280px)') || isSidebarOpen;
+    const isSmallScreen = useMediaQuery('(max-width: 1600px)') && isSidebarOpen;
 
     // hook to allow navigation on click to leaderboard
     // @Junior feel free to change the DOM to a `<Link />` element
@@ -62,17 +63,51 @@ export default function PointsBanner(props: propsIF) {
                     textAlign: smallCard ? 'center' : 'justify',
                 }}
             >
-                <p
-                    className={styles.left_side}
-                    style={{ fontSize: isSmallScreen ? '30px' : '50px' }}
+                <FlexContainer
+                    flexDirection='column'
+                    gap={8}
+                    textAlign='center'
                 >
-                    ambient points
-                </p>
-                <div className={styles.right_side}>
-                    <div className={styles.right_side_content}>
+                    <FlexContainer
+                        flexDirection={smallCard ? 'column' : 'row'}
+                        alignItems='center'
+                        gap={8}
+                        style={{ verticalAlign: 'middle' }}
+                    >
+                        <p
+                            className={styles.left_side}
+                            style={{ fontSize: '50px' }}
+                        >
+                            ambient
+                        </p>
+                        <Text
+                            fontWeight='100'
+                            fontSize='header1'
+                            color='text1'
+                            align='center'
+                            style={{ marginTop: '10px' }}
+                        >
+                            X
+                        </Text>
+                        <img
+                            src={blastLogo}
+                            alt=''
+                            width='200px'
+                            style={{ marginTop: '8px' }}
+                        />
+                    </FlexContainer>
+
+                    {isSmallScreen && (
                         <p className={isSmallScreen && styles.small_text}>
                             {promptText}
                         </p>
+                    )}
+                </FlexContainer>
+
+                <div className={styles.right_side}>
+                    <div className={styles.right_side_content}>
+                        {!isSmallScreen && <p>{promptText}</p>}
+
                         <div className={styles.right_side_buttons}>
                             {isUserConnected ? (
                                 <Link

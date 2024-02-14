@@ -128,6 +128,12 @@ export default function Account(props: propsIF) {
         maxFracDigits: 0,
         isLevel: true,
     });
+
+    const currentLevelDisplay =
+        currentLevel !== undefined && currentLevel?.toString()?.length >= 2
+            ? formattedXpLevel
+            : currentLevel;
+
     const levelDisplay = (
         <section
             style={{
@@ -148,12 +154,9 @@ export default function Account(props: propsIF) {
                     } else appHeaderDropdown.setIsActive(false);
                 }}
                 aria-label={ariaLabel}
-                large={false}
+                large={formattedXpLevel.length >= 4}
             >
-                {currentLevel !== undefined &&
-                currentLevel?.toString()?.length >= 2
-                    ? formattedXpLevel
-                    : currentLevel}
+                {currentLevelDisplay}
             </LevelButton>
             {showLevelDropdown ? (
                 <LevelDropdown

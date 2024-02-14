@@ -280,7 +280,9 @@ function Trade() {
                     ref={canvasRef}
                 >
                     {showTopPtsBanner && (
-                        <PointsBanner dismissElem={dismissTopBannerPopup} />
+                        <div style={{ padding: '0 8px' }}>
+                            <PointsBanner dismissElem={dismissTopBannerPopup} />
+                        </div>
                     )}
 
                     <TradeChartsHeader tradePage />
