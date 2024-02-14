@@ -86,7 +86,7 @@ export default function PointSystemPopup(props: PropsIF) {
                         >
                             <img src={ambientXblastLogo} alt='' width='800px' />
                         </FlexContainer>
-                        <p className={styles.sub_text}>system now live!</p>
+                        <p className={styles.sub_text}>points now live!</p>
 
                         <FlexContainer
                             flexDirection='column'
