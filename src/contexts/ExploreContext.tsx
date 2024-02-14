@@ -91,11 +91,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             cachedFetchTokenPrice,
         );
 
-        if (
-            !poolStats ||
-            poolStats.tvlTotalUsd < 100 ||
-            poolStats.volumeTotalUsd < 100
-        ) {
+        if (!poolStats || poolStats.tvlTotalUsd < 100) {
             // return early
             const poolData: PoolDataIF = {
                 ...pool,

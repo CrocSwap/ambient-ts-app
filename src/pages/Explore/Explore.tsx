@@ -59,7 +59,7 @@ export default function Explore() {
 
 const Section = styled.section`
     background: var(--dark2);
-    height: calc(100vh - 56px);
+    height: calc(100vh - 120px);
     padding: 16px;
     display: flex;
     flex-direction: column;
