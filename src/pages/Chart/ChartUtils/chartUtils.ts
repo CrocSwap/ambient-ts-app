@@ -113,6 +113,9 @@ export type chartItemStates = {
     showVolume: boolean;
     showFeeRate: boolean;
     liqMode: string;
+    showSwap: boolean;
+    showLiquidity: boolean;
+    showHistorical: boolean;
 };
 
 export type lineValue = {
@@ -128,6 +131,22 @@ export interface SubChartValue {
 export type zoomUtils = {
     zoom: d3.ZoomBehavior<Element, unknown>;
     xAxisZoom: d3.ZoomBehavior<Element, unknown>;
+};
+
+export type orderHistory = {
+    tsId: string;
+    tsStart: Date;
+    tsEnd: Date;
+    orderPrice: number;
+    orderPriceCompleted: number;
+    orderType: string;
+    orderDirection: string;
+    orderStatus: string;
+    orderDolarAmount: number;
+    tokenA: string;
+    tokenAAmount: number;
+    tokenB: string;
+    tokenBAmount: number;
 };
 
 export function setCanvasResolution(canvas: HTMLCanvasElement) {
@@ -480,4 +499,22 @@ export function isTimeZoneStart(date: Date): boolean {
     } catch (error) {
         return false;
     }
+}
+
+export function checkShowLatestCandle(
+    period: number,
+    xScale?: d3.ScaleLinear<number, number, never>,
+) {
+    if (xScale) {
+        const xDomain = xScale.domain();
+        const nowDate = Date.now();
+        const snapDiff = nowDate % (period * 1000);
+        const snappedTime = nowDate + (period * 1000 - snapDiff);
+
+        const isShowLatestCandle =
+            xDomain[0] < snappedTime && snappedTime < xDomain[1];
+
+        return isShowLatestCandle;
+    }
+    return false;
 }
