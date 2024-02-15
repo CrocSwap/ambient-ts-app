@@ -115,9 +115,9 @@
             "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
         },
         {
-            "name": "USDCoin",
+            "name": "USDBCoin",
             "address": "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4",
-            "symbol": "USDC",
+            "symbol": "USDB",
             "decimals": 6,
             "chainId": 534352,
             "logoURI": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png"
