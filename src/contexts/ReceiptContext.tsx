@@ -2,6 +2,7 @@ import React, { createContext } from 'react';
 
 interface ReceiptContextIF {
     sessionReceipts: Array<string>;
+    allReceipts: Array<string>;
     pendingTransactions: Array<string>;
     transactionsByType: Array<TransactionByType>;
     sessionPositionUpdates: PositionUpdateIF[];
@@ -70,6 +71,7 @@ export const ReceiptContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const [sessionReceipts, setSessionReceipts] = React.useState<string[]>([]);
+    const [allReceipts, setAllReceipts] = React.useState<string[]>([]);
     const [pendingTransactions, setPendingTransactions] = React.useState<
         string[]
     >([]);
@@ -87,6 +89,7 @@ export const ReceiptContextProvider = (props: {
     };
     const addReceipt = (receipt: string) => {
         setSessionReceipts((prev) => [receipt, ...prev]);
+        setAllReceipts((prev) => [receipt, ...prev]);
     };
     const addPendingTx = (tx: string) => {
         setPendingTransactions((prev) => [tx, ...prev]);
@@ -132,6 +135,7 @@ export const ReceiptContextProvider = (props: {
 
     const receiptContext: ReceiptContextIF = {
         sessionReceipts,
+        allReceipts,
         transactionsByType,
         pendingTransactions,
         sessionPositionUpdates,

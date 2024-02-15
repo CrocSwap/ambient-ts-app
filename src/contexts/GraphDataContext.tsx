@@ -166,7 +166,7 @@ export const GraphDataContextProvider = (props: {
 
     const { tokenA, tokenB } = useContext(TradeDataContext);
 
-    const { pendingTransactions, sessionReceipts, sessionPositionUpdates } =
+    const { pendingTransactions, allReceipts, sessionPositionUpdates } =
         useContext(ReceiptContext);
 
     const { setDataLoadingStatus, resetConnectedUserDataLoadingStatus } =
@@ -313,7 +313,7 @@ export const GraphDataContextProvider = (props: {
         (tx) => !userTxByPoolHashArray.includes(tx),
     );
 
-    const failedSessionTransactionHashes = sessionReceipts
+    const failedSessionTransactionHashes = allReceipts
         .filter((r) => JSON.parse(r).status === 0)
         .map((r) => JSON.parse(r).transactionHash);
 
