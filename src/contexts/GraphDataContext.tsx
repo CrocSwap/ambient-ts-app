@@ -164,13 +164,12 @@ export const GraphDataContextProvider = (props: {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
 
-    const { tokenA, tokenB } = useContext(TradeDataContext);
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     const { pendingTransactions, allReceipts, sessionPositionUpdates } =
         useContext(ReceiptContext);
 
-    const { setDataLoadingStatus, resetConnectedUserDataLoadingStatus } =
-        useContext(DataLoadingContext);
+    const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const {
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
@@ -252,7 +251,6 @@ export const GraphDataContextProvider = (props: {
     }, [isUserConnected, userAddress]);
 
     useEffect(() => {
-        resetConnectedUserDataLoadingStatus();
         setUserPositionsByPool({
             dataReceived: false,
             positions: [],
@@ -265,7 +263,7 @@ export const GraphDataContextProvider = (props: {
             dataReceived: false,
             changes: [],
         });
-    }, [tokenA.address + tokenB.address]);
+    }, [baseToken.address + quoteToken.address]);
 
     const userTxByPoolHashArray = userTransactionsByPool.changes.map(
         (change) => change.txHash,
