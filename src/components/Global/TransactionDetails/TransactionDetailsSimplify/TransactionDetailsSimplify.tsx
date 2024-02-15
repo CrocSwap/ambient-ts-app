@@ -49,6 +49,7 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
         truncatedHighDisplayPriceDenomByMoneyness,
         truncatedDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
+        elapsedTimeString,
     } = useProcessTransaction(tx, userAddress);
 
     const { chainData } = useContext(CrocEnvContext);
@@ -180,6 +181,17 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
         },
 
         {
+            title: 'Time ',
+            content: (
+                <div style={{ cursor: 'default' }}>
+                    {moment(tx.txTime * 1000).format('MM/DD/YYYY HH:mm')}
+                    {' '}
+                    {'(' + elapsedTimeString + ' ago)'}
+                </div>
+            ),
+            explanation: 'The transaction confirmation time',
+        },
+        {
             title: 'Wallet ',
             content: walletContent,
             explanation: 'The account of the transaction owner',
@@ -192,20 +204,12 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
         },
 
         {
-            title: 'Time ',
-            content: (
-                <div style={{ cursor: 'default' }}>
-                    {moment(tx.txTime * 1000).format('MM/DD/YYYY HH:mm')}
-                </div>
-            ),
-            explanation: 'The transaction confirmation time',
-        },
-
-        {
             title: isSwap ? 'From Token ' : 'Token 1 ',
             content: (
                 <div style={{ cursor: 'default' }}>
-                    {isBuy ? baseTokenSymbol : quoteTokenSymbol}
+                    {isBuy
+                        ? baseTokenSymbol + ' - ' + tx.baseName
+                        : quoteTokenSymbol + ' - ' + tx.quoteName}
                 </div>
             ),
             explanation: 'The symbol (short name) of the sell token',
@@ -251,7 +255,9 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
 
         {
             title: isSwap ? 'To Token ' : 'Token 2 ',
-            content: !isBuy ? baseTokenSymbol : quoteTokenSymbol,
+            content: !isBuy
+                ? baseTokenSymbol + ' - ' + tx.baseName
+                : quoteTokenSymbol + ' - ' + tx.quoteName,
             explanation: 'The symbol (short name) of the buy token',
         },
 

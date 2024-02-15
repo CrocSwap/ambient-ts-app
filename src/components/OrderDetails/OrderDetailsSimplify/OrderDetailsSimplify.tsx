@@ -77,6 +77,7 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
         isLimitOrderPartiallyFilled,
         fillPercentage,
         isBaseTokenMoneynessGreaterOrEqual,
+        elapsedTimeString,
     } = useProcessOrder(limitOrder, userAddress, isAccountView);
 
     const showFullAddresses = useMediaQuery('(min-width: 768px)');
@@ -160,9 +161,12 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
         </div>
     );
 
-    const submissionTime = moment(limitOrder.timeFirstMint * 1000).format(
-        'MM/DD/YYYY HH:mm',
-    );
+    const submissionTime =
+        moment(limitOrder.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm') +
+        ' ' +
+        '(' +
+        elapsedTimeString +
+        ' ago)';
 
     const status = isOrderFilled
         ? 'Fill Complete'
@@ -175,6 +179,11 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
             title: 'Position Type ',
             content: 'Limit',
             explanation: 'A limit order is a type of range position ',
+        },
+        {
+            title: 'Submit Time ',
+            content: submissionTime,
+            explanation: 'The time the owner first added a limit at this price',
         },
         {
             title: 'Wallet ',
@@ -191,11 +200,6 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
         // { title: 'Submit Transaction ', content: txContent, explanation: 'this is explanation' },
         // { title: 'Claim Transaction ', content: txContent, explanation: 'this is explanation' },
 
-        {
-            title: 'Submit Time ',
-            content: submissionTime,
-            explanation: 'The time the owner first added a limit at this price',
-        },
         // { title: 'Fill Time ', content: fillTime, explanation: 'this is explanation' },
         {
             title: 'Status ',
