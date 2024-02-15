@@ -1,7 +1,9 @@
-import logoText from '../../../assets/images/logos/logo_text.png';
+// import logoText from '../../../assets/images/logos/logo_text.png';
+import { FlexContainer, Text } from '../../../styled/Common';
+import blastLogo from '../../../assets/images/logos/blast_logo.svg';
+
 import TradeNowButton from './TradeNowButton/TradeNowButton';
 import styles from './BackgroundImages.module.css';
-import { FlexContainer } from '../../../styled/Common';
 import { HeroContainer } from '../../../styled/Components/Home';
 
 export default function Hero() {
@@ -21,7 +23,40 @@ export default function Hero() {
                 justifyContent='center'
                 gap={32}
             >
-                <img src={logoText} alt='ambient' />
+                <FlexContainer
+                    flexDirection={'row'}
+                    alignItems='center'
+                    gap={8}
+                    style={{ verticalAlign: 'middle' }}
+                >
+                    <p
+                        className={styles.ambient_blast_logo}
+                        style={{ fontSize: '90px' }}
+                    >
+                        ambient
+                    </p>
+                    <Text
+                        fontWeight='100'
+                        // fontSize='header1'
+                        color='text1'
+                        align='center'
+                        style={{
+                            marginTop: '20px',
+                            marginLeft: '15px',
+                            fontSize: '30px',
+                        }}
+                    >
+                        X
+                    </Text>
+                    <img
+                        src={blastLogo}
+                        alt=''
+                        width='130px'
+                        style={{ marginTop: '8px' }}
+                    />
+                </FlexContainer>
+                {/* <img src={ambientXblastLogo} alt='' width='1500px' /> */}
+                {/* <img src={logoText} alt='ambient' /> */}
                 <TradeNowButton fieldId='trade_now_btn_in_hero' />
             </FlexContainer>
         </HeroContainer>
