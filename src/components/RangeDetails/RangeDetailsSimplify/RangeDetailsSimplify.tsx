@@ -61,6 +61,7 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
         tokenBAddressLowerCase,
         baseDisplayFrontend,
         quoteDisplayFrontend,
+        elapsedTimeString,
     } = useProcessRange(position, userAddress, isAccountView);
 
     const showFullAddresses = useMediaQuery('(min-width: 768px)');
@@ -170,15 +171,24 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
         ? 'In Range'
         : 'Out of Range';
 
-    const submissionTime = moment(position.timeFirstMint * 1000).format(
-        'MM/DD/YYYY HH:mm',
-    );
+    const submissionTime =
+        moment(position.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm') +
+        ' ' +
+        '(' +
+        elapsedTimeString +
+        ' ago)';
 
     const infoContent = [
         {
             title: 'Position Type ',
             content: isAmbient ? 'Ambient' : 'Range',
             explanation: 'e.g. Range, Ambient ',
+        },
+        {
+            title: 'Add Time ',
+            content: submissionTime,
+            explanation:
+                'The time the owner first added a range at these prices',
         },
         {
             title: 'Position Slot ID ',
@@ -191,12 +201,6 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
             title: 'Wallet ',
             content: walletContent,
             explanation: 'The account of the position owner',
-        },
-        {
-            title: 'Add Time ',
-            content: submissionTime,
-            explanation:
-                'The time the owner first added a range at these prices',
         },
         {
             title: 'Status ',
