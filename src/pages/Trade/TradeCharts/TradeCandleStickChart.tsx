@@ -63,27 +63,14 @@ interface propsIF {
     showLatest: boolean | undefined;
     setShowLatest: Dispatch<SetStateAction<boolean>>;
     setShowTooltip: Dispatch<SetStateAction<boolean>>;
-    setIsLoading: Dispatch<SetStateAction<boolean>>;
-    isLoading: boolean;
     updateURL: (changes: updatesIF) => void;
 }
 
 function TradeCandleStickChart(props: propsIF) {
-    const {
-        selectedDate,
-        setSelectedDate,
-        isLoading,
-        setIsLoading,
-        updateURL,
-    } = props;
+    const { selectedDate, setSelectedDate, updateURL } = props;
 
-    const {
-        candleData,
-        isFetchingCandle,
-        isCandleDataNull,
-        setCandleScale,
-        candleScale,
-    } = useContext(CandleContext);
+    const { candleData, isFetchingCandle, setCandleScale, candleScale } =
+        useContext(CandleContext);
     const { chartSettings, isChangeScaleChart, setSelectedDrawnShape } =
         useContext(ChartContext);
     const { chainData } = useContext(CrocEnvContext);
@@ -164,10 +151,6 @@ function TradeCandleStickChart(props: propsIF) {
             setUserTransactionData(userTransactionsByPool.changes);
         }
     }, [userTransactionsByPool]);
-
-    useEffect(() => {
-        setIsLoading(true);
-    }, [period, isDenomBase]);
 
     useEffect(() => {
         setSelectedDrawnShape(undefined);
@@ -552,7 +535,6 @@ function TradeCandleStickChart(props: propsIF) {
                     : poolPriceDisplay,
             };
         } else {
-            setIsLoading(true);
             return undefined;
         }
     }, [liqBoundary, baseTokenAddress + quoteTokenAddress]);
@@ -561,7 +543,7 @@ function TradeCandleStickChart(props: propsIF) {
         if (unparsedCandleData) {
             setScaleForChart(unparsedCandleData);
         }
-    }, [unparsedCandleData === undefined, mobileView]);
+    }, [unparsedCandleData === undefined, mobileView, isDenomBase]);
 
     // Liq Scale
     useEffect(() => {
@@ -826,42 +808,27 @@ function TradeCandleStickChart(props: propsIF) {
             });
         }
     };
-    // resetting Chart
-    useEffect(() => {
-        if (scaleData) {
-            resetChart();
-        }
-    }, [isCandleDataNull, scaleData === undefined]);
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            const shouldReload =
-                scaleData === undefined ||
-                liquidityScale === undefined ||
-                liquidityDepthScale === undefined ||
-                unparsedCandleData?.length === 0 ||
-                poolPriceDisplay === 0 ||
-                poolPriceNonDisplay === 0 ||
-                liquidityData === undefined;
-
-            if (isLoading !== shouldReload) {
-                IS_LOCAL_ENV &&
-                    console.debug('setting isLoading to ' + shouldReload);
-                setIsLoading(shouldReload);
-            }
-        }, 500);
-        return () => clearTimeout(timer);
-    }, [
-        unparsedCandleData === undefined,
-        unparsedCandleData?.length,
-        poolPriceDisplay,
-        poolPriceNonDisplay,
-        scaleData === undefined,
-        liquidityScale,
-        liquidityDepthScale,
-        liquidityData,
-        isLoading,
-    ]);
+    const isLoading = useMemo(
+        () =>
+            scaleData === undefined ||
+            liquidityScale === undefined ||
+            liquidityDepthScale === undefined ||
+            unparsedCandleData?.length === 0 ||
+            poolPriceDisplay === 0 ||
+            poolPriceNonDisplay === 0 ||
+            liquidityData === undefined,
+        [
+            unparsedCandleData === undefined,
+            unparsedCandleData?.length,
+            poolPriceDisplay,
+            poolPriceNonDisplay,
+            scaleData === undefined,
+            liquidityScale,
+            liquidityDepthScale,
+            liquidityData,
+        ],
+    );
 
     return (
         <>
