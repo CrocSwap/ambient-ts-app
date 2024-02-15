@@ -60,7 +60,15 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const [extraPools, setExtraPools] = useState<Array<PoolDataIF>>([]);
 
     const allPools = useMemo(
-        () => limitedPools.concat(extraPools),
+        () =>
+            limitedPools
+                .concat(extraPools)
+                // filter out USDT and wstETH for Blast demo
+                .filter(
+                    (pool) =>
+                        pool.quote.symbol !== 'USDT' &&
+                        pool.quote.symbol !== 'wstETH',
+                ),
         [limitedPools, extraPools],
     );
 
