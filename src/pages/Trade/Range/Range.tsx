@@ -26,15 +26,13 @@ import {
     diffHashSig,
     isStablePair,
     truncateDecimals,
-} from '../../../ambient-utils/dataLayer';
-import { PositionIF } from '../../../ambient-utils/types';
-import { rangeTutorialSteps } from '../../../utils/tutorial/Range';
-import {
     getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
     roundDownTick,
     roundUpTick,
-} from './rangeFunctions';
+} from '../../../ambient-utils/dataLayer';
+import { PositionIF } from '../../../ambient-utils/types';
+import { rangeTutorialSteps } from '../../../utils/tutorial/Range';
 
 import { useApprove } from '../../../App/functions/approve';
 import { useHandleRangeButtonMessage } from '../../../App/hooks/useHandleRangeButtonMessage';
@@ -44,7 +42,8 @@ import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import {
     GAS_DROPS_ESTIMATE_POOL,
     NUM_GWEI_IN_WEI,
-    RANGE_BUFFER_MULTIPLIER,
+    RANGE_BUFFER_MULTIPLIER_MAINNET,
+    RANGE_BUFFER_MULTIPLIER_SCROLL,
 } from '../../../ambient-utils/constants/';
 
 export const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
@@ -817,7 +816,7 @@ function Range() {
                 gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
 
             setAmountToReduceNativeTokenQtyMainnet(
-                costOfMainnetPoolInETH * RANGE_BUFFER_MULTIPLIER,
+                costOfMainnetPoolInETH * RANGE_BUFFER_MULTIPLIER_MAINNET,
             );
 
             const costOfScrollPoolInETH =
@@ -830,7 +829,7 @@ function Range() {
             //     });
 
             setAmountToReduceNativeTokenQtyScroll(
-                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER,
+                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER_SCROLL,
             );
 
             const gasPriceInDollarsNum =
@@ -1121,11 +1120,25 @@ function Range() {
                         txErrorMessage={txErrorMessage}
                         resetConfirmation={resetConfirmation}
                         sendTransaction={sendTransaction}
-                        transactionPendingDisplayString={`Minting a Position with ${
-                            tokenAInputQty ?? '0'
-                        } ${tokenA.symbol} and ${tokenBInputQty ?? '0'} ${
-                            tokenB.symbol
-                        }.`}
+                        transactionPendingDisplayString={
+                            isAdd
+                                ? `Adding ${tokenA.symbol} and ${tokenB.symbol}`
+                                : `Minting a Position with ${
+                                      !isTokenAInputDisabled
+                                          ? tokenA.symbol
+                                          : ''
+                                  } ${
+                                      !isTokenAInputDisabled &&
+                                      !isTokenBInputDisabled
+                                          ? 'and'
+                                          : ''
+                                  } ${
+                                      !isTokenBInputDisabled
+                                          ? tokenB.symbol
+                                          : ''
+                                  }
+                                     `
+                        }
                     />
                 ) : undefined
             }

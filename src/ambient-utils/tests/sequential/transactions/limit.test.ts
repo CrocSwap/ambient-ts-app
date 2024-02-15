@@ -1,0 +1,374 @@
+import {
+    CrocEnv,
+    CrocPositionView,
+    pinTickLower,
+    pinTickUpper,
+    tickToPrice,
+} from '@crocswap-libs/sdk';
+import { ethers } from 'ethers';
+import {
+    submitLimitOrder,
+    SubmitLimitOrderParams,
+} from '../../../dataLayer/transactions/limit';
+import { goerliETH, goerliUSDC } from '../../../constants';
+import { fetchBlockNumber } from '../../../api';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { isNetworkAccessDisabled } from '../../config';
+
+describe('Submit and Remove Limit Orders on Goerli\'s ETH/USDC pool', () => {
+    const sleep = (ms: number) =>
+        new Promise((resolve) => setTimeout(resolve, ms));
+    const TEST_TIMEOUT = 90 * 1000; // 90 seconds
+    const DELAY_BEFORE_REMOVAL = 30 * 1000; // 30 seconds
+
+    const providerUrl =
+        process.env.PROVIDER_URL || 'https://goerli.infura.io/v3/';
+    const providerKey =
+        process.env.PROVIDER_KEY || 'c2d502344b024adf84b313c663131ada';
+    const providerUrlWithKey = providerUrl + providerKey;
+
+    const TEST_USER =
+        process.env.TEST_USER || '0x648a62958D11Ea1De1F73ff3F5ecb9FBEE1bBa01';
+    const walletPrivateKey =
+        process.env.TEST_USER_PRIVATE_KEY ||
+        'f95fc54b0f7c16b5b81998b084c1d17e27b0252c6578cebcfdf02cd1ba50221a';
+
+    const provider = new ethers.providers.JsonRpcProvider(providerUrlWithKey);
+    const signer = new ethers.Wallet(walletPrivateKey, provider);
+
+    const crocEnv = new CrocEnv(provider, signer);
+    console.log(`Successfully initialized crocEnv: ${JSON.stringify(crocEnv)}`);
+
+    const chainId = '0x5';
+
+    const tokenA = goerliETH;
+    const tokenB = goerliUSDC;
+
+    const pool = crocEnv.pool(tokenA.address, tokenB.address);
+
+    const gridSize = lookupChain(chainId).gridSize;
+
+    let isSellTokenBase: boolean;
+    let isDenomBase: boolean;
+
+    let lastBlockNumber: number;
+    let spotPrice: number;
+    let displayPriceWithDenom: number;
+    let limit: number;
+
+    beforeAll(async () => {
+        lastBlockNumber = await fetchBlockNumber(providerUrlWithKey);
+        console.log(`Fetched lastBlockNumber: ${lastBlockNumber}`);
+
+        spotPrice = await pool.spotPrice();
+
+        if (spotPrice === 0) console.log('spotPrice is 0, tests will fail.');
+
+        console.log(`Queried spotPrice: ${spotPrice}`);
+    }, TEST_TIMEOUT);
+
+    if (isNetworkAccessDisabled()) {
+        it.skip('skipping all limit order tests -- network access disabled', () => {});
+    } else {
+        it(
+            'submits a buy limit order',
+            async () => {
+                isSellTokenBase = true;
+                isDenomBase = false;
+
+                const initialLimitRateNonDisplay =
+                    spotPrice * (isSellTokenBase ? 0.985 : 1.015);
+
+                const pinnedTick: number = isSellTokenBase
+                    ? pinTickLower(initialLimitRateNonDisplay, gridSize)
+                    : pinTickUpper(initialLimitRateNonDisplay, gridSize);
+
+                const tickPrice = tickToPrice(pinnedTick);
+                const tickDispPrice = await pool.toDisplayPrice(tickPrice);
+                displayPriceWithDenom = isDenomBase
+                    ? tickDispPrice
+                    : 1 / tickDispPrice;
+
+                console.log(
+                    `Setting limit price to be: ${displayPriceWithDenom} and corresponding tick: ${pinnedTick}`,
+                );
+
+                limit = pinnedTick;
+
+                const initialEthBalance = await signer.provider.getBalance(
+                    signer.address,
+                );
+                console.log(
+                    'Initial balance:',
+                    ethers.utils.formatEther(initialEthBalance),
+                );
+
+                console.log(
+                    `Submitting limit order to BUY 100 USDC at price: ${displayPriceWithDenom}/tick: ${limit}`,
+                );
+                const params: SubmitLimitOrderParams = {
+                    crocEnv,
+                    qty: '100',
+                    buyTokenAddress: goerliUSDC.address,
+                    sellTokenAddress: goerliETH.address,
+                    type: 'buy',
+                    limit: limit,
+                    isWithdrawFromDexChecked: false,
+                };
+
+                const tx = await submitLimitOrder(params);
+
+                if (!tx) {
+                    console.log('Order will fail to mint - resubmit');
+                    return;
+                }
+
+                expect(tx).toBeDefined();
+                expect(tx.hash).toBeDefined();
+
+                const receipt = await tx.wait();
+                expect(receipt.status).toEqual(1);
+
+                const finalEthBalance = await signer.provider.getBalance(
+                    signer.address,
+                );
+                console.log(
+                    'Final balance:',
+                    ethers.utils.formatEther(finalEthBalance),
+                );
+
+                expect(finalEthBalance.lt(initialEthBalance)).toBe(true);
+                // TODO: add another assertion for a minimum decrease in balance i.e. 0.001 ETH
+            },
+            TEST_TIMEOUT,
+        );
+
+        it(
+            'removes a buy limit order',
+            async () => {
+                // TODO: update with a loop that checks for liquidity on the chain (with timeout)
+                await sleep(DELAY_BEFORE_REMOVAL);
+
+                const initialEthBalance = await signer.provider.getBalance(
+                    signer.address,
+                );
+                console.log(
+                    'Initial balance:',
+                    ethers.utils.formatEther(initialEthBalance),
+                );
+
+                const pos = new CrocPositionView(pool, TEST_USER);
+                console.log(JSON.stringify(pos));
+
+                const lowTick = isSellTokenBase ? limit : limit - gridSize;
+                console.log(`Using low tick: ${lowTick}`);
+                const highTick = isSellTokenBase ? limit + gridSize : limit;
+                console.log(`Using high tick: ${highTick}`);
+
+                // mocking updateLiq()
+                const livePos = await pos.queryKnockoutLivePos(
+                    isSellTokenBase,
+                    lowTick,
+                    highTick,
+                );
+                console.log({ livePos });
+
+                const currentLiquidity = (
+                    await pos.queryKnockoutLivePos(
+                        isSellTokenBase,
+                        lowTick,
+                        highTick,
+                    )
+                ).liq;
+                console.log(JSON.stringify(currentLiquidity));
+
+                let tx;
+
+                // mocking removeFn() for Limit Orders
+                if (isSellTokenBase) {
+                    tx = await crocEnv
+                        .buy(goerliUSDC.address, 0)
+                        .atLimit(goerliETH.address, lowTick)
+                        .burnLiq(currentLiquidity);
+                } else {
+                    tx = await crocEnv
+                        .buy(goerliETH.address, 0)
+                        .atLimit(goerliUSDC.address, highTick)
+                        .burnLiq(currentLiquidity);
+                }
+
+                if (!tx) {
+                    console.log('Order will fail to remove - resubmit');
+                    return;
+                }
+
+                expect(tx).toBeDefined();
+                expect(tx.hash).toBeDefined();
+
+                const receipt = await tx.wait();
+                expect(receipt.status).toEqual(1);
+
+                const finalEthBalance = await signer.provider.getBalance(
+                    signer.address,
+                );
+                console.log(
+                    'Final balance:',
+                    ethers.utils.formatEther(finalEthBalance),
+                );
+
+                expect(finalEthBalance.gt(initialEthBalance)).toBe(true);
+            },
+            TEST_TIMEOUT,
+        );
+
+        it(
+            'submits a sell limit order',
+            async () => {
+                isSellTokenBase = true;
+                isDenomBase = true;
+
+                const initialLimitRateNonDisplay =
+                    spotPrice * (isSellTokenBase ? 0.985 : 1.015);
+
+                const pinnedTick: number = isSellTokenBase
+                    ? pinTickLower(initialLimitRateNonDisplay, gridSize)
+                    : pinTickUpper(initialLimitRateNonDisplay, gridSize);
+
+                const tickPrice = tickToPrice(pinnedTick);
+                const tickDispPrice = await pool.toDisplayPrice(tickPrice);
+                displayPriceWithDenom = isDenomBase
+                    ? tickDispPrice
+                    : 1 / tickDispPrice;
+
+                console.log(
+                    `Setting limit price to be: ${displayPriceWithDenom} and corresponding tick: ${pinnedTick}`,
+                );
+
+                limit = pinnedTick;
+
+                const initialEthBalance = await signer.provider.getBalance(
+                    signer.address,
+                );
+                console.log(
+                    'Initial balance:',
+                    ethers.utils.formatEther(initialEthBalance),
+                );
+
+                console.log(
+                    `Submitting limit order to SELL 0.01 ETH at price: ${displayPriceWithDenom}/tick: ${limit}`,
+                );
+                const params: SubmitLimitOrderParams = {
+                    crocEnv,
+                    qty: '0.01',
+                    buyTokenAddress: goerliUSDC.address,
+                    sellTokenAddress: goerliETH.address,
+                    type: 'sell',
+                    limit: limit,
+                    isWithdrawFromDexChecked: false,
+                };
+
+                const tx = await submitLimitOrder(params);
+
+                if (!tx) {
+                    console.log('Order will fail to mint - resubmit');
+                    return;
+                }
+
+                expect(tx).toBeDefined();
+                expect(tx.hash).toBeDefined();
+
+                const receipt = await tx.wait();
+                expect(receipt.status).toEqual(1);
+
+                const finalEthBalance = await signer.provider.getBalance(
+                    signer.address,
+                );
+                console.log(
+                    'Final balance:',
+                    ethers.utils.formatEther(finalEthBalance),
+                );
+
+                expect(finalEthBalance.lt(initialEthBalance)).toBe(true);
+                // TODO: add another assertion for a minimum decrease in balance i.e. 0.001 ETH
+            },
+            TEST_TIMEOUT,
+        );
+
+        it(
+            'removes a sell limit order',
+            async () => {
+                await sleep(DELAY_BEFORE_REMOVAL);
+
+                const initialEthBalance = await signer.provider.getBalance(
+                    signer.address,
+                );
+                console.log(
+                    'Initial balance:',
+                    ethers.utils.formatEther(initialEthBalance),
+                );
+
+                const pos = new CrocPositionView(pool, TEST_USER);
+                console.log(JSON.stringify(pos));
+
+                const lowTick = isSellTokenBase ? limit : limit - gridSize;
+                console.log(`Using low tick: ${lowTick}`);
+                const highTick = isSellTokenBase ? limit + gridSize : limit;
+                console.log(`Using high tick: ${highTick}`);
+
+                // mocking updateLiq()
+                const livePos = await pos.queryKnockoutLivePos(
+                    isSellTokenBase,
+                    lowTick,
+                    highTick,
+                );
+                console.log({ livePos });
+
+                const currentLiquidity = (
+                    await pos.queryKnockoutLivePos(
+                        isSellTokenBase,
+                        lowTick,
+                        highTick,
+                    )
+                ).liq;
+                console.log(JSON.stringify(currentLiquidity));
+
+                let tx;
+
+                // mocking removeFn() for Limit Orders
+                if (isSellTokenBase) {
+                    tx = await crocEnv
+                        .buy(goerliUSDC.address, 0)
+                        .atLimit(goerliETH.address, lowTick)
+                        .burnLiq(currentLiquidity);
+                } else {
+                    tx = await crocEnv
+                        .buy(goerliETH.address, 0)
+                        .atLimit(goerliUSDC.address, highTick)
+                        .burnLiq(currentLiquidity);
+                }
+
+                if (!tx) {
+                    console.log('Order will fail to remove - resubmit');
+                    return;
+                }
+
+                expect(tx).toBeDefined();
+                expect(tx.hash).toBeDefined();
+
+                const receipt = await tx.wait();
+                expect(receipt.status).toEqual(1);
+
+                const finalEthBalance = await signer.provider.getBalance(
+                    signer.address,
+                );
+                console.log(
+                    'Final balance:',
+                    ethers.utils.formatEther(finalEthBalance),
+                );
+
+                expect(finalEthBalance.gt(initialEthBalance)).toBe(true);
+            },
+            TEST_TIMEOUT,
+        );
+    }
+});

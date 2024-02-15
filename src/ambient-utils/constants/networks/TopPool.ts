@@ -1,6 +1,7 @@
 import { TokenIF, PoolIF } from '../../types';
 import { sortTokens } from '../../dataLayer/functions/sortTokens';
 import { chainNumToString } from '../../dataLayer/functions/chainNumToString';
+import { getMoneynessRank } from '../../dataLayer/functions/getMoneynessRank';
 
 export class TopPool implements PoolIF {
     name: string;
@@ -8,9 +9,18 @@ export class TopPool implements PoolIF {
     quote: TokenIF;
     chainId: string;
     poolIdx: number;
+    isBaseTokenMoneynessGreaterOrEqual: boolean;
     constructor(tokenA: TokenIF, tokenB: TokenIF, poolIdx: number) {
         const [baseToken, quoteToken]: TokenIF[] = sortTokens(tokenA, tokenB);
-        this.name = `${baseToken.symbol} / ${quoteToken.symbol}`;
+        const isBaseTokenMoneynessGreaterOrEqual: boolean =
+            getMoneynessRank(baseToken?.symbol) -
+                getMoneynessRank(quoteToken?.symbol) >=
+            0;
+
+        this.name = isBaseTokenMoneynessGreaterOrEqual
+            ? `${baseToken.symbol} / ${quoteToken.symbol}`
+            : `${quoteToken.symbol} / ${baseToken.symbol}`;
+
         this.base = baseToken;
         this.quote = quoteToken;
         this.chainId =
@@ -18,5 +28,7 @@ export class TopPool implements PoolIF {
                 ? chainNumToString(baseToken.chainId)
                 : '';
         this.poolIdx = poolIdx;
+        this.isBaseTokenMoneynessGreaterOrEqual =
+            isBaseTokenMoneynessGreaterOrEqual;
     }
 }

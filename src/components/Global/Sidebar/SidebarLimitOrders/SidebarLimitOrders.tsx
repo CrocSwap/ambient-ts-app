@@ -31,7 +31,7 @@ export default function SidebarLimitOrders(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const {
-        setCurrentPositionActive,
+        setCurrentLimitOrderActive,
         setShowAllData,
         setOutsideControl,
         setSelectedOutsideTab,
@@ -58,7 +58,7 @@ export default function SidebarLimitOrders(props: propsIF) {
     const handleLimitOrderClick = (limitOrder: LimitOrderIF) => {
         setOutsideControl(true);
         setSelectedOutsideTab(1);
-        setCurrentPositionActive(limitOrder.limitOrderId);
+        setCurrentLimitOrderActive(limitOrder.limitOrderId);
         setShowAllData(false);
         const { base, quote, isBid, bidTick, askTick } = limitOrder;
         // URL params for link to limit page

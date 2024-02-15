@@ -1,11 +1,7 @@
 // START: Import React and Dongles
 import { useContext, useEffect, useMemo, useState, memo } from 'react';
 import { useLocation, useParams, Navigate } from 'react-router-dom';
-import {
-    CrocPositionView,
-    CrocReposition,
-    toDisplayPrice,
-} from '@crocswap-libs/sdk';
+import { CrocReposition, toDisplayPrice } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
 import RepositionHeader from '../../../components/Trade/Reposition/RepositionHeader/RepositionHeader';
@@ -15,7 +11,6 @@ import Button from '../../../components/Form/Button';
 // START: Import Other Local Files
 import styles from './Reposition.module.css';
 import { PositionIF, PositionServerIF } from '../../../ambient-utils/types';
-import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 import {
@@ -36,6 +31,7 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import {
     getPositionData,
     getFormattedNumber,
+    getPinnedPriceValuesFromTicks,
 } from '../../../ambient-utils/dataLayer';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
@@ -49,6 +45,9 @@ import {
     NUM_GWEI_IN_WEI,
 } from '../../../ambient-utils/constants/';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
+import { useProcessRange } from '../../../utils/hooks/useProcessRange';
+import { getPositionHash } from '../../../ambient-utils/dataLayer/functions/getPositionHash';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 function Reposition() {
     // current URL parameter string
@@ -74,6 +73,7 @@ function Reposition() {
         addPendingTx,
         addReceipt,
         addTransactionByType,
+        addPositionUpdate,
         removePendingTx,
         updateTransactionHash,
     } = useContext(ReceiptContext);
@@ -86,6 +86,7 @@ function Reposition() {
         setRescaleRangeBoundariesWithSlider,
         setAdvancedMode,
     } = useContext(RangeContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const [isOpen, openModal, closeModal] = useModal();
 
@@ -124,6 +125,8 @@ function Reposition() {
 
     const { position } = locationHook.state as { position: PositionIF };
 
+    const { posHashTruncated } = useProcessRange(position);
+
     useEffect(() => {
         setCurrentRangeInReposition('');
         if (position) {
@@ -135,8 +138,11 @@ function Reposition() {
 
     const updateConcLiq = async () => {
         if (!crocEnv || !position) return;
-        const pool = crocEnv.pool(position.base, position.quote);
-        const pos = new CrocPositionView(pool, position.user);
+        const pos = crocEnv.positions(
+            position.base,
+            position.quote,
+            position.user,
+        );
 
         const liquidity = (
             await pos.queryRangePos(position.bidTick, position.askTick)
@@ -301,8 +307,9 @@ function Reposition() {
             tx = await repo.rebal();
             setNewRepositionTransactionHash(tx?.hash);
             addPendingTx(tx?.hash);
-            if (tx?.hash)
+            if (tx?.hash) {
                 addTransactionByType({
+                    userAddress: userAddress || '',
                     txHash: tx.hash,
                     txAction: 'Reposition',
                     txType: 'Range',
@@ -320,6 +327,14 @@ function Reposition() {
                         gridSize: lookupChain(position.chainId).gridSize,
                     },
                 });
+                const posHash = getPositionHash(position);
+                addPositionUpdate({
+                    txHash: tx.hash,
+                    positionID: posHash,
+                    isLimit: false,
+                    unixTimeAdded: Math.floor(Date.now() / 1000),
+                });
+            }
             // We want the user to exit themselves
             // navigate(redirectPath, { replace: true });
         } catch (error) {
@@ -347,6 +362,13 @@ function Reposition() {
 
                 updateTransactionHash(error.hash, error.replacement.hash);
                 setNewRepositionTransactionHash(newTransactionHash);
+                const posHash = getPositionHash(position);
+                addPositionUpdate({
+                    txHash: newTransactionHash,
+                    positionID: posHash,
+                    isLimit: false,
+                    unixTimeAdded: Math.floor(Date.now() / 1000),
+                });
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
             } else if (isTransactionFailedError(error)) {
@@ -557,8 +579,6 @@ function Reposition() {
         ) {
             return;
         }
-        setNewBaseQtyDisplay('...');
-        setNewQuoteQtyDisplay('...');
         const pool = crocEnv.pool(position.base, position.quote);
 
         const repo = new CrocReposition(pool, {
@@ -567,8 +587,6 @@ function Reposition() {
             mint: mintArgsForReposition(debouncedLowTick, debouncedHighTick),
         });
 
-        setNewBaseQtyDisplay('...');
-        setNewQuoteQtyDisplay('...');
         repo.postBalance().then(([base, quote]: [number, number]) => {
             setNewBaseQtyDisplay(getFormattedNumber({ value: base }));
             setNewQuoteQtyDisplay(getFormattedNumber({ value: quote }));
@@ -610,19 +628,26 @@ function Reposition() {
             target='_blank'
             rel='noreferrer'
             className={styles.view_etherscan}
-            aria-label='view on etherscan'
+            aria-label='view on block explorer'
         >
-            View on Etherscan
+            View on Block Explorer
             <FiExternalLink size={12} color='var(--text1)' />
         </a>
     );
+
+    const isCurrentPositionEmptyOrLoading =
+        (currentBaseQtyDisplayTruncated === '0.00' &&
+            currentQuoteQtyDisplayTruncated === '0.00') ||
+        (currentBaseQtyDisplayTruncated === '...' &&
+            currentQuoteQtyDisplayTruncated === '...') ||
+        (newBaseQtyDisplay === '...' && newQuoteQtyDisplay === '...');
 
     return (
         <>
             <div className={styles.repositionContainer}>
                 <RepositionHeader
                     setRangeWidthPercentage={setRangeWidthPercentage}
-                    positionHash={position.firstMintTx}
+                    positionHash={posHashTruncated}
                     resetTxHash={() => setNewRepositionTransactionHash('')}
                 />
                 <div className={styles.reposition_content}>
@@ -671,7 +696,8 @@ function Reposition() {
                                 txErrorMessage={txErrorMessage}
                                 sendTransaction={sendRepositionTransaction}
                                 resetConfirmation={resetConfirmation}
-                                transactionPendingDisplayString={`Repositioning transaction with ${tokenA.symbol} and ${tokenB.symbol}`}
+                                transactionPendingDisplayString={`Repositioning ${tokenA.symbol} and ${tokenB.symbol}`}
+                                disableSubmitAgain
                             />
                         ) : (
                             <Button
@@ -690,7 +716,13 @@ function Reposition() {
                                         ? sendRepositionTransaction
                                         : handleModalOpen
                                 }
-                                disabled={isRepositionSent || isPositionInRange}
+                                disabled={
+                                    userAddress?.toLowerCase() !==
+                                        position.user.toLowerCase() ||
+                                    isRepositionSent ||
+                                    isPositionInRange ||
+                                    isCurrentPositionEmptyOrLoading
+                                }
                                 flat
                             />
                         )}

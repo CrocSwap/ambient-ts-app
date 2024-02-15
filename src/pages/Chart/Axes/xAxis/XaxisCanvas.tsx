@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useContext, memo } from 'react';
+import { MutableRefObject, useEffect, useState, useContext, memo } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { useLocation } from 'react-router-dom';
@@ -8,6 +8,7 @@ import {
 } from '../../../../ambient-utils/dataLayer';
 import {
     crosshair,
+    isTimeZoneStart,
     renderCanvasArray,
     scaleData,
     selectedDrawnData,
@@ -19,6 +20,7 @@ import moment from 'moment';
 import { CandleDataIF } from '../../../../ambient-utils/types';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { RangeContext } from '../../../../contexts/RangeContext';
+import { xAxisHeightPixel } from '../../ChartUtils/chartConstants';
 interface xAxisIF {
     scaleData: scaleData | undefined;
     lastCrDate: number | undefined;
@@ -48,6 +50,10 @@ interface xAxisIF {
     isChartZoom: boolean;
     isToolbarOpen: boolean;
     selectedDrawnShape: selectedDrawnData | undefined;
+    toolbarWidth: number;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    d3Xaxis: MutableRefObject<any>;
+    isUpdatingShape: boolean;
 }
 
 function XAxisCanvas(props: xAxisIF) {
@@ -75,9 +81,11 @@ function XAxisCanvas(props: xAxisIF) {
         isChartZoom,
         isToolbarOpen,
         selectedDrawnShape,
+        toolbarWidth,
+        d3Xaxis,
+        isUpdatingShape,
     } = props;
 
-    const d3Xaxis = useRef<HTMLInputElement | null>(null);
     const { timeOfEndCandle } = useContext(CandleContext);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [xAxis, setXaxis] = useState<any>();
@@ -147,10 +155,6 @@ function XAxisCanvas(props: xAxisIF) {
             const _width = mobileView ? 25 : 65; // magic number of pixels to blur surrounding price
             const tickSize = 6;
 
-            const toolbar = document.getElementById('toolbar_container');
-
-            const column = toolbar ? toolbar.getClientRects()[0].width : 9;
-
             const timeOfEndCandleLocation = timeOfEndCandle
                 ? xScale(timeOfEndCandle)
                 : undefined;
@@ -180,25 +184,12 @@ function XAxisCanvas(props: xAxisIF) {
                     ticks,
                 );
 
-                const filteredData = data.reduce(
-                    (acc: xAxisTick[], d: xAxisTick) => {
-                        const sameTime = acc.find((d1: xAxisTick) => {
-                            return d1.date.getTime() === d.date.getTime();
-                        });
-                        if (!sameTime) {
-                            acc.push(d);
-                        }
-                        return acc;
-                    },
-                    [],
-                );
-
-                filteredData.forEach((d: xAxisTick) => {
+                data.forEach((d: xAxisTick) => {
                     if (d.date instanceof Date) {
                         context.textAlign = 'center';
                         context.textBaseline = 'top';
-                        context.fillStyle = 'rgba(189,189,189,0.8)';
-                        context.font = '50 11.425px Lexend Deca';
+                        context.fillStyle = 'rgba(240, 240, 248, 0.8)';
+                        context.font = '50 11.5px Lexend Deca';
                         context.filter = ' blur(0px)';
 
                         const formatValue = formatDateTicks(d.date, 'tick');
@@ -236,56 +227,57 @@ function XAxisCanvas(props: xAxisIF) {
                             )
                         ) {
                             if (formatValue) {
-                                const indexValue = filteredData.findIndex(
+                                const indexValue = data.findIndex(
                                     (d1: xAxisTick) => d1.date === d.date,
                                 );
                                 if (!d.style) {
                                     const maxIndex =
-                                        indexValue === filteredData.length - 1
+                                        indexValue === data.length - 1
                                             ? indexValue
                                             : indexValue + 1;
                                     const minIndex =
                                         indexValue === 0
                                             ? indexValue
                                             : indexValue - 1;
-                                    const lastData = filteredData[maxIndex];
-                                    const beforeData = filteredData[minIndex];
+                                    const lastData = data[maxIndex];
+                                    const beforeData = data[minIndex];
+
+                                    const lastDataLocation = scaleData.xScale(
+                                        lastData.date,
+                                    );
+                                    const beforeDataLocation = scaleData.xScale(
+                                        beforeData.date,
+                                    );
+                                    const currentDataLocation =
+                                        scaleData.xScale(d.date);
+
+                                    const isTimeZoneStartLastData =
+                                        isTimeZoneStart(lastData.date);
 
                                     if (
-                                        beforeData.style ||
-                                        (lastData.style &&
-                                            xScale(d.date.getTime()))
+                                        Math.abs(
+                                            currentDataLocation -
+                                                beforeDataLocation,
+                                        ) > 20
                                     ) {
                                         if (
+                                            !isTimeZoneStartLastData ||
                                             Math.abs(
-                                                xScale(
-                                                    beforeData.date.getTime(),
-                                                ) - xScale(d.date.getTime()),
-                                            ) > _width &&
-                                            Math.abs(
-                                                xScale(
-                                                    lastData.date.getTime(),
-                                                ) - xScale(d.date.getTime()),
-                                            ) > _width
+                                                lastDataLocation -
+                                                    currentDataLocation,
+                                            ) > 20
                                         ) {
                                             context.fillText(
                                                 formatValue,
-                                                xScale(d.date.getTime()) +
-                                                    column,
+                                                currentDataLocation,
                                                 Y + tickSize,
                                             );
                                         }
-                                    } else {
-                                        context.fillText(
-                                            formatValue,
-                                            xScale(d.date.getTime()) + column,
-                                            Y + tickSize,
-                                        );
                                     }
                                 } else {
                                     context.fillText(
                                         formatValue,
-                                        xScale(d.date.getTime()) + column,
+                                        xScale(d.date.getTime()),
                                         Y + tickSize,
                                     );
                                 }
@@ -302,10 +294,14 @@ function XAxisCanvas(props: xAxisIF) {
 
                 context.beginPath();
 
-                if (dateCrosshair && crosshairActive !== 'none') {
+                if (
+                    dateCrosshair &&
+                    crosshairActive !== 'none' &&
+                    !isUpdatingShape
+                ) {
                     context.fillText(
                         dateCrosshair,
-                        xScale(crosshairData[0].x) + column,
+                        xScale(crosshairData[0].x),
                         Y + tickSize,
                     );
                 }
@@ -322,11 +318,7 @@ function XAxisCanvas(props: xAxisIF) {
                 }
 
                 if (firstCrDateLocation) {
-                    context.fillText(
-                        '🐊',
-                        firstCrDateLocation + column,
-                        Y + tickSize,
-                    );
+                    context.fillText('🐊', firstCrDateLocation, Y + tickSize);
                 }
 
                 if (timeOfEndCandle && timeOfEndCandleLocation) {
@@ -343,7 +335,7 @@ function XAxisCanvas(props: xAxisIF) {
                     }
                     context.fillText(
                         '🥚',
-                        timeOfEndCandleLocation + column,
+                        timeOfEndCandleLocation,
                         Y + tickSize,
                     );
                 }
@@ -357,9 +349,9 @@ function XAxisCanvas(props: xAxisIF) {
                         xScale(shapeData.data[1].x) -
                         xScale(shapeData.data[0].x);
 
-                    context.fillStyle = '#7674ff3f';
+                    context.fillStyle = 'rgba(115, 113, 252, 0.1)';
                     context.fillRect(
-                        xScale(shapeData.data[0].x) + column,
+                        xScale(shapeData.data[0].x),
                         height * 0.175,
                         rectWidth,
                         height * 0.65,
@@ -375,21 +367,22 @@ function XAxisCanvas(props: xAxisIF) {
                                     shapePoint - (_width - 15) &&
                                 xScale(crosshairData[0].x) <
                                     shapePoint + (_width - 15) &&
-                                crosshairActive !== 'none'
+                                crosshairActive !== 'none' &&
+                                !isUpdatingShape
                             ) {
                                 context.filter = ' blur(7px)';
                                 context.fillText(
                                     point,
-                                    shapePoint + column,
+                                    shapePoint,
                                     height * 0.5375,
                                 );
                             } else {
                                 const textWidth =
                                     context.measureText(point).width + 10;
 
-                                context.fillStyle = '#5553be';
+                                context.fillStyle = 'rgba(115, 113, 252, 1)';
                                 context.fillRect(
-                                    shapePoint + column - textWidth / 2,
+                                    shapePoint - textWidth / 2,
                                     height * 0.175,
                                     textWidth,
                                     height * 0.65,
@@ -400,7 +393,7 @@ function XAxisCanvas(props: xAxisIF) {
                                 context.textBaseline = 'middle';
                                 context.fillText(
                                     point,
-                                    shapePoint + column,
+                                    shapePoint,
                                     height * 0.5375,
                                 );
                             }
@@ -477,19 +470,20 @@ function XAxisCanvas(props: xAxisIF) {
         d3.select(d3Xaxis.current).on('mousemove', (event: MouseEvent) => {
             d3.select(d3Xaxis.current).style('cursor', 'col-resize');
             if (scaleData) {
+                const mouseLocation = event.offsetX;
+
                 const isEgg =
                     timeOfEndCandle &&
-                    event.offsetX > scaleData?.xScale(timeOfEndCandle) - 15 &&
-                    event.offsetX < scaleData?.xScale(timeOfEndCandle) + 15;
+                    mouseLocation > scaleData?.xScale(timeOfEndCandle) - 15 &&
+                    mouseLocation < scaleData?.xScale(timeOfEndCandle) + 15;
 
                 const isCroc =
                     lastCrDate &&
-                    event.offsetX > scaleData?.xScale(lastCrDate) - 15 &&
-                    event.offsetX < scaleData?.xScale(lastCrDate) + 15;
+                    mouseLocation > scaleData?.xScale(lastCrDate) - 15 &&
+                    mouseLocation < scaleData?.xScale(lastCrDate) + 15;
 
                 if (isEgg || isCroc) {
                     d3.select(d3Xaxis.current).style('cursor', 'default');
-
                     setXaxisActiveTooltip(isCroc ? 'croc' : 'egg');
                 } else {
                     setXaxisActiveTooltip('');
@@ -584,10 +578,9 @@ function XAxisCanvas(props: xAxisIF) {
             id='x-axis'
             className='x-axis'
             style={{
-                height: '2em',
+                height: xAxisHeightPixel + 'px',
                 width: '100%',
-                gridColumn: 3,
-                gridRow: 4,
+                marginLeft: toolbarWidth + 'px',
             }}
         ></d3fc-canvas>
     );
