@@ -180,6 +180,16 @@ export const scrollETH: TokenIF = {
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
 };
 
+export const scrollDAI: TokenIF = {
+    name: 'Dai Stablecoin',
+    address: '0xcA77eB3fEFe3725Dc33bccB54eDEFc3D9f764f97',
+    symbol: 'DAI',
+    decimals: 18,
+    chainId: 534352,
+    logoURI:
+        'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
+};
+
 export const scrollwstETH: TokenIF = {
     name: 'Wrapped stETH',
     address: '0xf610A9dfB7C89644979b4A0f27063E9e7d7Cda32',
@@ -267,6 +277,7 @@ export const defaultTokens: TokenIF[] = [
     scrollUSDC,
     scrollAxlUSDC,
     scrollUSDT,
+    scrollDAI,
     scrollWBTC,
     scrollwstETH,
     scrollSepoliaETH,
