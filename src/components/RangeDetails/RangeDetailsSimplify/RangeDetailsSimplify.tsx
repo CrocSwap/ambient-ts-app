@@ -62,6 +62,7 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
         baseDisplayFrontend,
         quoteDisplayFrontend,
         elapsedTimeString,
+        elapsedTimeSinceFirstMintString,
     } = useProcessRange(position, userAddress, isAccountView);
 
     const showFullAddresses = useMediaQuery('(min-width: 768px)');
@@ -175,6 +176,13 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
         moment(position.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm') +
         ' ' +
         '(' +
+        elapsedTimeSinceFirstMintString +
+        ' ago)';
+
+    const updateTime =
+        moment(position.latestUpdateTime * 1000).format('MM/DD/YYYY HH:mm') +
+        ' ' +
+        '(' +
         elapsedTimeString +
         ' ago)';
 
@@ -188,7 +196,13 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
             title: 'Add Time ',
             content: submissionTime,
             explanation:
-                'The time the owner first added a range at these prices',
+                'The time the owner first added liquidity at these prices',
+        },
+        {
+            title: 'Update Time ',
+            content: updateTime,
+            explanation:
+                'The time the owner last updated the liquidity at these prices',
         },
         {
             title: 'Position Slot ID ',
