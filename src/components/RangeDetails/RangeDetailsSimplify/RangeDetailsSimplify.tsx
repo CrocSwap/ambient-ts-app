@@ -193,7 +193,7 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
             explanation: 'e.g. Range, Ambient ',
         },
         {
-            title: 'Add Time ',
+            title: 'Submit Time ',
             content: submissionTime,
             explanation:
                 'The time the owner first added liquidity at these prices',
