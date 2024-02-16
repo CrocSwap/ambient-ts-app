@@ -156,7 +156,15 @@ export const TradeTokenContextProvider = (props: {
             isTokenAEth,
             isTokenBEth,
         };
-    }, [isTokenABase, baseTokenBalance, quoteTokenBalance, tokenA, tokenB]);
+    }, [
+        isTokenABase,
+        baseTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenBalance,
+        quoteTokenDexBalance,
+        tokenA,
+        tokenB,
+    ]);
 
     const tradeTokenContext = {
         baseToken: {
