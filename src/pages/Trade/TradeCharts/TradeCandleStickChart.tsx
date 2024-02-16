@@ -542,6 +542,10 @@ function TradeCandleStickChart(props: propsIF) {
     useEffect(() => {
         if (unparsedCandleData) {
             setScaleForChart(unparsedCandleData);
+        } else {
+            if (scaleData) {
+                scaleData.yScale.domain([NaN, NaN]);
+            }
         }
     }, [unparsedCandleData === undefined, mobileView, isDenomBase]);
 
@@ -834,6 +838,7 @@ function TradeCandleStickChart(props: propsIF) {
         <>
             <div style={{ height: '100%', width: '100%' }}>
                 {!isLoading &&
+                !scaleData?.yScale.domain().includes(NaN) &&
                 candleData !== undefined &&
                 isPoolInitialized !== undefined &&
                 prevPeriod === period &&
