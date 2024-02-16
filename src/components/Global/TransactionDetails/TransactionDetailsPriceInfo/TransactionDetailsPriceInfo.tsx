@@ -117,7 +117,6 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
     const isAmbient = tx.positionType === 'ambient';
 
     const changeType = tx.changeType;
-    const positionType = tx.positionType;
     const entityType = tx.entityType;
 
     const changeTypeDisplay =
@@ -126,17 +125,11 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             : changeType === 'mint'
             ? entityType === 'limitOrder'
                 ? 'Limit'
-                : positionType === 'concentrated'
-                ? 'Range'
-                : 'Ambient'
+                : 'Range'
             : changeType === 'burn'
             ? entityType === 'limitOrder'
                 ? 'Limit Removal'
-                : positionType === 'concentrated'
-                ? 'Range Removal'
-                : positionType === 'ambient'
-                ? 'Ambient Removal'
-                : 'Market'
+                : 'Range Removal'
             : changeType === 'recover'
             ? 'Limit Claim'
             : 'Market';
