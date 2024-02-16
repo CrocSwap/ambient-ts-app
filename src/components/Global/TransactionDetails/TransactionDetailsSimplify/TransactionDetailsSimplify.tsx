@@ -156,11 +156,6 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
         </div>
     );
 
-    const changeType = tx.changeType;
-    const positionType = tx.positionType;
-    const entityType = tx.entityType;
-
-    console.log({ changeTypeDisplay, changeType, entityType, positionType });
     // Create a data array for the info and map through it here
     const infoContent = [
         {
