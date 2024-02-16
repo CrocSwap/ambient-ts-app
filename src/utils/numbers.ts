@@ -186,6 +186,9 @@ export const formatTokenInput = (
             isToken: true,
             nullDisplay: '',
         });
-
-    return (+inputStr).toFixed(token.decimals);
+    // remove trailing zeros
+    return (+inputStr)
+        .toFixed(token.decimals)
+        .replace(/0+$/, '')
+        .replace(/\.$/, '');
 };
