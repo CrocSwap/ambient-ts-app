@@ -816,12 +816,9 @@ function TradeCandleStickChart(props: propsIF) {
     const isLoading = useMemo(
         () =>
             scaleData === undefined ||
-            liquidityScale === undefined ||
-            liquidityDepthScale === undefined ||
             unparsedCandleData?.length === 0 ||
             poolPriceDisplay === 0 ||
-            poolPriceNonDisplay === 0 ||
-            liquidityData === undefined,
+            poolPriceNonDisplay === 0,
         [
             unparsedCandleData === undefined,
             unparsedCandleData?.length,
@@ -830,7 +827,6 @@ function TradeCandleStickChart(props: propsIF) {
             scaleData === undefined,
             liquidityScale,
             liquidityDepthScale,
-            liquidityData,
         ],
     );
 

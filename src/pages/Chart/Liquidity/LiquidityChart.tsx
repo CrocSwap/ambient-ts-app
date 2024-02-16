@@ -19,6 +19,7 @@ import {
     lineValue,
     liquidityChartData,
     renderCanvasArray,
+    renderChart,
     scaleData,
     setCanvasResolution,
 } from '../ChartUtils/chartUtils';
@@ -232,6 +233,10 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         useState<string>('none');
 
     useEffect(() => {
+        renderChart();
+    }, [liquidityScale === undefined, liquidityDepthScale === undefined]);
+
+    useEffect(() => {
         if (
             scaleData !== undefined &&
             liquidityScale !== undefined &&
@@ -283,7 +288,14 @@ export default function LiquidityChart(props: liquidityPropsIF) {
 
             setLineLiqDepthAskSeries(() => d3CanvasLiqAskChartDepthLine);
         }
-    }, [scaleData, liquidityScale, pool, liquidityDepthScale]);
+    }, [
+        scaleData,
+        liquidityScale,
+        pool,
+        liquidityDepthScale,
+        liquidityScale === undefined,
+        liquidityDepthScale === undefined,
+    ]);
 
     useEffect(() => {
         const thresholdCurve = liquidityData?.liqTransitionPointforCurve;
@@ -491,6 +503,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
 
                     lineLiqSeries.context(ctx);
                 });
+
+            renderChart();
         }
     }, [
         liqDataAsk,
@@ -501,8 +515,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         liqSeries,
         liqDepthBidSeries,
         liqDepthAskSeries,
-        liquidityScale,
-        liquidityDepthScale,
+        liquidityScale === undefined,
+        liquidityDepthScale === undefined,
         liqMode,
         location.pathname,
         ranges,
