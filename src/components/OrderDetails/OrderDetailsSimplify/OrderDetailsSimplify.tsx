@@ -78,6 +78,8 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
         fillPercentage,
         isBaseTokenMoneynessGreaterOrEqual,
         elapsedTimeString,
+        elapsedTimeSinceFirstMintString,
+        elapsedTimeSinceCrossString,
     } = useProcessOrder(limitOrder, userAddress, isAccountView);
 
     const showFullAddresses = useMediaQuery('(min-width: 768px)');
@@ -165,7 +167,20 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
         moment(limitOrder.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm') +
         ' ' +
         '(' +
+        elapsedTimeSinceFirstMintString +
+        ' ago)';
+
+    const updateTime =
+        moment(limitOrder.latestUpdateTime * 1000).format('MM/DD/YYYY HH:mm') +
+        ' ' +
+        '(' +
         elapsedTimeString +
+        ' ago)';
+    const crossTime =
+        moment(limitOrder.crossTime * 1000).format('MM/DD/YYYY HH:mm') +
+        ' ' +
+        '(' +
+        elapsedTimeSinceCrossString +
         ' ago)';
 
     const status = isOrderFilled
@@ -183,8 +198,9 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
         {
             title: 'Submit Time ',
             content: submissionTime,
-            explanation: 'The time the owner first added a limit at this price',
+            explanation: 'Time the owner first added a limit at this price',
         },
+
         {
             title: 'Wallet ',
             content: walletContent,
@@ -303,7 +319,7 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
                 : `1  ${quoteTokenSymbol} = ${middlePriceDisplay}  ${baseTokenSymbol}`,
 
             explanation:
-                'The effective conversion price - halfway between start and finish',
+                'The effective conversion price halfway between start and end',
         },
         {
             title: 'Fill End ',
@@ -324,6 +340,22 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
             explanation: 'The approximate US dollar value of the limit order',
         },
     ];
+
+    if (isOrderFilled) {
+        infoContent.splice(6, 0, {
+            title: 'Fill Time ',
+            content: crossTime,
+            explanation:
+                'Time the pool price crossed the limit (Fill End) price',
+        });
+    }
+    if (submissionTime !== updateTime) {
+        infoContent.splice(2, 0, {
+            title: 'Update Time ',
+            content: updateTime,
+            explanation: 'Time the owner last updated the limit at this price',
+        });
+    }
 
     return (
         <div className={styles.tx_details_container}>
