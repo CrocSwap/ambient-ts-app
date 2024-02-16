@@ -14,21 +14,11 @@ import InfoRow from '../../InfoRow';
 interface TransactionDetailsSimplifyPropsIF {
     tx: TransactionIF;
     isAccountView: boolean;
-    changeTypeDisplay:
-        | 'Range Harvest'
-        | 'Limit'
-        | 'Range'
-        | 'Ambient'
-        | 'Limit Removal'
-        | 'Range Removal'
-        | 'Ambient Removal'
-        | 'Market'
-        | 'Limit Claim';
 }
 
 // TODO: refactor to using styled-components
 function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
-    const { tx, isAccountView, changeTypeDisplay } = props;
+    const { tx, isAccountView } = props;
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -155,6 +145,31 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
             <RiExternalLinkLine />
         </div>
     );
+
+    const changeType = tx.changeType;
+    const positionType = tx.positionType;
+    const entityType = tx.entityType;
+
+    const changeTypeDisplay =
+        changeType === 'harvest'
+            ? 'Range Harvest'
+            : changeType === 'mint'
+            ? entityType === 'limitOrder'
+                ? 'Limit Add'
+                : positionType === 'concentrated'
+                ? 'Range Add'
+                : 'Ambient Add'
+            : changeType === 'burn'
+            ? entityType === 'limitOrder'
+                ? 'Limit Removal'
+                : positionType === 'concentrated'
+                ? 'Range Removal'
+                : positionType === 'ambient'
+                ? 'Ambient Removal'
+                : 'Market Order'
+            : changeType === 'recover'
+            ? 'Limit Claim'
+            : 'Market Order';
 
     // Create a data array for the info and map through it here
     const infoContent = [
@@ -283,7 +298,12 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
             }`,
         },
         {
-            title: isSwap ? 'Price ' : 'Low Price Boundary',
+            title:
+                tx.entityType === 'swap'
+                    ? 'Price '
+                    : tx.entityType === 'limitOrder'
+                    ? 'Limit Price '
+                    : 'Low Price Boundary',
             content: (
                 <div style={{ cursor: 'default' }}>
                     {isSwap
@@ -305,9 +325,12 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
                         : `1 ${quoteTokenSymbol} = ${truncatedLowDisplayPrice} ${baseTokenSymbol}`}
                 </div>
             ),
-            explanation: isSwap
-                ? 'The transaction price'
-                : 'The low price boundary',
+            explanation:
+                tx.entityType === 'swap'
+                    ? 'The effective conversion rate for the swap'
+                    : tx.entityType === 'limitOrder'
+                    ? 'The pool price at which the limit order will be 100% filled and claimable'
+                    : 'The low price boundary of the range',
         },
         ...(isSwap
             ? [
@@ -332,7 +355,7 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
                           : isDenomBase
                           ? `1 ${baseTokenSymbol} = ${truncatedHighDisplayPrice} ${quoteTokenSymbol}`
                           : `1 ${quoteTokenSymbol} = ${truncatedHighDisplayPrice} ${baseTokenSymbol}`,
-                      explanation: 'The high price boundary',
+                      explanation: 'The upper price boundary of the range',
                   },
                   {
                       title: 'Value ',

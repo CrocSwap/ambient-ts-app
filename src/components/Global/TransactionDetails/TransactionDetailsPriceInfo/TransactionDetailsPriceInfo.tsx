@@ -24,20 +24,10 @@ interface propsIF {
     tx: TransactionIF;
     controlItems: ItemIF[];
     positionApy: number | undefined;
-    changeTypeDisplay:
-        | 'Range Harvest'
-        | 'Limit'
-        | 'Range'
-        | 'Ambient'
-        | 'Limit Removal'
-        | 'Range Removal'
-        | 'Ambient Removal'
-        | 'Market'
-        | 'Limit Claim';
 }
 
 export default function TransactionDetailsPriceInfo(props: propsIF) {
-    const { tx, controlItems, positionApy, changeTypeDisplay } = props;
+    const { tx, controlItems, positionApy } = props;
     const { userAddress } = useContext(UserDataContext);
 
     const { tokens } = useContext(TokenContext);
@@ -125,6 +115,31 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
     );
 
     const isAmbient = tx.positionType === 'ambient';
+
+    const changeType = tx.changeType;
+    const positionType = tx.positionType;
+    const entityType = tx.entityType;
+
+    const changeTypeDisplay =
+        changeType === 'harvest'
+            ? 'Range Harvest'
+            : changeType === 'mint'
+            ? entityType === 'limitOrder'
+                ? 'Limit'
+                : positionType === 'concentrated'
+                ? 'Range'
+                : 'Ambient'
+            : changeType === 'burn'
+            ? entityType === 'limitOrder'
+                ? 'Limit Removal'
+                : positionType === 'concentrated'
+                ? 'Range Removal'
+                : positionType === 'ambient'
+                ? 'Ambient Removal'
+                : 'Market'
+            : changeType === 'recover'
+            ? 'Limit Claim'
+            : 'Market';
 
     const txTypeContent = (
         <motion.div

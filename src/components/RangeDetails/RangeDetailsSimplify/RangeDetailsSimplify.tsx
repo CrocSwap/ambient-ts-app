@@ -275,7 +275,7 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
                 : isDenomBase
                 ? `1 ${baseTokenSymbol} = ${ambientOrMax} ${quoteTokenSymbol}`
                 : `1 ${quoteTokenSymbol} = ${ambientOrMax} ${baseTokenSymbol}`,
-            explanation: 'The high price boundary of the range',
+            explanation: 'The upper price boundary of the range',
         },
 
         {
@@ -316,7 +316,7 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
                       title: 'High Tick ',
                       content: position.askTick.toString(),
                       explanation:
-                          'The high price boundary represented in a geometric scale',
+                          'The upper price boundary represented in a geometric scale',
                   },
               ]
             : []),
