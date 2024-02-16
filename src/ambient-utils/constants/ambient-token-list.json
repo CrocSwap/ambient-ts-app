@@ -43,6 +43,14 @@
             "logoURI": "https://assets.coingecko.com/coins/images/29850/large/pepe-token.jpeg?1682922725"
         },
         {
+            "name": "Frax",
+            "address": "0x853d955acef822db058eb8505911ed77f175b99e",
+            "symbol": "FRAX",
+            "decimals": 18,
+            "chainId": 1,
+            "logoURI": "https://etherscan.io/token/images/fraxfinanceeth2_32.png"
+        },
+        {
             "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
             "chainId": 1,
             "decimals": 18,
