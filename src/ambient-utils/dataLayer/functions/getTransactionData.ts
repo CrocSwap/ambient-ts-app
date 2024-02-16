@@ -88,9 +88,9 @@ export const getTransactionData = async (
     newTx.quoteSymbol = (await quoteMetadata)?.symbol ?? '';
     newTx.quoteSymbol =
         newTx.quoteSymbol === 'USDC' ? 'USDB' : newTx.quoteSymbol;
-    newTx.baseName = newTx.baseSymbol === 'USDB' ? 'USDBCoin' : newTx.baseName;
+    newTx.baseName = newTx.baseSymbol === 'USDB' ? 'USDBlast' : newTx.baseName;
     newTx.quoteName =
-        newTx.quoteSymbol === 'USDB' ? 'USDBCoin' : newTx.quoteName;
+        newTx.quoteSymbol === 'USDB' ? 'USDBlast' : newTx.quoteName;
 
     newTx.baseFlowDecimalCorrected =
         tx.baseFlow / Math.pow(10, baseTokenDecimals);

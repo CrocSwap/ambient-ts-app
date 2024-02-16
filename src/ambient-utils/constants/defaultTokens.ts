@@ -200,7 +200,7 @@ export const scrollwstETH: TokenIF = {
 };
 
 export const scrollUSDC: TokenIF = {
-    name: 'USDBCoin',
+    name: 'USDBlast',
     address: '0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4',
     symbol: 'USDB',
     decimals: 6,

@@ -78,9 +78,9 @@ export const getLimitOrderData = async (
     newOrder.baseName = (await baseMetadata)?.name ?? '';
     newOrder.quoteName = (await quoteMetadata)?.name ?? '';
     newOrder.baseName =
-        newOrder.baseSymbol === 'USDB' ? 'USDBCoin' : newOrder.baseName;
+        newOrder.baseSymbol === 'USDB' ? 'USDBlast' : newOrder.baseName;
     newOrder.quoteName =
-        newOrder.quoteSymbol === 'USDB' ? 'USDBCoin' : newOrder.quoteName;
+        newOrder.quoteSymbol === 'USDB' ? 'USDBlast' : newOrder.quoteName;
 
     const baseTokenLogoURI = tokensOnChain.find(
         (token) =>

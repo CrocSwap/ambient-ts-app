@@ -90,10 +90,10 @@ export const getPositionData = async (
 
     newPosition.baseName = (await baseMetadata)?.name ?? '';
     newPosition.baseName =
-        newPosition.baseSymbol === 'USDB' ? 'USDBCoin' : newPosition.baseName;
+        newPosition.baseSymbol === 'USDB' ? 'USDBlast' : newPosition.baseName;
     newPosition.quoteName = (await quoteMetadata)?.name ?? '';
     newPosition.quoteName =
-        newPosition.quoteSymbol === 'USDB' ? 'USDBCoin' : newPosition.quoteName;
+        newPosition.quoteSymbol === 'USDB' ? 'USDBlast' : newPosition.quoteName;
 
     const lowerPriceNonDisplay = tickToPrice(position.bidTick);
     const upperPriceNonDisplay = tickToPrice(position.askTick);
