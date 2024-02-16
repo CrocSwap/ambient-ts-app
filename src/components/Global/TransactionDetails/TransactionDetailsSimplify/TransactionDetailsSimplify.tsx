@@ -14,11 +14,21 @@ import InfoRow from '../../InfoRow';
 interface TransactionDetailsSimplifyPropsIF {
     tx: TransactionIF;
     isAccountView: boolean;
+    changeTypeDisplay:
+        | 'Range Harvest'
+        | 'Limit'
+        | 'Range'
+        | 'Ambient'
+        | 'Limit Removal'
+        | 'Range Removal'
+        | 'Ambient Removal'
+        | 'Market'
+        | 'Limit Claim';
 }
 
 // TODO: refactor to using styled-components
 function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
-    const { tx, isAccountView } = props;
+    const { tx, isAccountView, changeTypeDisplay } = props;
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -150,26 +160,7 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
     const positionType = tx.positionType;
     const entityType = tx.entityType;
 
-    const changeTypeDisplay =
-        changeType === 'mint'
-            ? entityType === 'limitOrder'
-                ? 'Add to Limit'
-                : positionType === 'concentrated'
-                ? 'Add to Range Position'
-                : 'Add to Ambient Position'
-            : changeType === 'burn'
-            ? entityType === 'limitOrder'
-                ? 'Remove from Limit'
-                : positionType === 'concentrated'
-                ? 'Removal from Range Position'
-                : positionType === 'ambient'
-                ? 'Removal from Ambient Position'
-                : 'Market'
-            : changeType === 'recover'
-            ? 'Claim from Limit'
-            : 'Market';
-
-    console.log({ quoteQuantityDisplay, estimatedQuoteFlowDisplay });
+    console.log({ changeTypeDisplay, changeType, entityType, positionType });
     // Create a data array for the info and map through it here
     const infoContent = [
         {
