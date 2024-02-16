@@ -82,7 +82,10 @@ export function getFormattedNumber({
         valueString = value.toPrecision(3);
     } else if (Math.abs(value) < 2) {
         // restrict to 3 places after decimal
-        valueString = value.toFixed(4);
+        valueString = value.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 5,
+        });
     } else if (Math.abs(value) >= abbrevThreshold && !isInput) {
         // use abbreviations (k, M, B, T) for big numbers
         valueString = formatAbbrev(value, isTvl);
