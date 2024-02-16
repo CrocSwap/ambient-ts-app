@@ -66,6 +66,16 @@ export const mainnetDAI: TokenIF = {
     symbol: 'DAI',
 };
 
+export const mainnetFRAX: TokenIF = {
+    address: '0x853d955acef822db058eb8505911ed77f175b99e',
+    chainId: 1,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    logoURI: 'https://etherscan.io/token/images/fraxfinanceeth2_32.png',
+    name: 'Frax',
+    symbol: 'FRAX',
+};
+
 export const mainnetUSDT: TokenIF = {
     address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
     chainId: 1,
@@ -180,16 +190,6 @@ export const scrollETH: TokenIF = {
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
 };
 
-export const scrollDAI: TokenIF = {
-    name: 'Dai Stablecoin',
-    address: '0xcA77eB3fEFe3725Dc33bccB54eDEFc3D9f764f97',
-    symbol: 'DAI',
-    decimals: 18,
-    chainId: 534352,
-    logoURI:
-        'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
-};
-
 export const scrollwstETH: TokenIF = {
     name: 'Wrapped stETH',
     address: '0xf610A9dfB7C89644979b4A0f27063E9e7d7Cda32',
@@ -217,6 +217,16 @@ export const scrollAxlUSDC: TokenIF = {
     chainId: 534352,
     logoURI:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+};
+
+export const scrollDAI: TokenIF = {
+    name: 'Dai Stablecoin',
+    address: '0xcA77eB3fEFe3725Dc33bccB54eDEFc3D9f764f97',
+    symbol: 'DAI',
+    decimals: 18,
+    chainId: 534352,
+    logoURI:
+        'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
 };
 
 export const scrollUSDT: TokenIF = {
@@ -263,6 +273,7 @@ export const defaultTokens: TokenIF[] = [
     mainnetWBTC,
     mainnetPEPE,
     mainnetDAI,
+    mainnetFRAX,
     mainnetSYN,
     mainnetUSDT,
     goerliETH,
@@ -275,9 +286,10 @@ export const defaultTokens: TokenIF[] = [
     arbGoerliWBTC,
     scrollETH,
     scrollUSDC,
-    scrollAxlUSDC,
+    scrollDAI,
     scrollUSDT,
     scrollDAI,
+    scrollAxlUSDC,
     scrollWBTC,
     scrollwstETH,
     scrollSepoliaETH,
