@@ -3,12 +3,12 @@ import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { Chip } from '../../../../Form/Chip';
 import { FiExternalLink } from 'react-icons/fi';
-import { getPinnedPriceValuesFromTicks } from '../../../../../pages/Trade/Range/rangeFunctions';
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import {
     getFormattedNumber,
     trimString,
     getUnicodeCharacter,
+    getPinnedPriceValuesFromTicks,
 } from '../../../../../ambient-utils/dataLayer';
 import {
     RowItem,
@@ -70,7 +70,11 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
             {trimString(transaction.hash, 9, 0, '…')}
         </RowItem>
     );
-    const wallet = <p>you</p>;
+    const wallet = (
+        <RowItem style={{ textTransform: 'lowercase' }}>
+            <p>you</p>
+        </RowItem>
+    );
 
     const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
         isDenomBase,

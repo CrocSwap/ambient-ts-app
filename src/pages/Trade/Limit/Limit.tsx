@@ -6,7 +6,11 @@ import {
     priceHalfBelowTick,
 } from '@crocswap-libs/sdk';
 import { useContext, useState, useEffect } from 'react';
-import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
+import {
+    getFormattedNumber,
+    getTxReceipt,
+    submitLimitOrder,
+} from '../../../ambient-utils/dataLayer';
 import { useTradeData } from '../../../App/hooks/useTradeData';
 import Button from '../../../components/Form/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
@@ -38,10 +42,13 @@ import {
     GAS_DROPS_ESTIMATE_LIMIT_FROM_DEX,
     GAS_DROPS_ESTIMATE_LIMIT_FROM_WALLET,
     GAS_DROPS_ESTIMATE_LIMIT_NATIVE,
-    LIMIT_BUFFER_MULTIPLIER,
+    LIMIT_BUFFER_MULTIPLIER_MAINNET,
+    LIMIT_BUFFER_MULTIPLIER_SCROLL,
     NUM_GWEI_IN_WEI,
 } from '../../../ambient-utils/constants/';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
+import { getPositionHash } from '../../../ambient-utils/dataLayer/functions/getPositionHash';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 export default function Limit() {
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
@@ -52,6 +59,7 @@ export default function Limit() {
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
     const { pool, isPoolInitialized } = useContext(PoolContext);
+    const { userAddress } = useContext(UserDataContext);
     const { tokens } = useContext(TokenContext);
     const {
         tokenAAllowance,
@@ -68,6 +76,7 @@ export default function Limit() {
         addPendingTx,
         addReceipt,
         addTransactionByType,
+        addPositionUpdate,
         removePendingTx,
         updateTransactionHash,
     } = useContext(ReceiptContext);
@@ -129,7 +138,7 @@ export default function Limit() {
     const [
         amountToReduceNativeTokenQtyScroll,
         setAmountToReduceNativeTokenQtyScroll,
-    ] = useState<number>(0.00001);
+    ] = useState<number>(0.0003);
 
     const amountToReduceNativeTokenQty =
         chainId === '0x82750' || chainId === '0x8274f'
@@ -176,6 +185,7 @@ export default function Limit() {
         },
     );
 
+    // TODO: logic to determine start, middle, end display prices should be refactored into an ambient-utils function
     useEffect(() => {
         (async () => {
             if (limitTick === undefined && !!poolPriceNonDisplay && crocEnv) {
@@ -199,6 +209,7 @@ export default function Limit() {
                     : pinTickUpper(initialLimitRateNonDisplay, gridSize);
 
                 IS_LOCAL_ENV && console.debug({ pinnedTick });
+
                 setLimitTick(pinnedTick);
 
                 const tickPrice = tickToPrice(pinnedTick);
@@ -440,7 +451,7 @@ export default function Limit() {
                 gasPriceInGwei * averageLimitCostInGasDrops * NUM_GWEI_IN_WEI;
 
             setAmountToReduceNativeTokenQtyMainnet(
-                LIMIT_BUFFER_MULTIPLIER * costOfMainnetLimitInETH,
+                LIMIT_BUFFER_MULTIPLIER_MAINNET * costOfMainnetLimitInETH,
             );
 
             const costOfScrollLimitInETH =
@@ -454,7 +465,7 @@ export default function Limit() {
             //     });
 
             setAmountToReduceNativeTokenQtyScroll(
-                LIMIT_BUFFER_MULTIPLIER * costOfScrollLimitInETH,
+                LIMIT_BUFFER_MULTIPLIER_SCROLL * costOfScrollLimitInETH,
             );
 
             const gasPriceInDollarsNum =
@@ -503,54 +514,71 @@ export default function Limit() {
 
         const sellToken = tokenA.address;
         const buyToken = tokenB.address;
+
         const sellQty = tokenAInputQty;
         const buyQty = tokenBInputQty;
 
         const qty = isTokenAPrimary ? sellQty : buyQty;
+        const type = isTokenAPrimary ? 'sell' : 'buy';
 
-        const order = isTokenAPrimary
-            ? crocEnv.sell(sellToken, qty)
-            : crocEnv.buy(buyToken, qty);
-        const ko = order.atLimit(
-            isTokenAPrimary ? buyToken : sellToken,
-            limitTick,
-        );
-        if (await ko.willMintFail()) {
-            return;
-        }
+        const posHash = getPositionHash(undefined, {
+            isPositionTypeAmbient: false,
+            user: userAddress ?? '',
+            baseAddress: baseToken.address,
+            quoteAddress: quoteToken.address,
+            poolIdx: poolIndex,
+            bidTick: isSellTokenBase ? limitTick : limitTick - gridSize,
+            askTick: isSellTokenBase ? limitTick + gridSize : limitTick,
+        });
 
         let tx;
         try {
-            tx = await ko.mint({ surplus: isWithdrawFromDexChecked });
+            tx = await submitLimitOrder({
+                crocEnv,
+                qty,
+                sellTokenAddress: sellToken,
+                buyTokenAddress: buyToken,
+                type,
+                limit: limitTick,
+                isWithdrawFromDexChecked,
+            });
+
+            if (!tx) return;
+
             addPendingTx(tx?.hash);
             setNewLimitOrderTransactionHash(tx.hash);
-            if (tx?.hash)
-                addTransactionByType({
-                    txHash: tx.hash,
-                    txAction:
-                        tokenB.address.toLowerCase() ===
-                        quoteToken.address.toLowerCase()
-                            ? 'Buy'
-                            : 'Sell',
-                    txType: 'Limit',
-                    txDescription: `Add Limit ${tokenA.symbol}→${tokenB.symbol}`,
-                    txDetails: {
-                        baseAddress: baseToken.address,
-                        quoteAddress: quoteToken.address,
-                        baseTokenDecimals: baseToken.decimals,
-                        quoteTokenDecimals: quoteToken.decimals,
-                        poolIdx: poolIndex,
-                        baseSymbol: baseToken.symbol,
-                        quoteSymbol: quoteToken.symbol,
-                        lowTick: isSellTokenBase
-                            ? limitTick
-                            : limitTick - gridSize,
-                        highTick: isSellTokenBase
-                            ? limitTick + gridSize
-                            : limitTick,
-                        isBid: isSellTokenBase,
-                    },
-                });
+            addTransactionByType({
+                userAddress: userAddress || '',
+                txHash: tx.hash,
+                txAction:
+                    tokenB.address.toLowerCase() ===
+                    quoteToken.address.toLowerCase()
+                        ? 'Buy'
+                        : 'Sell',
+                txType: 'Limit',
+                txDescription: `Add Limit ${tokenA.symbol}→${tokenB.symbol}`,
+                txDetails: {
+                    baseAddress: baseToken.address,
+                    quoteAddress: quoteToken.address,
+                    baseTokenDecimals: baseToken.decimals,
+                    quoteTokenDecimals: quoteToken.decimals,
+                    poolIdx: poolIndex,
+                    baseSymbol: baseToken.symbol,
+                    quoteSymbol: quoteToken.symbol,
+                    lowTick: isSellTokenBase ? limitTick : limitTick - gridSize,
+                    highTick: isSellTokenBase
+                        ? limitTick + gridSize
+                        : limitTick,
+                    isBid: isSellTokenBase,
+                },
+            });
+
+            addPositionUpdate({
+                txHash: tx.hash,
+                positionID: posHash,
+                isLimit: true,
+                unixTimeAdded: Math.floor(Date.now() / 1000),
+            });
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
@@ -565,7 +593,7 @@ export default function Limit() {
 
         let receipt;
         try {
-            if (tx) receipt = await tx.wait();
+            if (tx) receipt = await getTxReceipt(tx);
         } catch (e) {
             const error = e as TransactionError;
             console.error({ error });
@@ -576,7 +604,12 @@ export default function Limit() {
                 removePendingTx(error.hash);
                 const newTransactionHash = error.replacement.hash;
                 addPendingTx(newTransactionHash);
-
+                addPositionUpdate({
+                    txHash: newTransactionHash,
+                    positionID: posHash,
+                    isLimit: true,
+                    unixTimeAdded: Math.floor(Date.now() / 1000),
+                });
                 updateTransactionHash(error.hash, error.replacement.hash);
                 setNewLimitOrderTransactionHash(newTransactionHash);
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
@@ -755,6 +788,8 @@ export default function Limit() {
                         startDisplayPrice={startDisplayPrice}
                         middleDisplayPrice={middleDisplayPrice}
                         endDisplayPrice={endDisplayPrice}
+                        limitAllowed={limitAllowed}
+                        limitButtonErrorMessage={limitButtonErrorMessage}
                     />
                 ) : (
                     <></>

@@ -25,6 +25,8 @@ export const useAppChain = (): {
     // hook to generate navigation actions with pre-loaded path
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
     const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
+    const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
     const [searchParams] = useSearchParams();
     const chainParam = searchParams.get('chain');
     const networkParam = searchParams.get('network');
@@ -80,9 +82,11 @@ export const useAppChain = (): {
     // trigger chain switch in wallet when chain in URL changes
     useEffect(() => {
         if (chainInURLValidated && switchNetwork) {
-            switchNetwork(parseInt(chainInURLValidated));
+            if (activeNetwork.chainId !== chainInURLValidated) {
+                switchNetwork(parseInt(chainInURLValidated));
+            }
         }
-    }, [chainInURLValidated, switchNetwork]);
+    }, [switchNetwork === undefined]);
 
     // listen for the wallet to change in connected wallet and process that change in the app
     useEffect(() => {
@@ -110,6 +114,13 @@ export const useAppChain = (): {
                         // if no, navigate to index page
                         // first part seems unnecessary but appears to help stability
                         const { pathname } = window.location;
+
+                        const isPathENS = pathname.slice(1)?.endsWith('.eth');
+                        const isPathHex =
+                            pathname.slice(1)?.startsWith('0x') &&
+                            pathname.slice(1)?.length == 42;
+                        const isPathUserAddress = isPathENS || isPathHex;
+
                         if (chainInURLValidated === incomingChainFromWallet) {
                             // generate params chain manually and navigate user
                             let templateURL = pathname;
@@ -118,13 +129,24 @@ export const useAppChain = (): {
                             }
                             linkGenCurrent.navigate(templateURL);
                         } else {
-                            if (
-                                pathname.includes('token') ||
-                                chainParam ||
-                                networkParam
-                            ) {
-                                // navigate to index page only if token pair in URL
+                            if (chainParam || networkParam) {
+                                // navigate to index page only if "chain" or "network" in URL
                                 linkGenIndex.navigate();
+                            } else if (
+                                linkGenCurrent.currentPage === 'initpool' ||
+                                linkGenCurrent.currentPage === 'reposition'
+                            ) {
+                                linkGenPool.navigate(
+                                    `chain=${incomingChainFromWallet}`,
+                                );
+                            } else if (pathname.includes('chain')) {
+                                linkGenCurrent.navigate(
+                                    `chain=${incomingChainFromWallet}`,
+                                );
+                            } else if (isPathUserAddress) {
+                                window.location.reload();
+                            } else {
+                                linkGenCurrent.navigate();
                             }
                         }
                         window.location.reload();
@@ -138,7 +160,7 @@ export const useAppChain = (): {
                 chainInWalletValidated.current = incomingChainFromWallet;
             }
         }
-    }, [chainNetwork?.id]);
+    }, [chainNetwork?.id, chainInWalletValidated.current]);
 
     const defaultChain = getDefaultChainId();
 
@@ -167,17 +189,33 @@ export const useAppChain = (): {
             // if found, update local state with retrieved metadata
             chainMetadata && setActiveNetwork(chainMetadata);
         }
-    }, [chainInWalletValidated.current]);
+    }, [chainInWalletValidated.current !== null]);
 
     // fn to allow user to manually switch chains in the app because everything
     // ... else in this file responds to changes in the browser environment
     function chooseNetwork(network: NetworkIF): void {
         localStorage.setItem(CHAIN_LS_KEY, network.chainId);
-        setActiveNetwork(network);
         const { pathname } = window.location;
-        if (pathname.includes('token')) {
-            // navigate to index page only if token pair in URL
-            linkGenIndex.navigate();
+
+        setActiveNetwork(network);
+        const isPathENS = pathname.slice(1)?.endsWith('.eth');
+        const isPathHex =
+            pathname.slice(1)?.startsWith('0x') &&
+            pathname.slice(1)?.length == 42;
+        const isPathUserAddress = isPathENS || isPathHex;
+        if (
+            linkGenCurrent.currentPage === 'initpool' ||
+            linkGenCurrent.currentPage === 'reposition'
+        ) {
+            linkGenPool.navigate(`chain=${network.chainId}`);
+        } else if (linkGenCurrent.currentPage === 'swap') {
+            linkGenSwap.navigate(`chain=${network.chainId}`);
+        } else if (pathname.includes('chain')) {
+            linkGenCurrent.navigate(`chain=${network.chainId}`);
+        } else if (isPathUserAddress) {
+            window.location.reload();
+        } else {
+            linkGenCurrent.navigate();
         }
         window.location.reload();
     }

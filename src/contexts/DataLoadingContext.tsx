@@ -4,6 +4,7 @@ interface DataLoadingContextIF {
     isConnectedUserTxDataLoading: boolean;
     isConnectedUserOrderDataLoading: boolean;
     isConnectedUserPoolOrderDataLoading: boolean;
+    isConnectedUserPoolTxDataLoading: boolean;
     isConnectedUserRangeDataLoading: boolean;
     isConnectedUserPoolRangeDataLoading: boolean;
     isLookupUserTxDataLoading: boolean;
@@ -39,6 +40,10 @@ export const DataLoadingContextProvider = (props: {
         setIsConnectedUserPoolOrderDataLoading,
     ] = useState(true);
     const [
+        isConnectedUserPoolTxDataLoading,
+        setIsConnectedUserPoolTxDataLoading,
+    ] = useState(true);
+    const [
         isConnectedUserRangeDataLoading,
         setIsConnectedUserRangeDataLoading,
     ] = useState(true);
@@ -64,8 +69,11 @@ export const DataLoadingContextProvider = (props: {
     };
     const resetConnectedUserDataLoadingStatus = () => {
         setIsConnectedUserTxDataLoading(true);
+        setIsConnectedUserPoolTxDataLoading(true);
         setIsConnectedUserOrderDataLoading(true);
+        setIsConnectedUserPoolOrderDataLoading(true);
         setIsConnectedUserRangeDataLoading(true);
+        setIsConnectedUserPoolRangeDataLoading(true);
     };
     const setDataLoadingStatus = (params: {
         datasetName: keyof DataLoadingContextIF;
@@ -82,6 +90,9 @@ export const DataLoadingContextProvider = (props: {
                 break;
             case 'isConnectedUserPoolOrderDataLoading':
                 setIsConnectedUserPoolOrderDataLoading(loadingStatus);
+                break;
+            case 'isConnectedUserPoolTxDataLoading':
+                setIsConnectedUserPoolTxDataLoading(loadingStatus);
                 break;
             case 'isConnectedUserRangeDataLoading':
                 setIsConnectedUserRangeDataLoading(loadingStatus);
@@ -117,6 +128,7 @@ export const DataLoadingContextProvider = (props: {
         isConnectedUserTxDataLoading,
         isConnectedUserOrderDataLoading,
         isConnectedUserPoolOrderDataLoading,
+        isConnectedUserPoolTxDataLoading,
         isConnectedUserRangeDataLoading,
         isConnectedUserPoolRangeDataLoading,
         isLookupUserTxDataLoading,

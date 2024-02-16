@@ -150,7 +150,7 @@ function LimitTokenInput(props: propsIF) {
 
         const truncatedTokenBQty = rawTokenBQty
             ? rawTokenBQty < 2
-                ? rawTokenBQty.toPrecision(3)
+                ? rawTokenBQty.toPrecision(6)
                 : truncateDecimals(rawTokenBQty, 2)
             : '';
 
@@ -193,7 +193,7 @@ function LimitTokenInput(props: propsIF) {
         }
         const truncatedTokenAQty = rawTokenAQty
             ? rawTokenAQty < 2
-                ? rawTokenAQty.toPrecision(3)
+                ? rawTokenAQty.toPrecision(6)
                 : truncateDecimals(rawTokenAQty, 2)
             : '';
 

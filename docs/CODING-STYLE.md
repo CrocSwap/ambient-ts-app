@@ -1,22 +1,22 @@
 #### Coding Style Checklist
 
-Please follow these items as close to as possible for your PR. Please add a description or link a Git issue for context. Check off relevant items and remove as not needed. These will help your reviewer find similar ground for starting their review from. 
+Please follow these items as close to as possible for your PR. Please add a description or link a Git issue for context. Check off relevant items and remove them as not needed. These will help your reviewer find similar ground for starting their review from. 
 
 #### Workflow Adherence
-- [ ] Has an issue been created which this PR addresses?
-- [ ] Has the PR been set to close relevant issues in GitHub?
+- [ ] Has an issue been created that this PR addresses?
+- [ ] Has the PR been set to close relevant issues on GitHub?
 - [ ] Did you pull code from branch `origin/develop` prior to submitting the PR?
 
 #### Code Quality
 - [ ] Does the code stick to our formatting and code standards?
 - [ ] Are magic numbers declared in centralized `const` variables?
 - [ ] Did you run Prettier before creating the PR?
-  - [ ] Really? (Emily this means you)
+- [ ] Really? (Emily this means you)
 - [ ] Do functions return a value through a single exit point?
 - [ ] Does the app compile without errors or warnings?
 - [ ] Has commented-out code been deleted or marked with a note to request preservation?
 - [ ] Does error handling use `console.warn` or `console.error` for handled and unhandled exceptions, respectively? Does this logging reference the generating file?
-- [ ] Have console commands been restricted with environmental variables (eg, dev environment only) as appropriate?
+- [ ] Have console commands been restricted with environmental variables (e.g. dev environment only) as appropriate?
 - [ ] Are keyboard events tracked with `e.key` or `e.code` instead of `e.charCode` or `e.keyCode`?
 
 #### TypeScript

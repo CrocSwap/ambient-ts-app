@@ -10,13 +10,6 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../ambient-utils/constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
-import {
-    getFormattedNumber,
-    exponentialNumRegEx,
-    getUnicodeCharacter,
-    getMoneynessRank,
-    truncateDecimals,
-} from '../../ambient-utils/dataLayer';
 
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import InitPoolTokenSelect from '../../components/Global/InitPoolTokenSelect/InitPoolTokenSelect';
@@ -46,11 +39,16 @@ import { CurrencyQuantityInput } from '../../styled/Components/TradeModules';
 import RangeTokenInput from '../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
 import { useCreateRangePosition } from '../../App/hooks/useCreateRangePosition';
 import {
+    getFormattedNumber,
+    exponentialNumRegEx,
+    getUnicodeCharacter,
+    getMoneynessRank,
+    truncateDecimals,
     getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
     roundDownTick,
     roundUpTick,
-} from '../Trade/Range/rangeFunctions';
+} from '../../ambient-utils/dataLayer';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import {
     DEFAULT_MAX_PRICE_DIFF_PERCENTAGE,
@@ -77,7 +75,8 @@ import { RangeContext } from '../../contexts/RangeContext';
 import {
     GAS_DROPS_ESTIMATE_INIT_WITH_POOL,
     GAS_DROPS_ESTIMATE_INIT_WITHOUT_POOL,
-    RANGE_BUFFER_MULTIPLIER,
+    RANGE_BUFFER_MULTIPLIER_MAINNET,
+    RANGE_BUFFER_MULTIPLIER_SCROLL,
     GAS_DROPS_ESTIMATE_POOL,
     NUM_GWEI_IN_WEI,
 } from '../../ambient-utils/constants/';
@@ -826,7 +825,7 @@ export default function InitPool() {
                 gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
 
             setAmountToReduceNativeTokenQtyMainnet(
-                costOfMainnetPoolInETH * RANGE_BUFFER_MULTIPLIER,
+                costOfMainnetPoolInETH * RANGE_BUFFER_MULTIPLIER_MAINNET,
             );
 
             const costOfScrollPoolInETH =
@@ -839,7 +838,7 @@ export default function InitPool() {
             //     });
 
             setAmountToReduceNativeTokenQtyScroll(
-                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER,
+                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER_SCROLL,
             );
 
             const gasPriceInDollarsNum =
@@ -1634,6 +1633,7 @@ export default function InitPool() {
 
                     if (tx?.hash) {
                         addTransactionByType({
+                            userAddress: userAddress || '',
                             txHash: tx.hash,
                             txType: 'Withdraw',
                             txDescription: `Withdrawal of ${erc20TokenWithDexBalance.symbol}`,

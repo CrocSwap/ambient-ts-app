@@ -178,9 +178,19 @@ function SwapTokenInput(props: propsIF) {
 
         isTokenAPrimary ? setIsBuyLoading(false) : setIsSellLoading(false);
 
+        // prevent swaps with a price impact in excess of -99.99% or 1 million percent
         if (impact) {
-            setIsLiquidityInsufficient(false);
-            return parseFloat(sellToken ? impact.buyQty : impact.sellQty);
+            if (
+                impact.percentChange < -0.9999 ||
+                impact.percentChange > 10000
+            ) {
+                setIsLiquidityInsufficient(true);
+                setSwapAllowed(false);
+                return undefined;
+            } else {
+                setIsLiquidityInsufficient(false);
+                return parseFloat(sellToken ? impact.buyQty : impact.sellQty);
+            }
         } else {
             setIsLiquidityInsufficient(true);
             setSwapAllowed(false);
@@ -210,7 +220,6 @@ function SwapTokenInput(props: propsIF) {
         () => async (value?: string) => {
             if (!crocEnv) return;
             setDisableReverseTokens(true);
-
             let rawTokenBQty = undefined;
             if (value !== undefined) {
                 if (parseFloat(value) !== 0) {
@@ -223,7 +232,7 @@ function SwapTokenInput(props: propsIF) {
 
             const truncatedTokenBQty = rawTokenBQty
                 ? rawTokenBQty < 2
-                    ? rawTokenBQty.toPrecision(3)
+                    ? rawTokenBQty.toPrecision(6)
                     : truncateDecimals(rawTokenBQty, rawTokenBQty < 100 ? 3 : 2)
                 : '';
 
@@ -264,7 +273,7 @@ function SwapTokenInput(props: propsIF) {
 
             const truncatedTokenAQty = rawTokenAQty
                 ? rawTokenAQty < 2
-                    ? rawTokenAQty.toPrecision(3)
+                    ? rawTokenAQty.toPrecision(6)
                     : truncateDecimals(rawTokenAQty, rawTokenAQty < 100 ? 3 : 2)
                 : '';
             setSellQtyString(truncatedTokenAQty);
@@ -309,6 +318,7 @@ function SwapTokenInput(props: propsIF) {
                 token={tokenA}
                 tokenInput={
                     buyQtyString !== '' ||
+                    isLiquidityInsufficient ||
                     (sellQtyString !== '' &&
                         (isBuyLoading || parseFloat(sellQtyString) === 0))
                         ? sellQtyString

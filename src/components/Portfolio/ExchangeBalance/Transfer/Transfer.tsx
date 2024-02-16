@@ -40,6 +40,7 @@ import {
     GAS_DROPS_ESTIMATE_TRANSFER_ERC20,
 } from '../../../../ambient-utils/constants/';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -64,6 +65,7 @@ export default function Transfer(props: propsIF) {
         setTokenModalOpen,
     } = props;
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const {
@@ -198,6 +200,7 @@ export default function Transfer(props: propsIF) {
                 addPendingTx(tx?.hash);
                 if (tx?.hash)
                     addTransactionByType({
+                        userAddress: userAddress || '',
                         txHash: tx.hash,
                         txType: 'Transfer',
                         txDescription: `Transfer ${selectedToken.symbol}`,

@@ -1,15 +1,12 @@
 import { memo, useContext, useEffect, useRef } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
-import TransactionDetailsModal from '../../../../Global/TransactionDetails/TransactionDetailsModal';
-import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { TransactionIF } from '../../../../../ambient-utils/types';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { txRowConstants } from '../txRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
-import { useModal } from '../../../../Global/Modal/useModal';
 import { TransactionRow as TransactionRowStyled } from '../../../../../styled/Components/TransactionTable';
 import { UserDataContext } from '../../../../../contexts/UserDataContext';
 
@@ -18,9 +15,10 @@ interface propsIF {
     tx: TransactionIF;
     tableView: 'small' | 'medium' | 'large';
     isAccountView: boolean;
+    openDetailsModal: () => void;
 }
 function TransactionRow(props: propsIF) {
-    const { idForDOM, tableView, tx, isAccountView } = props;
+    const { idForDOM, tableView, tx, isAccountView, openDetailsModal } = props;
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -44,7 +42,6 @@ function TransactionRow(props: propsIF) {
         truncatedDisplayPriceDenomByMoneyness,
         truncatedLowDisplayPriceDenomByMoneyness,
         truncatedHighDisplayPriceDenomByMoneyness,
-        isBaseTokenMoneynessGreaterOrEqual,
         positiveDisplayColor,
         negativeDisplayColor,
         positiveArrow,
@@ -62,14 +59,8 @@ function TransactionRow(props: propsIF) {
     const {
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
-    const {
-        showAllData: showAllDataSelection,
-        currentTxActiveInTransactions,
-        setCurrentTxActiveInTransactions,
-    } = useContext(TradeTableContext);
-
-    const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
-        useModal();
+    const { showAllData: showAllDataSelection, currentTxActiveInTransactions } =
+        useContext(TradeTableContext);
 
     // only show all data when on trade tab page
     const showAllData = !isAccountView && showAllDataSelection;
@@ -88,17 +79,12 @@ function TransactionRow(props: propsIF) {
         const element = document.getElementById(idForDOM);
         element?.scrollIntoView({
             behavior: 'smooth',
-            block: 'end',
+            block: 'start',
             inline: 'nearest',
         });
     }
 
     const activePositionRef = useRef(null);
-
-    const clickOutsideHandler = () => {
-        setCurrentTxActiveInTransactions('');
-    };
-    useOnClickOutside(activePositionRef, clickOutsideHandler);
 
     useEffect(() => {
         tx.txId === currentTxActiveInTransactions ? scrollToDiv() : null;
@@ -200,15 +186,6 @@ function TransactionRow(props: propsIF) {
         priceDisplay,
     } = txRowConstants(txRowConstantsProps);
 
-    function handleRowClick() {
-        console.log('handleRowClick');
-        if (tx.txId === currentTxActiveInTransactions) {
-            return;
-        }
-        setCurrentTxActiveInTransactions('');
-        openDetailsModal();
-    }
-
     return (
         <>
             <TransactionRowStyled
@@ -217,7 +194,7 @@ function TransactionRow(props: propsIF) {
                 account={isAccountView}
                 active={tx.txId === currentTxActiveInTransactions}
                 user={userNameToDisplay === 'You' && showAllData}
-                onClick={handleRowClick}
+                onClick={openDetailsModal}
                 ref={currentTxActiveInTransactions ? activePositionRef : null}
                 tabIndex={0}
                 onKeyDown={handleKeyPress}
@@ -247,23 +224,11 @@ function TransactionRow(props: propsIF) {
                     <TransactionsMenu
                         tx={tx}
                         isAccountView={props.isAccountView}
-                        isBaseTokenMoneynessGreaterOrEqual={
-                            isBaseTokenMoneynessGreaterOrEqual
-                        }
                         handleWalletClick={handleWalletClick}
+                        openDetailsModal={openDetailsModal}
                     />
                 </div>
             </TransactionRowStyled>
-            {isDetailsModalOpen && (
-                <TransactionDetailsModal
-                    tx={tx}
-                    isBaseTokenMoneynessGreaterOrEqual={
-                        isBaseTokenMoneynessGreaterOrEqual
-                    }
-                    isAccountView={isAccountView}
-                    onClose={closeDetailsModal}
-                />
-            )}
         </>
     );
 }

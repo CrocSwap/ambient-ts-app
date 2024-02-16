@@ -990,7 +990,7 @@ function ChatPanel(props: propsIF) {
                     chatNotification={chatNotification}
                     messageInput={messageInput}
                     userName={
-                        ens === null || ens === ''
+                        userAddress && !ens
                             ? trimString(userAddress as string, 6, 0, '…')
                             : (ens as string)
                     }
