@@ -199,12 +199,6 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
                 'The time the owner first added liquidity at these prices',
         },
         {
-            title: 'Update Time ',
-            content: updateTime,
-            explanation:
-                'The time the owner last updated the liquidity at these prices',
-        },
-        {
             title: 'Position Slot ID ',
             content: posHashContent,
             // eslint-disable-next-line quotes
@@ -327,6 +321,14 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
               ]
             : []),
     ];
+
+    if (submissionTime !== updateTime) {
+        infoContent.splice(2, 0, {
+            title: 'Update Time ',
+            content: updateTime,
+            explanation: 'Time the owner last updated the limit at this price',
+        });
+    }
 
     return (
         <div className={styles.tx_details_container}>
