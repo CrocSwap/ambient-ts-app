@@ -163,7 +163,7 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
             content: (
                 <div style={{ cursor: 'default' }}>{changeTypeDisplay}</div>
             ),
-            explanation: 'Transaction type explanation',
+            explanation: 'e.g. Market, Limit, Range',
         },
 
         {
