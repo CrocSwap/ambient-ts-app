@@ -5,8 +5,11 @@ import blastLogo from '../../../assets/images/logos/blast_logo.svg';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
 import styles from './BackgroundImages.module.css';
 import { HeroContainer } from '../../../styled/Components/Home';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 export default function Hero() {
+    const smallScreen = useMediaQuery('(max-width: 850px)');
+
     return (
         <HeroContainer
             justifyContent='center'
@@ -24,7 +27,7 @@ export default function Hero() {
                 gap={32}
             >
                 <FlexContainer
-                    flexDirection={'row'}
+                    flexDirection={smallScreen ? 'column' : 'row'}
                     alignItems='center'
                     gap={8}
                     style={{ verticalAlign: 'middle' }}
@@ -52,7 +55,7 @@ export default function Hero() {
                         src={blastLogo}
                         alt=''
                         width='130px'
-                        style={{ marginTop: '8px' }}
+                        style={{ marginTop: '8px', maxWidth: '60%' }}
                     />
                 </FlexContainer>
                 {/* <img src={ambientXblastLogo} alt='' width='1500px' /> */}

@@ -13,6 +13,8 @@ import Apy from '../../Tabs/Apy/Apy';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { useContext } from 'react';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import moment from 'moment';
+import { Text } from '../../../../styled/Common';
 
 type ItemIF = {
     slug: string;
@@ -346,6 +348,15 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         <div className={styles.main_container}>
             <div className={styles.price_info_container}>
                 {tokenPairDetails}
+                <Text
+                    fontWeight='200'
+                    fontSize='body'
+                    color='accent5'
+                    style={{ textAlign: 'center' }}
+                >
+                    {moment(tx.txTime * 1000).format('MM/DD/YYYY HH:mm')}
+                </Text>
+
                 {txTypeContent}
                 {controlItems[2] && totalValueContent}
                 {isBuy ? isBuyTransactionDetails : isSellTransactionDetails}

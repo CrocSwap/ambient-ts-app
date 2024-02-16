@@ -1,11 +1,10 @@
 import styles from './BackgroundImages.module.css';
 
-import logoText from '../../../assets/images/logos/logo_text.png';
-
 import Footer from '../../Footer/Footer';
 import liquidityImage from '../../../assets/images/home/liquidity.png';
 import orderImage from '../../../assets/images/home/orders.png';
 import { Fade } from 'react-reveal';
+import blastLogo from '../../../assets/images/logos/blast_logo.svg';
 
 import Stats from '../Stats/AmbientStats';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
@@ -50,7 +49,29 @@ export default function MobileLandingSections() {
                     fullWidth
                     className={styles.home_wallpaper_mobile}
                 >
-                    <img src={logoText} alt='ambient' />
+                    <FlexContainer
+                        flexDirection={'column'}
+                        alignItems='center'
+                        gap={4}
+                    >
+                        <p
+                            className={styles.ambient_blast_logo}
+                            style={{ fontSize: '30px' }}
+                        >
+                            ambient
+                        </p>
+                        <Text
+                            fontWeight='100'
+                            color='text1'
+                            align='center'
+                            style={{
+                                fontSize: '30px',
+                            }}
+                        >
+                            X
+                        </Text>
+                        <img src={blastLogo} alt='' width='100px' />
+                    </FlexContainer>
                 </MobileMainLogo>
                 {APP_ENVIRONMENT !== 'production' && (
                     <FlexContainer
