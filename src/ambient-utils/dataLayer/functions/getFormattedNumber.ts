@@ -77,12 +77,12 @@ export function getFormattedNumber({
         } else {
             valueString = formatSubscript(value);
         }
-    } else if (Math.abs(value) < 1) {
+    } else if (Math.abs(value) < 0.9) {
         // show 3 significant digits (after 0s)
         valueString = value.toPrecision(3);
     } else if (Math.abs(value) < 2) {
         // restrict to 3 places after decimal
-        valueString = value.toFixed(3);
+        valueString = value.toFixed(4);
     } else if (Math.abs(value) >= abbrevThreshold && !isInput) {
         // use abbreviations (k, M, B, T) for big numbers
         valueString = formatAbbrev(value, isTvl);
