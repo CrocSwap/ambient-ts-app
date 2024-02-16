@@ -28,7 +28,7 @@ export default function PortfolioBannerAccount(
         truncatedAccountAddress,
         ensNameAvailable,
     } = props;
-    const { userAddress } = useContext(UserDataContext);
+    const { userAddress, userAccountProfile } = useContext(UserDataContext);
 
     const {
         snackbar: { open: openSnackbar },
@@ -90,14 +90,29 @@ export default function PortfolioBannerAccount(
                 gap={22}
                 onClick={() => setShowAccountDetails(!showAccountDetails)}
             >
-                <div
-                    onClick={(event) => {
-                        event.stopPropagation();
-                        setShowNFTPage(!showNFTPage);
-                    }}
-                >
-                    {props.jazziconsToDisplay}
-                </div>
+                {userAccountProfile ? (
+                    <img
+                        src={userAccountProfile}
+                        onClick={(event) => {
+                            event.stopPropagation();
+                            setShowNFTPage(!showNFTPage);
+                        }}
+                        style={{
+                            width: '70px',
+                            height: '70px',
+                            borderRadius: '50%',
+                        }}
+                    ></img>
+                ) : (
+                    <div
+                        onClick={(event) => {
+                            event.stopPropagation();
+                            setShowNFTPage(!showNFTPage);
+                        }}
+                    >
+                        {props.jazziconsToDisplay}
+                    </div>
+                )}
 
                 <FlexContainer flexDirection='column'>
                     <FlexContainer

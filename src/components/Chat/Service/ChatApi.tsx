@@ -33,6 +33,21 @@ const useChatApi = () => {
         }
     }
 
+    async function getUserAvatarImageAndID() {
+        if (userAddress) {
+            const response = await fetch(
+                host +
+                    '/chat/api/auth/getUserAvatarImageByAccount/' +
+                    userAddress,
+                {
+                    method: 'GET',
+                },
+            );
+            const data = await response.json();
+            return data;
+        }
+    }
+
     async function getName(id: string) {
         const response = await fetch(
             host + '/chat/api/auth/getNamebyID/' + id,
@@ -128,6 +143,55 @@ const useChatApi = () => {
 
         return data;
     }
+
+    async function saveUserWithAvatarImage(
+        walletID: string,
+        ensName: string,
+        userAvatarImage: string,
+    ) {
+        const response = await fetch(
+            host + '/chat/api/auth/saveUserWithAvatarImage',
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    walletID: walletID,
+                    ensName: ensName,
+                    avatarImage: userAvatarImage,
+                }),
+            },
+        );
+        const data = await response.json();
+
+        return data;
+    }
+
+    async function updateUserWithAvatarImage(
+        _id: string,
+        ensName: string,
+        userCurrentPool: string,
+        userAvatarImage: string,
+        isAvatarImageSet: boolean,
+    ) {
+        const response = await fetch(
+            host + '/chat/api/auth/updateUserWithAvatarImage',
+            {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    _id: _id,
+                    ensName: ensName,
+                    userCurrentPool: userCurrentPool,
+                    avatarImage: userAvatarImage,
+                    isAvatarImageSet: isAvatarImageSet,
+                }),
+            },
+        );
+        const data = await response.json();
+
+        return data;
+    }
+
     return {
         getStatus,
         getID,
@@ -138,6 +202,9 @@ const useChatApi = () => {
         updateMessageUser,
         saveUser,
         deleteMessage,
+        saveUserWithAvatarImage,
+        updateUserWithAvatarImage,
+        getUserAvatarImageAndID,
     };
 };
 export default useChatApi;

@@ -45,7 +45,11 @@ function ChatPanel(props: propsIF) {
     const [isCurrentPool, setIsCurrentPool] = useState(false);
     const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
     const [userCurrentPool, setUserCurrentPool] = useState('ETH / USDC');
-    const { userAddress, ensName: ens } = useContext(UserDataContext);
+    const {
+        userAddress,
+        ensName: ens,
+        userAccountProfile,
+    } = useContext(UserDataContext);
     const [ensName, setEnsName] = useState('');
     const [currentUser, setCurrentUser] = useState<string | undefined>(
         undefined,
@@ -62,7 +66,15 @@ function ChatPanel(props: propsIF) {
         isChatOpen,
     );
 
-    const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
+    const {
+        getID,
+        updateUser,
+        updateMessageUser,
+        saveUser,
+        saveUserWithAvatarImage,
+        updateUserWithAvatarImage,
+        getUserAvatarImageAndID,
+    } = useChatApi();
 
     const { isUserConnected, resolvedAddressFromContext } =
         useContext(UserDataContext);
@@ -122,6 +134,7 @@ function ChatPanel(props: propsIF) {
             } else {
                 setEnsName(ens);
             }
+
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             getID().then((result: any) => {
                 if (result.status === 'Not OK') {
@@ -165,6 +178,67 @@ function ChatPanel(props: propsIF) {
             setCurrentUser(undefined);
         }
     }, [ens, userAddress, isChatOpen, isFullScreen, setUserCurrentPool]);
+
+    useEffect(() => {
+        if (userAddress) {
+            const userAvatarImgUrl = userAccountProfile
+                ? userAccountProfile
+                : '';
+
+            if (ens === null || ens === undefined) {
+                setEnsName('defaultValue');
+            } else {
+                setEnsName(ens);
+            }
+
+            getUserAvatarImageAndID().then((result: any) => {
+                if (result.status === 'Not OK') {
+                    // eslint-disable-next-line
+                    saveUserWithAvatarImage(
+                        userAddress,
+                        ensName,
+                        userAvatarImgUrl,
+                    ).then((result: any) => {
+                        setCurrentUser(result.userData._id);
+                        return result;
+                    });
+                } else {
+                    result.userData.isModerator === true
+                        ? setModerator(true)
+                        : setModerator(false);
+
+                    setCurrentUser(result.userData._id);
+                    setUserCurrentPool(result.userData.userCurrentPool);
+
+                    if (result.userData.avatarImage !== userAvatarImgUrl) {
+                        updateUserWithAvatarImage(
+                            currentUser as string,
+                            ensName,
+                            userCurrentPool,
+                            userAvatarImgUrl,
+                            userAvatarImgUrl !== '',
+                        ).then(
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            (result: any) => {
+                                if (result.status === 'OK') {
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                    updateMessageUser(
+                                        currentUser as string,
+                                        ensName,
+                                    ).then(
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                        (result: any) => {
+                                            return result;
+                                        },
+                                    );
+                                }
+                            },
+                        );
+                    }
+                }
+            });
+        }
+    }, [userAccountProfile]);
 
     useEffect(() => {
         setIsScrollToBottomButtonPressed(false);

@@ -12,9 +12,9 @@ export const fetchNFT = async (
 ): Promise<any> => {
     if (!crocEnv) return;
 
-    const covalentChainString =
-        COVALENT_CHAIN_IDS[chain as keyof typeof COVALENT_CHAIN_IDS] ||
-        'eth-goerli';
+    const covalentChainString = 'eth-goerli';
+    // COVALENT_CHAIN_IDS[chain as keyof typeof COVALENT_CHAIN_IDS] ||
+    // 'eth-goerli';
 
     const covalentNFTResponse = await client.NftService.getNftsForAddress(
         covalentChainString as Chains,

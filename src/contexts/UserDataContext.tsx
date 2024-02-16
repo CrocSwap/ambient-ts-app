@@ -25,6 +25,8 @@ interface UserDataContextIF {
     ensName: string | null | undefined;
     resolvedAddressFromContext: string;
     setResolvedAddressInContext: Dispatch<SetStateAction<string>>;
+    userAccountProfile: string | undefined;
+    setUserAccountProfile: Dispatch<SetStateAction<string | undefined>>;
 }
 export const UserDataContext = createContext<UserDataContextIF>(
     {} as UserDataContextIF,
@@ -57,6 +59,11 @@ export const UserDataContextProvider = (props: {
     const { data: ensNameFromWagmi } = useEnsName({ address: userAddress });
 
     const [ensName, setEnsName] = useState('');
+
+    const [userAccountProfile, setUserAccountProfile] = useState<
+        string | undefined
+    >(undefined);
+
     // check for ENS name account changes
     useEffect(() => {
         (async () => {
@@ -87,6 +94,8 @@ export const UserDataContextProvider = (props: {
         pendingConnector,
         resolvedAddressFromContext,
         setResolvedAddressInContext,
+        userAccountProfile,
+        setUserAccountProfile,
     };
 
     return (
