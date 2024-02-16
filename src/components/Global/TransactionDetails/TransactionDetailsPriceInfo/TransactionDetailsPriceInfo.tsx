@@ -175,7 +175,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                         token={quoteToken}
                         src={uriToHttp(quoteTokenLogo)}
                         alt={quoteTokenSymbol}
-                        size='xs'
+                        size='s'
                     />
                 </div>
             </Row>
@@ -208,7 +208,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                         token={baseToken}
                         src={uriToHttp(baseTokenLogo)}
                         alt={baseTokenSymbol}
-                        size='xs'
+                        size='s'
                     />
                 </div>
             </Row>
@@ -241,7 +241,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                         token={baseToken}
                         src={uriToHttp(baseTokenLogo)}
                         alt={baseTokenSymbol}
-                        size='xs'
+                        size='s'
                     />
                 </div>
             </Row>
@@ -274,7 +274,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                         token={quoteToken}
                         src={uriToHttp(quoteTokenLogo)}
                         alt={quoteTokenSymbol}
-                        size='xs'
+                        size='s'
                     />
                 </div>
             </Row>
