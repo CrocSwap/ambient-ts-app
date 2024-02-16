@@ -367,9 +367,21 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             <div className={styles.price_info_container}>
                 {tokenPairDetails}
                 {txTypeContent}
+                {isDenomBase
+                    ? isBuy
+                        ? sellBaseRow
+                        : buyBaseRow
+                    : isBuy
+                    ? buyQuoteRow
+                    : sellQuoteRow}
+                {isDenomBase
+                    ? isBuy
+                        ? buyQuoteRow
+                        : sellQuoteRow
+                    : isBuy
+                    ? sellBaseRow
+                    : buyBaseRow}
                 {controlItems[2] && totalValueContent}
-                {isBuy ? buyQuoteRow : buyBaseRow}
-                {isBuy ? sellBaseRow : sellQuoteRow}
                 {PriceDisplay}
                 {tx.entityType === 'liqchange' ? (
                     <Apy
