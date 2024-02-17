@@ -1,5 +1,5 @@
 /* eslint-disable no-irregular-whitespace */
-import { useContext, useEffect, useRef, useState, memo } from 'react';
+import { useContext, useEffect, useRef, useState, memo, useMemo } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
 import { useSortedLimits } from '../useSortedLimits';
@@ -74,46 +74,45 @@ function Orders(props: propsIF) {
     const baseTokenAddress = baseToken.address;
     const quoteTokenAddress = quoteToken.address;
 
-    const [limitOrderData, setLimitOrderData] = useState<LimitOrderIF[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const limitOrderData = useMemo(
+        () =>
+            isAccountView
+                ? activeAccountLimitOrderData || []
+                : !showAllData
+                ? userLimitOrdersByPool?.limitOrders.filter(
+                      (order) =>
+                          order.positionLiq != 0 || order.claimableLiq !== 0,
+                  )
+                : limitOrdersByPool.limitOrders,
+        [
+            showAllData,
+            isAccountView,
+            activeAccountLimitOrderData,
+            limitOrdersByPool,
+            userLimitOrdersByPool,
+        ],
+    );
 
-    useEffect(() => {
-        if (isAccountView) setLimitOrderData(activeAccountLimitOrderData || []);
-        else if (!showAllData)
-            setLimitOrderData(
-                userLimitOrdersByPool?.limitOrders.filter(
-                    (order) =>
-                        order.positionLiq != 0 || order.claimableLiq !== 0,
-                ),
-            );
-        else {
-            setLimitOrderData(limitOrdersByPool.limitOrders);
-        }
-    }, [
-        showAllData,
-        isAccountView,
-        activeAccountLimitOrderData,
-        limitOrdersByPool,
-        userLimitOrdersByPool,
-    ]);
-
-    useEffect(() => {
-        if (isAccountView && connectedAccountActive)
-            setIsLoading(dataLoadingStatus.isConnectedUserOrderDataLoading);
-        else if (isAccountView)
-            setIsLoading(dataLoadingStatus.isLookupUserOrderDataLoading);
-        else if (!showAllData)
-            setIsLoading(dataLoadingStatus.isConnectedUserPoolOrderDataLoading);
-        else setIsLoading(dataLoadingStatus.isPoolOrderDataLoading);
-    }, [
-        showAllData,
-        isAccountView,
-        connectedAccountActive,
-        dataLoadingStatus.isConnectedUserOrderDataLoading,
-        dataLoadingStatus.isConnectedUserPoolOrderDataLoading,
-        dataLoadingStatus.isLookupUserOrderDataLoading,
-        dataLoadingStatus.isPoolOrderDataLoading,
-    ]);
+    const isLoading = useMemo(
+        () =>
+            isAccountView && connectedAccountActive
+                ? dataLoadingStatus.isConnectedUserOrderDataLoading
+                : isAccountView
+                ? dataLoadingStatus.isLookupUserOrderDataLoading
+                : !showAllData
+                ? dataLoadingStatus.isConnectedUserPoolOrderDataLoading
+                : dataLoadingStatus.isPoolOrderDataLoading,
+        [
+            isAccountView,
+            showAllData,
+            connectedAccountActive,
+            dataLoadingStatus.isCandleDataLoading,
+            dataLoadingStatus.isConnectedUserOrderDataLoading,
+            dataLoadingStatus.isConnectedUserPoolOrderDataLoading,
+            dataLoadingStatus.isLookupUserOrderDataLoading,
+            dataLoadingStatus.isPoolOrderDataLoading,
+        ],
+    );
 
     const relevantTransactionsByType = transactionsByType.filter(
         (tx) =>
@@ -138,7 +137,7 @@ function Orders(props: propsIF) {
         useSortedLimits('time', limitOrderData);
 
     // TODO: Use these as media width constants
-    const isSmallScreen = useMediaQuery('(max-width: 600px)');
+    const isSmallScreen = useMediaQuery('(max-width: 750px)');
     const isLargeScreen = useMediaQuery('(min-width: 1600px)');
 
     const tableView =
