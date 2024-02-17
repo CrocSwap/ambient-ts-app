@@ -19,6 +19,7 @@ import { UserDataContext } from './UserDataContext';
 import { DataLoadingContext } from './DataLoadingContext';
 import { PositionUpdateIF, ReceiptContext } from './ReceiptContext';
 import { getPositionHash } from '../ambient-utils/dataLayer/functions/getPositionHash';
+import { TradeDataContext } from './TradeDataContext';
 
 interface Changes {
     dataReceived: boolean;
@@ -163,7 +164,9 @@ export const GraphDataContextProvider = (props: {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
 
-    const { pendingTransactions, sessionReceipts, sessionPositionUpdates } =
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
+
+    const { pendingTransactions, allReceipts, sessionPositionUpdates } =
         useContext(ReceiptContext);
 
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
@@ -192,6 +195,18 @@ export const GraphDataContextProvider = (props: {
             limitOrders: [],
         });
         setTransactionsByUser({
+            dataReceived: false,
+            changes: [],
+        });
+        setUserPositionsByPool({
+            dataReceived: false,
+            positions: [],
+        });
+        setUserLimitOrdersByPool({
+            dataReceived: false,
+            limitOrders: [],
+        });
+        setUserTransactionsByPool({
             dataReceived: false,
             changes: [],
         });
@@ -234,6 +249,21 @@ export const GraphDataContextProvider = (props: {
     useEffect(() => {
         resetUserGraphData();
     }, [isUserConnected, userAddress]);
+
+    useEffect(() => {
+        setUserPositionsByPool({
+            dataReceived: false,
+            positions: [],
+        });
+        setUserLimitOrdersByPool({
+            dataReceived: false,
+            limitOrders: [],
+        });
+        setUserTransactionsByPool({
+            dataReceived: false,
+            changes: [],
+        });
+    }, [baseToken.address + quoteToken.address]);
 
     const userTxByPoolHashArray = userTransactionsByPool.changes.map(
         (change) => change.txHash,
@@ -281,7 +311,7 @@ export const GraphDataContextProvider = (props: {
         (tx) => !userTxByPoolHashArray.includes(tx),
     );
 
-    const failedSessionTransactionHashes = sessionReceipts
+    const failedSessionTransactionHashes = allReceipts
         .filter((r) => JSON.parse(r).status === 0)
         .map((r) => JSON.parse(r).transactionHash);
 

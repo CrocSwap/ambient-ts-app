@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { MutableRefObject, useContext } from 'react';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 import {
@@ -60,6 +60,7 @@ export function useCreateRangePosition() {
         setTxErrorMessage: (s: string) => void;
         resetConfirmation: () => void;
         setIsTxCompletedRange?: React.Dispatch<React.SetStateAction<boolean>>;
+        activeRangeTxHash: MutableRefObject<string>;
     }) => {
         const {
             slippageTolerancePercentage,
@@ -75,6 +76,7 @@ export function useCreateRangePosition() {
             setTxErrorCode,
             setTxErrorMessage,
             setIsTxCompletedRange,
+            activeRangeTxHash,
         } = params;
 
         if (!crocEnv) return;
@@ -112,6 +114,7 @@ export function useCreateRangePosition() {
 
             setNewRangeTransactionHash(tx?.hash);
             addPendingTx(tx?.hash);
+            activeRangeTxHash.current = tx?.hash;
 
             if (tx?.hash)
                 addTransactionByType({
@@ -165,7 +168,7 @@ export function useCreateRangePosition() {
                 removePendingTx(error.hash);
                 const newTransactionHash = error.replacement.hash;
                 addPendingTx(newTransactionHash);
-
+                activeRangeTxHash.current = newTransactionHash;
                 addPositionUpdate({
                     txHash: newTransactionHash,
                     positionID: posHash,
@@ -175,6 +178,7 @@ export function useCreateRangePosition() {
                 updateTransactionHash(error.hash, error.replacement.hash);
                 setNewRangeTransactionHash(newTransactionHash);
             } else if (isTransactionFailedError(error)) {
+                activeRangeTxHash.current = '';
                 receipt = error.receipt;
             }
         }

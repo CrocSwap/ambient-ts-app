@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useEffect, useState, useContext, memo, useRef } from 'react';
+import { useEffect, useState, useContext, memo, useRef, useMemo } from 'react';
 
 // START: Import Local Files
 import { Pagination } from '@mui/material';
@@ -79,50 +79,49 @@ function Ranges(props: propsIF) {
     const baseTokenAddress = baseToken.address;
     const quoteTokenAddress = quoteToken.address;
 
-    const [rangeData, setRangeData] = useState<PositionIF[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
     const path = useLocation().pathname;
 
     if (!path.includes('reposition')) {
         setCurrentRangeInReposition('');
     }
 
-    useEffect(() => {
-        if (isAccountView) setRangeData(activeAccountPositionData || []);
-        else if (!showAllData)
-            setRangeData(
-                userPositionsByPool?.positions.filter(
-                    (position) => position.positionLiq != 0,
-                ),
-            );
-        else {
-            setRangeData(positionsByPool.positions);
-        }
-    }, [
-        showAllData,
-        isAccountView,
-        activeAccountPositionData,
-        positionsByPool,
-        userPositionsByPool,
-    ]);
+    const rangeData = useMemo(
+        () =>
+            isAccountView
+                ? activeAccountPositionData || []
+                : !showAllData
+                ? userPositionsByPool?.positions.filter(
+                      (position) => position.positionLiq != 0,
+                  )
+                : positionsByPool.positions,
+        [
+            showAllData,
+            isAccountView,
+            activeAccountPositionData,
+            positionsByPool,
+            userPositionsByPool,
+        ],
+    );
 
-    useEffect(() => {
-        if (isAccountView && connectedAccountActive)
-            setIsLoading(dataLoadingStatus.isConnectedUserRangeDataLoading);
-        else if (isAccountView)
-            setIsLoading(dataLoadingStatus.isLookupUserRangeDataLoading);
-        else if (!showAllData)
-            setIsLoading(dataLoadingStatus.isConnectedUserPoolRangeDataLoading);
-        else setIsLoading(dataLoadingStatus.isPoolRangeDataLoading);
-    }, [
-        showAllData,
-        isAccountView,
-        connectedAccountActive,
-        dataLoadingStatus.isConnectedUserRangeDataLoading,
-        dataLoadingStatus.isConnectedUserPoolRangeDataLoading,
-        dataLoadingStatus.isLookupUserRangeDataLoading,
-        dataLoadingStatus.isPoolRangeDataLoading,
-    ]);
+    const isLoading = useMemo(
+        () =>
+            isAccountView && connectedAccountActive
+                ? dataLoadingStatus.isConnectedUserRangeDataLoading
+                : isAccountView
+                ? dataLoadingStatus.isLookupUserRangeDataLoading
+                : !showAllData
+                ? dataLoadingStatus.isConnectedUserPoolRangeDataLoading
+                : dataLoadingStatus.isPoolRangeDataLoading,
+        [
+            showAllData,
+            isAccountView,
+            connectedAccountActive,
+            dataLoadingStatus.isConnectedUserRangeDataLoading,
+            dataLoadingStatus.isConnectedUserPoolRangeDataLoading,
+            dataLoadingStatus.isLookupUserRangeDataLoading,
+            dataLoadingStatus.isPoolRangeDataLoading,
+        ],
+    );
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =
         useSortedPositions('time', rangeData);
