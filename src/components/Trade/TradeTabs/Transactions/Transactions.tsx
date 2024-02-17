@@ -692,7 +692,9 @@ function Transactions(props: propsIF) {
                         ? dataLoadingStatus.isCandleDataLoading
                         : isLoading
                 ) ? (
-                    <Spinner size={100} bg='var(--dark1)' centered />
+                    <div style={{ height: isSmallScreen ? '80vh' : '100%' }}>
+                        <Spinner size={100} bg='var(--dark1)' centered />
+                    </div>
                 ) : (
                     transactionDataOrNull
                 )}
