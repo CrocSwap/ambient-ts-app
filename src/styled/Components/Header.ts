@@ -31,6 +31,9 @@ export const PrimaryHeader = styled.header<PrimaryHeaderProps>`
         grid-template-columns: repeat(3, 1fr);
         padding: 0 16px;
     }
+    @media only screen and (max-width: 600px) {
+        padding: 0 1rem;
+    }
 `;
 
 // Define the styles for LogoContainer
@@ -300,6 +303,10 @@ export const WalletWrapper = styled(FlexContainer)`
     opacity: 1;
     bottom: 85px;
     pointer-events: auto;
+
+    @media only screen and (max-width: 600px) {
+        right: -100px;
+    }
 `;
 
 // Account
@@ -357,10 +364,11 @@ export const StyledExchangeBalanceDropdown = styled.div`
     text-align: start;
 
     @media only screen and (max-width: 600px) {
-        width: auto;
+        width: 90%;
         height: auto;
         background: transparent;
         border-radius: var(--border-radius);
+        margin: 0 auto;
     }
 `;
 

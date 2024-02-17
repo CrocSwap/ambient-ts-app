@@ -30,6 +30,7 @@ export default function Account(props: propsIF) {
 
     const {
         snackbar: { open: openSnackbar },
+        appHeaderDropdown,
     } = useContext(AppStateContext);
 
     const { isUserConnected } = useContext(UserDataContext);
@@ -67,6 +68,7 @@ export default function Account(props: propsIF) {
     useEffect(() => {
         if (isEscapePressed) {
             setShowWalletDropdown(false);
+            appHeaderDropdown.setIsActive(false);
         }
     }, [isEscapePressed]);
     const walletDisplay = (
@@ -77,7 +79,12 @@ export default function Account(props: propsIF) {
         >
             <TitleGradientButton
                 tabIndex={0}
-                onClick={() => setShowWalletDropdown(!showWalletDropdown)}
+                onClick={() => {
+                    setShowWalletDropdown(!showWalletDropdown);
+                    if (!showWalletDropdown) {
+                        appHeaderDropdown.setIsActive(true);
+                    } else appHeaderDropdown.setIsActive(false);
+                }}
                 aria-label={ariaLabel}
             >
                 <MdAccountBalanceWallet color='var(--text1)' />
