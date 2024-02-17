@@ -1,6 +1,7 @@
-import { useMemo } from 'react';
+import { MutableRefObject, useContext, useMemo } from 'react';
 import { TokenIF } from '../../ambient-utils/types';
 import { ZERO_ADDRESS } from '../../ambient-utils/constants';
+import { ReceiptContext } from '../../contexts/ReceiptContext';
 
 export function useHandleRangeButtonMessage(
     token: TokenIF,
@@ -12,9 +13,13 @@ export function useHandleRangeButtonMessage(
     isPoolInitialized: boolean,
     tokenQtyCoveredByWalletBalance: number,
     amountToReduceNativeTokenQty: number,
+    activeRangeTxHash: MutableRefObject<string>,
+    clearTokenInputs: () => void,
     isMintLiqEnabled = true,
     isInitPage = false,
 ) {
+    const { pendingTransactions } = useContext(ReceiptContext);
+
     const { tokenAllowed, rangeButtonErrorMessage } = useMemo(() => {
         let tokenAllowed = false;
         let rangeButtonErrorMessage = '';
@@ -38,6 +43,13 @@ export function useHandleRangeButtonMessage(
                     parseFloat(tokenAmount) >
                         parseFloat(tokenDexBalance) + parseFloat(tokenBalance)
                 ) {
+                    if (
+                        pendingTransactions.some(
+                            (tx) => tx === activeRangeTxHash.current,
+                        )
+                    ) {
+                        clearTokenInputs();
+                    }
                     rangeButtonErrorMessage = `${token.symbol} Amount Exceeds Combined Wallet and Exchange Balance`;
                 } else if (
                     isNativeToken &&
@@ -55,6 +67,13 @@ export function useHandleRangeButtonMessage(
                     !isTokenInputDisabled &&
                     parseFloat(tokenAmount) > parseFloat(tokenBalance)
                 ) {
+                    if (
+                        pendingTransactions.some(
+                            (tx) => tx === activeRangeTxHash.current,
+                        )
+                    ) {
+                        clearTokenInputs();
+                    }
                     rangeButtonErrorMessage = `${token.symbol} Amount Exceeds Wallet Balance`;
                 } else if (
                     isNativeToken &&
@@ -83,6 +102,8 @@ export function useHandleRangeButtonMessage(
         isTokenInputDisabled,
         isWithdrawTokenFromDexChecked,
         isPoolInitialized,
+        pendingTransactions,
+        activeRangeTxHash,
     ]);
 
     return {

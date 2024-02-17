@@ -19,8 +19,8 @@ export async function performSwap(params: PerformSwapParams) {
         buyTokenAddress,
         sellTokenAddress,
         slippageTolerancePercentage,
-        isWithdrawFromDexChecked = false,
-        isSaveAsDexSurplusChecked = true,
+        isWithdrawFromDexChecked = true,
+        isSaveAsDexSurplusChecked = false,
     } = params;
 
     const plan = isQtySell
