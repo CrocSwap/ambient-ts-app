@@ -273,12 +273,12 @@ label {
 }
 
 .lastCandleDiv {
-    position: absolute;
+    position: fixed;
     text-align: center;
     cursor: pointer;
     pointer-events: none;
 
-    background: rgba(10, 10, 19, 0.47);
+    background: rgba(10, 10, 19, 0.7);
     padding: 6px;
     font-size: medium;
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.47);
@@ -286,6 +286,7 @@ label {
     -webkit-backdrop-filter: blur(4px);
     border-radius: var(--border-radius);
     width: 260px;
+    z-index: 999999;
 }
 
 .lastCandleTooltip-enter {

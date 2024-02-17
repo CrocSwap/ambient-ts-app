@@ -235,14 +235,24 @@ export default function TransactionDetailsGraph(
 
             const priceLine = d3fc
                 .annotationSvgLine()
-                .value((d: any) => d)
+                .value((d: any) => d.y)
                 .xScale(scaleData?.xScale)
                 .yScale(scaleData?.yScale);
 
-            priceLine.decorate((selection: any) => {
-                selection.enter().select('g.right-handle').remove();
-                selection.enter().select('line').attr('class', 'priceLine');
-                selection.select('g.left-handle').remove();
+            priceLine.decorate((selection: any, d: any) => {
+                selection.nodes().forEach((context: any, index: number) => {
+                    d3.select(context).attr(
+                        'transform',
+                        'translate(' +
+                            scaleData.xScale(d[index].x) +
+                            ',' +
+                            scaleData?.yScale(d[index].y) +
+                            ')',
+                    );
+                });
+                selection.enter().selectAll('g.right-handle').remove();
+                selection.enter().selectAll('line').attr('class', 'priceLine');
+                selection.selectAll('g.left-handle').remove();
             });
 
             setPriceLine(() => {
@@ -285,27 +295,22 @@ export default function TransactionDetailsGraph(
                 .seriesSvgPoint()
                 .xScale(scaleData.xScale)
                 .yScale(scaleData.yScale)
-                .crossValue(() => {
-                    return scaleData.xScale.domain()[0];
-                })
-                .mainValue((d: any) => d)
-                .size(90)
+                .crossValue((d: any) => d.x)
+                .mainValue((d: any) => d.y)
+                .size(50)
                 .type(d3.symbolTriangle)
                 .decorate((context: any, d: any) => {
                     context.nodes().forEach((selection: any, index: number) => {
-                        const lastPx = scaleData.xScale(
-                            scaleData.xScale.domain()[1],
-                        );
-
                         d3.select(selection)
                             .attr(
                                 'transform',
                                 'translate(' +
-                                    (index % 2 ? 0 : lastPx) +
+                                    (scaleData?.xScale(d[index].x) +
+                                        (index % 2 ? -4 : +4)) +
                                     ',' +
-                                    scaleData?.yScale(d[index]) +
+                                    scaleData?.yScale(d[index].y) +
                                     ') rotate(' +
-                                    (index % 2 ? 90 : 270) +
+                                    (index % 2 ? 270 : 90) +
                                     ')',
                             )
                             .style('stroke', 'rgba(97, 71, 247, 0.8)')
@@ -369,6 +374,15 @@ export default function TransactionDetailsGraph(
                 .fromValue((d: any) => d[0])
                 .toValue((d: any) => d[1])
                 .decorate((selection: any) => {
+                    const time = tx.timeFirstMint
+                        ? tx.timeFirstMint * 1000
+                        : tx.txTime * 1000;
+                    selection
+                        .select('path')
+                        .style(
+                            'transform',
+                            'translateX(' + scaleData.xScale(time) + 'px )',
+                        );
                     selection.select('path').attr('fill', '#7371FC1A');
                 });
 
@@ -528,7 +542,17 @@ export default function TransactionDetailsGraph(
                 return scaleData;
             });
         }
-    }, [tx, graphData]);
+    }, [
+        tx.askTickInvPriceDecimalCorrected,
+        tx.askTickPriceDecimalCorrected,
+        tx.bidTickPriceDecimalCorrected,
+        tx.bidTickInvPriceDecimalCorrected,
+        tx.positionType,
+        tx.txTime,
+        tx.swapInvPriceDecimalCorrected,
+        tx.swapPriceDecimalCorrected,
+        graphData,
+    ]);
 
     useEffect(() => {
         if (scaleData) {
@@ -865,9 +889,15 @@ export default function TransactionDetailsGraph(
                 }
 
                 if (transactionType === 'liqchange' && period) {
-                    const buffer = period * 1000 * 2;
+                    const buffer = period * 1000;
+                    const time = tx.timeFirstMint
+                        ? tx.timeFirstMint * 1000
+                        : tx.txTime * 1000;
 
-                    scaleData?.xScale.domain([minDomain, maxDomain + buffer]);
+                    scaleData?.xScale.domain([
+                        time - buffer * 100,
+                        maxDomain + buffer * 6,
+                    ]);
                 }
 
                 const lineJoin = d3fc.dataJoin('g', 'lineJoin');
@@ -989,13 +1019,26 @@ export default function TransactionDetailsGraph(
 
                                 horizontalBandData[0] = [bidLine, askLine];
 
-                                const rangeLinesData = [bidLine, askLine];
+                                const time = tx.timeFirstMint
+                                    ? tx.timeFirstMint * 1000
+                                    : tx.txTime * 1000;
+
+                                const rangeLinesData = [
+                                    { x: time, y: bidLine },
+                                    { x: time, y: askLine },
+                                ];
 
                                 const triangleData = [
-                                    bidLine,
-                                    bidLine,
-                                    askLine,
-                                    askLine,
+                                    { x: time, y: bidLine },
+                                    {
+                                        x: scaleData.xScale.domain()[1],
+                                        y: bidLine,
+                                    },
+                                    { x: time, y: askLine },
+                                    {
+                                        x: scaleData.xScale.domain()[1],
+                                        y: askLine,
+                                    },
                                 ];
 
                                 horizontalBandJoin(svg, [
@@ -1038,7 +1081,17 @@ export default function TransactionDetailsGraph(
                 render();
             }
         },
-        [tx, graphData],
+        [
+            tx?.txTime,
+            tx?.timeFirstMint,
+            tx.swapInvPriceDecimalCorrected,
+            tx.swapPriceDecimalCorrected,
+            tx.bidTickInvPriceDecimalCorrected,
+            tx.bidTickPriceDecimalCorrected,
+            tx.askTickInvPriceDecimalCorrected,
+            tx.askTickPriceDecimalCorrected,
+            graphData,
+        ],
     );
 
     const loadingSpinner = <Spinner size={100} bg='var(--dark1)' centered />;
