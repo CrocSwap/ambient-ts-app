@@ -61,6 +61,8 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
         tokenBAddressLowerCase,
         baseDisplayFrontend,
         quoteDisplayFrontend,
+        elapsedTimeString,
+        elapsedTimeSinceFirstMintString,
     } = useProcessRange(position, userAddress, isAccountView);
 
     const showFullAddresses = useMediaQuery('(min-width: 768px)');
@@ -170,15 +172,31 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
         ? 'In Range'
         : 'Out of Range';
 
-    const submissionTime = moment(position.timeFirstMint * 1000).format(
-        'MM/DD/YYYY HH:mm',
-    );
+    const submissionTime =
+        moment(position.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm') +
+        ' ' +
+        '(' +
+        elapsedTimeSinceFirstMintString +
+        ' ago)';
+
+    const updateTime =
+        moment(position.latestUpdateTime * 1000).format('MM/DD/YYYY HH:mm') +
+        ' ' +
+        '(' +
+        elapsedTimeString +
+        ' ago)';
 
     const infoContent = [
         {
             title: 'Position Type ',
             content: isAmbient ? 'Ambient' : 'Range',
             explanation: 'e.g. Range, Ambient ',
+        },
+        {
+            title: 'Submit Time ',
+            content: submissionTime,
+            explanation:
+                'The time the owner first added liquidity at these prices',
         },
         {
             title: 'Position Slot ID ',
@@ -191,12 +209,6 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
             title: 'Wallet ',
             content: walletContent,
             explanation: 'The account of the position owner',
-        },
-        {
-            title: 'Add Time ',
-            content: submissionTime,
-            explanation:
-                'The time the owner first added a range at these prices',
         },
         {
             title: 'Status ',
@@ -263,7 +275,7 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
                 : isDenomBase
                 ? `1 ${baseTokenSymbol} = ${ambientOrMax} ${quoteTokenSymbol}`
                 : `1 ${quoteTokenSymbol} = ${ambientOrMax} ${baseTokenSymbol}`,
-            explanation: 'The high price boundary of the range',
+            explanation: 'The upper price boundary of the range',
         },
 
         {
@@ -304,11 +316,19 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
                       title: 'High Tick ',
                       content: position.askTick.toString(),
                       explanation:
-                          'The high price boundary represented in a geometric scale',
+                          'The upper price boundary represented in a geometric scale',
                   },
               ]
             : []),
     ];
+
+    if (submissionTime !== updateTime) {
+        infoContent.splice(2, 0, {
+            title: 'Update Time ',
+            content: updateTime,
+            explanation: 'Time the owner last updated the limit at this price',
+        });
+    }
 
     return (
         <div className={styles.tx_details_container}>

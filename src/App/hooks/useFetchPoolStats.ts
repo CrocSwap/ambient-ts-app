@@ -39,7 +39,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
     >();
     const [shouldInvertDisplay, setShouldInvertDisplay] = useState<
         boolean | undefined
-    >();
+    >(!pool.isBaseTokenMoneynessGreaterOrEqual);
 
     const baseTokenCharacter = poolPriceDisplay
         ? getUnicodeCharacter(pool.base.symbol)
