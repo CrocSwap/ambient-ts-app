@@ -3,12 +3,10 @@ import { useEffect, useState, useContext, memo, useRef } from 'react';
 
 // START: Import Local Files
 import { Pagination } from '@mui/material';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
 import { PositionIF } from '../../../../ambient-utils/types';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
-import RangesRow from './RangesTable/RangesRow';
 import NoTableData from '../NoTableData/NoTableData';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
@@ -29,6 +27,8 @@ import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import TableRows from '../TableRows';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -63,12 +63,14 @@ function Ranges(props: propsIF) {
 
     const { userAddress } = useContext(UserDataContext);
 
-    const { userPositionsByPool, positionsByPool } =
-        useContext(GraphDataContext);
+    const {
+        userPositionsByPool,
+        positionsByPool,
+        unindexedNonFailedSessionPositionUpdates,
+    } = useContext(GraphDataContext);
     const dataLoadingStatus = useContext(DataLoadingContext);
-    const { transactionsByType, pendingTransactions } = useAppSelector(
-        (state) => state.receiptData,
-    );
+
+    const { transactionsByType } = useContext(ReceiptContext);
 
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
@@ -126,14 +128,22 @@ function Ranges(props: propsIF) {
         useSortedPositions('time', rangeData);
 
     // TODO: Use these as media width constants
-    const isSmallScreen = useMediaQuery('(max-width: 600px)');
-    const isLargeScreen = useMediaQuery('(min-width: 1600px)');
+    const isSmallScreen = useMediaQuery('(max-width: 700px)');
+    const isLargeScreen = useMediaQuery('(min-width: 2000px)');
+    const isLargeScreenAccount = useMediaQuery('(min-width: 1600px)');
 
     const tableView =
-        isSmallScreen || (isAccountView && !isLargeScreen && isSidebarOpen)
+        isSmallScreen ||
+        (isAccountView &&
+            connectedAccountActive &&
+            !isLargeScreenAccount &&
+            isSidebarOpen)
             ? 'small'
             : (!isSmallScreen && !isLargeScreen) ||
-              (isAccountView && isLargeScreen && isSidebarOpen)
+              (isAccountView &&
+                  connectedAccountActive &&
+                  isLargeScreenAccount &&
+                  isSidebarOpen)
             ? 'medium'
             : 'large';
 
@@ -335,6 +345,7 @@ function Ranges(props: propsIF) {
             slug: 'apr',
             sortable: true,
             alignRight: true,
+            rightPadding: 8,
         },
         {
             name: 'Status',
@@ -342,6 +353,7 @@ function Ranges(props: propsIF) {
             show: true,
             slug: 'status',
             sortable: true,
+            leftPadding: 8,
         },
 
         {
@@ -368,16 +380,6 @@ function Ranges(props: propsIF) {
         </RangeRowStyled>
     );
 
-    const currentRowItemContent = () =>
-        _DATA.currentData.map((position, idx) => (
-            <RangesRow
-                key={idx}
-                position={position}
-                isAccountView={isAccountView}
-                tableView={tableView}
-            />
-        ));
-
     useEffect(() => {
         if (_DATA.currentData.length && !isTradeTableExpanded) {
             setCurrentPage(1);
@@ -388,10 +390,11 @@ function Ranges(props: propsIF) {
 
     const relevantTransactionsByType = transactionsByType.filter(
         (tx) =>
-            tx.txAction &&
-            tx.txDetails &&
-            tx.txType === 'Range' &&
-            pendingTransactions.includes(tx.txHash) &&
+            unindexedNonFailedSessionPositionUpdates.some(
+                (update) => update.txHash === tx.txHash,
+            ) &&
+            tx.userAddress.toLowerCase() ===
+                (userAddress || '').toLowerCase() &&
             tx.txDetails?.baseAddress.toLowerCase() ===
                 baseToken.address.toLowerCase() &&
             tx.txDetails?.quoteAddress.toLowerCase() ===
@@ -402,14 +405,13 @@ function Ranges(props: propsIF) {
     const shouldDisplayNoTableData =
         !isLoading &&
         !rangeData.length &&
-        (relevantTransactionsByType.length === 0 ||
-            pendingTransactions.length === 0);
+        unindexedNonFailedSessionPositionUpdates.length === 0;
 
     const rangeDataOrNull = !shouldDisplayNoTableData ? (
         <div>
             <ul ref={listRef} id='current_row_scroll'>
                 {!isAccountView &&
-                    pendingTransactions.length > 0 &&
+                    relevantTransactionsByType.length > 0 &&
                     relevantTransactionsByType.reverse().map((tx, idx) => (
                         <RangesRowPlaceholder
                             key={idx}
@@ -422,7 +424,12 @@ function Ranges(props: propsIF) {
                             tableView={tableView}
                         />
                     ))}
-                {currentRowItemContent()}
+                <TableRows
+                    type='Range'
+                    data={_DATA.currentData}
+                    isAccountView={isAccountView}
+                    tableView={tableView}
+                />
             </ul>
             {
                 // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
@@ -443,7 +450,7 @@ function Ranges(props: propsIF) {
             }
         </div>
     ) : (
-        <NoTableData type='ranges' isAccountView={isAccountView} />
+        <NoTableData type='liquidity' isAccountView={isAccountView} />
     );
 
     return (

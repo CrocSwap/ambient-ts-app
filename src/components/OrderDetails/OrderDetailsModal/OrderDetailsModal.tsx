@@ -192,7 +192,7 @@ export default function OrderDetailsModal(props: propsIF) {
                     setUsdValue(
                         getFormattedNumber({
                             value: positionStats.totalValueUSD,
-                            isUSD: true,
+                            prefix: '$',
                         }),
                     );
                 })

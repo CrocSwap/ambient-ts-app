@@ -4,11 +4,10 @@ import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { Chip } from '../../../../Form/Chip';
 import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
 import { FiExternalLink } from 'react-icons/fi';
-import { getPinnedPriceValuesFromTicks } from '../../../../../pages/Trade/Range/rangeFunctions';
-import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 import {
     trimString,
     getUnicodeCharacter,
+    getPinnedPriceValuesFromTicks,
 } from '../../../../../ambient-utils/dataLayer';
 import {
     RangeRow,
@@ -17,6 +16,7 @@ import {
 import { FlexContainer } from '../../../../../styled/Common';
 import { UserDataContext } from '../../../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import { getPositionHash } from '../../../../../ambient-utils/dataLayer/functions/getPositionHash';
 
 interface PropsIF {
     transaction: {
@@ -79,33 +79,26 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
 
     const { userAddress } = useContext(UserDataContext);
 
-    let posHash;
-    if (isAmbient) {
-        posHash = ambientPosSlot(
-            userAddress ?? '',
-            transaction.details?.baseAddress ?? '',
-            transaction.details?.quoteAddress ?? '',
-            transaction.details?.poolIdx ?? 0,
-        );
-    } else {
-        posHash = transaction.details
-            ? concPosSlot(
-                  userAddress ?? '',
-                  transaction.details?.baseAddress ?? '',
-                  transaction.details?.quoteAddress ?? '',
-                  transaction.details?.lowTick ?? 0,
-                  transaction.details?.highTick ?? 0,
-                  transaction.details?.poolIdx ?? 0,
-              ).toString()
-            : '…';
-    }
+    const posHash = getPositionHash(undefined, {
+        isPositionTypeAmbient: isAmbient,
+        user: userAddress ?? '',
+        baseAddress: transaction.details?.baseAddress ?? '',
+        quoteAddress: transaction.details?.quoteAddress ?? '',
+        poolIdx: transaction.details?.poolIdx ?? 0,
+        bidTick: transaction.details?.lowTick ?? 0,
+        askTick: transaction.details?.highTick ?? 0,
+    });
 
     const id = (
         <RowItem font='roboto'>
             {trimString(posHash.toString(), 9, 0, '…')}
         </RowItem>
     );
-    const wallet = <p>you</p>;
+    const wallet = (
+        <RowItem style={{ textTransform: 'lowercase' }}>
+            <p>you</p>
+        </RowItem>
+    );
     // TODO: use media queries and standardized styles
     return (
         <>
@@ -183,7 +176,7 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
                 {
                     <FlexContainer
                         justifyContent='flex-start'
-                        padding='0 0 0 8px'
+                        padding='0 0 0 18px'
                     >
                         <RangeStatus
                             isInRange={false}

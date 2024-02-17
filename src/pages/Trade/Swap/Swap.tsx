@@ -5,6 +5,8 @@ import {
     getFormattedNumber,
     getPriceImpactString,
     isStablePair,
+    getTxReceipt,
+    performSwap,
 } from '../../../ambient-utils/dataLayer';
 import Button from '../../../components/Form/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
@@ -24,17 +26,7 @@ import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { FlexContainer } from '../../../styled/Common';
 import { WarningContainer } from '../../../styled/Components/TradeModules';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../utils/hooks/reduxToolkit';
-import {
-    addPendingTx,
-    addTransactionByType,
-    removePendingTx,
-    addReceipt,
-    updateTransactionHash,
-} from '../../../utils/state/receiptDataSlice';
+
 import {
     TransactionError,
     isTransactionReplacedError,
@@ -52,8 +44,11 @@ import {
     GAS_DROPS_ESTIMATE_SWAP_NATIVE,
     GAS_DROPS_ESTIMATE_SWAP_TO_FROM_DEX,
     NUM_GWEI_IN_WEI,
-    SWAP_BUFFER_MULTIPLIER,
+    SWAP_BUFFER_MULTIPLIER_MAINNET,
+    SWAP_BUFFER_MULTIPLIER_SCROLL,
 } from '../../../ambient-utils/constants/';
+import { ReceiptContext } from '../../../contexts/ReceiptContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -67,6 +62,7 @@ function Swap(props: propsIF) {
         ethMainnetUsdPrice,
         provider,
     } = useContext(CrocEnvContext);
+    const { userAddress } = useContext(UserDataContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { poolPriceDisplay, isPoolInitialized } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
@@ -80,17 +76,20 @@ function Swap(props: propsIF) {
     const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
         UserPreferenceContext,
     );
+    const {
+        addPendingTx,
+        addReceipt,
+        addTransactionByType,
+        removePendingTx,
+        updateTransactionHash,
+    } = useContext(ReceiptContext);
 
-    const dispatch = useAppDispatch();
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
     !pathname.includes('/trade') && useUrlParams(tokens, chainId, provider);
     const [isModalOpen, openModal, closeModal] = useModal();
     // use URL pathway to determine if user is in swap or market page
     // depending on location we pull data on the tx in progress differently
-    const {
-        tradeData: { primaryQuantity },
-    } = useAppSelector((state) => state);
     // TODO: confirm this doesn't break data that needs to be different when on trade page
     const { liquidityFee } = useContext(GraphDataContext);
     const {
@@ -100,6 +99,7 @@ function Swap(props: propsIF) {
         quoteToken,
         isTokenAPrimary,
         isDenomBase,
+        primaryQuantity,
     } = useContext(TradeDataContext);
 
     const [sellQtyString, setSellQtyString] = useState<string>(
@@ -196,7 +196,7 @@ function Swap(props: propsIF) {
     const [
         amountToReduceNativeTokenQtyScroll,
         setAmountToReduceNativeTokenQtyScroll,
-    ] = useState<number>(0.00001);
+    ] = useState<number>(0.0003);
 
     const amountToReduceNativeTokenQty =
         chainId === '0x82750' || chainId === '0x8274f'
@@ -210,12 +210,12 @@ function Swap(props: propsIF) {
         } else if (isPoolInitialized === false) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Pool Not Initialized');
-        } else if (isNaN(parseFloat(sellQtyString))) {
-            setSwapAllowed(false);
-            setSwapButtonErrorMessage('Enter an Amount');
         } else if (isLiquidityInsufficient) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Liquidity Insufficient');
+        } else if (isNaN(parseFloat(sellQtyString))) {
+            setSwapAllowed(false);
+            setSwapButtonErrorMessage('Enter an Amount');
         } else if (parseFloat(sellQtyString) <= 0) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Enter an Amount');
@@ -292,7 +292,7 @@ function Swap(props: propsIF) {
                 gasPriceInGwei * averageSwapCostInGasDrops * NUM_GWEI_IN_WEI;
 
             setAmountToReduceNativeTokenQtyMainnet(
-                SWAP_BUFFER_MULTIPLIER * costOfMainnetSwapInETH,
+                SWAP_BUFFER_MULTIPLIER_MAINNET * costOfMainnetSwapInETH,
             );
 
             const costOfScrollSwapInETH =
@@ -306,7 +306,7 @@ function Swap(props: propsIF) {
             //     });
 
             setAmountToReduceNativeTokenQtyScroll(
-                SWAP_BUFFER_MULTIPLIER * costOfScrollSwapInETH,
+                SWAP_BUFFER_MULTIPLIER_SCROLL * costOfScrollSwapInETH,
             );
 
             const gasPriceInDollarsNum =
@@ -348,9 +348,6 @@ function Swap(props: propsIF) {
         setShowConfirmation(true);
         if (!crocEnv) return;
 
-        const sellTokenAddress = tokenA.address;
-        const buyTokenAddress = tokenB.address;
-
         const qty = isTokenAPrimary
             ? sellQtyString.replaceAll(',', '')
             : buyQtyString.replaceAll(',', '');
@@ -359,40 +356,44 @@ function Swap(props: propsIF) {
 
         let tx;
         try {
-            const plan = isQtySell
-                ? crocEnv.sell(sellTokenAddress, qty).for(buyTokenAddress, {
-                      slippage: slippageTolerancePercentage / 100,
-                  })
-                : crocEnv.buy(buyTokenAddress, qty).with(sellTokenAddress, {
-                      slippage: slippageTolerancePercentage / 100,
-                  });
-            tx = await plan.swap({
-                surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked],
+            const sellTokenAddress = tokenA.address;
+            const buyTokenAddress = tokenB.address;
+
+            tx = await performSwap({
+                crocEnv,
+                isQtySell,
+                qty,
+                buyTokenAddress,
+                sellTokenAddress,
+                slippageTolerancePercentage,
+                isWithdrawFromDexChecked,
+                isSaveAsDexSurplusChecked,
             });
 
             setNewSwapTransactionHash(tx?.hash);
-            dispatch(addPendingTx(tx?.hash));
-            if (tx.hash)
-                dispatch(
-                    addTransactionByType({
-                        txHash: tx.hash,
-                        txAction:
-                            buyTokenAddress.toLowerCase() ===
-                            quoteToken.address.toLowerCase()
-                                ? 'Buy'
-                                : 'Sell',
-                        txType: 'Market',
-                        txDescription: `Swap ${tokenA.symbol}→${tokenB.symbol}`,
-                        txDetails: {
-                            baseAddress: baseToken.address,
-                            quoteAddress: quoteToken.address,
-                            poolIdx: poolIndex,
-                            baseSymbol: baseToken.symbol,
-                            quoteSymbol: quoteToken.symbol,
-                            isBid: isSellTokenBase,
-                        },
-                    }),
-                );
+            addPendingTx(tx?.hash);
+
+            if (tx.hash) {
+                addTransactionByType({
+                    userAddress: userAddress || '',
+                    txHash: tx.hash,
+                    txAction:
+                        buyTokenAddress.toLowerCase() ===
+                        quoteToken.address.toLowerCase()
+                            ? 'Buy'
+                            : 'Sell',
+                    txType: 'Market',
+                    txDescription: `Swap ${tokenA.symbol}→${tokenB.symbol}`,
+                    txDetails: {
+                        baseAddress: baseToken.address,
+                        quoteAddress: quoteToken.address,
+                        poolIdx: poolIndex,
+                        baseSymbol: baseToken.symbol,
+                        quoteSymbol: quoteToken.symbol,
+                        isBid: isSellTokenBase,
+                    },
+                });
+            }
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
@@ -402,38 +403,36 @@ function Swap(props: propsIF) {
             setTxErrorMessage(error?.data?.message);
         }
 
-        let receipt;
-        try {
-            if (tx) receipt = await tx.wait();
-        } catch (e) {
-            const error = e as TransactionError;
-            console.error({ error });
-            // The user used "speed up" or something similar
-            // in their client, but we now have the updated info
-            if (isTransactionReplacedError(error)) {
-                IS_LOCAL_ENV && console.debug('repriced');
-                dispatch(removePendingTx(error.hash));
+        if (tx) {
+            let receipt;
+            try {
+                receipt = await getTxReceipt(tx);
+            } catch (e) {
+                const error = e as TransactionError;
+                console.error({ error });
+                // The user used "speed up" or something similar
+                // in their client, but we now have the updated info
+                if (isTransactionReplacedError(error)) {
+                    IS_LOCAL_ENV && console.debug('repriced');
+                    removePendingTx(error.hash);
 
-                const newTransactionHash = error.replacement.hash;
-                dispatch(addPendingTx(newTransactionHash));
+                    const newTransactionHash = error.replacement.hash;
 
-                dispatch(
-                    updateTransactionHash({
-                        oldHash: error.hash,
-                        newHash: error.replacement.hash,
-                    }),
-                );
-                setNewSwapTransactionHash(newTransactionHash);
-                IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                receipt = error.receipt;
-            } else if (isTransactionFailedError(error)) {
-                receipt = error.receipt;
+                    addPendingTx(newTransactionHash);
+                    updateTransactionHash(error.hash, error.replacement.hash);
+                    setNewSwapTransactionHash(newTransactionHash);
+
+                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
+                    receipt = error.receipt;
+                } else if (isTransactionFailedError(error)) {
+                    receipt = error.receipt;
+                }
             }
-        }
 
-        if (receipt) {
-            dispatch(addReceipt(JSON.stringify(receipt)));
-            dispatch(removePendingTx(receipt.transactionHash));
+            if (receipt) {
+                addReceipt(JSON.stringify(receipt));
+                removePendingTx(receipt.transactionHash);
+            }
         }
     }
 
@@ -474,7 +473,7 @@ function Swap(props: propsIF) {
             color='other-red'
             padding='4px 8px'
         >
-            <div>Current Pool Liquidity is Insufficient for this Swap</div>
+            <div>Pool Liquidity is Insufficient for this Swap</div>
             <TooltipComponent
                 title='Current Pool Liquidity is Insufficient for this Swap'
                 placement='bottom'
@@ -585,6 +584,7 @@ function Swap(props: propsIF) {
                         sellQtyString={sellQtyString}
                         buyQtyString={buyQtyString}
                         isTokenAPrimary={isTokenAPrimary}
+                        priceImpactWarning={priceImpactWarning}
                     />
                 ) : (
                     <></>

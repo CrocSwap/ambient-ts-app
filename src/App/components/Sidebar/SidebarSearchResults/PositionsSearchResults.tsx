@@ -54,6 +54,7 @@ function PositionLI(props: PositionLiPropsIF) {
     // fn to generate human-readable version of total position value
     const positionValue = getFormattedNumber({
         value: position.totalValueUSD,
+        prefix: '$',
     });
 
     return (
@@ -72,7 +73,7 @@ function PositionLI(props: PositionLiPropsIF) {
                     : `${position?.quoteSymbol} / ${position?.baseSymbol}`}
             </p>
             <p style={{ textAlign: 'center' }}>{rangeDisplay}</p>
-            <p style={{ textAlign: 'center' }}>{'$' + positionValue}</p>
+            <p style={{ textAlign: 'center' }}>{positionValue}</p>
         </Results>
     );
 }
