@@ -10,7 +10,7 @@ import { useContext } from 'react';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TokenIF } from '../../../ambient-utils/types';
 
-interface IRemoveRangeInfoProps {
+interface propsIF {
     baseTokenAddress: string;
     quoteTokenAddress: string;
     baseTokenSymbol: string;
@@ -24,10 +24,11 @@ interface IRemoveRangeInfoProps {
     removalPercentage: number;
     baseRemovalNum: number;
     quoteRemovalNum: number;
+    fiatRemovalVal: string;
     isAmbient: boolean;
 }
 
-export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
+export default function RemoveRangeInfo(props: propsIF) {
     const {
         baseTokenAddress,
         quoteTokenAddress,
@@ -41,6 +42,7 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
         feeLiqQuoteDecimalCorrected,
         baseRemovalNum,
         quoteRemovalNum,
+        fiatRemovalVal,
         isAmbient,
     } = props;
 
@@ -84,7 +86,6 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
                     />
                 </div>
             </Row>
-            {/*  */}
             <Row>
                 <span>{quoteTokenSymbol} Rewards Earned</span>
                 <div className={styles.token_price}>
@@ -126,7 +127,6 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
                         />
                     </div>
                 </Row>
-                {/*  */}
                 <Row>
                     <span>Pooled {quoteTokenSymbol}</span>
                     <div className={styles.token_price}>
@@ -139,15 +139,12 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
                         />
                     </div>
                 </Row>
-                {/*  */}
                 {rewardsEarnedSection}
                 <DividerDark />
                 <Row>
                     <span>{baseTokenSymbol} Removal Summary</span>
                     <div className={styles.token_price}>
-                        {baseRemovalString !== undefined
-                            ? baseRemovalString
-                            : '…'}
+                        {baseRemovalString ?? '…'}
                         <TokenIcon
                             token={baseToken}
                             src={uriToHttp(baseTokenLogoURI)}
@@ -159,15 +156,20 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
                 <Row>
                     <span>{quoteTokenSymbol} Removal Summary</span>
                     <div className={styles.token_price}>
-                        {quoteRemovalString !== undefined
-                            ? quoteRemovalString
-                            : '…'}
+                        {quoteRemovalString ?? '…'}
                         <TokenIcon
                             token={quoteToken}
                             src={uriToHttp(quoteTokenLogoURI)}
                             alt={quoteTokenSymbol}
                             size='xs'
                         />
+                    </div>
+                </Row>
+                <Row>
+                    <span>USD ($) Removal Summary</span>
+                    <div className={styles.token_price}>
+                        {fiatRemovalVal ?? '…'}
+                        <TokenIcon size='xs' empty />
                     </div>
                 </Row>
             </div>

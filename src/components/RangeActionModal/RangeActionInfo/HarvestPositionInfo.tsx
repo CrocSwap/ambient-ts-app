@@ -9,9 +9,10 @@ import { useContext } from 'react';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TokenIF } from '../../../ambient-utils/types';
 
-interface IHarvestPositionInfoProps {
+interface propsIF {
     baseHarvestNum: number | undefined;
     quoteHarvestNum: number | undefined;
+    fiatHarvestVal: string | undefined;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
     baseTokenLogoURI: string;
@@ -20,7 +21,7 @@ interface IHarvestPositionInfoProps {
     quoteTokenAddress: string;
 }
 
-export default function HarvestPositionInfo(props: IHarvestPositionInfoProps) {
+export default function HarvestPositionInfo(props: propsIF) {
     const {
         baseTokenSymbol,
         quoteTokenSymbol,
@@ -30,6 +31,7 @@ export default function HarvestPositionInfo(props: IHarvestPositionInfoProps) {
         quoteHarvestNum,
         baseTokenAddress,
         quoteTokenAddress,
+        fiatHarvestVal,
     } = props;
 
     const baseHarvestString = getFormattedNumber({ value: baseHarvestNum });
@@ -47,9 +49,7 @@ export default function HarvestPositionInfo(props: IHarvestPositionInfoProps) {
                 <Row>
                     <span>{baseTokenSymbol} Removal Summary</span>
                     <div className={styles.token_price}>
-                        {baseHarvestString !== undefined
-                            ? baseHarvestString
-                            : '…'}
+                        {baseHarvestString ?? '…'}
                         <TokenIcon
                             token={baseToken}
                             src={uriToHttp(baseTokenLogoURI)}
@@ -61,15 +61,20 @@ export default function HarvestPositionInfo(props: IHarvestPositionInfoProps) {
                 <Row>
                     <span>{quoteTokenSymbol} Removal Summary</span>
                     <div className={styles.token_price}>
-                        {quoteHarvestString !== undefined
-                            ? quoteHarvestString
-                            : '…'}
+                        {quoteHarvestString ?? '…'}
                         <TokenIcon
                             token={quoteToken}
                             src={uriToHttp(quoteTokenLogoURI)}
                             alt={quoteTokenSymbol}
                             size='xs'
                         />
+                    </div>
+                </Row>
+                <Row>
+                    <span>USD ($) Removal Summary</span>
+                    <div className={styles.token_price}>
+                        {fiatHarvestVal ?? '…'}
+                        <TokenIcon size='xs' empty />
                     </div>
                 </Row>
             </div>

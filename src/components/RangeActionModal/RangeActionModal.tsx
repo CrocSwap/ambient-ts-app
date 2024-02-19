@@ -776,6 +776,7 @@ function RangeActionModal(props: propsIF) {
                             removalPercentage={removalPercentage}
                             baseRemovalNum={baseRemovalNum}
                             quoteRemovalNum={quoteRemovalNum}
+                            fiatRemovalVal={`$ ${92}`}
                             isAmbient={isAmbient}
                         />
                     )}
@@ -789,6 +790,7 @@ function RangeActionModal(props: propsIF) {
                             quoteTokenLogoURI={quoteTokenLogoURI}
                             baseHarvestNum={memoBaseHarvestNum}
                             quoteHarvestNum={memoQuoteHarvestNum}
+                            fiatHarvestVal={`$ ${93}`}
                         />
                     )}
                     <ExtraControls />
