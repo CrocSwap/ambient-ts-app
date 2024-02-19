@@ -14,7 +14,6 @@ import { fetchEnsAddress } from '../../ambient-utils/api';
 import { Navigate, useParams } from 'react-router-dom';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { diffHashSig } from '../../ambient-utils/dataLayer';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { TokenContext } from '../../contexts/TokenContext';
@@ -170,20 +169,13 @@ function Portfolio() {
                     });
 
                     tokensWithLogos.map((newToken: TokenIF) => {
-                        const indexOfExistingToken =
-                            resolvedAddressTokens.findIndex(
-                                (existingToken) =>
-                                    existingToken.address === newToken.address,
-                            );
+                        const indexOfExistingToken = updatedTokens.findIndex(
+                            (existingToken) =>
+                                existingToken.address === newToken.address,
+                        );
 
                         if (indexOfExistingToken === -1) {
                             updatedTokens.push(newToken);
-                        } else if (
-                            diffHashSig(
-                                resolvedAddressTokens[indexOfExistingToken],
-                            ) !== diffHashSig(newToken)
-                        ) {
-                            updatedTokens[indexOfExistingToken] = newToken;
                         }
                     });
                     setResolvedAddressTokens(updatedTokens);
