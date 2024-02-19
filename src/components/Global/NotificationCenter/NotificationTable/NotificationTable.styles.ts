@@ -31,11 +31,13 @@ export const Header = styled.section`
     color: var(--text1);
     padding: 1rem;
     background: var(--dark1);
+    border-radius: var(--border-radius);
     height: 50px;
 `;
 export const Footer = styled.section`
     padding: 1rem;
     background: var(--dark1);
+    border-radius: var(--border-radius);
     height: 50px;
 `;
 
