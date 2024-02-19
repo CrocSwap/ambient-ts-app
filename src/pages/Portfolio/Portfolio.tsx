@@ -147,7 +147,8 @@ function Portfolio() {
                 !connectedAccountActive
             ) {
                 try {
-                    const updatedTokens: TokenIF[] = resolvedAddressTokens;
+                    setResolvedAddressTokens([]);
+                    const updatedTokens: TokenIF[] = [];
 
                     const tokenBalanceResults = await cachedFetchTokenBalances(
                         resolvedAddress,
