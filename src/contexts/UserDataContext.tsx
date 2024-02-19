@@ -9,6 +9,7 @@ import { useAccount, useConnect, useDisconnect, useEnsName } from 'wagmi';
 import { ConnectArgs, Connector } from '@wagmi/core';
 import { checkBlacklist } from '../ambient-utils/constants';
 import { fetchEnsAddress } from '../ambient-utils/api';
+import useChatApi from '../components/Chat/Service/ChatApi';
 
 interface UserDataContextIF {
     isUserConnected: boolean | undefined;
@@ -40,6 +41,9 @@ export const UserDataContextProvider = (props: {
 
     const { address: userAddress, isConnected: isUserConnected } = useAccount();
     const { disconnect: disconnectUser } = useDisconnect();
+
+    const { getUserAvatarImageAndID } = useChatApi();
+
     const {
         connect: connectUser,
         connectors,
@@ -81,6 +85,25 @@ export const UserDataContextProvider = (props: {
             }
         })();
     }, [ensNameFromWagmi, userAddress]);
+
+    useEffect(() => {
+        (async () => {
+            if (userAddress) {
+                try {
+                    getUserAvatarImageAndID(userAddress).then((result: any) => {
+                        if (result.status === 'OK') {
+                            setUserAccountProfile(
+                                () => result.userData.avatarImage,
+                            );
+                        }
+                    });
+                } catch (error) {
+                    setUserAccountProfile('');
+                    console.error({ error });
+                }
+            }
+        })();
+    }, [userAddress, isUserConnected]);
 
     const userDataContext: UserDataContextIF = {
         isUserConnected,

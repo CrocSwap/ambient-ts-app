@@ -1,11 +1,12 @@
 import styles from './SentMessagePanel.module.css';
 import { Message } from '../../Model/MessageModel';
 import PositionBox from '../PositionBox/PositionBox';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { FiDelete } from 'react-icons/fi';
 import useChatApi from '../../Service/ChatApi';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 interface SentMessageProps {
     message: Message;
@@ -50,6 +51,8 @@ export default function SentMessagePanel(props: SentMessageProps) {
 
     const navigate = useNavigate();
     const location = useLocation();
+
+    const { userAddress, userAccountProfile } = useContext(UserDataContext);
 
     useEffect(() => {
         const previousMessageDate = new Date(props.previousMessage?.createdAt);
@@ -291,7 +294,20 @@ export default function SentMessagePanel(props: SentMessageProps) {
 
     const jazziconsSeed = props.message.walletID.toLowerCase();
 
-    const myJazzicon = (
+    useEffect(() => {
+        console.log(props.message);
+    }, [props.message]);
+
+    const myJazzicon = props.message.avatarImage ? (
+        <img
+            src={props.message.avatarImage}
+            style={{
+                width: '25px',
+                height: '25px',
+                borderRadius: '50%',
+            }}
+        ></img>
+    ) : (
         <Jazzicon diameter={25} seed={jsNumberForAddress(jazziconsSeed)} />
     );
 

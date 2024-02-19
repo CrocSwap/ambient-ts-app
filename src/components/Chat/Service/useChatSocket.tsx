@@ -43,6 +43,10 @@ const useChatSocket = (
             setMessages(data);
         });
 
+        socketRef.current.on('set-avatar', (data: any) => {
+            setMessages(data);
+        });
+
         return () => {
             socketRef.current.disconnect();
         };

@@ -33,7 +33,7 @@ const useChatApi = () => {
         }
     }
 
-    async function getUserAvatarImageAndID() {
+    async function getUserAvatarImageAndID(userAddress: string) {
         if (userAddress) {
             const response = await fetch(
                 host +

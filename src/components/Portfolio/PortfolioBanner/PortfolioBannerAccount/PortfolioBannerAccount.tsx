@@ -12,9 +12,14 @@ import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { FlexContainer } from '../../../../styled/Common';
-import { PortfolioBannerMainContainer } from '../../../../styled/Components/Portfolio';
+import {
+    PortfolioBannerMainContainer,
+    UpdateProfileButton,
+    ProfileSettingsContainer,
+} from '../../../../styled/Components/Portfolio';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import NFTBannerAccount from './NFTBannerAccount';
+import { TokenBalanceContext } from '../../../../contexts/TokenBalanceContext';
 
 export default function PortfolioBannerAccount(
     props: IPortfolioBannerAccountPropsIF,
@@ -28,7 +33,10 @@ export default function PortfolioBannerAccount(
         truncatedAccountAddress,
         ensNameAvailable,
     } = props;
+
     const { userAddress, userAccountProfile } = useContext(UserDataContext);
+
+    const { NFTData } = useContext(TokenBalanceContext);
 
     const {
         snackbar: { open: openSnackbar },
@@ -79,10 +87,20 @@ export default function PortfolioBannerAccount(
         }
     }
 
+    const updateProfile = NFTData && (
+        <UpdateProfileButton
+            onClick={(event: any) => {
+                event.stopPropagation();
+                setShowNFTPage(!showNFTPage);
+            }}
+        >
+            Update Profile
+        </UpdateProfileButton>
+    );
+
     return (
         <PortfolioBannerMainContainer
             animate={showAccountDetails ? 'open' : 'closed'}
-            onClick={() => setShowNFTPage(!showNFTPage)}
         >
             <FlexContainer
                 alignItems='flex-end'
@@ -90,29 +108,21 @@ export default function PortfolioBannerAccount(
                 gap={22}
                 onClick={() => setShowAccountDetails(!showAccountDetails)}
             >
-                {userAccountProfile ? (
-                    <img
-                        src={userAccountProfile}
-                        onClick={(event) => {
-                            event.stopPropagation();
-                            setShowNFTPage(!showNFTPage);
-                        }}
-                        style={{
-                            width: '70px',
-                            height: '70px',
-                            borderRadius: '50%',
-                        }}
-                    ></img>
-                ) : (
-                    <div
-                        onClick={(event) => {
-                            event.stopPropagation();
-                            setShowNFTPage(!showNFTPage);
-                        }}
-                    >
-                        {props.jazziconsToDisplay}
-                    </div>
-                )}
+                <ProfileSettingsContainer placement={NFTData ? true : false}>
+                    {userAccountProfile ? (
+                        <img
+                            src={userAccountProfile}
+                            style={{
+                                width: '65px',
+                                height: '65px',
+                                borderRadius: '50%',
+                            }}
+                        ></img>
+                    ) : (
+                        <>{props.jazziconsToDisplay}</>
+                    )}
+                    {updateProfile}
+                </ProfileSettingsContainer>
 
                 <FlexContainer flexDirection='column'>
                     <FlexContainer
@@ -153,6 +163,7 @@ export default function PortfolioBannerAccount(
                 <NFTBannerAccount
                     setShowNFTPage={setShowNFTPage}
                     showNFTPage={showNFTPage}
+                    NFTData={NFTData}
                 />
             )}
         </PortfolioBannerMainContainer>

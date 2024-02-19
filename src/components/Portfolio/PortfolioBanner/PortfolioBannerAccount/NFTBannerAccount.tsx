@@ -15,7 +15,10 @@ import {
     SaveButton,
     NFTImg,
 } from './NFTBannerAccountCss';
-import { TokenBalanceContext } from '../../../../contexts/TokenBalanceContext';
+import {
+    NftTokenContractBalanceItemIF,
+    TokenBalanceContext,
+} from '../../../../contexts/TokenBalanceContext';
 import Spinner from '../../../Global/Spinner/Spinner';
 import nftPlaceHolder from '../../../../assets/images/Temporary/nft/nft-placeholder.svg';
 import nftSelected from '../../../../assets/images/Temporary/nft/nft-profile-selected.svg';
@@ -25,14 +28,13 @@ import { UserDataContext } from '../../../../contexts/UserDataContext';
 interface NFTBannerAccountProps {
     showNFTPage: boolean;
     setShowNFTPage: React.Dispatch<boolean>;
+    NFTData: NftTokenContractBalanceItemIF[] | undefined;
 }
 
 export default function NFTBannerAccount(props: NFTBannerAccountProps) {
-    const { setShowNFTPage } = props;
+    const { setShowNFTPage, NFTData } = props;
 
     const { setUserAccountProfile } = useContext(UserDataContext);
-
-    const { NFTData } = useContext(TokenBalanceContext);
 
     const [nftArray, setNftArray] = useState<any[]>([]);
 

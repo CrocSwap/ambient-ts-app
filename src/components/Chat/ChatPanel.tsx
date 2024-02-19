@@ -191,7 +191,7 @@ function ChatPanel(props: propsIF) {
                 setEnsName(ens);
             }
 
-            getUserAvatarImageAndID().then((result: any) => {
+            getUserAvatarImageAndID(userAddress).then((result: any) => {
                 if (result.status === 'Not OK') {
                     // eslint-disable-next-line
                     saveUserWithAvatarImage(
@@ -239,6 +239,18 @@ function ChatPanel(props: propsIF) {
             });
         }
     }, [userAccountProfile]);
+
+    // useEffect(() => {
+    //     if(userAddress){
+    //         getUserAvatarImageAndID().then((result: any) => {
+    //             console.log(result)
+    //             if (result.status === 'OK') {
+    //                 setUserAccountProfile(() => result.userData.avatarImage)
+    //             }
+    //         });
+
+    //     }
+    // },[userAddress, isUserConnected])
 
     useEffect(() => {
         setIsScrollToBottomButtonPressed(false);
