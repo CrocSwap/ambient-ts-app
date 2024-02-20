@@ -36,11 +36,11 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
     } = useContext(AppStateContext);
     const { chainData } = useContext(CrocEnvContext);
 
-    const { sessionReceipts } = useContext(ReceiptContext);
+    const { allReceipts } = useContext(ReceiptContext);
 
     const lastReceipt =
-        sessionReceipts.length > 0 && isJsonString(sessionReceipts[0])
-            ? JSON.parse(sessionReceipts[0])
+        allReceipts.length > 0 && isJsonString(allReceipts[0])
+            ? JSON.parse(allReceipts[0])
             : null;
     const isLastReceiptSuccess = lastReceipt?.status === 1;
     const lastReceiptHash = useMemo(
