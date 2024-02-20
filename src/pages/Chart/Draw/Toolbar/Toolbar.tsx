@@ -70,6 +70,7 @@ function ChartToolbar() {
             undoStack,
             drawActionStack,
             actionKey,
+            drawnShapeHistory,
         },
         activeDrawingType,
         setActiveDrawingType,
@@ -445,7 +446,11 @@ function ChartToolbar() {
                                     }
                                     onTouchStart={() => handleDeleteAll()}
                                 >
-                                    <img src={trashIcon} alt='' />
+                                    <UndoButtonSvg
+                                        isActive={drawnShapeHistory.length > 0}
+                                        src={trashIcon}
+                                        alt=''
+                                    />
                                 </IconActiveContainer>
 
                                 {hoveredTool &&
