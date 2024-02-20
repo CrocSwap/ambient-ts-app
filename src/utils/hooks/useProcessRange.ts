@@ -208,6 +208,10 @@ export const useProcessRange = (
         ? moment(Date.now()).diff(positionTime * 1000, 'seconds')
         : 0;
 
+    const elapsedTimeSinceFirstMintInSecondsNum = position.timeFirstMint
+        ? moment(Date.now()).diff(position.timeFirstMint * 1000, 'seconds')
+        : 0;
+
     const elapsedTimeString =
         elapsedTimeInSecondsNum !== undefined
             ? elapsedTimeInSecondsNum < 60
@@ -223,6 +227,29 @@ export const useProcessRange = (
                 : elapsedTimeInSecondsNum < 172800
                 ? '1 day '
                 : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days `
+            : 'Pending...';
+
+    const elapsedTimeSinceFirstMintString =
+        elapsedTimeSinceFirstMintInSecondsNum !== undefined
+            ? elapsedTimeSinceFirstMintInSecondsNum < 60
+                ? '< 1 min. '
+                : elapsedTimeSinceFirstMintInSecondsNum < 120
+                ? '1 min. '
+                : elapsedTimeSinceFirstMintInSecondsNum < 3600
+                ? `${Math.floor(
+                      elapsedTimeSinceFirstMintInSecondsNum / 60,
+                  )} min. `
+                : elapsedTimeSinceFirstMintInSecondsNum < 7200
+                ? '1 hour '
+                : elapsedTimeSinceFirstMintInSecondsNum < 86400
+                ? `${Math.floor(
+                      elapsedTimeSinceFirstMintInSecondsNum / 3600,
+                  )} hrs. `
+                : elapsedTimeSinceFirstMintInSecondsNum < 172800
+                ? '1 day '
+                : `${Math.floor(
+                      elapsedTimeSinceFirstMintInSecondsNum / 86400,
+                  )} days `
             : 'Pending...';
 
     return {
@@ -279,6 +306,7 @@ export const useProcessRange = (
         width,
         blockExplorer,
         elapsedTimeString,
+        elapsedTimeSinceFirstMintString,
         baseTokenAddress: position.base,
         quoteTokenAddress: position.quote,
     };

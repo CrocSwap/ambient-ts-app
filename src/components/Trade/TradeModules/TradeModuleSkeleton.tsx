@@ -220,7 +220,8 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     style={{ marginTop: 'auto' }}
                 >
                     {warnings && warnings}
-                    {isUserConnected === undefined ? null : isUserConnected ===
+                    {isUserConnected === undefined ||
+                    !areDefaultTokensUpdatedForChain ? null : isUserConnected ===
                       true ? (
                         approveButton ? (
                             approveButton

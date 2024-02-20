@@ -5,7 +5,7 @@ import {
     priceHalfAboveTick,
     priceHalfBelowTick,
 } from '@crocswap-libs/sdk';
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, useRef } from 'react';
 import {
     getFormattedNumber,
     getTxReceipt,
@@ -99,6 +99,7 @@ export default function Limit() {
         poolPriceNonDisplay,
         primaryQuantity,
         activateConfirmation,
+        setPrimaryQuantity,
     } = useContext(TradeDataContext);
     const { liquidityFee } = useContext(GraphDataContext);
     const { urlParamMap, updateURL } = useTradeData();
@@ -147,6 +148,13 @@ export default function Limit() {
         chainId === '0x82750' || chainId === '0x8274f'
             ? amountToReduceNativeTokenQtyScroll
             : amountToReduceNativeTokenQtyMainnet;
+
+    const activeTxHash = useRef<string>('');
+
+    // reset activeTxHash when the pair changes or user updates quantity
+    useEffect(() => {
+        activeTxHash.current = '';
+    }, [tokenA.address + tokenB.address, primaryQuantity]);
 
     // TODO: is possible we can convert this to use the TradeTokenContext
     // However, unsure if the fact that baseToken comes from pool affects this
@@ -434,6 +442,8 @@ export default function Limit() {
         tokenAQtyCoveredByWalletBalance,
         tokenABalance,
         amountToReduceNativeTokenQty,
+        pendingTransactions,
+        activeTxHash,
     ]);
 
     useEffect(() => {
@@ -548,6 +558,8 @@ export default function Limit() {
 
             if (!tx) return;
 
+            activeTxHash.current = tx?.hash;
+
             addPendingTx(tx?.hash);
             setNewLimitOrderTransactionHash(tx.hash);
             addTransactionByType({
@@ -606,6 +618,7 @@ export default function Limit() {
                 IS_LOCAL_ENV && console.debug('repriced');
                 removePendingTx(error.hash);
                 const newTransactionHash = error.replacement.hash;
+                activeTxHash.current = newTransactionHash;
                 addPendingTx(newTransactionHash);
                 addPositionUpdate({
                     txHash: newTransactionHash,
@@ -618,6 +631,7 @@ export default function Limit() {
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
             } else if (isTransactionFailedError(error)) {
+                activeTxHash.current = '';
                 receipt = error.receipt;
             }
         }
@@ -654,6 +668,16 @@ export default function Limit() {
                     tokenAAmount >
                     parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
                 ) {
+                    if (
+                        pendingTransactions.some(
+                            (tx) => tx === activeTxHash.current,
+                        )
+                    ) {
+                        setTokenAInputQty('');
+                        setTokenBInputQty('');
+                        setPrimaryQuantity('');
+                        activeTxHash.current = '';
+                    }
                     setLimitAllowed(false);
                     setLimitButtonErrorMessage(
                         `${tokenA.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,

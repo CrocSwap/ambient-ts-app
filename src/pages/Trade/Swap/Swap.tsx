@@ -1,5 +1,5 @@
 import { CrocImpact } from '@crocswap-libs/sdk';
-import { useContext, useState, useEffect, memo } from 'react';
+import { useContext, useState, useEffect, memo, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
     getFormattedNumber,
@@ -103,6 +103,7 @@ function Swap(props: propsIF) {
         isDenomBase,
         primaryQuantity,
         activateConfirmation,
+        setPrimaryQuantity,
         areDefaultTokensUpdatedForChain,
     } = useContext(TradeDataContext);
 
@@ -210,6 +211,13 @@ function Swap(props: propsIF) {
             ? amountToReduceNativeTokenQtyScroll
             : amountToReduceNativeTokenQtyMainnet;
 
+    const activeTxHash = useRef<string>('');
+
+    // reset activeTxHash when the pair changes or user updates quantity
+    useEffect(() => {
+        activeTxHash.current = '';
+    }, [tokenA.address + tokenB.address, primaryQuantity]);
+
     useEffect(() => {
         if (isSellLoading || isBuyLoading) {
             setSwapAllowed(false);
@@ -237,6 +245,15 @@ function Swap(props: propsIF) {
             setSwapAllowed(parseFloat(sellQtyString) <= hurdle);
 
             if (parseFloat(sellQtyString) > hurdle) {
+                if (
+                    pendingTransactions.some(
+                        (tx) => tx === activeTxHash.current,
+                    )
+                ) {
+                    setSellQtyString('');
+                    setPrimaryQuantity('');
+                    activeTxHash.current = '';
+                }
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage(
                     `${tokenA.symbol} Amount Exceeds ${balanceLabel} Balance`,
@@ -272,6 +289,8 @@ function Swap(props: propsIF) {
         tokenABalance,
         tokenAQtyCoveredByWalletBalance,
         amountToReduceNativeTokenQty,
+        pendingTransactions,
+        activeTxHash,
     ]);
 
     useEffect(() => {
@@ -376,7 +395,7 @@ function Swap(props: propsIF) {
                 isWithdrawFromDexChecked,
                 isSaveAsDexSurplusChecked,
             });
-
+            activeTxHash.current = tx?.hash;
             setNewSwapTransactionHash(tx?.hash);
             addPendingTx(tx?.hash);
 
@@ -424,7 +443,7 @@ function Swap(props: propsIF) {
                     removePendingTx(error.hash);
 
                     const newTransactionHash = error.replacement.hash;
-
+                    activeTxHash.current = newTransactionHash;
                     addPendingTx(newTransactionHash);
                     updateTransactionHash(error.hash, error.replacement.hash);
                     setNewSwapTransactionHash(newTransactionHash);
@@ -433,6 +452,7 @@ function Swap(props: propsIF) {
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {
                     receipt = error.receipt;
+                    activeTxHash.current = '';
                 }
             }
 

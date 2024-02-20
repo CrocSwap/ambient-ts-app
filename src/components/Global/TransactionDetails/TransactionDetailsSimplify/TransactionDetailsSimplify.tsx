@@ -49,6 +49,7 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
         truncatedHighDisplayPriceDenomByMoneyness,
         truncatedDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
+        elapsedTimeString,
     } = useProcessTransaction(tx, userAddress);
 
     const { chainData } = useContext(CrocEnvContext);
@@ -150,23 +151,23 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
     const entityType = tx.entityType;
 
     const changeTypeDisplay =
-        changeType === 'mint'
+        changeType === 'harvest'
+            ? 'Range Harvest'
+            : changeType === 'mint'
             ? entityType === 'limitOrder'
-                ? 'Add to Limit'
+                ? 'Limit Add'
                 : positionType === 'concentrated'
-                ? 'Add to Range Position'
-                : 'Add to Ambient Position'
+                ? 'Concentrated Range Add'
+                : 'Ambient Range Add'
             : changeType === 'burn'
             ? entityType === 'limitOrder'
-                ? 'Remove from Limit'
+                ? 'Limit Removal'
                 : positionType === 'concentrated'
-                ? 'Removal from Range Position'
-                : positionType === 'ambient'
-                ? 'Removal from Ambient Position'
-                : 'Market'
+                ? 'Concentrated Range Removal'
+                : 'Ambient Range Removal'
             : changeType === 'recover'
-            ? 'Claim from Limit'
-            : 'Market';
+            ? 'Limit Claim'
+            : 'Market Order';
 
     console.log({ quoteQuantityDisplay, estimatedQuoteFlowDisplay });
     // Create a data array for the info and map through it here
@@ -176,9 +177,20 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
             content: (
                 <div style={{ cursor: 'default' }}>{changeTypeDisplay}</div>
             ),
-            explanation: 'Transaction type explanation',
+            explanation: 'e.g. Market, Limit, Range',
         },
 
+        {
+            title: 'Time ',
+            content: (
+                <div style={{ cursor: 'default' }}>
+                    {moment(tx.txTime * 1000).format('MM/DD/YYYY HH:mm')}
+                    {' '}
+                    {'(' + elapsedTimeString + ' ago)'}
+                </div>
+            ),
+            explanation: 'The transaction confirmation time',
+        },
         {
             title: 'Wallet ',
             content: walletContent,
@@ -192,20 +204,12 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
         },
 
         {
-            title: 'Time ',
-            content: (
-                <div style={{ cursor: 'default' }}>
-                    {moment(tx.txTime * 1000).format('MM/DD/YYYY HH:mm')}
-                </div>
-            ),
-            explanation: 'The transaction confirmation time',
-        },
-
-        {
             title: isSwap ? 'From Token ' : 'Token 1 ',
             content: (
                 <div style={{ cursor: 'default' }}>
-                    {isBuy ? baseTokenSymbol : quoteTokenSymbol}
+                    {isBuy
+                        ? baseTokenSymbol + ' - ' + tx.baseName
+                        : quoteTokenSymbol + ' - ' + tx.quoteName}
                 </div>
             ),
             explanation: 'The symbol (short name) of the sell token',
@@ -251,7 +255,9 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
 
         {
             title: isSwap ? 'To Token ' : 'Token 2 ',
-            content: !isBuy ? baseTokenSymbol : quoteTokenSymbol,
+            content: !isBuy
+                ? baseTokenSymbol + ' - ' + tx.baseName
+                : quoteTokenSymbol + ' - ' + tx.quoteName,
             explanation: 'The symbol (short name) of the buy token',
         },
 
@@ -291,7 +297,12 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
             }`,
         },
         {
-            title: isSwap ? 'Price ' : 'Low Price Boundary',
+            title:
+                tx.entityType === 'swap'
+                    ? 'Price '
+                    : tx.entityType === 'limitOrder'
+                    ? 'Limit Price '
+                    : 'Low Price Boundary',
             content: (
                 <div style={{ cursor: 'default' }}>
                     {isSwap
@@ -313,9 +324,12 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
                         : `1 ${quoteTokenSymbol} = ${truncatedLowDisplayPrice} ${baseTokenSymbol}`}
                 </div>
             ),
-            explanation: isSwap
-                ? 'The transaction price'
-                : 'The low price boundary',
+            explanation:
+                tx.entityType === 'swap'
+                    ? 'The effective conversion rate for the swap'
+                    : tx.entityType === 'limitOrder'
+                    ? 'The pool price at which the limit order will be 100% filled and claimable'
+                    : 'The low price boundary of the range',
         },
         ...(isSwap
             ? [
@@ -340,7 +354,7 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
                           : isDenomBase
                           ? `1 ${baseTokenSymbol} = ${truncatedHighDisplayPrice} ${quoteTokenSymbol}`
                           : `1 ${quoteTokenSymbol} = ${truncatedHighDisplayPrice} ${baseTokenSymbol}`,
-                      explanation: 'The high price boundary',
+                      explanation: 'The upper price boundary of the range',
                   },
                   {
                       title: 'Value ',

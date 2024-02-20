@@ -34,6 +34,8 @@ interface propsIF {
     isWithdraw?: boolean;
     disabledContent?: React.ReactNode;
     amountToReduceNativeTokenQty: number;
+    isInitPage?: boolean | undefined;
+    tokenDecimals?: number;
 }
 
 function TokenInputWithWalletBalance(props: propsIF) {
@@ -58,6 +60,8 @@ function TokenInputWithWalletBalance(props: propsIF) {
         parseTokenInput,
         handleRefresh,
         amountToReduceNativeTokenQty,
+        isInitPage,
+        tokenDecimals,
     } = props;
 
     const {
@@ -117,6 +121,8 @@ function TokenInputWithWalletBalance(props: propsIF) {
     const subtractBuffer = (balance: string) =>
         isTokenEth
             ? (parseFloat(balance) - amountToReduceNativeTokenQty).toFixed(18)
+            : isInitPage
+            ? (parseFloat(balance) - 1e-12).toFixed(tokenDecimals)
             : balance;
 
     const balanceWithBuffer = balance ? subtractBuffer(balance) : '...';

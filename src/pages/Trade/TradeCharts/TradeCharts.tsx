@@ -129,7 +129,7 @@ function TradeCharts(props: propsIF) {
         subchartState?.isVolumeSubchartEnabled ?? true,
     );
     const [showSwap, setShowSwap] = useState(
-        orderHistoryState?.isSwapOrderHistoryEnabled ?? false,
+        orderHistoryState?.isSwapOrderHistoryEnabled ?? true,
     );
     const [showLiquidity, setShowLiquidity] = useState(
         false, // orderHistoryState?.isLiquidityOrderHistoryEnabled ?? false,
@@ -164,6 +164,8 @@ function TradeCharts(props: propsIF) {
             setShowSwap(false);
             setShowLiquidity(false);
             setShowHistorical(false);
+        } else {
+            setShowSwap(orderHistoryState?.isSwapOrderHistoryEnabled ?? true);
         }
     }, [isUserConnected]);
 

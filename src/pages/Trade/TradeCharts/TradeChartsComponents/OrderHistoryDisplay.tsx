@@ -4,7 +4,7 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 import { LS_KEY_ORDER_HISTORY_SETTINGS } from '../../../../ambient-utils/constants';
 
-interface OrderHistortyDisplayPropsIF {
+interface OrderHistoryDisplayPropsIF {
     setShowSwap: Dispatch<SetStateAction<boolean>>;
     setShowLiquidity: Dispatch<SetStateAction<boolean>>;
     setShowHistorical: Dispatch<SetStateAction<boolean>>;
@@ -12,7 +12,7 @@ interface OrderHistortyDisplayPropsIF {
     showLiquidity: boolean;
     showHistorical: boolean;
 }
-function OrderHistortyDisplay(props: OrderHistortyDisplayPropsIF) {
+function OrderHistoryDisplay(props: OrderHistoryDisplayPropsIF) {
     const {
         setShowSwap,
         // setShowLiquidity,
@@ -34,8 +34,8 @@ function OrderHistortyDisplay(props: OrderHistortyDisplayPropsIF) {
     };
 
     const [
-        showOrderHistortyDisplayDropdown,
-        setShowOrderHistortyDisplayDropdown,
+        showOrderHistoryDisplayDropdown,
+        setShowOrderHistoryDisplayDropdown,
     ] = useState(false);
 
     const desktopView = useMediaQuery('(max-width: 968px)');
@@ -66,7 +66,7 @@ function OrderHistortyDisplay(props: OrderHistortyDisplayPropsIF) {
     //     });
     // };
 
-    const orderHistortyDisplay = [
+    const orderHistoryDisplay = [
         { name: 'Buys/Sells', selected: showSwap, action: handleSwapToggle },
         // {
         //     name: 'Liquidity',
@@ -80,28 +80,28 @@ function OrderHistortyDisplay(props: OrderHistortyDisplayPropsIF) {
         // },
     ];
 
-    const wrapperStyle = showOrderHistortyDisplayDropdown
+    const wrapperStyle = showOrderHistoryDisplayDropdown
         ? styles.dropdown_wrapper_active
         : styles.dropdown_wrapper;
 
     const dropdownItemRef = useRef<HTMLDivElement>(null);
     const clickOutsideHandler = () => {
-        setShowOrderHistortyDisplayDropdown(false);
+        setShowOrderHistoryDisplayDropdown(false);
     };
     useOnClickOutside(dropdownItemRef, clickOutsideHandler);
 
     function handleCurveDepthClickMobile(action: () => void) {
         action();
-        setShowOrderHistortyDisplayDropdown(false);
+        setShowOrderHistoryDisplayDropdown(false);
     }
 
-    const OrderHistortyDisplayMobile = (
+    const OrderHistoryDisplayMobile = (
         <div className={styles.dropdown_menu} ref={dropdownItemRef}>
             <button
                 className={styles.volume_tvl_fee_mobile_button}
                 onClick={() =>
-                    setShowOrderHistortyDisplayDropdown(
-                        !showOrderHistortyDisplayDropdown,
+                    setShowOrderHistoryDisplayDropdown(
+                        !showOrderHistoryDisplayDropdown,
                     )
                 }
                 tabIndex={0}
@@ -115,7 +115,7 @@ function OrderHistortyDisplay(props: OrderHistortyDisplayPropsIF) {
             </button>
 
             <div className={wrapperStyle}>
-                {orderHistortyDisplay.map((button, idx) => (
+                {orderHistoryDisplay.map((button, idx) => (
                     <div className={styles.volume_tvl_container} key={idx}>
                         <button
                             onClick={() =>
@@ -136,7 +136,7 @@ function OrderHistortyDisplay(props: OrderHistortyDisplayPropsIF) {
         </div>
     );
 
-    if (desktopView) return OrderHistortyDisplayMobile;
+    if (desktopView) return OrderHistoryDisplayMobile;
 
     return (
         <div
@@ -146,7 +146,7 @@ function OrderHistortyDisplay(props: OrderHistortyDisplayPropsIF) {
                 alignItems: 'center',
             }}
         >
-            {orderHistortyDisplay.map((button, idx) => (
+            {orderHistoryDisplay.map((button, idx) => (
                 <div className={styles.volume_tvl_container} key={idx}>
                     <button
                         onClick={button.action}
@@ -167,4 +167,4 @@ function OrderHistortyDisplay(props: OrderHistortyDisplayPropsIF) {
     );
 }
 
-export default memo(OrderHistortyDisplay);
+export default memo(OrderHistoryDisplay);

@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 // START: Import JSX Components
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
@@ -122,6 +122,8 @@ export default function InitPool() {
         advancedLowTick,
         setAdvancedHighTick,
         setAdvancedLowTick,
+        setIsTokenAPrimaryRange,
+        setPrimaryQuantityRange,
     } = useContext(RangeContext);
     const { tokenA, tokenB, baseToken, quoteToken } =
         useContext(TradeDataContext);
@@ -814,6 +816,13 @@ export default function InitPool() {
             ? amountToReduceNativeTokenQtyScroll
             : amountToReduceNativeTokenQtyMainnet;
 
+    const activeRangeTxHash = useRef<string>('none');
+
+    // reset activeTxHash when the pair changes or user updates quantity
+    useEffect(() => {
+        activeRangeTxHash.current = '';
+    }, [tokenA.address + tokenB.address]);
+
     // calculate price of gas for pool init
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
@@ -1030,7 +1039,18 @@ export default function InitPool() {
             isMintLiqEnabled,
         );
 
+    useEffect(() => {
+        if (isTokenAInputDisabled) setIsTokenAPrimaryRange(false);
+        if (isTokenBInputDisabled) setIsTokenAPrimaryRange(true);
+    }, [isTokenAInputDisabled, isTokenBInputDisabled]);
+
     const isInitPage = true;
+
+    const clearTokenInputs = () => {
+        setTokenACollateral('');
+        setTokenBCollateral('');
+        setPrimaryQuantityRange('');
+    };
 
     const {
         tokenAllowed: tokenAAllowed,
@@ -1045,6 +1065,8 @@ export default function InitPool() {
         true, // hardcode pool initialized since we will be initializing it on confirm
         tokenAQtyCoveredByWalletBalance,
         amountToReduceNativeTokenQty,
+        activeRangeTxHash,
+        clearTokenInputs,
         isMintLiqEnabled,
         isInitPage,
     );
@@ -1061,6 +1083,8 @@ export default function InitPool() {
         true, // hardcode pool initialized since we will be initializing it on confirm
         tokenBQtyCoveredByWalletBalance,
         amountToReduceNativeTokenQty,
+        activeRangeTxHash,
+        clearTokenInputs,
         isMintLiqEnabled,
         isInitPage,
     );
@@ -1087,6 +1111,7 @@ export default function InitPool() {
             resetConfirmation,
             poolPrice: selectedPoolNonDisplayPrice,
             setIsTxCompletedRange: setIsTxCompletedRange,
+            activeRangeTxHash: activeRangeTxHash,
         };
         console.log('Debug, calling createRangePosition', params);
         createRangePosition(params);
