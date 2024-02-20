@@ -295,6 +295,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         liquidityDepthScale,
         liquidityScale === undefined,
         liquidityDepthScale === undefined,
+        isDenomBase,
     ]);
 
     useEffect(() => {
