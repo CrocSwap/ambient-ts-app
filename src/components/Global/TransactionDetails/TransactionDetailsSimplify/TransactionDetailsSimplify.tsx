@@ -10,15 +10,17 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { useMediaQuery } from '@material-ui/core';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import InfoRow from '../../InfoRow';
+import { getElapsedTime } from '../../../../ambient-utils/dataLayer';
 
 interface TransactionDetailsSimplifyPropsIF {
     tx: TransactionIF;
+    timeFirstMint: number | undefined;
     isAccountView: boolean;
 }
 
 // TODO: refactor to using styled-components
 function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
-    const { tx, isAccountView } = props;
+    const { tx, timeFirstMint, isAccountView } = props;
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -180,7 +182,7 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
         },
 
         {
-            title: 'Time ',
+            title: 'Transaction Time ',
             content: (
                 <div style={{ cursor: 'default' }}>
                     {moment(tx.txTime * 1000).format('MM/DD/YYYY HH:mm')}
@@ -365,6 +367,21 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
                   },
               ]),
     ];
+
+    if (timeFirstMint && timeFirstMint !== tx.txTime) {
+        infoContent.splice(2, 0, {
+            title: 'Creation time ',
+            content:
+                moment(timeFirstMint * 1000).format('MM/DD/YYYY HH:mm') +
+                ' ' +
+                '(' +
+                getElapsedTime(
+                    moment(Date.now()).diff(timeFirstMint * 1000, 'seconds'),
+                ) +
+                ' ago)',
+            explanation: 'Time position was first created by user',
+        });
+    }
 
     return (
         <div className={styles.tx_details_container}>

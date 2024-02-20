@@ -255,6 +255,7 @@ export default function OrderDetailsModal(props: propsIF) {
                 <div className={styles.right_container}>
                     <TransactionDetailsGraph
                         tx={limitOrder}
+                        timeFirstMint={limitOrder.timeFirstMint}
                         transactionType={'limitOrder'}
                         isBaseTokenMoneynessGreaterOrEqual={
                             isBaseTokenMoneynessGreaterOrEqual

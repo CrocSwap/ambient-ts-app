@@ -23,6 +23,7 @@ import { useMediaQuery } from '@material-ui/core';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
     tx: any;
+    timeFirstMint?: number | undefined;
     transactionType: string;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isAccountView: boolean;
@@ -33,6 +34,7 @@ export default function TransactionDetailsGraph(
 ) {
     const {
         tx,
+        timeFirstMint,
         transactionType,
         isBaseTokenMoneynessGreaterOrEqual,
         isAccountView,
@@ -118,96 +120,95 @@ export default function TransactionDetailsGraph(
 
     useEffect(() => {
         (async () => {
-            setIsDataLoading(true);
             if (graphData === undefined) {
-                const time = () => {
-                    switch (transactionType) {
-                        case 'swap':
-                            return tx?.txTime !== undefined
-                                ? tx.txTime
-                                : new Date().getTime();
-                        case 'limitOrder':
-                            return tx?.timeFirstMint !== undefined
-                                ? tx?.timeFirstMint
-                                : new Date().getTime();
-                        case 'liqchange':
-                            return tx?.timeFirstMint !== undefined
-                                ? tx?.timeFirstMint
-                                : tx.txTime;
-                        default:
-                            return new Date().getTime();
-                    }
-                };
-
-                let minDateDiff = oneHourMiliseconds * 24 * 7;
-
-                if (transactionType === 'swap') {
-                    minDateDiff = oneHourMiliseconds * 8;
+                setIsDataLoading(true);
+            }
+            const time = () => {
+                switch (transactionType) {
+                    case 'swap':
+                        return tx?.txTime !== undefined
+                            ? tx.txTime
+                            : new Date().getTime();
+                    case 'limitOrder':
+                        return tx?.txTime !== undefined
+                            ? tx?.txTime
+                            : new Date().getTime();
+                    case 'liqchange':
+                        return timeFirstMint !== undefined
+                            ? timeFirstMint
+                            : tx.txTime;
+                    default:
+                        return new Date().getTime();
                 }
+            };
 
-                const minDate = time() * 1000 - minDateDiff;
+            let minDateDiff = oneHourMiliseconds * 24 * 7;
 
-                const diff =
-                    new Date().getTime() - minDate < 43200000
-                        ? 43200000
-                        : new Date().getTime() - minDate;
+            if (transactionType === 'swap') {
+                minDateDiff = oneHourMiliseconds * 8;
+            }
 
-                const period = decidePeriod(Math.floor(diff / 1000 / 200));
-                setPeriod(period);
-                if (period !== undefined) {
-                    const calcNumberCandlesNeeded = Math.floor(
-                        (diff * 2) / (period * 1000),
-                    );
-                    const maxNumCandlesNeeded = 3000;
+            const minDate = time() * 1000 - minDateDiff;
 
-                    const numCandlesNeeded =
-                        calcNumberCandlesNeeded < maxNumCandlesNeeded
-                            ? calcNumberCandlesNeeded
-                            : maxNumCandlesNeeded;
+            const diff =
+                new Date().getTime() - minDate < 43200000
+                    ? 43200000
+                    : new Date().getTime() - minDate;
 
-                    const offsetInSeconds = 120;
+            const period = decidePeriod(Math.floor(diff / 1000 / 200));
+            setPeriod(period);
+            if (period !== undefined) {
+                const calcNumberCandlesNeeded = Math.floor(
+                    (diff * 2) / (period * 1000),
+                );
+                const maxNumCandlesNeeded = 3000;
 
-                    const startBoundary =
-                        Math.floor(new Date().getTime() / 1000) -
-                        offsetInSeconds;
+                const numCandlesNeeded =
+                    calcNumberCandlesNeeded < maxNumCandlesNeeded
+                        ? calcNumberCandlesNeeded
+                        : maxNumCandlesNeeded;
 
-                    try {
-                        if (!crocEnv) {
-                            return;
-                        }
-                        const graphData = await fetchCandleSeriesCroc(
-                            fetchEnabled,
-                            chainData,
-                            activeNetwork.graphCacheUrl,
-                            period,
-                            baseTokenAddress,
-                            quoteTokenAddress,
-                            startBoundary,
-                            numCandlesNeeded,
-                            crocEnv,
-                            cachedFetchTokenPrice,
-                        );
+                const offsetInSeconds = 120;
 
-                        if (graphData) {
-                            setIsDataLoading(false);
-                            setIsDataEmpty(false);
-                            setGraphData(() => {
-                                return graphData.candles;
-                            });
-                        } else {
-                            setGraphData(() => {
-                                return undefined;
-                            });
-                            setIsDataLoading(false);
-                            setIsDataEmpty(true);
-                        }
-                    } catch (error) {
-                        console.warn(error);
+                const startBoundary =
+                    Math.floor(new Date().getTime() / 1000) - offsetInSeconds;
+
+                try {
+                    if (!crocEnv) {
+                        return;
                     }
+                    const graphData = await fetchCandleSeriesCroc(
+                        fetchEnabled,
+                        chainData,
+                        activeNetwork.graphCacheUrl,
+                        period,
+                        baseTokenAddress,
+                        quoteTokenAddress,
+                        startBoundary,
+                        numCandlesNeeded,
+                        crocEnv,
+                        cachedFetchTokenPrice,
+                    );
+
+                    if (graphData) {
+                        setIsDataLoading(false);
+                        setIsDataEmpty(false);
+                        setGraphData(() => {
+                            return graphData.candles;
+                        });
+                    } else {
+                        setGraphData(() => {
+                            return undefined;
+                        });
+                        setIsDataLoading(false);
+                        setIsDataEmpty(true);
+                    }
+                } catch (error) {
+                    console.warn(error);
                 }
             }
         })();
-    }, [fetchEnabled]);
+    }, [fetchEnabled, timeFirstMint]);
 
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -374,8 +375,8 @@ export default function TransactionDetailsGraph(
                 .fromValue((d: any) => d[0])
                 .toValue((d: any) => d[1])
                 .decorate((selection: any) => {
-                    const time = tx.timeFirstMint
-                        ? tx.timeFirstMint * 1000
+                    const time = timeFirstMint
+                        ? timeFirstMint * 1000
                         : tx.txTime * 1000;
                     selection
                         .select('path')
@@ -890,8 +891,8 @@ export default function TransactionDetailsGraph(
 
                 if (transactionType === 'liqchange' && period) {
                     const buffer = period * 1000;
-                    const time = tx.timeFirstMint
-                        ? tx.timeFirstMint * 1000
+                    const time = timeFirstMint
+                        ? timeFirstMint * 1000
                         : tx.txTime * 1000;
 
                     scaleData?.xScale.domain([
@@ -928,7 +929,7 @@ export default function TransactionDetailsGraph(
                             transactionType === 'limitOrder' &&
                             tx !== undefined
                         ) {
-                            if (tx.timeFirstMint === undefined) {
+                            if (timeFirstMint === undefined) {
                                 horizontalBandData[0] = [
                                     (
                                         !isAccountView
@@ -951,15 +952,15 @@ export default function TransactionDetailsGraph(
                                 ]).call(horizontalBand);
                             } else if (tx.claimableLiq > 0) {
                                 addExtraCandle(
-                                    tx.timeFirstMint,
+                                    timeFirstMint,
                                     tx.askTickInvPriceDecimalCorrected,
                                     tx.askTickPriceDecimalCorrected,
                                 );
                                 crossPointJoin(svg, [
                                     [
                                         {
-                                            x: tx.timeFirstMint
-                                                ? tx.timeFirstMint * 1000
+                                            x: timeFirstMint
+                                                ? timeFirstMint * 1000
                                                 : tx.txTime * 1000,
                                             y: (
                                                 !isAccountView
@@ -982,7 +983,7 @@ export default function TransactionDetailsGraph(
                                             ? tx.askTickInvPriceDecimalCorrected
                                             : tx.askTickPriceDecimalCorrected,
 
-                                        x: tx.timeFirstMint,
+                                        x: timeFirstMint,
                                     },
                                 ];
 
@@ -1019,8 +1020,8 @@ export default function TransactionDetailsGraph(
 
                                 horizontalBandData[0] = [bidLine, askLine];
 
-                                const time = tx.timeFirstMint
-                                    ? tx.timeFirstMint * 1000
+                                const time = timeFirstMint
+                                    ? timeFirstMint * 1000
                                     : tx.txTime * 1000;
 
                                 const rangeLinesData = [
@@ -1084,6 +1085,7 @@ export default function TransactionDetailsGraph(
         [
             tx?.txTime,
             tx?.timeFirstMint,
+            timeFirstMint,
             tx.swapInvPriceDecimalCorrected,
             tx.swapPriceDecimalCorrected,
             tx.bidTickInvPriceDecimalCorrected,
