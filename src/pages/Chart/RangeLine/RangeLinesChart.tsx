@@ -160,7 +160,7 @@ export default function RangeLinesChart(props: propsIF) {
                 return newTargets;
             });
         }
-    }, [minPrice, maxPrice, advancedMode, simpleRangeWidth]);
+    }, [minPrice, maxPrice, advancedMode, simpleRangeWidth, topBoundary]);
 
     useEffect(() => {
         if (position !== undefined) {
@@ -199,8 +199,9 @@ export default function RangeLinesChart(props: propsIF) {
                 d3.select(d3CanvasRangeLine.current)
                     .on('draw', () => {
                         if (
-                            location.pathname.includes('pool') ||
-                            location.pathname.includes('reposition')
+                            (location.pathname.includes('pool') ||
+                                location.pathname.includes('reposition')) &&
+                            topBoundary
                         ) {
                             setCanvasResolution(canvas);
                             ctx.setLineDash([20, 18]);

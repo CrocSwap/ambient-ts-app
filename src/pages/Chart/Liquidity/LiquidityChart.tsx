@@ -19,6 +19,7 @@ import {
     lineValue,
     liquidityChartData,
     renderCanvasArray,
+    renderChart,
     scaleData,
     setCanvasResolution,
 } from '../ChartUtils/chartUtils';
@@ -232,6 +233,10 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         useState<string>('none');
 
     useEffect(() => {
+        renderChart();
+    }, [liquidityScale === undefined, liquidityDepthScale === undefined]);
+
+    useEffect(() => {
         if (
             scaleData !== undefined &&
             liquidityScale !== undefined &&
@@ -283,7 +288,15 @@ export default function LiquidityChart(props: liquidityPropsIF) {
 
             setLineLiqDepthAskSeries(() => d3CanvasLiqAskChartDepthLine);
         }
-    }, [scaleData, liquidityScale, pool, liquidityDepthScale]);
+    }, [
+        scaleData,
+        liquidityScale,
+        pool,
+        liquidityDepthScale,
+        liquidityScale === undefined,
+        liquidityDepthScale === undefined,
+        isDenomBase,
+    ]);
 
     useEffect(() => {
         const thresholdCurve = liquidityData?.liqTransitionPointforCurve;
@@ -483,14 +496,16 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                     ]);
                     scaleData?.yScale.range([event.detail.height, 0]);
 
-                    liqSeries.context(ctx);
-                    liqDepthBidSeries.context(ctx);
-                    liqDepthAskSeries.context(ctx);
-                    lineLiqDepthAskSeries.context(ctx);
-                    lineLiqDepthBidSeries.context(ctx);
+                    liqSeries?.context(ctx);
+                    liqDepthBidSeries?.context(ctx);
+                    liqDepthAskSeries?.context(ctx);
+                    lineLiqDepthAskSeries?.context(ctx);
+                    lineLiqDepthBidSeries?.context(ctx);
 
-                    lineLiqSeries.context(ctx);
+                    lineLiqSeries?.context(ctx);
                 });
+
+            renderChart();
         }
     }, [
         liqDataAsk,
@@ -501,8 +516,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         liqSeries,
         liqDepthBidSeries,
         liqDepthAskSeries,
-        liquidityScale,
-        liquidityDepthScale,
+        liquidityScale === undefined,
+        liquidityDepthScale === undefined,
         liqMode,
         location.pathname,
         ranges,
@@ -563,9 +578,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                     }
                 })
                 .on('measure', () => {
-                    highlightedAreaCurveSeries.context(ctx);
-                    highlightedAreaAskSeries.context(ctx);
-                    highlightedAreaBidSeries.context(ctx);
+                    highlightedAreaCurveSeries?.context(ctx);
+                    highlightedAreaAskSeries?.context(ctx);
+                    highlightedAreaBidSeries?.context(ctx);
                 });
         }
     }, [

@@ -2257,7 +2257,13 @@ export default function Chart(props: propsIF) {
                 return marketLine;
             });
         }
-    }, [scaleData, liquidityDepthScale, liquidityScale, isUserConnected]);
+    }, [
+        scaleData,
+        liquidityDepthScale,
+        liquidityScale,
+        isUserConnected,
+        isDenomBase,
+    ]);
 
     function setXScaleDefault() {
         if (scaleData) {

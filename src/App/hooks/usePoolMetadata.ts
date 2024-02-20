@@ -71,7 +71,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         setLimitOrdersByPool,
         setUserLimitOrdersByPool,
         setLiquidity,
-        setLiquidityPending,
+        // setLiquidityPending,
         setLiquidityFee,
     } = useContext(GraphDataContext);
 
@@ -700,7 +700,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         };
 
         // Set the pending data before making the request
-        setLiquidityPending(request);
+        // setLiquidityPending(request);
 
         const crocEnv = props.crocEnv;
         if (
@@ -722,7 +722,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             )
                 .then((liqCurve) => {
                     if (liqCurve) {
-                        setLiquidity(liqCurve);
+                        setLiquidity(liqCurve, request);
                     }
                 })
                 .catch(console.error);

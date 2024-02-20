@@ -67,7 +67,10 @@ interface GraphDataContextIF {
     liquidityFee: number;
 
     setLiquidityPending: (params: PoolRequestParams) => void;
-    setLiquidity: (liqData: LiquidityDataIF) => void;
+    setLiquidity: (
+        liqData: LiquidityDataIF,
+        request: PoolRequestParams | undefined,
+    ) => void;
     setLiquidityFee: React.Dispatch<React.SetStateAction<number>>;
     setTransactionsByPool: React.Dispatch<React.SetStateAction<Changes>>;
     setTransactionsByUser: React.Dispatch<React.SetStateAction<Changes>>;
@@ -156,9 +159,9 @@ export const GraphDataContextProvider = (props: {
         LiquidityDataIF | undefined
     >(undefined);
 
-    const [liquidityRequest, setLiquidityRequest] = React.useState<
-        PoolRequestParams | undefined
-    >(undefined);
+    // const [liquidityRequest, setLiquidityRequest] = React.useState<
+    //     PoolRequestParams | undefined
+    // >(undefined);
     const [liquidityFee, setLiquidityFee] = React.useState<number>(0);
     const {
         server: { isEnabled: isServerEnabled },
@@ -213,7 +216,10 @@ export const GraphDataContextProvider = (props: {
         setSessionTransactionHashes([]);
     };
 
-    const setLiquidity = (liqData: LiquidityDataIF) => {
+    const setLiquidity = (
+        liqData: LiquidityDataIF,
+        request: PoolRequestParams | undefined,
+    ) => {
         // Sanitize the raw result from the backend
         const base = normalizeAddr(liqData.curveState.base);
         const quote = normalizeAddr(liqData.curveState.quote);
@@ -222,10 +228,10 @@ export const GraphDataContextProvider = (props: {
 
         // Verify that the result matches the current request in case multiple are in-flight
         if (
-            liquidityRequest?.baseAddress.toLowerCase() === base &&
-            liquidityRequest?.quoteAddress.toLowerCase() === quote &&
-            liquidityRequest?.poolIndex === liqData.curveState.poolIdx &&
-            liquidityRequest?.chainId === chainId
+            request?.baseAddress.toLowerCase() === base &&
+            request?.quoteAddress.toLowerCase() === quote &&
+            request?.poolIndex === liqData.curveState.poolIdx &&
+            request?.chainId === chainId
         ) {
             setLiquidityData({ ...liqData, curveState });
         } else {
@@ -238,8 +244,7 @@ export const GraphDataContextProvider = (props: {
         }
     };
 
-    const setLiquidityPending = (params: PoolRequestParams) => {
-        setLiquidityRequest(params);
+    const setLiquidityPending = () => {
         setLiquidityData(undefined);
     };
 
