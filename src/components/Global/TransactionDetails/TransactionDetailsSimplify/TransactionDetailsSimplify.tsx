@@ -370,7 +370,7 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
 
     if (timeFirstMint && timeFirstMint !== tx.txTime) {
         infoContent.splice(2, 0, {
-            title: 'Creation time ',
+            title: 'Submit time ',
             content:
                 moment(timeFirstMint * 1000).format('MM/DD/YYYY HH:mm') +
                 ' ' +
@@ -379,7 +379,8 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
                     moment(Date.now()).diff(timeFirstMint * 1000, 'seconds'),
                 ) +
                 ' ago)',
-            explanation: 'Time position was first created by user',
+            explanation:
+                'The time the owner first added liquidity at these prices',
         });
     }
 
