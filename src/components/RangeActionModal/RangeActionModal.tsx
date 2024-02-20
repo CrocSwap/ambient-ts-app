@@ -106,6 +106,20 @@ function RangeActionModal(props: propsIF) {
     const [feeLiqQuoteDecimalCorrected, setFeeLiqQuoteDecimalCorrected] =
         useState<number | undefined>();
 
+    const usdRemovalValue = useMemo(
+        () =>
+            type === 'Remove'
+                ? getFormattedNumber({
+                      value: (position.totalValueUSD * removalPercentage) / 100,
+                      prefix: '$',
+                  })
+                : getFormattedNumber({
+                      value: position.feesValueUSD,
+                      prefix: '$',
+                  }),
+        [position, removalPercentage, type],
+    );
+
     const areFeesAvailableToWithdraw =
         (feeLiqBaseDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0) >
         0;
@@ -776,6 +790,7 @@ function RangeActionModal(props: propsIF) {
                             removalPercentage={removalPercentage}
                             baseRemovalNum={baseRemovalNum}
                             quoteRemovalNum={quoteRemovalNum}
+                            fiatRemovalVal={usdRemovalValue}
                             isAmbient={isAmbient}
                         />
                     )}
@@ -789,6 +804,7 @@ function RangeActionModal(props: propsIF) {
                             quoteTokenLogoURI={quoteTokenLogoURI}
                             baseHarvestNum={memoBaseHarvestNum}
                             quoteHarvestNum={memoQuoteHarvestNum}
+                            fiatHarvestVal={usdRemovalValue}
                         />
                     )}
                     <ExtraControls />
