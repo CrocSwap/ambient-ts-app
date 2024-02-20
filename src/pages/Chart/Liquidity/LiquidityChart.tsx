@@ -496,13 +496,13 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                     ]);
                     scaleData?.yScale.range([event.detail.height, 0]);
 
-                    liqSeries.context(ctx);
-                    liqDepthBidSeries.context(ctx);
-                    liqDepthAskSeries.context(ctx);
-                    lineLiqDepthAskSeries.context(ctx);
-                    lineLiqDepthBidSeries.context(ctx);
+                    liqSeries?.context(ctx);
+                    liqDepthBidSeries?.context(ctx);
+                    liqDepthAskSeries?.context(ctx);
+                    lineLiqDepthAskSeries?.context(ctx);
+                    lineLiqDepthBidSeries?.context(ctx);
 
-                    lineLiqSeries.context(ctx);
+                    lineLiqSeries?.context(ctx);
                 });
 
             renderChart();
@@ -578,9 +578,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                     }
                 })
                 .on('measure', () => {
-                    highlightedAreaCurveSeries.context(ctx);
-                    highlightedAreaAskSeries.context(ctx);
-                    highlightedAreaBidSeries.context(ctx);
+                    highlightedAreaCurveSeries?.context(ctx);
+                    highlightedAreaAskSeries?.context(ctx);
+                    highlightedAreaBidSeries?.context(ctx);
                 });
         }
     }, [
