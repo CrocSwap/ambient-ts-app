@@ -75,7 +75,7 @@ export default function RemoveRangeInfo(props: propsIF) {
         <>
             <DividerDark />
             <Row>
-                <span>{baseTokenSymbol} Rewards Earned</span>
+                <span>Earned {baseTokenSymbol}</span>
                 <div className={styles.token_price}>
                     {feeLiqBaseDisplay !== undefined ? feeLiqBaseDisplay : '…'}
                     <TokenIcon
@@ -87,7 +87,7 @@ export default function RemoveRangeInfo(props: propsIF) {
                 </div>
             </Row>
             <Row>
-                <span>{quoteTokenSymbol} Rewards Earned</span>
+                <span>Earned {quoteTokenSymbol}</span>
                 <div className={styles.token_price}>
                     {feeLiqQuoteDisplay !== undefined
                         ? feeLiqQuoteDisplay
@@ -166,7 +166,7 @@ export default function RemoveRangeInfo(props: propsIF) {
                     </div>
                 </Row>
                 <Row>
-                    <span>USD ($) Removal Summary</span>
+                    <span>Removal Value</span>
                     <div className={styles.token_price}>
                         {fiatRemovalVal ?? '…'}
                         <TokenIcon size='xs' empty />

@@ -47,7 +47,7 @@ export default function HarvestPositionInfo(props: propsIF) {
         <div className={styles.row}>
             <div className={styles.remove_position_info}>
                 <Row>
-                    <span>{baseTokenSymbol} Removal Summary</span>
+                    <span>Earned {baseTokenSymbol}</span>
                     <div className={styles.token_price}>
                         {baseHarvestString ?? '…'}
                         <TokenIcon
@@ -59,7 +59,7 @@ export default function HarvestPositionInfo(props: propsIF) {
                     </div>
                 </Row>
                 <Row>
-                    <span>{quoteTokenSymbol} Removal Summary</span>
+                    <span>Earned {quoteTokenSymbol}</span>
                     <div className={styles.token_price}>
                         {quoteHarvestString ?? '…'}
                         <TokenIcon
@@ -71,7 +71,7 @@ export default function HarvestPositionInfo(props: propsIF) {
                     </div>
                 </Row>
                 <Row>
-                    <span>USD ($) Removal Summary</span>
+                    <span>Removal Value</span>
                     <div className={styles.token_price}>
                         {fiatHarvestVal ?? '…'}
                         <TokenIcon size='xs' empty />
