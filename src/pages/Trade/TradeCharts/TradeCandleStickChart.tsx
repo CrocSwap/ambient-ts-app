@@ -542,10 +542,6 @@ function TradeCandleStickChart(props: propsIF) {
     useEffect(() => {
         if (unparsedCandleData) {
             setScaleForChart(unparsedCandleData);
-        } else {
-            if (scaleData) {
-                scaleData.yScale.domain([NaN, NaN]);
-            }
         }
     }, [unparsedCandleData === undefined, mobileView, isDenomBase]);
 
@@ -633,6 +629,8 @@ function TradeCandleStickChart(props: propsIF) {
             xScale = d3.scaleLinear();
             xScale.domain(xExtent(boundaryCandles));
 
+            resetXScale(xScale);
+
             yScale.domain(priceRange(boundaryCandles));
 
             const volumeScale = d3.scaleLinear();
@@ -642,15 +640,18 @@ function TradeCandleStickChart(props: propsIF) {
                 .accessors([(d: any) => d.volumeUSD]);
 
             volumeScale.domain(yExtentVolume(candleData?.candles));
-            setScaleData((prev: scaleData | undefined) => {
-                return {
-                    xScale: prev?.xScale ? prev.xScale : xScale,
-                    xScaleTime: xScaleTime,
-                    yScale: yScale,
-                    volumeScale: volumeScale,
-                    xExtent: xExtent,
-                };
-            });
+
+            if (scaleData === undefined) {
+                setScaleData(() => {
+                    return {
+                        xScale: xScale,
+                        xScaleTime: xScaleTime,
+                        yScale: yScale,
+                        volumeScale: volumeScale,
+                        xExtent: xExtent,
+                    };
+                });
+            }
         }
     };
 
@@ -784,23 +785,26 @@ function TradeCandleStickChart(props: propsIF) {
     //     }
     // }, [baseTokenAddress + quoteTokenAddress]);
 
+    const resetXScale = (xScale: d3.ScaleLinear<number, number, never>) => {
+        const localInitialDisplayCandleCount =
+            getInitialDisplayCandleCount(mobileView);
+        const nowDate = Date.now();
+
+        const snapDiff = nowDate % (period * 1000);
+        const snappedTime = nowDate + (period * 1000 - snapDiff);
+
+        const centerX = snappedTime;
+        const diff =
+            (localInitialDisplayCandleCount * period * 1000) / xAxisBuffer;
+
+        xScale.domain([
+            centerX - diff * xAxisBuffer,
+            centerX + diff * (1 - xAxisBuffer),
+        ]);
+    };
     const resetChart = () => {
         if (scaleData && unparsedCandleData) {
-            const localInitialDisplayCandleCount =
-                getInitialDisplayCandleCount(mobileView);
-            const nowDate = Date.now();
-
-            const snapDiff = nowDate % (period * 1000);
-            const snappedTime = nowDate + (period * 1000 - snapDiff);
-
-            const centerX = snappedTime;
-            const diff =
-                (localInitialDisplayCandleCount * period * 1000) / xAxisBuffer;
-
-            scaleData?.xScale.domain([
-                centerX - diff * xAxisBuffer,
-                centerX + diff * (1 - xAxisBuffer),
-            ]);
+            resetXScale(scaleData.xScale);
 
             setCandleScale((prev: CandleScaleIF) => {
                 return {
@@ -834,7 +838,6 @@ function TradeCandleStickChart(props: propsIF) {
         <>
             <div style={{ height: '100%', width: '100%' }}>
                 {!isLoading &&
-                !scaleData?.yScale.domain().includes(NaN) &&
                 candleData !== undefined &&
                 isPoolInitialized !== undefined &&
                 prevPeriod === period &&
