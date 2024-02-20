@@ -270,7 +270,6 @@ export default function Chart(props: propsIF) {
     const [cursorStyleTrigger, setCursorStyleTrigger] = useState(false);
 
     const [chartHeights, setChartHeights] = useState(0);
-    const [d3ContainerHeight, setD3ContainerHeight] = useState(0);
     const { isUserConnected } = useContext(UserDataContext);
 
     const { isTokenAPrimaryRange, advancedMode } = useContext(RangeContext);
@@ -527,11 +526,6 @@ export default function Chart(props: propsIF) {
     );
     const [lastCandleDataCenterX, setLastCandleDataCenterX] = useState(0);
     const [lastCandleDataCenterY, setLastCandleDataCenterY] = useState(0);
-
-    const [lastCandleDataPositionY, setLastCandleDataPositionY] =
-        useState('bottom');
-    const [lastCandleDataPositionX, setLastCandleDataPositionX] =
-        useState('left');
 
     const [subChartValues, setsubChartValues] = useState([
         {
@@ -2692,13 +2686,9 @@ export default function Chart(props: propsIF) {
         if (d3Container) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const canvasDiv = d3.select(d3Container.current) as any;
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const resizeObserver = new ResizeObserver((result: any) => {
-                const height = result[0].contentRect.height;
+            const resizeObserver = new ResizeObserver(() => {
                 const chartRect = canvasDiv.node().getBoundingClientRect();
                 setChartContainerOptions(chartRect);
-                setD3ContainerHeight(height);
             });
 
             resizeObserver.observe(canvasDiv.node());
@@ -4963,36 +4953,28 @@ export default function Chart(props: propsIF) {
             checkYLocation &&
             scaleData
         ) {
-            let location =
-                d3ContainerHeight - (scaleData.yScale((open + close) / 2) + 10);
+            if (mainCanvasBoundingClientRect) {
+                const ymin = scaleData?.yScale.domain()[0] as number;
+                const ymax = scaleData?.yScale.domain()[1] as number;
+                const tempOpen = Math.max(open, close);
+                const tempClose = Math.min(open, close);
 
-            setLastCandleDataPositionY('bottom');
-            if (location < 0) {
-                location = 0;
+                const localOpen = Math.min(tempOpen, ymax);
+                const localClose = Math.max(ymin, tempClose);
+
+                const location =
+                    mainCanvasBoundingClientRect.top +
+                    scaleData.yScale((localOpen + localClose) / 2) -
+                    30;
+
+                setLastCandleDataCenterY(location);
+
+                const positionX =
+                    mainCanvasBoundingClientRect.left +
+                    scaleData?.xScale(lastCandleData?.time * 1000) +
+                    bandwidth * 2;
+                setLastCandleDataCenterX(positionX);
             }
-            if (location > d3ContainerHeight - 50) {
-                location = 0;
-                setLastCandleDataPositionY('top');
-            }
-
-            setLastCandleDataCenterY(location);
-
-            let positionX =
-                scaleData?.xScale(lastCandleData?.time * 1000) +
-                bandwidth * 2 +
-                toolbarWidth;
-
-            if (
-                mainCanvasBoundingClientRect &&
-                positionX > mainCanvasBoundingClientRect?.width - 100
-            ) {
-                positionX = 0;
-                setLastCandleDataPositionX('right');
-            } else {
-                setLastCandleDataPositionX('left');
-            }
-
-            setLastCandleDataCenterX(positionX);
 
             setIsShowLastCandleTooltip(true);
         } else {
@@ -5813,8 +5795,8 @@ export default function Chart(props: propsIF) {
                         className='lastCandleDiv'
                         style={{
                             fontSize: chartHeights > 280 ? 'medium' : '12px',
-                            [lastCandleDataPositionY]: lastCandleDataCenterY,
-                            [lastCandleDataPositionX]: lastCandleDataCenterX,
+                            top: lastCandleDataCenterY,
+                            left: lastCandleDataCenterX,
                         }}
                     >
                         <div>

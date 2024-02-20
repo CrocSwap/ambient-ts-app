@@ -182,7 +182,7 @@ function Transactions(props: propsIF) {
     );
 
     // TODO: Use these as media width constants
-    const isSmallScreen = useMediaQuery('(max-width: 600px)');
+    const isSmallScreen = useMediaQuery('(max-width: 800px)');
     const isLargeScreen = useMediaQuery('(min-width: 1600px)');
 
     const tableView =
@@ -692,7 +692,9 @@ function Transactions(props: propsIF) {
                         ? dataLoadingStatus.isCandleDataLoading
                         : isLoading
                 ) ? (
-                    <Spinner size={100} bg='var(--dark1)' centered />
+                    <div style={{ height: isSmallScreen ? '80vh' : '100%' }}>
+                        <Spinner size={100} bg='var(--dark1)' centered />
+                    </div>
                 ) : (
                     transactionDataOrNull
                 )}

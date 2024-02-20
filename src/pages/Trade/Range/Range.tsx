@@ -1,5 +1,5 @@
 import { capitalConcFactor, concDepositSkew } from '@crocswap-libs/sdk';
-import { memo, useContext, useEffect, useMemo, useState } from 'react';
+import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import Button from '../../../components/Form/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
 
@@ -64,6 +64,7 @@ function Range() {
         setAdvancedLowTick,
         isTokenAPrimaryRange,
         primaryQuantityRange,
+        setPrimaryQuantityRange,
         setIsTokenAPrimaryRange,
         isLinesSwitched,
 
@@ -810,6 +811,13 @@ function Range() {
             ? amountToReduceNativeTokenQtyScroll
             : amountToReduceNativeTokenQtyMainnet;
 
+    const activeRangeTxHash = useRef<string>('some');
+
+    // reset activeTxHash when the pair changes or user updates quantity
+    useEffect(() => {
+        activeRangeTxHash.current = '';
+    }, [tokenA.address + tokenB.address, primaryQuantityRange]);
+
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const costOfMainnetPoolInETH =
@@ -878,6 +886,7 @@ function Range() {
             setTxErrorCode,
             setTxErrorMessage,
             resetConfirmation,
+            activeRangeTxHash,
         });
     };
 
@@ -899,6 +908,12 @@ function Range() {
         }
     };
 
+    const clearTokenInputs = () => {
+        setTokenAInputQty('');
+        setTokenBInputQty('');
+        setPrimaryQuantityRange('');
+    };
+
     const {
         tokenAllowed: tokenAAllowed,
         rangeButtonErrorMessage: rangeButtonErrorMessageTokenA,
@@ -912,6 +927,8 @@ function Range() {
         isPoolInitialized,
         tokenAQtyCoveredByWalletBalance,
         amountToReduceNativeTokenQty,
+        activeRangeTxHash,
+        clearTokenInputs,
     );
     const {
         tokenAllowed: tokenBAllowed,
@@ -926,6 +943,8 @@ function Range() {
         isPoolInitialized,
         tokenBQtyCoveredByWalletBalance,
         amountToReduceNativeTokenQty,
+        activeRangeTxHash,
+        clearTokenInputs,
     );
 
     const { approve, isApprovalPending } = useApprove();
