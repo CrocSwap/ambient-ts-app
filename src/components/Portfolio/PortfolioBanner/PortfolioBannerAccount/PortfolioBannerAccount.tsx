@@ -34,7 +34,12 @@ export default function PortfolioBannerAccount(
         ensNameAvailable,
     } = props;
 
-    const { userAddress, userAccountProfile } = useContext(UserDataContext);
+    const {
+        userAddress,
+        userAccountProfile,
+        isfetchNftTriggered,
+        setIsfetchNftTriggered,
+    } = useContext(UserDataContext);
 
     const { NFTData } = useContext(TokenBalanceContext);
 
@@ -94,7 +99,7 @@ export default function PortfolioBannerAccount(
                 setShowNFTPage(!showNFTPage);
             }}
         >
-            Update Profile
+            Update Avatar
         </UpdateProfileButton>
     );
 
@@ -164,6 +169,8 @@ export default function PortfolioBannerAccount(
                     setShowNFTPage={setShowNFTPage}
                     showNFTPage={showNFTPage}
                     NFTData={NFTData}
+                    isfetchNftTriggered={isfetchNftTriggered}
+                    setIsfetchNftTriggered={setIsfetchNftTriggered}
                 />
             )}
         </PortfolioBannerMainContainer>

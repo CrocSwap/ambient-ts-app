@@ -25,15 +25,23 @@ import nftPlaceHolder from '../../../../assets/images/Temporary/nft/nft-placehol
 import nftSelected from '../../../../assets/images/Temporary/nft/nft-profile-selected.svg';
 import { VscClose } from 'react-icons/vsc';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { FiRefreshCw } from 'react-icons/fi';
 
 interface NFTBannerAccountProps {
     showNFTPage: boolean;
     setShowNFTPage: React.Dispatch<boolean>;
     NFTData: NftListByChain[] | undefined;
+    isfetchNftTriggered: boolean;
+    setIsfetchNftTriggered: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function NFTBannerAccount(props: NFTBannerAccountProps) {
-    const { setShowNFTPage, NFTData } = props;
+    const {
+        setShowNFTPage,
+        NFTData,
+        isfetchNftTriggered,
+        setIsfetchNftTriggered,
+    } = props;
 
     const { setUserAccountProfile } = useContext(UserDataContext);
 
@@ -93,10 +101,12 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
     }, [NFTData, selectedNFTContractAddress]);
 
     useEffect(() => {
+        console.log(isfetchNftTriggered || nftArray.length < 1);
+
         setIsLoading(() => {
-            return nftArray.length > 0;
+            return isfetchNftTriggered || nftArray.length < 1;
         });
-    }, [nftArray]);
+    }, [nftArray, isfetchNftTriggered]);
 
     function handleImgSrc(
         onErrorIndex: Array<number>,
@@ -180,11 +190,18 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                                 </DropDownListContainer>
                             )}
                         </DropDownContainer>
+
+                        <FiRefreshCw
+                            size={18}
+                            onClick={() => {
+                                setIsfetchNftTriggered(() => true);
+                            }}
+                        />
                     </NFTBannerFilter>
                 )}
             </div>
 
-            {isLoading ? (
+            {!isLoading ? (
                 <NFTDisplay>
                     {nftArray.map((item: any, index: number) => (
                         <NFTImgContainer key={index}>

@@ -81,8 +81,12 @@ const NFTBannerFilter = styled.div`
 
     height: 40px;
 
+    gap: 5px;
+
+    margin-left: 22px;
+
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
 `;
 
 const DropDownContainer = styled.div`
@@ -90,8 +94,6 @@ const DropDownContainer = styled.div`
 
     align-items: center;
     justify-content: center;
-
-    margin: 0 auto;
 
     z-index: 99;
 `;

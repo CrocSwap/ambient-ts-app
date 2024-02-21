@@ -52,7 +52,12 @@ export const ChainDataContextProvider = (props: {
 
     const client = new Client('cqt_rQdWPMQV7YGRkVfmvTd7FFRBXHR4');
 
-    const { userAddress, isUserConnected } = useContext(UserDataContext);
+    const {
+        userAddress,
+        isUserConnected,
+        setIsfetchNftTriggered,
+        isfetchNftTriggered,
+    } = useContext(UserDataContext);
 
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
@@ -143,7 +148,17 @@ export const ChainDataContextProvider = (props: {
     useEffect(() => {
         const nftLocalData = localStorage.getItem('user_nft_data');
 
-        if (!nftLocalData) {
+        const actionKey = userAddress;
+
+        const localNftDataParsed = nftLocalData
+            ? new Map(JSON.parse(nftLocalData))
+            : undefined;
+
+        if (
+            isfetchNftTriggered ||
+            !nftLocalData ||
+            (localNftDataParsed && !localNftDataParsed.has(actionKey))
+        ) {
             (async () => {
                 if (
                     crocEnv &&
@@ -161,56 +176,50 @@ export const ChainDataContextProvider = (props: {
                             client,
                         );
 
-                        const nftDataMap = new Map<
-                            string,
-                            Array<NftListByChain>
-                        >();
+                        const nftDataMap = localNftDataParsed
+                            ? localNftDataParsed
+                            : new Map<string, Array<NftListByChain>>();
+
                         const mapValue: Array<NftListByChain> = [];
 
                         const actionKey = userAddress;
 
-                        if (!nftDataMap.has(actionKey)) {
-                            NFTData.map((item: any) => {
-                                const nftData = Object.values(item.nft_data);
+                        NFTData.map((item: any) => {
+                            const nftData = Object.values(item.nft_data);
 
-                                const nftImgArray: Array<NftDataIF> = [];
+                            const nftImgArray: Array<NftDataIF> = [];
 
-                                nftData.map((element: any) => {
-                                    if (element.external_data)
-                                        nftImgArray.push({
-                                            tokenUrl: element.token_url,
-                                            nftImage:
-                                                element.external_data.image,
-                                        });
-                                });
-
-                                mapValue.push({
-                                    contractAddress: item.contract_address,
-                                    contractName: item.contract_name,
-                                    data: nftImgArray,
-                                });
-
-                                nftDataMap.set(actionKey, mapValue);
+                            nftData.map((element: any) => {
+                                if (element.external_data)
+                                    nftImgArray.push({
+                                        tokenUrl: element.token_url,
+                                        nftImage: element.external_data.image,
+                                    });
                             });
 
-                            localStorage.setItem(
-                                'user_nft_data',
-                                JSON.stringify(Array.from(nftDataMap)),
-                            );
-                        }
+                            mapValue.push({
+                                contractAddress: item.contract_address,
+                                contractName: item.contract_name,
+                                data: nftImgArray,
+                            });
+
+                            nftDataMap.set(actionKey, mapValue);
+                        });
+
+                        localStorage.setItem(
+                            'user_nft_data',
+                            JSON.stringify(Array.from(nftDataMap)),
+                        );
 
                         setNFTData(mapValue);
+                        setIsfetchNftTriggered(() => false);
                     } catch (error) {
                         console.error({ error });
                     }
                 }
             })();
         } else {
-            const actionKey = userAddress;
-
-            const localNftDataParsed = new Map(JSON.parse(nftLocalData));
-
-            if (localNftDataParsed.has(actionKey)) {
+            if (localNftDataParsed && localNftDataParsed.has(actionKey)) {
                 setNFTData(
                     () => localNftDataParsed.get(actionKey) as NftListByChain[],
                 );
@@ -224,6 +233,7 @@ export const ChainDataContextProvider = (props: {
         everyFiveMinutes,
         client !== undefined,
         activeNetwork.graphCacheUrl,
+        isfetchNftTriggered,
     ]);
 
     useEffect(() => {
