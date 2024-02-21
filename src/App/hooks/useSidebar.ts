@@ -41,7 +41,7 @@ export const useSidebar = (
                 : showByDefault
         )
             ? 'open'
-            : 'closed' ?? SIDEBAR_GLOBAL_DEFAULT,
+            : 'closed',
     );
 
     // reusable logic to update state and optionally persist data in local storage
