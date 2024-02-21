@@ -7,7 +7,6 @@ import {
     useContext,
     useState,
 } from 'react';
-import { useLocation } from 'react-router-dom';
 import {
     recentPoolsMethodsIF,
     useRecentPools,
@@ -57,9 +56,6 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
         () => (lastReceipt ? diffHashSig(lastReceipt) : undefined),
         [lastReceipt],
     );
-
-    // current URL pathway in the app
-    const { pathname: currentLocation } = useLocation();
 
     // hook to manage sidebar state (probably doesn't need to be extracted anymore)
     const sidebar = useSidebar(location.pathname);
