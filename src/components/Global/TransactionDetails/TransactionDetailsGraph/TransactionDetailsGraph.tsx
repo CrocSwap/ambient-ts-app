@@ -235,25 +235,14 @@ export default function TransactionDetailsGraph(
             });
 
             const priceLine = d3fc
-                .annotationSvgLine()
-                .value((d: any) => d.y)
+                .seriesSvgLine()
                 .xScale(scaleData?.xScale)
-                .yScale(scaleData?.yScale);
+                .yScale(scaleData?.yScale)
+                .crossValue((d: any) => d.x)
+                .mainValue((d: any) => d.y);
 
-            priceLine.decorate((selection: any, d: any) => {
-                selection.nodes().forEach((context: any, index: number) => {
-                    d3.select(context).attr(
-                        'transform',
-                        'translate(' +
-                            scaleData.xScale(d[index].x) +
-                            ',' +
-                            scaleData?.yScale(d[index].y) +
-                            ')',
-                    );
-                });
-                selection.enter().selectAll('g.right-handle').remove();
-                selection.enter().selectAll('line').attr('class', 'priceLine');
-                selection.selectAll('g.left-handle').remove();
+            priceLine.decorate((selection: any) => {
+                selection.enter().attr('class', 'priceLine');
             });
 
             setPriceLine(() => {
@@ -370,7 +359,7 @@ export default function TransactionDetailsGraph(
 
             const horizontalBand = d3fc
                 .annotationSvgBand()
-                .xScale(scaleData?.xScale)
+                .xScale(scaleData.xScaleCopy)
                 .yScale(scaleData?.yScale)
                 .fromValue((d: any) => d[0])
                 .toValue((d: any) => d[1])
@@ -537,6 +526,7 @@ export default function TransactionDetailsGraph(
             const scaleData = {
                 xScale: xScale,
                 yScale: yScale,
+                xScaleCopy: xScale.copy(),
             };
 
             setScaleData(() => {
@@ -549,7 +539,7 @@ export default function TransactionDetailsGraph(
         tx.bidTickPriceDecimalCorrected,
         tx.bidTickInvPriceDecimalCorrected,
         tx.positionType,
-        tx.txTime,
+        tx?.txTime,
         tx.swapInvPriceDecimalCorrected,
         tx.swapPriceDecimalCorrected,
         graphData,
@@ -911,6 +901,7 @@ export default function TransactionDetailsGraph(
                 const horizontalBandData: any[] = [];
 
                 const rangelinesJoin = d3fc.dataJoin('g', 'rangeLines');
+
                 const limitPriceLineJoin = d3fc.dataJoin('g', 'limitPriceLine');
                 const triangleRangeJoin = d3fc.dataJoin('g', 'triangleRange');
                 const triangleLimitJoin = d3fc.dataJoin('g', 'triangleLimit');
@@ -985,6 +976,23 @@ export default function TransactionDetailsGraph(
                             tx !== undefined
                         ) {
                             if (tx.positionType !== 'ambient') {
+                                const time = tx.timeFirstMint
+                                    ? tx.timeFirstMint * 1000
+                                    : tx.txTime * 1000;
+
+                                const timeEnd =
+                                    tx.changeType === 'burn'
+                                        ? tx.txTime * 1000
+                                        : scaleData.xScale.domain()[1];
+                                scaleData.xScaleCopy.domain(
+                                    scaleData.xScale.domain(),
+                                );
+                                scaleData.xScaleCopy.range([
+                                    0,
+                                    scaleData.xScale(timeEnd) -
+                                        scaleData.xScale(time),
+                                ]);
+
                                 const bidLine = (
                                     !isAccountView
                                         ? isDenomBase
@@ -1003,24 +1011,29 @@ export default function TransactionDetailsGraph(
 
                                 horizontalBandData[0] = [bidLine, askLine];
 
-                                const time = tx.timeFirstMint
+                                const timeStart = tx.timeFirstMint
                                     ? tx.timeFirstMint * 1000
                                     : tx.txTime * 1000;
 
-                                const rangeLinesData = [
-                                    { x: time, y: bidLine },
-                                    { x: time, y: askLine },
+                                const rangeLinesDataBid = [
+                                    { x: timeStart, y: bidLine },
+                                    { x: timeEnd, y: bidLine },
+                                ];
+
+                                const rangeLinesDataAsk = [
+                                    { x: timeStart, y: askLine },
+                                    { x: timeEnd, y: askLine },
                                 ];
 
                                 const triangleData = [
-                                    { x: time, y: bidLine },
+                                    { x: timeStart, y: bidLine },
                                     {
-                                        x: scaleData.xScale.domain()[1],
+                                        x: timeEnd,
                                         y: bidLine,
                                     },
-                                    { x: time, y: askLine },
+                                    { x: timeStart, y: askLine },
                                     {
-                                        x: scaleData.xScale.domain()[1],
+                                        x: timeEnd,
                                         y: askLine,
                                     },
                                 ];
@@ -1029,9 +1042,11 @@ export default function TransactionDetailsGraph(
                                     horizontalBandData,
                                 ]).call(horizontalBand);
 
-                                rangelinesJoin(svg, [rangeLinesData]).call(
-                                    priceLine,
-                                );
+                                svg.selectAll('.priceLine').remove();
+                                rangelinesJoin(svg, [
+                                    rangeLinesDataBid,
+                                    rangeLinesDataAsk,
+                                ]).call(priceLine);
 
                                 triangleRangeJoin(svg, [triangleData]).call(
                                     triangleRange,
