@@ -16,7 +16,8 @@ import {
     NFTImg,
 } from './NFTBannerAccountCss';
 import {
-    NftTokenContractBalanceItemIF,
+    NftDataIF,
+    NftListByChain,
     TokenBalanceContext,
 } from '../../../../contexts/TokenBalanceContext';
 import Spinner from '../../../Global/Spinner/Spinner';
@@ -28,7 +29,7 @@ import { UserDataContext } from '../../../../contexts/UserDataContext';
 interface NFTBannerAccountProps {
     showNFTPage: boolean;
     setShowNFTPage: React.Dispatch<boolean>;
-    NFTData: NftTokenContractBalanceItemIF[] | undefined;
+    NFTData: NftListByChain[] | undefined;
 }
 
 export default function NFTBannerAccount(props: NFTBannerAccountProps) {
@@ -36,7 +37,7 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
 
     const { setUserAccountProfile } = useContext(UserDataContext);
 
-    const [nftArray, setNftArray] = useState<any[]>([]);
+    const [nftArray, setNftArray] = useState<NftDataIF[]>([]);
 
     const [nftContractName, setNftContractName] = useState<
         { name: string; address: string }[]
@@ -55,7 +56,9 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
 
     const [onErrorIndex, setOnErrorIndex] = useState<Array<number>>([]);
 
-    const [selectedNft, setSelectedNft] = useState<any>(undefined);
+    const [selectedNft, setSelectedNft] = useState<NftDataIF | undefined>(
+        undefined,
+    );
 
     useEffect(() => {
         const nftContractName: any[] = [];
@@ -72,10 +75,10 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
     }, [NFTData]);
 
     useEffect(() => {
-        const nftArray: any[] = [];
+        const nftArray: NftDataIF[] = [];
 
         NFTData?.map((item) => {
-            const nftData = Object.values(item.nftData);
+            const nftData = item.data;
 
             nftData.map((element) => {
                 if (
@@ -111,8 +114,8 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
     }
 
     function handleNftSelection() {
-        if (selectedNft && selectedNft.external_data) {
-            setUserAccountProfile(() => selectedNft.external_data.image);
+        if (selectedNft) {
+            setUserAccountProfile(() => selectedNft.nftImage);
         }
     }
 
@@ -187,8 +190,9 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                         <NFTImgContainer key={index}>
                             <NFTImg
                                 selected={
-                                    selectedNft &&
-                                    item.token_url === selectedNft.token_url
+                                    selectedNft
+                                        ? selectedNft.tokenUrl === item.tokenUrl
+                                        : false
                                 }
                                 key={index}
                                 // alt='Content not found'
@@ -200,17 +204,17 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                                     setSelectedNft(item);
                                 }}
                                 src={
-                                    item.external_data
+                                    item.nftImage
                                         ? handleImgSrc(
                                               onErrorIndex,
-                                              item.external_data.image,
+                                              item.nftImage,
                                               index,
                                           )
                                         : nftPlaceHolder
                                 }
                             ></NFTImg>
                             {selectedNft &&
-                                item.token_url === selectedNft.token_url && (
+                                item.tokenUrl === selectedNft.tokenUrl && (
                                     <img
                                         src={nftSelected}
                                         style={{
