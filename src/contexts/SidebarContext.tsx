@@ -57,15 +57,15 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
         [lastReceipt],
     );
 
+    // determine whether the user screen width is less than min width to show the sidebar
+    const smallScreen: boolean = useMediaQuery('(max-width: 500px)');
+    const showSidebarByDefault: boolean = useMediaQuery('(min-width: 1600px)');
+
     // hook to manage sidebar state (probably doesn't need to be extracted anymore)
-    const sidebar = useSidebar(location.pathname);
+    const sidebar = useSidebar(location.pathname, showSidebarByDefault);
 
     // hook to manage recent pool data in-session
     const recentPools: recentPoolsMethodsIF = useRecentPools(chainData.chainId);
-
-    // determine whether the user screen width is less than min width to show the sidebar
-    const smallScreen: boolean = useMediaQuery('(max-width: 500px)');
-    const showSidebarByDefault: boolean = useMediaQuery('(min-width: 1850px)');
 
     // value showing whether the screen size warrants hiding the sidebar
     const [hideOnMobile, setHideOnMobile] = useState<boolean>(true);

@@ -14,7 +14,10 @@ export interface sidebarMethodsIF {
 
 export type SidebarStatus = 'open' | 'closed';
 
-export const useSidebar = (pathname: string): sidebarMethodsIF => {
+export const useSidebar = (
+    pathname: string,
+    showByDefault: boolean,
+): sidebarMethodsIF => {
     // base default status for the sidebar through the app
     const SIDEBAR_GLOBAL_DEFAULT: SidebarStatus = 'closed';
 
@@ -30,7 +33,9 @@ export const useSidebar = (pathname: string): sidebarMethodsIF => {
     // this hook initializes from local storage for returning users
     // will default to 'closed' if no value found (happens on first visit)
     const [sidebar, setSidebar] = useState<SidebarStatus>(
-        getStoredSidebarStatus() ?? SIDEBAR_GLOBAL_DEFAULT,
+        getStoredSidebarStatus() ?? showByDefault
+            ? 'open'
+            : 'closed' ?? SIDEBAR_GLOBAL_DEFAULT,
     );
 
     // reusable logic to update state and optionally persist data in local storage
