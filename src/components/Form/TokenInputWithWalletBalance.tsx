@@ -11,6 +11,7 @@ import { FiRefreshCw } from 'react-icons/fi';
 import WalletBalanceSubinfo from './WalletBalanceSubinfo';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { Text } from '../../styled/Common';
 
 interface propsIF {
     tokenAorB: 'A' | 'B';
@@ -137,6 +138,17 @@ function TokenInputWithWalletBalance(props: propsIF) {
             );
         }
     };
+    // This is only to help with developmenet on local and can be removed
+
+    const handleLocalPopulate = () => {
+        if (
+            formatTokenInput('0.00001', token, true) !== tokenInput &&
+            parseFloat('0.00001') > 0
+        ) {
+            parseTokenInput && parseTokenInput('0.00001', true);
+            handleTokenInputEvent(formatTokenInput('0.00001', token, true));
+        }
+    };
 
     const handleToggleDex = () => {
         // if the sell token quantity is maximized and the user switches to use exchange balance,
@@ -154,6 +166,9 @@ function TokenInputWithWalletBalance(props: propsIF) {
         }
         handleToggleDexSelection();
     };
+    const isLocalPopulateButtonEnabled =
+        process.env.REACT_APP_POPULATE_VALUE_BUTTON_IS_ENABLED !== undefined &&
+        process.env.REACT_APP_POPULATE_VALUE_BUTTON_IS_ENABLED === 'true';
 
     const walletContent = (
         <>
@@ -184,6 +199,18 @@ function TokenInputWithWalletBalance(props: propsIF) {
 
     return (
         <>
+            {isLocalPopulateButtonEnabled && tokenAorB === 'A' && (
+                <Text
+                    fontWeight='300'
+                    fontSize='body'
+                    color='accent1'
+                    align='end'
+                    onClick={handleLocalPopulate}
+                >
+                    populate value
+                </Text>
+            )}
+
             <TokenInputQuantity
                 fieldId={fieldId}
                 token={token}

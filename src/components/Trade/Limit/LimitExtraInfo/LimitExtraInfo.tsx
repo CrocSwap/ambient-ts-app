@@ -12,6 +12,8 @@ interface propsIF {
     endDisplayPrice: number;
     showExtraInfoDropdown: boolean;
     liquidityProviderFeeString: string;
+    showExtraInfo: boolean;
+    setShowExtraInfo: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function LimitExtraInfo(props: propsIF) {
@@ -22,6 +24,8 @@ function LimitExtraInfo(props: propsIF) {
         endDisplayPrice,
         showExtraInfoDropdown,
         liquidityProviderFeeString,
+        showExtraInfo,
+        setShowExtraInfo,
     } = props;
     const { poolPriceDisplay } = useContext(PoolContext);
 
@@ -97,6 +101,8 @@ function LimitExtraInfo(props: propsIF) {
             conversionRate={conversionRate}
             gasPrice={orderGasPriceInDollars}
             showDropdown={showExtraInfoDropdown}
+            showExtraInfo={showExtraInfo}
+            setShowExtraInfo={setShowExtraInfo}
         />
     );
 }

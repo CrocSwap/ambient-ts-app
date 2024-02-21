@@ -88,6 +88,7 @@ function Swap(props: propsIF) {
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
     !pathname.includes('/trade') && useUrlParams(tokens, chainId, provider);
+    // eslint-disable-next-line
     const [isModalOpen, openModal, closeModal] = useModal();
     // use URL pathway to determine if user is in swap or market page
     // depending on location we pull data on the tx in progress differently
@@ -101,6 +102,7 @@ function Swap(props: propsIF) {
         isTokenAPrimary,
         isDenomBase,
         primaryQuantity,
+        activateConfirmation,
         setPrimaryQuantity,
         areDefaultTokensUpdatedForChain,
     } = useContext(TradeDataContext);
@@ -461,11 +463,6 @@ function Swap(props: propsIF) {
         }
     }
 
-    const handleModalOpen = () => {
-        resetConfirmation();
-        openModal();
-    };
-
     const handleModalClose = () => {
         resetConfirmation();
         closeModal();
@@ -533,16 +530,71 @@ function Swap(props: propsIF) {
             </WarningContainer>
         ) : undefined;
 
+    const [activeContent, setActiveContent] = useState('main');
+    const handleSetActiveContent = (newActiveContent: string) => {
+        setActiveContent(newActiveContent);
+    };
+
+    const isTransactionApproved = newSwapTransactionHash !== '';
+    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
+    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
+
+    const isTransactionPending = !(
+        isTransactionApproved ||
+        isTransactionDenied ||
+        isTransactionException
+    );
+    const isTransactionConfirmed =
+        isTransactionApproved &&
+        !pendingTransactions.includes(newSwapTransactionHash);
+
+    const swapSteps = [
+        { label: 'Sign transaction' },
+        {
+            label: 'Submitting swap',
+        },
+    ];
+
+    const [activeStep, setActiveStep] = useState(0);
+    // active step 0 is sign transaction loading
+    // active step 1 is 'swapping something for something loading'
+    // active step 2 is all completed
+    const [showStepperComponent, setShowStepperComponent] = useState(false);
+
+    useEffect(() => {
+        setActiveStep(0);
+        if (isTransactionApproved) {
+            setActiveStep(1);
+        }
+        if (isTransactionConfirmed) {
+            setActiveStep(2);
+        }
+    }, [isTransactionApproved, isTransactionPending, isTransactionConfirmed]);
+
+    const [showExtraInfo, setShowExtraInfo] = useState<boolean>(false);
+
     return (
         <TradeModuleSkeleton
+            activeContent={activeContent}
+            setActiveContent={setActiveContent}
+            handleSetActiveContent={handleSetActiveContent}
             chainId={chainId}
             isSwapPage={!isOnTradeRoute}
+            moduleName='Swap'
+            showExtraInfo={showExtraInfo}
+            slippage={swapSlippage}
+            bypassConfirm={bypassConfirmSwap}
             header={
                 <TradeModuleHeader
                     slippage={swapSlippage}
                     bypassConfirm={bypassConfirmSwap}
                     settingsTitle='Swap'
                     isSwapPage={!isOnTradeRoute}
+                    activeContent={activeContent}
+                    handleSetActiveContent={handleSetActiveContent}
+                    handleReset={resetConfirmation}
+                    setShowStepperComponent={setShowStepperComponent}
+                    showStepperComponent={showStepperComponent}
                 />
             }
             input={
@@ -582,38 +634,40 @@ function Swap(props: propsIF) {
                     liquidityProviderFeeString={liquidityProviderFeeString}
                     swapGasPriceinDollars={swapGasPriceinDollars}
                     showExtraInfoDropdown={primaryQuantity !== ''}
+                    showExtraInfo={showExtraInfo}
+                    setShowExtraInfo={setShowExtraInfo}
                 />
             }
             modal={
-                isModalOpen ? (
-                    <ConfirmSwapModal
-                        onClose={handleModalClose}
-                        tokenPair={{
-                            dataTokenA: tokenA,
-                            dataTokenB: tokenB,
-                        }}
-                        isDenomBase={isDenomBase}
-                        baseTokenSymbol={baseToken.symbol}
-                        quoteTokenSymbol={quoteToken.symbol}
-                        initiateSwapMethod={initiateSwap}
-                        newSwapTransactionHash={newSwapTransactionHash}
-                        txErrorCode={txErrorCode}
-                        txErrorMessage={txErrorMessage}
-                        showConfirmation={showConfirmation}
-                        resetConfirmation={resetConfirmation}
-                        slippageTolerancePercentage={
-                            slippageTolerancePercentage
-                        }
-                        effectivePrice={effectivePrice}
-                        isSellTokenBase={isSellTokenBase}
-                        sellQtyString={sellQtyString}
-                        buyQtyString={buyQtyString}
-                        isTokenAPrimary={isTokenAPrimary}
-                        priceImpactWarning={priceImpactWarning}
-                    />
-                ) : (
-                    <></>
-                )
+                <ConfirmSwapModal
+                    onClose={handleModalClose}
+                    tokenPair={{
+                        dataTokenA: tokenA,
+                        dataTokenB: tokenB,
+                    }}
+                    isDenomBase={isDenomBase}
+                    baseTokenSymbol={baseToken.symbol}
+                    quoteTokenSymbol={quoteToken.symbol}
+                    initiateSwapMethod={initiateSwap}
+                    newSwapTransactionHash={newSwapTransactionHash}
+                    txErrorCode={txErrorCode}
+                    txErrorMessage={txErrorMessage}
+                    showConfirmation={showConfirmation}
+                    resetConfirmation={resetConfirmation}
+                    slippageTolerancePercentage={slippageTolerancePercentage}
+                    effectivePrice={effectivePrice}
+                    isSellTokenBase={isSellTokenBase}
+                    sellQtyString={sellQtyString}
+                    buyQtyString={buyQtyString}
+                    isTokenAPrimary={isTokenAPrimary}
+                    activeStep={activeStep}
+                    setActiveStep={setActiveStep}
+                    steps={swapSteps}
+                    handleSetActiveContent={handleSetActiveContent}
+                    showStepperComponent={showStepperComponent}
+                    setShowStepperComponent={setShowStepperComponent}
+                    priceImpactWarning={priceImpactWarning}
+                />
             }
             button={
                 <Button
@@ -635,7 +689,10 @@ function Swap(props: propsIF) {
                         areBothAckd
                             ? bypassConfirmSwap.isEnabled
                                 ? initiateSwap
-                                : handleModalOpen
+                                : () => {
+                                      setActiveContent('confirmation');
+                                      activateConfirmation('Swap');
+                                  }
                             : ackAsNeeded
                     }
                     disabled={
@@ -647,7 +704,7 @@ function Swap(props: propsIF) {
                     flat
                 />
             }
-            bypassConfirm={
+            bypassConfirmDisplay={
                 showConfirmation && bypassConfirmSwap.isEnabled ? (
                     <SubmitTransaction
                         type='Swap'
@@ -657,6 +714,9 @@ function Swap(props: propsIF) {
                         resetConfirmation={resetConfirmation}
                         sendTransaction={initiateSwap}
                         transactionPendingDisplayString={`Swapping ${sellQtyString} ${tokenA.symbol} for ${buyQtyString} ${tokenB.symbol}`}
+                        activeStep={activeStep}
+                        setActiveStep={setActiveStep}
+                        steps={swapSteps}
                     />
                 ) : undefined
             }

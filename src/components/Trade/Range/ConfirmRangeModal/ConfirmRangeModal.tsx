@@ -1,5 +1,12 @@
 // START: Import React and Dongles
-import { memo, useContext, useEffect, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    memo,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
 
 // START: Import JSX Functional Components
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
@@ -29,6 +36,7 @@ interface propsIF {
     pinnedMinPriceDisplayTruncatedInQuote: string;
     pinnedMaxPriceDisplayTruncatedInBase: string;
     pinnedMaxPriceDisplayTruncatedInQuote: string;
+    setShowConfirmation: Dispatch<SetStateAction<boolean>>;
     showConfirmation: boolean;
     txErrorCode: string;
     txErrorMessage: string;
@@ -37,6 +45,14 @@ interface propsIF {
     tokenAQty: string;
     tokenBQty: string;
     onClose: () => void;
+    activeStep: number;
+    setActiveStep: React.Dispatch<React.SetStateAction<number>>;
+    steps: {
+        label: string;
+    }[];
+    handleSetActiveContent: (newActiveContent: string) => void;
+    showStepperComponent: boolean;
+    setShowStepperComponent: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function ConfirmRangeModal(props: propsIF) {
@@ -53,11 +69,18 @@ function ConfirmRangeModal(props: propsIF) {
         txErrorCode,
         txErrorMessage,
         showConfirmation,
+        setShowConfirmation,
         resetConfirmation,
         isAdd,
         tokenAQty,
         tokenBQty,
         onClose = () => null,
+        activeStep,
+        setActiveStep,
+        steps,
+        handleSetActiveContent,
+        showStepperComponent,
+        setShowStepperComponent,
     } = props;
 
     const { tokenA, tokenB, isDenomBase } = useContext(TradeDataContext);
@@ -71,6 +94,7 @@ function ConfirmRangeModal(props: propsIF) {
     // logic to prevent pool quantities updating during/after pool completion
     const [memoTokenAQty, setMemoTokenAQty] = useState<string | undefined>();
     const [memoTokenBQty, setMemoTokenBQty] = useState<string | undefined>();
+
     const [memoMinPriceBase, setMemoMinPriceBase] = useState<
         string | undefined
     >();
@@ -105,6 +129,10 @@ function ConfirmRangeModal(props: propsIF) {
         pinnedMaxPriceDisplayTruncatedInQuote,
         isAdd,
     ]);
+
+    const minPrice = isDenomBase ? memoMinPriceBase : memoMinPriceQuote;
+
+    const maxPrice = isDenomBase ? memoMaxPriceBase : memoMaxPriceQuote;
 
     const poolTokenDisplay = (
         <>
@@ -198,6 +226,7 @@ function ConfirmRangeModal(props: propsIF) {
             txErrorCode={txErrorCode}
             txErrorMessage={txErrorMessage}
             showConfirmation={showConfirmation}
+            setShowConfirmation={setShowConfirmation}
             poolTokenDisplay={poolTokenDisplay}
             statusText={
                 !showConfirmation
@@ -216,9 +245,17 @@ function ConfirmRangeModal(props: propsIF) {
                           memoTokenBQty ? memoTokenBQty : '0'
                       } ${tokenB.symbol}`
             }
+            minPrice={minPrice}
+            maxPrice={maxPrice}
             initiate={sendTransaction}
             resetConfirmation={resetConfirmation}
             onClose={onClose}
+            activeStep={activeStep}
+            setActiveStep={setActiveStep}
+            steps={steps}
+            handleSetActiveContent={handleSetActiveContent}
+            showStepperComponent={showStepperComponent}
+            setShowStepperComponent={setShowStepperComponent}
         />
     );
 }

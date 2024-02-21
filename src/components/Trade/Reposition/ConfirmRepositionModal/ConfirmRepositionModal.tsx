@@ -30,6 +30,14 @@ interface propsIF {
     isTokenABase: boolean;
     isPositionInRange: boolean;
     onClose: () => void;
+    activeStep: number;
+    setActiveStep: React.Dispatch<React.SetStateAction<number>>;
+    steps: {
+        label: string;
+    }[];
+    handleSetActiveContent: (newActiveContent: string) => void;
+    showStepperComponent: boolean;
+    setShowStepperComponent: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function ConfirmRepositionModal(props: propsIF) {
@@ -52,6 +60,12 @@ export default function ConfirmRepositionModal(props: propsIF) {
         isTokenABase,
         isPositionInRange,
         onClose,
+        activeStep,
+        setActiveStep,
+        steps,
+        handleSetActiveContent,
+        showStepperComponent,
+        setShowStepperComponent,
     } = props;
 
     const { tokenA, tokenB, isDenomBase } = useContext(TradeDataContext);
@@ -63,6 +77,14 @@ export default function ConfirmRepositionModal(props: propsIF) {
         isDenomBaseLocalToRepositionConfirm,
         setIsDenomBaseocalToRepositionConfirm,
     ] = useState(isDenomBase);
+
+    const minPrice = isDenomBase
+        ? pinnedMinPriceDisplayTruncatedInBase
+        : pinnedMinPriceDisplayTruncatedInQuote;
+
+    const maxPrice = isDenomBase
+        ? pinnedMaxPriceDisplayTruncatedInBase
+        : pinnedMaxPriceDisplayTruncatedInQuote;
 
     const tokenAmountDisplay = (
         <section className={styles.fee_tier_display}>
@@ -175,8 +197,8 @@ export default function ConfirmRepositionModal(props: propsIF) {
     return (
         <TradeConfirmationSkeleton
             type='Reposition'
-            tokenA={{ token: tokenA }}
-            tokenB={{ token: tokenB }}
+            tokenA={{ token: tokenA, quantity: newBaseQtyDisplay }}
+            tokenB={{ token: tokenB, quantity: newQuoteQtyDisplay }}
             transactionHash={newRepositionTransactionHash}
             txErrorCode={txErrorCode}
             txErrorMessage={txErrorMessage}
@@ -188,10 +210,18 @@ export default function ConfirmRepositionModal(props: propsIF) {
                         : 'Send Reposition'
                     : `Repositioning ${tokenA.symbol} and ${tokenB.symbol}`
             }
+            minPrice={minPrice}
+            maxPrice={maxPrice}
             initiate={onSend}
             resetConfirmation={resetConfirmation}
             poolTokenDisplay={poolTokenDisplay}
             onClose={onClose}
+            activeStep={activeStep}
+            setActiveStep={setActiveStep}
+            steps={steps}
+            handleSetActiveContent={handleSetActiveContent}
+            showStepperComponent={showStepperComponent}
+            setShowStepperComponent={setShowStepperComponent}
         />
     );
 }

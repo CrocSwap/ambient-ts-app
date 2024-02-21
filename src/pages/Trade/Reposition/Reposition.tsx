@@ -4,7 +4,6 @@ import { useLocation, useParams, Navigate } from 'react-router-dom';
 import { CrocReposition, toDisplayPrice } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
-import RepositionHeader from '../../../components/Trade/Reposition/RepositionHeader/RepositionHeader';
 import RepositionPriceInfo from '../../../components/Trade/Reposition/RepositionPriceInfo/RepositionPriceInfo';
 import ConfirmRepositionModal from '../../../components/Trade/Reposition/ConfirmRepositionModal/ConfirmRepositionModal';
 import Button from '../../../components/Form/Button';
@@ -36,7 +35,6 @@ import {
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
-import { useModal } from '../../../components/Global/Modal/useModal';
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import RangeWidth from '../../../components/Form/RangeWidth/RangeWidth';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
@@ -45,6 +43,9 @@ import {
     NUM_GWEI_IN_WEI,
 } from '../../../ambient-utils/constants/';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
+import MultiContentComponent from '../../../components/Global/MultiStepTransaction/MultiContentComponent';
+import RepositionSkeleton from './RepositionSkeleton';
+import TransactionSettings from '../../../components/Global/TransactionSettings/TransactionSettings';
 import { useProcessRange } from '../../../utils/hooks/useProcessRange';
 import { getPositionHash } from '../../../ambient-utils/dataLayer/functions/getPositionHash';
 import { UserDataContext } from '../../../contexts/UserDataContext';
@@ -68,7 +69,9 @@ function Reposition() {
     } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
-    const { bypassConfirmRepo } = useContext(UserPreferenceContext);
+    const { bypassConfirmRepo, repoSlippage } = useContext(
+        UserPreferenceContext,
+    );
     const {
         addPendingTx,
         addReceipt,
@@ -76,6 +79,7 @@ function Reposition() {
         addPositionUpdate,
         removePendingTx,
         updateTransactionHash,
+        pendingTransactions,
     } = useContext(ReceiptContext);
     const {
         simpleRangeWidth,
@@ -86,9 +90,8 @@ function Reposition() {
         setRescaleRangeBoundariesWithSlider,
         setAdvancedMode,
     } = useContext(RangeContext);
+    // eslint-disable-next-line
     const { userAddress } = useContext(UserDataContext);
-
-    const [isOpen, openModal, closeModal] = useModal();
 
     const [newRepositionTransactionHash, setNewRepositionTransactionHash] =
         useState('');
@@ -162,6 +165,8 @@ function Reposition() {
         tokenB,
         isTokenABase,
         poolPriceNonDisplay: currentPoolPriceNonDisplay,
+        deactivateConfirmation,
+        activateConfirmation,
     } = useContext(TradeDataContext);
 
     const currentPoolPriceTick =
@@ -204,12 +209,14 @@ function Reposition() {
 
     const handleModalOpen = () => {
         resetConfirmation();
-        openModal();
+        // openModal();
+
+        setActiveContent('confirmation');
+        activateConfirmation('Reposition');
     };
 
     const handleModalClose = () => {
         resetConfirmation();
-        closeModal();
     };
 
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(10);
@@ -633,6 +640,68 @@ function Reposition() {
         </a>
     );
 
+    const [activeContent, setActiveContent] = useState('main');
+    const handleSetActiveContent = (newActiveContent: string) => {
+        setActiveContent(newActiveContent);
+    };
+    const repositionSteps = [
+        { label: 'Sign transaction' },
+        {
+            label: 'Submitting Liquidity',
+        },
+    ];
+    const [activeStep, setActiveStep] = useState(0);
+    // active step 0 is sign transaction loading
+    // active step 1 is 'swapping something for something loading'
+    // active step 2 is all completed
+    const [showStepperComponent, setShowStepperComponent] = useState(false);
+
+    const isTransactionApproved = newRepositionTransactionHash !== '';
+    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
+    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
+
+    const isTransactionPending = !(
+        isTransactionApproved ||
+        isTransactionDenied ||
+        isTransactionException
+    );
+
+    const isTransactionConfirmed =
+        isTransactionApproved &&
+        !pendingTransactions.includes(newRepositionTransactionHash);
+
+    useEffect(() => {
+        setActiveStep(0);
+        if (isTransactionApproved) {
+            setActiveStep(1);
+        }
+        if (isTransactionConfirmed) {
+            setActiveStep(2);
+        }
+    }, [isTransactionApproved, isTransactionPending, isTransactionConfirmed]);
+
+    const repositionSkeletonProps = {
+        setRangeWidthPercentage,
+        positionHash: posHashTruncated,
+        resetTxHash: () => setNewRepositionTransactionHash(''),
+        activeContent,
+        handleSetActiveContent,
+        handleReset: resetConfirmation,
+        showStepperComponent,
+        setShowStepperComponent,
+    };
+
+    const settingsContent = (
+        <RepositionSkeleton {...repositionSkeletonProps}>
+            <TransactionSettings
+                module='Reposition'
+                slippage={repoSlippage}
+                bypassConfirm={bypassConfirmRepo}
+                onClose={() => setActiveContent('main')}
+            />
+        </RepositionSkeleton>
+    );
+
     const isCurrentPositionEmptyOrLoading =
         (currentBaseQtyDisplayTruncated === '0.00' &&
             currentQuoteQtyDisplayTruncated === '0.00') ||
@@ -640,14 +709,9 @@ function Reposition() {
             currentQuoteQtyDisplayTruncated === '...') ||
         (newBaseQtyDisplay === '...' && newQuoteQtyDisplay === '...');
 
-    return (
-        <>
+    const mainContent = (
+        <RepositionSkeleton {...repositionSkeletonProps}>
             <div className={styles.repositionContainer}>
-                <RepositionHeader
-                    setRangeWidthPercentage={setRangeWidthPercentage}
-                    positionHash={posHashTruncated}
-                    resetTxHash={() => setNewRepositionTransactionHash('')}
-                />
                 <div className={styles.reposition_content}>
                     <RangeWidth
                         rangeWidthPercentage={rangeWidthPercentage}
@@ -728,43 +792,66 @@ function Reposition() {
                     {isRepositionSent ? etherscanButton : null}
                 </div>
             </div>
-            {isOpen && (
-                <ConfirmRepositionModal
-                    isPositionInRange={isPositionInRange}
-                    position={position as PositionIF}
-                    onSend={sendRepositionTransaction}
-                    showConfirmation={showConfirmation}
-                    newRepositionTransactionHash={newRepositionTransactionHash}
-                    resetConfirmation={resetConfirmation}
-                    txErrorCode={txErrorCode}
-                    txErrorMessage={txErrorMessage}
-                    minPriceDisplay={minPriceDisplay}
-                    maxPriceDisplay={maxPriceDisplay}
-                    currentBaseQtyDisplayTruncated={
-                        currentBaseQtyDisplayTruncated
-                    }
-                    currentQuoteQtyDisplayTruncated={
-                        currentQuoteQtyDisplayTruncated
-                    }
-                    newBaseQtyDisplay={newBaseQtyDisplay}
-                    newQuoteQtyDisplay={newQuoteQtyDisplay}
-                    isAmbient={isAmbient}
-                    pinnedMinPriceDisplayTruncatedInBase={
-                        pinnedMinPriceDisplayTruncatedInBase
-                    }
-                    pinnedMinPriceDisplayTruncatedInQuote={
-                        pinnedMinPriceDisplayTruncatedInQuote
-                    }
-                    pinnedMaxPriceDisplayTruncatedInBase={
-                        pinnedMaxPriceDisplayTruncatedInBase
-                    }
-                    pinnedMaxPriceDisplayTruncatedInQuote={
-                        pinnedMaxPriceDisplayTruncatedInQuote
-                    }
-                    isTokenABase={isTokenABase}
-                    onClose={handleModalClose}
-                />
-            )}
+        </RepositionSkeleton>
+    );
+
+    const confirmationContent = (
+        <RepositionSkeleton {...repositionSkeletonProps}>
+            <ConfirmRepositionModal
+                isPositionInRange={isPositionInRange}
+                position={position as PositionIF}
+                onSend={sendRepositionTransaction}
+                showConfirmation={showConfirmation}
+                newRepositionTransactionHash={newRepositionTransactionHash}
+                resetConfirmation={resetConfirmation}
+                txErrorCode={txErrorCode}
+                txErrorMessage={txErrorMessage}
+                minPriceDisplay={minPriceDisplay}
+                maxPriceDisplay={maxPriceDisplay}
+                currentBaseQtyDisplayTruncated={currentBaseQtyDisplayTruncated}
+                currentQuoteQtyDisplayTruncated={
+                    currentQuoteQtyDisplayTruncated
+                }
+                newBaseQtyDisplay={newBaseQtyDisplay}
+                newQuoteQtyDisplay={newQuoteQtyDisplay}
+                isAmbient={isAmbient}
+                pinnedMinPriceDisplayTruncatedInBase={
+                    pinnedMinPriceDisplayTruncatedInBase
+                }
+                pinnedMinPriceDisplayTruncatedInQuote={
+                    pinnedMinPriceDisplayTruncatedInQuote
+                }
+                pinnedMaxPriceDisplayTruncatedInBase={
+                    pinnedMaxPriceDisplayTruncatedInBase
+                }
+                pinnedMaxPriceDisplayTruncatedInQuote={
+                    pinnedMaxPriceDisplayTruncatedInQuote
+                }
+                isTokenABase={isTokenABase}
+                onClose={handleModalClose}
+                activeStep={activeStep}
+                setActiveStep={setActiveStep}
+                steps={repositionSteps}
+                handleSetActiveContent={handleSetActiveContent}
+                showStepperComponent={showStepperComponent}
+                setShowStepperComponent={setShowStepperComponent}
+            />
+        </RepositionSkeleton>
+    );
+
+    if (activeContent === 'main') {
+        deactivateConfirmation();
+    }
+
+    return (
+        <>
+            <MultiContentComponent
+                mainContent={mainContent}
+                settingsContent={settingsContent}
+                confirmationContent={confirmationContent}
+                activeContent={activeContent}
+                setActiveContent={handleSetActiveContent}
+            />
         </>
     );
 }

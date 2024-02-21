@@ -169,6 +169,7 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
             ? 'Limit Claim'
             : 'Market Order';
 
+    console.log({ quoteQuantityDisplay, estimatedQuoteFlowDisplay });
     // Create a data array for the info and map through it here
     const infoContent = [
         {

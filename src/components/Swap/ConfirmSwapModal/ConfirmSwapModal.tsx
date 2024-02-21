@@ -28,7 +28,15 @@ interface propsIF {
     buyQtyString: string;
     onClose?: () => void;
     isTokenAPrimary: boolean;
-    priceImpactWarning: JSX.Element | undefined;
+    activeStep: number;
+    setActiveStep: React.Dispatch<React.SetStateAction<number>>;
+    steps: {
+        label: string;
+    }[];
+    handleSetActiveContent: (newActiveContent: string) => void;
+    showStepperComponent: boolean;
+    setShowStepperComponent: React.Dispatch<React.SetStateAction<boolean>>;
+    priceImpactWarning?: JSX.Element | undefined;
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
@@ -50,6 +58,12 @@ export default function ConfirmSwapModal(props: propsIF) {
         buyQtyString,
         onClose = () => null,
         isTokenAPrimary,
+        activeStep,
+        setActiveStep,
+        steps,
+        handleSetActiveContent,
+        showStepperComponent,
+        setShowStepperComponent,
         priceImpactWarning,
     } = props;
 
@@ -248,6 +262,12 @@ export default function ConfirmSwapModal(props: propsIF) {
             acknowledgeUpdate={
                 isWaitingForPriceChangeAckt && priceIncreaseComponent
             }
+            activeStep={activeStep}
+            setActiveStep={setActiveStep}
+            steps={steps}
+            handleSetActiveContent={handleSetActiveContent}
+            showStepperComponent={showStepperComponent}
+            setShowStepperComponent={setShowStepperComponent}
             priceImpactWarning={priceImpactWarning}
         />
     );

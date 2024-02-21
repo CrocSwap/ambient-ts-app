@@ -1,5 +1,11 @@
 // START: Import React and Dongles
-import { useContext, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
 
 // START: Import JSX Components
 import Button from '../../Form/Button';
@@ -9,16 +15,15 @@ import { TokenIF } from '../../../ambient-utils/types';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { uriToHttp } from '../../../ambient-utils/dataLayer';
 import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
-import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import SubmitTransaction from './SubmitTransaction/SubmitTransaction';
-import Modal from '../../Global/Modal/Modal';
 import { FlexContainer, Text } from '../../../styled/Common';
 import {
     ConfirmationDetailsContainer,
     ConfirmationQuantityContainer,
-    ModalContainer,
 } from '../../../styled/Components/TradeModules';
+import { FiPlus } from 'react-icons/fi';
+import { AiOutlineDash } from 'react-icons/ai';
 
 interface propsIF {
     type: 'Swap' | 'Limit' | 'Range' | 'Reposition';
@@ -28,6 +33,7 @@ interface propsIF {
     txErrorCode: string;
     txErrorMessage: string;
     showConfirmation: boolean;
+    setShowConfirmation?: Dispatch<SetStateAction<boolean>>;
     statusText: string;
     onClose?: () => void;
     initiate: () => Promise<void>;
@@ -36,13 +42,24 @@ interface propsIF {
     transactionDetails?: React.ReactNode;
     acknowledgeUpdate?: React.ReactNode;
     extraNotes?: React.ReactNode;
+    activeStep?: number;
+    setActiveStep?: React.Dispatch<React.SetStateAction<number>>;
+    steps?: {
+        label: string;
+    }[];
+    handleSetActiveContent?: (newActiveContent: string) => void;
+    showStepperComponent: boolean;
+    setShowStepperComponent: React.Dispatch<React.SetStateAction<boolean>>;
+    poolPrice?: string;
+    minPrice?: string;
+    maxPrice?: string;
+    fillEnd?: string;
     priceImpactWarning?: JSX.Element | undefined;
     isAllowed?: boolean;
 }
 
 export default function TradeConfirmationSkeleton(props: propsIF) {
     const {
-        onClose = () => null,
         type,
         initiate,
         tokenA: { token: tokenA, quantity: tokenAQuantity },
@@ -53,10 +70,20 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         txErrorMessage,
         statusText,
         showConfirmation,
+
         resetConfirmation,
         poolTokenDisplay,
         acknowledgeUpdate,
         extraNotes,
+        activeStep,
+        setActiveStep,
+        steps,
+        handleSetActiveContent,
+        showStepperComponent,
+        setShowStepperComponent,
+        minPrice,
+        maxPrice,
+        fillEnd,
         priceImpactWarning,
         isAllowed,
     } = props;
@@ -70,6 +97,32 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
 
     const [skipFutureConfirmation, setSkipFutureConfirmation] =
         useState<boolean>(false);
+
+    const svgArrow = (
+        <svg
+            xmlns='http://www.w3.org/2000/svg'
+            width='24'
+            height='15'
+            viewBox='0 0 24 15'
+            fill='none'
+        >
+            <path
+                d='M2.82 -0.000175476L12 9.15982L21.18 -0.000175476L24 2.81982L12 14.8198L0 2.81982L2.82 -0.000175476Z'
+                fill='#7371FC'
+            />
+        </svg>
+    );
+
+    // logic to prevent swap quantities updating during/after swap completion
+    const [memoTokenA, setMemoTokenA] = useState<string | undefined>();
+    const [memoTokenB, setMemoTokenB] = useState<string | undefined>();
+
+    useEffect(() => {
+        if (activeStep === 0) {
+            setMemoTokenA(tokenAQuantity);
+            setMemoTokenB(tokenBQuantity);
+        }
+    }, [activeStep, tokenAQuantity, tokenBQuantity]);
 
     const tokenDisplay = (
         <>
@@ -97,8 +150,10 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                 fullWidth
                 justifyContent='center'
                 alignItems='center'
+                padding='8px 0'
+                style={{ pointerEvents: 'none' }}
             >
-                <TokensArrow onlyDisplay />
+                {svgArrow}
             </FlexContainer>
             <ConfirmationQuantityContainer>
                 <Text fontSize='header2' color='text1'>
@@ -123,80 +178,163 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         </>
     );
 
-    return (
-        <Modal
-            title={`${type === 'Range' ? 'Pool' : type} Confirmation`}
-            onClose={onClose}
-        >
-            <ModalContainer
-                flexDirection='column'
-                padding='16px'
-                gap={8}
-                aria-label='Transaction Confirmation modal'
-            >
-                {type === 'Swap' || type === 'Limit'
-                    ? tokenDisplay
-                    : poolTokenDisplay}
-                {transactionDetails && (
-                    <ConfirmationDetailsContainer
-                        flexDirection='column'
-                        gap={8}
-                        padding='8px'
-                    >
-                        {transactionDetails}
-                    </ConfirmationDetailsContainer>
+    const confirmationContent = (
+        <>
+            {type === 'Swap' || type === 'Limit'
+                ? tokenDisplay
+                : poolTokenDisplay}
+            {transactionDetails && (
+                <ConfirmationDetailsContainer
+                    flexDirection='column'
+                    gap={8}
+                    padding='8px'
+                >
+                    {transactionDetails}
+                </ConfirmationDetailsContainer>
+            )}
+
+            {extraNotes && extraNotes}
+        </>
+    );
+    const rangeTokensDisplay = (
+        <FlexContainer gap={8} alignItems='center' flexDirection='column'>
+            <FlexContainer gap={8} alignItems='center'>
+                <TokenIcon
+                    token={tokenA}
+                    src={uriToHttp(tokenA.logoURI)}
+                    alt={tokenA.symbol}
+                    size='s'
+                />
+                <Text fontSize='body' color='text2' align='center'>
+                    {tokenAQuantity} {tokenA.symbol}
+                </Text>
+                <FiPlus />
+
+                <TokenIcon
+                    token={tokenB}
+                    src={uriToHttp(tokenB.logoURI)}
+                    alt={tokenB.symbol}
+                    size='s'
+                />
+                <Text fontSize='body' color='text2' align='center'>
+                    {tokenBQuantity} {tokenB.symbol}
+                </Text>
+            </FlexContainer>
+            <FlexContainer gap={8} alignItems='center'>
+                <Text fontSize='body' color='text2' align='center'>
+                    {' '}
+                    {minPrice}
+                </Text>
+                <AiOutlineDash />
+
+                <Text fontSize='body' color='text2' align='center'>
+                    {' '}
+                    {maxPrice}
+                </Text>
+            </FlexContainer>
+        </FlexContainer>
+    );
+
+    const tokensDisplay =
+        type === 'Range' || type === 'Reposition' ? (
+            rangeTokensDisplay
+        ) : (
+            <FlexContainer gap={8} alignItems='center' flexDirection='column'>
+                <FlexContainer gap={8} alignItems='center'>
+                    <TokenIcon
+                        token={tokenA}
+                        src={uriToHttp(tokenA.logoURI)}
+                        alt={tokenA.symbol}
+                        size='s'
+                    />
+                    <Text fontSize='body' color='text2' align='center'>
+                        {memoTokenA} {tokenA.symbol}
+                    </Text>
+                    →
+                    <TokenIcon
+                        token={tokenB}
+                        src={uriToHttp(tokenB.logoURI)}
+                        alt={tokenB.symbol}
+                        size='s'
+                    />
+                    <Text fontSize='body' color='text2' align='center'>
+                        {memoTokenB} {tokenB.symbol}
+                    </Text>
+                </FlexContainer>
+                {fillEnd && (
+                    <Text fontSize='body' color='text2' align='center'>
+                        @ {fillEnd}
+                    </Text>
                 )}
-                {priceImpactWarning}
-                {extraNotes && extraNotes}
-                <footer>
-                    {!showConfirmation ? (
-                        !acknowledgeUpdate ? (
-                            <>
-                                <ConfirmationModalControl
-                                    tempBypassConfirm={skipFutureConfirmation}
-                                    setTempBypassConfirm={
-                                        setSkipFutureConfirmation
-                                    }
-                                />
-                                <Button
-                                    idForDOM='set_skip_confirmation_button'
-                                    title={statusText}
-                                    action={() => {
-                                        // if this modal is launched we can infer user wants confirmation
-                                        // if user enables bypass, update all settings in parallel
-                                        // otherwise do not not make any change to persisted preferences
-                                        if (skipFutureConfirmation) {
-                                            bypassConfirmSwap.enable();
-                                            bypassConfirmLimit.enable();
-                                            bypassConfirmRange.enable();
-                                            bypassConfirmRepo.enable();
-                                        }
-                                        initiate();
-                                    }}
-                                    flat
-                                    disabled={
-                                        isAllowed === false ||
-                                        !!acknowledgeUpdate
-                                    }
-                                />
-                            </>
-                        ) : (
-                            acknowledgeUpdate
-                        )
-                    ) : (
-                        <SubmitTransaction
-                            type={type}
-                            newTransactionHash={transactionHash}
-                            txErrorCode={txErrorCode}
-                            txErrorMessage={txErrorMessage}
-                            resetConfirmation={resetConfirmation}
-                            sendTransaction={initiate}
-                            transactionPendingDisplayString={statusText}
-                            disableSubmitAgain
+            </FlexContainer>
+        );
+
+    return (
+        <FlexContainer
+            flexDirection='column'
+            gap={8}
+            background='dark1'
+            aria-label='Transaction Confirmation modal'
+            height='100%'
+        >
+            {!showStepperComponent && confirmationContent}
+            {priceImpactWarning}
+            {/* <footer style={{marginTop: 'auto'}}> */}
+
+            {!showConfirmation ? (
+                !acknowledgeUpdate ? (
+                    <footer style={{ marginTop: 'auto', padding: '0 32px' }}>
+                        <ConfirmationModalControl
+                            tempBypassConfirm={skipFutureConfirmation}
+                            setTempBypassConfirm={setSkipFutureConfirmation}
                         />
-                    )}
-                </footer>
-            </ModalContainer>
-        </Modal>
+                        <Button
+                            title={statusText}
+                            action={() => {
+                                // if this modal is launched we can infer user wants confirmation
+                                // if user enables bypass, update all settings in parallel
+                                // otherwise do not not make any change to persisted preferences
+                                if (skipFutureConfirmation) {
+                                    bypassConfirmSwap.enable();
+                                    bypassConfirmLimit.enable();
+                                    bypassConfirmRange.enable();
+                                    bypassConfirmRepo.enable();
+                                }
+                                setShowStepperComponent(true);
+                                initiate();
+                            }}
+                            flat
+                            disabled={
+                                isAllowed === false || !!acknowledgeUpdate
+                            }
+                            idForDOM='trade_conf_skeleton_btn'
+                        />
+                    </footer>
+                ) : (
+                    acknowledgeUpdate
+                )
+            ) : (
+                <FlexContainer flexDirection='column' height='100%'>
+                    <SubmitTransaction
+                        type={type}
+                        newTransactionHash={transactionHash}
+                        txErrorCode={txErrorCode}
+                        txErrorMessage={txErrorMessage}
+                        resetConfirmation={resetConfirmation}
+                        sendTransaction={initiate}
+                        transactionPendingDisplayString={statusText}
+                        disableSubmitAgain
+                        activeStep={activeStep}
+                        setActiveStep={setActiveStep}
+                        steps={steps}
+                        stepperComponent
+                        stepperTokensDisplay={tokensDisplay}
+                        handleSetActiveContent={handleSetActiveContent}
+                        setShowStepperComponent={setShowStepperComponent}
+                    />
+                </FlexContainer>
+            )}
+            {/* </footer> */}
+        </FlexContainer>
     );
 }

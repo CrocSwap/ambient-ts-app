@@ -45,6 +45,7 @@ import {
     RANGE_BUFFER_MULTIPLIER_MAINNET,
     RANGE_BUFFER_MULTIPLIER_SCROLL,
 } from '../../../ambient-utils/constants/';
+import { ReceiptContext } from '../../../contexts/ReceiptContext';
 
 export const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 export const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
@@ -95,9 +96,10 @@ function Range() {
     const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
         UserPreferenceContext,
     );
+    const { pendingTransactions } = useContext(ReceiptContext);
     const { positionsByUser, liquidityFee } = useContext(GraphDataContext);
     const isPoolInitialized = useSimulatedIsPoolInitialized();
-
+    // eslint-disable-next-line
     const [isOpen, openModal, closeModal] = useModal();
 
     const {
@@ -107,6 +109,7 @@ function Range() {
         baseToken,
         quoteToken,
         poolPriceNonDisplay,
+        activateConfirmation,
     } = useContext(TradeDataContext);
 
     // RangeTokenInput state values
@@ -890,11 +893,6 @@ function Range() {
         });
     };
 
-    const handleModalOpen = () => {
-        resetConfirmation();
-        openModal();
-    };
-
     const handleModalClose = () => {
         resetConfirmation();
         closeModal();
@@ -995,6 +993,7 @@ function Range() {
         setMaxPrice: setMaxPrice,
         setMinPrice: setMinPrice,
     };
+    const [showExtraInfo, setShowExtraInfo] = useState<boolean>(false);
 
     const rangeExtraInfoProps = {
         isQtyEntered: isQtyEntered,
@@ -1010,16 +1009,66 @@ function Range() {
         isBalancedMode: !advancedMode,
         aprPercentage: aprPercentage,
         daysInRange: daysInRange,
+        showExtraInfo: showExtraInfo,
+        setShowExtraInfo: setShowExtraInfo,
     };
+    const [activeContent, setActiveContent] = useState('main');
+    const handleSetActiveContent = (newActiveContent: string) => {
+        setActiveContent(newActiveContent);
+    };
+    const isTransactionApproved = newRangeTransactionHash !== '';
+    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
+    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
+
+    const isTransactionPending = !(
+        isTransactionApproved ||
+        isTransactionDenied ||
+        isTransactionException
+    );
+    const isTransactionConfirmed =
+        isTransactionApproved &&
+        !pendingTransactions.includes(newRangeTransactionHash);
+
+    const rangeSteps = [
+        { label: 'Sign transaction' },
+        {
+            label: 'Submitting liquidity',
+        },
+    ];
+
+    const [activeStep, setActiveStep] = useState(0);
+
+    useEffect(() => {
+        setActiveStep(0);
+        if (isTransactionApproved) {
+            setActiveStep(1);
+        }
+        if (isTransactionConfirmed) {
+            setActiveStep(2);
+        }
+    }, [isTransactionApproved, isTransactionPending, isTransactionConfirmed]);
+    const [showStepperComponent, setShowStepperComponent] = useState(false);
 
     return (
         <TradeModuleSkeleton
             chainId={chainId}
+            activeContent={activeContent}
+            setActiveContent={setActiveContent}
+            handleSetActiveContent={handleSetActiveContent}
+            moduleName='Range'
+            showExtraInfo={showExtraInfo}
+            slippage={mintSlippage}
+            bypassConfirm={bypassConfirmRange}
             header={
                 <TradeModuleHeader
                     slippage={mintSlippage}
                     bypassConfirm={bypassConfirmRange}
                     settingsTitle='Pool'
+                    activeContent={activeContent}
+                    handleSetActiveContent={handleSetActiveContent}
+                    handleReset={resetConfirmation}
+                    setShowStepperComponent={setShowStepperComponent}
+                    showStepperComponent={showStepperComponent}
                 />
             }
             input={
@@ -1058,42 +1107,45 @@ function Range() {
             }
             transactionDetails={<RangeExtraInfo {...rangeExtraInfoProps} />}
             modal={
-                isOpen ? (
-                    <ConfirmRangeModal
-                        tokenAQty={isTokenAInputDisabled ? '' : tokenAInputQty}
-                        tokenBQty={isTokenBInputDisabled ? '' : tokenBInputQty}
-                        spotPriceDisplay={getFormattedNumber({
-                            value: displayPriceWithDenom,
-                        })}
-                        isTokenABase={isTokenABase}
-                        isAmbient={isAmbient}
-                        isAdd={isAdd}
-                        maxPriceDisplay={maxPriceDisplay}
-                        minPriceDisplay={minPriceDisplay}
-                        sendTransaction={sendTransaction}
-                        newRangeTransactionHash={newRangeTransactionHash}
-                        resetConfirmation={resetConfirmation}
-                        showConfirmation={showConfirmation}
-                        txErrorCode={txErrorCode}
-                        txErrorMessage={txErrorMessage}
-                        isInRange={!isOutOfRange}
-                        pinnedMinPriceDisplayTruncatedInBase={
-                            pinnedMinPriceDisplayTruncatedInBase
-                        }
-                        pinnedMinPriceDisplayTruncatedInQuote={
-                            pinnedMinPriceDisplayTruncatedInQuote
-                        }
-                        pinnedMaxPriceDisplayTruncatedInBase={
-                            pinnedMaxPriceDisplayTruncatedInBase
-                        }
-                        pinnedMaxPriceDisplayTruncatedInQuote={
-                            pinnedMaxPriceDisplayTruncatedInQuote
-                        }
-                        onClose={handleModalClose}
-                    />
-                ) : (
-                    <></>
-                )
+                <ConfirmRangeModal
+                    tokenAQty={isTokenAInputDisabled ? '' : tokenAInputQty}
+                    tokenBQty={isTokenBInputDisabled ? '' : tokenBInputQty}
+                    spotPriceDisplay={getFormattedNumber({
+                        value: displayPriceWithDenom,
+                    })}
+                    isTokenABase={isTokenABase}
+                    isAmbient={isAmbient}
+                    isAdd={isAdd}
+                    maxPriceDisplay={maxPriceDisplay}
+                    minPriceDisplay={minPriceDisplay}
+                    sendTransaction={sendTransaction}
+                    newRangeTransactionHash={newRangeTransactionHash}
+                    resetConfirmation={resetConfirmation}
+                    showConfirmation={showConfirmation}
+                    setShowConfirmation={setShowConfirmation}
+                    txErrorCode={txErrorCode}
+                    txErrorMessage={txErrorMessage}
+                    isInRange={!isOutOfRange}
+                    pinnedMinPriceDisplayTruncatedInBase={
+                        pinnedMinPriceDisplayTruncatedInBase
+                    }
+                    pinnedMinPriceDisplayTruncatedInQuote={
+                        pinnedMinPriceDisplayTruncatedInQuote
+                    }
+                    pinnedMaxPriceDisplayTruncatedInBase={
+                        pinnedMaxPriceDisplayTruncatedInBase
+                    }
+                    pinnedMaxPriceDisplayTruncatedInQuote={
+                        pinnedMaxPriceDisplayTruncatedInQuote
+                    }
+                    onClose={handleModalClose}
+                    activeStep={activeStep}
+                    setActiveStep={setActiveStep}
+                    steps={rangeSteps}
+                    handleSetActiveContent={handleSetActiveContent}
+                    showStepperComponent={showStepperComponent}
+                    setShowStepperComponent={setShowStepperComponent}
+                />
             }
             button={
                 <Button
@@ -1118,7 +1170,10 @@ function Range() {
                         areBothAckd
                             ? bypassConfirmRange.isEnabled
                                 ? sendTransaction
-                                : handleModalOpen
+                                : () => {
+                                      setActiveContent('confirmation');
+                                      activateConfirmation('Range');
+                                  }
                             : ackAsNeeded
                     }
                     disabled={
@@ -1130,7 +1185,7 @@ function Range() {
                     flat={true}
                 />
             }
-            bypassConfirm={
+            bypassConfirmDisplay={
                 showConfirmation && bypassConfirmRange.isEnabled ? (
                     <SubmitTransaction
                         type='Range'
@@ -1158,6 +1213,9 @@ function Range() {
                                   }
                                      `
                         }
+                        activeStep={activeStep}
+                        setActiveStep={setActiveStep}
+                        steps={rangeSteps}
                     />
                 ) : undefined
             }

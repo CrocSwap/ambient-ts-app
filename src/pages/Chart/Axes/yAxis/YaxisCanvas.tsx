@@ -23,6 +23,7 @@ import {
 import {
     crosshair,
     fillLiqAdvanced,
+    isMouseNearLine,
     getXandYLocationForChart,
     lineValue,
     liquidityChartData,
@@ -71,6 +72,7 @@ interface yAxisIF {
     isChartZoom: boolean;
     isUpdatingShape: boolean;
     selectedDrawnShape: selectedDrawnData | undefined;
+    isConfirmationActive: boolean;
 }
 
 type yLabel = {
@@ -112,6 +114,7 @@ function YAxisCanvas(props: yAxisIF) {
         poolPriceDisplay,
         isChartZoom,
         selectedDrawnShape,
+        isConfirmationActive,
         isUpdatingShape,
     } = props;
 
@@ -973,13 +976,97 @@ function YAxisCanvas(props: yAxisIF) {
         d3.select(d3Yaxis.current).on(
             'mousemove',
             (event: MouseEvent<HTMLDivElement>) => {
-                d3.select(event.currentTarget).style('cursor', 'row-resize');
+                if (scaleData) {
+                    const canvas = d3
+                        .select(d3Yaxis.current)
+                        .select('canvas')
+                        .node() as HTMLCanvasElement;
+                    const top = canvas.getBoundingClientRect().top;
+                    const offsetY = event.clientY - top;
+                    let isCursorNotAllowed = false;
+                    const isLimitPage = location.pathname.includes('/limit');
+                    const isPoolPage =
+                        location.pathname.includes('pool') ||
+                        location.pathname.includes('reposition');
+
+                    if (isLimitPage) {
+                        const { isSameLocation, sameLocationData } =
+                            sameLocationLimit();
+                        const limitValue = isSameLocation
+                            ? scaleData.yScale.invert(sameLocationData)
+                            : limit;
+
+                        const checkLimitNearest = isMouseNearLine(
+                            offsetY,
+                            limitValue,
+                            scaleData,
+                        );
+                        isCursorNotAllowed =
+                            checkLimitNearest && isConfirmationActive;
+                    }
+
+                    if (isPoolPage) {
+                        const tempRangeLowLineValue = ranges.filter(
+                            (target: lineValue) => target.name === 'Min',
+                        )[0].value;
+                        const tempRangeHighLineValue = ranges.filter(
+                            (target: lineValue) => target.name === 'Max',
+                        )[0].value;
+
+                        const {
+                            isSameLocationMin: isSameLocationMin,
+                            sameLocationDataMin: sameLocationDataMin,
+                            isSameLocationMax: isSameLocationMax,
+                            sameLocationDataMax: sameLocationDataMax,
+                        } = sameLocationRange();
+
+                        const rangeLowLineValue = isSameLocationMin
+                            ? scaleData.yScale.invert(sameLocationDataMin)
+                            : tempRangeLowLineValue;
+                        const rangeHighLineValue = isSameLocationMax
+                            ? scaleData.yScale.invert(sameLocationDataMax)
+                            : tempRangeHighLineValue;
+
+                        const checkLowLine = isMouseNearLine(
+                            offsetY,
+                            rangeLowLineValue,
+                            scaleData,
+                        );
+                        const checkHighLine = isMouseNearLine(
+                            offsetY,
+                            rangeHighLineValue,
+                            scaleData,
+                        );
+
+                        isCursorNotAllowed =
+                            (checkLowLine || checkHighLine) &&
+                            isConfirmationActive;
+                    }
+
+                    if (isCursorNotAllowed) {
+                        d3.select(event.currentTarget).style(
+                            'cursor',
+                            'not-allowed',
+                        );
+                    } else {
+                        d3.select(event.currentTarget).style(
+                            'cursor',
+                            'row-resize',
+                        );
+                    }
+                }
             },
         );
         d3.select(d3Yaxis.current).on('mouseover', () => {
             setCrosshairActive('none');
         });
-    }, [denomInBase, liqMode, location.pathname, advancedMode]);
+    }, [
+        denomInBase,
+        liqMode,
+        location.pathname,
+        advancedMode,
+        isConfirmationActive,
+    ]);
 
     return (
         <d3fc-canvas

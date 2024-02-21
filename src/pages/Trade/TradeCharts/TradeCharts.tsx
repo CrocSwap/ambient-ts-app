@@ -232,6 +232,8 @@ function TradeCharts(props: propsIF) {
 
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
+    // const { isConfirmationActive } = useContext(TradeDataContext);
+
     return (
         <>
             <MainContainer

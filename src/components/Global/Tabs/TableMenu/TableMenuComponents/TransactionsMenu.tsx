@@ -21,6 +21,7 @@ import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { Chip } from '../../../../Form/Chip';
 import { FlexContainer } from '../../../../../styled/Common';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 
 // interface for React functional component props
 interface propsIF {
@@ -36,6 +37,7 @@ export default function TransactionsMenu(props: propsIF) {
     const {
         chainData: { blockExplorer, chainId },
     } = useContext(CrocEnvContext);
+
     const {
         setSimpleRangeWidth,
         setPrimaryQuantityRange,
@@ -65,6 +67,7 @@ export default function TransactionsMenu(props: propsIF) {
         setIsTokenAPrimary,
         disableReverseTokens,
         setShouldSwapDirectionReverse,
+        isConfirmationActive,
     } = useContext(TradeDataContext);
     const menuItemRef = useRef<HTMLDivElement>(null);
 
@@ -198,12 +201,20 @@ export default function TransactionsMenu(props: propsIF) {
     };
 
     const copyButton = (
-        <Chip
-            disabled={disableReverseTokens}
-            onClick={() => copyButtonFunction(tx.entityType)}
+        <DefaultTooltip
+            title={
+                isConfirmationActive
+                    ? 'Disabled during transaction confirmation'
+                    : ''
+            }
         >
-            {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
-        </Chip>
+            <Chip
+                disabledOnHover={disableReverseTokens || isConfirmationActive}
+                onClick={() => copyButtonFunction(tx.entityType)}
+            >
+                {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
+            </Chip>
+        </DefaultTooltip>
     );
 
     const explorerButton = (

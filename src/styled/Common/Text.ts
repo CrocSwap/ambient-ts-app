@@ -15,6 +15,7 @@ interface TextProps {
     letterSpacing?: boolean;
     fontSize?: FontSizes;
     fontWeight?: FontWeights;
+    placeholder?: boolean;
 }
 export const Text = styled.span<TextProps>`
     ${({
@@ -31,6 +32,7 @@ export const Text = styled.span<TextProps>`
         marginBottom,
         padding,
         color,
+        placeholder,
     }) => `
     ${font ? `font-family: var(--${font});` : ''}
     ${letterSpacing ? 'letter-spacing: -0.02em;' : ''}
@@ -52,6 +54,8 @@ export const Text = styled.span<TextProps>`
     ${marginBottom ? `margin-bottom: ${marginBottom};` : ''}
     ${padding ? `padding: ${padding};` : ''}
     ${color ? `color: var(--${color});` : ''}
+    ${placeholder ? 'opacity: 0; pointer-events: none;' : ''}
+
     `}
 `;
 

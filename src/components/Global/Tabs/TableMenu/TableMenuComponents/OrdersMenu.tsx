@@ -23,6 +23,7 @@ import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { Chip } from '../../../../Form/Chip';
 import { FlexContainer } from '../../../../../styled/Common';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 
 // interface for React functional component props
 interface propsIF {
@@ -62,8 +63,12 @@ export default function OrdersMenu(props: propsIF) {
     const { handlePulseAnimation, setActiveMobileComponent } =
         useContext(TradeTableContext);
 
-    const { tokenA, isTokenAPrimary, setIsTokenAPrimary } =
-        useContext(TradeDataContext);
+    const {
+        tokenA,
+        isTokenAPrimary,
+        setIsTokenAPrimary,
+        isConfirmationActive,
+    } = useContext(TradeDataContext);
     // hook to generate navigation actions with pre-loaded path
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
 
@@ -118,31 +123,40 @@ export default function OrdersMenu(props: propsIF) {
             </Chip>
         ) : null;
     const copyButton = limitOrder ? (
-        <Chip
-            onClick={() => {
-                const { base, quote, isBid, bidTick, askTick } = limitOrder;
-                const newTokenA: string = isBid ? base : quote;
-                const newTokenB: string = isBid ? quote : base;
-                // determine if old token A === new token A
-                // no => flip `isTokenAPrimary`
-                tokenA.address.toLowerCase() !== newTokenA.toLowerCase() &&
-                    setIsTokenAPrimary(!isTokenAPrimary);
-                // URL params for link to limit page
-                const limitLinkParams: limitParamsIF = {
-                    chain: chainData.chainId,
-                    tokenA: newTokenA,
-                    tokenB: newTokenB,
-                    limitTick: isBid ? bidTick : askTick,
-                };
-                // navigate user to limit page with URL params defined above
-                linkGenLimit.navigate(limitLinkParams);
-                setActiveMobileComponent('trade');
-                handlePulseAnimation('limitOrder');
-                setShowDropdownMenu(false);
-            }}
+        <DefaultTooltip
+            title={
+                isConfirmationActive
+                    ? 'Disabled during transaction confirmation'
+                    : ''
+            }
         >
-            {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
-        </Chip>
+            <Chip
+                disabled={isConfirmationActive}
+                onClick={() => {
+                    const { base, quote, isBid, bidTick, askTick } = limitOrder;
+                    const newTokenA: string = isBid ? base : quote;
+                    const newTokenB: string = isBid ? quote : base;
+                    // determine if old token A === new token A
+                    // no => flip `isTokenAPrimary`
+                    tokenA.address.toLowerCase() !== newTokenA.toLowerCase() &&
+                        setIsTokenAPrimary(!isTokenAPrimary);
+                    // URL params for link to limit page
+                    const limitLinkParams: limitParamsIF = {
+                        chain: chainData.chainId,
+                        tokenA: newTokenA,
+                        tokenB: newTokenB,
+                        limitTick: isBid ? bidTick : askTick,
+                    };
+                    // navigate user to limit page with URL params defined above
+                    linkGenLimit.navigate(limitLinkParams);
+                    setActiveMobileComponent('trade');
+                    handlePulseAnimation('limitOrder');
+                    setShowDropdownMenu(false);
+                }}
+            >
+                {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
+            </Chip>
+        </DefaultTooltip>
     ) : null;
     const detailsButton = <Chip onClick={openLimitDetailsModal}>Details</Chip>;
 

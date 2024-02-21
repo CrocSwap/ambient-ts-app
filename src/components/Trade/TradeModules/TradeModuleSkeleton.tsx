@@ -15,10 +15,18 @@ import TutorialOverlay from '../../Global/TutorialOverlay/TutorialOverlay';
 import Button from '../../Form/Button';
 
 import TradeLinks from './TradeLinks';
+import MultiContentComponent from '../../Global/MultiStepTransaction/MultiContentComponent';
+import ShareTrade from '../../Global/ShareTrade/ShareTrade';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-
+import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
+import TransactionSettings from '../../Global/TransactionSettings/TransactionSettings';
+import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
+import { RangeContext } from '../../../contexts/RangeContext';
+type ModuleDimensions = {
+    [key: string]: { height: string; width: string };
+};
 interface PropsIF {
     chainId: string;
     header: ReactNode;
@@ -26,13 +34,23 @@ interface PropsIF {
     transactionDetails: ReactNode;
     modal: ReactNode | undefined;
     button: ReactNode;
-    bypassConfirm: ReactNode | undefined;
+    bypassConfirm: skipConfirmIF;
+    bypassConfirmDisplay: ReactNode | undefined;
+
     approveButton: ReactNode | undefined;
     warnings?: ReactNode | undefined;
     // eslint-disable-next-line
     tutorialSteps: any;
     isSwapPage?: boolean;
     inputOptions?: ReactNode;
+
+    activeContent: string;
+    setActiveContent: (key: string) => void;
+    handleSetActiveContent: (newActiveContent: string) => void;
+    moduleName: string;
+    showExtraInfo: boolean;
+
+    slippage: SlippageMethodsIF;
 }
 
 export const TradeModuleSkeleton = (props: PropsIF) => {
@@ -46,9 +64,15 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         modal,
         button,
         bypassConfirm,
+        bypassConfirmDisplay,
         approveButton,
         warnings,
         tutorialSteps,
+        activeContent,
+        handleSetActiveContent,
+        moduleName,
+        showExtraInfo,
+        slippage,
     } = props;
 
     const {
@@ -62,8 +86,15 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
 
     const { isUserConnected } = useContext(UserDataContext);
 
-    const { tokenA, tokenB, limitTick, areDefaultTokensUpdatedForChain } =
-        useContext(TradeDataContext);
+    const {
+        tokenA,
+        tokenB,
+        limitTick,
+        areDefaultTokensUpdatedForChain,
+        deactivateConfirmation,
+    } = useContext(TradeDataContext);
+
+    const { advancedMode } = useContext(RangeContext);
 
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
@@ -100,8 +131,48 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         '<span style="color: var(--negative); text-transform: uppercase;">$1</span>',
     );
     const smallScreen = useMediaQuery('(max-width: 500px)');
+    const mediumScreen = useMediaQuery('(max-width: 680px)');
+    const swapPageContainerHeight = showExtraInfo ? '590px' : '460px';
 
-    return (
+    const rangeHeight = !advancedMode
+        ? showExtraInfo
+            ? '730px'
+            : '660px'
+        : showExtraInfo
+        ? '630px'
+        : '560px';
+
+    const moduleDimensions: ModuleDimensions = {
+        Swap: {
+            height: mediumScreen ? 'auto' : showExtraInfo ? '600px' : '500px',
+            width: 'auto',
+        },
+        Limit: {
+            height: mediumScreen ? 'auto' : showExtraInfo ? '650px' : '510px',
+            width: 'auto',
+        },
+        Range: {
+            height: mediumScreen ? 'auto' : rangeHeight,
+            width: 'auto',
+        },
+    };
+
+    const contentContainerProps = {
+        isOnTradeRoute: !isSwapPage,
+        noPadding: smallScreen && !isSwapPage,
+        height: isSwapPage
+            ? mediumScreen || showExtraInfo
+                ? 'auto'
+                : swapPageContainerHeight
+            : moduleDimensions[moduleName]?.height,
+        width: isSwapPage
+            ? mediumScreen
+                ? 'auto'
+                : '430px'
+            : moduleDimensions[moduleName]?.width,
+    };
+
+    const mainContent = (
         <>
             {isTutorialActive && (
                 <FlexContainer
@@ -115,10 +186,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     </TutorialButton>
                 </FlexContainer>
             )}{' '}
-            <ContentContainer
-                isOnTradeRoute={!isSwapPage}
-                noPadding={smallScreen && !isSwapPage}
-            >
+            <ContentContainer {...contentContainerProps}>
                 {header}
                 {isSwapPage || (
                     <TradeLinks
@@ -137,12 +205,21 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                 </motion.div>
                 {inputOptions && inputOptions}
                 <FlexContainer
+                    margin='8px 0 0 0'
+                    padding='0 32px'
+                    flexDirection='column'
+                    gap={8}
+                >
+                    {transactionDetails}
+                </FlexContainer>
+                <FlexContainer
                     flexDirection='column'
                     gap={8}
                     margin='8px 0 0 0'
                     padding='0 32px'
+                    style={{ marginTop: 'auto' }}
                 >
-                    {transactionDetails}
+                    {warnings && warnings}
                     {isUserConnected === undefined ||
                     !areDefaultTokensUpdatedForChain ? null : isUserConnected ===
                       true ? (
@@ -150,7 +227,9 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                             approveButton
                         ) : (
                             <>
-                                {!bypassConfirm ? button : bypassConfirm}
+                                {!bypassConfirmDisplay
+                                    ? button
+                                    : bypassConfirmDisplay}
                                 {ackTokenMessage &&
                                     areDefaultTokensUpdatedForChain && (
                                         // NO
@@ -213,15 +292,85 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                             flat
                         />
                     )}
-                    {warnings && warnings}
                 </FlexContainer>
             </ContentContainer>
-            {modal}
             <TutorialOverlay
                 isTutorialEnabled={isTutorialEnabled}
                 setIsTutorialEnabled={setIsTutorialEnabled}
                 steps={tutorialSteps}
             />
         </>
+    );
+
+    const confirmationContent = (
+        <ContentContainer
+            isOnTradeRoute={!isSwapPage}
+            height={
+                isSwapPage
+                    ? mediumScreen
+                        ? 'auto'
+                        : swapPageContainerHeight
+                    : moduleDimensions[moduleName]?.height
+            }
+            width={
+                isSwapPage
+                    ? mediumScreen
+                        ? 'auto'
+                        : '430px'
+                    : moduleDimensions[moduleName]?.width
+            }
+        >
+            {header}
+            {modal}
+        </ContentContainer>
+    );
+
+    const shareContent = (
+        <ContentContainer {...contentContainerProps}>
+            {header}
+            <ShareTrade />
+        </ContentContainer>
+    );
+
+    const settingsContent = (
+        <ContentContainer {...contentContainerProps}>
+            {header}
+            <TransactionSettings
+                module={moduleName}
+                slippage={slippage}
+                bypassConfirm={bypassConfirm}
+                onClose={() => {
+                    handleSetActiveContent('main');
+                }}
+            />
+        </ContentContainer>
+    );
+
+    if (activeContent === 'main') {
+        deactivateConfirmation();
+    }
+
+    return (
+        <section>
+            <MultiContentComponent
+                mainContent={mainContent}
+                settingsContent={settingsContent}
+                confirmationContent={confirmationContent}
+                activeContent={activeContent}
+                setActiveContent={handleSetActiveContent}
+                otherContents={[
+                    {
+                        title: 'share',
+                        content: shareContent,
+                        activeKey: 'share',
+                    },
+                    {
+                        title: 'Other 2',
+                        content: <div>Other Content 2</div>,
+                        activeKey: 'example',
+                    },
+                ]}
+            />
+        </section>
     );
 };

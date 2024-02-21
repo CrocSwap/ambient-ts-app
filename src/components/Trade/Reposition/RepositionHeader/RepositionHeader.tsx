@@ -5,7 +5,6 @@ import settingsIcon from '../../../../assets/images/icons/settings.svg';
 import { VscClose } from 'react-icons/vsc';
 
 // START: Import JSX Components
-import TransactionSettingsModal from '../../../Global/TransactionSettingsModal/TransactionSettingsModal';
 
 // START: Import Local Files
 import styles from './RepositionHeader.module.css';
@@ -69,14 +68,6 @@ function RepositionHeader(props: propsIF) {
                     }}
                 />
             </TradeModuleHeaderContainer>
-            {isOpen && (
-                <TransactionSettingsModal
-                    module='Reposition'
-                    slippage={repoSlippage}
-                    bypassConfirm={bypassConfirmRepo}
-                    onClose={closeModal}
-                />
-            )}
         </>
     );
 }

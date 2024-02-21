@@ -19,6 +19,14 @@ interface propsIF {
     middleDisplayPrice: number;
     endDisplayPrice: number;
     onClose: () => void;
+    activeStep: number;
+    setActiveStep: React.Dispatch<React.SetStateAction<number>>;
+    steps: {
+        label: string;
+    }[];
+    handleSetActiveContent: (newActiveContent: string) => void;
+    showStepperComponent: boolean;
+    setShowStepperComponent: React.Dispatch<React.SetStateAction<boolean>>;
     limitAllowed: boolean;
     limitButtonErrorMessage: string;
 }
@@ -37,6 +45,12 @@ export default function ConfirmLimitModal(props: propsIF) {
         tokenAInputQty,
         tokenBInputQty,
         onClose = () => null,
+        activeStep,
+        setActiveStep,
+        steps,
+        handleSetActiveContent,
+        showStepperComponent,
+        setShowStepperComponent,
         limitAllowed,
         limitButtonErrorMessage,
     } = props;
@@ -117,8 +131,8 @@ export default function ConfirmLimitModal(props: propsIF) {
 
     const extraNotes = (
         <Text fontSize='body' color='accent2' style={{ textAlign: 'center' }}>
-            {`${tokenB.symbol} will be available for withdrawal after the limit order is filled. 
-        ${tokenA.symbol} can be withdrawn at any time before fill completion.`}
+            {`${tokenB.symbol} will be claimable after the limit order is filled. 
+        ${tokenA.symbol} can be removed at any time before fill completion.`}
         </Text>
     );
 
@@ -141,8 +155,16 @@ export default function ConfirmLimitModal(props: propsIF) {
                         : limitButtonErrorMessage
                     : `Submitting Limit Order to Swap ${tokenAInputQty} ${tokenA.symbol} for ${tokenBInputQty} ${tokenB.symbol}`
             }
+            poolPrice={displayPoolPriceWithDenom.toFixed(2)}
+            fillEnd={endPriceString}
             showConfirmation={showConfirmation}
             resetConfirmation={resetConfirmation}
+            activeStep={activeStep}
+            setActiveStep={setActiveStep}
+            steps={steps}
+            handleSetActiveContent={handleSetActiveContent}
+            showStepperComponent={showStepperComponent}
+            setShowStepperComponent={setShowStepperComponent}
             isAllowed={limitAllowed}
         />
     );

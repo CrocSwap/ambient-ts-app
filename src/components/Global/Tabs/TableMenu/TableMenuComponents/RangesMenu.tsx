@@ -25,6 +25,7 @@ import { Chip } from '../../../../Form/Chip';
 import { FlexContainer } from '../../../../../styled/Common';
 import { UserDataContext } from '../../../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 
 // interface for React functional component props
 interface propsIF {
@@ -75,6 +76,7 @@ function RangesMenu(props: propsIF) {
         setAdvancedMode,
     } = useContext(RangeContext);
     const { sidebar } = useContext(SidebarContext);
+
     const { handlePulseAnimation, setActiveMobileComponent } =
         useContext(TradeTableContext);
 
@@ -93,7 +95,8 @@ function RangesMenu(props: propsIF) {
 
     const { isUserConnected } = useContext(UserDataContext);
 
-    const { tokenA, tokenB } = useContext(TradeDataContext);
+    const { tokenA, tokenB, isConfirmationActive } =
+        useContext(TradeDataContext);
     const tokenAAddress = tokenA.address;
     const tokenBAddress = tokenB.address;
 
@@ -139,32 +142,45 @@ function RangesMenu(props: propsIF) {
     const linkGenRepo: linkGenMethodsIF = useLinkGen('reposition');
 
     const repositionButton = (
-        <Link
-            id={`reposition_button_${position.positionId}`}
-            className={styles.reposition_button}
-            to={linkGenRepo.getFullURL({
-                chain: chainId,
-                tokenA:
-                    tokenAAddress.toLowerCase() === position.quote.toLowerCase()
-                        ? position.quote
-                        : position.base,
-                tokenB:
-                    tokenBAddress.toLowerCase() === position.base.toLowerCase()
-                        ? position.base
-                        : position.quote,
-                lowTick: position.bidTick.toString(),
-                highTick: position.askTick.toString(),
-            })}
-            onClick={() => {
-                setActiveMobileComponent('trade');
-                setSimpleRangeWidth(10);
-                setCurrentRangeInReposition(position.positionId);
-                setCurrentRangeInAdd('');
-            }}
-            state={{ position: position }}
+        <DefaultTooltip
+            title={
+                isConfirmationActive
+                    ? 'Disabled during transaction confirmation'
+                    : ''
+            }
+            style={{ cursor: isConfirmationActive ? 'not-allowed' : 'pointer' }}
         >
-            Reposition
-        </Link>
+            <Link
+                id={`reposition_button_${position.positionId}`}
+                className={`${styles.reposition_button} ${
+                    isConfirmationActive ? styles.disabled_button : ''
+                }`}
+                to={linkGenRepo.getFullURL({
+                    chain: chainId,
+                    tokenA:
+                        tokenAAddress.toLowerCase() ===
+                        position.quote.toLowerCase()
+                            ? position.quote
+                            : position.base,
+                    tokenB:
+                        tokenBAddress.toLowerCase() ===
+                        position.base.toLowerCase()
+                            ? position.base
+                            : position.quote,
+                    lowTick: position.bidTick.toString(),
+                    highTick: position.askTick.toString(),
+                })}
+                onClick={() => {
+                    setActiveMobileComponent('trade');
+                    setSimpleRangeWidth(10);
+                    setCurrentRangeInReposition(position.positionId);
+                    setCurrentRangeInAdd('');
+                }}
+                state={{ position: position }}
+            >
+                Reposition
+            </Link>
+        </DefaultTooltip>
     );
 
     const removeButton = positionMatchesLoggedInUser ? (
@@ -177,61 +193,79 @@ function RangesMenu(props: propsIF) {
     ) : null;
 
     const copyButton = position ? (
-        <Chip
-            onClick={() => {
-                // URL params for link to pool page
-                const poolLinkParams: poolParamsIF = {
-                    chain: chainId,
-                    tokenA:
-                        tokenAAddress.toLowerCase() ===
-                        position.quote.toLowerCase()
-                            ? position.quote
-                            : position.base,
-                    tokenB:
-                        tokenAAddress.toLowerCase() ===
-                        position.quote.toLowerCase()
-                            ? position.base
-                            : position.quote,
-                    lowTick: position.bidTick.toString(),
-                    highTick: position.askTick.toString(),
-                };
-                // navigate user to pool page with URL params defined above
-                linkGenPool.navigate(poolLinkParams);
-                handleCopyClick();
-            }}
+        <DefaultTooltip
+            title={
+                isConfirmationActive
+                    ? 'Disabled during transaction confirmation'
+                    : ''
+            }
         >
-            {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
-        </Chip>
+            <Chip
+                disabled={isConfirmationActive}
+                onClick={() => {
+                    // URL params for link to pool page
+                    const poolLinkParams: poolParamsIF = {
+                        chain: chainId,
+                        tokenA:
+                            tokenAAddress.toLowerCase() ===
+                            position.quote.toLowerCase()
+                                ? position.quote
+                                : position.base,
+                        tokenB:
+                            tokenAAddress.toLowerCase() ===
+                            position.quote.toLowerCase()
+                                ? position.base
+                                : position.quote,
+                        lowTick: position.bidTick.toString(),
+                        highTick: position.askTick.toString(),
+                    };
+                    // navigate user to pool page with URL params defined above
+                    linkGenPool.navigate(poolLinkParams);
+                    handleCopyClick();
+                }}
+            >
+                {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
+            </Chip>
+        </DefaultTooltip>
     ) : null;
 
     const addButton = (
-        <Chip
-            id={`add_liquidity_position_${position.positionId}`}
-            onClick={() => {
-                // URL params for link to pool page
-                const poolLinkParams: poolParamsIF = {
-                    chain: chainId,
-                    tokenA:
-                        tokenAAddress.toLowerCase() ===
-                        position.quote.toLowerCase()
-                            ? position.quote
-                            : position.base,
-                    tokenB:
-                        tokenAAddress.toLowerCase() ===
-                        position.quote.toLowerCase()
-                            ? position.base
-                            : position.quote,
-                    lowTick: position.bidTick.toString(),
-                    highTick: position.askTick.toString(),
-                };
-                // navigate user to pool page with URL params defined above
-                linkGenPool.navigate(poolLinkParams);
-                handleCopyClick();
-                setCurrentRangeInAdd(position.positionId);
-            }}
+        <DefaultTooltip
+            title={
+                isConfirmationActive
+                    ? 'Disabled during transaction confirmation'
+                    : ''
+            }
         >
-            Add
-        </Chip>
+            <Chip
+                disabled={isConfirmationActive}
+                id={`add_liquidity_position_${position.positionId}`}
+                onClick={() => {
+                    // URL params for link to pool page
+                    const poolLinkParams: poolParamsIF = {
+                        chain: chainId,
+                        tokenA:
+                            tokenAAddress.toLowerCase() ===
+                            position.quote.toLowerCase()
+                                ? position.quote
+                                : position.base,
+                        tokenB:
+                            tokenAAddress.toLowerCase() ===
+                            position.quote.toLowerCase()
+                                ? position.base
+                                : position.quote,
+                        lowTick: position.bidTick.toString(),
+                        highTick: position.askTick.toString(),
+                    };
+                    // navigate user to pool page with URL params defined above
+                    linkGenPool.navigate(poolLinkParams);
+                    handleCopyClick();
+                    setCurrentRangeInAdd(position.positionId);
+                }}
+            >
+                Add
+            </Chip>
+        </DefaultTooltip>
     );
 
     const detailsButton = <Chip onClick={openDetailsModal}>Details</Chip>;

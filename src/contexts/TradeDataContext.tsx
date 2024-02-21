@@ -39,6 +39,10 @@ export interface TradeDataContextIF {
     setPoolPriceNonDisplay: React.Dispatch<React.SetStateAction<number>>;
     setSlippageTolerance: React.Dispatch<React.SetStateAction<number>>;
 
+    activateConfirmation: (module: string) => void;
+    deactivateConfirmation: () => void;
+    isConfirmationActive: boolean;
+    activeModule: string | null;
     chainData: ChainSpec;
     isWalletChainSupported: boolean;
     activeNetwork: NetworkIF;
@@ -127,6 +131,19 @@ export const TradeDataContextProvider = (props: {
     );
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = React.useState(0);
     const [slippageTolerance, setSlippageTolerance] = React.useState(0.5);
+    const [isConfirmationActive, setIsConfirmationActive] =
+        React.useState(false);
+    const [activeModule, setActiveModule] = React.useState<null | string>(null);
+
+    const activateConfirmation = (module: string) => {
+        setIsConfirmationActive(true);
+        setActiveModule(module);
+    };
+
+    const deactivateConfirmation = () => {
+        setIsConfirmationActive(false);
+        setActiveModule(null);
+    };
 
     const tradeDataContext = {
         tokenA,
@@ -158,6 +175,10 @@ export const TradeDataContextProvider = (props: {
         setLimitTick,
         setPoolPriceNonDisplay,
         setSlippageTolerance,
+        activateConfirmation,
+        deactivateConfirmation,
+        isConfirmationActive,
+        activeModule,
         chainData,
         isWalletChainSupported,
         activeNetwork,

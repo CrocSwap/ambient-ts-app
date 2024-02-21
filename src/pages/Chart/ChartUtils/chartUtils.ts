@@ -265,6 +265,21 @@ export function fillLiqAdvanced(
     }
 }
 
+export function isMouseNearLine(
+    offsetY: number,
+    value: number,
+    scaleData: scaleData,
+) {
+    const lineBuffer =
+        (scaleData?.yScale.domain()[1] - scaleData?.yScale.domain()[0]) / 30;
+    const mousePlacement = scaleData?.yScale.invert(offsetY);
+    const lineValue = value;
+
+    return (
+        mousePlacement < lineValue + lineBuffer &&
+        mousePlacement > lineValue - lineBuffer
+    );
+}
 export function formatTimeDifference(startDate: Date, endDate: Date): string {
     const timeDifference = endDate.getTime() - startDate.getTime();
     const secondsDifference = Math.floor(timeDifference / 1000);

@@ -2,9 +2,8 @@ import styles from './TransactionSubmitted.module.css';
 import Animation from '../../../../Global/Animation/Animation';
 import completed from '../../../../../assets/animations/completed.json';
 import addTokenToWallet from './addTokenToWallet';
-import Button from '../../../../Form/Button';
-import { FiExternalLink } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
+import { FlexContainer, Text } from '../../../../../styled/Common';
 import { getChainExplorer } from '../../../../../ambient-utils/dataLayer';
 
 interface PropsIF {
@@ -26,6 +25,7 @@ interface PropsIF {
     isConfirmed: boolean;
     isTransactionFailed: boolean;
     noAnimation?: boolean;
+    stepperComponent?: boolean;
 }
 
 export default function TransactionSubmitted(props: PropsIF) {
@@ -58,13 +58,9 @@ export default function TransactionSubmitted(props: PropsIF) {
     };
 
     const addToMetaMaskButton = (
-        <Button
-            idForDOM='import_token_B_into_wallet_button'
-            flat
-            title={`Import ${tokenBSymbol} into Connected Wallet`}
-            action={handleAddToMetaMask}
-            disabled={false}
-        />
+        <p onClick={handleAddToMetaMask} className={styles.view_etherscan}>
+            {`Import ${tokenBSymbol} into Connected Wallet`}
+        </p>
     );
 
     const etherscanButton = (
@@ -73,10 +69,9 @@ export default function TransactionSubmitted(props: PropsIF) {
             target='_blank'
             rel='noreferrer'
             className={styles.view_etherscan}
-            aria-label='view on block explorer'
+            aria-label='view on explorer'
         >
             View on Block Explorer
-            <FiExternalLink size={18} color='var(--text1)' />
         </a>
     );
     return (
@@ -96,82 +91,95 @@ export default function TransactionSubmitted(props: PropsIF) {
                     </div>
                 )}
             </div>
-
-            <h2 style={{ marginBottom: '15px' }}>
-                {type === 'Limit'
-                    ? `Limit Order ${
-                          isTransactionFailed
-                              ? 'Failed'
-                              : isConfirmed
-                              ? 'Success!'
-                              : 'Submitted'
-                      }`
-                    : type === 'Range'
-                    ? `Pool ${
-                          isTransactionFailed
-                              ? 'Failed'
-                              : isConfirmed
-                              ? 'Success!'
-                              : 'Submitted'
-                      }`
-                    : type === 'Reposition'
-                    ? `Reposition ${
-                          isTransactionFailed
-                              ? 'Failed'
-                              : isConfirmed
-                              ? 'Success!'
-                              : 'Submitted'
-                      }`
-                    : type === 'Harvest'
-                    ? `Harvest ${
-                          isTransactionFailed
-                              ? 'Failed'
-                              : isConfirmed
-                              ? 'Success!'
-                              : 'Submitted'
-                      }`
-                    : type === 'Reset'
-                    ? `Reset ${
-                          isTransactionFailed
-                              ? 'Failed'
-                              : isConfirmed
-                              ? 'Success!'
-                              : 'Submitted'
-                      }`
-                    : type === 'Remove'
-                    ? `Removal ${
-                          isTransactionFailed
-                              ? 'Failed'
-                              : isConfirmed
-                              ? 'Success!'
-                              : 'Submitted'
-                      }`
-                    : type === 'Claim'
-                    ? `Claim ${
-                          isTransactionFailed
-                              ? 'Failed'
-                              : isConfirmed
-                              ? 'Success!'
-                              : 'Submitted'
-                      }`
-                    : `Swap ${
-                          isTransactionFailed
-                              ? 'Failed'
-                              : isConfirmed
-                              ? 'Success!'
-                              : 'Submitted'
-                      }`}
-            </h2>
-            <div
-                className={`${styles.action_buttons} ${
-                    noAnimation && styles.bypass_buttons
-                }`}
-            >
-                {txUrlOnBlockExplorer && etherscanButton}
-                {tokenBSymbol === 'ETH' || currentLocation === '/trade/pool'
-                    ? null
-                    : addToMetaMaskButton}
-            </div>
+            <FlexContainer flexDirection='column' gap={16}>
+                <Text
+                    color='text1'
+                    fontSize='header2'
+                    style={{ textAlign: 'center', width: '100%' }}
+                >
+                    {type === 'Limit'
+                        ? `Limit Order ${
+                              isTransactionFailed
+                                  ? 'Failed'
+                                  : isConfirmed
+                                  ? 'Success!'
+                                  : 'Submitted'
+                          }`
+                        : type === 'Range'
+                        ? `Pool ${
+                              isTransactionFailed
+                                  ? 'Failed'
+                                  : isConfirmed
+                                  ? 'Success!'
+                                  : 'Submitted'
+                          }`
+                        : type === 'Reposition'
+                        ? `Reposition ${
+                              isTransactionFailed
+                                  ? 'Failed'
+                                  : isConfirmed
+                                  ? 'Success!'
+                                  : 'Submitted'
+                          }`
+                        : type === 'Harvest'
+                        ? `Harvest ${
+                              isTransactionFailed
+                                  ? 'Failed'
+                                  : isConfirmed
+                                  ? 'Success!'
+                                  : 'Submitted'
+                          }`
+                        : type === 'Reset'
+                        ? `Reset ${
+                              isTransactionFailed
+                                  ? 'Failed'
+                                  : isConfirmed
+                                  ? 'Success!'
+                                  : 'Submitted'
+                          }`
+                        : type === 'Remove'
+                        ? `Removal ${
+                              isTransactionFailed
+                                  ? 'Failed'
+                                  : isConfirmed
+                                  ? 'Success!'
+                                  : 'Submitted'
+                          }`
+                        : type === 'Claim'
+                        ? `Claim ${
+                              isTransactionFailed
+                                  ? 'Failed'
+                                  : isConfirmed
+                                  ? 'Success!'
+                                  : 'Submitted'
+                          }`
+                        : `Swap ${
+                              isTransactionFailed
+                                  ? 'Failed'
+                                  : isConfirmed
+                                  ? 'Success!'
+                                  : 'Submitted'
+                          }`}
+                </Text>
+                <div
+                    className={`${styles.action_buttons} ${
+                        noAnimation && styles.bypass_buttons
+                    }`}
+                >
+                    <FlexContainer
+                        justifyContent='center'
+                        flexDirection='column'
+                        gap={16}
+                        alignItems='center'
+                    >
+                        {txUrlOnBlockExplorer && etherscanButton}
+                        {tokenBSymbol === 'ETH' ||
+                        currentLocation === '/trade/pool'
+                            ? null
+                            : addToMetaMaskButton}
+                    </FlexContainer>
+                </div>
+            </FlexContainer>
         </div>
     );
 }

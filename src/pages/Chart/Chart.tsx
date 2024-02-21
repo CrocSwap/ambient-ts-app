@@ -67,6 +67,7 @@ import {
     checkShowLatestCandle,
     crosshair,
     fillLiqAdvanced,
+    isMouseNearLine,
     findSnapTime,
     formatTimeDifference,
     getInitialDisplayCandleCount,
@@ -264,12 +265,15 @@ export default function Chart(props: propsIF) {
         setIsTokenAPrimary,
         limitTick,
         setLimitTick,
+        isConfirmationActive,
     } = currentPool;
 
     const [isChartZoom, setIsChartZoom] = useState(false);
     const [cursorStyleTrigger, setCursorStyleTrigger] = useState(false);
 
     const [chartHeights, setChartHeights] = useState(0);
+    const [chartWidth, setChartWidth] = useState(0);
+
     const { isUserConnected } = useContext(UserDataContext);
 
     const { isTokenAPrimaryRange, advancedMode } = useContext(RangeContext);
@@ -331,6 +335,14 @@ export default function Chart(props: propsIF) {
 
     const [isShowLastCandleTooltip, setIsShowLastCandleTooltip] =
         useState(false);
+
+    const [isShowLimitOrPoolLinesTooltip, setIsShowLimitOrPoolLinesTooltip] =
+        useState(false);
+
+    const [
+        limitOrPoolLinesTooltipPosition,
+        setLimitOrPoolLinesTooltipPosition,
+    ] = useState(0);
     const [ranges, setRanges] = useState<lineValue[]>([
         {
             name: 'Min',
@@ -661,11 +673,6 @@ export default function Chart(props: propsIF) {
         ) {
             const offsetY =
                 chartMousemoveEvent.clientY - mainCanvasBoundingClientRect?.top;
-            const mousePlacement = scaleData?.yScale.invert(offsetY);
-            const lineBuffer =
-                (scaleData?.yScale.domain()[1] -
-                    scaleData?.yScale.domain()[0]) /
-                30;
 
             const rangeLowLineValue = ranges.filter(
                 (target: lineValue) => target.name === 'Min',
@@ -674,12 +681,28 @@ export default function Chart(props: propsIF) {
                 (target: lineValue) => target.name === 'Max',
             )[0].value;
 
-            return (
-                (mousePlacement < rangeLowLineValue + lineBuffer &&
-                    mousePlacement > rangeLowLineValue - lineBuffer) ||
-                (mousePlacement < rangeHighLineValue + lineBuffer &&
-                    mousePlacement > rangeHighLineValue - lineBuffer)
+            const checkLowLine = isMouseNearLine(
+                offsetY,
+                rangeLowLineValue,
+                scaleData,
             );
+            const checkHighLine = isMouseNearLine(
+                offsetY,
+                rangeHighLineValue,
+                scaleData,
+            );
+
+            if (checkLowLine) {
+                setLimitOrPoolLinesTooltipPosition(
+                    scaleData.yScale(rangeLowLineValue),
+                );
+            }
+            if (checkHighLine) {
+                setLimitOrPoolLinesTooltipPosition(
+                    scaleData.yScale(rangeHighLineValue),
+                );
+            }
+            return checkLowLine || checkHighLine;
         }
 
         return false;
@@ -700,21 +723,10 @@ export default function Chart(props: propsIF) {
             location.pathname.includes('/limit') &&
             scaleData
         ) {
-            const lineBuffer =
-                (scaleData?.yScale.domain()[1] -
-                    scaleData?.yScale.domain()[0]) /
-                30;
-
             const offsetY =
                 chartMousemoveEvent.clientY - mainCanvasBoundingClientRect?.top;
-
-            const mousePlacement = scaleData?.yScale.invert(offsetY);
-            const limitLineValue = limit;
-
-            return (
-                mousePlacement < limitLineValue + lineBuffer &&
-                mousePlacement > limitLineValue - lineBuffer
-            );
+            setLimitOrPoolLinesTooltipPosition(scaleData.yScale(limit));
+            return isMouseNearLine(offsetY, limit, scaleData);
         }
         return false;
     }, [
@@ -757,7 +769,11 @@ export default function Chart(props: propsIF) {
         if (isLineDrag) {
             d3.select(d3CanvasMain.current).style('cursor', 'none');
         } else if (canUserDragLimit || canUserDragRange) {
-            d3.select(d3CanvasMain.current).style('cursor', 'row-resize');
+            if (isConfirmationActive) {
+                d3.select(d3CanvasMain.current).style('cursor', 'not-allowed');
+            } else {
+                d3.select(d3CanvasMain.current).style('cursor', 'row-resize');
+            }
         } else {
             const cursorType = d3.select(d3CanvasMain.current).style('cursor');
 
@@ -778,7 +794,14 @@ export default function Chart(props: propsIF) {
         canUserDragRange,
         isLineDrag,
         isOnCandleOrVolumeMouseLocation,
+        isConfirmationActive,
     ]);
+
+    useEffect(() => {
+        setIsShowLimitOrPoolLinesTooltip(
+            isConfirmationActive && (canUserDragRange || canUserDragLimit),
+        );
+    }, [isConfirmationActive && (canUserDragRange || canUserDragLimit)]);
 
     useEffect(() => {
         if (cursorStyleTrigger && chartZoomEvent !== 'wheel') {
@@ -1166,6 +1189,31 @@ export default function Chart(props: propsIF) {
                                 mousePlacement < maxRangeValue + lineBuffer &&
                                 mousePlacement > maxRangeValue - lineBuffer;
 
+                            if (isOnLimit) {
+                                setLimitOrPoolLinesTooltipPosition(
+                                    scaleData.yScale(limit),
+                                );
+                            }
+
+                            if (isOnRangeMin) {
+                                setLimitOrPoolLinesTooltipPosition(
+                                    scaleData.yScale(minRangeValue),
+                                );
+                            }
+                            if (isOnRangeMax) {
+                                setLimitOrPoolLinesTooltipPosition(
+                                    scaleData.yScale(maxRangeValue),
+                                );
+                            }
+
+                            setIsShowLimitOrPoolLinesTooltip(
+                                isConfirmationActive &&
+                                    (isOnLimit || isOnRangeMin || isOnRangeMax),
+                            );
+
+                            setTimeout(() => {
+                                setIsShowLimitOrPoolLinesTooltip(false);
+                            }, 1500);
                             return (
                                 !isOnLimit &&
                                 !isOnRangeMin &&
@@ -1200,6 +1248,7 @@ export default function Chart(props: propsIF) {
         period,
         advancedMode,
         isChartZoom,
+        isConfirmationActive,
         liqMaxActiveLiq,
     ]);
 
@@ -2017,6 +2066,7 @@ export default function Chart(props: propsIF) {
         isTokenABase,
         chainData.gridSize,
         rescale,
+        isConfirmationActive,
         liqMaxActiveLiq,
     ]);
 
@@ -2031,10 +2081,10 @@ export default function Chart(props: propsIF) {
                 ? liqMaxActiveLiq - eventPointX > 10
                 : false;
 
-            return isHoverLiqidite;
+            return isHoverLiqidite && !isConfirmationActive;
         }
 
-        return true;
+        return !isConfirmationActive;
     }
     // dragLimit
     useEffect(() => {
@@ -2191,6 +2241,7 @@ export default function Chart(props: propsIF) {
         isTokenABase,
         chainData.gridSize,
         rescale,
+        isConfirmationActive,
         liqMaxActiveLiq,
     ]);
 
@@ -2670,7 +2721,8 @@ export default function Chart(props: propsIF) {
                 setMainCanvasBoundingClientRect(canvas.getBoundingClientRect());
 
                 const height = result[0].contentRect.height;
-
+                const width = result[0].contentRect.width;
+                setChartWidth(width);
                 setChartHeights(height);
                 render();
             });
@@ -4225,7 +4277,8 @@ export default function Chart(props: propsIF) {
                         (location.pathname.includes('pool') ||
                             location.pathname.includes('reposition')) &&
                         scaleData !== undefined &&
-                        !isHoverCandleOrVolumeData
+                        !isHoverCandleOrVolumeData &&
+                        !isConfirmationActive
                     ) {
                         onClickRange(event);
                     }
@@ -4234,7 +4287,8 @@ export default function Chart(props: propsIF) {
                     if (
                         location.pathname.includes('/limit') &&
                         scaleData !== undefined &&
-                        !isHoverCandleOrVolumeData
+                        !isHoverCandleOrVolumeData &&
+                        !isConfirmationActive
                     ) {
                         let newLimitValue = scaleData?.yScale.invert(
                             event.offsetY,
@@ -4257,7 +4311,6 @@ export default function Chart(props: propsIF) {
                     setSelectedOrderTooltipPlacement(() => undefined);
                 }
             };
-
             d3.select(d3CanvasMain.current).on(
                 'click',
                 (event: PointerEvent) => {
@@ -4335,6 +4388,7 @@ export default function Chart(props: propsIF) {
         isSelectedOrderHistory,
         selectedOrderHistory,
         showSwap,
+        isConfirmationActive,
     ]);
 
     function checkLineLocation(
@@ -5403,6 +5457,7 @@ export default function Chart(props: propsIF) {
         poolPriceDisplay,
         isChartZoom,
         selectedDrawnShape,
+        isConfirmationActive,
         isUpdatingShape,
     };
 
@@ -5811,6 +5866,25 @@ export default function Chart(props: propsIF) {
                 </CSSTransition>
             )}
 
+            {scaleData && mainCanvasBoundingClientRect && (
+                <CSSTransition
+                    in={isShowLimitOrPoolLinesTooltip}
+                    timeout={500}
+                    classNames='chartLinesTooltip'
+                    unmountOnExit
+                >
+                    <div
+                        className='chartLinesTooltipDiv'
+                        style={{
+                            fontSize: mobileView ? '10px' : '12px',
+                            top: limitOrPoolLinesTooltipPosition - 35 + 'px',
+                            left: chartWidth / (mobileView ? 6 : 2),
+                        }}
+                    >
+                        <div>Disabled during transaction confirmation</div>
+                    </div>
+                </CSSTransition>
+            )}
             {scaleData &&
                 showSwap &&
                 hoveredOrderHistory &&

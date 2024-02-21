@@ -23,8 +23,9 @@ export default function TransactionException(props: propsIF) {
         ? tokenA.symbol
         : tokenB.symbol;
 
-    const formattedErrorMessage =
-        'Error Message: ' + txErrorMessage?.replace('err: ', '');
+    const formattedErrorMessage = txErrorMessage
+        ? 'Error Message: ' + txErrorMessage?.replace('err: ', '')
+        : '';
 
     const suggestionToCheckWalletETHBalance = (
         <p>

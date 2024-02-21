@@ -139,7 +139,6 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
                     )}  ${elapsedTimeString}`}</p>
                     <a
                         href={EtherscanTx}
-                        className={styles.action}
                         target='_blank'
                         rel='noreferrer'
                         tabIndex={0}
