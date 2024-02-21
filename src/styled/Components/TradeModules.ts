@@ -212,7 +212,7 @@ export const TokenQuantityInput = styled.input`
     line-height: var(--header1-lh);
     color: var(--text1);
     text-align: start;
-    width: 80%;
+    width: 95%;
     height: calc(1.5em + 0.75rem + 2px);
     padding: 0;
     max-height: 23px;
