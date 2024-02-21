@@ -26,12 +26,14 @@ export const useSidebar = (
     const getStoredSidebarStatus = () =>
         getLocalStorageItem<SidebarStatus>(localStorageKey);
 
+    // fn to reset the persisted value in local storage to the global default
     const resetPersist = () =>
         localStorage.setItem(localStorageKey, SIDEBAR_GLOBAL_DEFAULT);
 
     // hook to track sidebar status in local state
     // this hook initializes from local storage for returning users
-    // will default to 'closed' if no value found (happens on first visit)
+    // will check a media query for viewport width if no persisted value is found
+    // last fallback is a centrally-defined const
     const [sidebar, setSidebar] = useState<SidebarStatus>(
         getStoredSidebarStatus() ?? showByDefault
             ? 'open'
