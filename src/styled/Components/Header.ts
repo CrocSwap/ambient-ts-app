@@ -293,7 +293,7 @@ export const WalletWrapper = styled(FlexContainer)`
     top: 50px;
     width: 347px;
     height: 280px;
-    right: -40px;
+    right: 0px;
     z-index: 9999;
     padding: 8px 1rem;
     opacity: 1;
@@ -344,8 +344,7 @@ export const WalletName = styled.p`
 export const StyledExchangeBalanceDropdown = styled.div`
     position: absolute;
     top: 68px;
-    right: 8px;
-    width: 450px;
+    right: 68px;
     height: 510px;
     border: none;
     overflow: hidden;
