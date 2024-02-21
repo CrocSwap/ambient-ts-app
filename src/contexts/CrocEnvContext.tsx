@@ -7,7 +7,6 @@ import {
     useState,
 } from 'react';
 import { useProvider, useSigner } from 'wagmi';
-import { useAppChain } from '../App/hooks/useAppChain';
 import { useBlacklist } from '../App/hooks/useBlacklist';
 import { useTopPools } from '../App/hooks/useTopPools';
 import { CachedDataContext } from './CachedDataContext';
@@ -28,6 +27,7 @@ import {
     getDefaultPairForChain,
 } from '../ambient-utils/constants';
 import { UserDataContext } from './UserDataContext';
+import { TradeDataContext } from './TradeDataContext';
 
 interface UrlRoutesTemplate {
     swap: string;
@@ -57,6 +57,8 @@ export const CrocEnvContext = createContext<CrocEnvContextIF>(
 
 export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+    const { chainData, isWalletChainSupported, activeNetwork, chooseNetwork } =
+        useContext(TradeDataContext);
 
     const { userAddress } = useContext(UserDataContext);
     const { data: signer, isError, error, status: signerStatus } = useSigner();
@@ -64,8 +66,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
     // const [activeNetwork, setActiveNetwork] =
     //     useState<NetworkIF>(ethereumGoerli);
-    const { chainData, isWalletChainSupported, activeNetwork, chooseNetwork } =
-        useAppChain();
+
     const topPools: PoolIF[] = useTopPools(chainData.chainId);
     const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
         number | undefined

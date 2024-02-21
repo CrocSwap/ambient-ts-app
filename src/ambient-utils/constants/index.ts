@@ -66,6 +66,7 @@ export const OVERRIDE_CANDLE_POOL_ID = 36000;
 // Localstorage keys
 export const LS_KEY_CHART_SETTINGS = 'chart_settings';
 export const LS_KEY_SUBCHART_SETTINGS = 'subchart_settings';
+export const LS_KEY_ORDER_HISTORY_SETTINGS = 'order_history_settings';
 
 // Icon archive
 export const ETH_ICON_URL =
@@ -95,3 +96,10 @@ export const REQUEST_TIMEOUT_DELAY = process.env.REACT_APP_REQUEST_TIMEOUT_DELAY
 
 export const NETWORK_ACCESS = process.env.NETWORK_ACCESS || 'disabled';
 export const CACHE_UPDATE_FREQ_IN_MS = 60000; // 1 minute
+
+// Allowed links
+export const CROCODILE_LABS_LINKS = [
+    'https://twitter.com/',
+    'https://docs.ambient.finance/',
+    'https://ambient.finance/',
+];

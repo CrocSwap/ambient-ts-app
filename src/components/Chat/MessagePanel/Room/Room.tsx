@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import styles from './Room.module.css';
-import { PoolIF } from '../../../../ambient-utils/types';
+import { useContext, useEffect, useState } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import { useState, useEffect, useContext } from 'react';
+import { PoolIF } from '../../../../ambient-utils/types';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import useChatApi from '../../Service/ChatApi';
-import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import styles from './Room.module.css';
 
 interface propsIF {
     selectedRoom: any;
@@ -22,8 +21,14 @@ interface propsIF {
     setUserCurrentPool: any;
     ensName: any;
     currentUser: any;
-    favoritePoolsArray: PoolIF[];
-    setFavoritePoolsArray: any;
+    favoritePools: PoolIF[];
+    setFavoritePools: any;
+    isFocusMentions: boolean;
+    setIsFocusMentions: any;
+    notifications?: Map<string, number>;
+    mentCount: number;
+    mentionIndex: number;
+    isModerator: boolean;
 }
 
 export default function Room(props: propsIF) {
@@ -33,10 +38,10 @@ export default function Room(props: propsIF) {
         setIsCurrentPool,
         showCurrentPoolButton,
         setShowCurrentPoolButton,
-        favoritePoolsArray,
-        setFavoritePoolsArray,
+        favoritePools,
+        setFavoritePools,
     } = props;
-    const { topPools: rooms } = useContext(CrocEnvContext);
+    const rooms: PoolIF[] = [];
     const { favePools } = useContext(UserPreferenceContext);
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
@@ -44,15 +49,13 @@ export default function Room(props: propsIF) {
     const [roomArray] = useState<PoolIF[]>([]);
     const [isHovering, setIsHovering] = useState(false);
     const { updateUser } = useChatApi();
-
-    // non-empty space
-    const defaultRooms = [
+    const [defaultRooms, setDefaultRooms] = useState([
         {
             id: 100,
             name: 'Global',
             value: 'Global',
         },
-    ];
+    ]);
 
     const isFullScreenDefaultRooms = [
         {
@@ -117,6 +120,45 @@ export default function Room(props: propsIF) {
         } else {
             setShowCurrentPoolButton(true);
         }
+
+        const currentPoolRoom: PoolIF = {
+            name: baseToken.symbol + ' / ' + quoteToken.symbol,
+            base: {
+                name: baseToken.name,
+                address: baseToken.address,
+                symbol: baseToken.symbol,
+                decimals: baseToken.decimals,
+                chainId: baseToken.chainId,
+                logoURI: baseToken.logoURI,
+            },
+            quote: {
+                name: quoteToken.name,
+                address: quoteToken.address,
+                symbol: quoteToken.symbol,
+                decimals: quoteToken.decimals,
+                chainId: quoteToken.chainId,
+                logoURI: quoteToken.logoURI,
+            },
+            chainId: '33',
+            poolIdx: 10,
+        };
+
+        if (!roomArray.some(({ name }) => name === currentPoolRoom.name)) {
+            roomArray.push(currentPoolRoom);
+        }
+
+        const index = roomArray.findIndex((obj1) =>
+            favePools.pools.some(
+                (obj2) =>
+                    obj2.base.symbol + ' / ' + obj2.quote.symbol !==
+                        obj1.name &&
+                    obj1.name !== baseToken.symbol + ' / ' + quoteToken.symbol,
+            ),
+        );
+
+        if (index !== -1) {
+            roomArray.splice(index, 1);
+        }
     }, [
         isCurrentPool,
         baseToken.symbol,
@@ -126,11 +168,30 @@ export default function Room(props: propsIF) {
     ]);
 
     useEffect(() => {
-        rooms?.map((pool: PoolIF) => {
-            if (!roomArray.some(({ name }) => name === pool.name)) {
-                roomArray.push(pool);
+        if (
+            props.isModerator &&
+            defaultRooms.find((room) => room.name === 'Admins') === undefined
+        ) {
+            setDefaultRooms([
+                ...defaultRooms,
+                {
+                    id: 101,
+                    name: 'Admins',
+                    value: 'Admins',
+                },
+            ]);
+        } else {
+            const index = defaultRooms.findIndex(
+                (room) => room.name === 'Admins',
+            );
+            if (index === -1) {
+                return;
             }
-        });
+            defaultRooms.splice(index, 1);
+        }
+    }, [props.isModerator]);
+
+    useEffect(() => {
         const fave:
             | PoolIF[]
             | {
@@ -156,6 +217,7 @@ export default function Room(props: propsIF) {
                   speed: number;
                   id: number;
               }[] = [];
+
         favePools.pools.forEach((pool: PoolIF) => {
             const favPool = {
                 name: pool.base.symbol + ' / ' + pool.quote.symbol,
@@ -185,6 +247,19 @@ export default function Room(props: propsIF) {
                 roomArray.push(favPool);
             }
 
+            if (
+                !roomArray.some(
+                    ({ name }) =>
+                        name === baseToken.symbol + ' / ' + quoteToken.symbol,
+                )
+            ) {
+                roomArray.push(
+                    (baseToken.symbol +
+                        ' / ' +
+                        quoteToken.symbol) as unknown as PoolIF,
+                );
+            }
+
             for (let x = 0; x < roomArray.length; x++) {
                 if (favPool.name === roomArray[x].name) {
                     roomArray.push(roomArray.splice(x, 1)[0]);
@@ -192,19 +267,22 @@ export default function Room(props: propsIF) {
             }
             fave.push(favPool);
         });
-        setFavoritePoolsArray(() => {
+        setFavoritePools(() => {
             return fave;
         });
-        const middleIndex = Math.ceil(favoritePoolsArray.length / 2);
-        favoritePoolsArray.splice(0, middleIndex);
-        if (props.selectedRoom !== 'Global') {
+        const middleIndex = Math.ceil(favoritePools.length / 2);
+        favoritePools.splice(0, middleIndex);
+        if (
+            defaultRooms.find((room) => room.name === props.selectedRoom) ===
+            undefined
+        ) {
             const index = roomArray
                 .map((e) => e.name)
                 .indexOf(props.selectedRoom);
             roomArray.splice(index, 1);
 
-            const middleIndex = Math.ceil(favoritePoolsArray.length / 2);
-            favoritePoolsArray.splice(0, middleIndex);
+            const middleIndex = Math.ceil(favoritePools.length / 2);
+            favoritePools.splice(0, middleIndex);
         }
     }, [favePools, props.selectedRoom, rooms.length === 0]);
 
@@ -222,10 +300,9 @@ export default function Room(props: propsIF) {
         setIsActive(!isActive);
     }
 
-    function handleRoomClick(event: any, name: string) {
-        event.target.dataset.value
-            ? props.setRoom(event.target.dataset.value)
-            : props.setRoom(name);
+    function handleRoomClick(event: any, name: string, poolName?: string) {
+        props.setRoom(event.target.dataset.value || poolName);
+
         if (name.toString() === 'Current Pool') {
             setIsCurrentPool(true);
             if (showCurrentPoolButton) {
@@ -277,11 +354,11 @@ export default function Room(props: propsIF) {
             }
         } else {
             if (selectedRoom === 'Global') {
-                if (roomArray.length !== 0) {
-                    return '';
-                }
-            } else {
                 const reverseRooms = [...defaultRooms].reverse();
+                const index = reverseRooms.findIndex(
+                    (room) => room.name === 'Global',
+                );
+                reverseRooms.splice(index, 1);
                 return reverseRooms.map((tab) => (
                     <div
                         className={styles.dropdown_item}
@@ -294,12 +371,50 @@ export default function Room(props: propsIF) {
                         {tab.name}
                     </div>
                 ));
+            } else if (selectedRoom === 'Admins') {
+                const reverseRooms = [...defaultRooms].reverse();
+                const index = reverseRooms.findIndex(
+                    (room) => room.name === 'Admins',
+                );
+                reverseRooms.splice(index, 1);
+                return reverseRooms.map((tab) => (
+                    <div
+                        className={styles.dropdown_item}
+                        key={tab.id}
+                        data-value={tab.value}
+                        onClick={(event: any) =>
+                            handleRoomClick(event, tab.name)
+                        }
+                    >
+                        {tab.name}
+                    </div>
+                ));
+            } else {
+                const reverseRooms = [...defaultRooms].reverse();
+                return reverseRooms.map((tab) => (
+                    <div
+                        className={styles.dropdown_item}
+                        key={tab.id}
+                        data-value={tab.value}
+                        onClick={(event: any) =>
+                            handleRoomClick(event, tab.name)
+                        }
+                    >
+                        {tab.name}
+                        {handleNotiDot(tab.name || '')}
+                    </div>
+                ));
             }
         }
     }
 
-    const smallScrenView = useMediaQuery('(max-width: 968px)');
+    function handleNotiDot(key: string) {
+        if (props.notifications?.get(key)) {
+            return <div className={styles.noti_dot}></div>;
+        }
+    }
 
+    const smallScrenView = useMediaQuery('(max-width: 968px)');
     return (
         <div className={styles.dropdown}>
             <div
@@ -314,6 +429,7 @@ export default function Room(props: propsIF) {
                     style={{ flexGrow: '1' }}
                 >
                     {props.selectedRoom}
+                    {handleNotiDot(props.selectedRoom || '')}
                 </div>
                 {showCurrentPoolButton ? (
                     <div
@@ -358,11 +474,11 @@ export default function Room(props: propsIF) {
                                         event,
                                         pool.base.symbol +
                                             ' / ' +
-                                            pool.quote.symbol,
+                                            pool.base.symbol,
                                     )
                                 }
                             >
-                                {favoritePoolsArray.some(
+                                {favoritePools.some(
                                     ({ name }) => name === pool.name,
                                 ) ? (
                                     <svg
@@ -398,10 +514,35 @@ export default function Room(props: propsIF) {
                                     ''
                                 )}
                                 {pool.name}
+                                {handleNotiDot(pool.name || '')}
                             </div>
                         ))}
-
                         {handleShowRoomsExceptGlobal(props.selectedRoom)}
+                    </div>
+
+                    {/* // CHAT_FEATURES_WBO -  Feature : Mentions */}
+                    <div className={styles.only_mentions_wrapper}>
+                        <span
+                            className={`${styles.only_mentions_text} ${
+                                props.isFocusMentions
+                                    ? styles.only_mentions_text_active
+                                    : ''
+                            }`}
+                        >
+                            Focus Mentions{' '}
+                        </span>
+                        <span
+                            className={styles.only_mentions_toggle_wrapper}
+                        ></span>
+                        {props.mentCount > 0 && (
+                            <div
+                                className={`${styles.ment_text_info_wrapper} ${
+                                    props.isFocusMentions ? styles.opa_full : ''
+                                }`}
+                            >
+                                {props.mentionIndex + 1}/ {props.mentCount}
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

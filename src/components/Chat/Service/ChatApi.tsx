@@ -1,6 +1,7 @@
 import { CHAT_BACKEND_URL } from '../../../ambient-utils/constants';
 import { useContext } from 'react';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import { getUserAvatarImageByAccountEndpoint } from '../ChatUtils';
 
 const host = CHAT_BACKEND_URL;
 
@@ -24,21 +25,6 @@ const useChatApi = () => {
         if (userAddress) {
             const response = await fetch(
                 host + '/chat/api/auth/getUserByAccount/' + userAddress,
-                {
-                    method: 'GET',
-                },
-            );
-            const data = await response.json();
-            return data;
-        }
-    }
-
-    async function getUserAvatarImageAndID(userAddress: string) {
-        if (userAddress) {
-            const response = await fetch(
-                host +
-                    '/chat/api/auth/getUserAvatarImageByAccount/' +
-                    userAddress,
                 {
                     method: 'GET',
                 },
@@ -73,6 +59,18 @@ const useChatApi = () => {
     async function receiveUsername(_username: string) {
         const response = await fetch(
             host + '/chat/api/auth/getUserByUsername/' + _username,
+            {
+                method: 'GET',
+            },
+        );
+        const data = await response.json();
+
+        return data;
+    }
+
+    async function getRepliedMessageInfo(_id: string) {
+        const response = await fetch(
+            host + '/chat/api/messages/getMsgWithId/' + _id,
             {
                 method: 'GET',
             },
@@ -118,15 +116,18 @@ const useChatApi = () => {
         return data;
     }
 
-    async function deleteMessage(_id: string) {
+    async function deleteMessage(_id: string, isModerator: boolean) {
         const response = await fetch(
-            host + '/chat/api/messages/deleteMessage/' + _id,
+            host + '/chat/api/messages/deleteMessagev2/' + _id,
             {
-                method: 'DELETE',
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    isModerator: isModerator,
+                }),
             },
         );
         const data = await response.json();
-
         return data;
     }
 
@@ -144,52 +145,20 @@ const useChatApi = () => {
         return data;
     }
 
-    async function saveUserWithAvatarImage(
-        walletID: string,
-        ensName: string,
-        userAvatarImage: string,
-    ) {
-        const response = await fetch(
-            host + '/chat/api/auth/saveUserWithAvatarImage',
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    walletID: walletID,
-                    ensName: ensName,
-                    avatarImage: userAvatarImage,
-                }),
-            },
-        );
-        const data = await response.json();
-
-        return data;
-    }
-
-    async function updateUserWithAvatarImage(
-        _id: string,
-        ensName: string,
-        userCurrentPool: string,
-        userAvatarImage: string,
-        isAvatarImageSet: boolean,
-    ) {
-        const response = await fetch(
-            host + '/chat/api/auth/updateUserWithAvatarImage',
-            {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    _id: _id,
-                    ensName: ensName,
-                    userCurrentPool: userCurrentPool,
-                    avatarImage: userAvatarImage,
-                    isAvatarImageSet: isAvatarImageSet,
-                }),
-            },
-        );
-        const data = await response.json();
-
-        return data;
+    async function getUserAvatarImageAndID(userAddress: string) {
+        if (userAddress) {
+            const response = await fetch(
+                CHAT_BACKEND_URL +
+                    getUserAvatarImageByAccountEndpoint +
+                    '/' +
+                    userAddress,
+                {
+                    method: 'GET',
+                },
+            );
+            const data = await response.json();
+            return data;
+        }
     }
 
     return {
@@ -202,8 +171,7 @@ const useChatApi = () => {
         updateMessageUser,
         saveUser,
         deleteMessage,
-        saveUserWithAvatarImage,
-        updateUserWithAvatarImage,
+        getRepliedMessageInfo,
         getUserAvatarImageAndID,
     };
 };

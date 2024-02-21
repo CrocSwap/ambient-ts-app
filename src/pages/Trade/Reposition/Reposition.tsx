@@ -1,11 +1,7 @@
 // START: Import React and Dongles
 import { useContext, useEffect, useMemo, useState, memo } from 'react';
 import { useLocation, useParams, Navigate } from 'react-router-dom';
-import {
-    CrocPositionView,
-    CrocReposition,
-    toDisplayPrice,
-} from '@crocswap-libs/sdk';
+import { CrocReposition, toDisplayPrice } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
 import RepositionHeader from '../../../components/Trade/Reposition/RepositionHeader/RepositionHeader';
@@ -50,6 +46,8 @@ import {
 } from '../../../ambient-utils/constants/';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { useProcessRange } from '../../../utils/hooks/useProcessRange';
+import { getPositionHash } from '../../../ambient-utils/dataLayer/functions/getPositionHash';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 function Reposition() {
     // current URL parameter string
@@ -75,6 +73,7 @@ function Reposition() {
         addPendingTx,
         addReceipt,
         addTransactionByType,
+        addPositionUpdate,
         removePendingTx,
         updateTransactionHash,
     } = useContext(ReceiptContext);
@@ -87,6 +86,7 @@ function Reposition() {
         setRescaleRangeBoundariesWithSlider,
         setAdvancedMode,
     } = useContext(RangeContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const [isOpen, openModal, closeModal] = useModal();
 
@@ -138,8 +138,11 @@ function Reposition() {
 
     const updateConcLiq = async () => {
         if (!crocEnv || !position) return;
-        const pool = crocEnv.pool(position.base, position.quote);
-        const pos = new CrocPositionView(pool, position.user);
+        const pos = crocEnv.positions(
+            position.base,
+            position.quote,
+            position.user,
+        );
 
         const liquidity = (
             await pos.queryRangePos(position.bidTick, position.askTick)
@@ -304,8 +307,9 @@ function Reposition() {
             tx = await repo.rebal();
             setNewRepositionTransactionHash(tx?.hash);
             addPendingTx(tx?.hash);
-            if (tx?.hash)
+            if (tx?.hash) {
                 addTransactionByType({
+                    userAddress: userAddress || '',
                     txHash: tx.hash,
                     txAction: 'Reposition',
                     txType: 'Range',
@@ -323,6 +327,14 @@ function Reposition() {
                         gridSize: lookupChain(position.chainId).gridSize,
                     },
                 });
+                const posHash = getPositionHash(position);
+                addPositionUpdate({
+                    txHash: tx.hash,
+                    positionID: posHash,
+                    isLimit: false,
+                    unixTimeAdded: Math.floor(Date.now() / 1000),
+                });
+            }
             // We want the user to exit themselves
             // navigate(redirectPath, { replace: true });
         } catch (error) {
@@ -350,6 +362,13 @@ function Reposition() {
 
                 updateTransactionHash(error.hash, error.replacement.hash);
                 setNewRepositionTransactionHash(newTransactionHash);
+                const posHash = getPositionHash(position);
+                addPositionUpdate({
+                    txHash: newTransactionHash,
+                    positionID: posHash,
+                    isLimit: false,
+                    unixTimeAdded: Math.floor(Date.now() / 1000),
+                });
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
             } else if (isTransactionFailedError(error)) {
@@ -698,6 +717,8 @@ function Reposition() {
                                         : handleModalOpen
                                 }
                                 disabled={
+                                    userAddress?.toLowerCase() !==
+                                        position.user.toLowerCase() ||
                                     isRepositionSent ||
                                     isPositionInRange ||
                                     isCurrentPositionEmptyOrLoading

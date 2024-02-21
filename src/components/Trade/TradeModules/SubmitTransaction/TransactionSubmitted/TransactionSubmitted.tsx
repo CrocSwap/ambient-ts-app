@@ -15,6 +15,7 @@ interface PropsIF {
         | 'Reposition'
         | 'Remove'
         | 'Harvest'
+        | 'Claim'
         | 'Reset';
     hash: string;
     tokenBAddress: string;
@@ -139,6 +140,14 @@ export default function TransactionSubmitted(props: PropsIF) {
                       }`
                     : type === 'Remove'
                     ? `Removal ${
+                          isTransactionFailed
+                              ? 'Failed'
+                              : isConfirmed
+                              ? 'Success!'
+                              : 'Submitted'
+                      }`
+                    : type === 'Claim'
+                    ? `Claim ${
                           isTransactionFailed
                               ? 'Failed'
                               : isConfirmed

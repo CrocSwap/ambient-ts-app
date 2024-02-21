@@ -1,56 +1,437 @@
-import { useEffect, useState, useRef } from 'react';
+/* eslint-disable camelcase */
+/* eslint-disable @typescript-eslint/no-explicit-any  */
+
+import { useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client';
-import { CHAT_BACKEND_WSS_URL } from '../../../ambient-utils/constants';
+import {
+    CHAT_BACKEND_URL,
+    CHAT_BACKEND_WSS_URL,
+} from '../../../ambient-utils/constants';
+
+import {
+    LS_USER_NON_VERIFIED_MESSAGES,
+    LS_USER_VERIFY_TOKEN,
+    addReactionEndpoint,
+    getAllMessagesEndpoint,
+    getLS,
+    getMentionsWithRestEndpoint,
+    getMessageWithRestEndpoint,
+    getMessageWithRestWithPaginationEndpoint,
+    getUnverifiedMsgList,
+    getUserAvatarImageByAccountEndpoint,
+    getUserDetailsEndpoint,
+    getUserIsVerified,
+    getUserListWithRestEndpoint,
+    getUserVerifyToken,
+    removeFromUnverifiedList,
+    saveuserWithAvatarEndpoint,
+    setLS,
+    updateLikesDislikesCountEndpoint,
+    updateUnverifiedMessagesEndpoint,
+    updateUserWithAvatarImageEndpoint,
+    updateVerifiedDateEndpoint,
+    verifyUserEndpoint,
+} from '../ChatUtils';
 import { Message } from '../Model/MessageModel';
+import { User } from '../Model/UserModel';
+import { AvatarUpdateIF, LikeDislikePayload } from '../ChatIFs';
 
 const useChatSocket = (
     room: string,
     areSubscriptionsEnabled = true,
     isChatOpen = true,
+    activateToastr: (
+        message: string,
+        type: 'success' | 'error' | 'warning' | 'info',
+    ) => void,
+    address?: string,
+    ensName?: string | null,
+    currentUserID?: string,
 ) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const socketRef: any = useRef();
     const [messages, setMessages] = useState<Message[]>([]);
+    const [users, setUsers] = useState<User[]>([]);
     const [lastMessage, setLastMessage] = useState<Message>();
     const [lastMessageText, setLastMessageText] = useState('');
     const [messageUser, setMessageUser] = useState<string>();
+    const [notifications, setNotifications] = useState<Map<string, number>>();
+    const [isVerified, setIsVerified] = useState<boolean>(false);
+    const [userMap, setUserMap] = useState<Map<string, User>>(
+        new Map<string, User>(),
+    );
+    const [userVrfToken, setUserVrfToken] = useState<string>('');
+
+    const messagesRef = useRef<Message[]>([]);
+    messagesRef.current = messages;
+
+    async function getMsgWithRest(roomInfo: string) {
+        const encodedRoomInfo = encodeURIComponent(roomInfo);
+        const url = `${CHAT_BACKEND_URL}${getMessageWithRestEndpoint}${encodedRoomInfo}`;
+        const response = await fetch(url, {
+            method: 'GET',
+        });
+        const data = await response.json();
+        setMessages(data.reverse());
+        setLastMessage(data);
+        setLastMessageText(data.message);
+        setMessageUser(data.sender);
+        return data.reverse();
+    }
+
+    async function fetchForNotConnectedUser() {
+        const encodedRoomInfo = encodeURIComponent(room);
+        const url = `${CHAT_BACKEND_URL}${getMessageWithRestEndpoint}${encodedRoomInfo}`;
+        const response = await fetch(url, {
+            method: 'GET',
+        });
+        const data = await response.json();
+        setMessages(data.reverse());
+        setLastMessage(data);
+        setLastMessageText(data.message);
+        setMessageUser(data.sender);
+    }
+
+    async function getAllMessages(p?: number) {
+        const queryParams = 'p=' + p;
+        const url = `${CHAT_BACKEND_URL}${getAllMessagesEndpoint}?${queryParams}`;
+        const response = await fetch(url, {
+            method: 'GET',
+        });
+        const data = await response.json();
+        setMessages((prevMessages) => [...data, ...prevMessages]);
+        setLastMessage(data);
+        setLastMessageText(data.message);
+        setMessageUser(data.sender);
+        return data;
+    }
+
+    async function getMsgWithRestWithPagination(roomInfo: string, p?: number) {
+        const encodedRoomInfo = encodeURIComponent(roomInfo);
+        const queryParams = 'p=' + p;
+        const url = `${CHAT_BACKEND_URL}${getMessageWithRestWithPaginationEndpoint}${encodedRoomInfo}?${queryParams}`;
+        const response = await fetch(url, {
+            method: 'GET',
+        });
+        const data = await response.json();
+        setMessages((prevMessages) => [...data.reverse(), ...prevMessages]);
+        setLastMessage(data);
+        setLastMessageText(data.message);
+        setMessageUser(data.sender);
+
+        return data.reverse();
+    }
+
+    async function updateLikeDislike(
+        messageId: string,
+        pl: LikeDislikePayload,
+    ) {
+        const payload = {
+            _id: messageId,
+            ...pl,
+        };
+
+        const response = await fetch(
+            CHAT_BACKEND_URL + updateLikesDislikesCountEndpoint,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            },
+        );
+        const data = await response.json();
+        if (data && data.data && data.data.message) {
+            const msg = data.data.message;
+            const newMessageList = messages.map((e) => {
+                if (e._id == msg._id) {
+                    return msg;
+                } else {
+                    return e;
+                }
+            });
+            setMessages([...newMessageList]);
+        }
+
+        return data;
+    }
+
+    async function getMentionsWithRest(roomInfo: string) {
+        const encodedRoomInfo = encodeURIComponent(roomInfo);
+        const response = await fetch(
+            CHAT_BACKEND_URL +
+                getMentionsWithRestEndpoint +
+                encodedRoomInfo +
+                '/' +
+                address,
+
+            {
+                method: 'GET',
+            },
+        );
+        const data = await response.json();
+        return data;
+    }
+
+    async function getUserListWithRest() {
+        const response = await fetch(
+            CHAT_BACKEND_URL + getUserListWithRestEndpoint,
+            {
+                method: 'GET',
+            },
+        );
+        const data = await response.json();
+        return data;
+    }
+
+    async function isUserVerified() {
+        if (address) {
+            const encodedAddress = encodeURIComponent(address);
+            const response = await fetch(
+                CHAT_BACKEND_URL + getUserIsVerified + encodedAddress,
+                {
+                    method: 'GET',
+                },
+            );
+            const data = await response.json();
+            return data;
+        }
+    }
+
+    async function verifyUser(verifyToken: string, verifyDate: Date) {
+        const response = await fetch(CHAT_BACKEND_URL + verifyUserEndpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                walletID: address,
+                verifyToken: verifyToken,
+                verifyDate: verifyDate,
+            }),
+        });
+        const data = await response.json();
+        setIsVerified(data.isVerified);
+
+        return data;
+    }
+
+    async function updateVerifyDate(verifyDate: Date) {
+        const response = await fetch(
+            CHAT_BACKEND_URL + updateVerifiedDateEndpoint,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    walletID: address,
+                    verifyDate: verifyDate,
+                }),
+            },
+        );
+        const data = await response.json();
+        setIsVerified(data.isVerified);
+
+        const userListData = await getUserListWithRest();
+        const usmp = new Map<string, User>();
+        userListData.forEach((user: User) => {
+            usmp.set(user._id, user);
+        });
+        setUserMap(usmp);
+        setUsers(userListData);
+
+        return data;
+    }
+
+    async function updateUnverifiedMessages(verifyDate: Date, endDate?: Date) {
+        const nonVerifiedMessages = getUnverifiedMsgList(address);
+        const vrfTkn = getLS(LS_USER_VERIFY_TOKEN, address);
+
+        const response = await fetch(
+            CHAT_BACKEND_URL + updateUnverifiedMessagesEndpoint,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user: currentUserID,
+                    startDate: verifyDate,
+                    msgList: nonVerifiedMessages,
+                    vrfTkn: vrfTkn,
+                    endDate: endDate,
+                }),
+            },
+        );
+        const messages = await response.json();
+        updateMessageWithArr(messages);
+
+        // clean up local storage
+        messages.map((msg: Message) => {
+            removeFromUnverifiedList(msg._id, address);
+        });
+    }
+
+    async function updateUserCache() {
+        const userListData = await getUserListWithRest();
+        const usmp = new Map<string, User>();
+        userListData.forEach((user: User) => {
+            usmp.set(user._id, user);
+        });
+        setUserMap(usmp);
+        setUsers(userListData);
+        const userToken = getLS(LS_USER_VERIFY_TOKEN, address);
+        setUserVrfToken(userToken ? userToken : '');
+    }
+
+    async function getUserSummaryDetails(walletID: string) {
+        const encodedWalletID = encodeURIComponent(walletID);
+        const response = await fetch(
+            CHAT_BACKEND_URL + getUserDetailsEndpoint + '/' + encodedWalletID,
+            {
+                method: 'GET',
+            },
+        );
+        const data = await response.json();
+        return data;
+    }
 
     useEffect(() => {
+        async function checkVerified() {
+            const data = await isUserVerified();
+            const userToken = getLS(LS_USER_VERIFY_TOKEN, address);
+            setUserVrfToken(userToken ? userToken : '');
+            if (!data) return;
+            setIsVerified(userToken == data.vrfTkn && data.vrfTkn != null);
+        }
+
+        checkVerified();
+
         if (!areSubscriptionsEnabled || !isChatOpen) return;
 
-        const roomId = room;
-        socketRef.current = io(CHAT_BACKEND_WSS_URL, {
-            path: '/chat/api/subscribe/',
-            query: { roomId },
-        });
-        socketRef.current.on('connection');
-
-        socketRef.current.on('send-msg', () => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            socketRef.current.on('msg-recieve', (data: any) => {
-                setMessages(data);
-                setLastMessage(data[0]);
-                setLastMessageText(data[0].text);
-                setMessageUser(data[0].sender);
+        if (address !== undefined && address != 'undefined') {
+            socketRef.current = io(CHAT_BACKEND_WSS_URL, {
+                path: '/chat/api/subscribe/',
+                query: { roomId: room, address, ensName },
             });
-        });
+        }
 
         if (isChatOpen) {
             getMsg();
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        socketRef.current.on('msg-recieve', (data: any) => {
-            setMessages(data);
-        });
 
-        socketRef.current.on('set-avatar', (data: any) => {
-            setMessages(data);
-        });
+        async function getRest() {
+            const data =
+                room === 'Admins'
+                    ? await getAllMessages(0)
+                    : await getMsgWithRest(room);
+            setMessages(data.reverse());
+            if (data.length > 0) {
+                setLastMessage(data[data.length - 1]);
+                setLastMessageText(data[data.length - 1].text);
+                setMessageUser(data[data.length - 1].sender);
+            }
+
+            const userListData = await getUserListWithRest();
+            const usmp = new Map<string, User>();
+            userListData.forEach((user: User) => {
+                usmp.set(user._id, user);
+            });
+            setUserMap(usmp);
+            setUsers(userListData);
+        }
+
+        getRest();
+
+        if (socketRef && socketRef.current) {
+            // eslint-disable-next-line
+            socketRef.current.on('msg-recieve-2', (data: any) => {
+                console.log('recieve 2');
+                if (
+                    data &&
+                    data.sender &&
+                    data.sender === currentUserID &&
+                    !data.isVerified
+                ) {
+                    let nonVrfMessages = getLS(
+                        LS_USER_NON_VERIFIED_MESSAGES,
+                        address,
+                    );
+                    const newMsgToken = ', ' + data._id;
+                    nonVrfMessages = nonVrfMessages
+                        ? (nonVrfMessages += newMsgToken)
+                        : data._id + '';
+                    setLS(
+                        LS_USER_NON_VERIFIED_MESSAGES,
+                        nonVrfMessages,
+                        address,
+                    );
+                }
+                setMessages([...messagesRef.current, data]);
+                if (messagesRef.current[messagesRef.current.length - 1]) {
+                    setLastMessage(data);
+                    setLastMessageText(data.message);
+                    setMessageUser(data.sender);
+                }
+            });
+
+            socketRef.current.on('noti', (data: any) => {
+                if (notifications) {
+                    const checkVal = notifications.get(data.roomInfo);
+                    if (checkVal != undefined) {
+                        setNotifications(
+                            notifications.set(data.roomInfo, checkVal + 1),
+                        );
+                    } else {
+                        setNotifications(notifications.set(data.roomInfo, 1));
+                    }
+                } else {
+                    const notificationsMap = new Map<string, number>();
+                    notificationsMap.set(data.roomInfo, 1);
+                    setNotifications(notificationsMap);
+                }
+            });
+
+            console.log('set-avatar-listener');
+            socketRef.current.on('set-avatar-listener', (data: any) => {
+                console.log('set-avatar-listener');
+                console.log('set-avatar-listener');
+                console.log('set-avatar-listener');
+                console.log('set-avatar-listener');
+                console.log('set-avatar-listener');
+                console.log('set-avatar-listener');
+                console.log(data);
+                console.log('set-avatar-listener');
+                console.log('set-avatar-listener');
+                console.log('set-avatar-listener');
+                userListLightUpdate(data);
+            });
+        }
 
         return () => {
-            socketRef.current.disconnect();
+            if (socketRef && socketRef.current) {
+                socketRef.current.disconnect();
+            }
         };
-    }, [room, areSubscriptionsEnabled, isChatOpen]);
+    }, [room, areSubscriptionsEnabled, isChatOpen, address, notifications]);
+    useEffect(() => {
+        if (socketRef.current) {
+            socketRef.current.on('message-deleted-listener', (data: any) => {
+                updateMessages(data);
+            });
+            socketRef.current.on('message-updated-listener', (data: any) => {
+                updateMessages(data);
+            });
+            socketRef.current.on('set-avatar-listener', (data: any) => {
+                console.log('set-avatar-listener');
+                console.log('set-avatar-listener');
+                console.log('set-avatar-listener');
+                console.log('set-avatar-listener');
+                console.log('set-avatar-listener');
+                console.log('set-avatar-listener');
+                console.log(data);
+                console.log('set-avatar-listener');
+                console.log('set-avatar-listener');
+                console.log('set-avatar-listener');
+                userListLightUpdate(data);
+            });
+        }
+        // updateUserCache();
+    }, [messages]);
 
     async function getMsg() {
         if (!socketRef.current) return;
@@ -59,12 +440,50 @@ const useChatSocket = (
         });
     }
 
+    async function deleteMsgFromList(msgId: string) {
+        const payload = {
+            _id: msgId,
+            whoIsDeleting: currentUserID,
+            verifyToken: getUserVerifyToken(address),
+        };
+        const response = await fetch(
+            `${CHAT_BACKEND_URL}/chat/api/messages/deleteMessagev2`,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            },
+        );
+        activateToastr('Message deleted successfully', 'success');
+        const data = await response.json();
+        data.message.deletedMessageText = 'This message has deleted';
+        if (data) {
+            const msg = data.message;
+            socketRef.current.emit('message-deleted', { ...data.message });
+            const newMessageList = messages.map((e) => {
+                if (e._id == msg._id) {
+                    return msg;
+                } else {
+                    return e;
+                }
+            });
+
+            setMessages([...newMessageList]);
+        }
+
+        return data;
+    }
+
     async function sendMsg(
         currentUser: string,
         msg: string,
         room: string,
         ensName: string,
         walletID: string | null,
+        mentionedName: string | null,
+        mentionedWalletID: string | null,
+        repliedMessage?: string | undefined,
+        repliedMessageRoomInfo?: string | undefined,
     ) {
         socketRef.current.emit('send-msg', {
             from: currentUser,
@@ -72,7 +491,160 @@ const useChatSocket = (
             roomInfo: room,
             ensName: ensName,
             walletID: walletID,
+            mentionedName: mentionedName,
+            isMentionMessage: mentionedName ? true : false,
+            mentionedWalletID,
+            repliedMessage: repliedMessage,
+            repliedMessageRoomInfo: repliedMessageRoomInfo,
+            senderToken: userVrfToken,
         });
+    }
+
+    async function addReaction(
+        messageId: string,
+        userId: string,
+        reaction: string,
+    ) {
+        const payload = {
+            messageId,
+            userId,
+            reaction,
+        };
+
+        const response = await fetch(CHAT_BACKEND_URL + addReactionEndpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        const data = await response.json();
+        socketRef.current.emit('message-updated', { ...data.data.message });
+
+        return data;
+    }
+
+    // update messages list with new message from server
+    const updateMessages = (message: any) => {
+        let newMessageList = messages.map((e) => {
+            if (e._id == message._id) {
+                return message;
+            } else {
+                return e;
+            }
+        });
+        newMessageList = newMessageList.filter(
+            (e) => e.isDeleted != true || room == 'Admins',
+        );
+        setMessages([...newMessageList]);
+    };
+
+    // updates messages list with new message list from server
+    const updateMessageWithArr = (msgListFromServer: Message[]) => {
+        const newVerifiedMsgIds = new Set(
+            msgListFromServer.map((msg) => msg._id),
+        );
+        let newMessageList = messages.map((e) => {
+            if (newVerifiedMsgIds.has(e._id)) {
+                return {
+                    ...e,
+                    isVerified: true,
+                };
+            } else {
+                return e;
+            }
+        });
+        newMessageList = newMessageList.filter(
+            (e) => e.isDeleted != true || room == 'Admins',
+        );
+        setMessages([...newMessageList]);
+    };
+
+    async function saveUserWithAvatarImage(
+        walletID: string,
+        ensName: string,
+        userAvatarImage: string,
+    ) {
+        const response = await fetch(
+            CHAT_BACKEND_URL + saveuserWithAvatarEndpoint,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    walletID: walletID,
+                    ensName: ensName,
+                    avatarImage: userAvatarImage,
+                }),
+            },
+        );
+        const data = await response.json();
+
+        // socketRef.current.emit('set-avatar', { user_id: data._id, avatarImage: userAvatarImage});
+        userAvatarUpdateHandler({
+            userId: data._id,
+            avatarImage: userAvatarImage,
+        });
+
+        return data;
+    }
+
+    async function updateUserWithAvatarImage(
+        _id: string,
+        ensName: string,
+        userCurrentPool: string,
+        userAvatarImage: string,
+        isAvatarImageSet: boolean,
+    ) {
+        const response = await fetch(
+            CHAT_BACKEND_URL + updateUserWithAvatarImageEndpoint,
+            {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    _id: _id,
+                    ensName: ensName,
+                    userCurrentPool: userCurrentPool,
+                    avatarImage: userAvatarImage,
+                    isAvatarImageSet: isAvatarImageSet,
+                }),
+            },
+        );
+        const data = await response.json();
+        userAvatarUpdateHandler({ userId: _id, avatarImage: userAvatarImage });
+        return data;
+    }
+
+    function userAvatarUpdateHandler(data: AvatarUpdateIF) {
+        console.log('set-avatar');
+        console.log('set-avatar');
+        console.log('set-avatar');
+        console.log('set-avatar');
+        console.log(data);
+        socketRef.current.emit('set-avatar', {
+            userId: data.userId,
+            avatarImage: data.avatarImage,
+        });
+    }
+
+    function userListLightUpdate(data: AvatarUpdateIF) {
+        console.log('light update ');
+        console.log(data);
+        const newUsersList: User[] = [];
+
+        users.map((e) => {
+            if (e._id == data.userId) {
+                newUsersList.push({ ...e, avatarImage: data.avatarImage });
+            } else {
+                newUsersList.push(e);
+            }
+        });
+
+        setUsers(newUsersList);
+
+        const usmp = new Map<string, User>();
+        newUsersList.forEach((user: User) => {
+            usmp.set(user._id, user);
+        });
+        setUserMap(usmp);
+        // setMessages([...messagesRef.current]);
     }
 
     return {
@@ -82,6 +654,26 @@ const useChatSocket = (
         lastMessage,
         messageUser,
         lastMessageText,
+        users,
+        notifications,
+        updateLikeDislike,
+        socketRef,
+        isVerified,
+        verifyUser,
+        userMap,
+        updateVerifyDate,
+        updateUserCache,
+        getMsgWithRestWithPagination,
+        getAllMessages,
+        deleteMsgFromList,
+        setMessages,
+        addReaction,
+        fetchForNotConnectedUser,
+        getUserSummaryDetails,
+        updateUnverifiedMessages,
+        getMentionsWithRest,
+        saveUserWithAvatarImage,
+        updateUserWithAvatarImage,
     };
 };
 
