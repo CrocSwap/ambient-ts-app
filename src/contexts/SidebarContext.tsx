@@ -82,15 +82,11 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
 
     // logic to open or close the sidebar automatically when the URL route changes
     useEffect(() => {
-        if (sidebar.getStoredStatus() === 'open') {
-            sidebar.open(true);
-        } else if (
-            currentLocation === '/' ||
-            currentLocation === '/swap' ||
-            currentLocation.includes('/account')
+        if (
+            sidebar.getStoredStatus() === 'open' ||
+            showSidebarByDefault ||
+            smallScreen
         ) {
-            sidebar.close();
-        } else if (showSidebarByDefault || smallScreen) {
             sidebar.open();
         } else {
             sidebar.close();
