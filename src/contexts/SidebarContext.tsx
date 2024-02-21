@@ -35,9 +35,7 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const { chainData } = useContext(CrocEnvContext);
-
     const { allReceipts } = useContext(ReceiptContext);
-
     const lastReceipt =
         allReceipts.length > 0 && isJsonString(allReceipts[0])
             ? JSON.parse(allReceipts[0])
@@ -48,31 +46,30 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
         [lastReceipt],
     );
 
+    // current URL pathway in the app
     const { pathname: currentLocation } = useLocation();
 
+    // hook to manage sidebar state (probably doesn't need to be extracted anymore)
     const sidebar = useSidebar(location.pathname);
 
     // hook to manage recent pool data in-session
     const recentPools: recentPoolsMethodsIF = useRecentPools(chainData.chainId);
-    const smallScreen = useMediaQuery('(max-width: 500px)');
 
+    // determine whether the user screen width is less than min width to show the sidebar
+    const smallScreen: boolean = useMediaQuery('(max-width: 500px)');
+    const showSidebarByDefault: boolean = useMediaQuery('(min-width: 1850px)');
+
+    // value showing whether the screen size warrants hiding the sidebar
     const [hideOnMobile, setHideOnMobile] = useState<boolean>(true);
 
-    useEffect(() => {
-        setHideOnMobile(smallScreen);
-    }, [smallScreen]);
+    // update sidebar hidden vs not hidden if screen width changes
+    useEffect(() => setHideOnMobile(smallScreen), [smallScreen]);
+
+    // fn to toggle visibility when the user is in mobile mode
     const toggleMobileModeVisibility = () => setHideOnMobile((prev) => !prev);
 
-    const sidebarState = {
-        sidebar,
-        recentPools,
-        hideOnMobile,
-        toggleMobileModeVisibility,
-    };
-
-    const showSidebarByDefault = useMediaQuery('(min-width: 1850px)');
-
-    function toggleSidebarBasedOnRoute() {
+    // logic to open or close the sidebar automatically when the URL route changes
+    useEffect(() => {
         if (sidebar.getStoredStatus() === 'open') {
             sidebar.open(true);
         } else if (
@@ -86,15 +83,14 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
         } else {
             sidebar.close();
         }
-    }
-    useEffect(() => {
-        toggleSidebarBasedOnRoute();
     }, [
         location.pathname.includes('/trade'),
         location.pathname.includes('/explore'),
         showSidebarByDefault,
     ]);
 
+    // logic to show a snackbar notification when a new receipt is received
+    // I'm not really sure why we put this logic in this file? should move later
     useEffect(() => {
         if (lastReceiptHash) {
             IS_LOCAL_ENV && console.debug('new receipt to display');
@@ -108,6 +104,14 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
             );
         }
     }, [lastReceiptHash]);
+
+    // data to return from this context
+    const sidebarState = {
+        sidebar,
+        recentPools,
+        hideOnMobile,
+        toggleMobileModeVisibility,
+    };
 
     return (
         <SidebarContext.Provider value={sidebarState}>
