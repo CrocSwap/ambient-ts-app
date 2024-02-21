@@ -2,36 +2,36 @@ import { useMemo, useState } from 'react';
 import { getLocalStorageItem } from '../../ambient-utils/dataLayer';
 
 export interface sidebarMethodsIF {
-    status: SidebarStoredStatus;
+    status: SidebarStatus;
     isOpen: boolean;
     isHiddenOnRoute: boolean;
     open: (persist?: boolean) => void;
     close: (persist?: boolean) => void;
     toggle: (persist?: boolean) => void;
-    getStoredStatus: () => SidebarStoredStatus | null;
+    getStoredStatus: () => SidebarStatus | null;
     resetStoredStatus: () => void;
 }
 
-export type SidebarStoredStatus = 'open' | 'closed';
+export type SidebarStatus = 'open' | 'closed';
 
 export const useSidebar = (pathname: string): sidebarMethodsIF => {
     // local storage key for persisted data
     const localStorageKey = 'sidebarStatus';
     const getStoredSidebarStatus = () =>
-        getLocalStorageItem<SidebarStoredStatus>(localStorageKey);
+        getLocalStorageItem<SidebarStatus>(localStorageKey);
 
     const resetPersist = () => localStorage.setItem(localStorageKey, 'closed');
 
     // hook to track sidebar status in local state
     // this hook initializes from local storage for returning users
-    // will default to 'open' if no value found (happens on first visit)
-    const [sidebar, setSidebar] = useState<SidebarStoredStatus>(
-        getStoredSidebarStatus() || 'open',
+    // will default to 'closed' if no value found (happens on first visit)
+    const [sidebar, setSidebar] = useState<SidebarStatus>(
+        getStoredSidebarStatus() ?? 'closed',
     );
 
     // reusable logic to update state and optionally persist data in local storage
     const changeSidebar = (
-        newStatus: SidebarStoredStatus,
+        newStatus: SidebarStatus,
         persist: boolean,
     ): void => {
         setSidebar(newStatus);
