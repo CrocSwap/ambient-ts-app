@@ -300,14 +300,13 @@ export const WalletWrapper = styled(FlexContainer)`
     top: 50px;
     width: 347px;
     height: 280px;
-    right: -40px;
+    right: 0px;
     z-index: 9999;
     padding: 8px 1rem;
-
     opacity: 1;
     bottom: 85px;
     pointer-events: auto;
-
+    border: 1px solid var(--accent1);
     @media (max-width: 500px) {
         width: 300px;
         right: -50px;
@@ -354,7 +353,7 @@ export const AccountDropdownWrapper = styled(FlexContainer)`
     opacity: 1;
     bottom: 85px;
     pointer-events: auto;
-
+    border: 1px solid var(--accent1);
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -420,8 +419,7 @@ export const WalletName = styled.p`
 export const StyledExchangeBalanceDropdown = styled.div`
     position: absolute;
     top: 68px;
-    right: 8px;
-    width: 450px;
+    right: 68px;
     height: 510px;
     border: none;
     overflow: hidden;
@@ -431,6 +429,7 @@ export const StyledExchangeBalanceDropdown = styled.div`
     border-radius: var(--border-radius);
     box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.25);
     text-align: start;
+    border: 1px solid var(--accent1);
 
     @media only screen and (max-width: 600px) {
         width: auto;
@@ -442,7 +441,7 @@ export const StyledExchangeBalanceDropdown = styled.div`
 
 // NavbarDropdownMenu
 
-export const NavbarDropdown = styled.div`
+export const NavbarDropdown = styled.div<{ hasBorder?: boolean }>`
     position: absolute;
     top: 60px;
     width: 240px;
@@ -456,6 +455,12 @@ export const NavbarDropdown = styled.div`
     border-radius: var(--border-radius);
     box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.25);
     z-index: 999;
+
+    ${(props) =>
+        props.hasBorder &&
+        css`
+            border: 1px solid var(--accent1);
+        `}
 `;
 
 export const Menu = styled(motion.div)`
@@ -587,6 +592,7 @@ export const MenuContent = styled.ul`
     background: var(--dark2);
     border-radius: var(--border-radius);
     z-index: 999;
+    border: 1px solid var(--accent1);
 
     ul,
     li {

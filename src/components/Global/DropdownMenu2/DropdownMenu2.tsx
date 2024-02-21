@@ -13,10 +13,12 @@ interface DropdownMenuPropsIF {
     marginTop?: string;
     titleWidth?: string;
     logo?: string;
+    left?: string;
+    right?: string;
 }
 
 export default function DropdownMenu2(props: DropdownMenuPropsIF) {
-    const { title, children, marginTop, titleWidth, logo } = props;
+    const { title, children, marginTop, titleWidth, logo, left, right } = props;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { appHeaderDropdown } = useContext(AppStateContext);
     const dropdownRefItem = useRef<HTMLDivElement>(null);
@@ -43,7 +45,11 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
             initial='hidden'
             animate='show'
             exit='hidden'
-            style={{ top: marginTop ? marginTop : '30px' }}
+            style={{
+                top: marginTop ? marginTop : '30px',
+                left: left,
+                right: right,
+            }}
         >
             {children}
         </MenuContainer>
