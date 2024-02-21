@@ -99,6 +99,8 @@ function TransactionDetailsModal(props: propsIF) {
 
                 setTimeFirstMint(positionStats.timeFirstMint);
 
+                tx.timeFirstMint = positionStats.timeFirstMint;
+
                 setUpdatedPositionApy(
                     positionStats.aprEst
                         ? positionStats.aprEst * 100
@@ -153,7 +155,7 @@ function TransactionDetailsModal(props: propsIF) {
                 <div className={styles.right_container}>
                     <TransactionDetailsGraph
                         tx={tx}
-                        timeFirstMint={timeFirstMint}
+                        // timeFirstMint={timeFirstMint}
                         transactionType={tx.entityType}
                         isBaseTokenMoneynessGreaterOrEqual={
                             isBaseTokenMoneynessGreaterOrEqual

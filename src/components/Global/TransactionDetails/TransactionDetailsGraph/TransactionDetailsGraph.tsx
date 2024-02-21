@@ -23,7 +23,7 @@ import { useMediaQuery } from '@material-ui/core';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
     tx: any;
-    timeFirstMint?: number | undefined;
+    // timeFirstMint?: number | undefined;
     transactionType: string;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isAccountView: boolean;
@@ -34,7 +34,7 @@ export default function TransactionDetailsGraph(
 ) {
     const {
         tx,
-        timeFirstMint,
+        // timeFirstMint,
         transactionType,
         isBaseTokenMoneynessGreaterOrEqual,
         isAccountView,
@@ -134,8 +134,8 @@ export default function TransactionDetailsGraph(
                             ? tx?.txTime
                             : new Date().getTime();
                     case 'liqchange':
-                        return timeFirstMint !== undefined
-                            ? timeFirstMint
+                        return tx.timeFirstMint !== undefined
+                            ? tx.timeFirstMint
                             : tx.txTime;
                     default:
                         return new Date().getTime();
@@ -208,7 +208,7 @@ export default function TransactionDetailsGraph(
                 }
             }
         })();
-    }, [fetchEnabled, timeFirstMint]);
+    }, [fetchEnabled, tx.timeFirstMint]);
 
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -375,8 +375,8 @@ export default function TransactionDetailsGraph(
                 .fromValue((d: any) => d[0])
                 .toValue((d: any) => d[1])
                 .decorate((selection: any) => {
-                    const time = timeFirstMint
-                        ? timeFirstMint * 1000
+                    const time = tx.timeFirstMint
+                        ? tx.timeFirstMint * 1000
                         : tx.txTime * 1000;
                     selection
                         .select('path')
@@ -891,8 +891,8 @@ export default function TransactionDetailsGraph(
 
                 if (transactionType === 'liqchange' && period) {
                     const buffer = period * 1000;
-                    const time = timeFirstMint
-                        ? timeFirstMint * 1000
+                    const time = tx.timeFirstMint
+                        ? tx.timeFirstMint * 1000
                         : tx.txTime * 1000;
 
                     scaleData?.xScale.domain([
@@ -929,7 +929,7 @@ export default function TransactionDetailsGraph(
                             transactionType === 'limitOrder' &&
                             tx !== undefined
                         ) {
-                            if (timeFirstMint === undefined) {
+                            if (tx.timeFirstMint === undefined) {
                                 horizontalBandData[0] = [
                                     (
                                         !isAccountView
@@ -952,15 +952,15 @@ export default function TransactionDetailsGraph(
                                 ]).call(horizontalBand);
                             } else if (tx.claimableLiq > 0) {
                                 addExtraCandle(
-                                    timeFirstMint,
+                                    tx.timeFirstMint,
                                     tx.askTickInvPriceDecimalCorrected,
                                     tx.askTickPriceDecimalCorrected,
                                 );
                                 crossPointJoin(svg, [
                                     [
                                         {
-                                            x: timeFirstMint
-                                                ? timeFirstMint * 1000
+                                            x: tx.timeFirstMint
+                                                ? tx.timeFirstMint * 1000
                                                 : tx.txTime * 1000,
                                             y: (
                                                 !isAccountView
@@ -983,7 +983,7 @@ export default function TransactionDetailsGraph(
                                             ? tx.askTickInvPriceDecimalCorrected
                                             : tx.askTickPriceDecimalCorrected,
 
-                                        x: timeFirstMint,
+                                        x: tx.timeFirstMint,
                                     },
                                 ];
 
@@ -1020,8 +1020,8 @@ export default function TransactionDetailsGraph(
 
                                 horizontalBandData[0] = [bidLine, askLine];
 
-                                const time = timeFirstMint
-                                    ? timeFirstMint * 1000
+                                const time = tx.timeFirstMint
+                                    ? tx.timeFirstMint * 1000
                                     : tx.txTime * 1000;
 
                                 const rangeLinesData = [
@@ -1085,7 +1085,6 @@ export default function TransactionDetailsGraph(
         [
             tx?.txTime,
             tx?.timeFirstMint,
-            timeFirstMint,
             tx.swapInvPriceDecimalCorrected,
             tx.swapPriceDecimalCorrected,
             tx.bidTickInvPriceDecimalCorrected,
