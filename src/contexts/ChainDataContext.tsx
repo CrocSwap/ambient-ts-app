@@ -12,7 +12,7 @@ import {
     SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
     supportedNetworks,
 } from '../ambient-utils/constants';
-import { isJsonString } from '../ambient-utils/dataLayer';
+import { getLocalStorageItem, isJsonString } from '../ambient-utils/dataLayer';
 import { TokenIF } from '../ambient-utils/types';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
@@ -20,7 +20,8 @@ import { TokenContext } from './TokenContext';
 import { Client } from '@covalenthq/client-sdk';
 import { UserDataContext } from './UserDataContext';
 import {
-    NftTokenContractBalanceItemIF,
+    NftDataIF,
+    NftListByChain,
     TokenBalanceContext,
 } from './TokenBalanceContext';
 import { fetchBlockNumber } from '../ambient-utils/api';
@@ -140,49 +141,81 @@ export const ChainDataContextProvider = (props: {
     const everyFiveMinutes = Math.floor(Date.now() / 300000);
 
     useEffect(() => {
-        (async () => {
-            if (
-                crocEnv &&
-                isUserConnected &&
-                userAddress &&
-                chainData.chainId &&
-                client
-            ) {
-                try {
-                    const NFTData = await cachedFetchNFT(
-                        // cachedFetchNFT(
-                        '0x8e42AEcF40b5cC4c25fFA74E352b3840759aefa2',
-                        chainData.chainId,
-                        crocEnv,
-                        client,
-                    );
+        const nftLocalData = localStorage.getItem('user_nft_data');
 
-                    const parsedNftData: NftTokenContractBalanceItemIF[] = [];
+        if (!nftLocalData) {
+            (async () => {
+                if (
+                    crocEnv &&
+                    isUserConnected &&
+                    userAddress &&
+                    chainData.chainId &&
+                    client
+                ) {
+                    try {
+                        const NFTData = await cachedFetchNFT(
+                            // cachedFetchNFT(
+                            '0x8e42AEcF40b5cC4c25fFA74E352b3840759aefa2',
+                            chainData.chainId,
+                            crocEnv,
+                            client,
+                        );
 
-                    NFTData.forEach((element: any) => {
-                        const item = {
-                            balance: element.balance,
-                            balance24h: element.balance_24h,
-                            contractAddress: element.contract_address,
-                            contractName: element.contract_name,
-                            contractTickerSymbol:
-                                element.contract_ticker_symbol,
-                            isSpam: element.is_spam,
-                            lastTransferedAt: element.last_transfered_at,
-                            nftData: element.nft_data,
-                            supportsErc: element.supports_erc,
-                            type: element.type,
-                        };
+                        const nftDataMap = new Map<
+                            string,
+                            Array<NftListByChain>
+                        >();
+                        const mapValue: Array<NftListByChain> = [];
 
-                        parsedNftData.push(item);
-                    });
+                        const actionKey = userAddress;
 
-                    setNFTData(parsedNftData);
-                } catch (error) {
-                    console.error({ error });
+                        if (!nftDataMap.has(actionKey)) {
+                            NFTData.map((item: any) => {
+                                const nftData = Object.values(item.nft_data);
+
+                                const nftImgArray: Array<NftDataIF> = [];
+
+                                nftData.map((element: any) => {
+                                    if (element.external_data)
+                                        nftImgArray.push({
+                                            tokenUrl: element.token_url,
+                                            nftImage:
+                                                element.external_data.image,
+                                        });
+                                });
+
+                                mapValue.push({
+                                    contractAddress: item.contract_address,
+                                    contractName: item.contract_name,
+                                    data: nftImgArray,
+                                });
+
+                                nftDataMap.set(actionKey, mapValue);
+                            });
+
+                            localStorage.setItem(
+                                'user_nft_data',
+                                JSON.stringify(Array.from(nftDataMap)),
+                            );
+                        }
+
+                        setNFTData(mapValue);
+                    } catch (error) {
+                        console.error({ error });
+                    }
                 }
+            })();
+        } else {
+            const actionKey = userAddress;
+
+            const localNftDataParsed = new Map(JSON.parse(nftLocalData));
+
+            if (localNftDataParsed.has(actionKey)) {
+                setNFTData(
+                    () => localNftDataParsed.get(actionKey) as NftListByChain[],
+                );
             }
-        })();
+        }
     }, [
         crocEnv,
         isUserConnected,
