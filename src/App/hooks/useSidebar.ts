@@ -35,9 +35,11 @@ export const useSidebar = (
     // will check a media query for viewport width if no persisted value is found
     // last fallback is a centrally-defined const
     const [sidebar, setSidebar] = useState<SidebarStatus>(
-        (getStoredSidebarStatus() !== null
-            ? getStoredSidebarStatus() === 'open'
-            : undefined) ?? showByDefault
+        (
+            getStoredSidebarStatus() !== null
+                ? getStoredSidebarStatus() === 'open'
+                : showByDefault
+        )
             ? 'open'
             : 'closed' ?? SIDEBAR_GLOBAL_DEFAULT,
     );
