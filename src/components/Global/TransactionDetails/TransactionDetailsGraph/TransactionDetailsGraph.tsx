@@ -272,7 +272,7 @@ export default function TransactionDetailsGraph(
                         d3.select(context).attr(
                             'transform',
                             'translate(' +
-                                scaleData.xScale(d[0].x * 1000) +
+                                scaleData.xScale(d[0].x) +
                                 ',' +
                                 scaleData?.yScale(d[0].y) +
                                 ')',
@@ -339,7 +339,7 @@ export default function TransactionDetailsGraph(
                             d3.select(selection).attr(
                                 'transform',
                                 'translate(' +
-                                    scaleData.xScale(d[0].x * 1000) +
+                                    scaleData.xScale(d[0].x) +
                                     ',' +
                                     scaleData?.yScale(d[0].y) +
                                     ') rotate(90)',
@@ -855,17 +855,20 @@ export default function TransactionDetailsGraph(
 
                 if (transactionType === 'limitOrder' && tx !== undefined) {
                     const buffer = oneHourMiliseconds * 24 * 3;
+                    const time = tx.timeFirstMint
+                        ? tx.timeFirstMint * 1000
+                        : tx.txTime * 1000;
 
-                    if (tx.timeFirstMint * 1000 + buffer >= maxDomain) {
+                    if (time * 1000 + buffer >= maxDomain) {
                         scaleData?.xScale.domain([
                             minDomain,
                             maxDomain + buffer,
                         ]);
                     }
 
-                    if (tx.timeFirstMint * 1000 - buffer <= minDomain) {
+                    if (time * 1000 - buffer <= minDomain) {
                         scaleData?.xScale.domain([
-                            tx.timeFirstMint * 1000 - buffer,
+                            time * 1000 - buffer,
                             maxDomain,
                         ]);
                     }
@@ -929,39 +932,19 @@ export default function TransactionDetailsGraph(
                             transactionType === 'limitOrder' &&
                             tx !== undefined
                         ) {
-                            if (tx.timeFirstMint === undefined) {
-                                horizontalBandData[0] = [
-                                    (
-                                        !isAccountView
-                                            ? isDenomBase
-                                            : !isBaseTokenMoneynessGreaterOrEqual
-                                    )
-                                        ? tx.bidTickInvPriceDecimalCorrected
-                                        : tx.bidTickPriceDecimalCorrected,
-                                    (
-                                        !isAccountView
-                                            ? isDenomBase
-                                            : !isBaseTokenMoneynessGreaterOrEqual
-                                    )
-                                        ? tx.askTickInvPriceDecimalCorrected
-                                        : tx.askTickPriceDecimalCorrected,
-                                ];
-
-                                horizontalBandJoin(svg, [
-                                    horizontalBandData,
-                                ]).call(horizontalBand);
-                            } else if (tx.claimableLiq > 0) {
+                            const time = tx.timeFirstMint
+                                ? tx.timeFirstMint * 1000
+                                : tx.txTime * 1000;
+                            if (tx.claimableLiq > 0) {
                                 addExtraCandle(
-                                    tx.timeFirstMint,
+                                    time,
                                     tx.askTickInvPriceDecimalCorrected,
                                     tx.askTickPriceDecimalCorrected,
                                 );
                                 crossPointJoin(svg, [
                                     [
                                         {
-                                            x: tx.timeFirstMint
-                                                ? tx.timeFirstMint * 1000
-                                                : tx.txTime * 1000,
+                                            x: time,
                                             y: (
                                                 !isAccountView
                                                     ? isDenomBase
@@ -983,7 +966,7 @@ export default function TransactionDetailsGraph(
                                             ? tx.askTickInvPriceDecimalCorrected
                                             : tx.askTickPriceDecimalCorrected,
 
-                                        x: tx.timeFirstMint,
+                                        x: time,
                                     },
                                 ];
 
