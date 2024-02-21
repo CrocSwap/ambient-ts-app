@@ -18,6 +18,7 @@ import { diffHashSig, isJsonString } from '../ambient-utils/dataLayer';
 import { AppStateContext } from './AppStateContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { ReceiptContext } from './ReceiptContext';
+import { TransactionReceipt } from '@ethersproject/abstract-provider';
 
 interface SidebarStateIF {
     recentPools: recentPoolsMethodsIF;
@@ -31,17 +32,28 @@ export const SidebarContext = createContext<SidebarStateIF>(
 );
 
 export const SidebarContextProvider = (props: { children: ReactNode }) => {
+    // logic to open a snackbar notification
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
+
+    // data on the active chain in the app
     const { chainData } = useContext(CrocEnvContext);
+
+    // all receipts stored in the current user session (array of stringified JSONs)
     const { allReceipts } = useContext(ReceiptContext);
-    const lastReceipt =
+
+    // parsed JSON on the most recent receipt in the stack
+    const lastReceipt: TransactionReceipt | null =
         allReceipts.length > 0 && isJsonString(allReceipts[0])
             ? JSON.parse(allReceipts[0])
             : null;
-    const isLastReceiptSuccess = lastReceipt?.status === 1;
-    const lastReceiptHash = useMemo(
+
+    // boolean representing whether most recent receipt parsed successfully
+    const isLastReceiptSuccess: boolean = lastReceipt?.status === 1;
+
+    // hash representation of the most recent receipt
+    const lastReceiptHash = useMemo<string | undefined>(
         () => (lastReceipt ? diffHashSig(lastReceipt) : undefined),
         [lastReceipt],
     );
