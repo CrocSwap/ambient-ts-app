@@ -184,7 +184,7 @@ export default function InitPool() {
     >();
 
     const [estimatedInitialPriceDisplay, setEstimatedInitialPriceDisplay] =
-        useState<string>('0');
+        useState<string>('2000');
 
     const [isAmbient, setIsAmbient] = useState(false);
 
@@ -1358,6 +1358,7 @@ export default function InitPool() {
 
     const openEditMode = () => {
         setIsEditEnabled(true);
+        focusInput();
         if (
             initialPriceDisplay === '' &&
             (!isReferencePriceAvailable ||
@@ -1381,7 +1382,6 @@ export default function InitPool() {
                 }
             }
         }
-        focusInput();
         isReferencePriceAvailable && setUseReferencePrice(false);
     };
 
@@ -1390,6 +1390,7 @@ export default function InitPool() {
         if (estimatedInitialPriceDisplay !== undefined) {
             setInitialPriceDisplay(estimatedInitialPriceDisplay);
         } else setInitialPriceDisplay('');
+        focusInput();
     }
 
     useEffect(() => {
@@ -1440,10 +1441,10 @@ export default function InitPool() {
                     </Text>
                 </FlexContainer>
                 {isReferencePriceAvailable ? refPriceToggle : initPriceEdit}
-            </FlexContainer>
+            </FlexContainer>{' '}
             <section
                 style={{ width: '100%' }}
-                onDoubleClick={() => {
+                onClick={() => {
                     if (!isEditEnabled) openEditMode();
                 }}
             >
@@ -1454,12 +1455,11 @@ export default function InitPool() {
                         alignItems='center'
                         padding='0 16px'
                     >
-                        {' '}
                         <Spinner size={24} bg='var(--dark2)' weight={2} />
                     </FlexContainer>
                 ) : (
                     <CurrencyQuantityInput
-                        disabled={!isEditEnabled}
+                        readOnly={!isEditEnabled}
                         id='initial-pool-price-quantity'
                         placeholder={placeholderText}
                         type='string'
