@@ -91,10 +91,13 @@ function TokenInputQuantity(props: propsIF) {
     const [displayValue, setDisplayValue] = useState<string>('');
     // trigger useEffect to update display value if the parsed value is the same as existing (12 -> 0000012 -> 12)
     const [inputChanged, setInputChanged] = useState(false);
-
     useEffect(() => {
-        setDisplayValue(value);
-    }, [inputChanged, value]);
+        if (isLoading) {
+            setDisplayValue('');
+        } else if (value) {
+            setDisplayValue(value);
+        }
+    }, [inputChanged, value, isLoading]);
 
     const onBlur = (input: string) => {
         setInputChanged(!inputChanged);
@@ -166,7 +169,7 @@ function TokenInputQuantity(props: propsIF) {
             onBlur={(event: ChangeEvent<HTMLInputElement>) =>
                 onBlur(event.target.value)
             }
-            value={isLoading ? '' : displayValue}
+            value={displayValue}
             type='string'
             step='any'
             inputMode='decimal'
@@ -177,20 +180,6 @@ function TokenInputQuantity(props: propsIF) {
             disabled={disable}
         />
     );
-    const inputContent = (() => {
-        switch (true) {
-            case !isPoolInitialized &&
-                fieldId !== 'exchangeBalance' &&
-                !onInitPage:
-                return poolNotInitializedContent;
-            case disabledContent !== undefined:
-                return disabledContent;
-            case isPoolInitialized:
-                return input;
-            default:
-                return input;
-        }
-    })();
 
     const isInit = location.pathname.startsWith('/initpool');
 
@@ -239,8 +228,14 @@ function TokenInputQuantity(props: propsIF) {
                     <FlexContainer fullWidth fullHeight alignItems='center'>
                         <Spinner size={24} bg='var(--dark2)' weight={2} />
                     </FlexContainer>
+                ) : !isPoolInitialized &&
+                  fieldId !== 'exchangeBalance' &&
+                  !onInitPage ? (
+                    poolNotInitializedContent
+                ) : disabledContent !== undefined ? (
+                    disabledContent
                 ) : (
-                    inputContent
+                    input
                 )}
 
                 <TokenSelectButton
