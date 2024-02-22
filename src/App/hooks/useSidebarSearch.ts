@@ -328,13 +328,18 @@ export const useSidebarSearch = (
         setOutputLimits(filteredLimits);
     }, [limitOrderList.length, validatedInput]);
 
+    // data returned when querying address as a wallet
     const [outputWallet, setOutputWallet] =
         useState<TransactionServerIF | null>(null);
 
+    // environmental data needed for wallet query
     const { activeNetwork, chainData } = useContext(CrocEnvContext);
 
+    // logic to query search input as a wallet
     useEffect(() => {
+        // fn to construct and query an endpoint
         function fetchWallet(): Promise<void> {
+            // logic to construct an endpoint for query
             let walletEndpoint: string =
                 GCGO_OVERRIDE_URL ?? activeNetwork.graphCacheUrl;
             walletEndpoint += '/user_txs?';
@@ -343,18 +348,20 @@ export const useSidebarSearch = (
                 chainId: chainData.chainId,
                 n: '1',
             });
+            // dispatch fetch request and process return
             return fetch(walletEndpoint)
                 .then((response) => response.json())
                 .then((response) => {
+                    // infer from data whether or not address is a wallet
                     const isWallet = !!response.data;
+                    // send data to state if wallet, otherwise nullify state
                     setOutputWallet(isWallet ? response : null);
                 });
         }
-        if (searchAs !== 'address') {
-            setOutputWallet(null);
-        } else {
-            fetchWallet();
-        }
+        // logic router to only run a query if input validates as an address
+        // if input validates, run the query (results may still be negative)
+        // if input does not validate, do not query and nullify any prior data
+        searchAs !== 'address' ? setOutputWallet(null) : fetchWallet();
     }, [validatedInput]);
 
     return {
