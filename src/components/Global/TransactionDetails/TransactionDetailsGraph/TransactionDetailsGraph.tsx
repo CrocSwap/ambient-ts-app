@@ -120,6 +120,15 @@ export default function TransactionDetailsGraph(
 
     useEffect(() => {
         (async () => {
+            const isTimeFirstMintInRemovalRange =
+                transactionType === 'liqchange' &&
+                tx.changeType === 'burn' &&
+                tx.timeFirstMint === undefined;
+
+            if (isTimeFirstMintInRemovalRange) {
+                return;
+            }
+
             if (graphData === undefined) {
                 setIsDataLoading(true);
             }
@@ -410,7 +419,46 @@ export default function TransactionDetailsGraph(
             const xScale = d3.scaleTime();
             const yScale = d3.scaleLinear();
 
-            xScale.domain(xExtent(graphData));
+            const localDomain = xExtent(graphData);
+
+            const minDomain = localDomain[0].getTime();
+            const maxDomain = localDomain[1].getTime();
+
+            if (transactionType === 'limitOrder' && tx !== undefined) {
+                const buffer = oneHourMiliseconds * 24 * 3;
+                const time = tx.timeFirstMint
+                    ? tx.timeFirstMint * 1000
+                    : tx.txTime * 1000;
+
+                if (time + buffer >= maxDomain) {
+                    xScale.domain([minDomain, maxDomain + buffer]);
+                }
+
+                if (time - buffer <= minDomain) {
+                    xScale.domain([time - buffer, maxDomain]);
+                }
+            }
+
+            if (transactionType === 'swap') {
+                const buffer = oneHourMiliseconds * 1;
+
+                if (tx.txTime * 1000 + buffer >= maxDomain) {
+                    xScale.domain([minDomain, maxDomain + buffer]);
+                }
+
+                if (tx.txTime * 1000 - buffer <= minDomain) {
+                    xScale.domain([tx.txTime * 1000 - buffer, maxDomain]);
+                }
+            }
+
+            if (transactionType === 'liqchange' && period) {
+                const buffer = period * 1000;
+                const time = tx.timeFirstMint
+                    ? tx.timeFirstMint * 1000
+                    : tx.txTime * 1000;
+
+                xScale.domain([time - buffer * 100, maxDomain + buffer * 6]);
+            }
 
             if (transactionType === 'swap') {
                 if (tx !== undefined) {
@@ -841,57 +889,6 @@ export default function TransactionDetailsGraph(
             triangleLimit: any,
         ) => {
             if (graphData.length > 0) {
-                const minDomain = scaleData.xScale.domain()[0].getTime();
-                const maxDomain = scaleData.xScale.domain()[1].getTime();
-
-                if (transactionType === 'limitOrder' && tx !== undefined) {
-                    const buffer = oneHourMiliseconds * 24 * 3;
-                    const time = tx.timeFirstMint
-                        ? tx.timeFirstMint * 1000
-                        : tx.txTime * 1000;
-
-                    if (time + buffer >= maxDomain) {
-                        scaleData?.xScale.domain([
-                            minDomain,
-                            maxDomain + buffer,
-                        ]);
-                    }
-
-                    if (time - buffer <= minDomain) {
-                        scaleData?.xScale.domain([time - buffer, maxDomain]);
-                    }
-                }
-
-                if (transactionType === 'swap') {
-                    const buffer = oneHourMiliseconds * 1;
-
-                    if (tx.txTime * 1000 + buffer >= maxDomain) {
-                        scaleData?.xScale.domain([
-                            minDomain,
-                            maxDomain + buffer,
-                        ]);
-                    }
-
-                    if (tx.txTime * 1000 - buffer <= minDomain) {
-                        scaleData?.xScale.domain([
-                            tx.txTime * 1000 - buffer,
-                            maxDomain,
-                        ]);
-                    }
-                }
-
-                if (transactionType === 'liqchange' && period) {
-                    const buffer = period * 1000;
-                    const time = tx.timeFirstMint
-                        ? tx.timeFirstMint * 1000
-                        : tx.txTime * 1000;
-
-                    scaleData?.xScale.domain([
-                        time - buffer * 100,
-                        maxDomain + buffer * 6,
-                    ]);
-                }
-
                 const lineJoin = d3fc.dataJoin('g', 'lineJoin');
                 const crossPointJoin = d3fc.dataJoin('g', 'crossPoint');
 
@@ -982,6 +979,19 @@ export default function TransactionDetailsGraph(
                                     tx.changeType === 'burn'
                                         ? tx.txTime * 1000
                                         : scaleData.xScale.domain()[1];
+
+                                const bandPixel =
+                                    scaleData.xScale(timeEnd) -
+                                    scaleData.xScale(time);
+
+                                if (bandPixel && bandPixel < 15 && period) {
+                                    scaleData.xScale.domain([
+                                        scaleData.xScale.domain()[0].getTime() +
+                                            period * 20 * 1000,
+                                        scaleData.xScale.domain()[1].getTime(),
+                                    ]);
+                                }
+
                                 scaleData.xScaleCopy.domain(
                                     scaleData.xScale.domain(),
                                 );
