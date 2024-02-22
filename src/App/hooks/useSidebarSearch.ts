@@ -18,6 +18,7 @@ import matchSearchInput from '../functions/matchSearchInput';
 import { tokenMethodsIF } from './useTokens';
 import {
     GCGO_OVERRIDE_URL,
+    IS_LOCAL_ENV,
     ZERO_ADDRESS,
     tokenListURIs,
 } from '../../ambient-utils/constants';
@@ -356,6 +357,10 @@ export const useSidebarSearch = (
                     const isWallet = !!response.data;
                     // send data to state if wallet, otherwise nullify state
                     setOutputWallet(isWallet ? response : null);
+                })
+                .catch((err) => {
+                    IS_LOCAL_ENV && console.warn(err);
+                    setOutputWallet(null);
                 });
         }
         // logic router to only run a query if input validates as an address
