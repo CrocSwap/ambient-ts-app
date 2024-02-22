@@ -132,7 +132,7 @@ export default function TransactionDetailsGraph(
                     case 'limitOrder':
                         return tx?.txTime !== undefined
                             ? tx?.txTime
-                            : new Date().getTime();
+                            : tx.timeFirstMint;
                     case 'liqchange':
                         return tx.timeFirstMint !== undefined
                             ? tx.timeFirstMint
@@ -540,6 +540,7 @@ export default function TransactionDetailsGraph(
         tx.bidTickInvPriceDecimalCorrected,
         tx.positionType,
         tx?.txTime,
+        tx?.timeFirstMint,
         tx.swapInvPriceDecimalCorrected,
         tx.swapPriceDecimalCorrected,
         graphData,
@@ -849,18 +850,15 @@ export default function TransactionDetailsGraph(
                         ? tx.timeFirstMint * 1000
                         : tx.txTime * 1000;
 
-                    if (time * 1000 + buffer >= maxDomain) {
+                    if (time + buffer >= maxDomain) {
                         scaleData?.xScale.domain([
                             minDomain,
                             maxDomain + buffer,
                         ]);
                     }
 
-                    if (time * 1000 - buffer <= minDomain) {
-                        scaleData?.xScale.domain([
-                            time * 1000 - buffer,
-                            maxDomain,
-                        ]);
+                    if (time - buffer <= minDomain) {
+                        scaleData?.xScale.domain([time - buffer, maxDomain]);
                     }
                 }
 
