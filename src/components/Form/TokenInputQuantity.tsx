@@ -109,12 +109,13 @@ function TokenInputQuantity(props: propsIF) {
     };
 
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
+        let inputStringNoCommas = event.target.value.replace(/,/g, '.');
         const isPrecisionGreaterThanDecimals =
-            precisionOfInput(event.target.value) > token.decimals;
-        if (event.target.value === '.') event.target.value = '0.';
-        if (!isPrecisionGreaterThanDecimals && !isNaN(+event.target.value)) {
-            handleTokenInputEvent(event.target.value);
-            setDisplayValue(event.target.value);
+            precisionOfInput(inputStringNoCommas) > token.decimals;
+        if (inputStringNoCommas === '.') inputStringNoCommas = '0.';
+        if (!isPrecisionGreaterThanDecimals && !isNaN(+inputStringNoCommas)) {
+            handleTokenInputEvent(inputStringNoCommas);
+            setDisplayValue(inputStringNoCommas);
         }
     };
 
