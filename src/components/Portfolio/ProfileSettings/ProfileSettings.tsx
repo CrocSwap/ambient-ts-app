@@ -102,21 +102,22 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
     }, []);
 
     async function updateUser() {
-        const response = await fetch(host + '/chat/api/auth/updateUser', {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ ensName: name, _id: id }),
-        });
+        console.log('update user called');
+        // const response = await fetch(host + '/chat/api/auth/updateUser', {
+        //     method: 'PUT',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify({ ensName: name, _id: id }),
+        // });
 
-        const data = await response.json();
-        if (data.status === 'OK') {
-            IS_LOCAL_ENV && console.debug('aaaa', data);
-            openSnackbar(`${name} has been set as a name.`, 'info');
-        } else {
-            IS_LOCAL_ENV && console.debug('bbb', data.status);
-        }
+        // const data = await response.json();
+        // if (data.status === 'OK') {
+        //     IS_LOCAL_ENV && console.debug('aaaa', data);
+        //     openSnackbar(`${name} has been set as a name.`, 'info');
+        // } else {
+        //     IS_LOCAL_ENV && console.debug('bbb', data.status);
+        // }
     }
 
     return (

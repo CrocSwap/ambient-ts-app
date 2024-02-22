@@ -1,7 +1,11 @@
 import { CHAT_BACKEND_URL } from '../../../ambient-utils/constants';
 import { useContext } from 'react';
 import { UserDataContext } from '../../../contexts/UserDataContext';
-import { getUserAvatarImageByAccountEndpoint } from '../ChatUtils';
+import {
+    getUserAvatarImageByAccountEndpoint,
+    getUserVerifyToken,
+    updateUserWithAvatarImageEndpoint,
+} from '../ChatUtils';
 
 const host = CHAT_BACKEND_URL;
 
@@ -161,6 +165,26 @@ const useChatApi = () => {
         }
     }
 
+    async function updateUserWithAvatarImage(
+        walletID: `0x${string}`,
+        userAvatarImage: string,
+    ) {
+        const response = await fetch(
+            CHAT_BACKEND_URL + updateUserWithAvatarImageEndpoint,
+            {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    walletID: walletID,
+                    avatarImage: userAvatarImage,
+                    verifyToken: getUserVerifyToken(walletID),
+                }),
+            },
+        );
+        const data = await response.json();
+        return data;
+    }
+
     return {
         getStatus,
         getID,
@@ -173,6 +197,7 @@ const useChatApi = () => {
         deleteMessage,
         getRepliedMessageInfo,
         getUserAvatarImageAndID,
+        updateUserWithAvatarImage,
     };
 };
 export default useChatApi;

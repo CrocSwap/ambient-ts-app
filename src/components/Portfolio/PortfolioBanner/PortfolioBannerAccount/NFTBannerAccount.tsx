@@ -25,6 +25,7 @@ import nftPlaceHolder from '../../../../assets/images/Temporary/nft/nft-placehol
 import nftSelected from '../../../../assets/images/Temporary/nft/nft-profile-selected.svg';
 import { VscClose } from 'react-icons/vsc';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import useChatApi from '../../../Chat/Service/ChatApi';
 
 interface NFTBannerAccountProps {
     showNFTPage: boolean;
@@ -35,7 +36,7 @@ interface NFTBannerAccountProps {
 export default function NFTBannerAccount(props: NFTBannerAccountProps) {
     const { setShowNFTPage, NFTData } = props;
 
-    const { setUserAccountProfile } = useContext(UserDataContext);
+    const { setUserAccountProfile, userAddress } = useContext(UserDataContext);
 
     const [nftArray, setNftArray] = useState<NftDataIF[]>([]);
 
@@ -59,6 +60,8 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
     const [selectedNft, setSelectedNft] = useState<NftDataIF | undefined>(
         undefined,
     );
+
+    const { updateUserWithAvatarImage } = useChatApi();
 
     useEffect(() => {
         const nftContractName: any[] = [];
@@ -113,9 +116,15 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
         return imgSrc;
     }
 
-    function handleNftSelection() {
+    async function handleNftSelection() {
         if (selectedNft) {
-            setUserAccountProfile(() => selectedNft.nftImage);
+            if (userAddress !== undefined) {
+                await updateUserWithAvatarImage(
+                    userAddress,
+                    selectedNft.nftImage,
+                );
+                // setUserAccountProfile(() => selectedNft.nftImage);
+            }
         }
     }
 
