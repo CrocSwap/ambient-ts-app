@@ -301,17 +301,13 @@ const useChatSocket = (
 
         checkVerified();
 
-        if (!areSubscriptionsEnabled || !isChatOpen) return;
+        // if (!areSubscriptionsEnabled || !isChatOpen) return;
 
         if (address !== undefined && address != 'undefined') {
             socketRef.current = io(CHAT_BACKEND_WSS_URL, {
                 path: '/chat/api/subscribe/',
                 query: { roomId: room, address, ensName },
             });
-        }
-
-        if (isChatOpen) {
-            getMsg();
         }
 
         async function getRest() {
@@ -335,7 +331,10 @@ const useChatSocket = (
             setUsers(userListData);
         }
 
-        getRest();
+        if (isChatOpen) {
+            getMsg();
+            getRest();
+        }
 
         if (socketRef && socketRef.current) {
             // eslint-disable-next-line
@@ -386,18 +385,7 @@ const useChatSocket = (
                 }
             });
 
-            console.log('set-avatar-listener');
             socketRef.current.on('set-avatar-listener', (data: any) => {
-                console.log('set-avatar-listener');
-                console.log('set-avatar-listener');
-                console.log('set-avatar-listener');
-                console.log('set-avatar-listener');
-                console.log('set-avatar-listener');
-                console.log('set-avatar-listener');
-                console.log(data);
-                console.log('set-avatar-listener');
-                console.log('set-avatar-listener');
-                console.log('set-avatar-listener');
                 userListLightUpdate(data);
             });
         }
@@ -417,16 +405,6 @@ const useChatSocket = (
                 updateMessages(data);
             });
             socketRef.current.on('set-avatar-listener', (data: any) => {
-                console.log('set-avatar-listener');
-                console.log('set-avatar-listener');
-                console.log('set-avatar-listener');
-                console.log('set-avatar-listener');
-                console.log('set-avatar-listener');
-                console.log('set-avatar-listener');
-                console.log(data);
-                console.log('set-avatar-listener');
-                console.log('set-avatar-listener');
-                console.log('set-avatar-listener');
                 userListLightUpdate(data);
             });
         }
@@ -558,69 +536,28 @@ const useChatSocket = (
         setMessages([...newMessageList]);
     };
 
-    async function saveUserWithAvatarImage(
-        walletID: string,
-        ensName: string,
-        userAvatarImage: string,
-    ) {
-        const response = await fetch(
-            CHAT_BACKEND_URL + saveuserWithAvatarEndpoint,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    walletID: walletID,
-                    ensName: ensName,
-                    avatarImage: userAvatarImage,
-                }),
-            },
-        );
-        const data = await response.json();
-
-        // socketRef.current.emit('set-avatar', { user_id: data._id, avatarImage: userAvatarImage});
-        userAvatarUpdateHandler({
-            userId: data._id,
-            avatarImage: userAvatarImage,
-        });
-
-        return data;
-    }
-
     async function updateUserWithAvatarImage(
-        _id: string,
-        ensName: string,
-        userCurrentPool: string,
-        userAvatarImage: string,
-        isAvatarImageSet: boolean,
+        userId: string,
+        avatarImage: string,
     ) {
-        const response = await fetch(
-            CHAT_BACKEND_URL + updateUserWithAvatarImageEndpoint,
-            {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    _id: _id,
-                    ensName: ensName,
-                    userCurrentPool: userCurrentPool,
-                    avatarImage: userAvatarImage,
-                    isAvatarImageSet: isAvatarImageSet,
-                }),
-            },
-        );
-        const data = await response.json();
-        userAvatarUpdateHandler({ userId: _id, avatarImage: userAvatarImage });
-        return data;
-    }
+        // rest implementation to be removed
+        // const response = await fetch(
+        //     CHAT_BACKEND_URL + updateUserWithAvatarImageEndpoint,
+        //     {
+        //         method: 'PUT',
+        //         headers: { 'Content-Type': 'application/json' },
+        //         body: JSON.stringify({
+        //             _id: _id,
+        //             ensName: ensName,
+        //             avatarImage: userAvatarImage,
+        //         }),
+        //     },
+        // );
+        // const data = await response.json();
 
-    function userAvatarUpdateHandler(data: AvatarUpdateIF) {
-        console.log('set-avatar');
-        console.log('set-avatar');
-        console.log('set-avatar');
-        console.log('set-avatar');
-        console.log(data);
         socketRef.current.emit('set-avatar', {
-            userId: data.userId,
-            avatarImage: data.avatarImage,
+            userId,
+            avatarImage,
         });
     }
 
@@ -629,13 +566,18 @@ const useChatSocket = (
         console.log(data);
         const newUsersList: User[] = [];
 
+        let refreshMessages = false;
         users.map((e) => {
             if (e._id == data.userId) {
                 newUsersList.push({ ...e, avatarImage: data.avatarImage });
-            } else {
-                newUsersList.push(e);
+                refreshMessages = true;
             }
         });
+
+        console.log(newUsersList);
+        console.log(refreshMessages);
+
+        if (!refreshMessages) return;
 
         setUsers(newUsersList);
 
@@ -644,7 +586,7 @@ const useChatSocket = (
             usmp.set(user._id, user);
         });
         setUserMap(usmp);
-        // setMessages([...messagesRef.current]);
+        setMessages([...messagesRef.current]);
     }
 
     return {
@@ -672,7 +614,6 @@ const useChatSocket = (
         getUserSummaryDetails,
         updateUnverifiedMessages,
         getMentionsWithRest,
-        saveUserWithAvatarImage,
         updateUserWithAvatarImage,
     };
 };

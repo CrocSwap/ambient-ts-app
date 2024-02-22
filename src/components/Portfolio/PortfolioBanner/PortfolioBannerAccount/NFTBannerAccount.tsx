@@ -26,6 +26,7 @@ import nftSelected from '../../../../assets/images/Temporary/nft/nft-profile-sel
 import { VscClose } from 'react-icons/vsc';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import useChatApi from '../../../Chat/Service/ChatApi';
+import useChatSocket from '../../../Chat/Service/useChatSocket';
 
 interface NFTBannerAccountProps {
     showNFTPage: boolean;
@@ -36,7 +37,8 @@ interface NFTBannerAccountProps {
 export default function NFTBannerAccount(props: NFTBannerAccountProps) {
     const { setShowNFTPage, NFTData } = props;
 
-    const { setUserAccountProfile, userAddress } = useContext(UserDataContext);
+    const { setUserAccountProfile, userAddress, ensName } =
+        useContext(UserDataContext);
 
     const [nftArray, setNftArray] = useState<NftDataIF[]>([]);
 
@@ -61,7 +63,32 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
         undefined,
     );
 
-    const { updateUserWithAvatarImage } = useChatApi();
+    const { saveUser } = useChatApi();
+
+    const [userId, setUserId] = useState<string>('');
+
+    const { updateUserWithAvatarImage } = useChatSocket(
+        '',
+        true,
+        false,
+        () => {
+            console.log('show toastr from nft banner comp');
+        },
+        userAddress,
+        ensName,
+        userId,
+    );
+
+    useEffect(() => {
+        const userRegister = async () => {
+            if (userAddress && ensName) {
+                const userId = await saveUser(userAddress, ensName);
+                console.log('userId', userId);
+                setUserId(userId.userData._id);
+            }
+        };
+        userRegister();
+    }, []);
 
     useEffect(() => {
         const nftContractName: any[] = [];
@@ -117,13 +144,12 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
     }
 
     async function handleNftSelection() {
+        console.log('selectedNft', selectedNft);
+        console.log('userId', userId);
         if (selectedNft) {
-            if (userAddress !== undefined) {
-                await updateUserWithAvatarImage(
-                    userAddress,
-                    selectedNft.nftImage,
-                );
-                // setUserAccountProfile(() => selectedNft.nftImage);
+            if (userId !== undefined) {
+                updateUserWithAvatarImage(userId, selectedNft.nftImage);
+                setUserAccountProfile(() => selectedNft.nftImage);
             }
         }
     }

@@ -406,67 +406,6 @@ function ChatPanel(props: propsIF) {
         }
     }, [ens, userAddress, isChatOpen, isFullScreen, setUserCurrentPool]);
 
-    useEffect(() => {
-        if (userAddress) {
-            const userAvatarImgUrl = userAccountProfile
-                ? userAccountProfile
-                : '';
-
-            if (ens === null || ens === undefined) {
-                setEnsName('defaultValue');
-            } else {
-                setEnsName(ens);
-            }
-
-            getUserAvatarImageAndID(userAddress).then((result: any) => {
-                if (result.status === 'Not OK') {
-                    // eslint-disable-next-line
-                    saveUserWithAvatarImage(
-                        userAddress,
-                        ensName,
-                        userAvatarImgUrl,
-                    ).then((result: any) => {
-                        setCurrentUser(result.userData._id);
-                        return result;
-                    });
-                } else {
-                    result.userData.isModerator === true
-                        ? setIsModerator(true)
-                        : setIsModerator(false);
-
-                    setCurrentUser(result.userData._id);
-                    setUserCurrentPool(result.userData.userCurrentPool);
-
-                    if (result.userData.avatarImage !== userAvatarImgUrl) {
-                        updateUserWithAvatarImage(
-                            currentUser as string,
-                            ensName,
-                            userCurrentPool,
-                            userAvatarImgUrl,
-                            userAvatarImgUrl !== '',
-                        ).then(
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            (result: any) => {
-                                if (result.status === 'OK') {
-                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                    updateMessageUser(
-                                        currentUser as string,
-                                        ensName,
-                                    ).then(
-                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                        (result: any) => {
-                                            return result;
-                                        },
-                                    );
-                                }
-                            },
-                        );
-                    }
-                }
-            });
-        }
-    }, [userAccountProfile]);
-
     // useEffect(() => {
     //     if(userAddress){
     //         getUserAvatarImageAndID().then((result: any) => {

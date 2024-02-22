@@ -26,7 +26,7 @@ export const getAvatarFromMessageWithSize = (
 
 export const getAvatar = (
     walletID: string,
-    avatarImage: string,
+    avatarImage?: string,
     size?: number,
 ) => {
     if (avatarImage && avatarImage.length > 0) {
@@ -34,8 +34,8 @@ export const getAvatar = (
             <img
                 src={avatarImage}
                 style={{
-                    width: '25px',
-                    height: '25px',
+                    width: size ? size + 'px' : '25px',
+                    height: size ? size + 'px' : '25px',
                     borderRadius: '50%',
                 }}
             ></img>

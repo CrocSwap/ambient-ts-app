@@ -2,6 +2,7 @@ import { CHAT_BACKEND_URL } from '../../../ambient-utils/constants';
 import { useContext } from 'react';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import {
+    getUserAvatarEndpoint,
     getUserAvatarImageByAccountEndpoint,
     getUserVerifyToken,
     updateUserWithAvatarImageEndpoint,
@@ -185,6 +186,23 @@ const useChatApi = () => {
         return data;
     }
 
+    async function getUserAvatar(walletID: string) {
+        if (walletID && walletID.length > 0) {
+            if (userAddress) {
+                const response = await fetch(
+                    CHAT_BACKEND_URL + getUserAvatarEndpoint + '/' + walletID,
+                    {
+                        method: 'GET',
+                    },
+                );
+                const data = await response.json();
+                return data;
+            }
+        }
+
+        return '';
+    }
+
     return {
         getStatus,
         getID,
@@ -198,6 +216,7 @@ const useChatApi = () => {
         getRepliedMessageInfo,
         getUserAvatarImageAndID,
         updateUserWithAvatarImage,
+        getUserAvatar,
     };
 };
 export default useChatApi;

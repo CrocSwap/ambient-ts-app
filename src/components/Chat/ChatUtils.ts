@@ -38,6 +38,8 @@ export const updateUserWithAvatarImageEndpoint =
 export const getUserAvatarImageByAccountEndpoint =
     '/chat/api/auth/getUserAvatarImageByAccount';
 
+export const getUserAvatarEndpoint = '/chat/api/auth/getUserAvatar';
+
 export const getLS = (key: string, personalize?: string) => {
     if (personalize) {
         return localStorage.getItem(`${key}_${personalize}`);

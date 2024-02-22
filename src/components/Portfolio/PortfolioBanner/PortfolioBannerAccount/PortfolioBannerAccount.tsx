@@ -20,6 +20,8 @@ import {
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import NFTBannerAccount from './NFTBannerAccount';
 import { TokenBalanceContext } from '../../../../contexts/TokenBalanceContext';
+import { getAvatar } from '../../../Chat/ChatRenderUtils';
+import useChatApi from '../../../Chat/Service/ChatApi';
 
 export default function PortfolioBannerAccount(
     props: IPortfolioBannerAccountPropsIF,
@@ -34,7 +36,8 @@ export default function PortfolioBannerAccount(
         ensNameAvailable,
     } = props;
 
-    const { userAddress, userAccountProfile } = useContext(UserDataContext);
+    const { userAddress, userAccountProfile, setUserAccountProfile } =
+        useContext(UserDataContext);
 
     const { NFTData } = useContext(TokenBalanceContext);
 
@@ -56,6 +59,21 @@ export default function PortfolioBannerAccount(
         : userAddress;
 
     const [_, copy] = useCopyToClipboard();
+
+    const { getUserAvatar } = useChatApi();
+
+    const [userAvatarImage, setUserAvatarImage] = useState(null);
+
+    useEffect(() => {
+        const fetchAvatar = async () => {
+            if (userAddress) {
+                const avatar = await getUserAvatar(userAddress);
+                setUserAvatarImage(avatar);
+                setUserAccountProfile(avatar);
+            }
+        };
+        fetchAvatar();
+    }, []);
 
     function handleCopyEnsName() {
         copy(
@@ -109,7 +127,9 @@ export default function PortfolioBannerAccount(
                 onClick={() => setShowAccountDetails(!showAccountDetails)}
             >
                 <ProfileSettingsContainer placement={NFTData ? true : false}>
-                    {userAccountProfile ? (
+                    {userAddress &&
+                        getAvatar(userAddress, userAccountProfile, 65)}
+                    {/* {userAccountProfile ? (
                         <img
                             src={userAccountProfile}
                             style={{
@@ -120,7 +140,7 @@ export default function PortfolioBannerAccount(
                         ></img>
                     ) : (
                         <>{props.jazziconsToDisplay}</>
-                    )}
+                    )} */}
                     {updateProfile}
                 </ProfileSettingsContainer>
 
