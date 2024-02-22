@@ -63,7 +63,6 @@ export default function NetworkSelector(props: propsIF) {
                 // navigate to index page only if chain/network search param present
                 linkGenIndex.navigate();
             }
-            console.log({ supportedNetworks });
             chooseNetwork(supportedNetworks[chn.chainId]);
         }
     }
