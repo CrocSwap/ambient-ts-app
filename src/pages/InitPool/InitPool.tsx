@@ -840,12 +840,6 @@ export default function InitPool() {
             const costOfScrollPoolInETH =
                 gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
 
-            //   IS_LOCAL_ENV &&  console.log({
-            //         gasPriceInGwei,
-            //         costOfScrollPoolInETH,
-            //         amountToReduceNativeTokenQtyScroll,
-            //     });
-
             setAmountToReduceNativeTokenQtyScroll(
                 costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER_SCROLL,
             );
@@ -899,10 +893,6 @@ export default function InitPool() {
 
         const timer = setTimeout(() => {
             inputField.focus();
-            inputField.setSelectionRange(
-                inputField.value.length,
-                inputField.value.length,
-            );
         }, 500);
         return () => clearTimeout(timer);
     };
@@ -1113,17 +1103,14 @@ export default function InitPool() {
             setIsTxCompletedRange: setIsTxCompletedRange,
             activeRangeTxHash: activeRangeTxHash,
         };
-        console.log('Debug, calling createRangePosition', params);
         createRangePosition(params);
     };
 
     const sendTransaction = isMintLiqEnabled
         ? async () => {
-              console.log('initializing and minting');
               sendInit(initialPriceInBaseDenom, sendRangePosition);
           }
         : () => {
-              console.log('initializing');
               sendInit(initialPriceInBaseDenom);
           };
 
@@ -1386,17 +1373,12 @@ export default function InitPool() {
     };
 
     function handleRefPriceToggle() {
+        if (useReferencePrice) openEditMode();
         setUseReferencePrice(!useReferencePrice);
         if (estimatedInitialPriceDisplay !== undefined) {
             setInitialPriceDisplay(estimatedInitialPriceDisplay);
         } else setInitialPriceDisplay('');
-        focusInput();
     }
-
-    useEffect(() => {
-        if (!useReferencePrice) openEditMode();
-    }, [useReferencePrice]);
-
     // toggle to use reference price
     const refPriceToggle = (
         <FlexContainer flexDirection='row' alignItems='center' gap={8}>
@@ -1480,7 +1462,6 @@ export default function InitPool() {
     const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
         if (tokenAorB === 'A') {
             setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked);
-            console.log('toggled');
         } else {
             setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked);
         }
