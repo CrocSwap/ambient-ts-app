@@ -1,7 +1,7 @@
 import { ERC20_ABI } from '@crocswap-libs/sdk';
 import { Contract, ethers } from 'ethers';
 import { memoizeProviderFn } from '../dataLayer/functions/memoizePromiseFn';
-import { TokenIF } from '../types/token/TokenIF';
+import { TokenIF } from '../types';
 import { ZERO_ADDRESS } from '../constants';
 
 export interface ContractDetails {
