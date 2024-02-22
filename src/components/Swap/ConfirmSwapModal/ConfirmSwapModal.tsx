@@ -29,6 +29,7 @@ interface propsIF {
     onClose?: () => void;
     isTokenAPrimary: boolean;
     priceImpactWarning: JSX.Element | undefined;
+    isSaveAsDexSurplusChecked: boolean;
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
@@ -51,6 +52,7 @@ export default function ConfirmSwapModal(props: propsIF) {
         onClose = () => null,
         isTokenAPrimary,
         priceImpactWarning,
+        isSaveAsDexSurplusChecked,
     } = props;
 
     const { pool } = useContext(PoolContext);
@@ -195,6 +197,21 @@ export default function ConfirmSwapModal(props: propsIF) {
                     </Text>
                 </FlexContainer>
             )}
+            {
+                <FlexContainer
+                    justifyContent='space-between'
+                    alignItems='center'
+                >
+                    <Text fontSize='body' color='text2'>
+                        Output Destination
+                    </Text>
+                    <Text fontSize='body' color='text2'>
+                        {isSaveAsDexSurplusChecked
+                            ? 'Exchange Balance'
+                            : 'Wallet'}
+                    </Text>
+                </FlexContainer>
+            }
             <FlexContainer justifyContent='space-between' alignItems='center'>
                 <Text fontSize='body' color='text2'>
                     Effective Conversion Rate
