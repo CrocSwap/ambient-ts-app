@@ -32,6 +32,7 @@ import {
     getPositionData,
     getFormattedNumber,
     getPinnedPriceValuesFromTicks,
+    isStablePair,
 } from '../../../ambient-utils/dataLayer';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
@@ -68,7 +69,9 @@ function Reposition() {
     } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
-    const { bypassConfirmRepo } = useContext(UserPreferenceContext);
+    const { bypassConfirmRepo, repoSlippage } = useContext(
+        UserPreferenceContext,
+    );
     const {
         addPendingTx,
         addReceipt,
@@ -124,6 +127,13 @@ function Reposition() {
     }
 
     const { position } = locationHook.state as { position: PositionIF };
+
+    const slippageTolerancePercentage = isStablePair(
+        position.base,
+        position.quote,
+    )
+        ? repoSlippage.stable
+        : repoSlippage.volatile;
 
     const { posHashTruncated } = useProcessRange(position);
 
@@ -763,6 +773,7 @@ function Reposition() {
                     }
                     isTokenABase={isTokenABase}
                     onClose={handleModalClose}
+                    slippageTolerance={slippageTolerancePercentage}
                 />
             )}
         </>

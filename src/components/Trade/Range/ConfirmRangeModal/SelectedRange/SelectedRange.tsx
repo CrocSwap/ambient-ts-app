@@ -16,6 +16,7 @@ interface propsIF {
     showOnlyFeeTier?: boolean;
     isDenomBase: boolean;
     setIsDenomBase: Dispatch<SetStateAction<boolean>>;
+    slippageTolerance: number;
     initialPrice?: number;
     isInitPage?: boolean;
 }
@@ -32,6 +33,7 @@ function SelectedRange(props: propsIF) {
         showOnlyFeeTier,
         initialPrice,
         isInitPage,
+        slippageTolerance,
     } = props;
 
     const { poolPriceDisplay } = useContext(PoolContext);
@@ -176,13 +178,26 @@ function SelectedRange(props: propsIF) {
                     {isInitPage ? 'Dynamic' : `${liquidityProviderFeeString}%`}
                 </Text>
             </FlexContainer>
+            {!isInitPage && (
+                <FlexContainer
+                    justifyContent='space-between'
+                    alignItems='center'
+                >
+                    <Text fontSize='body' color='text2'>
+                        {'Slippage Tolerance'}
+                    </Text>
+                    <Text fontSize='body' color='text2'>
+                        {`${slippageTolerance}%`}
+                    </Text>
+                </FlexContainer>
+            )}
         </FlexContainer>
     );
     if (showOnlyFeeTier) return extraInfoData;
 
     return (
         <FlexContainer flexDirection='column' gap={8}>
-            {selectedRangeDisplay}
+            {!isAmbient && selectedRangeDisplay}
             <div style={{ padding: isInitPage ? '0 4rem' : '0 1rem' }}>
                 {extraInfoData}
             </div>
