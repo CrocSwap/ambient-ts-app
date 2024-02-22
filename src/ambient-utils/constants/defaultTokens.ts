@@ -130,6 +130,17 @@ export const sepoliaUSDC: TokenIF = {
     fromList: '/ambient-token-list.json',
 };
 
+export const sepoliaWBTC: TokenIF = {
+    name: 'Wrapped BTC',
+    address: '0xCA97CC9c1a1dfA54A252DaAFE9b5Cd1E16C81328',
+    symbol: 'WBTC',
+    decimals: 8,
+    chainId: 11155111,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
+    fromList: '/ambient-token-list.json',
+};
+
 export const goerliDAI: TokenIF = {
     name: 'Dai Stablecoin',
     address: '0xdc31Ee1784292379Fbb2964b3B9C4124D8F89C60',
