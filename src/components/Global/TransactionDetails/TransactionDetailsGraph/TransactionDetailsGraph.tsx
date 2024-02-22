@@ -88,6 +88,22 @@ export default function TransactionDetailsGraph(
             : 86400;
     };
 
+    const takeSmallerPeriodForRemoveRange = (diff: number) => {
+        if (diff <= 60) {
+            return 60;
+        } else if (diff <= 300) {
+            return 60;
+        } else if (diff <= 900) {
+            return 300;
+        } else if (diff <= 3600) {
+            return 900;
+        } else if (diff <= 14400) {
+            return 3600;
+        } else {
+            return 14400;
+        }
+    };
+
     const fetchEnabled = !!(
         chainData &&
         isServerEnabled &&
@@ -164,13 +180,21 @@ export default function TransactionDetailsGraph(
                     ? 43200000
                     : new Date().getTime() - minDate;
 
-            const period = decidePeriod(Math.floor(diff / 1000 / 200));
+            let period = decidePeriod(Math.floor(diff / 1000 / 200));
+
+            if (transactionType === 'liqchange' && tx.changeType === 'burn') {
+                const removeRangeDiff = Math.abs(tx.txTime - tx.timeFirstMint);
+                if (removeRangeDiff < period) {
+                    period = takeSmallerPeriodForRemoveRange(removeRangeDiff);
+                }
+            }
+
             setPeriod(period);
             if (period !== undefined) {
                 const calcNumberCandlesNeeded = Math.floor(
                     (diff * 2) / (period * 1000),
                 );
-                const maxNumCandlesNeeded = 3000;
+                const maxNumCandlesNeeded = 2999;
 
                 const numCandlesNeeded =
                     calcNumberCandlesNeeded < maxNumCandlesNeeded
@@ -987,7 +1011,7 @@ export default function TransactionDetailsGraph(
                                 if (bandPixel && bandPixel < 15 && period) {
                                     scaleData.xScale.domain([
                                         scaleData.xScale.domain()[0].getTime() +
-                                            period * 20 * 1000,
+                                            period * 25 * 1000,
                                         scaleData.xScale.domain()[1].getTime(),
                                     ]);
                                 }
