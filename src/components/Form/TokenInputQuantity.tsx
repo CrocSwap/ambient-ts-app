@@ -37,7 +37,6 @@ interface propsIF {
     value: string;
     handleTokenInputEvent: (val: string) => void;
     reverseTokens?: () => void;
-    parseInput?: (val: string) => void;
     fieldId?: string;
     isLoading?: boolean;
     label?: string;
@@ -63,7 +62,6 @@ function TokenInputQuantity(props: propsIF) {
         disabledContent,
         handleTokenInputEvent,
         reverseTokens,
-        parseInput,
         setTokenModalOpen = () => null,
     } = props;
     const isPoolInitialized = useSimulatedIsPoolInitialized();
@@ -90,19 +88,13 @@ function TokenInputQuantity(props: propsIF) {
 
     const [displayValue, setDisplayValue] = useState<string>('');
     // trigger useEffect to update display value if the parsed value is the same as existing (12 -> 0000012 -> 12)
-    const [inputChanged, setInputChanged] = useState(false);
     useEffect(() => {
         if (isLoading) {
             setDisplayValue('');
-        } else if (value) {
+        } else {
             setDisplayValue(value);
         }
-    }, [inputChanged, value, isLoading]);
-
-    const onBlur = (input: string) => {
-        setInputChanged(!inputChanged);
-        parseInput && parseInput(input);
-    };
+    }, [value, isLoading]);
 
     const precisionOfInput = (inputString: string) => {
         if (inputString.includes('.')) {
@@ -166,9 +158,6 @@ function TokenInputQuantity(props: propsIF) {
             id={fieldId ? `${fieldId}_qty` : undefined}
             placeholder={isLoading ? '' : '0.0'}
             onChange={(event: ChangeEvent<HTMLInputElement>) => onChange(event)}
-            onBlur={(event: ChangeEvent<HTMLInputElement>) =>
-                onBlur(event.target.value)
-            }
             value={displayValue}
             type='string'
             step='any'
