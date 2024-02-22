@@ -12,11 +12,17 @@ import {
     PoolIF,
     TokenIF,
     TransactionIF,
+    TransactionServerIF,
 } from '../../ambient-utils/types';
 import matchSearchInput from '../functions/matchSearchInput';
 import { tokenMethodsIF } from './useTokens';
-import { ZERO_ADDRESS, tokenListURIs } from '../../ambient-utils/constants';
+import {
+    GCGO_OVERRIDE_URL,
+    ZERO_ADDRESS,
+    tokenListURIs,
+} from '../../ambient-utils/constants';
 import { PoolContext } from '../../contexts/PoolContext';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 export interface sidebarSearchIF {
     rawInput: string;
@@ -27,6 +33,7 @@ export interface sidebarSearchIF {
     positions: PositionIF[];
     txs: TransactionIF[];
     limits: LimitOrderIF[];
+    wallet: TransactionServerIF | null;
 }
 
 export const useSidebarSearch = (
@@ -47,8 +54,9 @@ export const useSidebarSearch = (
         return () => clearTimeout(timer);
     }, [rawInput]);
 
-    // search type ➜ '' or 'address' or 'nameOrAddress'
-    const [searchAs, setSearchAs] = useState<string | null>(null);
+    // search type ➜ presumed type of input provided by user
+    type searchType = 'address' | 'nameOrSymbol' | null;
+    const [searchAs, setSearchAs] = useState<searchType>(null);
 
     // fn to clear the search input
     function clearInput(): void {
@@ -144,7 +152,7 @@ export const useSidebarSearch = (
             case 'nameOrSymbol':
                 filteredPools = searchByNameOrSymbol(validatedInput);
                 break;
-            case '':
+            case null:
             default:
                 filteredPools = noSearch();
         }
@@ -224,7 +232,7 @@ export const useSidebarSearch = (
             case 'nameOrSymbol':
                 filteredRangePositions = searchByNameOrSymbol(validatedInput);
                 break;
-            case '':
+            case null:
             default:
                 filteredRangePositions = noSearch();
         }
@@ -266,7 +274,7 @@ export const useSidebarSearch = (
             case 'nameOrSymbol':
                 filteredTxs = searchByNameOrSymbol(validatedInput);
                 break;
-            case '':
+            case null:
             default:
                 filteredTxs = noSearch();
         }
@@ -312,13 +320,42 @@ export const useSidebarSearch = (
             case 'nameOrSymbol':
                 filteredLimits = searchByNameOrSymbol(validatedInput);
                 break;
-            case '':
+            case null:
             default:
                 filteredLimits = noSearch();
         }
         // send txs filtered by search input to local state (to be returned from this file)
         setOutputLimits(filteredLimits);
     }, [limitOrderList.length, validatedInput]);
+
+    const [outputWallet, setOutputWallet] =
+        useState<TransactionServerIF | null>(null);
+
+    const { activeNetwork, chainData } = useContext(CrocEnvContext);
+
+    useEffect(() => {
+        function fetchWallet(): Promise<void> {
+            let walletEndpoint: string =
+                GCGO_OVERRIDE_URL ?? activeNetwork.graphCacheUrl;
+            walletEndpoint += '/user_txs?';
+            walletEndpoint += new URLSearchParams({
+                user: validatedInput,
+                chainId: chainData.chainId,
+                n: '1',
+            });
+            return fetch(walletEndpoint)
+                .then((response) => response.json())
+                .then((response) => {
+                    const isWallet = !!response.data;
+                    setOutputWallet(isWallet ? response : null);
+                });
+        }
+        if (searchAs !== 'address') {
+            setOutputWallet(null);
+        } else {
+            fetchWallet();
+        }
+    }, [validatedInput]);
 
     return {
         rawInput,
@@ -329,5 +366,6 @@ export const useSidebarSearch = (
         positions: outputPositions,
         txs: outputTxs,
         limits: outputLimits,
+        wallet: outputWallet,
     };
 };
