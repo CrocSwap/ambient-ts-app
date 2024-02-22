@@ -194,7 +194,6 @@ function TokenInputWithWalletBalance(props: propsIF) {
                 isLoading={isLoading}
                 includeWallet={walletContent}
                 showPulseAnimation={showPulseAnimation}
-                parseInput={parseTokenInput}
                 disabledContent={disabledContent}
             />
             {handleRefresh && (
