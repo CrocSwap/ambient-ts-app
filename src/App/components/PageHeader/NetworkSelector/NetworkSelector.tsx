@@ -176,21 +176,21 @@ export default function NetworkSelector(props: propsIF) {
     const sepoliaNetwork: JSX.Element = (
         <NetworkItem
             id='sepolia_network_selector'
-            onClick={() => handleClick(chainMap.get('0x8274f'))}
+            onClick={() => handleClick(chainMap.get('0xaa36a7'))}
             key='sepolia'
             custom={0}
             variants={ItemEnterAnimation}
             tabIndex={0}
         >
-            <ChainNameStatus tabIndex={0} active={chainId === '0x8274f'}>
+            <ChainNameStatus tabIndex={0} active={chainId === '0xaa36a7'}>
                 <img
-                    src={scrollLogo}
-                    alt='scroll network'
+                    src={ETH}
+                    alt='sepolia network'
                     width='21px'
                     height='21px'
                     style={{ borderRadius: '50%' }}
                 />
-                <Text color={chainId === '0x8274f' ? 'accent1' : 'white'}>
+                <Text color={chainId === '0xaa36a7' ? 'accent1' : 'white'}>
                     Sepolia
                 </Text>
             </ChainNameStatus>
@@ -218,7 +218,7 @@ export default function NetworkSelector(props: propsIF) {
                         {chainMap.has('0x82750') && scrollNetwork}
                         {INCLUDE_CANTO_LINK && cantoNetwork}
                         {chainMap.has('0x5') && goerliNetwork}
-                        {chainMap.has('0x8274f') && sepoliaNetwork}
+                        {chainMap.has('0xaa36a7') && sepoliaNetwork}
                     </MenuContent>
                 </DropdownMenu2>
             </DropdownMenuContainer>
