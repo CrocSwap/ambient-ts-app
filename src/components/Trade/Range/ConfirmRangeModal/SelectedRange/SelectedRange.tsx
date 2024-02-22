@@ -170,14 +170,6 @@ function SelectedRange(props: propsIF) {
                     }`}
                 </Text>
             </FlexContainer>
-            <FlexContainer justifyContent='space-between' alignItems='center'>
-                <Text fontSize='body' color='text2'>
-                    {isInitPage ? 'Initial Fee Rate' : 'Current Fee Rate'}
-                </Text>
-                <Text fontSize='body' color='text2'>
-                    {isInitPage ? 'Dynamic' : `${liquidityProviderFeeString}%`}
-                </Text>
-            </FlexContainer>
             {!isInitPage && (
                 <FlexContainer
                     justifyContent='space-between'
@@ -191,6 +183,14 @@ function SelectedRange(props: propsIF) {
                     </Text>
                 </FlexContainer>
             )}
+            <FlexContainer justifyContent='space-between' alignItems='center'>
+                <Text fontSize='body' color='text2'>
+                    {isInitPage ? 'Initial Fee Rate' : 'Current Fee Rate'}
+                </Text>
+                <Text fontSize='body' color='text2'>
+                    {isInitPage ? 'Dynamic' : `${liquidityProviderFeeString}%`}
+                </Text>
+            </FlexContainer>
         </FlexContainer>
     );
     if (showOnlyFeeTier) return extraInfoData;

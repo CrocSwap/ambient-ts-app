@@ -306,11 +306,15 @@ function Reposition() {
 
         try {
             const pool = crocEnv.pool(position.base, position.quote);
-            const repo = new CrocReposition(pool, {
-                liquidity: concLiq,
-                burn: [position.bidTick, position.askTick],
-                mint: mintArgsForReposition(pinnedLowTick, pinnedHighTick),
-            });
+            const repo = new CrocReposition(
+                pool,
+                {
+                    liquidity: concLiq,
+                    burn: [position.bidTick, position.askTick],
+                    mint: mintArgsForReposition(pinnedLowTick, pinnedHighTick),
+                },
+                { impact: slippageTolerancePercentage },
+            );
 
             tx = await repo.rebal();
             setNewRepositionTransactionHash(tx?.hash);
