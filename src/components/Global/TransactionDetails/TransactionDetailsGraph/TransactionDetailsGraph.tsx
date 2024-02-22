@@ -444,6 +444,7 @@ export default function TransactionDetailsGraph(
             const yScale = d3.scaleLinear();
 
             const localDomain = xExtent(graphData);
+            xScale.domain(localDomain);
 
             const minDomain = localDomain[0].getTime();
             const maxDomain = localDomain[1].getTime();
@@ -947,7 +948,7 @@ export default function TransactionDetailsGraph(
                                 : tx.txTime * 1000;
                             if (tx.claimableLiq > 0) {
                                 addExtraCandle(
-                                    time,
+                                    time / 1000,
                                     tx.askTickInvPriceDecimalCorrected,
                                     tx.askTickPriceDecimalCorrected,
                                 );
