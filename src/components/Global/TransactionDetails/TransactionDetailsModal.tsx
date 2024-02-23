@@ -52,7 +52,7 @@ function TransactionDetailsModal(props: propsIF) {
 
     const [updatedPositionApy, setUpdatedPositionApy] = useState<
         number | undefined
-    >(1.01);
+    >();
 
     useEffect(() => {
         const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
@@ -97,11 +97,7 @@ function TransactionDetailsModal(props: propsIF) {
 
                 tx.timeFirstMint = positionStats.timeFirstMint;
 
-                setUpdatedPositionApy(
-                    positionStats.aprEst
-                        ? positionStats.aprEst * 100
-                        : undefined,
-                );
+                setUpdatedPositionApy(positionStats.aprEst * 100);
             })
             .catch(console.error);
     }, [lastBlockNumber, !!crocEnv, !!provider, chainId]);

@@ -942,14 +942,6 @@ export default function InitPool() {
     // Begin Range Logic
     const { createRangePosition } = useCreateRangePosition();
 
-    // const slippageTolerancePercentage = isStablePair(
-    //     tokenA.address,
-    //     tokenB.address,
-    //     chainId,
-    // )
-    //     ? mintSlippage.stable
-    //     : mintSlippage.volatile;
-
     const depositSkew = useMemo(
         () =>
             concDepositSkew(

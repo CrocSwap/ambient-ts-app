@@ -152,7 +152,7 @@ export function useCreateRangePosition() {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
-            setTxErrorMessage(error?.data?.message);
+            setTxErrorMessage(error?.error?.message);
         }
 
         let receipt;

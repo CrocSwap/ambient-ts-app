@@ -249,7 +249,7 @@ export default function LimitActionModal(props: propsIF) {
             } catch (error) {
                 console.error({ error });
                 setTxErrorCode(error?.code);
-                setTxErrorMessage(error?.data?.message);
+                setTxErrorMessage(error?.error?.message);
                 if (
                     error.reason === 'sending a transaction requires a signer'
                 ) {
@@ -390,7 +390,7 @@ export default function LimitActionModal(props: propsIF) {
             } catch (error) {
                 console.error({ error });
                 setTxErrorCode(error?.code);
-                setTxErrorMessage(error?.data?.message);
+                setTxErrorMessage(error?.error?.message);
                 if (
                     error.reason === 'sending a transaction requires a signer'
                 ) {
