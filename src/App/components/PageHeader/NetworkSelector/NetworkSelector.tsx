@@ -24,7 +24,7 @@ import { Text } from '../../../../styled/Common';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import cantoLogo from '../../../../assets/images/networks/canto.png';
 import scrollLogo from '../../../../assets/images/networks/scroll.png';
-import ETH from '../../../../assets/images/tokens/ETH.png';
+import ETH from '../../../../assets/images/logos/eth-diamond-purple.png';
 
 interface propsIF {
     switchNetwork: ((chainId_?: number | undefined) => void) | undefined;
@@ -84,9 +84,9 @@ export default function NetworkSelector(props: propsIF) {
                 <img
                     src={ETH}
                     alt='ethereum mainnet network'
-                    width='21px'
-                    height='21px'
-                    style={{ borderRadius: '50%' }}
+                    width='17px'
+                    height='22px'
+                    style={{ borderRadius: '50%', marginLeft: '2px' }}
                 />
                 <Text color={chainId === '0x1' ? 'accent1' : 'white'}>
                     Ethereum
@@ -109,8 +109,8 @@ export default function NetworkSelector(props: propsIF) {
                 <img
                     src={scrollLogo}
                     alt='scroll network'
-                    width='21px'
-                    height='21px'
+                    width='22px'
+                    height='22px'
                     style={{ borderRadius: '50%' }}
                 />
                 <Text color={chainId === '0x82750' ? 'accent1' : 'white'}>
@@ -141,7 +141,7 @@ export default function NetworkSelector(props: propsIF) {
                 <Text color='white' marginRight='10px'>
                     Canto
                 </Text>
-                <RiExternalLinkLine size={14} />
+                <RiExternalLinkLine size={14} style={{ marginLeft: '55px' }} />
             </ChainNameStatus>
         </NetworkItem>
     );
@@ -160,9 +160,9 @@ export default function NetworkSelector(props: propsIF) {
                 <img
                     src={ETH}
                     alt='goerli network'
-                    width='21px'
-                    height='21px'
-                    style={{ borderRadius: '50%' }}
+                    width='17px'
+                    height='22px'
+                    style={{ borderRadius: '50%', marginLeft: '2px' }}
                 />
                 <Text color={chainId === '0x5' ? 'accent1' : 'white'}>
                     Görli
@@ -186,12 +186,18 @@ export default function NetworkSelector(props: propsIF) {
                 <img
                     src={ETH}
                     alt='sepolia network'
-                    width='21px'
-                    height='21px'
-                    style={{ borderRadius: '50%' }}
+                    width='17px'
+                    height='22px'
+                    style={{
+                        borderRadius: '50%',
+                        marginLeft: '2px',
+                    }}
                 />
                 <Text color={chainId === '0xaa36a7' ? 'accent1' : 'white'}>
                     Sepolia
+                </Text>
+                <Text color={'accent1'} fontSize={'mini'} marginLeft='35px'>
+                    Testnet
                 </Text>
             </ChainNameStatus>
         </NetworkItem>
@@ -208,7 +214,7 @@ export default function NetworkSelector(props: propsIF) {
                     marginTop={'50px'}
                     titleWidth={'80px'}
                     title={lookupChain(chainId).displayName}
-                    logo={lookupChain(chainId).logoUrl}
+                    logo={chainId === '0x82750' ? scrollLogo : ETH}
                 >
                     <MenuContent
                         tabIndex={0}
@@ -217,8 +223,8 @@ export default function NetworkSelector(props: propsIF) {
                         {chainMap.has('0x1') && ethereumNetwork}
                         {chainMap.has('0x82750') && scrollNetwork}
                         {INCLUDE_CANTO_LINK && cantoNetwork}
-                        {chainMap.has('0x5') && goerliNetwork}
                         {chainMap.has('0xaa36a7') && sepoliaNetwork}
+                        {chainMap.has('0x5') && goerliNetwork}
                     </MenuContent>
                 </DropdownMenu2>
             </DropdownMenuContainer>
