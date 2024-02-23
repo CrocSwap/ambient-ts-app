@@ -93,7 +93,7 @@ export function useSendInit(
                 }
                 console.error({ error });
                 setTxErrorCode(error?.code);
-                setTxErrorMessage(error?.data?.message);
+                setTxErrorMessage(error?.error?.message);
             } finally {
                 setIsInitPending(false);
             }

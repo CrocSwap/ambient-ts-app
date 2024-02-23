@@ -395,7 +395,7 @@ function RangeActionModal(props: propsIF) {
                     }
                     console.error({ error });
                     setTxErrorCode(error?.code);
-                    setTxErrorMessage(error?.data?.message);
+                    setTxErrorMessage(error?.error?.message);
                 }
             } else {
                 try {
@@ -415,7 +415,7 @@ function RangeActionModal(props: propsIF) {
                     }
                     IS_LOCAL_ENV && console.debug({ error });
                     setTxErrorCode(error?.code);
-                    setTxErrorMessage(error?.data?.message);
+                    setTxErrorMessage(error?.error?.message);
                 }
             }
         } else if (position.positionType === 'concentrated') {
@@ -437,7 +437,7 @@ function RangeActionModal(props: propsIF) {
                 }
                 console.error({ error });
                 setTxErrorCode(error?.code);
-                setTxErrorMessage(error?.data?.message);
+                setTxErrorMessage(error?.error?.message);
             }
         } else {
             IS_LOCAL_ENV &&
@@ -565,7 +565,7 @@ function RangeActionModal(props: propsIF) {
             } catch (error) {
                 console.error({ error });
                 setTxErrorCode(error?.code);
-                setTxErrorMessage(error?.data?.message);
+                setTxErrorMessage(error?.error?.message);
                 if (
                     error.reason === 'sending a transaction requires a signer'
                 ) {

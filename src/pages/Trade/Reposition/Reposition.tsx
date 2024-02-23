@@ -355,7 +355,8 @@ function Reposition() {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
-            setTxErrorMessage(error?.data?.message);
+
+            setTxErrorMessage(error?.error?.message);
         }
 
         let receipt;

@@ -424,7 +424,7 @@ function Swap(props: propsIF) {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
-            setTxErrorMessage(error?.data?.message);
+            setTxErrorMessage(error?.error?.message);
         }
 
         if (tx) {
