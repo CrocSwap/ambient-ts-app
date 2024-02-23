@@ -159,9 +159,6 @@ export const GraphDataContextProvider = (props: {
         LiquidityDataIF | undefined
     >(undefined);
 
-    // const [liquidityRequest, setLiquidityRequest] = React.useState<
-    //     PoolRequestParams | undefined
-    // >(undefined);
     const [liquidityFee, setLiquidityFee] = React.useState<number>(0);
     const {
         server: { isEnabled: isServerEnabled },

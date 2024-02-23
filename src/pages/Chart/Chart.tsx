@@ -4761,7 +4761,7 @@ export default function Chart(props: propsIF) {
                 });
             }
         }
-    }, [userTransactionData]);
+    }, [userTransactionData, denomInBase]);
 
     const handleCardClick = (tx: TransactionIF): void => {
         setSelectedDate(undefined);
