@@ -313,7 +313,7 @@ function Reposition() {
                     burn: [position.bidTick, position.askTick],
                     mint: mintArgsForReposition(pinnedLowTick, pinnedHighTick),
                 },
-                { impact: slippageTolerancePercentage },
+                { impact: slippageTolerancePercentage / 100 },
             );
 
             tx = await repo.rebal();
