@@ -5,6 +5,7 @@ interface PaginationResult<T> {
     prev: () => void;
     jump: (page: number) => void;
     currentData: T[];
+    fullData: T[];
     currentPage: number;
     maxPage: number;
     showingFrom: number;
@@ -96,6 +97,7 @@ function usePagination<T>(
         prev,
         jump,
         currentData: currentData(),
+        fullData: data,
         currentPage,
         maxPage,
         showingFrom,
