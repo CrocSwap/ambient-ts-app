@@ -382,5 +382,14 @@
 
 }
 
+.dropdown_icon{
+    display: inline-block;
+    margin-left: .5rem;
+    opacity: .5;
+}
+.dropdown_icon svg{
+    vertical-align: middle;
+}
+
 
 

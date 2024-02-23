@@ -33,6 +33,7 @@ import { uriToHttp } from '../../../ambient-utils/dataLayer';
 import ChatToaster from '../ChatToaster/ChatToaster';
 import ChatConfirmationPanel from '../ChatConfirmationPanel/ChatConfirmationPanel';
 import Picker, { IEmojiData } from 'emoji-picker-react';
+import { RiArrowDownSLine } from 'react-icons/ri';
 
 interface FullChatPropsIF {
     messageList: JSX.Element;
@@ -651,6 +652,9 @@ function FullChat(props: FullChatPropsIF) {
                 onClick={() => setShowChannelsDropdown(!showChannelsDropdown)}
             >
                 {readableRoomName}
+                <div className={styles.dropdown_icon}>
+                    <RiArrowDownSLine size={20}></RiArrowDownSLine>
+                </div>
             </button>
             {showChannelsDropdown && (
                 <div

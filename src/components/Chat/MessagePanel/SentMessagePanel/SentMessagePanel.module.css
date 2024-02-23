@@ -280,7 +280,7 @@
     flex: none;
     order: 4;
     align-self: stretch;
-    background: var(--dark3);
+    /* background: var(--dark3); */
 }
 
 .name_default{

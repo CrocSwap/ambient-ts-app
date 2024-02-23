@@ -32,7 +32,10 @@
    border-radius: .2rem;
    width: 50%;
    margin: .2rem auto;
+}
 
+.ment_autocomp_user_wrapper:hover{
+    background: rgb(56 77 106);
 }
 
 .ment_autocomp_user_selected{

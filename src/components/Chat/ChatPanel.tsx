@@ -26,6 +26,7 @@ import { Message } from './Model/MessageModel';
 import { UserSummaryModel } from './Model/UserSummaryModel';
 import useChatApi from './Service/ChatApi';
 import useChatSocket from './Service/useChatSocket';
+import { domDebug } from './DomDebugger/DomDebuggerUtils';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -428,6 +429,10 @@ function ChatPanel(props: propsIF) {
         if (messages.length == 0) return;
     }, [messages, setMessages]);
 
+    domDebug('isModerator', isModerator ? 'true' : '-');
+    domDebug('isVerified', isVerified ? 'true' : '-');
+    // domDebug('address', userAddress);
+
     function handleCloseChatPanel() {
         setIsChatOpen(false);
     }
@@ -810,8 +815,12 @@ function ChatPanel(props: propsIF) {
                         />
                     );
                 })}
+
+            {/* WBO - Feature : User Summary */}
+
             <UserSummary
-                isActive={userSummaryActive}
+                // isActive={userSummaryActive}
+                isActive={userSummaryActive && false}
                 toBottom={userSummaryToBottom}
                 user={selectedUserSummary}
                 mouseLeaveListener={summaryMouseLeaveListener}

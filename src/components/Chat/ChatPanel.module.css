@@ -124,40 +124,11 @@
     order: 0;
     align-self: stretch;
     cursor: default;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,.1) transparent;
+    scrollbar-3dlight-color: transparent;
 }
 
-/* width */
-::-webkit-scrollbar {
-    width: 4px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 0px;
-    gap: 10px;
-
-    width: 10px;
-    height: 5px;
-
-    /* dark/primary */
-    background-image: var(--primary-gradient);
-    border-radius: 8px;
-    transform: rotate(-90deg);
-
-    /* Inside auto layout */
-    flex: none;
-    order: 0;
-    flex-grow: 0;
-}
 
 @media only screen and (min-width: 1280px) {
     .main_container {
