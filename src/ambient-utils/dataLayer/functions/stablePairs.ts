@@ -13,6 +13,7 @@ import {
     mainnetUSDC,
     mainnetUSDT,
     scrollAxlUSDC,
+    sepoliaUSDC,
     scrollSepoliaUSDC,
     scrollUSDC,
 } from '../../constants/defaultTokens';
@@ -50,6 +51,7 @@ export const STABLE_USD_TOKENS = [
     arbGoerliUSDC.address,
     scrollUSDC.address,
     scrollAxlUSDC.address,
+    sepoliaUSDC.address,
     scrollSepoliaUSDC.address,
 ].map((x) => x.toLowerCase());
 
@@ -57,6 +59,7 @@ export const USDC_TOKENS = [
     mainnetUSDC.address,
     goerliUSDC.address,
     arbGoerliUSDC.address,
+    sepoliaUSDC.address,
     scrollSepoliaUSDC.address,
     scrollUSDC.address,
 ].map((x) => x.toLowerCase());
