@@ -133,7 +133,7 @@ export default function RangeLinesChart(props: propsIF) {
                 return horizontalBand;
             });
         }
-    }, [scaleData]);
+    }, [scaleData, isDenomBase]);
 
     useEffect(() => {
         if (

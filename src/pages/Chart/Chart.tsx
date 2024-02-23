@@ -3902,8 +3902,10 @@ export default function Chart(props: propsIF) {
         isDenomBase,
     ]);
 
-    function changeScale() {
-        if (poolPriceDisplay && scaleData && rescale) {
+    const getYAxisBoundary = () => {
+        let minYBoundary = undefined;
+        let maxYBoundary = undefined;
+        if (scaleData) {
             const xmin = scaleData?.xScale.domain()[0];
             const xmax = scaleData?.xScale.domain()[1];
 
@@ -3911,7 +3913,6 @@ export default function Chart(props: propsIF) {
                 (data: CandleDataIF) =>
                     data.time * 1000 >= xmin && data.time * 1000 <= xmax,
             );
-
             if (
                 filtered !== undefined &&
                 filtered.length > 10 &&
@@ -3933,128 +3934,151 @@ export default function Chart(props: propsIF) {
                         : d.maxPriceExclMEVDecimalCorrected,
                 );
 
-                const marketPrice = market;
-
                 if (filteredMin && filteredMax) {
-                    const minYBoundary = Math.min(
-                        placeHolderPrice,
-                        filteredMin,
-                    );
-                    const maxYBoundary = Math.max(
-                        placeHolderPrice,
-                        filteredMax,
-                    );
-
-                    const diffBoundary = Math.abs(maxYBoundary - minYBoundary);
-                    const buffer = diffBoundary
-                        ? diffBoundary / 6
-                        : minYBoundary / 2;
-                    if (
-                        location.pathname.includes('pool') ||
-                        location.pathname.includes('reposition')
-                    ) {
-                        if (simpleRangeWidth !== 100 || advancedMode) {
-                            const min = ranges.filter(
-                                (target: lineValue) => target.name === 'Min',
-                            )[0].value;
-                            const max = ranges.filter(
-                                (target: lineValue) => target.name === 'Max',
-                            )[0].value;
-
-                            const low = Math.min(
-                                min,
-                                max,
-                                minYBoundary,
-                                marketPrice,
-                            );
-
-                            const high = Math.max(
-                                min,
-                                max,
-                                maxYBoundary,
-                                marketPrice,
-                            );
-
-                            const bufferForRange = Math.abs((low - high) / 6);
-
-                            const domain = [
-                                Math.min(low, high) - bufferForRange,
-                                Math.max(low, high) + bufferForRange / 2,
-                            ];
-
-                            setYaxisDomain(domain[0], domain[1]);
-                        } else {
-                            const lowTick =
-                                currentPoolPriceTick - simpleRangeWidth * 100;
-                            const highTick =
-                                currentPoolPriceTick + simpleRangeWidth * 100;
-
-                            const pinnedDisplayPrices =
-                                getPinnedPriceValuesFromTicks(
-                                    isDenomBase,
-                                    baseTokenDecimals,
-                                    quoteTokenDecimals,
-                                    lowTick,
-                                    highTick,
-                                    lookupChain(chainId).gridSize,
-                                );
-
-                            const low = 0;
-                            const high = parseFloat(
-                                pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                            );
-
-                            const bufferForRange = Math.abs((low - high) / 90);
-
-                            const domain = [
-                                Math.min(low, high) - bufferForRange,
-                                Math.max(low, high) + bufferForRange / 2,
-                            ];
-
-                            scaleData?.yScale.domain(domain);
-                        }
-                    } else if (location.pathname.includes('/limit')) {
-                        const value = limit;
-                        const low = Math.min(
-                            minYBoundary,
-                            value,
-                            minTickForLimit,
-                            marketPrice,
-                        );
-
-                        const high = Math.max(
-                            maxYBoundary,
-                            value,
-                            maxTickForLimit,
-                            marketPrice,
-                        );
-
-                        const bufferForLimit = Math.abs((low - high) / 6);
-                        if (value > 0 && Math.abs(value) !== Infinity) {
-                            const domain = [
-                                Math.min(low, high) - bufferForLimit,
-                                Math.max(low, high) + bufferForLimit / 2,
-                            ];
-
-                            setYaxisDomain(domain[0], domain[1]);
-                        }
-                    } else {
-                        const domain = [
-                            Math.min(minYBoundary, maxYBoundary, marketPrice) -
-                                buffer,
-                            Math.max(minYBoundary, maxYBoundary, marketPrice) +
-                                buffer / 2,
-                        ];
-
-                        setYaxisDomain(domain[0], domain[1]);
-                    }
+                    minYBoundary = Math.min(placeHolderPrice, filteredMin);
+                    maxYBoundary = Math.max(placeHolderPrice, filteredMax);
                 }
             }
-            render();
+        }
+
+        return { minYBoundary: minYBoundary, maxYBoundary: maxYBoundary };
+    };
+
+    function changeScaleSwap() {
+        if (scaleData && poolPriceWithoutDenom && rescale) {
+            const placeHolderPrice = denomInBase
+                ? 1 / poolPriceWithoutDenom
+                : poolPriceWithoutDenom;
+
+            const { minYBoundary, maxYBoundary } = getYAxisBoundary();
+
+            if (maxYBoundary !== undefined && minYBoundary !== undefined) {
+                const diffBoundary = Math.abs(maxYBoundary - minYBoundary);
+                const buffer = diffBoundary
+                    ? diffBoundary / 6
+                    : minYBoundary / 2;
+                const domain = [
+                    Math.min(minYBoundary, maxYBoundary, placeHolderPrice) -
+                        buffer,
+                    Math.max(minYBoundary, maxYBoundary, placeHolderPrice) +
+                        buffer / 2,
+                ];
+
+                setYaxisDomain(domain[0], domain[1]);
+            }
+        }
+
+        render();
+    }
+
+    function changeScaleLimit() {
+        if (scaleData && poolPriceWithoutDenom && rescale) {
+            const { minYBoundary, maxYBoundary } = getYAxisBoundary();
+
+            if (maxYBoundary !== undefined && minYBoundary !== undefined) {
+                const value = limit;
+                const low = Math.min(
+                    minYBoundary,
+                    value,
+                    minTickForLimit,
+                    market,
+                );
+
+                const high = Math.max(
+                    maxYBoundary,
+                    value,
+                    maxTickForLimit,
+                    market,
+                );
+
+                const bufferForLimit = Math.abs((low - high) / 6);
+                if (value > 0 && Math.abs(value) !== Infinity) {
+                    const domain = [
+                        Math.min(low, high) - bufferForLimit,
+                        Math.max(low, high) + bufferForLimit / 2,
+                    ];
+
+                    setYaxisDomain(domain[0], domain[1]);
+                }
+            }
+        }
+
+        render();
+    }
+
+    function changeScaleRangeOrReposition() {
+        if (scaleData && poolPriceWithoutDenom && rescale) {
+            const { minYBoundary, maxYBoundary } = getYAxisBoundary();
+
+            if (maxYBoundary !== undefined && minYBoundary !== undefined) {
+                if (simpleRangeWidth !== 100 || advancedMode) {
+                    const min = ranges.filter(
+                        (target: lineValue) => target.name === 'Min',
+                    )[0].value;
+                    const max = ranges.filter(
+                        (target: lineValue) => target.name === 'Max',
+                    )[0].value;
+
+                    const low = Math.min(min, max, minYBoundary, market);
+
+                    const high = Math.max(min, max, maxYBoundary, market);
+
+                    const bufferForRange = Math.abs((low - high) / 6);
+
+                    const domain = [
+                        Math.min(low, high) - bufferForRange,
+                        Math.max(low, high) + bufferForRange / 2,
+                    ];
+
+                    setYaxisDomain(domain[0], domain[1]);
+                } else {
+                    const lowTick =
+                        currentPoolPriceTick - simpleRangeWidth * 100;
+                    const highTick =
+                        currentPoolPriceTick + simpleRangeWidth * 100;
+
+                    const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+                        isDenomBase,
+                        baseTokenDecimals,
+                        quoteTokenDecimals,
+                        lowTick,
+                        highTick,
+                        lookupChain(chainId).gridSize,
+                    );
+
+                    const low = 0;
+                    const high = parseFloat(
+                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                    );
+
+                    const bufferForRange = Math.abs((low - high) / 90);
+
+                    const domain = [
+                        Math.min(low, high) - bufferForRange,
+                        Math.max(low, high) + bufferForRange / 2,
+                    ];
+
+                    scaleData?.yScale.domain(domain);
+                }
+            }
+        }
+
+        render();
+    }
+
+    function changeScale() {
+        if (location.pathname.includes('limit')) {
+            changeScaleLimit();
+        } else if (
+            location.pathname.includes('pool') ||
+            location.pathname.includes('reposition')
+        ) {
+            changeScaleRangeOrReposition();
+        } else {
+            changeScaleSwap();
         }
     }
 
-    // autoScaleF
     useEffect(() => {
         if (
             rescale &&
@@ -4065,16 +4089,39 @@ export default function Chart(props: propsIF) {
             changeScale();
         }
     }, [
-        ranges,
-        limit,
-        location.pathname,
         period,
         diffHashSigChart(unparsedCandleData),
-        noGoZoneBoundaries,
-        maxTickForLimit,
-        minTickForLimit,
         prevPeriod === period,
         candleTimeInSeconds === period,
+    ]);
+
+    useEffect(() => {
+        if (location.pathname.includes('/market')) {
+            changeScaleSwap();
+        }
+    }, [isDenomBase, poolPriceWithoutDenom, location.pathname]);
+
+    // autoScaleF
+    useEffect(() => {
+        if (!isLineDrag) {
+            if (
+                location.pathname.includes('pool') ||
+                location.pathname.includes('reposition')
+            ) {
+                changeScaleRangeOrReposition();
+            }
+        }
+    }, [ranges, location.pathname, isLineDrag]);
+
+    useEffect(() => {
+        if (!isLineDrag && location.pathname.includes('limit')) {
+            changeScaleLimit();
+        }
+    }, [
+        location.pathname,
+        limit,
+        minTickForLimit,
+        maxTickForLimit,
         isLineDrag,
     ]);
 
