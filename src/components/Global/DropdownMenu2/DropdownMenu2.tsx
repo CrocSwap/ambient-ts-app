@@ -12,10 +12,12 @@ interface DropdownMenuPropsIF {
     marginTop?: string;
     titleWidth?: string;
     logo?: string;
+    left?: string;
+    right?: string;
 }
 
 export default function DropdownMenu2(props: DropdownMenuPropsIF) {
-    const { title, children, marginTop, titleWidth, logo } = props;
+    const { title, children, marginTop, titleWidth, logo, left, right } = props;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const dropdownRefItem = useRef<HTMLDivElement>(null);
@@ -32,7 +34,11 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
             initial='hidden'
             animate='show'
             exit='hidden'
-            style={{ top: marginTop ? marginTop : '30px' }}
+            style={{
+                top: marginTop ? marginTop : '30px',
+                left: left,
+                right: right,
+            }}
         >
             {children}
         </MenuContainer>
@@ -63,9 +69,12 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
                             <img
                                 src={logo}
                                 alt={title}
-                                width='18px'
-                                height='18px'
-                                style={{ borderRadius: '50%' }}
+                                width={title === 'Scroll' ? '20px' : '15px'}
+                                height='20px'
+                                style={{
+                                    borderRadius: '50%',
+                                    marginLeft: '2px',
+                                }}
                             />
                             {title}
                         </Icon>
@@ -74,13 +83,13 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
                         <img
                             src={logo}
                             alt={title}
-                            width='20px'
-                            height='20px'
-                            style={{ borderRadius: '50%' }}
+                            width='18px'
+                            height='18px'
+                            style={{ borderRadius: '50%', marginLeft: '2px' }}
                         />
                     )}
                 </MenuItem>
-                <FaAngleDown />
+                <FaAngleDown style={{ marginLeft: '4px', marginTop: '2px' }} />
             </Menu>
             {isMenuOpen && dropdownMenuContent}
         </div>

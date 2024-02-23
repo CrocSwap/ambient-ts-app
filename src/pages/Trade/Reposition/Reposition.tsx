@@ -230,10 +230,9 @@ function Reposition() {
 
     useEffect(() => {
         if (simpleRangeWidth !== rangeWidthPercentage) {
-            setSimpleRangeWidth(simpleRangeWidth);
             setRangeWidthPercentage(simpleRangeWidth);
             const sliderInput = document.getElementById(
-                'reposition-input-slider-range',
+                'input-slider-range',
             ) as HTMLInputElement;
             if (sliderInput) sliderInput.value = simpleRangeWidth.toString();
         }
@@ -242,7 +241,6 @@ function Reposition() {
     useEffect(() => {
         if (simpleRangeWidth !== rangeWidthPercentage) {
             setSimpleRangeWidth(rangeWidthPercentage);
-            setRangeWidthPercentage(rangeWidthPercentage);
         }
     }, [rangeWidthPercentage]);
 

@@ -448,6 +448,7 @@ function Transactions(props: propsIF) {
         rowsPerPage,
         changeRowsPerPage,
         count,
+        fullData,
     } = _DATA;
     const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
         setPage(p);
@@ -655,6 +656,7 @@ function Transactions(props: propsIF) {
                 <TableRows
                     type='Transaction'
                     data={_DATA.currentData}
+                    fullData={fullData}
                     tableView={tableView}
                     isAccountView={isAccountView}
                 />
@@ -692,7 +694,9 @@ function Transactions(props: propsIF) {
                         ? dataLoadingStatus.isCandleDataLoading
                         : isLoading
                 ) ? (
-                    <Spinner size={100} bg='var(--dark1)' centered />
+                    <div style={{ height: isSmallScreen ? '80vh' : '100%' }}>
+                        <Spinner size={100} bg='var(--dark1)' centered />
+                    </div>
                 ) : (
                     transactionDataOrNull
                 )}
