@@ -76,7 +76,7 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
                                     marginLeft: '2px',
                                 }}
                             />
-                            {title}
+                            {title === 'Scroll Sepolia' ? 'Sepolia' : title}
                         </Icon>
                     )}
                     {!desktopScreen && (

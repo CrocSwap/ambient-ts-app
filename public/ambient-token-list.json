@@ -163,6 +163,14 @@
             "logoURI": "https://scroll-tech.github.io/token-list/data/WBTC/logo.svg"
         },
         {
+            "name": "Wrapped BTC",
+            "chainId": 534351,
+            "address": "0xb3B942b6d4a4858838aAb8f94DdaEdd479CD1594",
+            "symbol": "WBTC",
+            "decimals": 8,
+            "logoURI": "https://scroll-tech.github.io/token-list/data/WBTC/logo.svg"
+        },
+        {
             "name": "Wrapped stETH",
             "address": "0xf610A9dfB7C89644979b4A0f27063E9e7d7Cda32",
             "symbol": "wstETH",

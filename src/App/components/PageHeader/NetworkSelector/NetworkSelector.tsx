@@ -120,6 +120,34 @@ export default function NetworkSelector(props: propsIF) {
         </NetworkItem>
     );
 
+    // JSX element to select scroll sepolia network
+    const scrollSepoliaNetwork: JSX.Element = (
+        <NetworkItem
+            id='scroll_sepolia_network_selector'
+            onClick={() => handleClick(chainMap.get('0x8274f'))}
+            key='scroll-scroll'
+            custom={0}
+            variants={ItemEnterAnimation}
+            tabIndex={0}
+        >
+            <ChainNameStatus tabIndex={0} active={chainId === '0x8274f'}>
+                <img
+                    src={scrollLogo}
+                    alt='scroll sepolia network'
+                    width='22px'
+                    height='22px'
+                    style={{ borderRadius: '50%' }}
+                />
+                <Text color={chainId === '0x8274f' ? 'accent1' : 'white'}>
+                    Sepolia
+                </Text>
+                <Text color={'accent1'} fontSize={'mini'} marginLeft='35px'>
+                    Testnet
+                </Text>
+            </ChainNameStatus>
+        </NetworkItem>
+    );
+
     // JSX element to select canto network (external link)
     const cantoNetwork: JSX.Element = (
         <NetworkItem
@@ -214,7 +242,13 @@ export default function NetworkSelector(props: propsIF) {
                     marginTop={'50px'}
                     titleWidth={'80px'}
                     title={lookupChain(chainId).displayName}
-                    logo={chainId === '0x82750' ? scrollLogo : ETH}
+                    logo={
+                        lookupChain(chainId)
+                            .displayName.toLowerCase()
+                            .includes('scroll')
+                            ? scrollLogo
+                            : ETH
+                    }
                 >
                     <MenuContent
                         tabIndex={0}
@@ -224,6 +258,7 @@ export default function NetworkSelector(props: propsIF) {
                         {chainMap.has('0x82750') && scrollNetwork}
                         {INCLUDE_CANTO_LINK && cantoNetwork}
                         {chainMap.has('0xaa36a7') && sepoliaNetwork}
+                        {chainMap.has('0x8274f') && scrollSepoliaNetwork}
                         {chainMap.has('0x5') && goerliNetwork}
                     </MenuContent>
                 </DropdownMenu2>
