@@ -69,9 +69,12 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
                             <img
                                 src={logo}
                                 alt={title}
-                                width='18px'
-                                height='18px'
-                                style={{ borderRadius: '50%' }}
+                                width={title === 'Scroll' ? '20px' : '15px'}
+                                height='20px'
+                                style={{
+                                    borderRadius: '50%',
+                                    marginLeft: '2px',
+                                }}
                             />
                             {title}
                         </Icon>
@@ -80,13 +83,13 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
                         <img
                             src={logo}
                             alt={title}
-                            width='20px'
-                            height='20px'
-                            style={{ borderRadius: '50%' }}
+                            width='18px'
+                            height='18px'
+                            style={{ borderRadius: '50%', marginLeft: '2px' }}
                         />
                     )}
                 </MenuItem>
-                <FaAngleDown />
+                <FaAngleDown style={{ marginLeft: '4px', marginTop: '2px' }} />
             </Menu>
             {isMenuOpen && dropdownMenuContent}
         </div>

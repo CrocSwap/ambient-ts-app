@@ -184,7 +184,7 @@ export default function InitPool() {
     >();
 
     const [estimatedInitialPriceDisplay, setEstimatedInitialPriceDisplay] =
-        useState<string>('0');
+        useState<string>('2000');
 
     const [isAmbient, setIsAmbient] = useState(false);
 
@@ -840,12 +840,6 @@ export default function InitPool() {
             const costOfScrollPoolInETH =
                 gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
 
-            //   IS_LOCAL_ENV &&  console.log({
-            //         gasPriceInGwei,
-            //         costOfScrollPoolInETH,
-            //         amountToReduceNativeTokenQtyScroll,
-            //     });
-
             setAmountToReduceNativeTokenQtyScroll(
                 costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER_SCROLL,
             );
@@ -899,10 +893,6 @@ export default function InitPool() {
 
         const timer = setTimeout(() => {
             inputField.focus();
-            inputField.setSelectionRange(
-                inputField.value.length,
-                inputField.value.length,
-            );
         }, 500);
         return () => clearTimeout(timer);
     };
@@ -1113,17 +1103,14 @@ export default function InitPool() {
             setIsTxCompletedRange: setIsTxCompletedRange,
             activeRangeTxHash: activeRangeTxHash,
         };
-        console.log('Debug, calling createRangePosition', params);
         createRangePosition(params);
     };
 
     const sendTransaction = isMintLiqEnabled
         ? async () => {
-              console.log('initializing and minting');
               sendInit(initialPriceInBaseDenom, sendRangePosition);
           }
         : () => {
-              console.log('initializing');
               sendInit(initialPriceInBaseDenom);
           };
 
@@ -1358,6 +1345,7 @@ export default function InitPool() {
 
     const openEditMode = () => {
         setIsEditEnabled(true);
+        focusInput();
         if (
             initialPriceDisplay === '' &&
             (!isReferencePriceAvailable ||
@@ -1381,21 +1369,16 @@ export default function InitPool() {
                 }
             }
         }
-        focusInput();
         isReferencePriceAvailable && setUseReferencePrice(false);
     };
 
     function handleRefPriceToggle() {
+        if (useReferencePrice) openEditMode();
         setUseReferencePrice(!useReferencePrice);
         if (estimatedInitialPriceDisplay !== undefined) {
             setInitialPriceDisplay(estimatedInitialPriceDisplay);
         } else setInitialPriceDisplay('');
     }
-
-    useEffect(() => {
-        if (!useReferencePrice) openEditMode();
-    }, [useReferencePrice]);
-
     // toggle to use reference price
     const refPriceToggle = (
         <FlexContainer flexDirection='row' alignItems='center' gap={8}>
@@ -1440,10 +1423,10 @@ export default function InitPool() {
                     </Text>
                 </FlexContainer>
                 {isReferencePriceAvailable ? refPriceToggle : initPriceEdit}
-            </FlexContainer>
+            </FlexContainer>{' '}
             <section
                 style={{ width: '100%' }}
-                onDoubleClick={() => {
+                onClick={() => {
                     if (!isEditEnabled) openEditMode();
                 }}
             >
@@ -1454,12 +1437,11 @@ export default function InitPool() {
                         alignItems='center'
                         padding='0 16px'
                     >
-                        {' '}
                         <Spinner size={24} bg='var(--dark2)' weight={2} />
                     </FlexContainer>
                 ) : (
                     <CurrencyQuantityInput
-                        disabled={!isEditEnabled}
+                        readOnly={!isEditEnabled}
                         id='initial-pool-price-quantity'
                         placeholder={placeholderText}
                         type='string'
@@ -1480,7 +1462,6 @@ export default function InitPool() {
     const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
         if (tokenAorB === 'A') {
             setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked);
-            console.log('toggled');
         } else {
             setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked);
         }
