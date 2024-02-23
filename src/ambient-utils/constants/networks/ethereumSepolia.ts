@@ -1,6 +1,6 @@
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { sepolia as wagmiChain } from 'wagmi/chains';
-import { sepoliaETH, sepoliaUSDC } from '../defaultTokens';
+import { sepoliaETH, sepoliaUSDC, sepoliaWBTC } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 import { GCGO_TESTNET_URL } from '../gcgo';
@@ -20,6 +20,7 @@ export const ethereumSepolia: NetworkIF = {
     defaultPair: [sepoliaETH, sepoliaUSDC],
     topPools: [
         new TopPool(sepoliaETH, sepoliaUSDC, lookupChain('0xaa36a7').poolIndex),
+        new TopPool(sepoliaETH, sepoliaWBTC, lookupChain('0xaa36a7').poolIndex),
     ],
     getGasPriceInGwei: async () => {
         return 15;
