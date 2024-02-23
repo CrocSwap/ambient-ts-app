@@ -610,6 +610,7 @@ function Swap(props: propsIF) {
                         buyQtyString={buyQtyString}
                         isTokenAPrimary={isTokenAPrimary}
                         priceImpactWarning={priceImpactWarning}
+                        isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     />
                 ) : (
                     <></>

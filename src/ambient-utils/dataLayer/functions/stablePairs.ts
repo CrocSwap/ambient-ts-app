@@ -65,4 +65,5 @@ export const WETH_TOKENS = [
     '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // Mainnet
     '0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6', // Goerli
     '0x5300000000000000000000000000000000000004', // Scroll (test and main)
+    '0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14', // Sepolia
 ].map((x) => x.toLowerCase());
