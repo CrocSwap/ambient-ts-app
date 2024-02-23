@@ -89,7 +89,7 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
                         />
                     )}
                 </MenuItem>
-                <FaAngleDown />
+                <FaAngleDown style={{ marginLeft: '4px', marginTop: '2px' }} />
             </Menu>
             {isMenuOpen && dropdownMenuContent}
         </div>
