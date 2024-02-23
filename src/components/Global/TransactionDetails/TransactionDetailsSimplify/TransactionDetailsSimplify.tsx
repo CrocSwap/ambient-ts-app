@@ -14,13 +14,12 @@ import { getElapsedTime } from '../../../../ambient-utils/dataLayer';
 
 interface TransactionDetailsSimplifyPropsIF {
     tx: TransactionIF;
-    timeFirstMint: number | undefined;
     isAccountView: boolean;
 }
 
 // TODO: refactor to using styled-components
 function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
-    const { tx, timeFirstMint, isAccountView } = props;
+    const { tx, isAccountView } = props;
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -368,15 +367,15 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
               ]),
     ];
 
-    if (timeFirstMint && timeFirstMint !== tx.txTime) {
+    if (tx.timeFirstMint && tx.timeFirstMint !== tx.txTime) {
         infoContent.splice(2, 0, {
             title: 'Submit time ',
             content:
-                moment(timeFirstMint * 1000).format('MM/DD/YYYY HH:mm') +
+                moment(tx.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm') +
                 ' ' +
                 '(' +
                 getElapsedTime(
-                    moment(Date.now()).diff(timeFirstMint * 1000, 'seconds'),
+                    moment(Date.now()).diff(tx.timeFirstMint * 1000, 'seconds'),
                 ) +
                 ' ago)',
             explanation:

@@ -54,8 +54,6 @@ function TransactionDetailsModal(props: propsIF) {
         number | undefined
     >(1.01);
 
-    const [timeFirstMint, setTimeFirstMint] = useState<number | undefined>();
-
     useEffect(() => {
         const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
             ? GCGO_OVERRIDE_URL + '/position_stats?'
@@ -96,8 +94,6 @@ function TransactionDetailsModal(props: propsIF) {
                     cachedEnsResolve,
                     skipENSFetch,
                 );
-
-                setTimeFirstMint(positionStats.timeFirstMint);
 
                 tx.timeFirstMint = positionStats.timeFirstMint;
 
@@ -187,7 +183,6 @@ function TransactionDetailsModal(props: propsIF) {
                 ) : (
                     <TransactionDetailsSimplify
                         tx={tx}
-                        timeFirstMint={timeFirstMint}
                         isAccountView={isAccountView}
                     />
                 )}
