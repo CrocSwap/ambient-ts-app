@@ -910,6 +910,8 @@ export default function Chart(props: propsIF) {
                         if (wheelTimeout) {
                             clearTimeout(wheelTimeout);
                         }
+
+                        setPrevLastCandleTime(lastCandleData.time);
                         // check wheel end
                         wheelTimeout = setTimeout(() => {
                             setIsChartZoom(false);
@@ -1056,7 +1058,7 @@ export default function Chart(props: propsIF) {
                                 }
 
                                 clickedForLine = true;
-
+                                setPrevLastCandleTime(lastCandleData.time);
                                 calculateOrderHistoryTooltipPlacements();
 
                                 render();
