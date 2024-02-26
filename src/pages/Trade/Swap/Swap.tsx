@@ -31,6 +31,7 @@ import {
     TransactionError,
     isTransactionReplacedError,
     isTransactionFailedError,
+    parseErrorMessage,
 } from '../../../utils/TransactionError';
 import { swapTutorialSteps } from '../../../utils/tutorial/Swap';
 import { useApprove } from '../../../App/functions/approve';
@@ -424,7 +425,7 @@ function Swap(props: propsIF) {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
-            setTxErrorMessage(error?.error?.message);
+            setTxErrorMessage(parseErrorMessage(error));
         }
 
         if (tx) {

@@ -55,3 +55,24 @@ export function isTransactionFailedError(
 
     return false;
 }
+
+export function parseErrorMessage(error: any): string {
+    const errorMessage =
+        error?.error?.message ||
+        error?.data?.message ||
+        error?.response?.data?.message ||
+        error?.details ||
+        error?.shortMessage ||
+        error?.message ||
+        error;
+
+    if (typeof errorMessage === 'object') {
+        try {
+            return JSON.stringify(errorMessage);
+        } catch {
+            return String(errorMessage);
+        }
+    }
+
+    return String(errorMessage);
+}

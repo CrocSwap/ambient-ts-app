@@ -4,6 +4,7 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
+    parseErrorMessage,
     TransactionError,
 } from '../../utils/TransactionError';
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
@@ -152,7 +153,7 @@ export function useCreateRangePosition() {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
-            setTxErrorMessage(error?.error?.message);
+            setTxErrorMessage(parseErrorMessage(error));
         }
 
         let receipt;
