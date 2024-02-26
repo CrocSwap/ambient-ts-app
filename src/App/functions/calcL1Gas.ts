@@ -1,9 +1,5 @@
-import {
-    CrocEnv,
-    estimateScrollL1Gas,
-    getRawTransaction,
-} from '@crocswap-libs/sdk';
-import { BigNumber, Transaction } from 'ethers';
+import { CrocEnv, estimateScrollL1Gas } from '@crocswap-libs/sdk';
+import { BigNumber } from 'ethers';
 
 interface SimulateSwapParams {
     crocEnv: CrocEnv;
@@ -54,14 +50,12 @@ export const calcL1Gas = async (
     params: SimulateSwapParams,
 ): Promise<BigNumber | undefined> => {
     try {
-        getFauxRawTx(params).then(async (raw) => {
-            console.log({ raw });
+        return getFauxRawTx(params).then(async (raw) => {
             if (raw) {
                 const scrollL1GasEstimate = await estimateScrollL1Gas(
                     params.crocEnv,
                     raw,
                 );
-                console.log({ scrollL1GasEstimate });
 
                 return scrollL1GasEstimate;
             } else {
