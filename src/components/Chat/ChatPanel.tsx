@@ -77,6 +77,8 @@ function ChatPanel(props: propsIF) {
     const [selectedMessageforReply, setSelectedMessageForReply] = useState<
         Message | undefined
     >();
+    const [selectedMessageIdForDeletion, setSelectedMessageIdForDeletion] =
+        useState('');
 
     const [page, setPage] = useState(0);
     const [mentionIndex, setMentionIndex] = useState(-1);
@@ -105,6 +107,7 @@ function ChatPanel(props: propsIF) {
 
     const [showVerifyOldMessagesPanel, setShowVerifyOldMessagesPanel] =
         useState(false);
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
     const [confirmationPanelContent, setConfirmationPanelContent] = useState(0);
 
@@ -183,9 +186,8 @@ function ChatPanel(props: propsIF) {
     }
 
     function formatURL(url: string) {
-        if (!/^https?:\/\//i.test(url)) {
-            url = 'https://' + url;
-            return url;
+        if (/^https?:\/\//i.test(url)) {
+            url = url.replace(/^https?:\/\//i, '');
         }
         return url;
     }
@@ -597,6 +599,57 @@ function ChatPanel(props: propsIF) {
         setShowVerifyOldMessagesPanel(true);
     };
 
+    const verifyWalletWithMessage = (
+        verificationType: number,
+        startDate: Date,
+        // eslint-disable-next-line
+        e?: React.MouseEvent<HTMLDivElement>,
+    ) => {
+        if (e) e.stopPropagation();
+
+        if (isUserConnected == false)
+            activateToastr('Please connect your wallet first.', 'warning');
+
+        const message =
+            'Your wallet will be verified for chat. Please sign it for verification.';
+        let verifyDate = new Date();
+        setVerifyOldMessagesStartDate(startDate);
+        if (verificationType === 0) {
+            if (isVerified) return;
+        } else {
+            verifyDate = verifyOldMessagesStartDate;
+        }
+
+        window.ethereum
+            .request({
+                method: 'personal_sign',
+                params: [message, userAddress, ''],
+                // params: [message, '0x7D0CDcC61914001A5b9bF81063A2834119539911', ''],
+            })
+            // eslint-disable-next-line
+            .then((signedMessage: any) => {
+                verifyUser(signedMessage, verifyDate);
+                if (verifyOldMessagesStartDate) {
+                    setTimeout(() => {
+                        setShowVerifyOldMessagesPanel(false);
+                        updateUnverifiedMessages(
+                            verifyOldMessagesStartDate,
+                            new Date(),
+                        );
+                    }, 1000);
+                }
+                setLS(LS_USER_VERIFY_TOKEN, signedMessage, userAddress);
+                setTimeout(() => {
+                    updateUserCache();
+                    activateToastr('Your wallet is verified!', 'success');
+                }, 300);
+            })
+            // eslint-disable-next-line
+            .catch((error: any) => {
+                // Handle error
+            });
+    };
+
     const verifyWallet = (
         verificationType: number,
         verificationDate: Date,
@@ -779,7 +832,7 @@ function ChatPanel(props: propsIF) {
                             updateLikeDislike={updateLikeDislike}
                             socketRef={socketRef}
                             userMap={userMap}
-                            verifyWallet={verifyWallet}
+                            verifyWalletWithMessage={verifyWalletWithMessage}
                             isUserVerified={isVerified}
                             formatURL={formatURL}
                             isLinkInCrocodileLabsLinksForInput={
@@ -813,6 +866,16 @@ function ChatPanel(props: propsIF) {
                                 setUserSummaryActive(false);
                             }}
                             handleConfirmationDialog={handleConfirmationDialog}
+                            showDeleteConfirmation={showDeleteConfirmation}
+                            setShowDeleteConfirmation={
+                                setShowDeleteConfirmation
+                            }
+                            selectedMessageIdForDeletion={
+                                selectedMessageIdForDeletion
+                            }
+                            setSelectedMessageIdForDeletion={
+                                setSelectedMessageIdForDeletion
+                            }
                         />
                     );
                 })}
@@ -977,10 +1040,20 @@ function ChatPanel(props: propsIF) {
         />
     );
 
+    const handleConfirmDelete = async () => {
+        console.log('Deleting message with ID:', selectedMessageIdForDeletion);
+        deleteMsgFromList(selectedMessageIdForDeletion);
+        setShowDeleteConfirmation(false);
+    };
+
+    const handleCancelDelete = () => {
+        setShowDeleteConfirmation(false);
+    };
+
     const getConfirmationPanelContent = () => {
         switch (confirmationPanelContent) {
             case 1:
-                return 'Your old messages that sent from this browser will be verified, do you confirm?';
+                return 'Are you sure you want to delete this message?';
 
             case 2:
                 return 'These messages may not sent from this browser. Do you want to verify?';
@@ -1156,50 +1229,16 @@ function ChatPanel(props: propsIF) {
                     )}
                 </>
             )}
+            {showDeleteConfirmation && (
+                <ChatConfirmationPanel
+                    isActive={showDeleteConfirmation && isChatOpen}
+                    title='Delete Message'
+                    content='Are you sure you want to delete this message?'
+                    confirmListener={handleConfirmDelete}
+                    cancelListener={handleCancelDelete}
+                />
+            )}
 
-            <ChatConfirmationPanel
-                isActive={showVerifyOldMessagesPanel && isChatOpen}
-                title='Verify Old Messages'
-                content={getConfirmationPanelContent()}
-                cancelListener={() => {
-                    setShowVerifyOldMessagesPanel(false);
-                }}
-                confirmListener={async () => {
-                    if (!isVerified) {
-                        verifyBtnRef.current?.classList.add(styles.flashed);
-                        verifyUser('', new Date());
-                        setTimeout(() => {
-                            verifyBtnRef.current?.classList.remove(
-                                styles.flashed,
-                            );
-                        }, 1500);
-                        return activateToastr(
-                            'Please verify your wallet to verify old messages.',
-                            'warning',
-                        );
-                    }
-                    await updateUnverifiedMessages(
-                        verifyOldMessagesStartDate,
-                        confirmationPanelContent == 2
-                            ? new Date(
-                                  verifyOldMessagesStartDate.getTime() +
-                                      1000 * 60,
-                              )
-                            : undefined,
-                    );
-                    activateToastr(
-                        'Old messages verified successfully',
-                        'success',
-                    );
-                    setShowVerifyOldMessagesPanel(false);
-                }}
-            />
-            <ChatToaster
-                isActive={toastrActive && isChatOpen}
-                activator={setToastrActive}
-                text={toastrText}
-                type={toastrType}
-            />
             <DomDebugger />
         </div>
     );

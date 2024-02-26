@@ -53,9 +53,9 @@ interface SentMessageProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     socketRef: any;
     userMap?: Map<string, User>;
-    verifyWallet: (
+    verifyWalletWithMessage: (
         verificationType: number,
-        verificationDate: Date,
+        startDate: Date,
         e?: React.MouseEvent<HTMLDivElement>,
     ) => void;
     isUserVerified: boolean;
@@ -84,6 +84,12 @@ interface SentMessageProps {
         confirmationType: number,
         startDate: Date,
     ) => void;
+    showDeleteConfirmation: boolean;
+    setShowDeleteConfirmation: Dispatch<SetStateAction<boolean>>;
+    setSelectedMessageIdForDeletion: React.Dispatch<
+        React.SetStateAction<string>
+    >;
+    selectedMessageIdForDeletion: string;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
@@ -408,6 +414,14 @@ function SentMessagePanel(props: SentMessageProps) {
             }
         }
     }
+    const handleDeleteConfirm = () => {
+        deleteMsgFromList(props.message?._id || '');
+        props.setShowDeleteConfirmation(false); // Hide confirmation dialog
+    };
+
+    const handleDeleteCancel = () => {
+        props.setShowDeleteConfirmation(false); // Hide confirmation dialog
+    };
 
     // old chat message renderer function, keeping to comparing new render method, will be gone after code refactoration
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -836,6 +850,18 @@ function SentMessagePanel(props: SentMessageProps) {
                                     isUserVerified={props.isUserVerified}
                                     tsForRefresh={timestampForChildRefresh}
                                     deleteMessageFromList={deleteMsgFromList}
+                                    showDeleteConfirmation={
+                                        props.showDeleteConfirmation
+                                    }
+                                    setShowDeleteConfirmation={
+                                        props.setShowDeleteConfirmation
+                                    }
+                                    setSelectedMessageIdForDeletion={
+                                        props.setSelectedMessageIdForDeletion
+                                    }
+                                    selectedMessageIdForDeletion={
+                                        props.selectedMessageIdForDeletion
+                                    }
                                 />
                             )}
                         </div>
@@ -993,7 +1019,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                                                 styles.update_verify_date_icon
                                                             }
                                                             onClick={() => {
-                                                                props.handleConfirmationDialog(
+                                                                props.verifyWalletWithMessage(
                                                                     checkLocalStorage(
                                                                         props
                                                                             .message
