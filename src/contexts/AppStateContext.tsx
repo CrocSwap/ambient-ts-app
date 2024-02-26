@@ -101,10 +101,10 @@ export const AppStateContextProvider = (props: {
     ] = useModal();
 
     const pointsModalDismissalDuration =
-        DEFAULT_CTA_DISMISSAL_DURATION_MINUTES || 0;
+        DEFAULT_CTA_DISMISSAL_DURATION_MINUTES || 5;
 
     const pointsBannerDismissalDuration =
-        DEFAULT_CTA_DISMISSAL_DURATION_MINUTES || 0;
+        DEFAULT_CTA_DISMISSAL_DURATION_MINUTES || 5;
 
     const [showPointSystemPopup, setShowPointSystemPopup] = useState(
         (getCtaDismissalsFromLocalStorage().find(
