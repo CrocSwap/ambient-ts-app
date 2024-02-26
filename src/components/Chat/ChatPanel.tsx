@@ -185,10 +185,8 @@ function ChatPanel(props: propsIF) {
     }
 
     function formatURL(url: string) {
-        console.log('Url: ', url);
         if (/^https?:\/\//i.test(url)) {
             url = url.replace(/^https?:\/\//i, '');
-            console.log('parsed url: ', url);
         }
         return url;
     }
