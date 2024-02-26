@@ -2101,10 +2101,10 @@
     date-fns "^2.30.0"
     typescript "^5.1.6"
 
-"@crocswap-libs/sdk@^0.2.80":
-  version "0.2.80"
-  resolved "https://registry.yarnpkg.com/@crocswap-libs/sdk/-/sdk-0.2.80.tgz#21fb9491751efc47e6ae6cc45abcfff585f3e4f1"
-  integrity sha512-tOjhLI6NfW57PEsnWnMwE+vU/hM3rh4t0BRjtGfADW1eWKxM0P9noPD1M7xigm5IfrnMUdo61fMx+z8cNJC8Nw==
+"@crocswap-libs/sdk@^0.2.88":
+  version "0.2.88"
+  resolved "https://registry.yarnpkg.com/@crocswap-libs/sdk/-/sdk-0.2.88.tgz#a6b5e2ae05c78f2073b32e3abe4a363904c5413d"
+  integrity sha512-ZXFageuSX8A5NtZ7N6UnAYpjg+XZuV5KxJZaiKVr7tFGJvU7hg1qucRLjiapd4grI03qQY8NGQ8sj7Rf49RoCw==
   dependencies:
     ethers "^5.5.3"
 

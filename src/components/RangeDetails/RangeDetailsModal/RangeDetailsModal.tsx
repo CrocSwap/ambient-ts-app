@@ -189,11 +189,7 @@ function RangeDetailsModal(props: propsIF) {
                         }),
                     );
 
-                    setUpdatedPositionApy(
-                        positionStats.aprEst
-                            ? positionStats.aprEst * 100
-                            : undefined,
-                    );
+                    setUpdatedPositionApy(positionStats.aprEst * 100);
 
                     const baseFeeDisplayNum =
                         positionStats.feesLiqBaseDecimalCorrected;

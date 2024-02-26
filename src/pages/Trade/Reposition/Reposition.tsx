@@ -32,6 +32,7 @@ import {
     getPositionData,
     getFormattedNumber,
     getPinnedPriceValuesFromTicks,
+    isStablePair,
 } from '../../../ambient-utils/dataLayer';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
@@ -68,7 +69,9 @@ function Reposition() {
     } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
-    const { bypassConfirmRepo } = useContext(UserPreferenceContext);
+    const { bypassConfirmRepo, repoSlippage } = useContext(
+        UserPreferenceContext,
+    );
     const {
         addPendingTx,
         addReceipt,
@@ -124,6 +127,13 @@ function Reposition() {
     }
 
     const { position } = locationHook.state as { position: PositionIF };
+
+    const slippageTolerancePercentage = isStablePair(
+        position.base,
+        position.quote,
+    )
+        ? repoSlippage.stable
+        : repoSlippage.volatile;
 
     const { posHashTruncated } = useProcessRange(position);
 
@@ -296,11 +306,15 @@ function Reposition() {
 
         try {
             const pool = crocEnv.pool(position.base, position.quote);
-            const repo = new CrocReposition(pool, {
-                liquidity: concLiq,
-                burn: [position.bidTick, position.askTick],
-                mint: mintArgsForReposition(pinnedLowTick, pinnedHighTick),
-            });
+            const repo = new CrocReposition(
+                pool,
+                {
+                    liquidity: concLiq,
+                    burn: [position.bidTick, position.askTick],
+                    mint: mintArgsForReposition(pinnedLowTick, pinnedHighTick),
+                },
+                { impact: slippageTolerancePercentage / 100 },
+            );
 
             tx = await repo.rebal();
             setNewRepositionTransactionHash(tx?.hash);
@@ -323,6 +337,9 @@ function Reposition() {
                         lowTick: pinnedLowTick,
                         highTick: pinnedHighTick,
                         gridSize: lookupChain(position.chainId).gridSize,
+                        originalLowTick: position.bidTick,
+                        originalHighTick: position.askTick,
+                        isBid: position.positionLiqQuote === 0,
                     },
                 });
                 const posHash = getPositionHash(position);
@@ -341,7 +358,8 @@ function Reposition() {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
-            setTxErrorMessage(error?.data?.message);
+
+            setTxErrorMessage(error?.error?.message);
         }
 
         let receipt;
@@ -419,6 +437,7 @@ function Reposition() {
 
     const [currentBaseQtyDisplayTruncated, setCurrentBaseQtyDisplayTruncated] =
         useState<string>(position?.positionLiqBaseTruncated || '0.00');
+
     const [
         currentQuoteQtyDisplayTruncated,
         setCurrentQuoteQtyDisplayTruncated,
@@ -763,6 +782,7 @@ function Reposition() {
                     }
                     isTokenABase={isTokenABase}
                     onClose={handleModalClose}
+                    slippageTolerance={slippageTolerancePercentage}
                 />
             )}
         </>

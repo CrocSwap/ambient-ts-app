@@ -424,7 +424,7 @@ function Swap(props: propsIF) {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
-            setTxErrorMessage(error?.data?.message);
+            setTxErrorMessage(error?.error?.message);
         }
 
         if (tx) {
@@ -610,6 +610,7 @@ function Swap(props: propsIF) {
                         buyQtyString={buyQtyString}
                         isTokenAPrimary={isTokenAPrimary}
                         priceImpactWarning={priceImpactWarning}
+                        isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     />
                 ) : (
                     <></>

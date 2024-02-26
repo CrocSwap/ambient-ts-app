@@ -260,14 +260,15 @@ export default function PriceInfo(props: propsIF) {
                 </div>
 
                 {priceStatusContent}
-                <Apy
-                    amount={positionApy || undefined}
-                    fs='48px'
-                    lh='60px'
-                    fw='300px'
-                    center
-                    showTitle
-                />
+                {positionApy !== 0 ? (
+                    <Apy
+                        amount={positionApy}
+                        fs='48px'
+                        lh='60px'
+                        center
+                        showTitle
+                    />
+                ) : undefined}
             </div>
         </div>
     );

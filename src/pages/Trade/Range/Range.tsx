@@ -1090,6 +1090,7 @@ function Range() {
                             pinnedMaxPriceDisplayTruncatedInQuote
                         }
                         onClose={handleModalClose}
+                        slippageTolerance={slippageTolerancePercentage}
                     />
                 ) : (
                     <></>

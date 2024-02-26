@@ -448,6 +448,7 @@ function Transactions(props: propsIF) {
         rowsPerPage,
         changeRowsPerPage,
         count,
+        fullData,
     } = _DATA;
     const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
         setPage(p);
@@ -593,6 +594,7 @@ function Transactions(props: propsIF) {
                                             lowTick: tx.txDetails?.lowTick,
                                             highTick: tx.txDetails?.highTick,
                                             gridSize: tx.txDetails?.gridSize,
+                                            isBid: tx.txDetails?.isBid,
                                         },
                                     }}
                                     tableView={tableView}
@@ -642,8 +644,10 @@ function Transactions(props: propsIF) {
                                             quoteTokenDecimals:
                                                 tx.txDetails
                                                     ?.quoteTokenDecimals,
-                                            lowTick: tx.txDetails?.lowTick,
-                                            highTick: tx.txDetails?.highTick,
+                                            lowTick:
+                                                tx.txDetails?.originalLowTick,
+                                            highTick:
+                                                tx.txDetails?.originalHighTick,
                                             gridSize: tx.txDetails?.gridSize,
                                         },
                                     }}
@@ -655,6 +659,7 @@ function Transactions(props: propsIF) {
                 <TableRows
                     type='Transaction'
                     data={_DATA.currentData}
+                    fullData={fullData}
                     tableView={tableView}
                     isAccountView={isAccountView}
                 />

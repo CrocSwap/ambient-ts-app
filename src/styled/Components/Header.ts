@@ -606,7 +606,7 @@ export const NetworkItem = styled(motion.li)`
     flex-direction: row;
     align-items: center;
     transition: background 500ms;
-    padding: 8px 0;
+    padding: 4px;
     cursor: pointer;
     text-decoration: none;
 
@@ -620,7 +620,7 @@ export const NetworkItem = styled(motion.li)`
 export const ChainNameStatus = styled.div<{ active: boolean }>`
     display: flex;
     align-items: center;
-    padding: 0.6rem 0;
+    padding: 8px 0;
     font-size: var(--header2-size);
     width: 100%;
     color: var(--text1);

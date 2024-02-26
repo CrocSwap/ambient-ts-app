@@ -23,7 +23,8 @@ import { Text } from '../../../../styled/Common';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import cantoLogo from '../../../../assets/images/networks/canto.png';
 import scrollLogo from '../../../../assets/images/networks/scroll.png';
-import ETH from '../../../../assets/images/tokens/ETH.png';
+import ETH from '../../../../assets/images/logos/eth-diamond-purple.png';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 interface propsIF {
     switchNetwork: ((chainId_?: number | undefined) => void) | undefined;
@@ -108,9 +109,9 @@ export default function NetworkSelector(props: propsIF) {
                 <img
                     src={ETH}
                     alt='ethereum mainnet network'
-                    width='21px'
-                    height='21px'
-                    style={{ borderRadius: '50%' }}
+                    width='17px'
+                    height='22px'
+                    style={{ borderRadius: '50%', marginLeft: '2px' }}
                 />
                 <Text color={chainId === '0x1' ? 'accent1' : 'white'}>
                     Ethereum
@@ -130,23 +131,13 @@ export default function NetworkSelector(props: propsIF) {
             tabIndex={0}
         >
             <ChainNameStatus tabIndex={0} active={chainId === '0x82750'}>
-                <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    width='21px'
-                    height='21px'
-                    viewBox='0 0 20 14'
-                    fill='none'
-                >
-                    <path
-                        d='M15.7589 6.99084L18.9128 5.41927L20 2.08235L17.8256 0.5H3.34769L0 2.98654H17.0183L16.1141 5.78525H9.28956L8.63294 7.83045H15.4575L13.5414 13.7185L16.7384 12.1362L17.8794 8.60548L15.7374 7.0339L15.7589 6.99084Z'
-                        fill='#FCFC03'
-                    />
-                    <path
-                        d='M4.81162 11.1889L6.78148 5.05331L4.59633 3.41714L1.31323 13.7185H13.5414L14.3595 11.1889H4.81162Z'
-                        fill='#FCFC03'
-                    />
-                </svg>
-
+                <img
+                    src={scrollLogo}
+                    alt='scroll network'
+                    width='22px'
+                    height='22px'
+                    style={{ borderRadius: '50%' }}
+                />
                 <Text color={chainId === '0x82750' ? 'accent1' : 'white'}>
                     {' Blast'}
                 </Text>
@@ -154,31 +145,33 @@ export default function NetworkSelector(props: propsIF) {
         </NetworkItem>
     );
 
-    // // JSX element to select scroll network
-    // const scrollNetwork: JSX.Element = (
-    //     <NetworkItem
-    //         id='scroll_network_selector'
-    //         onClick={() => handleClick(chainMap.get('0x82750'))}
-    //         key='scroll'
-    //         custom={0}
-    //         variants={ItemEnterAnimation}
-    //         tabIndex={0}
-    //     >
-    //         <ChainNameStatus tabIndex={0} active={chainId === '0x82750'}>
-
-    //             <img
-    //                 src={scrollLogo}
-    //                 alt='scroll network'
-    //                 width='21px'
-    //                 height='21px'
-    //                 style={{ borderRadius: '50%' }}
-    //             />
-    //             <Text color={chainId === '0x82750' ? 'accent1' : 'white'}>
-    //                 {'Scroll'}
-    //             </Text>
-    //         </ChainNameStatus>
-    //     </NetworkItem>
-    // );
+    // JSX element to select scroll sepolia network
+    const scrollSepoliaNetwork: JSX.Element = (
+        <NetworkItem
+            id='scroll_sepolia_network_selector'
+            onClick={() => handleClick(chainMap.get('0x8274f'))}
+            key='scroll-scroll'
+            custom={0}
+            variants={ItemEnterAnimation}
+            tabIndex={0}
+        >
+            <ChainNameStatus tabIndex={0} active={chainId === '0x8274f'}>
+                <img
+                    src={scrollLogo}
+                    alt='scroll sepolia network'
+                    width='22px'
+                    height='22px'
+                    style={{ borderRadius: '50%' }}
+                />
+                <Text color={chainId === '0x8274f' ? 'accent1' : 'white'}>
+                    Sepolia
+                </Text>
+                <Text color={'accent1'} fontSize={'mini'} marginLeft='35px'>
+                    Testnet
+                </Text>
+            </ChainNameStatus>
+        </NetworkItem>
+    );
 
     // JSX element to select canto network (external link)
     const cantoNetwork: JSX.Element = (
@@ -201,7 +194,7 @@ export default function NetworkSelector(props: propsIF) {
                 <Text color='white' marginRight='10px'>
                     Canto
                 </Text>
-                <RiExternalLinkLine size={14} />
+                <RiExternalLinkLine size={14} style={{ marginLeft: '55px' }} />
             </ChainNameStatus>
         </NetworkItem>
     );
@@ -220,9 +213,9 @@ export default function NetworkSelector(props: propsIF) {
                 <img
                     src={ETH}
                     alt='goerli network'
-                    width='21px'
-                    height='21px'
-                    style={{ borderRadius: '50%' }}
+                    width='17px'
+                    height='22px'
+                    style={{ borderRadius: '50%', marginLeft: '2px' }}
                 />
                 <Text color={chainId === '0x5' ? 'accent1' : 'white'}>
                     Görli
@@ -236,22 +229,28 @@ export default function NetworkSelector(props: propsIF) {
     const sepoliaNetwork: JSX.Element = (
         <NetworkItem
             id='sepolia_network_selector'
-            onClick={() => handleClick(chainMap.get('0x8274f'))}
+            onClick={() => handleClick(chainMap.get('0xaa36a7'))}
             key='sepolia'
             custom={0}
             variants={ItemEnterAnimation}
             tabIndex={0}
         >
-            <ChainNameStatus tabIndex={0} active={chainId === '0x8274f'}>
+            <ChainNameStatus tabIndex={0} active={chainId === '0xaa36a7'}>
                 <img
-                    src={scrollLogo}
-                    alt='scroll network'
-                    width='21px'
-                    height='21px'
-                    style={{ borderRadius: '50%' }}
+                    src={ETH}
+                    alt='sepolia network'
+                    width='17px'
+                    height='22px'
+                    style={{
+                        borderRadius: '50%',
+                        marginLeft: '2px',
+                    }}
                 />
-                <Text color={chainId === '0x8274f' ? 'accent1' : 'white'}>
+                <Text color={chainId === '0xaa36a7' ? 'accent1' : 'white'}>
                     Sepolia
+                </Text>
+                <Text color={'accent1'} fontSize={'mini'} marginLeft='35px'>
+                    Testnet
                 </Text>
             </ChainNameStatus>
         </NetworkItem>
@@ -267,10 +266,13 @@ export default function NetworkSelector(props: propsIF) {
                 <DropdownMenu2
                     marginTop={'50px'}
                     titleWidth={'80px'}
-                    title={'Blast'}
-                    // title={lookupChain(chainId).displayName}
+                    title={lookupChain(chainId).displayName}
                     logo={
-                        'https://deploy-preview-3380--ambient-finance.netlify.app/blast_logo.jpeg'
+                        lookupChain(chainId)
+                            .displayName.toLowerCase()
+                            .includes('scroll')
+                            ? scrollLogo
+                            : ETH
                     }
                 >
                     <MenuContent
@@ -280,8 +282,9 @@ export default function NetworkSelector(props: propsIF) {
                         {chainMap.has('0x1') && ethereumNetwork}
                         {chainMap.has('0x82750') && scrollNetwork}
                         {INCLUDE_CANTO_LINK && cantoNetwork}
+                        {chainMap.has('0xaa36a7') && sepoliaNetwork}
+                        {chainMap.has('0x8274f') && scrollSepoliaNetwork}
                         {chainMap.has('0x5') && goerliNetwork}
-                        {chainMap.has('0x8274f') && sepoliaNetwork}
                     </MenuContent>
                 </DropdownMenu2>
             </DropdownMenuContainer>

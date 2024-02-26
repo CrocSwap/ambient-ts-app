@@ -21,7 +21,6 @@ export const useAppChain = (): {
     // metadata on chain authenticated in connected wallet
     const { chain: chainNetwork, chains: chns } = useNetwork();
     const { switchNetwork } = useSwitchNetwork();
-
     // hook to generate navigation actions with pre-loaded path
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
     const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
@@ -180,7 +179,6 @@ export const useAppChain = (): {
 
     function findNetworkData(chn: keyof typeof supportedNetworks): NetworkIF {
         const output = supportedNetworks[chn];
-        // console.log(output);
         return output;
     }
     // logic to update `activeNetwork` when the connected wallet changes networks

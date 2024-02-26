@@ -397,6 +397,10 @@ export default function Chart(props: propsIF) {
         setSelectedOutsideTab,
     } = useContext(TradeTableContext);
 
+    const isShowLatestCandle = useMemo(() => {
+        return checkShowLatestCandle(period, scaleData?.xScale);
+    }, [period, diffHashSigScaleData(scaleData, 'x')]);
+
     const unparsedCandleData = useMemo(() => {
         const data = unparsedData.candles
             .sort((a, b) => b.time - a.time)
@@ -404,11 +408,6 @@ export default function Chart(props: propsIF) {
                 ...item,
                 isFakeData: false,
             }));
-
-        const isShowLatestCandle = checkShowLatestCandle(
-            period,
-            scaleData?.xScale,
-        );
 
         if (
             poolPriceWithoutDenom &&
@@ -468,7 +467,11 @@ export default function Chart(props: propsIF) {
         }
 
         return data;
-    }, [diffHashSigChart(unparsedData.candles), poolPriceWithoutDenom]);
+    }, [
+        diffHashSigChart(unparsedData.candles),
+        poolPriceWithoutDenom,
+        isShowLatestCandle,
+    ]);
 
     const calculateVisibleCandles = (
         scaleData: scaleData | undefined,
@@ -907,6 +910,8 @@ export default function Chart(props: propsIF) {
                         if (wheelTimeout) {
                             clearTimeout(wheelTimeout);
                         }
+
+                        setPrevLastCandleTime(lastCandleData.time);
                         // check wheel end
                         wheelTimeout = setTimeout(() => {
                             setIsChartZoom(false);
@@ -1053,7 +1058,7 @@ export default function Chart(props: propsIF) {
                                 }
 
                                 clickedForLine = true;
-
+                                setPrevLastCandleTime(lastCandleData.time);
                                 calculateOrderHistoryTooltipPlacements();
 
                                 render();
