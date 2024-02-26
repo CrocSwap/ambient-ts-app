@@ -265,7 +265,7 @@ export default function MessageInput(props: MessageInputProps) {
             } else {
                 // send msg if ment panel is not active
                 if (!mentPanelActive) {
-                    handleSendMsg(e.target.value, roomId);
+                    handleSendMsg(props.formatURL(message), roomId);
                     setMentUser(null);
                     setPossibleMentUser(null);
                     setMessage('');

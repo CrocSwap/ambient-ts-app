@@ -18,6 +18,10 @@ interface propsIF {
     tsForRefresh: number;
     setFlipped: (val: boolean) => void;
     deleteMessageFromList: (id: string) => void;
+    showDeleteConfirmation: boolean;
+    setShowDeleteConfirmation: Dispatch<SetStateAction<boolean>>;
+    selectedMessageIdForDeletion: string;
+    setSelectedMessageIdForDeletion: Dispatch<SetStateAction<string>>;
 }
 export default function Options(props: propsIF) {
     const [showDetailsGroup, setShowDetailsGroup] = useState(false);
@@ -99,9 +103,12 @@ export default function Options(props: propsIF) {
                 className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font} ${styles.options_node}  ${styles.sub_options_node} `}
             >
                 <AiOutlineDelete
-                    onClick={() =>
-                        props.deleteMessageFromList(props.message?._id || '')
-                    }
+                    onClick={() => {
+                        props.setShowDeleteConfirmation(true);
+                        props.setSelectedMessageIdForDeletion(
+                            props.message ? props.message._id : '',
+                        );
+                    }}
                     size={14}
                 />
             </p>
