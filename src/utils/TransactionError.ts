@@ -56,6 +56,7 @@ export function isTransactionFailedError(
     return false;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function parseErrorMessage(error: any): string {
     const errorMessage =
         error?.error?.message ||
