@@ -33,7 +33,7 @@ function RangeExtraInfo(props: propsIF) {
         {
             title: 'Slippage Tolerance',
             tooltipTitle: 'This can be changed in settings.',
-            data: `±${slippageTolerance}%`,
+            data: `${slippageTolerance}%`,
         },
         {
             title: 'Current Provider Fee',
