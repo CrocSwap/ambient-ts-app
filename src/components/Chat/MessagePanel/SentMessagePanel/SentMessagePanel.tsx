@@ -414,14 +414,6 @@ function SentMessagePanel(props: SentMessageProps) {
             }
         }
     }
-    const handleDeleteConfirm = () => {
-        deleteMsgFromList(props.message?._id || '');
-        props.setShowDeleteConfirmation(false); // Hide confirmation dialog
-    };
-
-    const handleDeleteCancel = () => {
-        props.setShowDeleteConfirmation(false); // Hide confirmation dialog
-    };
 
     // old chat message renderer function, keeping to comparing new render method, will be gone after code refactoration
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

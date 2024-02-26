@@ -14,7 +14,6 @@ import NotFound from '../../pages/NotFound/NotFound';
 import DividerDark from '../Global/DividerDark/DividerDark';
 import ChatConfirmationPanel from './ChatConfirmationPanel/ChatConfirmationPanel';
 import styles from './ChatPanel.module.css';
-import ChatToaster from './ChatToaster/ChatToaster';
 import { LS_USER_VERIFY_TOKEN, setLS } from './ChatUtils';
 import DomDebugger from './DomDebugger/DomDebugger';
 import FullChat from './FullChat/FullChat';
@@ -461,7 +460,7 @@ function ChatPanel(props: propsIF) {
             room === 'Admins'
                 ? await getAllMessages(nextPage)
                 : await getMsgWithRestWithPagination(room, nextPage);
-        if (data.length === 0 || data.length < 20) {
+        if (data.length === 0) {
             setShowPreviousMessagesButton(false);
         } else {
             const scrollContainer = messageEnd.current; // Referring to the scrollable container
