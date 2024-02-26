@@ -594,6 +594,7 @@ function Transactions(props: propsIF) {
                                             lowTick: tx.txDetails?.lowTick,
                                             highTick: tx.txDetails?.highTick,
                                             gridSize: tx.txDetails?.gridSize,
+                                            isBid: tx.txDetails?.isBid,
                                         },
                                     }}
                                     tableView={tableView}
@@ -643,8 +644,10 @@ function Transactions(props: propsIF) {
                                             quoteTokenDecimals:
                                                 tx.txDetails
                                                     ?.quoteTokenDecimals,
-                                            lowTick: tx.txDetails?.lowTick,
-                                            highTick: tx.txDetails?.highTick,
+                                            lowTick:
+                                                tx.txDetails?.originalLowTick,
+                                            highTick:
+                                                tx.txDetails?.originalHighTick,
                                             gridSize: tx.txDetails?.gridSize,
                                         },
                                     }}

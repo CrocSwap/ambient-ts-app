@@ -337,6 +337,9 @@ function Reposition() {
                         lowTick: pinnedLowTick,
                         highTick: pinnedHighTick,
                         gridSize: lookupChain(position.chainId).gridSize,
+                        originalLowTick: position.bidTick,
+                        originalHighTick: position.askTick,
+                        isBid: position.positionLiqQuote === 0,
                     },
                 });
                 const posHash = getPositionHash(position);
@@ -434,6 +437,7 @@ function Reposition() {
 
     const [currentBaseQtyDisplayTruncated, setCurrentBaseQtyDisplayTruncated] =
         useState<string>(position?.positionLiqBaseTruncated || '0.00');
+
     const [
         currentQuoteQtyDisplayTruncated,
         setCurrentQuoteQtyDisplayTruncated,
