@@ -244,9 +244,9 @@ export const scrollwstETH: TokenIF = {
 };
 
 export const scrollUSDC: TokenIF = {
-    name: 'USDBlast',
+    name: 'USDCoin',
     address: '0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4',
-    symbol: 'USDB',
+    symbol: 'USDC',
     decimals: 6,
     chainId: 534352,
     logoURI:

@@ -68,19 +68,11 @@ export const getLimitOrderData = async (
     newOrder.quoteDecimals = quoteTokenDecimals;
 
     newOrder.baseSymbol = (await baseMetadata)?.symbol ?? '';
-    newOrder.baseSymbol =
-        newOrder.baseSymbol === 'USDC' ? 'USDB' : newOrder.baseSymbol;
 
     newOrder.quoteSymbol = (await quoteMetadata)?.symbol ?? '';
-    newOrder.quoteSymbol =
-        newOrder.quoteSymbol === 'USDC' ? 'USDB' : newOrder.quoteSymbol;
 
     newOrder.baseName = (await baseMetadata)?.name ?? '';
     newOrder.quoteName = (await quoteMetadata)?.name ?? '';
-    newOrder.baseName =
-        newOrder.baseSymbol === 'USDB' ? 'USDBlast' : newOrder.baseName;
-    newOrder.quoteName =
-        newOrder.quoteSymbol === 'USDB' ? 'USDBlast' : newOrder.quoteName;
 
     const baseTokenLogoURI = tokensOnChain.find(
         (token) =>

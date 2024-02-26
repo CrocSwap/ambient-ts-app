@@ -81,19 +81,11 @@ export const getPositionData = async (
     newPosition.quoteDecimals = quoteTokenDecimals;
 
     newPosition.baseSymbol = (await baseMetadata)?.symbol ?? '';
-    newPosition.baseSymbol =
-        newPosition.baseSymbol === 'USDC' ? 'USDB' : newPosition.baseSymbol;
 
     newPosition.quoteSymbol = (await quoteMetadata)?.symbol ?? '';
-    newPosition.quoteSymbol =
-        newPosition.quoteSymbol === 'USDC' ? 'USDB' : newPosition.quoteSymbol;
 
     newPosition.baseName = (await baseMetadata)?.name ?? '';
-    newPosition.baseName =
-        newPosition.baseSymbol === 'USDB' ? 'USDBlast' : newPosition.baseName;
     newPosition.quoteName = (await quoteMetadata)?.name ?? '';
-    newPosition.quoteName =
-        newPosition.quoteSymbol === 'USDB' ? 'USDBlast' : newPosition.quoteName;
 
     const lowerPriceNonDisplay = tickToPrice(position.bidTick);
     const upperPriceNonDisplay = tickToPrice(position.askTick);

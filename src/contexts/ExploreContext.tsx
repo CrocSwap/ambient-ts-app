@@ -60,15 +60,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const [extraPools, setExtraPools] = useState<Array<PoolDataIF>>([]);
 
     const allPools = useMemo(
-        () =>
-            limitedPools
-                .concat(extraPools)
-                // filter out USDT and wstETH for Blast demo
-                .filter(
-                    (pool) =>
-                        pool.quote.symbol !== 'USDT' &&
-                        pool.quote.symbol !== 'wstETH',
-                ),
+        () => limitedPools.concat(extraPools),
         [limitedPools, extraPools],
     );
 
@@ -269,15 +261,18 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             );
             return !(baseToken && quoteToken);
         });
+        console.log({ poolList, ambientTokens, extraPoolList });
 
         const extraPoolData = extraPoolList.map((pool: PoolIF) =>
             getPoolData(pool, crocEnv, chainId),
         );
         Promise.all(extraPoolData)
             .then((results: Array<PoolDataIF>) => {
+                console.log({ results });
                 const filteredPoolData = results.filter(
                     (pool) => pool.spotPrice > 0,
                 );
+                console.log({ filteredPoolData });
                 setExtraPools(filteredPoolData);
             })
             .catch((err) => {
