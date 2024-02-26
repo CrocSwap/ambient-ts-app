@@ -495,6 +495,12 @@ function ChatPanel(props: propsIF) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleScroll = (e: any) => {
+        console.log(
+            e.target.scrollTop,
+            e.target.clientHeight,
+            e.target.scrollHeight,
+            messages.length,
+        );
         const tolerance = 0.6;
 
         if (
