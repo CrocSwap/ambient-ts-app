@@ -261,18 +261,15 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             );
             return !(baseToken && quoteToken);
         });
-        console.log({ poolList, ambientTokens, extraPoolList });
 
         const extraPoolData = extraPoolList.map((pool: PoolIF) =>
             getPoolData(pool, crocEnv, chainId),
         );
         Promise.all(extraPoolData)
             .then((results: Array<PoolDataIF>) => {
-                console.log({ results });
                 const filteredPoolData = results.filter(
                     (pool) => pool.spotPrice > 0,
                 );
-                console.log({ filteredPoolData });
                 setExtraPools(filteredPoolData);
             })
             .catch((err) => {
