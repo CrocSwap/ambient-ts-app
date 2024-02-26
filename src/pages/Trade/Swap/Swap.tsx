@@ -49,6 +49,7 @@ import {
 } from '../../../ambient-utils/constants/';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import { calcL1Gas } from '../../../App/functions/calcL1Gas';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -322,13 +323,6 @@ function Swap(props: propsIF) {
             const costOfScrollSwapInETH =
                 gasPriceInGwei * averageSwapCostInGasDrops * NUM_GWEI_IN_WEI;
 
-            // IS_LOCAL_ENV &&
-            //     console.log({
-            //         gasPriceInGwei,
-            //         costOfScrollSwapInETH,
-            //         amountToReduceNativeTokenQtyScroll,
-            //     });
-
             setAmountToReduceNativeTokenQtyScroll(
                 SWAP_BUFFER_MULTIPLIER_SCROLL * costOfScrollSwapInETH,
             );
@@ -338,6 +332,15 @@ function Swap(props: propsIF) {
                 averageSwapCostInGasDrops *
                 NUM_GWEI_IN_WEI *
                 ethMainnetUsdPrice;
+
+            IS_LOCAL_ENV &&
+                console.log({
+                    gasPriceInGwei,
+                    costOfScrollSwapInETH,
+                    amountToReduceNativeTokenQtyScroll,
+                    ethMainnetUsdPrice,
+                    gasPriceInDollarsNum,
+                });
 
             setSwapGasPriceinDollars(
                 getFormattedNumber({
@@ -352,6 +355,39 @@ function Swap(props: propsIF) {
         isSellTokenNativeToken,
         isWithdrawFromDexChecked,
         isTokenADexSurplusSufficient,
+        isSaveAsDexSurplusChecked,
+    ]);
+
+    useEffect(() => {
+        (async () => {
+            if (!crocEnv) return;
+
+            const qty = isTokenAPrimary
+                ? sellQtyString.replaceAll(',', '')
+                : buyQtyString.replaceAll(',', '');
+
+            const l1Gas = await calcL1Gas({
+                crocEnv,
+                isQtySell: isTokenAPrimary,
+                qty,
+                buyTokenAddress: tokenB.address,
+                sellTokenAddress: tokenA.address,
+                slippageTolerancePercentage,
+                isWithdrawFromDexChecked,
+                isSaveAsDexSurplusChecked,
+            });
+
+            console.log({ l1Gas });
+        })();
+    }, [
+        crocEnv,
+        isTokenAPrimary,
+        sellQtyString,
+        buyQtyString,
+        tokenA.address,
+        tokenB.address,
+        slippageTolerancePercentage,
+        isWithdrawFromDexChecked,
         isSaveAsDexSurplusChecked,
     ]);
 
