@@ -3,8 +3,7 @@ import {
     estimateScrollL1Gas,
     getRawTransaction,
 } from '@crocswap-libs/sdk';
-import { TransactionResponse } from '@ethersproject/providers';
-import { BigNumber } from 'ethers';
+import { BigNumber, Transaction } from 'ethers';
 
 interface SimulateSwapParams {
     crocEnv: CrocEnv;
@@ -16,9 +15,9 @@ interface SimulateSwapParams {
     isWithdrawFromDexChecked?: boolean;
     isSaveAsDexSurplusChecked?: boolean;
 }
-export const getSimulatedTx = async (
+export const getFauxRawTx = async (
     params: SimulateSwapParams,
-): Promise<TransactionResponse | undefined> => {
+): Promise<`0x${string}` | undefined> => {
     const {
         crocEnv,
         isQtySell,
@@ -38,13 +37,13 @@ export const getSimulatedTx = async (
                   slippage: slippageTolerancePercentage / 100,
               });
 
-        const tx = await plan.simulate({
+        const raw = await plan.getFauxRawTx({
             settlement: {
                 sellDexSurplus: isWithdrawFromDexChecked,
                 buyDexSurplus: isSaveAsDexSurplusChecked,
             },
         });
-        return tx;
+        return raw;
     } catch (e) {
         console.log({ e });
         return undefined;
@@ -55,14 +54,12 @@ export const calcL1Gas = async (
     params: SimulateSwapParams,
 ): Promise<BigNumber | undefined> => {
     try {
-        getSimulatedTx(params).then((tx) => {
-            console.log({ tx });
-            if (tx) {
-                const rawTx = getRawTransaction(tx);
-                console.log({ rawTx });
-                const scrollL1GasEstimate = estimateScrollL1Gas(
+        getFauxRawTx(params).then(async (raw) => {
+            console.log({ raw });
+            if (raw) {
+                const scrollL1GasEstimate = await estimateScrollL1Gas(
                     params.crocEnv,
-                    rawTx as `0x${string}`,
+                    raw,
                 );
                 console.log({ scrollL1GasEstimate });
 
