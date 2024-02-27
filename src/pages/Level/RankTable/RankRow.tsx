@@ -20,7 +20,7 @@ export default function RankRow(props: PropsIF) {
     const navigate = useNavigate();
 
     function handleWalletLinkClick() {
-        navigate(`/account/${data.userAddress}`);
+        navigate(`/${data.userAddress}`);
     }
 
     function goToLevelsPage(): void {
