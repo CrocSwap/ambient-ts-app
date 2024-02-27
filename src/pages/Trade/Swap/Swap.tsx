@@ -305,6 +305,9 @@ function Swap(props: propsIF) {
     }, [baseToken.address + quoteToken.address]);
 
     const isScroll = chainId === '0x82750' || chainId === '0x8274f';
+    const [l1GasFeeSwapInGwei, setL1GasFeeSwapInGwei] = useState<number>(
+        isScroll ? 0.0007 : 0,
+    );
     const [extraL1GasFeeSwap, setExtraL1GasFeeSwap] = useState(
         isScroll ? 1 : 0,
     );
@@ -333,8 +336,13 @@ function Swap(props: propsIF) {
                 SWAP_BUFFER_MULTIPLIER_MAINNET * costOfMainnetSwapInETH,
             );
 
-            const costOfScrollSwapInETH =
+            const l1costOfScrollSwapInETH =
+                l1GasFeeSwapInGwei / NUM_GWEI_IN_ETH;
+
+            const l2costOfScrollSwapInETH =
                 gasPriceInGwei * averageSwapCostInGasDrops * NUM_GWEI_IN_WEI;
+            const costOfScrollSwapInETH =
+                l1costOfScrollSwapInETH + l2costOfScrollSwapInETH;
 
             setAmountToReduceNativeTokenQtyScroll(
                 SWAP_BUFFER_MULTIPLIER_SCROLL * costOfScrollSwapInETH,
@@ -361,6 +369,7 @@ function Swap(props: propsIF) {
         isTokenADexSurplusSufficient,
         isSaveAsDexSurplusChecked,
         extraL1GasFeeSwap,
+        l1GasFeeSwapInGwei,
     ]);
 
     useEffect(() => {
@@ -388,6 +397,7 @@ function Swap(props: propsIF) {
                 Math.floor((ethMainnetUsdPrice || 0) * 100),
             );
             const l1GasInGwei = l1Gas ? l1Gas.div(NUM_WEI_IN_GWEI) : undefined;
+            setL1GasFeeSwapInGwei(l1GasInGwei?.toNumber() || 0);
 
             const l1GasCents = l1GasInGwei
                 ? l1GasInGwei.mul(costOfEthInCents).div(NUM_GWEI_IN_ETH)
