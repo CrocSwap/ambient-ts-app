@@ -17,7 +17,12 @@ import SwapTokenInput from '../../../components/Swap/SwapTokenInput/SwapTokenInp
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../ambient-utils/constants';
+import {
+    IS_LOCAL_ENV,
+    NUM_GWEI_IN_ETH,
+    NUM_WEI_IN_GWEI,
+    ZERO_ADDRESS,
+} from '../../../ambient-utils/constants';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
@@ -50,6 +55,8 @@ import {
 } from '../../../ambient-utils/constants/';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import { calcL1Gas } from '../../../App/functions/calcL1Gas';
+import { BigNumber } from 'ethers';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -297,6 +304,14 @@ function Swap(props: propsIF) {
         setNewSwapTransactionHash('');
     }, [baseToken.address + quoteToken.address]);
 
+    const isScroll = chainId === '0x82750' || chainId === '0x8274f';
+    const [l1GasFeeSwapInGwei, setL1GasFeeSwapInGwei] = useState<number>(
+        isScroll ? 0.0007 : 0,
+    );
+    const [extraL1GasFeeSwap, setExtraL1GasFeeSwap] = useState(
+        isScroll ? 1 : 0,
+    );
+
     // calculate price of gas for swap
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
@@ -321,15 +336,13 @@ function Swap(props: propsIF) {
                 SWAP_BUFFER_MULTIPLIER_MAINNET * costOfMainnetSwapInETH,
             );
 
-            const costOfScrollSwapInETH =
-                gasPriceInGwei * averageSwapCostInGasDrops * NUM_GWEI_IN_WEI;
+            const l1costOfScrollSwapInETH =
+                l1GasFeeSwapInGwei / NUM_GWEI_IN_ETH;
 
-            // IS_LOCAL_ENV &&
-            //     console.log({
-            //         gasPriceInGwei,
-            //         costOfScrollSwapInETH,
-            //         amountToReduceNativeTokenQtyScroll,
-            //     });
+            const l2costOfScrollSwapInETH =
+                gasPriceInGwei * averageSwapCostInGasDrops * NUM_GWEI_IN_WEI;
+            const costOfScrollSwapInETH =
+                l1costOfScrollSwapInETH + l2costOfScrollSwapInETH;
 
             setAmountToReduceNativeTokenQtyScroll(
                 SWAP_BUFFER_MULTIPLIER_SCROLL * costOfScrollSwapInETH,
@@ -343,7 +356,7 @@ function Swap(props: propsIF) {
 
             setSwapGasPriceinDollars(
                 getFormattedNumber({
-                    value: gasPriceInDollarsNum,
+                    value: gasPriceInDollarsNum + extraL1GasFeeSwap,
                     isUSD: true,
                 }),
             );
@@ -355,6 +368,58 @@ function Swap(props: propsIF) {
         isWithdrawFromDexChecked,
         isTokenADexSurplusSufficient,
         isSaveAsDexSurplusChecked,
+        extraL1GasFeeSwap,
+        l1GasFeeSwapInGwei,
+    ]);
+
+    useEffect(() => {
+        (async () => {
+            if (!crocEnv) return;
+
+            const qty = isTokenAPrimary
+                ? sellQtyString.replaceAll(',', '')
+                : buyQtyString.replaceAll(',', '');
+
+            if (qty === '' || parseFloat(qty) === 0) return;
+
+            const l1Gas = await calcL1Gas({
+                crocEnv,
+                isQtySell: isTokenAPrimary,
+                qty,
+                buyTokenAddress: tokenB.address,
+                sellTokenAddress: tokenA.address,
+                slippageTolerancePercentage,
+                isWithdrawFromDexChecked,
+                isSaveAsDexSurplusChecked,
+            });
+
+            const costOfEthInCents = BigNumber.from(
+                Math.floor((ethMainnetUsdPrice || 0) * 100),
+            );
+            const l1GasInGwei = l1Gas ? l1Gas.div(NUM_WEI_IN_GWEI) : undefined;
+            setL1GasFeeSwapInGwei(l1GasInGwei?.toNumber() || 0);
+
+            const l1GasCents = l1GasInGwei
+                ? l1GasInGwei.mul(costOfEthInCents).div(NUM_GWEI_IN_ETH)
+                : undefined;
+
+            const l1GasDollarsNum = l1GasCents
+                ? l1GasCents?.toNumber() / 100
+                : undefined;
+
+            if (l1GasDollarsNum) setExtraL1GasFeeSwap(l1GasDollarsNum);
+        })();
+    }, [
+        crocEnv,
+        isTokenAPrimary,
+        sellQtyString,
+        buyQtyString,
+        tokenA.address,
+        tokenB.address,
+        slippageTolerancePercentage,
+        isWithdrawFromDexChecked,
+        isSaveAsDexSurplusChecked,
+        ethMainnetUsdPrice,
     ]);
 
     useEffect(() => {
