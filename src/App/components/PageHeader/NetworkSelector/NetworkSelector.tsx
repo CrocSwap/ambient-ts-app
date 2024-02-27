@@ -25,6 +25,7 @@ import cantoLogo from '../../../../assets/images/networks/canto.png';
 import scrollLogo from '../../../../assets/images/networks/scroll.png';
 import ETH from '../../../../assets/images/logos/eth-diamond-purple.png';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { getSupportedChainIds } from '../../../../ambient-utils/dataLayer';
 
 interface propsIF {
     switchNetwork: ((chainId_?: number | undefined) => void) | undefined;
@@ -42,34 +43,9 @@ export default function NetworkSelector(props: propsIF) {
     const chainParam = searchParams.get('chain');
     const networkParam = searchParams.get('network');
 
-    // const chains: ChainSpec[] = getSupportedChainIds().map((chain: string) =>
-    //     lookupChain(chain),
-    // );
-
-    // temporarily hardcoded mock blast chain data
-    const chains = [
-        {
-            nodeUrl: 'https://rpc.scroll.io',
-            addrs: {
-                dex: '0xaaaaAAAACB71BF2C8CaE522EA5fa455571A74106',
-                query: '0x62223e90605845Cf5CC6DAE6E0de4CDA130d6DDf',
-                impact: '0xc2c301759B5e0C385a38e678014868A33E2F3ae3',
-            },
-            poolIndex: 420,
-            isTestNet: false,
-            chainId: '0x82750',
-            gridSize: 4,
-            proxyPaths: {
-                cold: 3,
-                long: 130,
-                liq: 128,
-            },
-            blockExplorer: 'https://scrollscan.com/',
-            displayName: 'Blast',
-            logoUrl:
-                'https://deploy-preview-3380--ambient-finance.netlify.app/blast_logo.jpeg',
-        },
-    ];
+    const chains: ChainSpec[] = getSupportedChainIds().map((chain: string) =>
+        lookupChain(chain),
+    );
 
     // organize chain data into a hashmap for easier access in the file
     const chainMap = new Map();
@@ -139,7 +115,7 @@ export default function NetworkSelector(props: propsIF) {
                     style={{ borderRadius: '50%' }}
                 />
                 <Text color={chainId === '0x82750' ? 'accent1' : 'white'}>
-                    {' Blast'}
+                    {'Scroll'}
                 </Text>
             </ChainNameStatus>
         </NetworkItem>
