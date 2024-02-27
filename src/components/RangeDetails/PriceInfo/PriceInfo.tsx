@@ -8,6 +8,7 @@ import { useContext, useEffect, useState } from 'react';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { PositionRewardsDataIF } from '../../../ambient-utils/types/xp';
 import { fetchPositionRewardsData } from '../../../ambient-utils/api/fetchPositionRewards';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 interface propsIF {
     usdValue: string;
@@ -58,6 +59,7 @@ export default function PriceInfo(props: propsIF) {
 
     const isOnTradeRoute = pathname.includes('trade');
     const { tokens } = useContext(TokenContext);
+    const { isActiveNetworkBlast } = useContext(CrocEnvContext);
     const baseToken: TokenIF | undefined =
         tokens.getTokenByAddress(baseTokenAddress);
     const quoteToken: TokenIF | undefined =
@@ -168,16 +170,12 @@ export default function PriceInfo(props: propsIF) {
         </div>
     );
 
-    const showEarnedRewards = true;
+    const showEarnedRewards = !isActiveNetworkBlast;
 
     const [positionRewards, setPositionRewards] =
         useState<PositionRewardsDataIF>({
             'BLAST points': '…',
-            'AMBI points': '…',
-
-            __BASE__: '…',
-            __QUOTE__: '…',
-            'TOKEN yield': '…',
+            'BLAST gold': '…',
         });
 
     useEffect(() => {
@@ -196,7 +194,9 @@ export default function PriceInfo(props: propsIF) {
             <div>Rewards:</div>
             {Object.entries(positionRewards).map(([rewardType, reward]) => {
                 const logo =
-                    rewardType === 'BLAST points' || rewardType === 'BLAST'
+                    rewardType === 'BLAST points' ||
+                    rewardType === 'BLAST' ||
+                    rewardType === 'BLAST gold'
                         ? blastLogo
                         : rewardType === 'AMBI points' || rewardType === 'AMBI'
                         ? ambiLogo
@@ -210,13 +210,7 @@ export default function PriceInfo(props: propsIF) {
                 return (
                     <BlastRewardRow
                         key={rewardType}
-                        rewardType={
-                            rewardType === '__BASE__'
-                                ? baseTokenSymbol + ' yield'
-                                : rewardType === '__QUOTE__'
-                                ? quoteTokenSymbol + ' yield'
-                                : rewardType
-                        }
+                        rewardType={rewardType}
                         reward={reward}
                         logo={logo}
                     />

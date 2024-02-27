@@ -49,6 +49,7 @@ interface CrocEnvContextIF {
     activeNetwork: NetworkIF;
     chooseNetwork: (network: NetworkIF) => void;
     mainnetProvider: Provider | undefined;
+    isActiveNetworkBlast: boolean;
 }
 
 export const CrocEnvContext = createContext<CrocEnvContextIF>(
@@ -69,6 +70,13 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
         number | undefined
     >();
+
+    const isActiveNetworkBlast = [
+        '0x5d50',
+        '0xa0c71fd',
+        '0xee',
+        '0x13e31',
+    ].includes(chainData.chainId);
 
     // hooks to generate default URL paths
     const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
@@ -198,6 +206,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         mainnetProvider,
         activeNetwork,
         chooseNetwork,
+        isActiveNetworkBlast,
     };
 
     return (

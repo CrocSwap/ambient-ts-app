@@ -59,11 +59,12 @@ export const fetchPositionRewardsData = async (args: argsIF) => {
 const getMockPositionRewards = (): PositionRewardsDataIF => {
     // deterministically generate multipliers within 0.00420 - 0.0069 based on positionId kek
     // (parseInt(positionId.slice(4, 8), 16) / 0xffff) * 0.0027 + 0.0042;
-    const ambiMultiplier = 1 / 1000;
-    const blastMultiplier = 1 / 1200;
-    const tokenMultiplier = 1 / 22;
-    const baseMultiplier = 1 / 1400000;
-    const quoteMultiplier = 1 / 2000;
+    const blastPointsMultiplier = 1 / 1200;
+    const blastGoldMultiplier = 1 / 1500;
+    // const ambiMultiplier = 1 / 1000;
+    // const tokenMultiplier = 1 / 22;
+    // const baseMultiplier = 1 / 1400000;
+    // const quoteMultiplier = 1 / 2000;
 
     // increase points by seconds since start of day (assuming doug doesn't record demo through midnight)
     const now = new Date();
@@ -73,11 +74,12 @@ const getMockPositionRewards = (): PositionRewardsDataIF => {
     //     (now.valueOf() - startOfDay.valueOf()) / 1000,
     // );
 
-    const ambiPoints = secondsElapsed * randomNum * ambiMultiplier;
-    const blastPoints = secondsElapsed * randomNum * blastMultiplier;
-    const tokenPoints = secondsElapsed * randomNum * tokenMultiplier;
-    const basePoints = secondsElapsed * randomNum * baseMultiplier;
-    const quotePoints = secondsElapsed * randomNum * quoteMultiplier;
+    const blastPoints = secondsElapsed * randomNum * blastPointsMultiplier;
+    const blastGold = secondsElapsed * randomNum * blastGoldMultiplier;
+    // const ambiPoints = secondsElapsed * randomNum * ambiMultiplier;
+    // const tokenPoints = secondsElapsed * randomNum * tokenMultiplier;
+    // const basePoints = secondsElapsed * randomNum * baseMultiplier;
+    // const quotePoints = secondsElapsed * randomNum * quoteMultiplier;
 
     return {
         'BLAST points': getFormattedNumber({
@@ -85,25 +87,30 @@ const getMockPositionRewards = (): PositionRewardsDataIF => {
             zeroDisplay: '0',
             abbrevThreshold: 1000000000,
         }),
-        'AMBI points': getFormattedNumber({
-            value: ambiPoints,
+        'BLAST gold': getFormattedNumber({
+            value: blastGold,
             zeroDisplay: '0',
             abbrevThreshold: 1000000000,
         }),
-        __BASE__: getFormattedNumber({
-            value: basePoints,
-            zeroDisplay: '0',
-            abbrevThreshold: 1000000000,
-        }),
-        __QUOTE__: getFormattedNumber({
-            value: quotePoints,
-            zeroDisplay: '0',
-            abbrevThreshold: 1000000000,
-        }),
-        'TOKEN yield': getFormattedNumber({
-            value: tokenPoints,
-            zeroDisplay: '0',
-            abbrevThreshold: 1000000000,
-        }),
+        // 'AMBI points': getFormattedNumber({
+        //     value: ambiPoints,
+        //     zeroDisplay: '0',
+        //     abbrevThreshold: 1000000000,
+        // }),
+        // __BASE__: getFormattedNumber({
+        //     value: basePoints,
+        //     zeroDisplay: '0',
+        //     abbrevThreshold: 1000000000,
+        // }),
+        // __QUOTE__: getFormattedNumber({
+        //     value: quotePoints,
+        //     zeroDisplay: '0',
+        //     abbrevThreshold: 1000000000,
+        // }),
+        // 'TOKEN yield': getFormattedNumber({
+        //     value: tokenPoints,
+        //     zeroDisplay: '0',
+        //     abbrevThreshold: 1000000000,
+        // }),
     };
 };
