@@ -4109,8 +4109,6 @@ export default function Chart(props: propsIF) {
                 location.pathname.includes('pool') ||
                 location.pathname.includes('reposition')
             ) {
-                console.log('ranges', ranges[0], ranges[1], minPrice, maxPrice);
-
                 changeScaleRangeOrReposition();
             }
         }
