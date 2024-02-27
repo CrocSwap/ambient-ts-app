@@ -16,6 +16,7 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
+    parseErrorMessage,
     TransactionError,
 } from '../../../utils/TransactionError';
 import useDebounce from '../../../App/hooks/useDebounce';
@@ -358,8 +359,7 @@ function Reposition() {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
-
-            setTxErrorMessage(error?.error?.message);
+            setTxErrorMessage(parseErrorMessage(error));
         }
 
         let receipt;
