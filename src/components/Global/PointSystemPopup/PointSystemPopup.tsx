@@ -9,9 +9,9 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import ambientXblastLogo from '../../../assets/images/logos/ambientXBlast.svg';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { IS_BLAST_SITE } from '../../../ambient-utils/constants';
 
 interface PropsIF {
-    showPointSystemPopup: boolean;
     dismissPointSystemPopup(ctaDismissal: { ctaId: string }): void;
 }
 
@@ -84,9 +84,24 @@ export default function PointSystemPopup(props: PropsIF) {
                             gap={10}
                             alignItems='center'
                         >
-                            <img src={ambientXblastLogo} alt='' width='800px' />
+                            {IS_BLAST_SITE ? (
+                                <img
+                                    src={ambientXblastLogo}
+                                    alt=''
+                                    width='800px'
+                                />
+                            ) : (
+                                <p
+                                    className={styles.ambient_blast_logo}
+                                    style={{ fontSize: '90px' }}
+                                >
+                                    ambient points
+                                </p>
+                            )}
                         </FlexContainer>
-                        <p className={styles.sub_text}>points now live!</p>
+                        <p className={styles.sub_text}>
+                            {IS_BLAST_SITE ? ' points now live!' : ' now live!'}
+                        </p>
 
                         <FlexContainer
                             flexDirection='column'

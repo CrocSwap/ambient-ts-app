@@ -14,7 +14,6 @@ import {
     CHAT_ENABLED,
     CACHE_UPDATE_FREQ_IN_MS,
     DEFAULT_CTA_DISMISSAL_DURATION_MINUTES,
-    IS_BLAST_SITE,
 } from '../ambient-utils/constants';
 import {
     getCtaDismissalsFromLocalStorage,
@@ -118,11 +117,9 @@ export const AppStateContextProvider = (props: {
     };
 
     const [showTopPtsBanner, setShowTopPtsBanner] = useState<boolean>(
-        ((IS_BLAST_SITE &&
-            getCtaDismissalsFromLocalStorage().find(
-                (x) => x.ctaId === 'top_points_banner_cta',
-            )?.unixTimeOfDismissal) ||
-            0) <
+        (getCtaDismissalsFromLocalStorage().find(
+            (x) => x.ctaId === 'top_points_banner_cta',
+        )?.unixTimeOfDismissal || 0) <
             Math.floor(Date.now() / 1000 - 60 * pointsBannerDismissalDuration),
     );
 

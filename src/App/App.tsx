@@ -172,7 +172,6 @@ export default function App() {
                 {!isWalletChainSupported && <SwitchNetwork />}
                 {showPointSystemPopup && (
                     <PointSystemPopup
-                        showPointSystemPopup={showPointSystemPopup}
                         dismissPointSystemPopup={dismissPointSystemPopup}
                     />
                 )}
