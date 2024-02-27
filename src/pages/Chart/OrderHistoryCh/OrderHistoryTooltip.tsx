@@ -89,6 +89,7 @@ export default function OrderHistoryTooltip(props: {
 
                             return !prev;
                         });
+                        setHoverOHTooltip(false);
                     }}
                 >
                     <OrderHistoryHeader>
