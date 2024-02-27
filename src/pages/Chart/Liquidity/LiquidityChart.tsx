@@ -227,7 +227,15 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             }
         }
         return undefined;
-    }, [liqDataBid, liqDataAsk, liqMode, diffHashSigScaleData(scaleData, 'y')]);
+    }, [
+        liqDataBid,
+        liqDataAsk,
+        liqDataDepthBid,
+        liqDataDepthAsk,
+        scaleData && liquidityDepthScale && liquidityScale,
+        liqMode,
+        diffHashSigScaleData(scaleData, 'y'),
+    ]);
 
     const [liquidityMouseMoveActive, setLiquidityMouseMoveActive] =
         useState<string>('none');
