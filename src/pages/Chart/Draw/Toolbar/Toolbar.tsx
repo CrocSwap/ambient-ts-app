@@ -322,6 +322,9 @@ function ChartToolbar() {
                                         hoveredTool === item.description && (
                                             <HoveredTooltip
                                                 hoveredTool={hoveredTool}
+                                                height={22}
+                                                width={125}
+                                                arrow={true}
                                             ></HoveredTooltip>
                                         )}
                                 </IconCard>
@@ -358,6 +361,9 @@ function ChartToolbar() {
                                         hoveredTool === item.description && (
                                             <HoveredTooltip
                                                 hoveredTool={hoveredTool}
+                                                height={22}
+                                                width={125}
+                                                arrow={true}
                                             ></HoveredTooltip>
                                         )}
                                 </IconCard>
@@ -428,6 +434,9 @@ function ChartToolbar() {
                                         hoveredTool === item.description && (
                                             <HoveredTooltip
                                                 hoveredTool={hoveredTool}
+                                                height={22}
+                                                width={125}
+                                                arrow={true}
                                             ></HoveredTooltip>
                                         )}
                                 </IconCard>
@@ -457,6 +466,9 @@ function ChartToolbar() {
                                     hoveredTool === 'Delete All' && (
                                         <HoveredTooltip
                                             hoveredTool={hoveredTool}
+                                            height={22}
+                                            width={125}
+                                            arrow={true}
                                         ></HoveredTooltip>
                                     )}
                             </IconCard>
