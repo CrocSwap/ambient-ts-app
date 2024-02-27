@@ -762,6 +762,34 @@ export default function Chart(props: propsIF) {
     };
 
     useEffect(() => {
+        if (cursorStyleTrigger && chartZoomEvent !== 'wheel') {
+            d3.select(d3CanvasMain.current).style('cursor', 'grabbing');
+
+            render();
+        } else {
+            const cursorType = d3.select(d3CanvasMain.current).style('cursor');
+
+            if (
+                !(
+                    isOnCandleOrVolumeMouseLocation && cursorType === 'pointer'
+                ) &&
+                !(!isOnCandleOrVolumeMouseLocation && cursorType === 'default')
+            ) {
+                d3.select(d3CanvasMain.current).style(
+                    'cursor',
+                    isOnCandleOrVolumeMouseLocation ? 'pointer' : 'default',
+                );
+            }
+        }
+    }, [
+        chartZoomEvent,
+        diffHashSig(cursorStyleTrigger),
+        isOnCandleOrVolumeMouseLocation,
+    ]);
+
+    useEffect(() => {
+        console.log({ canUserDragLimit, canUserDragRange });
+
         if (isLineDrag) {
             d3.select(d3CanvasMain.current).style('cursor', 'none');
         } else if (canUserDragLimit || canUserDragRange) {
@@ -785,32 +813,6 @@ export default function Chart(props: propsIF) {
         canUserDragLimit,
         canUserDragRange,
         isLineDrag,
-        isOnCandleOrVolumeMouseLocation,
-    ]);
-
-    useEffect(() => {
-        if (cursorStyleTrigger && chartZoomEvent !== 'wheel') {
-            d3.select(d3CanvasMain.current).style('cursor', 'grabbing');
-
-            render();
-        } else {
-            const cursorType = d3.select(d3CanvasMain.current).style('cursor');
-
-            if (
-                !(
-                    isOnCandleOrVolumeMouseLocation && cursorType === 'pointer'
-                ) &&
-                !(!isOnCandleOrVolumeMouseLocation && cursorType === 'default')
-            ) {
-                d3.select(d3CanvasMain.current).style(
-                    'cursor',
-                    isOnCandleOrVolumeMouseLocation ? 'pointer' : 'default',
-                );
-            }
-        }
-    }, [
-        chartZoomEvent,
-        diffHashSig(cursorStyleTrigger),
         isOnCandleOrVolumeMouseLocation,
     ]);
 
