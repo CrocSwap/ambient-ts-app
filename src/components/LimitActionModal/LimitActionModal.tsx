@@ -9,6 +9,7 @@ import {
     TransactionError,
     isTransactionReplacedError,
     isTransactionFailedError,
+    parseErrorMessage,
 } from '../../utils/TransactionError';
 import LimitActionInfo from './LimitActionInfo/LimitActionInfo';
 import LimitActionSettings from './LimitActionSettings/LimitActionSettings';
@@ -249,7 +250,7 @@ export default function LimitActionModal(props: propsIF) {
             } catch (error) {
                 console.error({ error });
                 setTxErrorCode(error?.code);
-                setTxErrorMessage(error?.error?.message);
+                setTxErrorMessage(parseErrorMessage(error));
                 if (
                     error.reason === 'sending a transaction requires a signer'
                 ) {
@@ -390,7 +391,7 @@ export default function LimitActionModal(props: propsIF) {
             } catch (error) {
                 console.error({ error });
                 setTxErrorCode(error?.code);
-                setTxErrorMessage(error?.error?.message);
+                setTxErrorMessage(parseErrorMessage(error));
                 if (
                     error.reason === 'sending a transaction requires a signer'
                 ) {

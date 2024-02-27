@@ -31,6 +31,7 @@ import {
     TransactionError,
     isTransactionReplacedError,
     isTransactionFailedError,
+    parseErrorMessage,
 } from '../../../utils/TransactionError';
 import { swapTutorialSteps } from '../../../utils/tutorial/Swap';
 import { useApprove } from '../../../App/functions/approve';
@@ -64,7 +65,7 @@ function Swap(props: propsIF) {
     } = useContext(CrocEnvContext);
     const { userAddress } = useContext(UserDataContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
-    const { poolPriceDisplay, isPoolInitialized } = useContext(PoolContext);
+    const { isPoolInitialized } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
 
     const {
@@ -211,6 +212,10 @@ function Swap(props: propsIF) {
 
     const activeTxHash = useRef<string>('');
 
+    const activeTxHashInPendingTxs = pendingTransactions.some(
+        (tx) => tx === activeTxHash.current,
+    );
+
     // reset activeTxHash when the pair changes or user updates quantity
     useEffect(() => {
         activeTxHash.current = '';
@@ -226,7 +231,10 @@ function Swap(props: propsIF) {
         } else if (isLiquidityInsufficient) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Liquidity Insufficient');
-        } else if (isNaN(parseFloat(sellQtyString))) {
+        } else if (
+            isNaN(parseFloat(sellQtyString)) ||
+            isNaN(parseFloat(buyQtyString))
+        ) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Enter an Amount');
         } else if (parseFloat(sellQtyString) <= 0) {
@@ -243,19 +251,18 @@ function Swap(props: propsIF) {
             setSwapAllowed(parseFloat(sellQtyString) <= hurdle);
 
             if (parseFloat(sellQtyString) > hurdle) {
-                if (
-                    pendingTransactions.some(
-                        (tx) => tx === activeTxHash.current,
-                    )
-                ) {
+                if (activeTxHashInPendingTxs) {
                     setSellQtyString('');
+                    setBuyQtyString('');
                     setPrimaryQuantity('');
                     activeTxHash.current = '';
+                    setSwapButtonErrorMessage('');
+                } else {
+                    setSwapButtonErrorMessage(
+                        `${tokenA.symbol} Amount Exceeds ${balanceLabel} Balance`,
+                    );
+                    setSwapAllowed(false);
                 }
-                setSwapAllowed(false);
-                setSwapButtonErrorMessage(
-                    `${tokenA.symbol} Amount Exceeds ${balanceLabel} Balance`,
-                );
             } else if (
                 isSellTokenNativeToken &&
                 tokenAQtyCoveredByWalletBalance + amountToReduceNativeTokenQty >
@@ -273,13 +280,9 @@ function Swap(props: propsIF) {
         crocEnv,
         isPoolInitialized,
         isPoolInitialized === undefined, // Needed to distinguish false from undefined
-        poolPriceDisplay,
         tokenA.address,
         tokenB.address,
-        slippageTolerancePercentage,
-        isTokenAPrimary,
         sellQtyString,
-        buyQtyString,
         isWithdrawFromDexChecked,
         isBuyLoading,
         isSellLoading,
@@ -287,8 +290,7 @@ function Swap(props: propsIF) {
         tokenABalance,
         tokenAQtyCoveredByWalletBalance,
         amountToReduceNativeTokenQty,
-        pendingTransactions,
-        activeTxHash,
+        activeTxHashInPendingTxs,
     ]);
 
     useEffect(() => {
@@ -424,7 +426,7 @@ function Swap(props: propsIF) {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
-            setTxErrorMessage(error?.error?.message);
+            setTxErrorMessage(parseErrorMessage(error));
         }
 
         if (tx) {
