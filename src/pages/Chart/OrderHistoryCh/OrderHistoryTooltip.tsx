@@ -30,7 +30,7 @@ export default function OrderHistoryTooltip(props: {
     setSelectedOrderHistory: React.Dispatch<
         React.SetStateAction<TransactionIF | undefined>
     >;
-    setIsSelectedOrderHistory: React.Dispatch<boolean>;
+    setIsSelectedOrderHistory: React.Dispatch<React.SetStateAction<boolean>>;
     pointerEvents: boolean;
 }) {
     const {
@@ -69,10 +69,15 @@ export default function OrderHistoryTooltip(props: {
                 <OrderHistoryContainer
                     onClick={() => {
                         handleCardClick(hoveredOrderHistory);
-                        setSelectedOrderHistory(() => {
-                            return hoveredOrderHistory;
+                        setIsSelectedOrderHistory((prev: boolean) => {
+                            if (!prev) {
+                                setSelectedOrderHistory(() => {
+                                    return hoveredOrderHistory;
+                                });
+                            }
+
+                            return !prev;
                         });
-                        setIsSelectedOrderHistory(true);
                     }}
                 >
                     <OrderHistoryHeader>
@@ -137,7 +142,10 @@ export default function OrderHistoryTooltip(props: {
                         <StyledLink
                             color={'#8b98a5'}
                             size={'13px'}
-                            onClick={() => {
+                            onClick={(
+                                event: React.MouseEvent<HTMLDivElement>,
+                            ) => {
+                                event.stopPropagation();
                                 handleOpenExplorer(hoveredOrderHistory.txHash);
                             }}
                         >

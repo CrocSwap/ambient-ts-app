@@ -54,7 +54,8 @@ interface undoRedoButtonList {
 }
 
 function ChartToolbar() {
-    const mobileView = useMediaQuery('(max-width: 600px)');
+    const mobileView = useMediaQuery('(max-width: 1200px)');
+    const smallScreen = useMediaQuery('(max-width: 500px)');
 
     const {
         toolbarRef,
@@ -69,6 +70,7 @@ function ChartToolbar() {
             undoStack,
             drawActionStack,
             actionKey,
+            drawnShapeHistory,
         },
         activeDrawingType,
         setActiveDrawingType,
@@ -266,7 +268,11 @@ function ChartToolbar() {
         <ToolbarContainer
             isActive={isToolbarOpen}
             isMobile={mobileView}
-            marginTopValue={chartContainerOptions.top - 57}
+            marginTopValue={
+                chartContainerOptions.top -
+                57 -
+                (mobileView && !smallScreen ? 20 : 0)
+            }
             id='toolbar_container'
             ref={toolbarRef}
             backgroundColor={mobileView ? 'var(--dark1)' : 'var(--dark2)'}
@@ -440,7 +446,11 @@ function ChartToolbar() {
                                     }
                                     onTouchStart={() => handleDeleteAll()}
                                 >
-                                    <img src={trashIcon} alt='' />
+                                    <UndoButtonSvg
+                                        isActive={drawnShapeHistory.length > 0}
+                                        src={trashIcon}
+                                        alt=''
+                                    />
                                 </IconActiveContainer>
 
                                 {hoveredTool &&

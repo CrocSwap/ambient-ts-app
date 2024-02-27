@@ -4,6 +4,7 @@ import { Dispatch, memo, SetStateAction, useContext } from 'react';
 import { CandleDataIF } from '../../../../ambient-utils/types';
 import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 interface CurrentDataInfoPropsIF {
     showTooltip: boolean;
@@ -34,11 +35,15 @@ function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
     }
 
     const { isDenomBase } = useContext(TradeDataContext);
+    const smallScreen = useMediaQuery('(max-width: 500px)');
 
     return (
         <div className={styles.chart_tooltips}>
             {showTooltip ? (
-                <div className={styles.current_data_info}>
+                <div
+                    className={styles.current_data_info}
+                    style={{ marginLeft: smallScreen ? '0px' : '15px' }}
+                >
                     {currentData &&
                         'O: ' +
                             formattedCurrentData(
