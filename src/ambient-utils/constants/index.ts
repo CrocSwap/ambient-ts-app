@@ -106,6 +106,10 @@ export const USE_MOCK_XP_DATA = process.env.REACT_APP_USE_MOCK_XP_DATA
     ? process.env.REACT_APP_USE_MOCK_XP_DATA?.toLowerCase() === 'true'
     : undefined;
 
+export const IS_BLAST_SITE = process.env.REACT_APP_IS_BLAST_SITE
+    ? process.env.REACT_APP_IS_BLAST_SITE?.toLowerCase() === 'true'
+    : undefined;
+
 export const USE_MOCK_POSITION_REWARDS_DATA = process.env
     .REACT_APP_USE_MOCK_POSITION_REWARDS_DATA
     ? process.env.REACT_APP_USE_MOCK_POSITION_REWARDS_DATA?.toLowerCase() ===

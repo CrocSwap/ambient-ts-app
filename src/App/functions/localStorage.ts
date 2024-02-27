@@ -35,11 +35,16 @@ export function saveCtaDismissalToLocalStorage(ctaDismissal: {
     }
 }
 
-export function getLeaderboardSelectionFromLocalStorage(): string {
+export function getLeaderboardSelectionFromLocalStorage(
+    defaultToChain?: boolean,
+): string {
     const storedData = localStorage.getItem('leaderboard_selection');
     if (storedData) {
         return storedData;
     } else {
+        if (defaultToChain) {
+            return 'Chain';
+        }
         return 'Global';
     }
 }

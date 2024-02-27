@@ -14,6 +14,7 @@ import {
     CHAT_ENABLED,
     CACHE_UPDATE_FREQ_IN_MS,
     DEFAULT_CTA_DISMISSAL_DURATION_MINUTES,
+    IS_BLAST_SITE,
 } from '../ambient-utils/constants';
 import {
     getCtaDismissalsFromLocalStorage,
@@ -52,8 +53,6 @@ interface AppStateContextIF {
     dismissPointSystemPopup: () => void;
     showTopPtsBanner: boolean;
     dismissTopBannerPopup: () => void;
-    showSidePtsBanner: boolean;
-    dismissSideBannerPopup: () => void;
 }
 
 export const AppStateContext = createContext<AppStateContextIF>(
@@ -119,29 +118,17 @@ export const AppStateContextProvider = (props: {
     };
 
     const [showTopPtsBanner, setShowTopPtsBanner] = useState<boolean>(
-        (getCtaDismissalsFromLocalStorage().find(
-            (x) => x.ctaId === 'top_points_banner_cta',
-            //  do not show points banner if dismissed in last 1 minute
-        )?.unixTimeOfDismissal || 0) <
-            Math.floor(Date.now() / 1000 - 60 * pointsBannerDismissalDuration),
-    );
-
-    const [showSidePtsBanner, setShowSidePtsBanner] = useState<boolean>(
-        (getCtaDismissalsFromLocalStorage().find(
-            (x) => x.ctaId === 'side_points_banner_cta',
-            //  do not show points banner if dismissed in last 1 minute
-        )?.unixTimeOfDismissal || 0) <
+        ((IS_BLAST_SITE &&
+            getCtaDismissalsFromLocalStorage().find(
+                (x) => x.ctaId === 'top_points_banner_cta',
+            )?.unixTimeOfDismissal) ||
+            0) <
             Math.floor(Date.now() / 1000 - 60 * pointsBannerDismissalDuration),
     );
 
     const dismissTopBannerPopup = () => {
         setShowTopPtsBanner(false);
         saveCtaDismissalToLocalStorage({ ctaId: 'top_points_banner_cta' });
-    };
-
-    const dismissSideBannerPopup = () => {
-        setShowSidePtsBanner(false);
-        saveCtaDismissalToLocalStorage({ ctaId: 'side_points_banner_cta' });
     };
 
     const appStateContext = useMemo(
@@ -179,8 +166,6 @@ export const AppStateContextProvider = (props: {
             dismissPointSystemPopup,
             showTopPtsBanner,
             dismissTopBannerPopup,
-            showSidePtsBanner,
-            dismissSideBannerPopup,
         }),
         [
             // Dependency list includes the memoized use*() values from above and any primitives
@@ -205,8 +190,6 @@ export const AppStateContextProvider = (props: {
             dismissPointSystemPopup,
             showTopPtsBanner,
             dismissTopBannerPopup,
-            showSidePtsBanner,
-            dismissSideBannerPopup,
         ],
     );
 
