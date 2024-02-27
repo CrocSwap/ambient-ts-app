@@ -32,6 +32,7 @@ export default function OrderHistoryTooltip(props: {
     >;
     setIsSelectedOrderHistory: React.Dispatch<React.SetStateAction<boolean>>;
     pointerEvents: boolean;
+    setHoverOHTooltip: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
     const {
         hoveredOrderHistory,
@@ -42,6 +43,7 @@ export default function OrderHistoryTooltip(props: {
         setSelectedOrderHistory,
         setIsSelectedOrderHistory,
         pointerEvents,
+        setHoverOHTooltip,
     } = props;
 
     const {
@@ -65,6 +67,8 @@ export default function OrderHistoryTooltip(props: {
                 left={hoveredOrderTooltipPlacement.left}
                 isOnLeftSide={hoveredOrderTooltipPlacement.isOnLeftSide}
                 pointerEvents={pointerEvents}
+                onMouseEnter={() => setHoverOHTooltip(true)}
+                onMouseLeave={() => setHoverOHTooltip(false)}
             >
                 <OrderHistoryContainer
                     onClick={() => {
@@ -73,6 +77,10 @@ export default function OrderHistoryTooltip(props: {
                             if (!prev) {
                                 setSelectedOrderHistory(() => {
                                     return hoveredOrderHistory;
+                                });
+                            } else {
+                                setSelectedOrderHistory(() => {
+                                    return undefined;
                                 });
                             }
 
