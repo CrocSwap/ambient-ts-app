@@ -18,7 +18,7 @@ export const mainnetUSDC: TokenIF = {
     fromList: '/ambient-token-list.json',
     logoURI:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
-    name: 'USDCoin',
+    name: 'USDC',
     symbol: 'USDC',
 };
 
@@ -98,7 +98,7 @@ export const goerliETH: TokenIF = {
 };
 
 export const goerliUSDC: TokenIF = {
-    name: 'USDCoin',
+    name: 'USDC',
     address: '0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
     symbol: 'USDC',
     decimals: 6,
@@ -120,7 +120,7 @@ export const sepoliaETH: TokenIF = {
 };
 
 export const sepoliaUSDC: TokenIF = {
-    name: 'USDCoin',
+    name: 'USDC',
     address: '0x60bBA138A74C5e7326885De5090700626950d509',
     symbol: 'USDC',
     decimals: 6,
@@ -195,7 +195,7 @@ export const arbGoerliETH: TokenIF = {
 };
 
 export const arbGoerliUSDC: TokenIF = {
-    name: 'USDCoin',
+    name: 'USDC',
     address: '0xc944b73fba33a773a4a07340333a3184a70af1ae',
     symbol: 'USDC',
     decimals: 6,
@@ -244,7 +244,7 @@ export const scrollwstETH: TokenIF = {
 };
 
 export const scrollUSDC: TokenIF = {
-    name: 'USDCoin',
+    name: 'USDC',
     address: '0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4',
     symbol: 'USDC',
     decimals: 6,
@@ -303,7 +303,7 @@ export const scrollSepoliaETH: TokenIF = {
 };
 
 export const scrollSepoliaUSDC: TokenIF = {
-    name: 'USDCoin',
+    name: 'USDC',
     address: '0x4D65fB724CEd0CFC6ABFD03231C9CDC2C36A587B',
     symbol: 'USDC',
     decimals: 6,
