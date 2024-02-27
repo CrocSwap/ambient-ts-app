@@ -250,6 +250,7 @@ function SwapTokenInput(props: propsIF) {
             isTokenAPrimary,
             sellQtyString,
             buyQtyString,
+            primaryQuantity,
         ],
     );
 
@@ -290,6 +291,7 @@ function SwapTokenInput(props: propsIF) {
             isTokenAPrimary,
             sellQtyString,
             buyQtyString,
+            primaryQuantity,
         ],
     );
 
