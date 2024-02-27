@@ -199,9 +199,8 @@ export default function RangeLinesChart(props: propsIF) {
                 d3.select(d3CanvasRangeLine.current)
                     .on('draw', () => {
                         if (
-                            (location.pathname.includes('pool') ||
-                                location.pathname.includes('reposition')) &&
-                            topBoundary
+                            location.pathname.includes('pool') ||
+                            location.pathname.includes('reposition')
                         ) {
                             setCanvasResolution(canvas);
                             ctx.setLineDash([20, 18]);
@@ -220,7 +219,7 @@ export default function RangeLinesChart(props: propsIF) {
                     });
             }
         }
-    }, [ranges, horizontalLine, location.pathname]);
+    }, [ranges, horizontalLine, horizontalBand, triangle, location.pathname]);
 
     useEffect(() => {
         const passValue =
