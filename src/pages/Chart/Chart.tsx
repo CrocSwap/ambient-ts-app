@@ -788,8 +788,6 @@ export default function Chart(props: propsIF) {
     ]);
 
     useEffect(() => {
-        console.log({ canUserDragLimit, canUserDragRange });
-
         if (isLineDrag) {
             d3.select(d3CanvasMain.current).style('cursor', 'none');
         } else if (canUserDragLimit || canUserDragRange) {
