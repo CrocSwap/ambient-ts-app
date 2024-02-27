@@ -141,6 +141,17 @@ export const sepoliaWBTC: TokenIF = {
     fromList: '/ambient-token-list.json',
 };
 
+export const scrollSepoliaWBTC: TokenIF = {
+    name: 'Wrapped BTC',
+    address: '0xb3B942b6d4a4858838aAb8f94DdaEdd479CD1594',
+    symbol: 'WBTC',
+    decimals: 8,
+    chainId: 534351,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
+    fromList: '/ambient-token-list.json',
+};
+
 export const goerliDAI: TokenIF = {
     name: 'Dai Stablecoin',
     address: '0xdc31Ee1784292379Fbb2964b3B9C4124D8F89C60',
@@ -312,8 +323,6 @@ export const defaultTokens: TokenIF[] = [
     mainnetUSDT,
     goerliETH,
     goerliUSDC,
-    sepoliaETH,
-    sepoliaUSDC,
     goerliWBTC,
     goerliDAI,
     arbGoerliETH,
@@ -327,6 +336,10 @@ export const defaultTokens: TokenIF[] = [
     scrollAxlUSDC,
     scrollWBTC,
     scrollwstETH,
+    sepoliaETH,
+    sepoliaUSDC,
+    sepoliaWBTC,
     scrollSepoliaETH,
     scrollSepoliaUSDC,
+    scrollSepoliaWBTC,
 ];

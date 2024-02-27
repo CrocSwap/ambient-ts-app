@@ -226,8 +226,6 @@ function TradeCandleStickChart(props: propsIF) {
             unparsedLiquidityData.curveState.poolIdx === chainData.poolIndex &&
             unparsedLiquidityData.curveState.chainId === chainData.chainId
         ) {
-            IS_LOCAL_ENV && console.debug('parsing liquidity data');
-
             const liqAskData: LiquidityDataLocal[] = [];
             const liqBidData: LiquidityDataLocal[] = [];
             const depthLiqBidData: LiquidityDataLocal[] = [];

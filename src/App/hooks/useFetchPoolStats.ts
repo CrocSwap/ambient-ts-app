@@ -14,10 +14,7 @@ import { sortBaseQuoteTokens, toDisplayPrice } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { PoolIF, PoolStatIF } from '../../ambient-utils/types';
-import {
-    CACHE_UPDATE_FREQ_IN_MS,
-    IS_LOCAL_ENV,
-} from '../../ambient-utils/constants';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../../ambient-utils/constants';
 
 const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
     const {
@@ -227,7 +224,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                         setPoolApy(apyString);
                     }
                 } catch (error) {
-                    IS_LOCAL_ENV && console.log({ error });
+                    // IS_LOCAL_ENV && console.log({ error });
                 }
 
                 try {

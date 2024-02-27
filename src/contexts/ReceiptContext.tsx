@@ -50,6 +50,8 @@ interface TransactionByType {
         highTick?: number;
         isBid?: boolean;
         gridSize?: number;
+        originalLowTick?: number;
+        originalHighTick?: number;
     };
 }
 

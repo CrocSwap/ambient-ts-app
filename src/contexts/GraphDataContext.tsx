@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect } from 'react';
 import { fetchUserRecentChanges, fetchRecords } from '../ambient-utils/api';
 import useDebounce from '../App/hooks/useDebounce';
-import { IS_LOCAL_ENV } from '../ambient-utils/constants';
 import {
     TokenIF,
     PositionIF,
@@ -394,10 +393,6 @@ export const GraphDataContextProvider = (props: {
             }
             const recordTargets = [RecordType.Position, RecordType.LimitOrder];
             for (let i = 0; i < recordTargets.length; i++) {
-                IS_LOCAL_ENV &&
-                    console.debug(
-                        'fetching user positions for ' + recordTargets[i],
-                    );
                 try {
                     const updatedLedger = await fetchRecords({
                         recordType: recordTargets[i],
@@ -437,10 +432,6 @@ export const GraphDataContextProvider = (props: {
                 } catch (error) {
                     console.error(error);
                 }
-                IS_LOCAL_ENV &&
-                    console.debug(
-                        'fetching user limit orders ' + recordTargets[i],
-                    );
             }
 
             try {
