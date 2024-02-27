@@ -649,8 +649,11 @@ function TradeCandleStickChart(props: propsIF) {
                         yScale: yScale,
                         volumeScale: volumeScale,
                         xExtent: xExtent,
+                        priceRange: priceRange,
                     };
                 });
+            } else {
+                scaleData.priceRange = priceRange;
             }
         }
     };

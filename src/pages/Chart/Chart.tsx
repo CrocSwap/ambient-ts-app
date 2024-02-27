@@ -181,15 +181,7 @@ export default function Chart(props: propsIF) {
         unparsedData,
         prevPeriod,
         candleTimeInSeconds,
-        // undo,
-        // redo,
-        // drawnShapeHistory,
-        // setDrawnShapeHistory,
-        // deleteItem,
         updateURL,
-        // addDrawActionStack,
-        // drawActionStack,
-        // undoStack,
         userTransactionData,
     } = props;
 
@@ -754,6 +746,22 @@ export default function Chart(props: propsIF) {
     }, [JSON.stringify(drawnShapeHistory), isToolbarOpen]);
 
     useEffect(() => {
+        setMarketLineValue();
+    }, [poolPriceWithoutDenom, denomInBase]);
+
+    const setMarketLineValue = () => {
+        if (poolPriceWithoutDenom !== undefined) {
+            const lastCandlePrice = denomInBase
+                ? 1 / poolPriceWithoutDenom
+                : poolPriceWithoutDenom;
+
+            setMarket(() => {
+                return lastCandlePrice !== undefined ? lastCandlePrice : 0;
+            });
+        }
+    };
+
+    useEffect(() => {
         if (isLineDrag) {
             d3.select(d3CanvasMain.current).style('cursor', 'none');
         } else if (canUserDragLimit || canUserDragRange) {
@@ -1258,21 +1266,6 @@ export default function Chart(props: propsIF) {
         }
     }, [rescale]);
 
-    useEffect(() => {
-        setMarketLineValue();
-    }, [poolPriceWithoutDenom, denomInBase]);
-
-    const setMarketLineValue = useCallback(() => {
-        if (poolPriceWithoutDenom !== undefined) {
-            const lastCandlePrice = denomInBase
-                ? 1 / poolPriceWithoutDenom
-                : poolPriceWithoutDenom;
-
-            setMarket(() => {
-                return lastCandlePrice !== undefined ? lastCandlePrice : 0;
-            });
-        }
-    }, [poolPriceWithoutDenom, denomInBase]);
     // set default limit tick
     useEffect(() => {
         if (limitTick && Math.abs(limitTick) === Infinity)
@@ -3972,7 +3965,7 @@ export default function Chart(props: propsIF) {
     }
 
     function changeScaleLimit() {
-        if (scaleData && poolPriceWithoutDenom && rescale) {
+        if (scaleData && market && rescale) {
             const { minYBoundary, maxYBoundary } = getYAxisBoundary();
 
             if (maxYBoundary !== undefined && minYBoundary !== undefined) {
@@ -4007,18 +4000,26 @@ export default function Chart(props: propsIF) {
     }
 
     function changeScaleRangeOrReposition() {
-        if (scaleData && poolPriceWithoutDenom && rescale) {
+        if (scaleData && rescale) {
+            const min = minPrice;
+            const max = maxPrice;
+
+            ranges[0] = { name: 'Min', value: minPrice };
+            ranges[1] = { name: 'Max', value: maxPrice };
+            if (!market) {
+                scaleData.yScale.domain(
+                    scaleData.priceRange(visibleCandleData),
+                );
+            }
+
             const { minYBoundary, maxYBoundary } = getYAxisBoundary();
 
-            if (maxYBoundary !== undefined && minYBoundary !== undefined) {
+            if (
+                maxYBoundary !== undefined &&
+                market &&
+                minYBoundary !== undefined
+            ) {
                 if (simpleRangeWidth !== 100 || advancedMode) {
-                    const min = ranges.filter(
-                        (target: lineValue) => target.name === 'Min',
-                    )[0].value;
-                    const max = ranges.filter(
-                        (target: lineValue) => target.name === 'Max',
-                    )[0].value;
-
                     const low = Math.min(min, max, minYBoundary, market);
 
                     const high = Math.max(min, max, maxYBoundary, market);
@@ -4108,22 +4109,25 @@ export default function Chart(props: propsIF) {
                 location.pathname.includes('pool') ||
                 location.pathname.includes('reposition')
             ) {
+                console.log('ranges', ranges[0], ranges[1], minPrice, maxPrice);
+
                 changeScaleRangeOrReposition();
             }
         }
-    }, [ranges, location.pathname, isLineDrag]);
+    }, [
+        location.pathname.includes('pool') ||
+            location.pathname.includes('reposition'),
+        market,
+        isLineDrag,
+        minPrice,
+        maxPrice,
+    ]);
 
     useEffect(() => {
         if (!isLineDrag && location.pathname.includes('limit')) {
             changeScaleLimit();
         }
-    }, [
-        location.pathname,
-        limit,
-        minTickForLimit,
-        maxTickForLimit,
-        isLineDrag,
-    ]);
+    }, [location.pathname.includes('limit'), limit, isLineDrag]);
 
     function setYaxisDomain(minDomain: number, maxDomain: number) {
         if (scaleData) {
