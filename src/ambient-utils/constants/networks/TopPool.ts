@@ -17,9 +17,7 @@ export class TopPool implements PoolIF {
                 getMoneynessRank(quoteToken?.symbol) >=
             0;
 
-        this.name = isBaseTokenMoneynessGreaterOrEqual
-            ? `${baseToken.symbol} / ${quoteToken.symbol}`
-            : `${quoteToken.symbol} / ${baseToken.symbol}`;
+        this.name = `${baseToken.symbol} / ${quoteToken.symbol}`;
 
         this.base = baseToken;
         this.quote = quoteToken;

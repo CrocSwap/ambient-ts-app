@@ -33,6 +33,7 @@ import {
     TransactionError,
     isTransactionReplacedError,
     isTransactionFailedError,
+    parseErrorMessage,
 } from '../../../utils/TransactionError';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
 import { useApprove } from '../../../App/functions/approve';
@@ -598,7 +599,7 @@ export default function Limit() {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
-            setTxErrorMessage(error?.data?.message);
+            setTxErrorMessage(parseErrorMessage(error));
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
