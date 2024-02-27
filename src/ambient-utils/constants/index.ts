@@ -104,7 +104,7 @@ export const DEFAULT_CTA_DISMISSAL_DURATION_MINUTES = process.env
 
 export const USE_MOCK_XP_DATA = process.env.REACT_APP_USE_MOCK_XP_DATA
     ? process.env.REACT_APP_USE_MOCK_XP_DATA?.toLowerCase() === 'true'
-    : undefined;
+    : false;
 
 export const IS_BLAST_SITE = process.env.REACT_APP_IS_BLAST_SITE
     ? process.env.REACT_APP_IS_BLAST_SITE?.toLowerCase() === 'true'

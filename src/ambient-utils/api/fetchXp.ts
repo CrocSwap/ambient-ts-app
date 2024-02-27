@@ -6,8 +6,6 @@ interface argsIF {
     chainId: string;
 }
 
-const USE_MOCK_DATA = USE_MOCK_XP_DATA !== undefined ? USE_MOCK_XP_DATA : true;
-
 // function to convert level to xp
 export const levelToXp = (level: number) => {
     const xp = 250 * (level - 1) ** (3 / 2);
@@ -193,7 +191,7 @@ export const fetchUserXpData = async (args: argsIF) => {
         ],
     };
 
-    const userXp = USE_MOCK_DATA
+    const userXp = USE_MOCK_XP_DATA
         ? mapUserXpResponseToUserXp(userXpMockData)
         : userXpFetchData;
     return userXp;
@@ -787,7 +785,7 @@ export const fetchXpLeadersData = async (
                   mapUserXpResponseToUserXp(userXp),
               );
 
-    const xpLeaders = USE_MOCK_DATA ? xpLeadersMockData : xpLeaderFetchData;
+    const xpLeaders = USE_MOCK_XP_DATA ? xpLeadersMockData : xpLeaderFetchData;
 
     return xpLeaders;
 };
