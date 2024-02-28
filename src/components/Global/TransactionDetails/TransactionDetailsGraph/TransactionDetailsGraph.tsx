@@ -138,6 +138,7 @@ export default function TransactionDetailsGraph(
         (async () => {
             const isTimeFirstMintInRemovalRange =
                 transactionType === 'liqchange' &&
+                tx.changeType !== 'mint' &&
                 tx.timeFirstMint === undefined;
 
             if (isTimeFirstMintInRemovalRange) {
@@ -185,7 +186,8 @@ export default function TransactionDetailsGraph(
 
             if (
                 transactionType === 'liqchange' &&
-                tx.timeFirstMint !== tx.txTime
+                tx.timeFirstMint !== tx.txTime &&
+                tx.changeType !== 'mint'
             ) {
                 const diffTime = Math.abs(tx.txTime - tx.timeFirstMint);
                 if (diffTime < period) {
@@ -248,7 +250,7 @@ export default function TransactionDetailsGraph(
                 }
             }
         })();
-    }, [fetchEnabled, tx.timeFirstMint]);
+    }, [fetchEnabled, tx.timeFirstMint, tx.changeType]);
 
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -1024,7 +1026,9 @@ export default function TransactionDetailsGraph(
                                     : tx.txTime * 1000;
 
                                 const timeEnd =
-                                    tx.txTime && tx.timeFirstMint !== tx.txTime
+                                    tx.txTime &&
+                                    tx.timeFirstMint !== tx.txTime &&
+                                    tx.changeType !== 'mint'
                                         ? tx.txTime * 1000
                                         : scaleData.xScale
                                               .domain()[1]
