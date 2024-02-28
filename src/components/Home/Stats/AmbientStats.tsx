@@ -19,6 +19,7 @@ import {
 import {
     GCGO_ETHEREUM_URL,
     GCGO_SCROLL_URL,
+    IS_TESTNET_SITE,
 } from '../../../ambient-utils/constants';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { useProvider } from 'wagmi';
@@ -191,10 +192,17 @@ export default function Stats() {
     ];
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
+    const statsTitle = IS_TESTNET_SITE
+        ? 'Testnet Stats'
+        : !supportedNetworks.includes('0x1') &&
+          supportedNetworks.includes('0x82750')
+        ? 'Ambient x Scroll Stats'
+        : 'Ambient Finance Stats';
+
     const mobileWrapper = (
         <Fade up>
-            <HomeTitle aria-label='Ambient Finance Stats' tabIndex={0}>
-                Ambient Finance Stats
+            <HomeTitle aria-label={statsTitle} tabIndex={0}>
+                {statsTitle}
             </HomeTitle>
             <HomeContent>
                 {statCardData.map((card, idx) => (
@@ -210,8 +218,8 @@ export default function Stats() {
                 mobileWrapper
             ) : (
                 <>
-                    <HomeTitle aria-label='Ambient Finance Stats' tabIndex={0}>
-                        Ambient Finance Stats
+                    <HomeTitle aria-label={statsTitle} tabIndex={0}>
+                        {statsTitle}
                     </HomeTitle>
                     <HomeContent>
                         {statCardData.map((card, idx) => (
