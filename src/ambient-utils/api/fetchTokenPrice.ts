@@ -19,9 +19,6 @@ export const fetchTokenPrice = async (
     _lastTime: number,
 ) => {
     const address = translateToken(dispToken, chain);
-
-    const defaultPair = supportedNetworks[chain].defaultPair;
-
     try {
         const body = {
             config_path: 'price',
@@ -35,6 +32,7 @@ export const fetchTokenPrice = async (
 
         return response.value;
     } catch (error) {
+        const defaultPair = supportedNetworks[chain].defaultPair;
         // if token is USDC, return 0.999
         if (dispToken.toLowerCase() === defaultPair[1].address.toLowerCase()) {
             return {
