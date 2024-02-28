@@ -378,6 +378,8 @@ export default function Chart(props: propsIF) {
     const [selectedOrderHistory, setSelectedOrderHistory] =
         useState<TransactionIF>();
 
+    const [hoverOHTooltip, setHoverOHTooltip] = useState<boolean>(true);
+
     const [hoveredOrderTooltipPlacement, setHoveredOrderTooltipPlacement] =
         useState<{ top: number; left: number; isOnLeftSide: boolean }>();
     const [selectedOrderTooltipPlacement, setSelectedOrderTooltipPlacement] =
@@ -4723,6 +4725,13 @@ export default function Chart(props: propsIF) {
         setCurrentTxActiveInTransactions('');
     }, [denomInBase]);
 
+    useEffect(() => {
+        if (!hoverOHTooltip) {
+            setHoveredOrderHistory(undefined);
+            setIsHoveredOrderHistory(false);
+        }
+    }, [hoverOHTooltip]);
+
     const orderHistoryHoverStatus = (
         mouseX: number,
         mouseY: number,
@@ -4761,10 +4770,12 @@ export default function Chart(props: propsIF) {
                     return resElement;
                 });
                 setIsHoveredOrderHistory(true);
+                setHoverOHTooltip(true);
             } else {
                 setHoveredOrderTooltipPlacement(() => undefined);
                 setHoveredOrderHistory(() => undefined);
                 setIsHoveredOrderHistory(false);
+                setHoverOHTooltip(false);
             }
 
             if (onClick && scaleData) {
@@ -5462,7 +5473,7 @@ export default function Chart(props: propsIF) {
                                   circleScale(
                                       hoveredOrderHistory.totalValueUSD,
                                   ),
-                              ));
+                              ) / 1.3);
 
                     return {
                         top,
@@ -5481,7 +5492,8 @@ export default function Chart(props: propsIF) {
                     );
                     const left =
                         scaleData?.xScale(selectedOrderHistory.txTime * 1000) +
-                        scale(circleScale(selectedOrderHistory.totalValueUSD));
+                        scale(circleScale(selectedOrderHistory.totalValueUSD)) /
+                            1.3;
 
                     return { top, left, isOnLeftSide: false };
                 });
@@ -5830,6 +5842,7 @@ export default function Chart(props: propsIF) {
                         pointerEvents={
                             !isDragActive && activeDrawingType === 'Cross'
                         }
+                        setHoverOHTooltip={setHoverOHTooltip}
                     />
                 )}
 
@@ -5850,6 +5863,7 @@ export default function Chart(props: propsIF) {
                         pointerEvents={
                             !isDragActive && activeDrawingType === 'Cross'
                         }
+                        setHoverOHTooltip={setHoverOHTooltip}
                     />
                 )}
         </div>

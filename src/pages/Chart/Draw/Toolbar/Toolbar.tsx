@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import drawLine from '../../../../assets/images/icons/draw/draw_line.svg';
 import drawCross from '../../../../assets/images/icons/draw/draw_cross.svg';
 import drawRect from '../../../../assets/images/icons/draw/rect.svg';
@@ -70,6 +70,7 @@ function ChartToolbar() {
             undoStack,
             drawActionStack,
             actionKey,
+            drawnShapeHistory,
         },
         activeDrawingType,
         setActiveDrawingType,
@@ -321,6 +322,9 @@ function ChartToolbar() {
                                         hoveredTool === item.description && (
                                             <HoveredTooltip
                                                 hoveredTool={hoveredTool}
+                                                height={22}
+                                                width={125}
+                                                arrow={true}
                                             ></HoveredTooltip>
                                         )}
                                 </IconCard>
@@ -357,6 +361,9 @@ function ChartToolbar() {
                                         hoveredTool === item.description && (
                                             <HoveredTooltip
                                                 hoveredTool={hoveredTool}
+                                                height={22}
+                                                width={125}
+                                                arrow={true}
                                             ></HoveredTooltip>
                                         )}
                                 </IconCard>
@@ -427,6 +434,9 @@ function ChartToolbar() {
                                         hoveredTool === item.description && (
                                             <HoveredTooltip
                                                 hoveredTool={hoveredTool}
+                                                height={22}
+                                                width={125}
+                                                arrow={true}
                                             ></HoveredTooltip>
                                         )}
                                 </IconCard>
@@ -445,13 +455,20 @@ function ChartToolbar() {
                                     }
                                     onTouchStart={() => handleDeleteAll()}
                                 >
-                                    <img src={trashIcon} alt='' />
+                                    <UndoButtonSvg
+                                        isActive={drawnShapeHistory.length > 0}
+                                        src={trashIcon}
+                                        alt=''
+                                    />
                                 </IconActiveContainer>
 
                                 {hoveredTool &&
                                     hoveredTool === 'Delete All' && (
                                         <HoveredTooltip
                                             hoveredTool={hoveredTool}
+                                            height={22}
+                                            width={125}
+                                            arrow={true}
                                         ></HoveredTooltip>
                                     )}
                             </IconCard>
