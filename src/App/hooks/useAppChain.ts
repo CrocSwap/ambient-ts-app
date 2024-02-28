@@ -163,12 +163,30 @@ export const useAppChain = (): {
 
     const defaultChain = getDefaultChainId();
 
+    // boolean showing if the current chain in connected wallet is supported
+    // this is used to launch the network switcher automatically
+    const isWalletChainSupported = useMemo<boolean>(() => {
+        // output variable, true by default (when no wallet is connected)
+        let isSupported = true;
+        // if a wallet is connected, try to validate network
+        if (chns.length && chainNetwork) {
+            // array of supported chains (number)
+            const supportedChains: number[] = chns.map((chn) => chn.id);
+            // chain Id of connected network in wallet
+            const walletChain: number = chainNetwork.id;
+            // determine if connected wallet has a supported chain
+            isSupported = supportedChains.includes(walletChain);
+        }
+        // return output variable
+        return isSupported;
+    }, [chainNetwork]);
+
     // metadata about the active network in the app
     const [activeNetwork, setActiveNetwork] = useState<NetworkIF>(
         findNetworkData(
-            chainInURLValidated ??
-                localStorage.getItem(CHAIN_LS_KEY) ??
-                defaultChain,
+            isWalletChainSupported
+                ? localStorage.getItem(CHAIN_LS_KEY) ?? defaultChain
+                : defaultChain,
         ),
     );
 
@@ -226,24 +244,6 @@ export const useAppChain = (): {
         // return output varibale (chain data)
         return output;
     }, [activeNetwork.chainId]);
-
-    // boolean showing if the current chain in connected wallet is supported
-    // this is used to launch the network switcher automatically
-    const isWalletChainSupported = useMemo<boolean>(() => {
-        // output variable, true by default (when no wallet is connected)
-        let isSupported = true;
-        // if a wallet is connected, try to validate network
-        if (chns.length && chainNetwork) {
-            // array of supported chains (number)
-            const supportedChains: number[] = chns.map((chn) => chn.id);
-            // chain Id of connected network in wallet
-            const walletChain: number = chainNetwork.id;
-            // determine if connected wallet has a supported chain
-            isSupported = supportedChains.includes(walletChain);
-        }
-        // return output variable
-        return isSupported;
-    }, [chainNetwork]);
 
     return {
         chainData,
