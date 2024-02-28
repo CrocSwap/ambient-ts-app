@@ -120,7 +120,7 @@ export default function CandleChart(props: candlePropsIF) {
 
             setCandlestick(() => canvasCandlestick);
         }
-    }, [scaleData]);
+    }, [scaleData, denomInBase]);
 
     useEffect(() => {
         if (candlestick) {

@@ -10,6 +10,7 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { useMediaQuery } from '@material-ui/core';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import InfoRow from '../../InfoRow';
+import { getElapsedTime } from '../../../../ambient-utils/dataLayer';
 
 interface TransactionDetailsSimplifyPropsIF {
     tx: TransactionIF;
@@ -180,7 +181,7 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
         },
 
         {
-            title: 'Time ',
+            title: 'Transaction Time ',
             content: (
                 <div style={{ cursor: 'default' }}>
                     {moment(tx.txTime * 1000).format('MM/DD/YYYY HH:mm')}
@@ -365,6 +366,22 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
                   },
               ]),
     ];
+
+    if (tx.timeFirstMint && tx.timeFirstMint !== tx.txTime) {
+        infoContent.splice(2, 0, {
+            title: 'Submit time ',
+            content:
+                moment(tx.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm') +
+                ' ' +
+                '(' +
+                getElapsedTime(
+                    moment(Date.now()).diff(tx.timeFirstMint * 1000, 'seconds'),
+                ) +
+                ' ago)',
+            explanation:
+                'The time the owner first added liquidity at these prices',
+        });
+    }
 
     return (
         <div className={styles.tx_details_container}>

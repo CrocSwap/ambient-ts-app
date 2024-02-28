@@ -15,6 +15,11 @@ export function useRangeInputDisable(
     // TODO: this logic can likely be simplified
     // Or at least made more readable
     useEffect(() => {
+        if (
+            currentPoolPriceTick === Infinity ||
+            currentPoolPriceTick === -Infinity
+        )
+            return;
         if (!isMintLiqEnabled) {
             setIsTokenAInputDisabled(true);
             setIsTokenBInputDisabled(true);
