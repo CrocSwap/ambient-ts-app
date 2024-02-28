@@ -187,7 +187,7 @@ export const useAppChain = (): {
             isWalletChainSupported
                 ? localStorage.getItem(CHAIN_LS_KEY) ?? defaultChain
                 : defaultChain,
-        ),
+        ) || findNetworkData(defaultChain),
     );
 
     function findNetworkData(chn: keyof typeof supportedNetworks): NetworkIF {
