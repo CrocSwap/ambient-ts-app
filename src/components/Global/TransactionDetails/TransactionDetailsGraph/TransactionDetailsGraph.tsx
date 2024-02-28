@@ -138,7 +138,6 @@ export default function TransactionDetailsGraph(
         (async () => {
             const isTimeFirstMintInRemovalRange =
                 transactionType === 'liqchange' &&
-                tx.changeType === 'burn' &&
                 tx.timeFirstMint === undefined;
 
             if (isTimeFirstMintInRemovalRange) {
@@ -184,7 +183,10 @@ export default function TransactionDetailsGraph(
 
             let period = decidePeriod(Math.floor(diff / 1000 / 200));
 
-            if (transactionType === 'liqchange' && tx.changeType === 'burn') {
+            if (
+                transactionType === 'liqchange' &&
+                tx.timeFirstMint !== tx.txTime
+            ) {
                 const diffTime = Math.abs(tx.txTime - tx.timeFirstMint);
                 if (diffTime < period) {
                     period = takeSmallerPeriodForRemoveRange(diffTime);
@@ -1022,9 +1024,28 @@ export default function TransactionDetailsGraph(
                                     : tx.txTime * 1000;
 
                                 const timeEnd =
-                                    tx.changeType === 'burn'
+                                    tx.txTime && tx.timeFirstMint !== tx.txTime
                                         ? tx.txTime * 1000
-                                        : scaleData.xScale.domain()[1];
+                                        : scaleData.xScale
+                                              .domain()[1]
+                                              .getTime();
+
+                                const bandPixel =
+                                    scaleData.xScale(timeEnd) -
+                                    scaleData.xScale(time);
+
+                                if (bandPixel < 20 && period) {
+                                    const tempDomain =
+                                        timeEnd + period * 1000 * 40;
+                                    const newMaxDomain = Math.min(
+                                        tempDomain,
+                                        scaleData.xScale.domain()[1].getTime(),
+                                    );
+                                    scaleData.xScale.domain([
+                                        time - period * 1000 * 20,
+                                        newMaxDomain,
+                                    ]);
+                                }
 
                                 scaleData.xScaleCopy.domain(
                                     scaleData.xScale.domain(),
