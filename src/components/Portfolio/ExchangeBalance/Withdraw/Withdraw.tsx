@@ -65,7 +65,11 @@ export default function Withdraw(props: propsIF) {
         secondaryEnsName,
         setTokenModalOpen,
     } = props;
-    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const {
+        crocEnv,
+        ethMainnetUsdPrice,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
 
     const { userAddress } = useContext(UserDataContext);
@@ -332,6 +336,9 @@ export default function Withdraw(props: propsIF) {
         }
     };
 
+    const isScroll = chainId === '0x82750' || chainId === '0x8274f';
+    const [extraL1GasFeeWithdraw] = useState(isScroll ? 1.2 : 0);
+
     const [withdrawGasPriceinDollars, setWithdrawGasPriceinDollars] = useState<
         string | undefined
     >();
@@ -351,12 +358,12 @@ export default function Withdraw(props: propsIF) {
 
             setWithdrawGasPriceinDollars(
                 getFormattedNumber({
-                    value: gasPriceInDollarsNum,
+                    value: gasPriceInDollarsNum + extraL1GasFeeWithdraw,
                     isUSD: true,
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth]);
+    }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth, extraL1GasFeeWithdraw]);
 
     return (
         <FlexContainer flexDirection='column' gap={16} padding={'16px'}>

@@ -199,7 +199,7 @@ function SwapTokenInput(props: propsIF) {
     }
 
     const debouncedTokenAChangeEvent = (value: string) => {
-        setIsBuyLoading(true);
+        if (parseFloat(value) > 0) setIsBuyLoading(true);
         setSellQtyString(value);
         setPrimaryQuantity(value);
         setLastInput(value);
@@ -208,7 +208,7 @@ function SwapTokenInput(props: propsIF) {
     };
 
     const debouncedTokenBChangeEvent = (value: string) => {
-        setIsSellLoading(true);
+        if (parseFloat(value) > 0) setIsSellLoading(true);
         setBuyQtyString(value);
         setPrimaryQuantity(value);
         setLastInput(value);
@@ -250,6 +250,7 @@ function SwapTokenInput(props: propsIF) {
             isTokenAPrimary,
             sellQtyString,
             buyQtyString,
+            primaryQuantity,
         ],
     );
 
@@ -290,6 +291,7 @@ function SwapTokenInput(props: propsIF) {
             isTokenAPrimary,
             sellQtyString,
             buyQtyString,
+            primaryQuantity,
         ],
     );
 
@@ -317,10 +319,9 @@ function SwapTokenInput(props: propsIF) {
                 tokenAorB='A'
                 token={tokenA}
                 tokenInput={
-                    buyQtyString !== '' ||
+                    isTokenAPrimary ||
                     isLiquidityInsufficient ||
-                    (sellQtyString !== '' &&
-                        (isBuyLoading || parseFloat(sellQtyString) === 0))
+                    (!isTokenAPrimary && parseFloat(buyQtyString) > 0)
                         ? sellQtyString
                         : ''
                 }
@@ -375,10 +376,9 @@ function SwapTokenInput(props: propsIF) {
                 tokenAorB='B'
                 token={tokenB}
                 tokenInput={
-                    sellQtyString !== '' ||
+                    !isTokenAPrimary ||
                     isLiquidityInsufficient ||
-                    (buyQtyString !== '' &&
-                        (isSellLoading || parseFloat(buyQtyString) === 0))
+                    parseFloat(sellQtyString) > 0
                         ? buyQtyString
                         : ''
                 }
