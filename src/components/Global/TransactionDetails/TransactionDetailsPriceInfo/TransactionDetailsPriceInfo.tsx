@@ -99,7 +99,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             className={styles.info_container}
         >
             <Row>
-                <span>Total Value: </span>
+                <span>Order Value: </span>
                 <DefaultTooltip
                     interactive
                     title={usdValue}
