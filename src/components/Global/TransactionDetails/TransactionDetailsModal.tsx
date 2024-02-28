@@ -95,6 +95,8 @@ function TransactionDetailsModal(props: propsIF) {
                     skipENSFetch,
                 );
 
+                tx.timeFirstMint = positionStats.timeFirstMint;
+
                 setUpdatedPositionApy(positionStats.aprEst * 100);
             })
             .catch(console.error);
@@ -145,6 +147,7 @@ function TransactionDetailsModal(props: propsIF) {
                 <div className={styles.right_container}>
                     <TransactionDetailsGraph
                         tx={tx}
+                        // timeFirstMint={timeFirstMint}
                         transactionType={tx.entityType}
                         isBaseTokenMoneynessGreaterOrEqual={
                             isBaseTokenMoneynessGreaterOrEqual
