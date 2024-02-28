@@ -76,18 +76,32 @@ export default function OrderHistoryTooltip(props: {
                 <OrderHistoryContainer
                     onClick={() => {
                         handleCardClick(hoveredOrderHistory);
+
                         setIsSelectedOrderHistory((prev: boolean) => {
+                            let shouldDeselect = !prev;
                             if (!prev) {
                                 setSelectedOrderHistory(() => {
                                     return hoveredOrderHistory;
                                 });
                             } else {
-                                setSelectedOrderHistory(() => {
-                                    return undefined;
-                                });
+                                setSelectedOrderHistory(
+                                    (
+                                        prevSelected: TransactionIF | undefined,
+                                    ) => {
+                                        shouldDeselect =
+                                            hoveredOrderHistory === prevSelected
+                                                ? !prev
+                                                : prev;
+
+                                        return hoveredOrderHistory ===
+                                            prevSelected
+                                            ? undefined
+                                            : hoveredOrderHistory;
+                                    },
+                                );
                             }
 
-                            return !prev;
+                            return shouldDeselect;
                         });
                         setHoverOHTooltip(false);
                     }}

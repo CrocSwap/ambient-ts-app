@@ -4852,6 +4852,7 @@ export default function Chart(props: propsIF) {
 
                     setIsSelectedOrderHistory(() => {
                         !shouldSelect && setCurrentTxActiveInTransactions('');
+                        console.log(shouldSelect);
                         return shouldSelect;
                     });
                 } else {
@@ -5533,7 +5534,7 @@ export default function Chart(props: propsIF) {
                                   circleScale(
                                       hoveredOrderHistory.totalValueUSD,
                                   ),
-                              ) / 1.3);
+                              ));
 
                     return {
                         top,
@@ -5552,8 +5553,7 @@ export default function Chart(props: propsIF) {
                     );
                     const left =
                         scaleData?.xScale(selectedOrderHistory.txTime * 1000) +
-                        scale(circleScale(selectedOrderHistory.totalValueUSD)) /
-                            1.3;
+                        scale(circleScale(selectedOrderHistory.totalValueUSD));
 
                     return { top, left, isOnLeftSide: false };
                 });
@@ -5562,6 +5562,7 @@ export default function Chart(props: propsIF) {
     };
 
     useEffect(() => {
+        console.log(isSelectedOrderHistory, selectedOrderHistory);
         calculateOrderHistoryTooltipPlacements();
     }, [
         isSelectedOrderHistory,
