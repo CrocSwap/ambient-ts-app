@@ -2,36 +2,51 @@ import { useMemo, useState } from 'react';
 import { getLocalStorageItem } from '../../ambient-utils/dataLayer';
 
 export interface sidebarMethodsIF {
-    status: SidebarStoredStatus;
+    status: SidebarStatus;
     isOpen: boolean;
     isHiddenOnRoute: boolean;
     open: (persist?: boolean) => void;
     close: (persist?: boolean) => void;
     toggle: (persist?: boolean) => void;
-    getStoredStatus: () => SidebarStoredStatus | null;
+    getStoredStatus: () => SidebarStatus | null;
     resetStoredStatus: () => void;
 }
 
-export type SidebarStoredStatus = 'open' | 'closed';
+export type SidebarStatus = 'open' | 'closed';
 
-export const useSidebar = (pathname: string): sidebarMethodsIF => {
+export const useSidebar = (
+    pathname: string,
+    showByDefault: boolean,
+): sidebarMethodsIF => {
+    // base default status for the sidebar through the app
+    const SIDEBAR_GLOBAL_DEFAULT: SidebarStatus = 'closed';
+
     // local storage key for persisted data
     const localStorageKey = 'sidebarStatus';
     const getStoredSidebarStatus = () =>
-        getLocalStorageItem<SidebarStoredStatus>(localStorageKey);
+        getLocalStorageItem<SidebarStatus>(localStorageKey);
 
-    const resetPersist = () => localStorage.setItem(localStorageKey, 'closed');
+    // fn to reset the persisted value in local storage to the global default
+    const resetPersist = () =>
+        localStorage.setItem(localStorageKey, SIDEBAR_GLOBAL_DEFAULT);
 
     // hook to track sidebar status in local state
     // this hook initializes from local storage for returning users
-    // will default to 'open' if no value found (happens on first visit)
-    const [sidebar, setSidebar] = useState<SidebarStoredStatus>(
-        getStoredSidebarStatus() || 'open',
+    // will check a media query for viewport width if no persisted value is found
+    // last fallback is a centrally-defined const
+    const [sidebar, setSidebar] = useState<SidebarStatus>(
+        (
+            getStoredSidebarStatus() !== null
+                ? getStoredSidebarStatus() === 'open'
+                : showByDefault
+        )
+            ? 'open'
+            : 'closed',
     );
 
     // reusable logic to update state and optionally persist data in local storage
     const changeSidebar = (
-        newStatus: SidebarStoredStatus,
+        newStatus: SidebarStatus,
         persist: boolean,
     ): void => {
         setSidebar(newStatus);

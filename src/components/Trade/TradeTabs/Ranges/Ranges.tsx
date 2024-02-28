@@ -171,6 +171,7 @@ function Ranges(props: propsIF) {
         rowsPerPage,
         changeRowsPerPage,
         count,
+        fullData,
     } = _DATA;
     const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
         setPage(p);
@@ -426,6 +427,7 @@ function Ranges(props: propsIF) {
                 <TableRows
                     type='Range'
                     data={_DATA.currentData}
+                    fullData={fullData}
                     isAccountView={isAccountView}
                     tableView={tableView}
                 />

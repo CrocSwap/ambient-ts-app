@@ -41,8 +41,6 @@ interface propsIF {
     ) => void;
     selectedDate: number | undefined;
     setSelectedDate: Dispatch<number | undefined>;
-    setIsChartLoading: Dispatch<React.SetStateAction<boolean>>;
-    isChartLoading: boolean;
     updateURL: (changes: updatesIF) => void;
 }
 export interface LiquidityDataLocal {
@@ -291,8 +289,6 @@ function TradeCharts(props: propsIF) {
                         showLatest={showLatest}
                         setShowLatest={setShowLatest}
                         setShowTooltip={setShowTooltip}
-                        isLoading={props.isChartLoading}
-                        setIsLoading={props.setIsChartLoading}
                         updateURL={updateURL}
                     />
                 </div>
