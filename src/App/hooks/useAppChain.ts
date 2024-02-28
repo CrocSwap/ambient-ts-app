@@ -184,7 +184,7 @@ export const useAppChain = (): {
     // metadata about the active network in the app
     const [activeNetwork, setActiveNetwork] = useState<NetworkIF>(
         findNetworkData(
-            chainInURLValidated && isWalletChainSupported
+            isWalletChainSupported
                 ? localStorage.getItem(CHAIN_LS_KEY) ?? defaultChain
                 : defaultChain,
         ),
