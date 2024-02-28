@@ -26,7 +26,7 @@ export interface HeaderItem {
 }
 
 interface propsIF {
-    allPools: PoolDataIF[];
+    allPools: Array<PoolDataIF>;
     chainId: string;
 }
 

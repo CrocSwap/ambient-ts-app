@@ -1,5 +1,5 @@
 import { CrocImpact } from '@crocswap-libs/sdk';
-import { useContext, useState, useEffect, memo } from 'react';
+import { useContext, useState, useEffect, memo, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
     getFormattedNumber,
@@ -82,6 +82,7 @@ function Swap(props: propsIF) {
         addTransactionByType,
         removePendingTx,
         updateTransactionHash,
+        pendingTransactions,
     } = useContext(ReceiptContext);
 
     // get URL pathway for user relative to index
@@ -100,6 +101,8 @@ function Swap(props: propsIF) {
         isTokenAPrimary,
         isDenomBase,
         primaryQuantity,
+        setPrimaryQuantity,
+        areDefaultTokensUpdatedForChain,
     } = useContext(TradeDataContext);
 
     const [sellQtyString, setSellQtyString] = useState<string>(
@@ -177,7 +180,10 @@ function Swap(props: propsIF) {
     const needConfirmTokenA = !tokens.verify(tokenA.address);
     const needConfirmTokenB = !tokens.verify(tokenB.address);
     // value showing if no acknowledgement is necessary
-    const areBothAckd: boolean = !needConfirmTokenA && !needConfirmTokenB;
+    const areBothAckd: boolean =
+        areDefaultTokensUpdatedForChain &&
+        !needConfirmTokenA &&
+        !needConfirmTokenB;
 
     const liquidityProviderFeeString = (liquidityFee * 100).toLocaleString(
         'en-US',
@@ -202,6 +208,13 @@ function Swap(props: propsIF) {
         chainId === '0x82750' || chainId === '0x8274f'
             ? amountToReduceNativeTokenQtyScroll
             : amountToReduceNativeTokenQtyMainnet;
+
+    const activeTxHash = useRef<string>('');
+
+    // reset activeTxHash when the pair changes or user updates quantity
+    useEffect(() => {
+        activeTxHash.current = '';
+    }, [tokenA.address + tokenB.address, primaryQuantity]);
 
     useEffect(() => {
         if (isSellLoading || isBuyLoading) {
@@ -230,6 +243,15 @@ function Swap(props: propsIF) {
             setSwapAllowed(parseFloat(sellQtyString) <= hurdle);
 
             if (parseFloat(sellQtyString) > hurdle) {
+                if (
+                    pendingTransactions.some(
+                        (tx) => tx === activeTxHash.current,
+                    )
+                ) {
+                    setSellQtyString('');
+                    setPrimaryQuantity('');
+                    activeTxHash.current = '';
+                }
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage(
                     `${tokenA.symbol} Amount Exceeds ${balanceLabel} Balance`,
@@ -265,6 +287,8 @@ function Swap(props: propsIF) {
         tokenABalance,
         tokenAQtyCoveredByWalletBalance,
         amountToReduceNativeTokenQty,
+        pendingTransactions,
+        activeTxHash,
     ]);
 
     useEffect(() => {
@@ -369,7 +393,7 @@ function Swap(props: propsIF) {
                 isWithdrawFromDexChecked,
                 isSaveAsDexSurplusChecked,
             });
-
+            activeTxHash.current = tx?.hash;
             setNewSwapTransactionHash(tx?.hash);
             addPendingTx(tx?.hash);
 
@@ -417,7 +441,7 @@ function Swap(props: propsIF) {
                     removePendingTx(error.hash);
 
                     const newTransactionHash = error.replacement.hash;
-
+                    activeTxHash.current = newTransactionHash;
                     addPendingTx(newTransactionHash);
                     updateTransactionHash(error.hash, error.replacement.hash);
                     setNewSwapTransactionHash(newTransactionHash);
@@ -426,6 +450,7 @@ function Swap(props: propsIF) {
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {
                     receipt = error.receipt;
+                    activeTxHash.current = '';
                 }
             }
 

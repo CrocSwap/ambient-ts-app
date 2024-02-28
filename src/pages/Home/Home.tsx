@@ -7,10 +7,10 @@ import MobileLandingSections from '../../components/Home/Landing/MobileLandingSe
 import { useSearchParams } from 'react-router-dom';
 import { useSwitchNetwork } from 'wagmi';
 import { supportedNetworks } from '../../ambient-utils/constants';
-import { useAppChain } from '../../App/hooks/useAppChain';
 import { useContext, useEffect } from 'react';
 import { lookupChainId } from '../../ambient-utils/dataLayer';
 import { UserDataContext } from '../../contexts/UserDataContext';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 export default function Home() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
@@ -18,8 +18,7 @@ export default function Home() {
     const { switchNetwork } = useSwitchNetwork();
     // hook from wagmi indicating if user is connected
     const { isUserConnected } = useContext(UserDataContext);
-    // hook managing chain data between the app and external APIs
-    const { chooseNetwork, chainData } = useAppChain();
+    const { chainData, chooseNetwork } = useContext(TradeDataContext);
     // hook to consume and alter search params on the index page
     const [searchParams, setSearchParams] = useSearchParams();
     // logic to consume chain param data from the URL
