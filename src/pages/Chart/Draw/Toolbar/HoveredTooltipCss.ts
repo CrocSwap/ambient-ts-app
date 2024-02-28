@@ -5,7 +5,7 @@ const TooltipContainer = styled.div`
     z-index: 999;
 `;
 
-const Tooltip = styled.div`
+const Tooltip = styled.div<{ height: number; width: number }>`
     position: absolute;
 
     display: flex;
@@ -18,8 +18,8 @@ const Tooltip = styled.div`
 
     border-radius: 4px;
 
-    height: 22px;
-    width: 125px;
+    height: ${({ height }) => height + 'px'};
+    width: ${({ width }) => width + 'px'};
 
     left: 35px;
     top: 0px;
