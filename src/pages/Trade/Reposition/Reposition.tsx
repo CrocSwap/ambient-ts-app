@@ -65,7 +65,7 @@ function Reposition() {
         crocEnv,
         activeNetwork,
         provider,
-        chainData: { blockExplorer },
+        chainData: { blockExplorer, chainId },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
@@ -620,6 +620,12 @@ function Reposition() {
         string | undefined
     >();
 
+    const isScroll = chainId === '0x82750' || chainId === '0x8274f';
+    // const [l1GasFeePoolInGwei] = useState<number>(
+    //     isScroll ? 0.0009 * 1e9 : 0,
+    // );
+    const [extraL1GasFeePool] = useState(isScroll ? 2.75 : 0);
+
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const gasPriceInDollarsNum =
@@ -630,12 +636,12 @@ function Reposition() {
 
             setRangeGasPriceinDollars(
                 getFormattedNumber({
-                    value: gasPriceInDollarsNum,
+                    value: gasPriceInDollarsNum + extraL1GasFeePool,
                     isUSD: true,
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+    }, [gasPriceInGwei, ethMainnetUsdPrice, extraL1GasFeePool]);
 
     const txUrlOnBlockExplorer = `${blockExplorer}tx/${newRepositionTransactionHash}`;
 

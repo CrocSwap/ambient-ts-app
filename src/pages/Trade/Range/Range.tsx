@@ -12,7 +12,10 @@ import RangeTokenInput from '../../../components/Trade/Range/RangeTokenInput/Ran
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
-import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
+import {
+    IS_LOCAL_ENV,
+    NUM_GWEI_IN_ETH,
+} from '../../../ambient-utils/constants';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
@@ -53,6 +56,7 @@ function Range() {
     const {
         chainData: { chainId, gridSize },
         ethMainnetUsdPrice,
+        crocEnv,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { poolPriceDisplay, ambientApy, dailyVol } = useContext(PoolContext);
@@ -806,12 +810,16 @@ function Range() {
         setAmountToReduceNativeTokenQtyScroll,
     ] = useState<number>(0.0007);
 
+    const isScroll = chainId === '0x82750' || chainId === '0x8274f';
+    const [l1GasFeePoolInGwei] = useState<number>(isScroll ? 0.0009 * 1e9 : 0);
+    const [extraL1GasFeePool] = useState(isScroll ? 2.3 : 0);
+
     const amountToReduceNativeTokenQty =
         chainId === '0x82750' || chainId === '0x8274f'
             ? amountToReduceNativeTokenQtyScroll
             : amountToReduceNativeTokenQtyMainnet;
 
-    const activeRangeTxHash = useRef<string>('some');
+    const activeRangeTxHash = useRef<string>('');
 
     // reset activeTxHash when the pair changes or user updates quantity
     useEffect(() => {
@@ -827,14 +835,18 @@ function Range() {
                 costOfMainnetPoolInETH * RANGE_BUFFER_MULTIPLIER_MAINNET,
             );
 
-            const costOfScrollPoolInETH =
+            const l2CostOfScrollPoolInETH =
                 gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
 
-            //   IS_LOCAL_ENV &&  console.log({
-            //         gasPriceInGwei,
-            //         costOfScrollPoolInETH,
-            //         amountToReduceNativeTokenQtyScroll,
-            //     });
+            const l1CostOfScrollPoolInETH =
+                l1GasFeePoolInGwei / NUM_GWEI_IN_ETH;
+
+            const costOfScrollPoolInETH =
+                l1CostOfScrollPoolInETH + l2CostOfScrollPoolInETH;
+
+            setAmountToReduceNativeTokenQtyScroll(
+                RANGE_BUFFER_MULTIPLIER_MAINNET * costOfScrollPoolInETH,
+            );
 
             setAmountToReduceNativeTokenQtyScroll(
                 costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER_SCROLL,
@@ -848,14 +860,17 @@ function Range() {
 
             setRangeGasPriceinDollars(
                 getFormattedNumber({
-                    value: gasPriceInDollarsNum,
+                    value: gasPriceInDollarsNum + extraL1GasFeePool,
                     isUSD: true,
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice]);
-
-    const { crocEnv } = useContext(CrocEnvContext);
+    }, [
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
+        l1GasFeePoolInGwei,
+        extraL1GasFeePool,
+    ]);
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
