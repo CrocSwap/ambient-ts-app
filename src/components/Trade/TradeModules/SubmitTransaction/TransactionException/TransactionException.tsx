@@ -33,6 +33,8 @@ export default function TransactionException(props: propsIF) {
         </p>
     );
 
+    const isSlippageError = txErrorMessage === 'execution reverted: K';
+
     return (
         <div className={styles.removal_pending}>
             {rangeModuleActive && isNativeTokenSecondary ? (
@@ -62,8 +64,14 @@ export default function TransactionException(props: propsIF) {
                     <DividerDark />
                     <p>{formattedErrorMessage}</p>
                     <DividerDark />
+
                     {!txErrorMessage ? (
                         suggestionToCheckWalletETHBalance
+                    ) : isSlippageError ? (
+                        <p>
+                            Please try increasing your slippage tolerance in
+                            settings
+                        </p>
                     ) : (
                         <p>
                             Please check your wallet for notifications or try
