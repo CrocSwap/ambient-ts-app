@@ -172,14 +172,10 @@ function Trade() {
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
     const smallScreen = useMediaQuery('(max-width: 500px)');
 
-    const [isChartLoading, setIsChartLoading] = useState<boolean>(true);
-
     const tradeChartsProps = {
         changeState: changeState,
         selectedDate: selectedDate,
         setSelectedDate: setSelectedDate,
-        isChartLoading,
-        setIsChartLoading,
         updateURL,
     };
 
@@ -254,9 +250,9 @@ function Trade() {
                 </ContentContainer>
             )}
 
-            {!isChartLoading &&
-                !isChartHeightMinimum &&
-                activeMobileComponent === 'chart' && <ChartToolbar />}
+            {!isChartHeightMinimum && activeMobileComponent === 'chart' && (
+                <ChartToolbar />
+            )}
         </MainSection>
     );
 
@@ -390,7 +386,7 @@ function Trade() {
                         }}
                     />
                 </FlexContainer>
-                {!isChartLoading && !isChartHeightMinimum && <ChartToolbar />}
+                {!isChartHeightMinimum && <ChartToolbar />}
             </MainSection>
         </>
     );

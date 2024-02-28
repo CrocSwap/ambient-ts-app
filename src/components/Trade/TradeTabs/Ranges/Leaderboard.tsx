@@ -222,6 +222,7 @@ function Leaderboard() {
                     <TableRows
                         type='Range'
                         data={usePaginateDataOrNull}
+                        fullData={usePaginateDataOrNull}
                         isAccountView={false}
                         isLeaderboard={true}
                         tableView={tableView}

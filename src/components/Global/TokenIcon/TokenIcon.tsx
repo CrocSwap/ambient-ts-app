@@ -14,14 +14,18 @@ interface propsIF {
     src?: string;
     alt?: string;
     size?: TokenIconSize;
+    empty?: boolean;
 }
 
-function TokenIcon({
-    token,
-    src = '',
-    alt = 'Token Icon',
-    size = 'm',
-}: propsIF) {
+function TokenIcon(props: propsIF) {
+    const {
+        token,
+        src = '',
+        alt = 'Token Icon',
+        size = 'm',
+        empty = false,
+    } = props;
+
     // translate human-readable icon width to CSS value
     const getIconWidth = (size: TokenIconSize): string => {
         switch (size) {
@@ -45,6 +49,19 @@ function TokenIcon({
                 return '20px';
         }
     };
+
+    // return the element with no embedded image asset, this is for layouts where we want to
+    // ... perserve the correct negative space in the DOM without actually showing anything
+    if (empty) {
+        return (
+            <div
+                style={{
+                    width: getIconWidth(size),
+                    height: getIconWidth(size),
+                }}
+            ></div>
+        );
+    }
 
     const { pathname } = useLocation();
 

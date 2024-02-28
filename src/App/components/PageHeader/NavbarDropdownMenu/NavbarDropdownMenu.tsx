@@ -96,7 +96,7 @@ function NavbarDropdownMenu(props: propsIF) {
     ];
 
     return (
-        <NavbarDropdown ref={dropdownRef} aria-label={ariaLabel}>
+        <NavbarDropdown ref={dropdownRef} aria-label={ariaLabel} hasBorder>
             <CSSTransition
                 in={true}
                 unmountOnExit

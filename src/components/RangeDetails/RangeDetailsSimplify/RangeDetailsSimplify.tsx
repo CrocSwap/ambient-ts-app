@@ -291,7 +291,7 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
         },
         {
             title: 'Value ',
-            content: '$' + usdValue,
+            content: usdValue,
             explanation: 'The approximate US dollar value of the limit order',
         },
         ...(!isAmbient
