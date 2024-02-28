@@ -116,19 +116,23 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
 
     const isAmbient = tx.positionType === 'ambient';
 
-    const typeDisplay = tx.entityType
-        ? tx.entityType === 'swap'
-            ? 'Market'
-            : tx.entityType === 'liqchange'
-            ? tx.changeType === 'mint'
-                ? 'Add to Range'
-                : 'Remove from Range'
-            : tx.changeType === 'burn'
-            ? 'Limit Removal'
-            : tx.changeType === 'recover'
+    const changeType = tx.changeType;
+    const entityType = tx.entityType;
+
+    const changeTypeDisplay =
+        changeType === 'harvest'
+            ? 'Range Harvest'
+            : changeType === 'mint'
+            ? entityType === 'limitOrder'
+                ? 'Limit'
+                : 'Range'
+            : changeType === 'burn'
+            ? entityType === 'limitOrder'
+                ? 'Limit Removal'
+                : 'Range Removal'
+            : changeType === 'recover'
             ? 'Limit Claim'
-            : 'Limit Mint'
-        : '...';
+            : 'Market';
 
     const txTypeContent = (
         <motion.div
@@ -140,125 +144,141 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         >
             <Row>
                 <span>Order Type: </span>
-                <div className={styles.info_text}>{typeDisplay}</div>
+                <div className={styles.info_text}>{changeTypeDisplay}</div>
             </Row>
         </motion.div>
     );
 
     const buyQuoteRow = (
-        <Row>
-            <p>
-                {tx.entityType === 'liqchange'
-                    ? tx.quoteSymbol + ': '
-                    : tx.changeType === 'burn'
-                    ? tx.quoteSymbol + ' Claimed: '
-                    : 'Buy: '}
-            </p>
-            <div>
-                {tx.entityType !== 'limitOrder' ||
-                tx.changeType === 'recover' ||
-                tx.changeType === 'burn'
-                    ? quoteQuantityDisplay
-                    : estimatedQuoteFlowDisplay || '0.00'}
-                <TokenIcon
-                    token={quoteToken}
-                    src={uriToHttp(quoteTokenLogo)}
-                    alt={quoteTokenSymbol}
-                    size='xs'
-                />
-            </div>
-        </Row>
-    );
-    const sellBaseRow = (
-        <Row>
-            <p>
-                {tx.entityType === 'liqchange'
-                    ? tx.baseSymbol + ': '
-                    : tx.changeType === 'burn'
-                    ? tx.baseSymbol + ' Removed: '
-                    : 'Sell: '}
-            </p>
-            <div>
-                {tx.entityType !== 'limitOrder' ||
-                tx.changeType === 'burn' ||
-                tx.changeType === 'mint'
-                    ? baseQuantityDisplay
-                    : estimatedBaseFlowDisplay || '0.00'}
-                <TokenIcon
-                    token={baseToken}
-                    src={uriToHttp(baseTokenLogo)}
-                    alt={baseTokenSymbol}
-                    size='xs'
-                />
-            </div>
-        </Row>
+        <motion.div
+            layout
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className={styles.info_container}
+        >
+            <Row>
+                <p>
+                    {tx.entityType === 'liqchange'
+                        ? tx.quoteSymbol + ': '
+                        : tx.changeType === 'burn'
+                        ? tx.quoteSymbol + ' Claimed: '
+                        : 'Buy: '}
+                </p>
+                <div className={styles.info_text}>
+                    {tx.entityType !== 'limitOrder' ||
+                    tx.changeType === 'recover' ||
+                    tx.changeType === 'burn'
+                        ? quoteQuantityDisplay
+                        : estimatedQuoteFlowDisplay || '0.00'}
+                    <TokenIcon
+                        token={quoteToken}
+                        src={uriToHttp(quoteTokenLogo)}
+                        alt={quoteTokenSymbol}
+                        size='s'
+                    />
+                </div>
+            </Row>
+        </motion.div>
     );
 
-    const isBuyTransactionDetails = (
-        <div className={styles.tx_details}>
-            {isDenomBase ? sellBaseRow : buyQuoteRow}
-            <span className={styles.divider}></span>
-            {isDenomBase ? buyQuoteRow : sellBaseRow}
-        </div>
+    const sellBaseRow = (
+        <motion.div
+            layout
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className={styles.info_container}
+        >
+            <Row>
+                <p>
+                    {tx.entityType === 'liqchange'
+                        ? tx.baseSymbol + ': '
+                        : tx.changeType === 'burn'
+                        ? tx.baseSymbol + ' Removed: '
+                        : 'Sell: '}
+                </p>
+                <div className={styles.info_text}>
+                    {tx.entityType !== 'limitOrder' ||
+                    tx.changeType === 'burn' ||
+                    tx.changeType === 'mint'
+                        ? baseQuantityDisplay
+                        : estimatedBaseFlowDisplay || '0.00'}
+                    <TokenIcon
+                        token={baseToken}
+                        src={uriToHttp(baseTokenLogo)}
+                        alt={baseTokenSymbol}
+                        size='s'
+                    />
+                </div>
+            </Row>
+        </motion.div>
     );
 
     const buyBaseRow = (
-        <Row>
-            <p>
-                {tx.entityType === 'liqchange'
-                    ? tx.baseSymbol + ': '
-                    : tx.changeType === 'burn'
-                    ? tx.baseSymbol + ' Claimed: '
-                    : 'Buy: '}
-            </p>
-
-            <div>
-                {tx.entityType !== 'limitOrder' ||
-                tx.changeType === 'recover' ||
-                tx.changeType === 'burn'
-                    ? baseQuantityDisplay
-                    : estimatedBaseFlowDisplay || '0.00'}
-                <TokenIcon
-                    token={baseToken}
-                    src={uriToHttp(baseTokenLogo)}
-                    alt={baseTokenSymbol}
-                    size='xs'
-                />
-            </div>
-        </Row>
+        <motion.div
+            layout
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className={styles.info_container}
+        >
+            <Row>
+                <p>
+                    {tx.entityType === 'liqchange'
+                        ? tx.baseSymbol + ': '
+                        : tx.changeType === 'burn'
+                        ? tx.baseSymbol + ' Claimed: '
+                        : 'Buy: '}
+                </p>
+                <div className={styles.info_text}>
+                    {tx.entityType !== 'limitOrder' ||
+                    tx.changeType === 'recover' ||
+                    tx.changeType === 'burn'
+                        ? baseQuantityDisplay
+                        : estimatedBaseFlowDisplay || '0.00'}
+                    <TokenIcon
+                        token={baseToken}
+                        src={uriToHttp(baseTokenLogo)}
+                        alt={baseTokenSymbol}
+                        size='s'
+                    />
+                </div>
+            </Row>
+        </motion.div>
     );
 
     const sellQuoteRow = (
-        <Row>
-            <p>
-                {tx.entityType === 'liqchange'
-                    ? tx.quoteSymbol + ': '
-                    : tx.changeType === 'burn'
-                    ? tx.quoteSymbol + ' Removed: '
-                    : 'Sell: '}
-            </p>
-            <div>
-                {tx.entityType !== 'limitOrder' ||
-                tx.changeType === 'burn' ||
-                tx.changeType === 'mint'
-                    ? quoteQuantityDisplay
-                    : estimatedQuoteFlowDisplay || '0.00'}
-                <TokenIcon
-                    token={quoteToken}
-                    src={uriToHttp(quoteTokenLogo)}
-                    alt={quoteTokenSymbol}
-                    size='xs'
-                />
-            </div>
-        </Row>
-    );
-
-    const isSellTransactionDetails = (
-        <div className={styles.tx_details}>
-            {isDenomBase ? buyBaseRow : sellQuoteRow}
-            <span className={styles.divider}></span>
-            {isDenomBase ? sellQuoteRow : buyBaseRow}
-        </div>
+        <motion.div
+            layout
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className={styles.info_container}
+        >
+            <Row>
+                <p>
+                    {tx.entityType === 'liqchange'
+                        ? tx.quoteSymbol + ': '
+                        : tx.changeType === 'burn'
+                        ? tx.quoteSymbol + ' Removed: '
+                        : 'Sell: '}
+                </p>
+                <div className={styles.info_text}>
+                    {tx.entityType !== 'limitOrder' ||
+                    tx.changeType === 'burn' ||
+                    tx.changeType === 'mint'
+                        ? quoteQuantityDisplay
+                        : estimatedQuoteFlowDisplay || '0.00'}
+                    <TokenIcon
+                        token={quoteToken}
+                        src={uriToHttp(quoteTokenLogo)}
+                        alt={quoteTokenSymbol}
+                        size='s'
+                    />
+                </div>
+            </Row>
+        </motion.div>
     );
 
     const PriceDisplay = (
@@ -347,12 +367,25 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             <div className={styles.price_info_container}>
                 {tokenPairDetails}
                 {txTypeContent}
+                {isDenomBase
+                    ? isBuy
+                        ? sellBaseRow
+                        : buyBaseRow
+                    : isBuy
+                    ? buyQuoteRow
+                    : sellQuoteRow}
+                {isDenomBase
+                    ? isBuy
+                        ? buyQuoteRow
+                        : sellQuoteRow
+                    : isBuy
+                    ? sellBaseRow
+                    : buyBaseRow}
                 {controlItems[2] && totalValueContent}
-                {isBuy ? isBuyTransactionDetails : isSellTransactionDetails}
                 {PriceDisplay}
-                {tx.entityType === 'liqchange' ? (
+                {tx.entityType === 'liqchange' && positionApy !== 0 ? (
                     <Apy
-                        amount={positionApy || undefined}
+                        amount={positionApy}
                         fs='48px'
                         lh='60px'
                         center

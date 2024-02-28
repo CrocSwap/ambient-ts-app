@@ -17,6 +17,7 @@ import ExtraControls from './RangeActionExtraControls/RangeActionExtraControls';
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
+    parseErrorMessage,
     TransactionError,
 } from '../../utils/TransactionError';
 import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../ambient-utils/constants';
@@ -105,6 +106,20 @@ function RangeActionModal(props: propsIF) {
         useState<number | undefined>();
     const [feeLiqQuoteDecimalCorrected, setFeeLiqQuoteDecimalCorrected] =
         useState<number | undefined>();
+
+    const usdRemovalValue = useMemo(
+        () =>
+            type === 'Remove'
+                ? getFormattedNumber({
+                      value: (position.totalValueUSD * removalPercentage) / 100,
+                      prefix: '$',
+                  })
+                : getFormattedNumber({
+                      value: position.feesValueUSD,
+                      prefix: '$',
+                  }),
+        [position, removalPercentage, type],
+    );
 
     const areFeesAvailableToWithdraw =
         (feeLiqBaseDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0) >
@@ -381,7 +396,7 @@ function RangeActionModal(props: propsIF) {
                     }
                     console.error({ error });
                     setTxErrorCode(error?.code);
-                    setTxErrorMessage(error?.data?.message);
+                    setTxErrorMessage(parseErrorMessage(error));
                 }
             } else {
                 try {
@@ -401,7 +416,7 @@ function RangeActionModal(props: propsIF) {
                     }
                     IS_LOCAL_ENV && console.debug({ error });
                     setTxErrorCode(error?.code);
-                    setTxErrorMessage(error?.data?.message);
+                    setTxErrorMessage(parseErrorMessage(error));
                 }
             }
         } else if (position.positionType === 'concentrated') {
@@ -423,7 +438,7 @@ function RangeActionModal(props: propsIF) {
                 }
                 console.error({ error });
                 setTxErrorCode(error?.code);
-                setTxErrorMessage(error?.data?.message);
+                setTxErrorMessage(parseErrorMessage(error));
             }
         } else {
             IS_LOCAL_ENV &&
@@ -551,7 +566,7 @@ function RangeActionModal(props: propsIF) {
             } catch (error) {
                 console.error({ error });
                 setTxErrorCode(error?.code);
-                setTxErrorMessage(error?.data?.message);
+                setTxErrorMessage(parseErrorMessage(error));
                 if (
                     error.reason === 'sending a transaction requires a signer'
                 ) {
@@ -776,6 +791,7 @@ function RangeActionModal(props: propsIF) {
                             removalPercentage={removalPercentage}
                             baseRemovalNum={baseRemovalNum}
                             quoteRemovalNum={quoteRemovalNum}
+                            fiatRemovalVal={usdRemovalValue}
                             isAmbient={isAmbient}
                         />
                     )}
@@ -789,6 +805,7 @@ function RangeActionModal(props: propsIF) {
                             quoteTokenLogoURI={quoteTokenLogoURI}
                             baseHarvestNum={memoBaseHarvestNum}
                             quoteHarvestNum={memoQuoteHarvestNum}
+                            fiatHarvestVal={usdRemovalValue}
                         />
                     )}
                     <ExtraControls />

@@ -23,6 +23,7 @@ import {
     DEPOSIT_BUFFER_MULTIPLIER_MAINNET,
     DEPOSIT_BUFFER_MULTIPLIER_SCROLL,
     ZERO_ADDRESS,
+    NUM_GWEI_IN_ETH,
 } from '../../../../ambient-utils/constants';
 import { FaGasPump } from 'react-icons/fa';
 import useDebounce from '../../../../App/hooks/useDebounce';
@@ -86,6 +87,14 @@ export default function Deposit(props: propsIF) {
 
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
+    const isScroll = chainId === '0x82750' || chainId === '0x8274f';
+    const [l1GasFeeLimitInGwei] = useState<number>(isScroll ? 0.0002 * 1e9 : 0);
+    const [extraL1GasFeeDeposit] = useState(isScroll ? 1.25 : 0);
+
+    const [depositGasPriceinDollars, setDepositGasPriceinDollars] = useState<
+        string | undefined
+    >();
+
     const amountToReduceNativeTokenQtyMainnet = BigNumber.from(
         Math.ceil(gasPriceInGwei || DEFAULT_MAINNET_GAS_PRICE_IN_GWEI),
     )
@@ -100,16 +109,16 @@ export default function Deposit(props: propsIF) {
         .mul(BigNumber.from(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE))
         .mul(BigNumber.from(DEPOSIT_BUFFER_MULTIPLIER_SCROLL));
 
-    const amountToReduceNativeTokenQty =
-        chainId === '0x82750' || chainId === '0x8274f'
-            ? amountToReduceNativeTokenQtyScroll
-            : amountToReduceNativeTokenQtyMainnet;
+    const amountToReduceNativeTokenQty = isScroll
+        ? amountToReduceNativeTokenQtyScroll
+        : amountToReduceNativeTokenQtyMainnet;
 
     const tokenWalletBalanceAdjustedNonDisplayString =
         isTokenEth && !!tokenWalletBalance
             ? BigNumber.from(tokenWalletBalance)
 
                   .sub(amountToReduceNativeTokenQty)
+                  .sub(BigNumber.from(l1GasFeeLimitInGwei * NUM_GWEI_IN_ETH))
                   .toString()
             : tokenWalletBalance;
 
@@ -354,10 +363,6 @@ export default function Deposit(props: propsIF) {
         }
     };
 
-    const [depositGasPriceinDollars, setDepositGasPriceinDollars] = useState<
-        string | undefined
-    >();
-
     // calculate price of gas for exchange balance deposit
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
@@ -371,12 +376,12 @@ export default function Deposit(props: propsIF) {
 
             setDepositGasPriceinDollars(
                 getFormattedNumber({
-                    value: gasPriceInDollarsNum,
+                    value: gasPriceInDollarsNum + extraL1GasFeeDeposit,
                     isUSD: true,
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth]);
+    }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth, extraL1GasFeeDeposit]);
 
     return (
         <FlexContainer flexDirection='column' gap={16} padding={'16px'}>

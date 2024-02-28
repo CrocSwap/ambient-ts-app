@@ -14,7 +14,7 @@ const OrderHistoryHover = styled.div<{
     text-align: center;
 
     padding: 0px 15px 0px 15px;
-
+    cursor: pointer;
     transform: translateY(-50%);
 
     top: ${({ top }) => top + 'px'};
@@ -75,6 +75,25 @@ const StyledLink = styled.div<{ color: string; size: string }>`
 
     color: ${({ color }) => color};
     font-size: ${({ size }) => size};
+
+    &:hover {
+        -webkit-mask: linear-gradient(
+                -60deg,
+                black 30%,
+                rgba(119, 117, 117, 0.333),
+                black 70%
+            )
+            right/300% 100%;
+
+        background-repeat: no-repeat;
+        animation: shimmer 2s infinite;
+
+        @keyframes shimmer {
+            100% {
+                -webkit-mask-position: left;
+            }
+        }
+    }
 `;
 
 export {

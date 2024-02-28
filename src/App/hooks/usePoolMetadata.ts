@@ -60,8 +60,7 @@ interface PoolParamsHookIF {
 
 // Hooks to update metadata and volume/TVL/liquidity curves on a per-pool basis
 export function usePoolMetadata(props: PoolParamsHookIF) {
-    const { tokenA, tokenB, baseToken, quoteToken } =
-        useContext(TradeDataContext);
+    const { tokenA, tokenB } = useContext(TradeDataContext);
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const {
         setUserPositionsByPool,
@@ -72,7 +71,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         setLimitOrdersByPool,
         setUserLimitOrdersByPool,
         setLiquidity,
-        setLiquidityPending,
         setLiquidityFee,
     } = useContext(GraphDataContext);
 
@@ -192,7 +190,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             datasetName: 'isConnectedUserPoolOrderDataLoading',
             loadingStatus: true,
         });
-    }, [baseToken.address, quoteToken.address]);
+    }, [baseTokenAddress, quoteTokenAddress]);
 
     // Sets up the asynchronous queries to TVL, volume and liquidity curve
     useEffect(() => {
@@ -201,20 +199,12 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             props.crocEnv &&
             props.provider !== undefined
         ) {
-            const tokenAAddress = tokenA.address;
-            const tokenBAddress = tokenB.address;
-
-            if (tokenAAddress && tokenBAddress) {
-                const sortedTokens = sortBaseQuoteTokens(
-                    tokenAAddress,
-                    tokenBAddress,
-                );
-
+            if (baseTokenAddress && quoteTokenAddress) {
                 // retrieve pool liquidity provider fee
                 if (props.isServerEnabled) {
                     cachedGetLiquidityFee(
-                        sortedTokens[0],
-                        sortedTokens[1],
+                        baseTokenAddress,
+                        quoteTokenAddress,
                         props.chainData.poolIndex,
                         props.chainData.chainId,
                         props.graphCacheUrl,
@@ -233,8 +223,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     fetch(
                         allPositionsCacheEndpoint +
                             new URLSearchParams({
-                                base: sortedTokens[0].toLowerCase(),
-                                quote: sortedTokens[1].toLowerCase(),
+                                base: baseTokenAddress.toLowerCase(),
+                                quote: quoteTokenAddress.toLowerCase(),
                                 poolIdx: props.chainData.poolIndex.toString(),
                                 chainId: props.chainData.chainId,
                                 annotate: 'true', // token quantities
@@ -303,8 +293,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     fetch(
                         poolPositionsCacheEndpoint +
                             new URLSearchParams({
-                                base: sortedTokens[0].toLowerCase(),
-                                quote: sortedTokens[1].toLowerCase(),
+                                base: baseTokenAddress.toLowerCase(),
+                                quote: quoteTokenAddress.toLowerCase(),
                                 poolIdx: props.chainData.poolIndex.toString(),
                                 chainId: props.chainData.chainId,
                                 ensResolution: 'true',
@@ -371,8 +361,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     // retrieve pool recent changes
                     fetchPoolRecentChanges({
                         tokenList: props.searchableTokens,
-                        base: sortedTokens[0],
-                        quote: sortedTokens[1],
+                        base: baseTokenAddress,
+                        quote: quoteTokenAddress,
                         poolIdx: props.chainData.poolIndex,
                         chainId: props.chainData.chainId,
                         annotate: true,
@@ -412,8 +402,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     fetch(
                         poolLimitOrderStatesCacheEndpoint +
                             new URLSearchParams({
-                                base: sortedTokens[0].toLowerCase(),
-                                quote: sortedTokens[1].toLowerCase(),
+                                base: baseTokenAddress.toLowerCase(),
+                                quote: quoteTokenAddress.toLowerCase(),
                                 poolIdx: props.chainData.poolIndex.toString(),
                                 chainId: props.chainData.chainId,
                                 n: '200',
@@ -476,8 +466,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                             userPoolTransactionsCacheEndpoint +
                                 new URLSearchParams({
                                     user: props.userAddress,
-                                    base: sortedTokens[0].toLowerCase(),
-                                    quote: sortedTokens[1].toLowerCase(),
+                                    base: baseTokenAddress.toLowerCase(),
+                                    quote: quoteTokenAddress.toLowerCase(),
                                     poolIdx:
                                         props.chainData.poolIndex.toString(),
                                     chainId: props.chainData.chainId,
@@ -547,8 +537,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                             userPoolPositionsCacheEndpoint +
                                 new URLSearchParams({
                                     user: props.userAddress,
-                                    base: sortedTokens[0].toLowerCase(),
-                                    quote: sortedTokens[1].toLowerCase(),
+                                    base: baseTokenAddress.toLowerCase(),
+                                    quote: quoteTokenAddress.toLowerCase(),
                                     poolIdx:
                                         props.chainData.poolIndex.toString(),
                                     chainId: props.chainData.chainId,
@@ -617,8 +607,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                             userPoolLimitOrdersCacheEndpoint +
                                 new URLSearchParams({
                                     user: props.userAddress,
-                                    base: sortedTokens[0].toLowerCase(),
-                                    quote: sortedTokens[1].toLowerCase(),
+                                    base: baseTokenAddress.toLowerCase(),
+                                    quote: quoteTokenAddress.toLowerCase(),
                                     poolIdx:
                                         props.chainData.poolIndex.toString(),
                                     chainId: props.chainData.chainId,
@@ -689,8 +679,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         props.userAddress,
         props.receiptCount,
         contextMatchesParams,
-        tokenA.address,
-        tokenB.address,
+        baseTokenAddress,
         quoteTokenAddress,
         props.chainData.chainId,
         props.chainData.poolIndex,
@@ -708,9 +697,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             chainId: props.chainData.chainId,
             poolIndex: props.chainData.poolIndex,
         };
-
-        // Set the pending data before making the request
-        setLiquidityPending(request);
 
         const crocEnv = props.crocEnv;
         if (
@@ -732,7 +718,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             )
                 .then((liqCurve) => {
                     if (liqCurve) {
-                        setLiquidity(liqCurve);
+                        setLiquidity(liqCurve, request);
                     }
                 })
                 .catch(console.error);

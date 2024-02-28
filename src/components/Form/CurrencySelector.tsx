@@ -1,7 +1,6 @@
 import { TokenIF } from '../../ambient-utils/types';
 import { Dispatch, memo, SetStateAction } from 'react';
 import { fromDisplayQty } from '@crocswap-libs/sdk';
-import { getFormattedNumber } from '../../ambient-utils/dataLayer';
 import TokenInputQuantity from './TokenInputQuantity';
 
 interface propsIF {
@@ -35,27 +34,12 @@ export function CurrencySelector(props: propsIF) {
         );
     };
 
-    const parseInput = () => {
-        const inputNum = parseFloat(inputValue);
-        if (!isNaN(inputNum)) {
-            const formattedInputStr = getFormattedNumber({
-                value: inputNum,
-                isToken: true,
-                removeCommas: true,
-                minFracDigits: selectedToken.decimals,
-                maxFracDigits: selectedToken.decimals,
-            });
-            setInputValue(formattedInputStr);
-        }
-    };
-
     return (
         <TokenInputQuantity
             label='Select Token'
             tokenAorB={null}
             value={inputValue}
             handleTokenInputEvent={handleOnChange}
-            parseInput={parseInput}
             disable={disable}
             token={selectedToken}
             setTokenModalOpen={setTokenModalOpen}

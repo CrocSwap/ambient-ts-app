@@ -5,7 +5,7 @@ import {
     priceHalfAboveTick,
     priceHalfBelowTick,
 } from '@crocswap-libs/sdk';
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, useRef } from 'react';
 import {
     getFormattedNumber,
     getTxReceipt,
@@ -21,7 +21,11 @@ import LimitTokenInput from '../../../components/Trade/Limit/LimitTokenInput/Lim
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../ambient-utils/constants';
+import {
+    IS_LOCAL_ENV,
+    NUM_GWEI_IN_ETH,
+    ZERO_ADDRESS,
+} from '../../../ambient-utils/constants';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -33,6 +37,7 @@ import {
     TransactionError,
     isTransactionReplacedError,
     isTransactionFailedError,
+    parseErrorMessage,
 } from '../../../utils/TransactionError';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
 import { useApprove } from '../../../App/functions/approve';
@@ -79,6 +84,7 @@ export default function Limit() {
         addPositionUpdate,
         removePendingTx,
         updateTransactionHash,
+        pendingTransactions,
     } = useContext(ReceiptContext);
     const { mintSlippage, dexBalLimit, bypassConfirmLimit } = useContext(
         UserPreferenceContext,
@@ -96,6 +102,7 @@ export default function Limit() {
         limitTick,
         poolPriceNonDisplay,
         primaryQuantity,
+        setPrimaryQuantity,
     } = useContext(TradeDataContext);
     const { liquidityFee } = useContext(GraphDataContext);
     const { urlParamMap, updateURL } = useTradeData();
@@ -138,12 +145,19 @@ export default function Limit() {
     const [
         amountToReduceNativeTokenQtyScroll,
         setAmountToReduceNativeTokenQtyScroll,
-    ] = useState<number>(0.0003);
+    ] = useState<number>(0.0005);
 
     const amountToReduceNativeTokenQty =
         chainId === '0x82750' || chainId === '0x8274f'
             ? amountToReduceNativeTokenQtyScroll
             : amountToReduceNativeTokenQtyMainnet;
+
+    const activeTxHash = useRef<string>('');
+
+    // reset activeTxHash when the pair changes or user updates quantity
+    useEffect(() => {
+        activeTxHash.current = '';
+    }, [tokenA.address + tokenB.address, primaryQuantity]);
 
     // TODO: is possible we can convert this to use the TradeTokenContext
     // However, unsure if the fact that baseToken comes from pool affects this
@@ -431,11 +445,17 @@ export default function Limit() {
         tokenAQtyCoveredByWalletBalance,
         tokenABalance,
         amountToReduceNativeTokenQty,
+        pendingTransactions,
+        activeTxHash,
     ]);
 
     useEffect(() => {
         setIsWithdrawFromDexChecked(parseFloat(tokenADexBalance) > 0);
     }, [tokenADexBalance]);
+
+    const isScroll = chainId === '0x82750' || chainId === '0x8274f';
+    const [l1GasFeeLimitInGwei] = useState<number>(isScroll ? 0.0007 * 1e9 : 0);
+    const [extraL1GasFeeLimit] = useState(isScroll ? 1.5 : 0);
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
@@ -454,15 +474,14 @@ export default function Limit() {
                 LIMIT_BUFFER_MULTIPLIER_MAINNET * costOfMainnetLimitInETH,
             );
 
-            const costOfScrollLimitInETH =
+            const l1CostOfScrollLimitInETH =
+                l1GasFeeLimitInGwei / NUM_GWEI_IN_ETH;
+
+            const l2CostOfScrollLimitInETH =
                 gasPriceInGwei * averageLimitCostInGasDrops * NUM_GWEI_IN_WEI;
 
-            // IS_LOCAL_ENV &&
-            //     console.log({
-            //         gasPriceInGwei,
-            //         costOfScrollLimitInETH,
-            //         amountToReduceNativeTokenQtyScroll,
-            //     });
+            const costOfScrollLimitInETH =
+                l1CostOfScrollLimitInETH + l2CostOfScrollLimitInETH;
 
             setAmountToReduceNativeTokenQtyScroll(
                 LIMIT_BUFFER_MULTIPLIER_SCROLL * costOfScrollLimitInETH,
@@ -476,7 +495,7 @@ export default function Limit() {
 
             setOrderGasPriceInDollars(
                 getFormattedNumber({
-                    value: gasPriceInDollarsNum,
+                    value: gasPriceInDollarsNum + extraL1GasFeeLimit,
                     isUSD: true,
                 }),
             );
@@ -487,6 +506,8 @@ export default function Limit() {
         isSellTokenNativeToken,
         isWithdrawFromDexChecked,
         isTokenADexSurplusSufficient,
+        l1GasFeeLimitInGwei,
+        extraL1GasFeeLimit,
     ]);
 
     const resetConfirmation = () => {
@@ -545,6 +566,8 @@ export default function Limit() {
 
             if (!tx) return;
 
+            activeTxHash.current = tx?.hash;
+
             addPendingTx(tx?.hash);
             setNewLimitOrderTransactionHash(tx.hash);
             addTransactionByType({
@@ -585,7 +608,7 @@ export default function Limit() {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
-            setTxErrorMessage(error?.data?.message);
+            setTxErrorMessage(parseErrorMessage(error));
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
@@ -603,6 +626,7 @@ export default function Limit() {
                 IS_LOCAL_ENV && console.debug('repriced');
                 removePendingTx(error.hash);
                 const newTransactionHash = error.replacement.hash;
+                activeTxHash.current = newTransactionHash;
                 addPendingTx(newTransactionHash);
                 addPositionUpdate({
                     txHash: newTransactionHash,
@@ -615,6 +639,7 @@ export default function Limit() {
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
             } else if (isTransactionFailedError(error)) {
+                activeTxHash.current = '';
                 receipt = error.receipt;
             }
         }
@@ -651,6 +676,16 @@ export default function Limit() {
                     tokenAAmount >
                     parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
                 ) {
+                    if (
+                        pendingTransactions.some(
+                            (tx) => tx === activeTxHash.current,
+                        )
+                    ) {
+                        setTokenAInputQty('');
+                        setTokenBInputQty('');
+                        setPrimaryQuantity('');
+                        activeTxHash.current = '';
+                    }
                     setLimitAllowed(false);
                     setLimitButtonErrorMessage(
                         `${tokenA.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,

@@ -15,7 +15,8 @@ import {
 } from '../../../ambient-utils/dataLayer';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
+import HoveredTooltip from '../Draw/Toolbar/HoveredTooltip';
 
 export default function OrderHistoryTooltip(props: {
     hoveredOrderHistory: TransactionIF;
@@ -30,8 +31,9 @@ export default function OrderHistoryTooltip(props: {
     setSelectedOrderHistory: React.Dispatch<
         React.SetStateAction<TransactionIF | undefined>
     >;
-    setIsSelectedOrderHistory: React.Dispatch<boolean>;
+    setIsSelectedOrderHistory: React.Dispatch<React.SetStateAction<boolean>>;
     pointerEvents: boolean;
+    setHoverOHTooltip: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
     const {
         hoveredOrderHistory,
@@ -42,6 +44,7 @@ export default function OrderHistoryTooltip(props: {
         setSelectedOrderHistory,
         setIsSelectedOrderHistory,
         pointerEvents,
+        setHoverOHTooltip,
     } = props;
 
     const {
@@ -52,6 +55,8 @@ export default function OrderHistoryTooltip(props: {
         const explorerUrl = `${blockExplorer}tx/${txHash}`;
         window.open(explorerUrl);
     }
+
+    const [hoveredID, setHoveredID] = useState<string | undefined>();
 
     return (
         <CSSTransition
@@ -65,14 +70,26 @@ export default function OrderHistoryTooltip(props: {
                 left={hoveredOrderTooltipPlacement.left}
                 isOnLeftSide={hoveredOrderTooltipPlacement.isOnLeftSide}
                 pointerEvents={pointerEvents}
+                onMouseEnter={() => setHoverOHTooltip(true)}
+                onMouseLeave={() => setHoverOHTooltip(false)}
             >
                 <OrderHistoryContainer
                     onClick={() => {
                         handleCardClick(hoveredOrderHistory);
-                        setSelectedOrderHistory(() => {
-                            return hoveredOrderHistory;
+                        setIsSelectedOrderHistory((prev: boolean) => {
+                            if (!prev) {
+                                setSelectedOrderHistory(() => {
+                                    return hoveredOrderHistory;
+                                });
+                            } else {
+                                setSelectedOrderHistory(() => {
+                                    return undefined;
+                                });
+                            }
+
+                            return !prev;
                         });
-                        setIsSelectedOrderHistory(true);
+                        setHoverOHTooltip(false);
                     }}
                 >
                     <OrderHistoryHeader>
@@ -137,13 +154,36 @@ export default function OrderHistoryTooltip(props: {
                         <StyledLink
                             color={'#8b98a5'}
                             size={'13px'}
-                            onClick={() => {
+                            onClick={(
+                                event: React.MouseEvent<HTMLDivElement>,
+                            ) => {
+                                event.stopPropagation();
                                 handleOpenExplorer(hoveredOrderHistory.txHash);
                             }}
+                            onMouseEnter={() => {
+                                setHoveredID(hoveredOrderHistory.txHash);
+                            }}
+                            onMouseLeave={() => setHoveredID(() => undefined)}
                         >
                             {trimString(hoveredOrderHistory.txHash, 6, 4, '…')}
                             <RiExternalLinkLine />
                         </StyledLink>
+                        {hoveredID && (
+                            <div
+                                style={{
+                                    position: 'absolute',
+                                    left: '-130%',
+                                    top: '110%',
+                                }}
+                            >
+                                <HoveredTooltip
+                                    hoveredTool={hoveredID}
+                                    height={22}
+                                    width={470}
+                                    arrow={false}
+                                ></HoveredTooltip>
+                            </div>
+                        )}
                     </OrderHistoryBody>
                 </OrderHistoryContainer>
             </OrderHistoryHover>

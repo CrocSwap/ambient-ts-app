@@ -66,6 +66,16 @@ export const mainnetDAI: TokenIF = {
     symbol: 'DAI',
 };
 
+export const mainnetFRAX: TokenIF = {
+    address: '0x853d955acef822db058eb8505911ed77f175b99e',
+    chainId: 1,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    logoURI: 'https://etherscan.io/token/images/fraxfinanceeth2_32.png',
+    name: 'Frax',
+    symbol: 'FRAX',
+};
+
 export const mainnetUSDT: TokenIF = {
     address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
     chainId: 1,
@@ -95,6 +105,50 @@ export const goerliUSDC: TokenIF = {
     chainId: 5,
     logoURI:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+    fromList: '/ambient-token-list.json',
+};
+
+export const sepoliaETH: TokenIF = {
+    name: 'Native Ether',
+    address: '0x0000000000000000000000000000000000000000',
+    symbol: 'ETH',
+    decimals: 18,
+    chainId: 11155111,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+    fromList: '/ambient-token-list.json',
+};
+
+export const sepoliaUSDC: TokenIF = {
+    name: 'USDCoin',
+    address: '0x60bBA138A74C5e7326885De5090700626950d509',
+    symbol: 'USDC',
+    decimals: 6,
+    chainId: 11155111,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+    fromList: '/ambient-token-list.json',
+};
+
+export const sepoliaWBTC: TokenIF = {
+    name: 'Wrapped BTC',
+    address: '0xCA97CC9c1a1dfA54A252DaAFE9b5Cd1E16C81328',
+    symbol: 'WBTC',
+    decimals: 8,
+    chainId: 11155111,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
+    fromList: '/ambient-token-list.json',
+};
+
+export const scrollSepoliaWBTC: TokenIF = {
+    name: 'Wrapped BTC',
+    address: '0xb3B942b6d4a4858838aAb8f94DdaEdd479CD1594',
+    symbol: 'WBTC',
+    decimals: 8,
+    chainId: 534351,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
     fromList: '/ambient-token-list.json',
 };
 
@@ -209,6 +263,17 @@ export const scrollAxlUSDC: TokenIF = {
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
 };
 
+export const scrollDAI: TokenIF = {
+    address: '0xcA77eB3fEFe3725Dc33bccB54eDEFc3D9f764f97',
+    chainId: 534352,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png',
+    name: 'Dai Stablecoin',
+    symbol: 'DAI',
+};
+
 export const scrollUSDT: TokenIF = {
     chainId: 534352,
     address: '0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df',
@@ -253,6 +318,7 @@ export const defaultTokens: TokenIF[] = [
     mainnetWBTC,
     mainnetPEPE,
     mainnetDAI,
+    mainnetFRAX,
     mainnetSYN,
     mainnetUSDT,
     goerliETH,
@@ -265,10 +331,15 @@ export const defaultTokens: TokenIF[] = [
     arbGoerliWBTC,
     scrollETH,
     scrollUSDC,
-    scrollAxlUSDC,
+    scrollDAI,
     scrollUSDT,
+    scrollAxlUSDC,
     scrollWBTC,
     scrollwstETH,
+    sepoliaETH,
+    sepoliaUSDC,
+    sepoliaWBTC,
     scrollSepoliaETH,
     scrollSepoliaUSDC,
+    scrollSepoliaWBTC,
 ];

@@ -64,7 +64,7 @@ export default function PriceInfo(props: propsIF) {
             token={baseToken}
             src={baseTokenLogoURI}
             alt={baseTokenSymbol}
-            size='xs'
+            size='s'
         />
     );
     const quoteTokenLogoDisplay = (
@@ -72,7 +72,7 @@ export default function PriceInfo(props: propsIF) {
             token={quoteToken}
             src={quoteTokenLogoURI}
             alt={quoteTokenSymbol}
-            size='xs'
+            size='s'
         />
     );
 
@@ -189,13 +189,15 @@ export default function PriceInfo(props: propsIF) {
                 </div>
 
                 {priceStatusContent}
-                <Apy
-                    amount={positionApy || undefined}
-                    fs='48px'
-                    lh='60px'
-                    center
-                    showTitle
-                />
+                {positionApy !== 0 ? (
+                    <Apy
+                        amount={positionApy}
+                        fs='48px'
+                        lh='60px'
+                        center
+                        showTitle
+                    />
+                ) : undefined}
             </div>
         </div>
     );
