@@ -4852,7 +4852,6 @@ export default function Chart(props: propsIF) {
 
                     setIsSelectedOrderHistory(() => {
                         !shouldSelect && setCurrentTxActiveInTransactions('');
-                        console.log(shouldSelect);
                         return shouldSelect;
                     });
                 } else {
@@ -5562,7 +5561,6 @@ export default function Chart(props: propsIF) {
     };
 
     useEffect(() => {
-        console.log(isSelectedOrderHistory, selectedOrderHistory);
         calculateOrderHistoryTooltipPlacements();
     }, [
         isSelectedOrderHistory,
