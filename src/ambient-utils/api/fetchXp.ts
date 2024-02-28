@@ -60,7 +60,7 @@ export const fetchUserXpData = async (args: argsIF) => {
     const { user, chainId } = args;
     console.log(`Fetching Xp for ${user} on chain ${chainId}...`);
 
-    const userXpEndpoint = 'https://ambindexer.bus.bz/xp/user?';
+    const userXpEndpoint = 'https://ambindexer.net/xp/user?';
 
     const userXpFetchData = fetch(
         userXpEndpoint +
@@ -203,7 +203,7 @@ export const fetchXpLeadersData = async (
 ) => {
     console.log({ chainId });
 
-    const xpLeadersEndpoint = 'https://ambindexer.bus.bz/xp/leaderboard?';
+    const xpLeadersEndpoint = 'https://ambindexer.net/xp/leaderboard?';
 
     const xpLeaderFetchData = fetch(
         xpLeadersEndpoint +

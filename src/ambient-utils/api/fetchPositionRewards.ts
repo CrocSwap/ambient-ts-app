@@ -42,7 +42,7 @@ export const fetchPositionRewardsData = async (args: argsIF) => {
         return getMockPositionRewards();
     }
 
-    const positionRewardsEndpoint = 'https://ambindexer.bus.bz/xp/position?';
+    const positionRewardsEndpoint = 'https://ambindexer.net/xp/position?';
 
     const positionRewardsFetchData = fetch(
         positionRewardsEndpoint + new URLSearchParams({ pos: `${positionId}` }),
