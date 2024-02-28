@@ -398,7 +398,7 @@ export default function MessageInput(props: MessageInputProps) {
             ) {
                 props.sendMsg(
                     props.currentUser,
-                    message,
+                    msg,
                     props.selectedMessageForReply?.roomInfo as string,
                     props.ensName,
                     userAddress,
@@ -411,7 +411,7 @@ export default function MessageInput(props: MessageInputProps) {
             } else {
                 props.sendMsg(
                     props.currentUser,
-                    message,
+                    msg,
                     roomId,
                     props.ensName,
                     userAddress,
