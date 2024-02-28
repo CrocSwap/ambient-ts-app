@@ -71,7 +71,11 @@ export default function Account(props: propsIF) {
     }, [isEscapePressed]);
     const walletDisplay = (
         <section
-            style={{ position: 'relative', fontSize: '16px' }}
+            style={{
+                position: 'relative',
+                fontSize: '16px',
+                marginTop: '1px',
+            }}
             ref={walletDropdownItemRef}
             aria-label={mainAriaLabel}
         >

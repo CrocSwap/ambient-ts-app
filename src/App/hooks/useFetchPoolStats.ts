@@ -162,17 +162,6 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                 crocEnv &&
                 provider
             ) {
-                const RANGE_WIDTH = 0.1;
-
-                const apyEst = estimateFrom24HrRangeApr(
-                    RANGE_WIDTH,
-                    pool.base.address,
-                    pool.quote.address,
-                    crocEnv,
-                    provider,
-                    lastBlockNumber,
-                );
-
                 const poolStats = await cachedPoolStatsFetch(
                     chainId,
                     pool.base.address,
@@ -187,7 +176,6 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                 const tvlResult = poolStats?.tvlTotalUsd;
                 const feesTotalResult = poolStats?.feesTotalUsd;
                 const volumeResult = poolStats?.volumeTotalUsd; // display the 24 hour volume
-                const apyResult = await apyEst;
 
                 setQuoteTvlDecimal(poolStats.quoteTvlDecimal);
                 setBaseTvlDecimal(poolStats.baseTvlDecimal);
@@ -214,12 +202,29 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                     });
                     setPoolVolume(volumeString);
                 }
-                if (apyResult) {
-                    const apyString = apyResult.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    });
-                    setPoolApy(apyString);
+
+                try {
+                    const RANGE_WIDTH = 0.1;
+
+                    const apyEst = estimateFrom24HrRangeApr(
+                        RANGE_WIDTH,
+                        pool.base.address,
+                        pool.quote.address,
+                        crocEnv,
+                        provider,
+                        lastBlockNumber,
+                    );
+                    const apyResult = await apyEst;
+
+                    if (apyResult) {
+                        const apyString = apyResult.toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                        });
+                        setPoolApy(apyString);
+                    }
+                } catch (error) {
+                    // IS_LOCAL_ENV && console.log({ error });
                 }
 
                 try {

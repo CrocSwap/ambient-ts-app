@@ -14,7 +14,7 @@ const OrderHistoryHover = styled.div<{
     text-align: center;
 
     padding: 0px 15px 0px 15px;
-
+    cursor: pointer;
     transform: translateY(-50%);
 
     top: ${({ top }) => top + 'px'};

@@ -1,5 +1,5 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../constants';
+import { GCGO_OVERRIDE_URL } from '../constants';
 import { TokenIF, TransactionIF } from '../types';
 import { FetchAddrFn } from './fetchAddress';
 import { FetchContractDetailsFn } from './fetchContractDetails';
@@ -53,8 +53,6 @@ export const fetchUserRecentChanges = (args: argsIF) => {
     const userRecentChangesCacheEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/user_txs?'
         : graphCacheUrl + '/user_txs?';
-
-    IS_LOCAL_ENV && console.debug('fetching user recent changes');
 
     const poolChanges = fetch(
         userRecentChangesCacheEndpoint +
