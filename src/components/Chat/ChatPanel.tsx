@@ -278,7 +278,6 @@ function ChatPanel(props: propsIF) {
         event: React.MouseEvent,
         data: IEmojiData,
     ) => {
-        console.log('asdasd');
         console.log(focusedMessage);
         console.log(currentUser);
         if (focusedMessage && currentUser) {
