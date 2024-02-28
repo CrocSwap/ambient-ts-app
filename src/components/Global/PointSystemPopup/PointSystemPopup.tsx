@@ -9,7 +9,7 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import ambientXblastLogo from '../../../assets/images/logos/ambientXBlast.svg';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { IS_BLAST_SITE } from '../../../ambient-utils/constants';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface PropsIF {
     dismissPointSystemPopup(ctaDismissal: { ctaId: string }): void;
@@ -26,6 +26,7 @@ export default function PointSystemPopup(props: PropsIF) {
     const {
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
+    const { isActiveNetworkBlast } = useContext(ChainDataContext);
     const { isUserConnected } = useContext(UserDataContext);
     const isEnabledLocally =
         process.env.REACT_APP_POINT_SYSTEM_POPUP_ENABLED !== undefined
@@ -84,7 +85,7 @@ export default function PointSystemPopup(props: PropsIF) {
                             gap={10}
                             alignItems='center'
                         >
-                            {IS_BLAST_SITE ? (
+                            {isActiveNetworkBlast ? (
                                 <img
                                     src={ambientXblastLogo}
                                     alt=''
@@ -100,7 +101,9 @@ export default function PointSystemPopup(props: PropsIF) {
                             )}
                         </FlexContainer>
                         <p className={styles.sub_text}>
-                            {IS_BLAST_SITE ? ' points now live!' : ' now live!'}
+                            {isActiveNetworkBlast
+                                ? ' points now live!'
+                                : ' now live!'}
                         </p>
 
                         <FlexContainer

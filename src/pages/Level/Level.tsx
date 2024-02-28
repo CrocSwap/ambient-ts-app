@@ -15,7 +15,6 @@ import {
     getLeaderboardSelectionFromLocalStorage,
     saveLeaderboardSelectionToLocalStorage,
 } from '../../App/functions/localStorage';
-import { IS_BLAST_SITE } from '../../ambient-utils/constants';
 
 interface LevelPropsIF {
     resolvedAddress: string;
@@ -39,7 +38,8 @@ export default function Level(props: LevelPropsIF) {
         setIsViewMoreActive,
     } = props;
     const { userAddress } = useContext(UserDataContext);
-    const { connectedUserXp } = useContext(ChainDataContext);
+    const { connectedUserXp, isActiveNetworkBlast } =
+        useContext(ChainDataContext);
     const { xpLeaders } = useContext(XpLeadersContext);
 
     const jazziconsSeed = resolvedAddress
@@ -158,7 +158,7 @@ export default function Level(props: LevelPropsIF) {
         );
     // LEADERBOARD
     const [selectedXpLeaderboardType, setSelectedXpLeaderboardType] = useState(
-        getLeaderboardSelectionFromLocalStorage(IS_BLAST_SITE),
+        getLeaderboardSelectionFromLocalStorage(isActiveNetworkBlast),
     );
 
     useEffect(() => {

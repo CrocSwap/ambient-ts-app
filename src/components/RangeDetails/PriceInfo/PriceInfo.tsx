@@ -8,7 +8,7 @@ import { useContext, useEffect, useState } from 'react';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { PositionRewardsDataIF } from '../../../ambient-utils/types/xp';
 import { fetchPositionRewardsData } from '../../../ambient-utils/api/fetchPositionRewards';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface propsIF {
     usdValue: string;
@@ -59,7 +59,7 @@ export default function PriceInfo(props: propsIF) {
 
     const isOnTradeRoute = pathname.includes('trade');
     const { tokens } = useContext(TokenContext);
-    const { isActiveNetworkBlast } = useContext(CrocEnvContext);
+    const { isActiveNetworkBlast } = useContext(ChainDataContext);
     const baseToken: TokenIF | undefined =
         tokens.getTokenByAddress(baseTokenAddress);
     const quoteToken: TokenIF | undefined =
