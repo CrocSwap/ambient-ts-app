@@ -388,7 +388,7 @@ export default function Chart(props: propsIF) {
     const [circleScale, setCircleScale] =
         useState<d3.ScaleLinear<number, number>>();
 
-    const mobileView = useMediaQuery('(max-width: 600px)');
+    const mobileView = useMediaQuery('(max-width: 1200px)');
     const smallScreen = useMediaQuery('(max-width: 500px)');
 
     const drawSettings = useDrawSettings();
@@ -523,7 +523,7 @@ export default function Chart(props: propsIF) {
     });
 
     const toolbarWidth = isToolbarOpen
-        ? 40 - (mobileView ? 0 : smallScreen ? 4 : 25)
+        ? 40 - (mobileView ? (smallScreen ? 0 : 25) : 5)
         : 9 - (mobileView ? 0 : 4);
 
     const [prevlastCandleTime, setPrevLastCandleTime] = useState<number>(
