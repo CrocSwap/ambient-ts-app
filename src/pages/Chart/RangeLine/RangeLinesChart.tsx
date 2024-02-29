@@ -133,7 +133,7 @@ export default function RangeLinesChart(props: propsIF) {
                 return horizontalBand;
             });
         }
-    }, [scaleData]);
+    }, [scaleData, isDenomBase]);
 
     useEffect(() => {
         if (
@@ -160,7 +160,7 @@ export default function RangeLinesChart(props: propsIF) {
                 return newTargets;
             });
         }
-    }, [minPrice, maxPrice, advancedMode, simpleRangeWidth]);
+    }, [minPrice, maxPrice, advancedMode, simpleRangeWidth, topBoundary]);
 
     useEffect(() => {
         if (position !== undefined) {
@@ -219,7 +219,7 @@ export default function RangeLinesChart(props: propsIF) {
                     });
             }
         }
-    }, [ranges, horizontalLine, location.pathname]);
+    }, [ranges, horizontalLine, horizontalBand, triangle, location.pathname]);
 
     useEffect(() => {
         const passValue =

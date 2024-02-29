@@ -21,7 +21,11 @@ import LimitTokenInput from '../../../components/Trade/Limit/LimitTokenInput/Lim
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../ambient-utils/constants';
+import {
+    IS_LOCAL_ENV,
+    NUM_GWEI_IN_ETH,
+    ZERO_ADDRESS,
+} from '../../../ambient-utils/constants';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -141,7 +145,7 @@ export default function Limit() {
     const [
         amountToReduceNativeTokenQtyScroll,
         setAmountToReduceNativeTokenQtyScroll,
-    ] = useState<number>(0.0003);
+    ] = useState<number>(0.0005);
 
     const amountToReduceNativeTokenQty =
         chainId === '0x82750' || chainId === '0x8274f'
@@ -449,6 +453,10 @@ export default function Limit() {
         setIsWithdrawFromDexChecked(parseFloat(tokenADexBalance) > 0);
     }, [tokenADexBalance]);
 
+    const isScroll = chainId === '0x82750' || chainId === '0x8274f';
+    const [l1GasFeeLimitInGwei] = useState<number>(isScroll ? 0.0007 * 1e9 : 0);
+    const [extraL1GasFeeLimit] = useState(isScroll ? 1.5 : 0);
+
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const averageLimitCostInGasDrops = isSellTokenNativeToken
@@ -466,15 +474,14 @@ export default function Limit() {
                 LIMIT_BUFFER_MULTIPLIER_MAINNET * costOfMainnetLimitInETH,
             );
 
-            const costOfScrollLimitInETH =
+            const l1CostOfScrollLimitInETH =
+                l1GasFeeLimitInGwei / NUM_GWEI_IN_ETH;
+
+            const l2CostOfScrollLimitInETH =
                 gasPriceInGwei * averageLimitCostInGasDrops * NUM_GWEI_IN_WEI;
 
-            // IS_LOCAL_ENV &&
-            //     console.log({
-            //         gasPriceInGwei,
-            //         costOfScrollLimitInETH,
-            //         amountToReduceNativeTokenQtyScroll,
-            //     });
+            const costOfScrollLimitInETH =
+                l1CostOfScrollLimitInETH + l2CostOfScrollLimitInETH;
 
             setAmountToReduceNativeTokenQtyScroll(
                 LIMIT_BUFFER_MULTIPLIER_SCROLL * costOfScrollLimitInETH,
@@ -488,7 +495,7 @@ export default function Limit() {
 
             setOrderGasPriceInDollars(
                 getFormattedNumber({
-                    value: gasPriceInDollarsNum,
+                    value: gasPriceInDollarsNum + extraL1GasFeeLimit,
                     isUSD: true,
                 }),
             );
@@ -499,6 +506,8 @@ export default function Limit() {
         isSellTokenNativeToken,
         isWithdrawFromDexChecked,
         isTokenADexSurplusSufficient,
+        l1GasFeeLimitInGwei,
+        extraL1GasFeeLimit,
     ]);
 
     const resetConfirmation = () => {
