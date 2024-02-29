@@ -68,7 +68,7 @@ const MINT_DEFAULTS: defaultsConstructorArgsIF = {
     vals: {
         stable: 1,
         volatile: 3,
-        l2: 1,
+        l2: 3,
     },
     presets: {
         stable: [1, 2, 3],
