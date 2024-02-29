@@ -515,7 +515,7 @@ export default function Chart(props: propsIF) {
     });
 
     const toolbarWidth = isToolbarOpen
-        ? 40 - (mobileView ? (smallScreen ? 0 : 25) : 5)
+        ? 38 - (mobileView ? (smallScreen ? 0 : 25) : 13)
         : 9 - (mobileView ? 0 : 4);
 
     const [prevlastCandleTime, setPrevLastCandleTime] = useState<number>(
@@ -5533,7 +5533,7 @@ export default function Chart(props: propsIF) {
                                   circleScale(
                                       hoveredOrderHistory.totalValueUSD,
                                   ),
-                              ) / 1.3);
+                              ));
 
                     return {
                         top,
@@ -5552,8 +5552,7 @@ export default function Chart(props: propsIF) {
                     );
                     const left =
                         scaleData?.xScale(selectedOrderHistory.txTime * 1000) +
-                        scale(circleScale(selectedOrderHistory.totalValueUSD)) /
-                            1.3;
+                        scale(circleScale(selectedOrderHistory.totalValueUSD));
 
                     return { top, left, isOnLeftSide: false };
                 });

@@ -17,6 +17,7 @@ import { RiExternalLinkLine } from 'react-icons/ri';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useContext, useState } from 'react';
 import HoveredTooltip from '../Draw/Toolbar/HoveredTooltip';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
 
 export default function OrderHistoryTooltip(props: {
     hoveredOrderHistory: TransactionIF;
@@ -51,6 +52,8 @@ export default function OrderHistoryTooltip(props: {
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
 
+    const { setCurrentTxActiveInTransactions } = useContext(TradeTableContext);
+
     function handleOpenExplorer(txHash: string) {
         const explorerUrl = `${blockExplorer}tx/${txHash}`;
         window.open(explorerUrl);
@@ -76,18 +79,35 @@ export default function OrderHistoryTooltip(props: {
                 <OrderHistoryContainer
                     onClick={() => {
                         handleCardClick(hoveredOrderHistory);
+
                         setIsSelectedOrderHistory((prev: boolean) => {
+                            let shouldDeselect = !prev;
                             if (!prev) {
                                 setSelectedOrderHistory(() => {
                                     return hoveredOrderHistory;
                                 });
                             } else {
-                                setSelectedOrderHistory(() => {
-                                    return undefined;
-                                });
+                                setSelectedOrderHistory(
+                                    (
+                                        prevSelected: TransactionIF | undefined,
+                                    ) => {
+                                        shouldDeselect =
+                                            hoveredOrderHistory === prevSelected
+                                                ? !prev
+                                                : prev;
+
+                                        return hoveredOrderHistory ===
+                                            prevSelected
+                                            ? undefined
+                                            : hoveredOrderHistory;
+                                    },
+                                );
                             }
 
-                            return !prev;
+                            if (!shouldDeselect)
+                                setCurrentTxActiveInTransactions('');
+
+                            return shouldDeselect;
                         });
                         setHoverOHTooltip(false);
                     }}
