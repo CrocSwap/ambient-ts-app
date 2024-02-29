@@ -1,11 +1,10 @@
 import styles from './BackgroundImages.module.css';
 
-import logoText from '../../../assets/images/logos/logo_text.png';
-
 import Footer from '../../Footer/Footer';
 import liquidityImage from '../../../assets/images/home/liquidity.png';
 import orderImage from '../../../assets/images/home/orders.png';
 import { Fade } from 'react-reveal';
+import blastLogo from '../../../assets/images/logos/blast_logo.svg';
 
 import Stats from '../Stats/AmbientStats';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
@@ -22,6 +21,8 @@ import {
     MobileCard,
 } from '../../../styled/Components/Home';
 import { FlexContainer, Text } from '../../../styled/Common';
+import { Link } from 'react-router-dom';
+import { APP_ENVIRONMENT } from '../../../ambient-utils/constants';
 
 export default function MobileLandingSections() {
     const [isIPhone, setIsIPhone] = useState(false);
@@ -48,8 +49,50 @@ export default function MobileLandingSections() {
                     fullWidth
                     className={styles.home_wallpaper_mobile}
                 >
-                    <img src={logoText} alt='ambient' />
+                    <FlexContainer
+                        flexDirection={'column'}
+                        alignItems='center'
+                        gap={4}
+                    >
+                        <p
+                            className={styles.ambient_blast_logo}
+                            style={{ fontSize: '30px' }}
+                        >
+                            ambient
+                        </p>
+                        <Text
+                            fontWeight='100'
+                            color='text1'
+                            align='center'
+                            style={{
+                                fontSize: '30px',
+                            }}
+                        >
+                            X
+                        </Text>
+                        <img src={blastLogo} alt='' width='100px' />
+                    </FlexContainer>
                 </MobileMainLogo>
+                {APP_ENVIRONMENT !== 'production' && (
+                    <FlexContainer
+                        justifyContent='center'
+                        alignItems='center'
+                        gap={8}
+                    >
+                        <Text fontSize='body' style={{ marginTop: '2.5px' }}>
+                            Points system now live!{' '}
+                        </Text>
+                        <Link to='/xp-leaderboard'>
+                            <Text
+                                fontSize='body'
+                                color='accent1'
+                                style={{ textDecoration: 'underline' }}
+                            >
+                                View Leaderboard
+                            </Text>
+                        </Link>
+                    </FlexContainer>
+                )}
                 <div style={{ padding: '20px' }}>
                     <TopPools noTitle gap='8px' />
                 </div>

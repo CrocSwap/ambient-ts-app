@@ -16,8 +16,8 @@ const pulsate = keyframes`
 `;
 
 export const ActivityIndicatorDiv = styled(motion.div)`
-    height: 34px;
-    width: 34px;
+    height: 30px;
+    width: 30px;
     background: var(--dark2);
     display: flex;
     justify-content: center;
