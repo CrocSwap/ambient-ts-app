@@ -85,7 +85,7 @@ export const useSlippage = (
     // updateStable ➡ accepts a new `stable` value from the DOM
     // updateVolatile ➡ accepts a new `volatile` value from the DOM
     // !important:  fields will preferentially consume an L2 value as relevant
-    return useMemo(
+    return useMemo<SlippageMethodsIF>(
         () => ({
             stable: isActiveNetworkL2 ? l2 : stable,
             volatile: isActiveNetworkL2 ? l2 : volatile,
