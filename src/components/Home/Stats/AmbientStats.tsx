@@ -17,6 +17,7 @@ import {
     StatValue,
 } from '../../../styled/Components/Home';
 import {
+    GCGO_BLAST_URL,
     GCGO_ETHEREUM_URL,
     GCGO_SCROLL_URL,
     IS_TESTNET_SITE,
@@ -63,6 +64,7 @@ export default function Stats() {
     } = useContext(AppStateContext);
     const { mainnetProvider } = useContext(CrocEnvContext);
     const scrollProvider = useProvider({ chainId: +'0x82750' });
+    const blastProvider = useProvider({ chainId: +'0x13e31' });
 
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
@@ -83,6 +85,8 @@ export default function Stats() {
             let numChainsToAggregate = 0;
             if (supportedNetworks.includes('0x1')) numChainsToAggregate += 1;
             if (supportedNetworks.includes('0x82750'))
+                numChainsToAggregate += 1;
+            if (supportedNetworks.includes('0x13e31'))
                 numChainsToAggregate += 1;
 
             let resultsReceived = 0;
@@ -173,8 +177,55 @@ export default function Stats() {
                     }
                 });
             }
+
+            if (supportedNetworks.includes('0x13e31')) {
+                const blastCrocEnv = blastProvider
+                    ? new CrocEnv(blastProvider, undefined)
+                    : undefined;
+                if (!blastCrocEnv) return;
+
+                getChainStats(
+                    '0x13e31',
+                    blastCrocEnv,
+                    GCGO_BLAST_URL,
+                    cachedFetchTokenPrice,
+                ).then((dexStats) => {
+                    if (!dexStats) {
+                        return;
+                    }
+                    tvlTotalUsd += dexStats.tvlTotalUsd;
+                    volumeTotalUsd += dexStats.volumeTotalUsd;
+                    feesTotalUsd += dexStats.feesTotalUsd;
+                    resultsReceived += 1;
+                    if (resultsReceived === numChainsToAggregate) {
+                        setTotalTvlString(
+                            getFormattedNumber({
+                                value: tvlTotalUsd,
+                                prefix: '$',
+                                isTvl: true,
+                            }),
+                        );
+                        setTotalVolumeString(
+                            getFormattedNumber({
+                                value: volumeTotalUsd,
+                                prefix: '$',
+                            }),
+                        );
+                        setTotalFeesString(
+                            getFormattedNumber({
+                                value: feesTotalUsd,
+                                prefix: '$',
+                            }),
+                        );
+                    }
+                });
+            }
         }
-    }, [mainnetProvider !== undefined && scrollProvider !== undefined]);
+    }, [
+        mainnetProvider !== undefined &&
+            scrollProvider !== undefined &&
+            blastProvider !== undefined,
+    ]);
 
     const statCardData = [
         {
@@ -197,6 +248,9 @@ export default function Stats() {
         : !supportedNetworks.includes('0x1') &&
           supportedNetworks.includes('0x82750')
         ? 'Ambient x Scroll Stats'
+        : !supportedNetworks.includes('0x1') &&
+          supportedNetworks.includes('0x13e31')
+        ? 'Ambient x Blast Stats'
         : 'Ambient Finance Stats';
 
     const mobileWrapper = (
