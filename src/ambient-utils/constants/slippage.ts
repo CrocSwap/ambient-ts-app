@@ -1,4 +1,16 @@
-const swap = {
+// slippage quick select presets in the DOM (three numbers)
+export type slippagePresetsType = [number, number, number];
+// shape of data object to hold slippage presets
+export interface slippageDefaultsIF {
+    stable: number;
+    volatile: number;
+    presets: {
+        stable: slippagePresetsType;
+        volatile: slippagePresetsType;
+    };
+}
+
+const swap: slippageDefaultsIF = {
     stable: 0.1,
     volatile: 0.1,
     presets: {
@@ -7,7 +19,7 @@ const swap = {
     },
 };
 
-const mint = {
+const mint: slippageDefaultsIF = {
     stable: 1,
     volatile: 3,
     presets: {
@@ -16,7 +28,7 @@ const mint = {
     },
 };
 
-const reposition = {
+const reposition: slippageDefaultsIF = {
     stable: 0.1,
     volatile: 0.5,
     presets: {

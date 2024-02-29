@@ -1,15 +1,9 @@
 // START: Import React and Dongles
 import { useEffect, useMemo, useState } from 'react';
-
-// interface for a Slippage Pair (not needed outside this file)
-interface SlippagePairIF {
-    stable: number;
-    volatile: number;
-    presets: {
-        stable: number[];
-        volatile: number[];
-    };
-}
+import {
+    slippageDefaultsIF,
+    slippagePresetsType,
+} from '../../ambient-utils/constants';
 
 // interface for object returned by this hook
 export interface SlippageMethodsIF {
@@ -17,7 +11,7 @@ export interface SlippageMethodsIF {
     volatile: number;
     updateStable: (val: number) => void;
     updateVolatile: (val: number) => void;
-    presets: { stable: number[]; volatile: number[] };
+    presets: { stable: slippagePresetsType; volatile: slippagePresetsType };
 }
 
 export interface allSlippageMethodsIF {
@@ -31,14 +25,14 @@ export interface allSlippageMethodsIF {
 // @param defaults ➡ default values to use for slippage
 export const useSlippage = (
     slippageType: string,
-    defaults: SlippagePairIF,
+    defaults: slippageDefaultsIF,
 ): SlippageMethodsIF => {
     // fn to get relevant slippage pair from local storage and return
     // ... a value to use productively for stable or volatile slippage
-    const getSlippage = (whichOne: string): number => {
+    const getSlippage = (whichOne: 'stable' | 'volatile'): number => {
         // retrieve the relevant slippage pair from local storage
         // query will return `null` if the key-value pair does not exist
-        const pair: SlippagePairIF | null = JSON.parse(
+        const pair: slippageDefaultsIF | null = JSON.parse(
             localStorage.getItem(`slippage_${slippageType}`) as string,
         );
         // declare an output value for the function
