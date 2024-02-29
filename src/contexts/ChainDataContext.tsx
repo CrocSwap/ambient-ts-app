@@ -174,10 +174,9 @@ export const ChainDataContextProvider = (props: {
                         newToken.logoURI = oldToken ? oldToken.logoURI : '';
                         return newToken;
                     });
-
                     setTokenBalances(tokensWithLogos);
                 } catch (error) {
-                    setTokenBalances([]);
+                    // setTokenBalances(undefined);
                     console.error({ error });
                 }
             }
