@@ -30,6 +30,7 @@ interface ChainDataContextIF {
     client: Client;
     connectedUserXp: UserXpDataIF;
     isActiveNetworkBlast: boolean;
+    isActiveNetworkL2: boolean;
 }
 
 export const ChainDataContext = createContext<ChainDataContextIF>(
@@ -58,12 +59,16 @@ export const ChainDataContextProvider = (props: {
         chainData.chainId,
     );
 
-    // const isActiveNetworkL2 = [
-    //     '0x13e31',
-    //     '0xa0c71fd',
-    //     '0x82750',
-    //     '0x8274f',
-    // ].includes(chainData.chainId);
+    // array of network IDs for supported L2 networks
+    const L2_NETWORKS: string[] = [
+        '0x13e31',
+        '0xa0c71fd',
+        '0x82750',
+        '0x8274f',
+    ];
+
+    // boolean representing whether the active network is an L2
+    const isActiveNetworkL2: boolean = L2_NETWORKS.includes(chainData.chainId);
 
     async function pollBlockNum(): Promise<void> {
         // if default RPC is Infura, use key from env variable
@@ -227,6 +232,7 @@ export const ChainDataContextProvider = (props: {
         setGasPriceinGwei,
         isActiveNetworkBlast,
         client,
+        isActiveNetworkL2,
     };
 
     return (
