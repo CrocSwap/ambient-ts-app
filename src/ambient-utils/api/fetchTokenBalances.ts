@@ -130,7 +130,10 @@ export const fetchTokenBalances = async (
             chainId: 1,
             logoURI: '',
             name: 'USDB',
-            address: '0x4200000000000000000000000000000000000022',
+            address:
+                chain === '0xa0c71fd'
+                    ? '0x4200000000000000000000000000000000000022'
+                    : '0x4300000000000000000000000000000000000003',
             symbol: 'USDB',
             decimals: 18,
             walletBalance: usdbInWallet,

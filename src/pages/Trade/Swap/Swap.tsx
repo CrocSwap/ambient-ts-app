@@ -71,7 +71,8 @@ function Swap(props: propsIF) {
         provider,
     } = useContext(CrocEnvContext);
     const { userAddress } = useContext(UserDataContext);
-    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { gasPriceInGwei, isActiveNetworkBlast } =
+        useContext(ChainDataContext);
     const { isPoolInitialized } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
 
@@ -355,10 +356,15 @@ function Swap(props: propsIF) {
                 ethMainnetUsdPrice;
 
             setSwapGasPriceinDollars(
-                getFormattedNumber({
-                    value: gasPriceInDollarsNum + extraL1GasFeeSwap,
-                    isUSD: true,
-                }),
+                isActiveNetworkBlast
+                    ? getFormattedNumber({
+                          value: gasPriceInDollarsNum + extraL1GasFeeSwap,
+                          prefix: '$',
+                      })
+                    : getFormattedNumber({
+                          value: gasPriceInDollarsNum + extraL1GasFeeSwap,
+                          isUSD: true,
+                      }),
             );
         }
     }, [
