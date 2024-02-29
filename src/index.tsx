@@ -47,8 +47,12 @@ if (!doReload) {
                 rpc: (chain: Chain) => {
                     if (chain.id === 534352) {
                         return { http: 'https://rpc.scroll.io' };
+                    } else if (chain.id === 81457) {
+                        return { http: 'https://rpc.ankr.com/blast' };
                     } else if (chain.id === 534351) {
                         return { http: 'https://sepolia-rpc.scroll.io' };
+                    } else if (chain.id === 168587773) {
+                        return { http: 'https://sepolia.blast.io' };
                     } else {
                         return { http: '' };
                     }
