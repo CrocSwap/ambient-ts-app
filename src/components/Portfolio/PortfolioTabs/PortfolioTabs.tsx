@@ -43,6 +43,7 @@ import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { PortfolioTabsPortfolioTabsContainer } from '../../../styled/Components/Portfolio';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { DataLoadingContext } from '../../../contexts/DataLoadingContext';
+import Points from '../../Global/Account/AccountTabs/Points/Points';
 
 // interface for React functional component props
 interface propsIF {
@@ -347,6 +348,11 @@ export default function PortfolioTabs(props: propsIF) {
             icon: rangePositionsImage,
         },
         {
+            label: 'Points',
+            content: <Points />,
+            icon: rangePositionsImage,
+        },
+        {
             label: 'Exchange Balances',
             content: <Exchange {...exchangeProps} />,
             icon: exchangeImage,
@@ -372,6 +378,11 @@ export default function PortfolioTabs(props: propsIF) {
         {
             label: 'Liquidity',
             content: <Ranges {...rangeProps} />,
+            icon: rangePositionsImage,
+        },
+        {
+            label: 'Points',
+            content: <Points />,
             icon: rangePositionsImage,
         },
         {
