@@ -44,22 +44,21 @@ export const useSlippage = (
     const getSlippage = (whichOne: 'stable' | 'volatile' | 'l2'): number => {
         // retrieve the relevant slippage pair from local storage
         // query will return `null` if the key-value pair does not exist
-        const pair: slippageDefaultsIF | null = JSON.parse(
-            localStorage.getItem(LS_KEY) as string,
-        );
+        const pair: { stable: number; volatile: number; l2: number } | null =
+            JSON.parse(localStorage.getItem(LS_KEY) as string);
         // declare an output value for the function
         let output: number;
         // router to get the stable or volatile value as specified by params
         // will use default value if local storage did not have a key-val pair
         switch (whichOne) {
             case 'stable':
-                output = pair?.stable ?? defaults.stable;
+                output = pair?.stable ?? defaults.vals.stable;
                 break;
             case 'volatile':
-                output = pair?.volatile ?? defaults.volatile;
+                output = pair?.volatile ?? defaults.vals.volatile;
                 break;
             case 'l2':
-                output = pair?.l2 ?? defaults.l2;
+                output = pair?.l2 ?? defaults.vals.l2;
                 break;
             default:
                 output = 0.1;
@@ -85,7 +84,7 @@ export const useSlippage = (
     // volatile ➡ number, active slippage value for non-stable pairs
     // updateStable ➡ accepts a new `stable` value from the DOM
     // updateVolatile ➡ accepts a new `volatile` value from the DOM
-    // !important:  most fields will preferentially consume an L2 value as relevant
+    // !important:  fields will preferentially consume an L2 value as relevant
     return useMemo(
         () => ({
             stable: isActiveNetworkL2 ? l2 : stable,
