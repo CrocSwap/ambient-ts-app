@@ -26,6 +26,7 @@ import {
 } from './TokenBalanceContext';
 import { fetchBlockNumber } from '../ambient-utils/api';
 import { fetchNFT } from '../ambient-utils/api/fetchNft';
+import moment from 'moment';
 
 interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
@@ -50,7 +51,8 @@ export const ChainDataContextProvider = (props: {
         useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
 
-    const client = new Client('cqt_rQdWPMQV7YGRkVfmvTd7FFRBXHR4');
+    // const client = new Client('cqt_rQdWPMQV7YGRkVfmvTd7FFRBXHR4');
+    const client = new Client('cqt_wFBFjbVQ94kqCqVYxTJgWyQkg6cg');
 
     const {
         userAddress,
@@ -154,9 +156,16 @@ export const ChainDataContextProvider = (props: {
             ? new Map(JSON.parse(nftLocalData))
             : undefined;
 
+        const nftDataMap = localNftDataParsed?.get(actionKey) as any;
+
         if (
             isfetchNftTriggered ||
             !nftLocalData ||
+            (nftDataMap &&
+                moment(Date.now()).diff(
+                    moment(nftDataMap.lastFetchTime),
+                    'days',
+                ) >= 7) ||
             (localNftDataParsed && !localNftDataParsed.has(actionKey))
         ) {
             (async () => {
@@ -169,8 +178,7 @@ export const ChainDataContextProvider = (props: {
                 ) {
                     try {
                         const NFTData = await cachedFetchNFT(
-                            // cachedFetchNFT(
-                            '0x8e42AEcF40b5cC4c25fFA74E352b3840759aefa2',
+                            '0xF005Bc919B57DC1a95070A614C0d51A2897d11ff', // '0x8e42AEcF40b5cC4c25fFA74E352b3840759aefa2',
                             chainData.chainId,
                             crocEnv,
                             client,
@@ -203,7 +211,12 @@ export const ChainDataContextProvider = (props: {
                                 data: nftImgArray,
                             });
 
-                            nftDataMap.set(actionKey, mapValue);
+                            const mapWithFetchTime = {
+                                lastFetchTime: Date.now(),
+                                mapValue: mapValue,
+                            };
+
+                            nftDataMap.set(actionKey, mapWithFetchTime);
                         });
 
                         localStorage.setItem(
@@ -220,9 +233,9 @@ export const ChainDataContextProvider = (props: {
             })();
         } else {
             if (localNftDataParsed && localNftDataParsed.has(actionKey)) {
-                setNFTData(
-                    () => localNftDataParsed.get(actionKey) as NftListByChain[],
-                );
+                if (nftDataMap) {
+                    setNFTData(() => nftDataMap.mapValue as NftListByChain[]);
+                }
             }
         }
     }, [

@@ -154,7 +154,7 @@ function ChatPanel(props: propsIF) {
         fetchForNotConnectedUser,
         getUserSummaryDetails,
         updateUnverifiedMessages,
-        saveUserWithAvatarImage,
+        // saveUserWithAvatarImage,
         updateUserWithAvatarImage,
     } = useChatSocket(
         room,

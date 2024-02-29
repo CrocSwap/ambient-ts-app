@@ -101,6 +101,8 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
     useEffect(() => {
         const nftContractName: any[] = [];
 
+        console.log(NFTData);
+
         NFTData?.map((item) => {
             nftContractName.push({
                 name: item.contractName,
@@ -131,8 +133,6 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
     }, [NFTData, selectedNFTContractAddress]);
 
     useEffect(() => {
-        console.log(isfetchNftTriggered || nftArray.length < 1);
-
         setIsLoading(() => {
             return isfetchNftTriggered || nftArray.length < 1;
         });
