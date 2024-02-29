@@ -12,7 +12,11 @@ export interface SlippageMethodsIF {
     volatile: number;
     updateStable: (val: number) => void;
     updateVolatile: (val: number) => void;
-    presets: { stable: slippagePresetsType; volatile: slippagePresetsType };
+    presets: {
+        stable: slippagePresetsType;
+        volatile: slippagePresetsType;
+        l2: slippagePresetsType;
+    };
 }
 
 // !important:  this hook supports differential values on L2 networks, this is not

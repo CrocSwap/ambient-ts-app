@@ -8,6 +8,7 @@ export interface slippageDefaultsIF {
     presets: {
         stable: slippagePresetsType;
         volatile: slippagePresetsType;
+        l2: slippagePresetsType;
     };
 }
 
@@ -18,6 +19,7 @@ const swap: slippageDefaultsIF = {
     presets: {
         stable: [0.1, 0.3, 0.5],
         volatile: [0.1, 0.3, 0.5],
+        l2: [1, 2, 3],
     },
 };
 
@@ -28,6 +30,7 @@ const mint: slippageDefaultsIF = {
     presets: {
         stable: [1, 2, 3],
         volatile: [1, 2, 3],
+        l2: [1, 2, 3],
     },
 };
 
@@ -38,6 +41,7 @@ const reposition: slippageDefaultsIF = {
     presets: {
         stable: [0.1, 0.3, 0.5],
         volatile: [0.1, 0.3, 0.5],
+        l2: [1, 2, 3],
     },
 };
 
