@@ -54,12 +54,9 @@ export const ChainDataContextProvider = (props: {
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
 
-    const isActiveNetworkBlast = [
-        '0x5d50',
-        '0xa0c71fd',
-        '0xee',
-        '0x13e31',
-    ].includes(chainData.chainId);
+    const isActiveNetworkBlast = ['0x13e31', '0xa0c71fd'].includes(
+        chainData.chainId,
+    );
 
     async function pollBlockNum(): Promise<void> {
         // if default RPC is Infura, use key from env variable
