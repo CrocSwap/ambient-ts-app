@@ -515,7 +515,7 @@ export default function Chart(props: propsIF) {
     });
 
     const toolbarWidth = isToolbarOpen
-        ? 40 - (mobileView ? (smallScreen ? 0 : 25) : 5)
+        ? 38 - (mobileView ? (smallScreen ? 0 : 25) : 13)
         : 9 - (mobileView ? 0 : 4);
 
     const [prevlastCandleTime, setPrevLastCandleTime] = useState<number>(
