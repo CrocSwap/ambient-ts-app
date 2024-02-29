@@ -289,6 +289,7 @@ function Portfolio(props: PortfolioPropsIF) {
         resolvedAddress: resolvedAddress,
         connectedAccountActive: connectedAccountActive,
         fullLayoutActive: fullLayoutActive,
+        resolvedUserXp: resolvedUserXp,
     };
 
     const portfolioBannerProps = {

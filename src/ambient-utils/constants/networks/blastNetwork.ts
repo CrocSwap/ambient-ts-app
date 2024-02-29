@@ -3,7 +3,7 @@ import { blastETH, blastUSDB } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 import { Provider } from '@ethersproject/providers';
-import { GCGO_TESTNET_URL } from '../gcgo';
+import { GCGO_BLAST_URL } from '../gcgo';
 import { Chain } from 'wagmi';
 
 const wagmiChain = {
@@ -34,7 +34,7 @@ const wagmiChain = {
 
 export const blast: NetworkIF = {
     chainId: '0x13e31',
-    graphCacheUrl: GCGO_TESTNET_URL,
+    graphCacheUrl: GCGO_BLAST_URL,
     evmRpcUrl: 'https://rpc.ankr.com/blast/',
     wagmiChain,
     shouldPollBlock: true,
