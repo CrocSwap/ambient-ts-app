@@ -31,7 +31,7 @@ export const useSlippage = (
     txType: slippageDefaultTypes,
 ): SlippageMethodsIF => {
     // default slippage values to consume depending on transaction type
-    const defaults = DEFAULT_SLIPPAGE_VALUES[txType];
+    const defaults: slippageDefaultsIF = DEFAULT_SLIPPAGE_VALUES[txType];
 
     // keygen logic for local storage
     const LS_KEY: string = 'slippage_' + txType;
@@ -92,14 +92,7 @@ export const useSlippage = (
             volatile: isActiveNetworkL2 ? l2 : volatile,
             updateStable: isActiveNetworkL2 ? setL2 : setStable,
             updateVolatile: isActiveNetworkL2 ? setL2 : setVolatile,
-            presets: {
-                stable: isActiveNetworkL2
-                    ? defaults.presets.l2
-                    : defaults.presets.stable,
-                volatile: isActiveNetworkL2
-                    ? defaults.presets.l2
-                    : defaults.presets.volatile,
-            },
+            presets: defaults.getPresets(isActiveNetworkL2),
         }),
         [stable, volatile, l2],
     );

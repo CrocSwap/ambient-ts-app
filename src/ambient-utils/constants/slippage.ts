@@ -10,6 +10,10 @@ export interface slippageDefaultsIF {
         volatile: slippagePresetsType;
         l2: slippagePresetsType;
     };
+    getPresets: (isL2: boolean) => {
+        stable: slippagePresetsType;
+        volatile: slippagePresetsType;
+    };
 }
 
 export const DEFAULT_SLIPPAGE_VALUES: {
@@ -26,6 +30,13 @@ export const DEFAULT_SLIPPAGE_VALUES: {
             volatile: [0.1, 0.3, 0.5],
             l2: [1, 2, 3],
         },
+        getPresets(isL2: boolean) {
+            const { stable, volatile, l2 } = this.presets;
+            return {
+                stable: isL2 ? l2 : stable,
+                volatile: isL2 ? l2 : volatile,
+            };
+        },
     },
     mint: {
         stable: 1,
@@ -36,6 +47,13 @@ export const DEFAULT_SLIPPAGE_VALUES: {
             volatile: [1, 2, 3],
             l2: [1, 2, 3],
         },
+        getPresets(isL2: boolean) {
+            const { stable, volatile, l2 } = this.presets;
+            return {
+                stable: isL2 ? l2 : stable,
+                volatile: isL2 ? l2 : volatile,
+            };
+        },
     },
     repo: {
         stable: 0.1,
@@ -45,6 +63,13 @@ export const DEFAULT_SLIPPAGE_VALUES: {
             stable: [0.1, 0.3, 0.5],
             volatile: [0.1, 0.3, 0.5],
             l2: [1, 2, 3],
+        },
+        getPresets(isL2: boolean) {
+            const { stable, volatile, l2 } = this.presets;
+            return {
+                stable: isL2 ? l2 : stable,
+                volatile: isL2 ? l2 : volatile,
+            };
         },
     },
 };
