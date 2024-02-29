@@ -22,6 +22,7 @@ import {
 } from '../../../../../ambient-utils/constants';
 import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
 import UserProfileCard from '../UserProfileCard';
+import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -50,10 +51,10 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { isActiveNetworkBlast } = useContext(ChainDataContext);
 
     const { tokenBalances } = useContext(TokenBalanceContext);
     const defaultPair = supportedNetworks[chainId].defaultPair;
-
     const nativeData: TokenIF | undefined =
         tokenBalances &&
         tokenBalances.find((tkn: TokenIF) => tkn.address === ZERO_ADDRESS);
@@ -201,21 +202,38 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
             value: nativeTokenMainnetUsdValueTruncated,
             logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
         },
-        {
-            symbol: 'USDC',
-            amount: nativeCombinedBalanceTruncated
+    ];
+    if (isActiveNetworkBlast) {
+        tokensData.push({
+            symbol: 'USDB',
+            amount: usdcBalanceForDom
                 ? parseFloat(usdcBalanceForDom ?? '0') === 0
                     ? '0.00'
                     : usdcBalanceForDom
                 : '...',
-            value: nativeCombinedBalanceTruncated
+            value: usdcUsdValueForDom
+                ? parseFloat(usdcUsdValueForDom ?? '0') === 0
+                    ? '$0.00'
+                    : usdcUsdValueForDom
+                : '...',
+            logo: 'https://assets-global.website-files.com/65a6baa1a3f8ed336f415cb4/65c67f0ebf2f6a1bd0feb13c_usdb-icon-yellow.png',
+        });
+    } else {
+        tokensData.push({
+            symbol: 'USDC',
+            amount: usdcBalanceForDom
+                ? parseFloat(usdcBalanceForDom ?? '0') === 0
+                    ? '0.00'
+                    : usdcBalanceForDom
+                : '...',
+            value: usdcUsdValueForDom
                 ? parseFloat(usdcUsdValueForDom ?? '0') === 0
                     ? '$0.00'
                     : usdcUsdValueForDom
                 : '...',
             logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
-        },
-    ];
+        });
+    }
 
     return (
         <WalletWrapper

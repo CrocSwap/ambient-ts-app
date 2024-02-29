@@ -8,7 +8,7 @@ import { SidebarContext } from '../../contexts/SidebarContext';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import blastLogo from '../../assets/images/logos/blast_logo.svg';
 import { FlexContainer, Text } from '../../styled/Common';
-import { IS_BLAST_SITE } from '../../ambient-utils/constants';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
 interface propsIF {
     dismissElem: () => void;
     smallCard?: boolean;
@@ -16,6 +16,7 @@ interface propsIF {
 
 export default function PointsBanner(props: propsIF) {
     const { dismissElem, smallCard } = props;
+    const { isActiveNetworkBlast } = useContext(ChainDataContext);
 
     const {
         sidebar: { isOpen: isSidebarOpen },
@@ -50,7 +51,7 @@ export default function PointsBanner(props: propsIF) {
         ? 'Connect wallet to check your points'
         : 'Connect wallet to check your ambient points';
 
-    if (IS_BLAST_SITE) {
+    if (isActiveNetworkBlast) {
         return (
             <aside className={styles.points_banner}>
                 <section

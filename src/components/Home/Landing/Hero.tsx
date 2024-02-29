@@ -6,12 +6,14 @@ import TradeNowButton from './TradeNowButton/TradeNowButton';
 import styles from './BackgroundImages.module.css';
 import { HeroContainer } from '../../../styled/Components/Home';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { IS_BLAST_SITE } from '../../../ambient-utils/constants';
+import { useContext } from 'react';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 export default function Hero() {
     const smallScreen = useMediaQuery('(max-width: 850px)');
+    const { isActiveNetworkBlast } = useContext(ChainDataContext);
 
-    if (IS_BLAST_SITE) {
+    if (isActiveNetworkBlast) {
         return (
             <HeroContainer
                 justifyContent='center'

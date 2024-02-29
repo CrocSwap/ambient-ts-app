@@ -6,7 +6,7 @@ import { useFetchBatch } from '../../../App/hooks/useFetchBatch';
 
 interface PropsIF {
     data: {
-        rank: number;
+        rank: number | string;
         walletDisplay: string;
         userAddress: string;
         points: string;
@@ -20,7 +20,7 @@ export default function RankRow(props: PropsIF) {
     const navigate = useNavigate();
 
     function handleWalletLinkClick() {
-        navigate(`/account/${data.userAddress}`);
+        navigate(`/${data.userAddress}`);
     }
 
     function goToLevelsPage(): void {

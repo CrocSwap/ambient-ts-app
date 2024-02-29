@@ -53,10 +53,16 @@ export default function RankTable(props: Props) {
             ? {
                   rank:
                       selectedXpLeaderboardType === 'Weekly'
-                          ? connectedUserXp.data.weeklyRank ?? 0
+                          ? connectedUserXp.data.weeklyRank
+                              ? connectedUserXp.data.weeklyRank
+                              : '-'
                           : selectedXpLeaderboardType === 'Chain'
-                          ? connectedUserXp.data.chainRank ?? 0
-                          : connectedUserXp.data.globalRank ?? 0,
+                          ? connectedUserXp.data.chainRank
+                              ? connectedUserXp.data.chainRank
+                              : '-'
+                          : connectedUserXp.data.globalRank
+                          ? connectedUserXp.data.globalRank
+                          : '-',
                   walletDisplay: trimString(
                       connectedUserXp.data.userAddress ?? '',
                       6,

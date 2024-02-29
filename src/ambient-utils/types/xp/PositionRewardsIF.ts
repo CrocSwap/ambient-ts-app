@@ -4,10 +4,11 @@ export interface PositionRewardsServerIF {
 }
 
 export interface PositionRewardsDataIF {
-    __BASE__: string;
-    __QUOTE__: string;
+    // __BASE__: string;
+    // __QUOTE__: string;
 
     'BLAST points': string;
-    'AMBI points': string;
+    'BLAST gold': string;
+    // 'AMBI points': string;
     [key: string]: string;
 }

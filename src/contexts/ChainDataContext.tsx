@@ -29,6 +29,7 @@ interface ChainDataContextIF {
     setLastBlockNumber: Dispatch<SetStateAction<number>>;
     client: Client;
     connectedUserXp: UserXpDataIF;
+    isActiveNetworkBlast: boolean;
 }
 
 export const ChainDataContext = createContext<ChainDataContextIF>(
@@ -52,6 +53,17 @@ export const ChainDataContextProvider = (props: {
 
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
+
+    const isActiveNetworkBlast = ['0x13e31', '0xa0c71fd'].includes(
+        chainData.chainId,
+    );
+
+    // const isActiveNetworkL2 = [
+    //     '0x13e31',
+    //     '0xa0c71fd',
+    //     '0x82750',
+    //     '0x8274f',
+    // ].includes(chainData.chainId);
 
     async function pollBlockNum(): Promise<void> {
         // if default RPC is Infura, use key from env variable
@@ -166,10 +178,9 @@ export const ChainDataContextProvider = (props: {
                         newToken.logoURI = oldToken ? oldToken.logoURI : '';
                         return newToken;
                     });
-
                     setTokenBalances(tokensWithLogos);
                 } catch (error) {
-                    setTokenBalances([]);
+                    // setTokenBalances(undefined);
                     console.error({ error });
                 }
             }
@@ -214,6 +225,7 @@ export const ChainDataContextProvider = (props: {
         gasPriceInGwei,
         connectedUserXp,
         setGasPriceinGwei,
+        isActiveNetworkBlast,
         client,
     };
 
