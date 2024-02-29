@@ -62,7 +62,8 @@ export default function Limit() {
         chainData: { chainId, gridSize, poolIndex },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
-    const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
+    const { gasPriceInGwei, lastBlockNumber, isActiveNetworkBlast } =
+        useContext(ChainDataContext);
     const { pool, isPoolInitialized } = useContext(PoolContext);
     const { userAddress } = useContext(UserDataContext);
     const { tokens } = useContext(TokenContext);
@@ -494,10 +495,15 @@ export default function Limit() {
                 ethMainnetUsdPrice;
 
             setOrderGasPriceInDollars(
-                getFormattedNumber({
-                    value: gasPriceInDollarsNum + extraL1GasFeeLimit,
-                    isUSD: true,
-                }),
+                isActiveNetworkBlast
+                    ? getFormattedNumber({
+                          value: gasPriceInDollarsNum + extraL1GasFeeLimit,
+                          prefix: '$',
+                      })
+                    : getFormattedNumber({
+                          value: gasPriceInDollarsNum + extraL1GasFeeLimit,
+                          isUSD: true,
+                      }),
             );
         }
     }, [
