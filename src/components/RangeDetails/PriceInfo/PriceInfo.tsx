@@ -170,7 +170,7 @@ export default function PriceInfo(props: propsIF) {
         </div>
     );
 
-    const showEarnedRewards = !isActiveNetworkBlast;
+    const showEarnedRewards = isActiveNetworkBlast;
 
     const [positionRewards, setPositionRewards] =
         useState<PositionRewardsDataIF>({
