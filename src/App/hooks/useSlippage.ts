@@ -15,12 +15,6 @@ export interface SlippageMethodsIF {
     presets: { stable: slippagePresetsType; volatile: slippagePresetsType };
 }
 
-export interface allSlippageMethodsIF {
-    swapSlippage: SlippageMethodsIF;
-    mintSlippage: SlippageMethodsIF;
-    repoSlippage: SlippageMethodsIF;
-}
-
 // !important:  this hook supports differential values on L2 networks, this is not
 // !important:  ... written in the prettiest way but is allows for differential
 // !important:  ... handling without changing any fn calls in the app proper
@@ -61,7 +55,7 @@ export const useSlippage = (
                 output = pair?.l2 ?? defaults.l2;
                 break;
             default:
-                output = 0;
+                output = 0.1;
         }
         // return output value
         return output;
