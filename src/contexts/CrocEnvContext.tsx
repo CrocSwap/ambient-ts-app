@@ -64,8 +64,6 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { data: signer, isError, error, status: signerStatus } = useSigner();
 
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
-    // const [activeNetwork, setActiveNetwork] =
-    //     useState<NetworkIF>(ethereumGoerli);
 
     const topPools: PoolIF[] = useTopPools(chainData.chainId);
     const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<

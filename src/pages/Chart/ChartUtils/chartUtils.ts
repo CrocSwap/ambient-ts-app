@@ -102,6 +102,8 @@ export type scaleData = {
     yScale: d3.ScaleLinear<number, number>;
     volumeScale: d3.ScaleLinear<number, number>;
     xExtent: [number, number];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    priceRange: any;
 };
 
 export type crosshair = {

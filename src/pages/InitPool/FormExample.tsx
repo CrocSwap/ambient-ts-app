@@ -151,9 +151,6 @@ export default function ExampleForm() {
                     tokenAorB={null}
                     value={inputValue}
                     handleTokenInputEvent={setInputValue}
-                    parseInput={(input: string) => {
-                        return input;
-                    }}
                     disable={false}
                     token={tokenA}
                     setTokenModalOpen={() => {

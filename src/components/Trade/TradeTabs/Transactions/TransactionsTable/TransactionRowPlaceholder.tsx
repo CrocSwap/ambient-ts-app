@@ -181,7 +181,7 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                                       transaction.details?.isBid === false)
                                 ? 'Buy' + ` ${sideCharacter}`
                                 : 'Sell' + ` ${sideCharacter}`
-                            : transaction.action ?? '...'}
+                            : transaction.side ?? '...'}
                     </FlexContainer>
                 )}
                 {tableView === 'large' && (
@@ -211,7 +211,7 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                                           transaction.details?.isBid === false)
                                     ? 'Buy' + ` ${sideCharacter}`
                                     : 'Sell' + ` ${sideCharacter}`
-                                : transaction.action ?? '...'}
+                                : transaction.side ?? '...'}
                         </p>
                     </FlexContainer>
                 )}

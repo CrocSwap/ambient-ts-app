@@ -131,6 +131,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
             setIsDenomBase={setIsDenomBase}
             showOnlyFeeTier={!isMintLiqEnabled}
             initialPrice={initialPriceInBaseDenom}
+            slippageTolerance={3}
             isInitPage
         />
     );
