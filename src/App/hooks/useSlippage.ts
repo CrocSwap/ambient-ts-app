@@ -21,6 +21,10 @@ export interface allSlippageMethodsIF {
     repoSlippage: SlippageMethodsIF;
 }
 
+// !important:  this hook supports differential values on L2 networks, this is not
+// !important:  ... written in the prettiest way but is allows for differential
+// !important:  ... handling without changing any fn calls in the app proper
+
 // custom hook to manage and interact a given slippage pair
 // @param slippageType ➡ denotes swap, mint, or reposition
 // @param defaults ➡ default values to use for slippage
@@ -28,7 +32,7 @@ export const useSlippage = (
     slippageType: 'swap' | 'mint' | 'repo',
     defaults: slippageDefaultsIF,
 ): SlippageMethodsIF => {
-    //
+    // keygen logic for local storage
     const LS_KEY: string = 'slippage_' + slippageType;
 
     // check if active network is an L2 for differential handling
@@ -63,7 +67,8 @@ export const useSlippage = (
         return output;
     };
 
-    // hooks to hold stable and volatile values in state
+    // hooks to hold different slippage values in state
+    // l2 is stored separately but preferentially consumed when relevant
     // do NOT refactor these as useMemo() hooks, it will not work
     const [stable, setStable] = useState<number>(getSlippage('stable'));
     const [volatile, setVolatile] = useState<number>(getSlippage('volatile'));
@@ -79,6 +84,7 @@ export const useSlippage = (
     // volatile ➡ number, active slippage value for non-stable pairs
     // updateStable ➡ accepts a new `stable` value from the DOM
     // updateVolatile ➡ accepts a new `volatile` value from the DOM
+    // !important:  most fields will preferentially consume an L2 value as relevant
     return useMemo(
         () => ({
             stable: isActiveNetworkL2 ? stable : l2,
