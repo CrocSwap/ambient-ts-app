@@ -13,10 +13,20 @@ import {
 import {
     CHAT_ENABLED,
     CACHE_UPDATE_FREQ_IN_MS,
+    DEFAULT_CTA_DISMISSAL_DURATION_MINUTES,
 } from '../ambient-utils/constants';
+import {
+    getCtaDismissalsFromLocalStorage,
+    saveCtaDismissalToLocalStorage,
+} from '../App/functions/localStorage';
 
 interface AppStateContextIF {
     appOverlay: { isActive: boolean; setIsActive: (val: boolean) => void };
+    appHeaderDropdown: {
+        isActive: boolean;
+        setIsActive: (val: boolean) => void;
+    };
+
     globalPopup: globalPopupMethodsIF;
     snackbar: snackbarMethodsIF;
     tutorial: { isActive: boolean; setIsActive: (val: boolean) => void };
@@ -38,6 +48,10 @@ interface AppStateContextIF {
         open: () => void;
         close: () => void;
     };
+    showPointSystemPopup: boolean;
+    dismissPointSystemPopup: () => void;
+    showTopPtsBanner: boolean;
+    dismissTopBannerPopup: () => void;
 }
 
 export const AppStateContext = createContext<AppStateContextIF>(
@@ -49,6 +63,7 @@ export const AppStateContextProvider = (props: {
 }) => {
     const [theme, setTheme] = useState<'dark' | 'light'>('dark');
     const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
+    const [isAppHeaderDropdown, setIsAppHeaderDropdown] = useState(false);
     const [isTutorialMode, setIsTutorialMode] = useState(false);
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isChatEnabled, setIsChatEnabled] = useState(CHAT_ENABLED);
@@ -83,11 +98,45 @@ export const AppStateContextProvider = (props: {
         closeWagmiModalWallet,
     ] = useModal();
 
+    const pointsModalDismissalDuration =
+        DEFAULT_CTA_DISMISSAL_DURATION_MINUTES || 5;
+
+    const pointsBannerDismissalDuration =
+        DEFAULT_CTA_DISMISSAL_DURATION_MINUTES || 5;
+
+    const [showPointSystemPopup, setShowPointSystemPopup] = useState(
+        (getCtaDismissalsFromLocalStorage().find(
+            (x) => x.ctaId === 'points_modal_cta',
+        )?.unixTimeOfDismissal || 0) <
+            Math.floor(Date.now() / 1000 - 60 * pointsModalDismissalDuration),
+    );
+
+    const dismissPointSystemPopup = () => {
+        setShowPointSystemPopup(false);
+        saveCtaDismissalToLocalStorage({ ctaId: 'points_modal_cta' });
+    };
+
+    const [showTopPtsBanner, setShowTopPtsBanner] = useState<boolean>(
+        (getCtaDismissalsFromLocalStorage().find(
+            (x) => x.ctaId === 'top_points_banner_cta',
+        )?.unixTimeOfDismissal || 0) <
+            Math.floor(Date.now() / 1000 - 60 * pointsBannerDismissalDuration),
+    );
+
+    const dismissTopBannerPopup = () => {
+        setShowTopPtsBanner(false);
+        saveCtaDismissalToLocalStorage({ ctaId: 'top_points_banner_cta' });
+    };
+
     const appStateContext = useMemo(
         () => ({
             appOverlay: {
                 isActive: isAppOverlayActive,
                 setIsActive: setIsAppOverlayActive,
+            },
+            appHeaderDropdown: {
+                isActive: isAppHeaderDropdown,
+                setIsActive: setIsAppHeaderDropdown,
             },
             globalPopup,
             snackbar,
@@ -110,6 +159,10 @@ export const AppStateContextProvider = (props: {
                 open: openWagmiModalWallet,
                 close: closeWagmiModalWallet,
             },
+            showPointSystemPopup,
+            dismissPointSystemPopup,
+            showTopPtsBanner,
+            dismissTopBannerPopup,
         }),
         [
             // Dependency list includes the memoized use*() values from above and any primitives
@@ -128,6 +181,12 @@ export const AppStateContextProvider = (props: {
             isWagmiModalOpenWallet,
             openWagmiModalWallet,
             closeWagmiModalWallet,
+            isAppHeaderDropdown,
+            setIsAppHeaderDropdown,
+            showPointSystemPopup,
+            dismissPointSystemPopup,
+            showTopPtsBanner,
+            dismissTopBannerPopup,
         ],
     );
 

@@ -1,0 +1,23 @@
+.exchange_row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    align-items: center;
+    height: 48px;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text2);
+    padding: 0 4px;
+    border-radius: var(--border-radius);
+}
+
+.exchange_row:hover {
+    transition: var(--transition);
+    background: var(--dark2);
+    cursor: default;
+}
+
+.logo_box {
+    gap: 15px;
+    display: flex;
+    flex-direction: row;
+}
