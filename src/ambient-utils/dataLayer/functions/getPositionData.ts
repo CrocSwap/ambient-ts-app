@@ -81,6 +81,7 @@ export const getPositionData = async (
     newPosition.quoteDecimals = quoteTokenDecimals;
 
     newPosition.baseSymbol = (await baseMetadata)?.symbol ?? '';
+
     newPosition.quoteSymbol = (await quoteMetadata)?.symbol ?? '';
 
     newPosition.baseName = (await baseMetadata)?.name ?? '';
@@ -265,6 +266,8 @@ export const getPositionData = async (
     }
 
     newPosition.apy = position.aprEst * 100;
+
+    newPosition.serverPositionId = position.positionId;
 
     return newPosition;
 };

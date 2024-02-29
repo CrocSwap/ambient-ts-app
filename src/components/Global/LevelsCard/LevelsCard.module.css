@@ -1,0 +1,130 @@
+.main_container{
+    display: flex;
+padding: 8px 32px;
+flex-direction: column;
+/* justify-content: center; */
+align-items: center;
+gap: 16px;
+background:  rgba(23, 29, 39, 0.30);
+margin: 0 auto;
+
+/* blur/card */
+backdrop-filter: blur(10px);
+border-radius: 4px;
+}
+
+.main_container_full{
+    display: flex;
+    padding: 8px 32px;
+    flex-direction: column;
+    /* align-items: center; */
+    gap: 16px;
+    background:  rgba(23, 29, 39, 0.30);
+    margin: 0 auto;
+    
+    /* blur/card */
+    backdrop-filter: blur(10px);
+    border-radius: 4px;
+   
+    }
+
+.user_image{
+    width: 50px;
+height: 50px;
+
+border-radius: 50%;
+
+}
+.user_image img{
+    max-height: 100%;
+max-width: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+}
+
+.point_display_container{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border: 1px solid var(--dark3);
+    padding: 8px;
+    height: auto;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+}
+
+.divider{
+    width: 100%;
+    height: 1px;
+    background: var(--dark3)
+}
+
+
+.level_only_container{
+display: flex;
+flex-direction: row;
+align-items: center;
+    width: 100%;
+    /* padding: 8px; */
+    gap: 8px;
+}
+.level_border{
+    background: var(--title-gradient);
+    display: flex;
+min-width: 50px !important;
+height: 50px !important;
+border-radius: 50% !important;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+gap: 10px;
+padding: 1px;
+    }
+    .level_border_content{
+        background-color: var(--dark1);
+        width: 100%;
+        height: 100%;
+        border-radius: 50% !important;
+        display: flex;
+        justify-content: center;
+align-items: center;
+    }
+    .auto_width{
+        min-width: 60px !important;
+        height: 60px !important;
+    }
+
+    .link{
+
+         font-size: var(--body-size);
+         line-height: var(--body-lh);
+         color: var(--accent5);
+         text-decoration: underline;
+         display: flex;
+         justify-content: center;
+         cursor: pointer;
+        
+    }
+
+
+
+@media (min-width: 768px) {
+    
+    .main_container{
+
+height: 650px;
+margin: auto;
+
+    }
+    .main_container_full{
+      
+        height: 650px;
+        }
+    .point_display_container {
+       height: 65px;
+    }
+  
+
+}

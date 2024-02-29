@@ -1,5 +1,6 @@
 export interface PositionIF {
     chainId: string;
+    serverPositionId: string;
     positionId: string;
     askTick: number;
     bidTick: number;

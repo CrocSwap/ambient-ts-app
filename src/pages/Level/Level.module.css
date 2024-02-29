@@ -1,0 +1,54 @@
+.level_page_container{
+    background: url(../../assets/images/backgrounds/level_bg.png) no-repeat;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    min-height: 80vh;
+    overflow-y: scroll;
+    
+    
+    
+    
+    
+    
+}
+
+.option_button{
+    display: flex;
+    padding: 5px 8px;
+    align-items: flex-start;
+    gap: 10px;
+
+    border-radius: 50px;
+border: 1px solid var(--dark3, #242F3F);
+background: var(--dark1, #0D1117);
+font-size: var(--body-size);
+line-height: var(--body-lh);
+color: var(--text-white);
+cursor: pointer;
+transition: all var(--animation-speed) ease-in-out;
+}
+
+.selected_button{
+    border: 1px solid var(--accent-accent1, #7371FC);
+    color: var(--accent1, #7371FC);
+
+
+}
+.refresh_button{
+    width: 25px;
+    height: 25px;
+    border-radius: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--dark3);
+    border-radius: var(--border-radius);
+    border: none;
+    outline: none;
+}
