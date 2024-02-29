@@ -22,6 +22,50 @@ export const mainnetUSDC: TokenIF = {
     symbol: 'USDC',
 };
 
+export const blastETH: TokenIF = {
+    address: '0x0000000000000000000000000000000000000000',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+    name: 'Ether',
+    symbol: 'ETH',
+};
+
+export const blastUSDB: TokenIF = {
+    address: '0x4300000000000000000000000000000000000003',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    logoURI:
+        'https://assets-global.website-files.com/65a6baa1a3f8ed336f415cb4/65c67f0ebf2f6a1bd0feb13c_usdb-icon-yellow.png',
+    name: 'USDB',
+    symbol: 'USDB',
+};
+
+export const blastSepoliaETH: TokenIF = {
+    address: '0x0000000000000000000000000000000000000000',
+    chainId: 168587773,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+    name: 'Ether',
+    symbol: 'ETH',
+};
+
+export const blastSepoliaUSDB: TokenIF = {
+    address: '0x4200000000000000000000000000000000000022',
+    chainId: 168587773,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    logoURI:
+        'https://assets-global.website-files.com/65a6baa1a3f8ed336f415cb4/65c67f0ebf2f6a1bd0feb13c_usdb-icon-yellow.png',
+    name: 'USDB',
+    symbol: 'USDB',
+};
+
 export const mainnetWBTC: TokenIF = {
     address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
     chainId: 1,
@@ -320,6 +364,10 @@ export const defaultTokens: TokenIF[] = [
     mainnetFRAX,
     mainnetSYN,
     mainnetUSDT,
+    blastETH,
+    blastUSDB,
+    blastSepoliaETH,
+    blastSepoliaUSDB,
     goerliETH,
     goerliUSDC,
     goerliWBTC,
