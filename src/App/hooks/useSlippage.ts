@@ -88,17 +88,17 @@ export const useSlippage = (
     // !important:  most fields will preferentially consume an L2 value as relevant
     return useMemo(
         () => ({
-            stable: isActiveNetworkL2 ? stable : l2,
-            volatile: isActiveNetworkL2 ? volatile : l2,
-            updateStable: isActiveNetworkL2 ? setStable : setL2,
-            updateVolatile: isActiveNetworkL2 ? setVolatile : setL2,
+            stable: isActiveNetworkL2 ? l2 : stable,
+            volatile: isActiveNetworkL2 ? l2 : volatile,
+            updateStable: isActiveNetworkL2 ? setL2 : setStable,
+            updateVolatile: isActiveNetworkL2 ? setL2 : setVolatile,
             presets: {
                 stable: isActiveNetworkL2
-                    ? defaults.presets.stable
-                    : defaults.presets.l2,
+                    ? defaults.presets.l2
+                    : defaults.presets.stable,
                 volatile: isActiveNetworkL2
-                    ? defaults.presets.volatile
-                    : defaults.presets.l2,
+                    ? defaults.presets.l2
+                    : defaults.presets.volatile,
             },
         }),
         [stable, volatile, l2],
