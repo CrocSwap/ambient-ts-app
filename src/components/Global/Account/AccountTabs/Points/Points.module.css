@@ -17,6 +17,7 @@
 }
 
 .logo_box {
+    gap: 15px;
     display: flex;
     flex-direction: row;
 }

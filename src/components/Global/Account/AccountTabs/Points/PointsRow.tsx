@@ -4,15 +4,16 @@ import styles from './Points.module.css';
 interface propsIF {
     shortName: string;
     longName: string;
-    pointsAccrued: number;
+    pointsAccrued: string | number;
+    logo?: JSX.Element;
 }
 
 export default function PointsRow(props: propsIF) {
-    const { shortName, longName, pointsAccrued } = props;
+    const { shortName, longName, pointsAccrued, logo } = props;
     return (
         <div className={styles.exchange_row}>
             <div className={styles.logo_box}>
-                <TokenIcon />
+                {logo ? logo : <TokenIcon />}
                 <p>{shortName}</p>
             </div>
             <p>{longName}</p>
