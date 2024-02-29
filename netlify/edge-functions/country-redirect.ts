@@ -8,11 +8,22 @@ export default async (request: Request, context: Context) => {
         geofenceArg ? geofenceArg.split(',') : [],
     );
 
-    // if user not in geofenced country, show website
-    if (!geofenced.includes(context.geo.country.code)) {
-        return;
-    }
+    const invertGeofenceArg = Netlify.env.get(
+        'NETLIFY_EDGE_IS_GEOFENCE_WHITELIST',
+    );
+    const invertedGeofence = !!invertGeofenceArg;
 
+    if (invertedGeofence) {
+        // If geofence is whitelis, show website if the user is in the country list
+        if (geofenced.includes(context.geo.country.code)) {
+            return;
+        }
+    } else {
+        // if user not in geofenced country, show website
+        if (!geofenced.includes(context.geo.country.code)) {
+            return;
+        }
+    }
     const headers = request?.headers;
     const host = headers.get('host');
 
