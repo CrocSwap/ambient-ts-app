@@ -1,9 +1,10 @@
 // START: Import React and Dongles
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import {
     slippageDefaultsIF,
     slippagePresetsType,
 } from '../../ambient-utils/constants';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
 
 // interface for object returned by this hook
 export interface SlippageMethodsIF {
@@ -27,6 +28,10 @@ export const useSlippage = (
     slippageType: string,
     defaults: slippageDefaultsIF,
 ): SlippageMethodsIF => {
+    // check if active network is an L2 for differential handling
+    const { isActiveNetworkL2 } = useContext(ChainDataContext);
+    false && isActiveNetworkL2;
+
     // fn to get relevant slippage pair from local storage and return
     // ... a value to use productively for stable or volatile slippage
     const getSlippage = (whichOne: 'stable' | 'volatile'): number => {
