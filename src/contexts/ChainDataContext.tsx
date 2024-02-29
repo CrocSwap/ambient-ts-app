@@ -58,6 +58,13 @@ export const ChainDataContextProvider = (props: {
         chainData.chainId,
     );
 
+    // const isActiveNetworkL2 = [
+    //     '0x13e31',
+    //     '0xa0c71fd',
+    //     '0x82750',
+    //     '0x8274f',
+    // ].includes(chainData.chainId);
+
     async function pollBlockNum(): Promise<void> {
         // if default RPC is Infura, use key from env variable
         const nodeUrl =
