@@ -56,8 +56,8 @@ export const fetchTokenPrice = async (
                 1 /
                 toDisplayPrice(
                     spotPrice ?? twoThousandDollarEthNonDisplay,
-                    18,
-                    18,
+                    defaultPair[0].decimals,
+                    defaultPair[1].decimals,
                 );
             const usdPriceFormatted = truncateDecimals(displayPrice, 2);
             return {
