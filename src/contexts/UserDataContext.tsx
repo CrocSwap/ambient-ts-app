@@ -28,6 +28,8 @@ interface UserDataContextIF {
     setResolvedAddressInContext: Dispatch<SetStateAction<string>>;
     userAccountProfile: string | undefined;
     setUserAccountProfile: Dispatch<SetStateAction<string | undefined>>;
+    isfetchNftTriggered: boolean;
+    setIsfetchNftTriggered: Dispatch<SetStateAction<boolean>>;
 }
 export const UserDataContext = createContext<UserDataContextIF>(
     {} as UserDataContextIF,
@@ -67,6 +69,9 @@ export const UserDataContextProvider = (props: {
     const [userAccountProfile, setUserAccountProfile] = useState<
         string | undefined
     >(undefined);
+
+    const [isfetchNftTriggered, setIsfetchNftTriggered] =
+        useState<boolean>(false);
 
     // check for ENS name account changes
     useEffect(() => {
@@ -119,6 +124,8 @@ export const UserDataContextProvider = (props: {
         setResolvedAddressInContext,
         userAccountProfile,
         setUserAccountProfile,
+        setIsfetchNftTriggered,
+        isfetchNftTriggered,
     };
 
     return (
