@@ -78,10 +78,12 @@ function Portfolio(props: PortfolioPropsIF) {
         () =>
             userAddress
                 ? addressFromParams
-                    ? resolvedAddress?.toLowerCase() ===
-                      userAddress.toLowerCase()
-                        ? true
-                        : false
+                    ? resolvedAddress
+                        ? resolvedAddress?.toLowerCase() ===
+                          userAddress.toLowerCase()
+                            ? true
+                            : false
+                        : true
                     : true
                 : false,
         [addressFromParams, resolvedAddress, userAddress],
