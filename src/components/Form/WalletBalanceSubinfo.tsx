@@ -10,6 +10,7 @@ import WalletBalanceExplanation from '../Global/Informational/WalletBalanceExpla
 import { DefaultTooltip } from '../Global/StyledTooltip/StyledTooltip';
 import { FlexContainer } from '../../styled/Common';
 import { MaxButton } from '../../styled/Components/Portfolio';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
 interface PropsIF {
     usdValueForDom: string;
     showWallet: boolean | undefined;
@@ -39,6 +40,8 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
 
+    const { isActiveNetworkBlast } = useContext(ChainDataContext);
+
     const walletWithTooltip = (
         <IconWithTooltip
             title={`${
@@ -47,8 +50,16 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
             placement='bottom'
         >
             <div
-                style={{ paddingTop: '2px', cursor: 'pointer' }}
-                onClick={onToggleDex}
+                style={
+                    !isWithdraw && isActiveNetworkBlast
+                        ? { paddingTop: '2px', cursor: 'default' }
+                        : { paddingTop: '2px', cursor: 'pointer' }
+                }
+                onClick={
+                    !isWithdraw && isActiveNetworkBlast
+                        ? undefined
+                        : onToggleDex
+                }
             >
                 <img
                     src={!isDexSelected ? walletEnabledIcon : walletIcon}
@@ -58,7 +69,27 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
         </IconWithTooltip>
     );
 
-    const exchangeWithTooltip = (
+    const exchangeWithTooltip = isActiveNetworkBlast ? (
+        isWithdraw && (
+            <IconWithTooltip
+                title={`${'Use Wallet and Exchange Balance'}`}
+                placement='bottom'
+            >
+                <div
+                    style={{
+                        padding: '2px 4px 0 4px',
+                        filter: !isDexSelected
+                            ? 'grayscale(100%)'
+                            : 'contrast(1) brightness(1) saturate(1)',
+                        cursor: 'pointer',
+                    }}
+                    onClick={onToggleDex}
+                >
+                    <img src={ambientLogo} width='20' alt='surplus' />
+                </div>
+            </IconWithTooltip>
+        )
+    ) : (
         <IconWithTooltip
             title={`${
                 isWithdraw
