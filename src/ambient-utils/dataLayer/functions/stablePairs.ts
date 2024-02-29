@@ -53,7 +53,6 @@ export const STABLE_USD_TOKENS = [
     arbGoerliDAI.address,
     arbGoerliUSDC.address,
     scrollUSDC.address,
-    scrollUSDC.address,
     scrollAxlUSDC.address,
     sepoliaUSDC.address,
     blastSepoliaUSDB.address,
