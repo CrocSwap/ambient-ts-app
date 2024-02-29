@@ -56,6 +56,7 @@ export default function PriceInfo(props: propsIF) {
     } = props;
 
     const { pathname } = useLocation();
+    // const { lastBlockNumber } = useContext(ChainDataContext);
 
     const isOnTradeRoute = pathname.includes('trade');
     const { tokens } = useContext(TokenContext);
@@ -178,13 +179,22 @@ export default function PriceInfo(props: propsIF) {
             'BLAST gold': '…',
         });
 
+    // useEffect(() => {
+    //     fetchPositionRewardsData({ positionId }).then((rewards) => {
+    //         rewards && setPositionRewards(rewards);
+    //     });
+    // }, [lastBlockNumber]);
+
     useEffect(() => {
-        // update every 2 seconds
+        fetchPositionRewardsData({ positionId }).then((rewards) => {
+            rewards && setPositionRewards(rewards);
+        });
+        // update every 10 seconds
         const interval = setInterval(() => {
             fetchPositionRewardsData({ positionId }).then((rewards) => {
                 rewards && setPositionRewards(rewards);
             });
-        }, 2000);
+        }, 10000);
         return () => clearInterval(interval);
     }, []);
 
