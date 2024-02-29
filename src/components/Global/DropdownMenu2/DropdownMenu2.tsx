@@ -56,7 +56,6 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
     );
 
     const desktopScreen = useMediaQuery('(min-width: 1020px)');
-
     return (
         <div ref={dropdownRefItem}>
             <Menu
@@ -80,14 +79,22 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
                             <img
                                 src={logo}
                                 alt={title}
-                                width={title === 'Scroll' ? '20px' : '15px'}
+                                width={
+                                    title.includes('Scroll') ||
+                                    title.includes('Blast')
+                                        ? '20px'
+                                        : '15px'
+                                }
                                 height='20px'
                                 style={{
                                     borderRadius: '50%',
                                     marginLeft: '2px',
                                 }}
                             />
-                            {title === 'Scroll Sepolia' ? 'Sepolia' : title}
+                            {title === 'Scroll Sepolia' ||
+                            title === 'Blast Sepolia'
+                                ? 'Sepolia'
+                                : title}
                         </Icon>
                     )}
                     {!desktopScreen && (

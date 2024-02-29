@@ -38,8 +38,10 @@ export default function Level(props: LevelPropsIF) {
         setIsViewMoreActive,
     } = props;
     const { userAddress } = useContext(UserDataContext);
-    const { connectedUserXp, isActiveNetworkBlast } =
-        useContext(ChainDataContext);
+    const {
+        connectedUserXp,
+        // isActiveNetworkBlast
+    } = useContext(ChainDataContext);
     const { xpLeaders } = useContext(XpLeadersContext);
 
     const jazziconsSeed = resolvedAddress
@@ -158,7 +160,9 @@ export default function Level(props: LevelPropsIF) {
         );
     // LEADERBOARD
     const [selectedXpLeaderboardType, setSelectedXpLeaderboardType] = useState(
-        getLeaderboardSelectionFromLocalStorage(isActiveNetworkBlast),
+        getLeaderboardSelectionFromLocalStorage(),
+        // TODO: uncomment when Blast points available
+        // isActiveNetworkBlast
     );
 
     useEffect(() => {
@@ -183,7 +187,8 @@ export default function Level(props: LevelPropsIF) {
             setIsLeaderboardLoading(false);
         }, 500);
     };
-    const xpLeaderboardTypes = ['Global', 'Weekly', 'Chain'];
+    const xpLeaderboardTypes = ['Global', 'Weekly'];
+    // const xpLeaderboardTypes = ['Global', 'Weekly', 'Chain'];
 
     if (isDisplayRank) {
         return (

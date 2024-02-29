@@ -58,7 +58,8 @@ function Range() {
         ethMainnetUsdPrice,
         crocEnv,
     } = useContext(CrocEnvContext);
-    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { gasPriceInGwei, isActiveNetworkBlast } =
+        useContext(ChainDataContext);
     const { poolPriceDisplay, ambientApy, dailyVol } = useContext(PoolContext);
     const {
         advancedHighTick,
@@ -859,10 +860,15 @@ function Range() {
                 ethMainnetUsdPrice;
 
             setRangeGasPriceinDollars(
-                getFormattedNumber({
-                    value: gasPriceInDollarsNum + extraL1GasFeePool,
-                    isUSD: true,
-                }),
+                isActiveNetworkBlast
+                    ? getFormattedNumber({
+                          value: gasPriceInDollarsNum + extraL1GasFeePool,
+                          prefix: '$',
+                      })
+                    : getFormattedNumber({
+                          value: gasPriceInDollarsNum + extraL1GasFeePool,
+                          isUSD: true,
+                      }),
             );
         }
     }, [

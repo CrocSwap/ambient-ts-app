@@ -101,13 +101,3 @@ export const DEFAULT_CTA_DISMISSAL_DURATION_MINUTES = process.env
     .REACT_APP_DEFAULT_CTA_DISMISSAL_DURATION_MINUTES
     ? parseFloat(process.env.REACT_APP_DEFAULT_CTA_DISMISSAL_DURATION_MINUTES)
     : undefined;
-
-export const IS_BLAST_SITE = process.env.REACT_APP_IS_BLAST_SITE
-    ? process.env.REACT_APP_IS_BLAST_SITE?.toLowerCase() === 'true'
-    : false;
-
-export const USE_MOCK_POSITION_REWARDS_DATA = process.env
-    .REACT_APP_USE_MOCK_POSITION_REWARDS_DATA
-    ? process.env.REACT_APP_USE_MOCK_POSITION_REWARDS_DATA?.toLowerCase() ===
-      'true'
-    : false;
