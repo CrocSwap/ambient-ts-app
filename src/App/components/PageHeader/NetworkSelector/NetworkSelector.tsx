@@ -23,6 +23,7 @@ import { Text } from '../../../../styled/Common';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import cantoLogo from '../../../../assets/images/networks/canto.png';
 import scrollLogo from '../../../../assets/images/networks/scroll.png';
+import blastLogo from '../../../../assets/images/networks/blast_logo.png';
 import ETH from '../../../../assets/images/logos/eth-diamond-purple.png';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { getSupportedChainIds } from '../../../../ambient-utils/dataLayer';
@@ -89,14 +90,16 @@ export default function NetworkSelector(props: propsIF) {
                     height='22px'
                     style={{ borderRadius: '50%', marginLeft: '2px' }}
                 />
-                <Text color={chainId === '0x1' ? 'accent1' : 'white'}>
+                <Text
+                    color={chainId === '0x1' ? 'accent1' : 'white'}
+                    style={{ marginLeft: '4px' }}
+                >
                     Ethereum
                 </Text>
             </ChainNameStatus>
         </NetworkItem>
     );
 
-    // temporary hardcoded mock blast network data
     const scrollNetwork: JSX.Element = (
         <NetworkItem
             id='scroll_network_selector'
@@ -112,10 +115,40 @@ export default function NetworkSelector(props: propsIF) {
                     alt='scroll network'
                     width='22px'
                     height='22px'
-                    style={{ borderRadius: '50%' }}
+                    style={{ borderRadius: '50%', marginLeft: '-2px' }}
                 />
-                <Text color={chainId === '0x82750' ? 'accent1' : 'white'}>
+                <Text
+                    color={chainId === '0x82750' ? 'accent1' : 'white'}
+                    style={{ marginLeft: '4px' }}
+                >
                     {'Scroll'}
+                </Text>
+            </ChainNameStatus>
+        </NetworkItem>
+    );
+
+    const blastNetwork: JSX.Element = (
+        <NetworkItem
+            id='blast_network_selector'
+            onClick={() => handleClick(chainMap.get('0x82750'))}
+            key='blast'
+            custom={0}
+            variants={ItemEnterAnimation}
+            tabIndex={0}
+        >
+            <ChainNameStatus tabIndex={0} active={chainId === '0x82750'}>
+                <img
+                    src={blastLogo}
+                    alt='blast network'
+                    width='25px'
+                    height='25px'
+                    style={{ borderRadius: '50%', marginLeft: '-2px' }}
+                />
+                <Text
+                    color={chainId === '0x82750' ? 'accent1' : 'white'}
+                    style={{ marginLeft: '1px' }}
+                >
+                    {'Blast'}
                 </Text>
             </ChainNameStatus>
         </NetworkItem>
@@ -256,6 +289,7 @@ export default function NetworkSelector(props: propsIF) {
                         aria-label={'Dropdown menu for networks.'}
                     >
                         {chainMap.has('0x1') && ethereumNetwork}
+                        {chainMap.has('0x82750') && blastNetwork}
                         {chainMap.has('0x82750') && scrollNetwork}
                         {INCLUDE_CANTO_LINK && cantoNetwork}
                         {chainMap.has('0xaa36a7') && sepoliaNetwork}
