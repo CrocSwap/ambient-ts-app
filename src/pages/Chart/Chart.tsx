@@ -370,6 +370,8 @@ export default function Chart(props: propsIF) {
     const [selectedOrderHistory, setSelectedOrderHistory] =
         useState<TransactionIF>();
 
+    const [hoverOHTooltip, setHoverOHTooltip] = useState<boolean>(true);
+
     const [hoveredOrderTooltipPlacement, setHoveredOrderTooltipPlacement] =
         useState<{ top: number; left: number; isOnLeftSide: boolean }>();
     const [selectedOrderTooltipPlacement, setSelectedOrderTooltipPlacement] =
@@ -378,7 +380,8 @@ export default function Chart(props: propsIF) {
     const [circleScale, setCircleScale] =
         useState<d3.ScaleLinear<number, number>>();
 
-    const mobileView = useMediaQuery('(max-width: 600px)');
+    const mobileView = useMediaQuery('(max-width: 1200px)');
+    const smallScreen = useMediaQuery('(max-width: 500px)');
 
     const drawSettings = useDrawSettings();
 
@@ -512,7 +515,7 @@ export default function Chart(props: propsIF) {
     });
 
     const toolbarWidth = isToolbarOpen
-        ? 40 - (mobileView ? 0 : 4)
+        ? 40 - (mobileView ? (smallScreen ? 0 : 25) : 5)
         : 9 - (mobileView ? 0 : 4);
 
     const [prevlastCandleTime, setPrevLastCandleTime] = useState<number>(
@@ -4782,6 +4785,13 @@ export default function Chart(props: propsIF) {
         setCurrentTxActiveInTransactions('');
     }, [denomInBase]);
 
+    useEffect(() => {
+        if (!hoverOHTooltip) {
+            setHoveredOrderHistory(undefined);
+            setIsHoveredOrderHistory(false);
+        }
+    }, [hoverOHTooltip]);
+
     const orderHistoryHoverStatus = (
         mouseX: number,
         mouseY: number,
@@ -4820,10 +4830,12 @@ export default function Chart(props: propsIF) {
                     return resElement;
                 });
                 setIsHoveredOrderHistory(true);
+                setHoverOHTooltip(true);
             } else {
                 setHoveredOrderTooltipPlacement(() => undefined);
                 setHoveredOrderHistory(() => undefined);
                 setIsHoveredOrderHistory(false);
+                setHoverOHTooltip(false);
             }
 
             if (onClick && scaleData) {
@@ -5889,6 +5901,7 @@ export default function Chart(props: propsIF) {
                         pointerEvents={
                             !isDragActive && activeDrawingType === 'Cross'
                         }
+                        setHoverOHTooltip={setHoverOHTooltip}
                     />
                 )}
 
@@ -5909,6 +5922,7 @@ export default function Chart(props: propsIF) {
                         pointerEvents={
                             !isDragActive && activeDrawingType === 'Cross'
                         }
+                        setHoverOHTooltip={setHoverOHTooltip}
                     />
                 )}
         </div>

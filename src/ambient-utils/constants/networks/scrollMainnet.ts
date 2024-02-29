@@ -2,6 +2,7 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import {
     scrollETH,
     scrollUSDC,
+    // scrollDAI,
     scrollUSDT,
     scrollWBTC,
     scrollwstETH,

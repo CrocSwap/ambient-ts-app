@@ -18,9 +18,9 @@ import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
 import { Client } from '@covalenthq/client-sdk';
-import { UserDataContext } from './UserDataContext';
+import { UserDataContext, UserXpDataIF } from './UserDataContext';
 import { TokenBalanceContext } from './TokenBalanceContext';
-import { fetchBlockNumber } from '../ambient-utils/api';
+import { fetchBlockNumber, fetchUserXpData } from '../ambient-utils/api';
 
 interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
@@ -28,6 +28,9 @@ interface ChainDataContextIF {
     lastBlockNumber: number;
     setLastBlockNumber: Dispatch<SetStateAction<number>>;
     client: Client;
+    connectedUserXp: UserXpDataIF;
+    isActiveNetworkBlast: boolean;
+    isActiveNetworkL2: boolean;
 }
 
 export const ChainDataContext = createContext<ChainDataContextIF>(
@@ -51,6 +54,21 @@ export const ChainDataContextProvider = (props: {
 
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
+
+    const isActiveNetworkBlast = ['0x13e31', '0xa0c71fd'].includes(
+        chainData.chainId,
+    );
+
+    // array of network IDs for supported L2 networks
+    const L2_NETWORKS: string[] = [
+        '0x13e31',
+        '0xa0c71fd',
+        '0x82750',
+        '0x8274f',
+    ];
+
+    // boolean representing whether the active network is an L2
+    const isActiveNetworkL2: boolean = L2_NETWORKS.includes(chainData.chainId);
 
     async function pollBlockNum(): Promise<void> {
         // if default RPC is Infura, use key from env variable
@@ -165,10 +183,9 @@ export const ChainDataContextProvider = (props: {
                         newToken.logoURI = oldToken ? oldToken.logoURI : '';
                         return newToken;
                     });
-
                     setTokenBalances(tokensWithLogos);
                 } catch (error) {
-                    setTokenBalances([]);
+                    // setTokenBalances(undefined);
                     console.error({ error });
                 }
             }
@@ -183,12 +200,39 @@ export const ChainDataContextProvider = (props: {
         activeNetwork.graphCacheUrl,
     ]);
 
+    const [connectedUserXp, setConnectedUserXp] = React.useState<UserXpDataIF>({
+        dataReceived: false,
+        data: undefined,
+    });
+
+    React.useEffect(() => {
+        if (userAddress) {
+            fetchUserXpData({
+                user: userAddress,
+                chainId: chainData.chainId,
+            }).then((data) => {
+                setConnectedUserXp({
+                    dataReceived: true,
+                    data: data ? data : undefined,
+                });
+            });
+        } else {
+            setConnectedUserXp({
+                dataReceived: false,
+                data: undefined,
+            });
+        }
+    }, [userAddress]);
+
     const chainDataContext = {
         lastBlockNumber,
         setLastBlockNumber,
         gasPriceInGwei,
+        connectedUserXp,
         setGasPriceinGwei,
+        isActiveNetworkBlast,
         client,
+        isActiveNetworkL2,
     };
 
     return (

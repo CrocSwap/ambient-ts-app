@@ -40,3 +40,21 @@
     -o-background-size: cover;
     background-size: cover;
 }
+
+.ambient_blast_logo {
+    font-size: 50px;
+    font-family: 'Lexend Exa';
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+
+    background: linear-gradient(
+        90deg,
+        #7371fc 0.01%,
+        #cdc1ff 49.48%,
+        #7371fc 99.99%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
