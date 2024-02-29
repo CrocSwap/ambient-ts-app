@@ -6,7 +6,7 @@ import { useFetchBatch } from '../../../App/hooks/useFetchBatch';
 
 interface PropsIF {
     data: {
-        rank: number;
+        rank: number | string;
         walletDisplay: string;
         userAddress: string;
         points: string;
