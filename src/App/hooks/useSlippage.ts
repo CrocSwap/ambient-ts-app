@@ -25,9 +25,12 @@ export interface allSlippageMethodsIF {
 // @param slippageType ➡ denotes swap, mint, or reposition
 // @param defaults ➡ default values to use for slippage
 export const useSlippage = (
-    slippageType: string,
+    slippageType: 'swap' | 'mint' | 'repo',
     defaults: slippageDefaultsIF,
 ): SlippageMethodsIF => {
+    //
+    const LS_KEY: string = 'slippage_' + slippageType;
+
     // check if active network is an L2 for differential handling
     const { isActiveNetworkL2 } = useContext(ChainDataContext);
 
@@ -37,7 +40,7 @@ export const useSlippage = (
         // retrieve the relevant slippage pair from local storage
         // query will return `null` if the key-value pair does not exist
         const pair: slippageDefaultsIF | null = JSON.parse(
-            localStorage.getItem(`slippage_${slippageType}`) as string,
+            localStorage.getItem(LS_KEY) as string,
         );
         // declare an output value for the function
         let output: number;
@@ -68,10 +71,7 @@ export const useSlippage = (
 
     // update persisted value in local storage whenever user changes slippage tolerance
     useEffect(() => {
-        localStorage.setItem(
-            `slippage_${slippageType}`,
-            JSON.stringify({ stable, volatile, l2 }),
-        );
+        localStorage.setItem(LS_KEY, JSON.stringify({ stable, volatile, l2 }));
     }, [stable, volatile, l2]);
 
     // return data object
