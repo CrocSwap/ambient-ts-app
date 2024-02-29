@@ -40,7 +40,7 @@ export default function Points(props: propsIF) {
                         <PointsRow
                             shortName={'BLAST'}
                             longName={'Blast Points'}
-                            pointsAccrued={0}
+                            pointsAccrued={'...'}
                             logo={blastLogo}
                         />
                     </div>
@@ -48,7 +48,7 @@ export default function Points(props: propsIF) {
                         <PointsRow
                             shortName={'BLAST'}
                             longName={'Blast Gold'}
-                            pointsAccrued={0}
+                            pointsAccrued={'...'}
                             logo={blastLogo}
                         />
                     </div>
