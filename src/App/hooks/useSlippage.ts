@@ -4,7 +4,7 @@ import {
     DEFAULT_SLIPPAGE_VALUES,
     slippageDefaultsIF,
     slippagePresetsType,
-    slippageTypes,
+    slippageDefaultTypes,
 } from '../../ambient-utils/constants';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 
@@ -17,7 +17,6 @@ export interface SlippageMethodsIF {
     presets: {
         stable: slippagePresetsType;
         volatile: slippagePresetsType;
-        l2: slippagePresetsType;
     };
 }
 
@@ -28,7 +27,9 @@ export interface SlippageMethodsIF {
 // custom hook to manage and interact a given slippage pair
 // @param slippageType ➡ denotes swap, mint, or reposition
 // @param defaults ➡ default values to use for slippage
-export const useSlippage = (txType: slippageTypes): SlippageMethodsIF => {
+export const useSlippage = (
+    txType: slippageDefaultTypes,
+): SlippageMethodsIF => {
     // default slippage values to consume depending on transaction type
     const defaults = DEFAULT_SLIPPAGE_VALUES[txType];
 
@@ -91,7 +92,14 @@ export const useSlippage = (txType: slippageTypes): SlippageMethodsIF => {
             volatile: isActiveNetworkL2 ? volatile : l2,
             updateStable: isActiveNetworkL2 ? setStable : setL2,
             updateVolatile: isActiveNetworkL2 ? setVolatile : setL2,
-            presets: defaults.presets,
+            presets: {
+                stable: isActiveNetworkL2
+                    ? defaults.presets.stable
+                    : defaults.presets.l2,
+                volatile: isActiveNetworkL2
+                    ? defaults.presets.volatile
+                    : defaults.presets.l2,
+            },
         }),
         [stable, volatile, l2],
     );

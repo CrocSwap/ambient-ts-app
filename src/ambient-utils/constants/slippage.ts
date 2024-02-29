@@ -50,4 +50,4 @@ export const DEFAULT_SLIPPAGE_VALUES: {
 };
 
 // string-literal union type of keys in `SLIPPAGE`
-export type slippageTypes = keyof typeof DEFAULT_SLIPPAGE_VALUES;
+export type slippageDefaultTypes = keyof typeof DEFAULT_SLIPPAGE_VALUES;
