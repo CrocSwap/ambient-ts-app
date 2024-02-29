@@ -12,37 +12,42 @@ export interface slippageDefaultsIF {
     };
 }
 
-const swap: slippageDefaultsIF = {
-    stable: 0.1,
-    volatile: 0.1,
-    l2: 1,
-    presets: {
-        stable: [0.1, 0.3, 0.5],
-        volatile: [0.1, 0.3, 0.5],
-        l2: [1, 2, 3],
+export const DEFAULT_SLIPPAGE_VALUES: {
+    swap: slippageDefaultsIF;
+    mint: slippageDefaultsIF;
+    repo: slippageDefaultsIF;
+} = {
+    swap: {
+        stable: 0.1,
+        volatile: 0.1,
+        l2: 1,
+        presets: {
+            stable: [0.1, 0.3, 0.5],
+            volatile: [0.1, 0.3, 0.5],
+            l2: [1, 2, 3],
+        },
+    },
+    mint: {
+        stable: 1,
+        volatile: 3,
+        l2: 1,
+        presets: {
+            stable: [1, 2, 3],
+            volatile: [1, 2, 3],
+            l2: [1, 2, 3],
+        },
+    },
+    repo: {
+        stable: 0.1,
+        volatile: 0.5,
+        l2: 1,
+        presets: {
+            stable: [0.1, 0.3, 0.5],
+            volatile: [0.1, 0.3, 0.5],
+            l2: [1, 2, 3],
+        },
     },
 };
 
-const mint: slippageDefaultsIF = {
-    stable: 1,
-    volatile: 3,
-    l2: 1,
-    presets: {
-        stable: [1, 2, 3],
-        volatile: [1, 2, 3],
-        l2: [1, 2, 3],
-    },
-};
-
-const reposition: slippageDefaultsIF = {
-    stable: 0.1,
-    volatile: 0.5,
-    l2: 1,
-    presets: {
-        stable: [0.1, 0.3, 0.5],
-        volatile: [0.1, 0.3, 0.5],
-        l2: [1, 2, 3],
-    },
-};
-
-export const slippage = { swap, mint, reposition };
+// string-literal union type of keys in `SLIPPAGE`
+export type slippageTypes = keyof typeof DEFAULT_SLIPPAGE_VALUES;

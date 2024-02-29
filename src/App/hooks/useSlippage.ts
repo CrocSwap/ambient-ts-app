@@ -1,8 +1,10 @@
 // START: Import React and Dongles
 import { useContext, useEffect, useMemo, useState } from 'react';
 import {
+    DEFAULT_SLIPPAGE_VALUES,
     slippageDefaultsIF,
     slippagePresetsType,
+    slippageTypes,
 } from '../../ambient-utils/constants';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 
@@ -26,12 +28,12 @@ export interface SlippageMethodsIF {
 // custom hook to manage and interact a given slippage pair
 // @param slippageType ➡ denotes swap, mint, or reposition
 // @param defaults ➡ default values to use for slippage
-export const useSlippage = (
-    slippageType: 'swap' | 'mint' | 'repo',
-    defaults: slippageDefaultsIF,
-): SlippageMethodsIF => {
+export const useSlippage = (txType: slippageTypes): SlippageMethodsIF => {
+    // default slippage values to consume depending on transaction type
+    const defaults = DEFAULT_SLIPPAGE_VALUES[txType];
+
     // keygen logic for local storage
-    const LS_KEY: string = 'slippage_' + slippageType;
+    const LS_KEY: string = 'slippage_' + txType;
 
     // check if active network is an L2 for differential handling
     const { isActiveNetworkL2 } = useContext(ChainDataContext);
