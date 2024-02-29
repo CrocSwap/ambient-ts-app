@@ -28,7 +28,7 @@ export const DEFAULT_SLIPPAGE_VALUES: {
         presets: {
             stable: [0.1, 0.3, 0.5],
             volatile: [0.1, 0.3, 0.5],
-            l2: [1, 2, 3],
+            l2: [0.5, 1, 3],
         },
         getPresets(isL2: boolean) {
             const { stable, volatile, l2 } = this.presets;
@@ -45,7 +45,7 @@ export const DEFAULT_SLIPPAGE_VALUES: {
         presets: {
             stable: [1, 2, 3],
             volatile: [1, 2, 3],
-            l2: [1, 2, 3],
+            l2: [0.5, 1, 3],
         },
         getPresets(isL2: boolean) {
             const { stable, volatile, l2 } = this.presets;
@@ -62,7 +62,7 @@ export const DEFAULT_SLIPPAGE_VALUES: {
         presets: {
             stable: [0.1, 0.3, 0.5],
             volatile: [0.1, 0.3, 0.5],
-            l2: [1, 2, 3],
+            l2: [0.5, 1, 3],
         },
         getPresets(isL2: boolean) {
             const { stable, volatile, l2 } = this.presets;
