@@ -1,4 +1,5 @@
 export interface PositionServerIF {
+    positionId: string;
     chainId: string;
     askTick: number;
     bidTick: number;

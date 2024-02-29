@@ -37,26 +37,7 @@ export const fetchTokenBalances = async (
 
     const covalentChainString =
         COVALENT_CHAIN_IDS[chain as keyof typeof COVALENT_CHAIN_IDS] ||
-        'eth-mainnet';
-
-    const covalentBalancesResponse =
-        await client.BalanceService.getTokenBalancesForWalletAddress(
-            covalentChainString as Chains,
-            address,
-            {
-                noSpam: false,
-                quoteCurrency: 'USD',
-                nft: false,
-            },
-        );
-
-    const dexBalancesFromCache = await fetchDepositBalances({
-        chainId: chain,
-        user: address,
-        crocEnv: crocEnv,
-        graphCacheUrl: graphCacheUrl,
-        cachedTokenDetails: cachedTokenDetails,
-    });
+        undefined;
 
     const combinedBalances: TokenIF[] = [];
 
@@ -97,12 +78,70 @@ export const fetchTokenBalances = async (
         };
     };
 
-    const covalentData = covalentBalancesResponse.data.items;
-
-    covalentData.map((tokenBalance) => {
-        const newToken: TokenIF = getTokenInfoFromCovalentBalance(tokenBalance);
-        combinedBalances.push(newToken);
+    const dexBalancesFromCache = await fetchDepositBalances({
+        chainId: chain,
+        user: address,
+        crocEnv: crocEnv,
+        graphCacheUrl: graphCacheUrl,
+        cachedTokenDetails: cachedTokenDetails,
     });
+
+    if (covalentChainString !== undefined) {
+        const covalentBalancesResponse =
+            await client.BalanceService.getTokenBalancesForWalletAddress(
+                covalentChainString as Chains,
+                address,
+                {
+                    noSpam: false,
+                    quoteCurrency: 'USD',
+                    nft: false,
+                },
+            );
+
+        const covalentData = covalentBalancesResponse.data.items;
+
+        covalentData.map((tokenBalance) => {
+            const newToken: TokenIF =
+                getTokenInfoFromCovalentBalance(tokenBalance);
+            combinedBalances.push(newToken);
+        });
+    } else {
+        const usdbAddress =
+            chain === '0xa0c71fd'
+                ? '0x4200000000000000000000000000000000000022'
+                : '0x4300000000000000000000000000000000000003';
+        const ethInWallet = (
+            await crocEnv.token(ZERO_ADDRESS).wallet(address)
+        ).toString();
+        const usdbInWallet = (
+            await crocEnv.token(usdbAddress).wallet(address)
+        ).toString();
+
+        const eth = {
+            chainId: 1,
+            logoURI: '',
+            name: 'Ether',
+            address: '0x0000000000000000000000000000000000000000',
+            symbol: 'ETH',
+            decimals: 18,
+            walletBalance: ethInWallet,
+        };
+        const usdb = {
+            chainId: 1,
+            logoURI: '',
+            name: 'USDB',
+            address:
+                chain === '0xa0c71fd'
+                    ? '0x4200000000000000000000000000000000000022'
+                    : '0x4300000000000000000000000000000000000003',
+            symbol: 'USDB',
+            decimals: 18,
+            walletBalance: usdbInWallet,
+        };
+
+        combinedBalances.push(eth);
+        combinedBalances.push(usdb);
+    }
 
     if (dexBalancesFromCache !== undefined) {
         dexBalancesFromCache.map((balanceFromCache: IDepositedTokenBalance) => {

@@ -5,6 +5,12 @@ import { ethereumSepolia } from './ethereumSepolia';
 import { ethereumMainnet } from './ethereumMainnet';
 import { scrollMainnet } from './scrollMainnet';
 import { scrollSepolia } from './scrollSepolia';
+import { blastSepolia } from './blastSepolia';
+import { blast } from './blastNetwork';
+
+export const IS_BLAST_SITE = process.env.REACT_APP_IS_BLAST_SITE
+    ? process.env.REACT_APP_IS_BLAST_SITE?.toLowerCase() === 'true'
+    : false;
 
 export const IS_SCROLL_SITE =
     process.env.REACT_APP_IS_SCROLL_SITE !== undefined
@@ -21,27 +27,35 @@ export const IS_TESTNET_SITE =
         ? process.env.REACT_APP_IS_TESTNET_SITE.toLowerCase() === 'true'
         : false;
 
-export const supportedNetworks: { [x: string]: NetworkIF } = IS_SCROLL_SITE
+export const supportedNetworks: { [x: string]: NetworkIF } = IS_BLAST_SITE
+    ? {
+          [blast.chainId]: blast,
+      }
+    : IS_SCROLL_SITE
     ? {
           [scrollMainnet.chainId]: scrollMainnet,
       }
     : IS_PRODUCTION_SITE
     ? {
           [ethereumMainnet.chainId]: ethereumMainnet,
+          [blast.chainId]: blast,
           [scrollMainnet.chainId]: scrollMainnet,
       }
     : IS_TESTNET_SITE
     ? {
           [ethereumSepolia.chainId]: ethereumSepolia,
+          [blastSepolia.chainId]: blastSepolia,
           [scrollSepolia.chainId]: scrollSepolia,
       }
     : {
           [ethereumMainnet.chainId]: ethereumMainnet,
-          [ethereumGoerli.chainId]: ethereumGoerli,
-          [ethereumSepolia.chainId]: ethereumSepolia,
-          [arbitrumGoerli.chainId]: arbitrumGoerli,
-          [scrollSepolia.chainId]: scrollSepolia,
+          [blast.chainId]: blast,
           [scrollMainnet.chainId]: scrollMainnet,
+          [blastSepolia.chainId]: blastSepolia,
+          [ethereumSepolia.chainId]: ethereumSepolia,
+          [scrollSepolia.chainId]: scrollSepolia,
+          [ethereumGoerli.chainId]: ethereumGoerli,
+          [arbitrumGoerli.chainId]: arbitrumGoerli,
       };
 
 export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
@@ -57,3 +71,5 @@ export { ethereumSepolia };
 export { ethereumMainnet };
 export { scrollMainnet };
 export { scrollSepolia };
+export { blastSepolia };
+export { blast };
