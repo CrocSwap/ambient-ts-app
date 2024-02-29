@@ -4,6 +4,7 @@ export type slippagePresetsType = [number, number, number];
 export interface slippageDefaultsIF {
     stable: number;
     volatile: number;
+    l2: 1;
     presets: {
         stable: slippagePresetsType;
         volatile: slippagePresetsType;
@@ -13,6 +14,7 @@ export interface slippageDefaultsIF {
 const swap: slippageDefaultsIF = {
     stable: 0.1,
     volatile: 0.1,
+    l2: 1,
     presets: {
         stable: [0.1, 0.3, 0.5],
         volatile: [0.1, 0.3, 0.5],
@@ -22,6 +24,7 @@ const swap: slippageDefaultsIF = {
 const mint: slippageDefaultsIF = {
     stable: 1,
     volatile: 3,
+    l2: 1,
     presets: {
         stable: [1, 2, 3],
         volatile: [1, 2, 3],
@@ -31,6 +34,7 @@ const mint: slippageDefaultsIF = {
 const reposition: slippageDefaultsIF = {
     stable: 0.1,
     volatile: 0.5,
+    l2: 1,
     presets: {
         stable: [0.1, 0.3, 0.5],
         volatile: [0.1, 0.3, 0.5],

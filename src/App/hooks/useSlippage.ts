@@ -30,11 +30,10 @@ export const useSlippage = (
 ): SlippageMethodsIF => {
     // check if active network is an L2 for differential handling
     const { isActiveNetworkL2 } = useContext(ChainDataContext);
-    false && isActiveNetworkL2;
 
     // fn to get relevant slippage pair from local storage and return
     // ... a value to use productively for stable or volatile slippage
-    const getSlippage = (whichOne: 'stable' | 'volatile'): number => {
+    const getSlippage = (whichOne: 'stable' | 'volatile' | 'l2'): number => {
         // retrieve the relevant slippage pair from local storage
         // query will return `null` if the key-value pair does not exist
         const pair: slippageDefaultsIF | null = JSON.parse(
@@ -51,6 +50,9 @@ export const useSlippage = (
             case 'volatile':
                 output = pair?.volatile ?? defaults.volatile;
                 break;
+            case 'l2':
+                output = pair?.l2 ?? defaults.l2;
+                break;
             default:
                 output = 0;
         }
@@ -62,14 +64,15 @@ export const useSlippage = (
     // do NOT refactor these as useMemo() hooks, it will not work
     const [stable, setStable] = useState<number>(getSlippage('stable'));
     const [volatile, setVolatile] = useState<number>(getSlippage('volatile'));
+    const [l2, setL2] = useState<number>(getSlippage('l2'));
 
     // update persisted value in local storage whenever user changes slippage tolerance
     useEffect(() => {
         localStorage.setItem(
             `slippage_${slippageType}`,
-            JSON.stringify({ stable, volatile }),
+            JSON.stringify({ stable, volatile, l2 }),
         );
-    }, [stable, volatile]);
+    }, [stable, volatile, l2]);
 
     // return data object
     // stable ➡ number, active slippage value for stable pairs
@@ -78,10 +81,10 @@ export const useSlippage = (
     // updateVolatile ➡ accepts a new `volatile` value from the DOM
     return useMemo(
         () => ({
-            stable,
-            volatile,
-            updateStable: setStable,
-            updateVolatile: setVolatile,
+            stable: isActiveNetworkL2 ? stable : l2,
+            volatile: isActiveNetworkL2 ? volatile : l2,
+            updateStable: isActiveNetworkL2 ? setStable : setL2,
+            updateVolatile: isActiveNetworkL2 ? setVolatile : setL2,
             presets: defaults.presets,
         }),
         [stable, volatile],
