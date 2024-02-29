@@ -1,5 +1,8 @@
 import { useEffect, useState, Dispatch, SetStateAction, useMemo } from 'react';
-import { LS_KEY_CHART_SETTINGS } from '../../ambient-utils/constants';
+import {
+    IS_BLAST_SITE,
+    LS_KEY_CHART_SETTINGS,
+} from '../../ambient-utils/constants';
 import { getLocalStorageItem } from '../../ambient-utils/dataLayer';
 
 // interface for shape of data held in local storage
@@ -103,7 +106,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         getOverlay('pool') ?? 'curve',
     );
     const [candleTimeGlobal, setCandleTimeGlobal] = useState<TimeInSecondsType>(
-        getCandleTime('global') ?? 3600, // 1 hr default
+        getCandleTime('global') ?? (IS_BLAST_SITE ? 300 : 3600), // 5 min for blast, 1 hr default elsewhere
     );
     const [candleTimeMarket, setCandleTimeMarket] = useState<TimeInSecondsType>(
         getCandleTime('market') ?? 900,
