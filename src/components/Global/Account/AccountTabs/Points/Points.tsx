@@ -9,11 +9,13 @@ import { UserXpDataIF } from '../../../../../contexts/UserDataContext';
 
 interface propsIF {
     resolvedUserXp: UserXpDataIF;
+    resolvedUserBlastPoints: UserXpDataIF;
     connectedAccountActive: boolean;
 }
 
 export default function Points(props: propsIF) {
-    const { resolvedUserXp, connectedAccountActive } = props;
+    const { resolvedUserXp, resolvedUserBlastPoints, connectedAccountActive } =
+        props;
     const { isActiveNetworkBlast } = useContext(ChainDataContext);
 
     // since we're only going to do a set number of finite rows, they can be instantiated
@@ -22,8 +24,29 @@ export default function Points(props: propsIF) {
     const { connectedUserXp } = useContext(ChainDataContext);
 
     const ambiGlobalPoints = connectedAccountActive
-        ? connectedUserXp.data?.globalPoints ?? 0
-        : resolvedUserXp.data?.globalPoints ?? 0;
+        ? connectedUserXp.data?.globalPoints !== undefined
+            ? connectedUserXp.data?.globalPoints
+            : '...'
+        : resolvedUserXp.data?.globalPoints !== undefined
+        ? resolvedUserXp.data?.globalPoints
+        : '...';
+
+    const blastPoints = connectedAccountActive
+        ? connectedUserXp.data?.blastPoints !== undefined
+            ? connectedUserXp.data?.blastPoints
+            : '...'
+        : resolvedUserBlastPoints.data?.blastPoints !== undefined
+        ? resolvedUserBlastPoints.data?.blastPoints
+        : '...';
+
+    const blastGold = connectedAccountActive
+        ? connectedUserXp.data?.blastPoints !== undefined
+            ? connectedUserXp.data?.blastPoints
+            : '..'
+        : resolvedUserBlastPoints.data?.blastGold !== undefined
+        ? resolvedUserBlastPoints.data?.blastGold
+        : '...';
+
     return (
         <div>
             <div>
@@ -40,7 +63,7 @@ export default function Points(props: propsIF) {
                         <PointsRow
                             shortName={'BLAST'}
                             longName={'Blast Points'}
-                            pointsAccrued={'...'}
+                            pointsAccrued={blastPoints.toLocaleString()}
                             logo={blastLogo}
                         />
                     </div>
@@ -48,7 +71,7 @@ export default function Points(props: propsIF) {
                         <PointsRow
                             shortName={'BLAST'}
                             longName={'Blast Gold'}
-                            pointsAccrued={'...'}
+                            pointsAccrued={blastGold}
                             logo={blastLogo}
                         />
                     </div>

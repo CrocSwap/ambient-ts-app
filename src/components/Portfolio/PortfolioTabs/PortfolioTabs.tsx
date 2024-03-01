@@ -53,6 +53,7 @@ interface propsIF {
     connectedAccountActive: boolean;
     fullLayoutActive: boolean;
     resolvedUserXp: UserXpDataIF;
+    resolvedUserBlastPoints: UserXpDataIF;
 }
 
 // React functional component
@@ -63,6 +64,7 @@ export default function PortfolioTabs(props: propsIF) {
         connectedAccountActive,
         fullLayoutActive,
         resolvedUserXp,
+        resolvedUserBlastPoints,
     } = props;
 
     const {
@@ -321,6 +323,7 @@ export default function PortfolioTabs(props: propsIF) {
     // props for <Points/> React Element
     const pointsProps = {
         resolvedUserXp: resolvedUserXp,
+        resolvedUserBlastPoints: resolvedUserBlastPoints,
         connectedAccountActive: connectedAccountActive,
     };
 

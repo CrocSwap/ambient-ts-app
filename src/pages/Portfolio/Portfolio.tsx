@@ -10,7 +10,11 @@ import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileS
 
 // START: Import Other Local Files
 import { TokenIF } from '../../ambient-utils/types';
-import { fetchEnsAddress, fetchUserXpData } from '../../ambient-utils/api';
+import {
+    fetchBlastUserPointsData,
+    fetchEnsAddress,
+    fetchUserXpData,
+} from '../../ambient-utils/api';
 import { Navigate, useParams } from 'react-router-dom';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
@@ -142,6 +146,12 @@ function Portfolio(props: PortfolioPropsIF) {
         data: undefined,
     });
 
+    const [resolvedUserBlastPoints, setResolvedUserBlastPoints] =
+        useState<UserXpDataIF>({
+            dataReceived: false,
+            data: undefined,
+        });
+
     // fetch xp data for resolved address if not connected user account
     useEffect(() => {
         if (!connectedAccountActive && resolvedAddress) {
@@ -153,6 +163,17 @@ function Portfolio(props: PortfolioPropsIF) {
                     });
                 },
             );
+            fetchBlastUserPointsData({
+                user: resolvedAddress,
+                chainId: chainId,
+            }).then((resolvedUserBlastPoints) => {
+                setResolvedUserBlastPoints({
+                    dataReceived: true,
+                    data: resolvedUserBlastPoints
+                        ? resolvedUserBlastPoints
+                        : undefined,
+                });
+            });
         }
     }, [connectedAccountActive, resolvedAddress]);
 
@@ -292,6 +313,7 @@ function Portfolio(props: PortfolioPropsIF) {
         connectedAccountActive: connectedAccountActive,
         fullLayoutActive: fullLayoutActive,
         resolvedUserXp: resolvedUserXp,
+        resolvedUserBlastPoints: resolvedUserBlastPoints,
     };
 
     const portfolioBannerProps = {

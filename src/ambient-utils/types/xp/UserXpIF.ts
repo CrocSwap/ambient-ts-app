@@ -32,6 +32,8 @@ export interface UserXpIF {
     weeklyRank?: number;
     chainPoints?: number;
     chainRank?: number;
+    blastPoints?: number;
+    blastGold?: number;
     chainId?: string;
     currentLevel: number;
     pointsRemainingToNextLevel: number;

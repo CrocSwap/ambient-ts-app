@@ -102,3 +102,25 @@ export const fetchXpLeadersData = async (
 
     return xpLeaders;
 };
+
+export const fetchBlastUserPointsData = async (args: argsIF) => {
+    const { user, chainId } = args;
+    console.log(`Fetching Blast points for ${user} on chain ${chainId}...`);
+
+    const userXpEndpoint = 'https://ambindexer.net/xp/user?';
+
+    const userXpFetchData = fetch(
+        userXpEndpoint +
+            new URLSearchParams({
+                user: user,
+                chainId: chainId || '',
+            }),
+    )
+        .then((response) => response?.json())
+        .then((parsedResponse) =>
+            mapUserXpResponseToUserXp(parsedResponse.data),
+        )
+        .catch(console.error);
+
+    return userXpFetchData;
+};
