@@ -30,6 +30,7 @@ interface ChainDataContextIF {
     client: Client;
     connectedUserXp: UserXpDataIF;
     isActiveNetworkBlast: boolean;
+    isActiveNetworkScroll: boolean;
     isActiveNetworkL2: boolean;
 }
 
@@ -56,6 +57,10 @@ export const ChainDataContextProvider = (props: {
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
 
     const isActiveNetworkBlast = ['0x13e31', '0xa0c71fd'].includes(
+        chainData.chainId,
+    );
+
+    const isActiveNetworkScroll = ['0x82750', '0x8274f'].includes(
         chainData.chainId,
     );
 
@@ -231,6 +236,7 @@ export const ChainDataContextProvider = (props: {
         connectedUserXp,
         setGasPriceinGwei,
         isActiveNetworkBlast,
+        isActiveNetworkScroll,
         client,
         isActiveNetworkL2,
     };

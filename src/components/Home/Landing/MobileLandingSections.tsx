@@ -5,6 +5,7 @@ import liquidityImage from '../../../assets/images/home/liquidity.png';
 import orderImage from '../../../assets/images/home/orders.png';
 import { Fade } from 'react-reveal';
 import blastLogo from '../../../assets/images/logos/blast_logo.svg';
+import scrollLogo from '../../../assets/images/logos/scroll_brand_logo.svg';
 
 import Stats from '../Stats/AmbientStats';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
@@ -26,7 +27,8 @@ import { APP_ENVIRONMENT } from '../../../ambient-utils/constants';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 export default function MobileLandingSections() {
-    const { isActiveNetworkBlast } = useContext(ChainDataContext);
+    const { isActiveNetworkBlast, isActiveNetworkScroll } =
+        useContext(ChainDataContext);
     const [isIPhone, setIsIPhone] = useState(false);
     useEffect(() => {
         const userAgent = window.navigator.userAgent;
@@ -74,6 +76,37 @@ export default function MobileLandingSections() {
                                 X
                             </Text>
                             <img src={blastLogo} alt='' width='140px' />
+                        </FlexContainer>
+                    </MobileMainLogo>
+                ) : isActiveNetworkScroll ? (
+                    <MobileMainLogo
+                        justifyContent='center'
+                        alignItems='center'
+                        fullWidth
+                        className={styles.home_wallpaper_mobile}
+                    >
+                        <FlexContainer
+                            flexDirection={'column'}
+                            alignItems='center'
+                            gap={4}
+                        >
+                            <p
+                                className={styles.ambient_blast_logo}
+                                style={{ fontSize: '30px' }}
+                            >
+                                ambient
+                            </p>
+                            <Text
+                                fontWeight='100'
+                                color='text1'
+                                align='center'
+                                style={{
+                                    fontSize: '20px',
+                                }}
+                            >
+                                X
+                            </Text>
+                            <img src={scrollLogo} alt='' width='130px' />
                         </FlexContainer>
                     </MobileMainLogo>
                 ) : (
