@@ -15221,7 +15221,7 @@ style-value-types@4.1.4:
     hey-listen "^1.0.8"
     tslib "^2.1.0"
 
-styled-components@^6.0.3:
+styled-components@6.0.3:
   version "6.0.3"
   resolved "https://registry.yarnpkg.com/styled-components/-/styled-components-6.0.3.tgz#03863133b8340912f52be623e3262ba9eb87ccc0"
   integrity sha512-qEyWvDK4CYCyDckNIruRJIcQSvcUR3dVEw/fwxu1v0LFzUMPr2uf5PhXHp17FkGK+S4TkglOS+XIealo1MssQA==
