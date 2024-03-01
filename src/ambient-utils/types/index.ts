@@ -18,6 +18,9 @@ export * from './token';
 // TransactionIF, TransactionServerIF
 export * from './transaction';
 
+// UserXpIF, XpLeaderboardIF
+export * from './xp';
+
 export * from './fetchBatch';
 
 export * from './GCServerPoolIF';

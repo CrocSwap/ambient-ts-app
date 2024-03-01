@@ -22,6 +22,50 @@ export const mainnetUSDC: TokenIF = {
     symbol: 'USDC',
 };
 
+export const blastETH: TokenIF = {
+    address: '0x0000000000000000000000000000000000000000',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+    name: 'Ether',
+    symbol: 'ETH',
+};
+
+export const blastUSDB: TokenIF = {
+    address: '0x4300000000000000000000000000000000000003',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    logoURI:
+        'https://assets-global.website-files.com/65a6baa1a3f8ed336f415cb4/65c67f0ebf2f6a1bd0feb13c_usdb-icon-yellow.png',
+    name: 'USDB',
+    symbol: 'USDB',
+};
+
+export const blastSepoliaETH: TokenIF = {
+    address: '0x0000000000000000000000000000000000000000',
+    chainId: 168587773,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+    name: 'Ether',
+    symbol: 'ETH',
+};
+
+export const blastSepoliaUSDB: TokenIF = {
+    address: '0x4200000000000000000000000000000000000022',
+    chainId: 168587773,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    logoURI:
+        'https://assets-global.website-files.com/65a6baa1a3f8ed336f415cb4/65c67f0ebf2f6a1bd0feb13c_usdb-icon-yellow.png',
+    name: 'USDB',
+    symbol: 'USDB',
+};
+
 export const mainnetWBTC: TokenIF = {
     address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
     chainId: 1,
@@ -105,6 +149,50 @@ export const goerliUSDC: TokenIF = {
     chainId: 5,
     logoURI:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+    fromList: '/ambient-token-list.json',
+};
+
+export const sepoliaETH: TokenIF = {
+    name: 'Native Ether',
+    address: '0x0000000000000000000000000000000000000000',
+    symbol: 'ETH',
+    decimals: 18,
+    chainId: 11155111,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+    fromList: '/ambient-token-list.json',
+};
+
+export const sepoliaUSDC: TokenIF = {
+    name: 'USDCoin',
+    address: '0x60bBA138A74C5e7326885De5090700626950d509',
+    symbol: 'USDC',
+    decimals: 6,
+    chainId: 11155111,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+    fromList: '/ambient-token-list.json',
+};
+
+export const sepoliaWBTC: TokenIF = {
+    name: 'Wrapped BTC',
+    address: '0xCA97CC9c1a1dfA54A252DaAFE9b5Cd1E16C81328',
+    symbol: 'WBTC',
+    decimals: 8,
+    chainId: 11155111,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
+    fromList: '/ambient-token-list.json',
+};
+
+export const scrollSepoliaWBTC: TokenIF = {
+    name: 'Wrapped BTC',
+    address: '0xb3B942b6d4a4858838aAb8f94DdaEdd479CD1594',
+    symbol: 'WBTC',
+    decimals: 8,
+    chainId: 534351,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
     fromList: '/ambient-token-list.json',
 };
 
@@ -220,14 +308,13 @@ export const scrollAxlUSDC: TokenIF = {
 };
 
 export const scrollDAI: TokenIF = {
-    address: '0xcA77eB3fEFe3725Dc33bccB54eDEFc3D9f764f97',
-    chainId: 534352,
-    decimals: 18,
-    fromList: '/ambient-token-list.json',
-    logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png',
     name: 'Dai Stablecoin',
+    address: '0xcA77eB3fEFe3725Dc33bccB54eDEFc3D9f764f97',
     symbol: 'DAI',
+    decimals: 18,
+    chainId: 534352,
+    logoURI:
+        'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
 };
 
 export const scrollUSDT: TokenIF = {
@@ -277,6 +364,10 @@ export const defaultTokens: TokenIF[] = [
     mainnetFRAX,
     mainnetSYN,
     mainnetUSDT,
+    blastETH,
+    blastUSDB,
+    blastSepoliaETH,
+    blastSepoliaUSDB,
     goerliETH,
     goerliUSDC,
     goerliWBTC,
@@ -289,9 +380,14 @@ export const defaultTokens: TokenIF[] = [
     scrollUSDC,
     scrollDAI,
     scrollUSDT,
+    scrollDAI,
     scrollAxlUSDC,
     scrollWBTC,
     scrollwstETH,
+    sepoliaETH,
+    sepoliaUSDC,
+    sepoliaWBTC,
     scrollSepoliaETH,
     scrollSepoliaUSDC,
+    scrollSepoliaWBTC,
 ];

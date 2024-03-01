@@ -52,13 +52,12 @@ function TransactionDetailsModal(props: propsIF) {
 
     const [updatedPositionApy, setUpdatedPositionApy] = useState<
         number | undefined
-    >(1.01);
+    >();
 
     useEffect(() => {
         const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
             ? GCGO_OVERRIDE_URL + '/position_stats?'
             : activeNetwork.graphCacheUrl + '/position_stats?';
-
         fetch(
             positionStatsCacheEndpoint +
                 new URLSearchParams({
@@ -95,11 +94,11 @@ function TransactionDetailsModal(props: propsIF) {
                     skipENSFetch,
                 );
 
-                setUpdatedPositionApy(
-                    positionStats.aprEst
-                        ? positionStats.aprEst * 100
-                        : undefined,
-                );
+                if (positionStats.timeFirstMint) {
+                    tx.timeFirstMint = positionStats.timeFirstMint;
+                }
+
+                setUpdatedPositionApy(positionStats.aprEst * 100);
             })
             .catch(console.error);
     }, [lastBlockNumber, !!crocEnv, !!provider, chainId]);
@@ -149,6 +148,7 @@ function TransactionDetailsModal(props: propsIF) {
                 <div className={styles.right_container}>
                     <TransactionDetailsGraph
                         tx={tx}
+                        // timeFirstMint={timeFirstMint}
                         transactionType={tx.entityType}
                         isBaseTokenMoneynessGreaterOrEqual={
                             isBaseTokenMoneynessGreaterOrEqual

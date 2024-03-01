@@ -1,5 +1,8 @@
 import { useEffect, useState, Dispatch, SetStateAction, useMemo } from 'react';
-import { LS_KEY_CHART_SETTINGS } from '../../ambient-utils/constants';
+import {
+    IS_BLAST_SITE,
+    LS_KEY_CHART_SETTINGS,
+} from '../../ambient-utils/constants';
 import { getLocalStorageItem } from '../../ambient-utils/dataLayer';
 
 // interface for shape of data held in local storage
@@ -48,7 +51,9 @@ export interface chartSettingsMethodsIF {
 }
 
 // hook to manage user preferences for chart settings
-export const useChartSettings = (): chartSettingsMethodsIF => {
+export const useChartSettings = (
+    isActiveNetworkBlast: boolean,
+): chartSettingsMethodsIF => {
     // fn to get user preference for overlay to display on the chart by module
     // will return `undefined` if the value does not exist yet
     // value of `undefined` will be handled downstream
@@ -82,17 +87,36 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         const chartSettings: chartSettingsIF | null = JSON.parse(
             getLocalStorageItem(LS_KEY_CHART_SETTINGS) ?? '{}',
         );
+
         let time: number | undefined;
-        switch (timeFor) {
-            case 'global':
-            case 'market':
-            case 'limit':
-            case 'pool':
-                time = chartSettings?.candleTimeGlobal;
-                break;
-            default:
-                return;
+        if (isActiveNetworkBlast) {
+            switch (timeFor) {
+                case 'global':
+                case 'market':
+                case 'limit':
+                case 'pool':
+                    time = chartSettings?.candleTimeGlobal
+                        ? chartSettings?.candleTimeGlobal > 3600
+                            ? 300
+                            : chartSettings?.candleTimeGlobal
+                        : 300;
+                    break;
+                default:
+                    return;
+            }
+        } else {
+            switch (timeFor) {
+                case 'global':
+                case 'market':
+                case 'limit':
+                case 'pool':
+                    time = chartSettings?.candleTimeGlobal;
+                    break;
+                default:
+                    return;
+            }
         }
+
         return time as TimeInSecondsType;
     };
 
@@ -103,7 +127,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         getOverlay('pool') ?? 'curve',
     );
     const [candleTimeGlobal, setCandleTimeGlobal] = useState<TimeInSecondsType>(
-        getCandleTime('global') ?? 3600, // 1 hr default
+        getCandleTime('global') ?? (IS_BLAST_SITE ? 300 : 3600), // 5 min for blast, 1 hr default elsewhere
     );
     const [candleTimeMarket, setCandleTimeMarket] = useState<TimeInSecondsType>(
         getCandleTime('market') ?? 900,
@@ -158,14 +182,23 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         time: TimeInSecondsType;
         // eslint-disable-next-line
         changeTime: (_val: TimeInSecondsType) => void;
-        defaults: DefaultTimeIF[] = [
-            { readable: '1m', seconds: 60 },
-            { readable: '5m', seconds: 300 },
-            { readable: '15m', seconds: 900 },
-            { readable: '1h', seconds: 3600 },
-            { readable: '4h', seconds: 14400 },
-            { readable: '1d', seconds: 86400 },
-        ];
+        defaults: DefaultTimeIF[] = isActiveNetworkBlast
+            ? [
+                  { readable: '1m', seconds: 60 },
+                  { readable: '5m', seconds: 300 },
+                  { readable: '15m', seconds: 900 },
+                  { readable: '1h', seconds: 3600 },
+                  //   { readable: '4h', seconds: 14400 },
+                  //   { readable: '1d', seconds: 86400 },
+              ]
+            : [
+                  { readable: '1m', seconds: 60 },
+                  { readable: '5m', seconds: 300 },
+                  { readable: '15m', seconds: 900 },
+                  { readable: '1h', seconds: 3600 },
+                  { readable: '4h', seconds: 14400 },
+                  { readable: '1d', seconds: 86400 },
+              ];
         readableTime =
             this.defaults.find(
                 (pair: DefaultTimeIF) => pair.seconds === this.time,

@@ -42,6 +42,9 @@ import ContentContainer from '../../components/Global/ContentContainer/ContentCo
 import { PoolContext } from '../../contexts/PoolContext';
 import { MdAutoGraph } from 'react-icons/md';
 import ChartToolbar from '../Chart/Draw/Toolbar/Toolbar';
+import PointsBanner from './PointsBanner';
+
+import { AppStateContext } from '../../contexts/AppStateContext';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -67,6 +70,9 @@ function Trade() {
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const { tokens } = useContext(TokenContext);
+
+    const { showTopPtsBanner, dismissTopBannerPopup } =
+        useContext(AppStateContext);
     const {
         setOutsideControl,
         setSelectedOutsideTab,
@@ -172,14 +178,10 @@ function Trade() {
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
     const smallScreen = useMediaQuery('(max-width: 500px)');
 
-    const [isChartLoading, setIsChartLoading] = useState<boolean>(true);
-
     const tradeChartsProps = {
         changeState: changeState,
         selectedDate: selectedDate,
         setSelectedDate: setSelectedDate,
-        isChartLoading,
-        setIsChartLoading,
         updateURL,
     };
 
@@ -254,9 +256,9 @@ function Trade() {
                 </ContentContainer>
             )}
 
-            {!isChartLoading &&
-                !isChartHeightMinimum &&
-                activeMobileComponent === 'chart' && <ChartToolbar />}
+            {!isChartHeightMinimum && activeMobileComponent === 'chart' && (
+                <ChartToolbar />
+            )}
         </MainSection>
     );
 
@@ -273,6 +275,12 @@ function Trade() {
                     style={{ height: 'calc(100vh - 56px)' }}
                     ref={canvasRef}
                 >
+                    {showTopPtsBanner && (
+                        <div style={{ padding: '0 8px' }}>
+                            <PointsBanner dismissElem={dismissTopBannerPopup} />
+                        </div>
+                    )}
+
                     <TradeChartsHeader tradePage />
                     {/* This div acts as a parent to maintain a min/max for the resizable element below */}
                     <FlexContainer
@@ -390,7 +398,7 @@ function Trade() {
                         }}
                     />
                 </FlexContainer>
-                {!isChartLoading && !isChartHeightMinimum && <ChartToolbar />}
+                {!isChartHeightMinimum && <ChartToolbar />}
             </MainSection>
         </>
     );

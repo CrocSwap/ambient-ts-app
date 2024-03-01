@@ -99,7 +99,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             className={styles.info_container}
         >
             <Row>
-                <span>Total Value: </span>
+                <span>Order Value: </span>
                 <DefaultTooltip
                     interactive
                     title={usdValue}
@@ -383,9 +383,9 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                     : buyBaseRow}
                 {controlItems[2] && totalValueContent}
                 {PriceDisplay}
-                {tx.entityType === 'liqchange' ? (
+                {tx.entityType === 'liqchange' && positionApy !== 0 ? (
                     <Apy
-                        amount={positionApy || undefined}
+                        amount={positionApy}
                         fs='48px'
                         lh='60px'
                         center

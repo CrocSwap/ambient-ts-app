@@ -28,6 +28,7 @@ import {
 } from '../ambient-utils/constants';
 import { UserDataContext } from './UserDataContext';
 import { TradeDataContext } from './TradeDataContext';
+import { ethers } from 'ethers';
 
 interface UrlRoutesTemplate {
     swap: string;
@@ -54,6 +55,10 @@ interface CrocEnvContextIF {
 export const CrocEnvContext = createContext<CrocEnvContextIF>(
     {} as CrocEnvContextIF,
 );
+const mainnetProvider = new ethers.providers.InfuraProvider(
+    'mainnet',
+    process.env.REACT_APP_INFURA_KEY || '360ea5fda45b4a22883de8522ebd639e',
+);
 
 export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
@@ -64,8 +69,6 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { data: signer, isError, error, status: signerStatus } = useSigner();
 
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
-    // const [activeNetwork, setActiveNetwork] =
-    //     useState<NetworkIF>(ethereumGoerli);
 
     const topPools: PoolIF[] = useTopPools(chainData.chainId);
     const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
@@ -113,7 +116,6 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         useState<UrlRoutesTemplate>(initUrl);
 
     const provider = useProvider({ chainId: +chainData.chainId });
-    const mainnetProvider = useProvider({ chainId: +'0x1' });
 
     useBlacklist(userAddress);
 
