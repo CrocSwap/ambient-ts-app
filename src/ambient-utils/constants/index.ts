@@ -40,6 +40,11 @@ export const CHAT_ENABLED =
         ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
         : true;
 
+export const BLAST_RPC_URL =
+    process.env.REACT_APP_BLAST_RPC_URL !== undefined
+        ? process.env.REACT_APP_BLAST_RPC_URL
+        : 'https://rpc.blast.io/';
+
 export const INCLUDE_CANTO_LINK =
     process.env.REACT_APP_INCLUDE_CANTO_LINK !== undefined
         ? process.env.REACT_APP_INCLUDE_CANTO_LINK.toLowerCase() === 'true'
