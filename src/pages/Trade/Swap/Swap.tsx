@@ -135,7 +135,9 @@ function Swap(props: propsIF) {
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] =
         useState<boolean>(false);
     const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] =
-        useState<boolean>(dexBalSwap.outputToDexBal.isEnabled);
+        useState<boolean>(
+            isActiveNetworkBlast ? false : dexBalSwap.outputToDexBal.isEnabled,
+        );
 
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
