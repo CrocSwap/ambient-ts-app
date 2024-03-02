@@ -44,7 +44,7 @@ export const blastUSDB: TokenIF = {
     symbol: 'USDB',
 };
 
-export const blastOrbit: TokenIF = {
+export const blastORBIT: TokenIF = {
     address: '0x42E12D42b3d6C4A74a88A61063856756Ea2DB357',
     chainId: 81457,
     decimals: 18,
