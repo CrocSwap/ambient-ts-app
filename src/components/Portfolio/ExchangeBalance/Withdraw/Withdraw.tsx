@@ -66,7 +66,8 @@ export default function Withdraw(props: propsIF) {
         setTokenModalOpen,
     } = props;
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
-    const { gasPriceInGwei, isActiveNetworkL2 } = useContext(ChainDataContext);
+    const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
+        useContext(ChainDataContext);
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -331,7 +332,9 @@ export default function Withdraw(props: propsIF) {
                 setInputValue(tokenExchangeDepositsDisplay);
         }
     };
-    const [extraL1GasFeeWithdraw] = useState(isActiveNetworkL2 ? 1.2 : 0);
+    const [extraL1GasFeeWithdraw] = useState(
+        isActiveNetworkScroll ? 1.2 : isActiveNetworkBlast ? 0.25 : 0,
+    );
 
     const [withdrawGasPriceinDollars, setWithdrawGasPriceinDollars] = useState<
         string | undefined

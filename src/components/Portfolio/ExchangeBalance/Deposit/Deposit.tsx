@@ -67,7 +67,12 @@ export default function Deposit(props: propsIF) {
         setTokenModalOpen = () => null,
     } = props;
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
-    const { gasPriceInGwei, isActiveNetworkL2 } = useContext(ChainDataContext);
+    const {
+        gasPriceInGwei,
+        isActiveNetworkL2,
+        isActiveNetworkBlast,
+        isActiveNetworkScroll,
+    } = useContext(ChainDataContext);
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -86,7 +91,9 @@ export default function Deposit(props: propsIF) {
     const [l1GasFeeLimitInGwei] = useState<number>(
         isActiveNetworkL2 ? 0.0002 * 1e9 : 0,
     );
-    const [extraL1GasFeeDeposit] = useState(isActiveNetworkL2 ? 1.25 : 0);
+    const [extraL1GasFeeDeposit] = useState(
+        isActiveNetworkScroll ? 1.25 : isActiveNetworkBlast ? 0.3 : 0,
+    );
 
     const [depositGasPriceinDollars, setDepositGasPriceinDollars] = useState<
         string | undefined
