@@ -66,12 +66,8 @@ export default function Deposit(props: propsIF) {
         selectedTokenDecimals,
         setTokenModalOpen = () => null,
     } = props;
-    const {
-        crocEnv,
-        ethMainnetUsdPrice,
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
-    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { gasPriceInGwei, isActiveNetworkL2 } = useContext(ChainDataContext);
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -87,9 +83,10 @@ export default function Deposit(props: propsIF) {
 
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
-    const isScroll = chainId === '0x82750' || chainId === '0x8274f';
-    const [l1GasFeeLimitInGwei] = useState<number>(isScroll ? 0.0002 * 1e9 : 0);
-    const [extraL1GasFeeDeposit] = useState(isScroll ? 1.25 : 0);
+    const [l1GasFeeLimitInGwei] = useState<number>(
+        isActiveNetworkL2 ? 0.0002 * 1e9 : 0,
+    );
+    const [extraL1GasFeeDeposit] = useState(isActiveNetworkL2 ? 1.25 : 0);
 
     const [depositGasPriceinDollars, setDepositGasPriceinDollars] = useState<
         string | undefined
@@ -109,7 +106,7 @@ export default function Deposit(props: propsIF) {
         .mul(BigNumber.from(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE))
         .mul(BigNumber.from(DEPOSIT_BUFFER_MULTIPLIER_SCROLL));
 
-    const amountToReduceNativeTokenQty = isScroll
+    const amountToReduceNativeTokenQty = isActiveNetworkL2
         ? amountToReduceNativeTokenQtyScroll
         : amountToReduceNativeTokenQtyMainnet;
 
