@@ -43,6 +43,32 @@
             "logoURI": "https://assets-global.website-files.com/65a6baa1a3f8ed336f415cb4/65c67f0ebf2f6a1bd0feb13c_usdb-icon-yellow.png"
         },
         {
+            "address": "0x42E12D42b3d6C4A74a88A61063856756Ea2DB357",
+            "chainId": 81457,
+            "decimals": 18,
+            "name": "Orbit Protocol",
+            "symbol": "ORBIT",
+            "logoURI":
+                "https://dashboard-assets.dappradar.com/document/47902/orbitprotocol-project-defi-47902-logo-166x166_1e74c8301cbe3d05a57a80147dd2607d.png"
+        },
+        {
+            "address": "0xA4C7aA67189EC5623121c6C94Ec757DfeD932D4B",
+            "chainId": 81457,
+            "decimals": 18,
+            "name": "Mia",
+            "symbol": "MIA",
+            "logoURI": "https://miablastsoff.com/images/logo.png"
+        },
+        {
+            "address": "0x0000000000000000000000000000000000000000",
+            "chainId": 168587773,
+            "decimals": 18,
+            "logoURI":
+                "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png",
+            "name": "Ether",
+            "symbol": "ETH"
+        },
+        {
             "name": "Native Ether",
             "address": "0x0000000000000000000000000000000000000000",
             "symbol": "ETH",
