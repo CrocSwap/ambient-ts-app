@@ -16,7 +16,7 @@ import InitPoolTokenSelect from '../../components/Global/InitPoolTokenSelect/Ini
 
 import { PoolContext } from '../../contexts/PoolContext';
 import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
-import { LuEdit2 } from 'react-icons/lu';
+import { LuPencil } from 'react-icons/lu';
 import { FiExternalLink, FiRefreshCw } from 'react-icons/fi';
 import { FlexContainer, Text } from '../../styled/Common';
 import Toggle from '../../components/Form/Toggle';
@@ -1397,7 +1397,7 @@ export default function InitPool() {
             ) : (
                 <FiRefreshCw size={20} onClick={handleRefresh} />
             )}
-            <LuEdit2 size={20} onClick={() => openEditMode()} />
+            <LuPencil size={20} onClick={() => openEditMode()} />
         </FlexContainer>
     );
 
