@@ -48,8 +48,7 @@
             "decimals": 18,
             "name": "Orbit Protocol",
             "symbol": "ORBIT",
-            "logoURI":
-                "https://dashboard-assets.dappradar.com/document/47902/orbitprotocol-project-defi-47902-logo-166x166_1e74c8301cbe3d05a57a80147dd2607d.png"
+            "logoURI": "https://dashboard-assets.dappradar.com/document/47902/orbitprotocol-project-defi-47902-logo-166x166_1e74c8301cbe3d05a57a80147dd2607d.png"
         },
         {
             "address": "0xA4C7aA67189EC5623121c6C94Ec757DfeD932D4B",
@@ -65,14 +64,13 @@
             "decimals": 18,
             "name": "Bag",
             "symbol": "BAG",
-            "logoURI": "https://assets.coingecko.com/coins/images/35417/thumb/bag-cg.png",
+            "logoURI": "https://assets.coingecko.com/coins/images/35417/thumb/bag-cg.png"
         },
         {
             "address": "0x0000000000000000000000000000000000000000",
             "chainId": 168587773,
             "decimals": 18,
-            "logoURI":
-                "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png",
+            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png",
             "name": "Ether",
             "symbol": "ETH"
         },
