@@ -64,14 +64,11 @@ export default function Transfer(props: propsIF) {
         secondaryEnsName,
         setTokenModalOpen,
     } = props;
-    const {
-        crocEnv,
-        ethMainnetUsdPrice,
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
     const { userAddress } = useContext(UserDataContext);
 
-    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { gasPriceInGwei, isActiveNetworkScroll, isActiveNetworkBlast } =
+        useContext(ChainDataContext);
     const {
         addPendingTx,
         addReceipt,
@@ -296,8 +293,9 @@ export default function Transfer(props: propsIF) {
         }
     };
 
-    const isScroll = chainId === '0x82750' || chainId === '0x8274f';
-    const [extraL1GasFeeTransfer] = useState(isScroll ? 1.25 : 0);
+    const [extraL1GasFeeTransfer] = useState(
+        isActiveNetworkScroll ? 1.25 : isActiveNetworkBlast ? 0.35 : 0,
+    );
 
     const [transferGasPriceinDollars, setTransferGasPriceinDollars] = useState<
         string | undefined

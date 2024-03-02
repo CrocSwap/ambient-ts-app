@@ -71,7 +71,7 @@ function Swap(props: propsIF) {
         provider,
     } = useContext(CrocEnvContext);
     const { userAddress } = useContext(UserDataContext);
-    const { gasPriceInGwei, isActiveNetworkBlast } =
+    const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
         useContext(ChainDataContext);
     const { isPoolInitialized } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
@@ -307,12 +307,11 @@ function Swap(props: propsIF) {
         setNewSwapTransactionHash('');
     }, [baseToken.address + quoteToken.address]);
 
-    const isScroll = chainId === '0x82750' || chainId === '0x8274f';
     const [l1GasFeeSwapInGwei, setL1GasFeeSwapInGwei] = useState<number>(
-        isScroll ? 0.0007 : 0,
+        isActiveNetworkScroll ? 0.0007 : isActiveNetworkBlast ? 0.0001 : 0,
     );
     const [extraL1GasFeeSwap, setExtraL1GasFeeSwap] = useState(
-        isScroll ? 1 : 0,
+        isActiveNetworkScroll ? 1 : isActiveNetworkBlast ? 0.3 : 0,
     );
 
     // calculate price of gas for swap
