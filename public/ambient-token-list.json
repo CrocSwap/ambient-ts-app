@@ -60,6 +60,14 @@
             "logoURI": "https://miablastsoff.com/images/logo.png"
         },
         {
+            "address": "0xb9dfCd4CF589bB8090569cb52FaC1b88Dbe4981F",
+            "chainId": 81457,
+            "decimals": 18,
+            "name": "Bag",
+            "symbol": "BAG",
+            "logoURI": "https://assets.coingecko.com/coins/images/35417/thumb/bag-cg.png",
+        },
+        {
             "name": "Native Ether",
             "address": "0x0000000000000000000000000000000000000000",
             "symbol": "ETH",
