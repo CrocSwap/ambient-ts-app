@@ -43,6 +43,32 @@
             "logoURI": "https://assets-global.website-files.com/65a6baa1a3f8ed336f415cb4/65c67f0ebf2f6a1bd0feb13c_usdb-icon-yellow.png"
         },
         {
+            "address": "0x42E12D42b3d6C4A74a88A61063856756Ea2DB357",
+            "chainId": 81457,
+            "decimals": 18,
+            "name": "Orbit Protocol",
+            "symbol": "ORBIT",
+            "logoURI":
+                "https://dashboard-assets.dappradar.com/document/47902/orbitprotocol-project-defi-47902-logo-166x166_1e74c8301cbe3d05a57a80147dd2607d.png"
+        },
+        {
+            "address": "0xA4C7aA67189EC5623121c6C94Ec757DfeD932D4B",
+            "chainId": 81457,
+            "decimals": 18,
+            "name": "Mia",
+            "symbol": "MIA",
+            "logoURI": "https://miablastsoff.com/images/logo.png"
+        },
+        {
+            "address": "0x0000000000000000000000000000000000000000",
+            "chainId": 168587773,
+            "decimals": 18,
+            "logoURI":
+                "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png",
+            "name": "Ether",
+            "symbol": "ETH"
+        },
+        {
             "name": "Native Ether",
             "address": "0x0000000000000000000000000000000000000000",
             "symbol": "ETH",
@@ -56,6 +82,22 @@
             "symbol": "USDB",
             "decimals": 18,
             "chainId": 168587773,
+            "logoURI": "https://assets-global.website-files.com/65a6baa1a3f8ed336f415cb4/65c67f0ebf2f6a1bd0feb13c_usdb-icon-yellow.png"
+        },
+        {
+            "name": "Native Ether",
+            "address": "0x0000000000000000000000000000000000000000",
+            "symbol": "ETH",
+            "decimals": 18,
+            "chainId": 81457,
+            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
+        },
+        {
+            "name": "USDB",
+            "address": "0x4300000000000000000000000000000000000003",
+            "symbol": "USDB",
+            "decimals": 18,
+            "chainId": 81457,
             "logoURI": "https://assets-global.website-files.com/65a6baa1a3f8ed336f415cb4/65c67f0ebf2f6a1bd0feb13c_usdb-icon-yellow.png"
         },
         {
@@ -73,14 +115,6 @@
             "decimals": 18,
             "chainId": 1,
             "logoURI": "https://assets.coingecko.com/coins/images/29850/large/pepe-token.jpeg?1682922725"
-        },
-        {
-            "name": "Frax",
-            "address": "0x853d955acef822db058eb8505911ed77f175b99e",
-            "symbol": "FRAX",
-            "decimals": 18,
-            "chainId": 1,
-            "logoURI": "https://etherscan.io/token/images/fraxfinanceeth2_32.png"
         },
         {
             "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
@@ -163,6 +197,30 @@
             "logoURI": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png"
         },
         {
+            "name": "Native Ether",
+            "address": "0x0000000000000000000000000000000000000000",
+            "symbol": "ETH",
+            "decimals": 18,
+            "chainId": 11155111,
+            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
+        },
+        {
+            "name": "USDCoin",
+            "address": "0x60bBA138A74C5e7326885De5090700626950d509",
+            "symbol": "USDC",
+            "decimals": 6,
+            "chainId": 11155111,
+            "logoURI": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png"
+        },
+        {
+            "name": "Wrapped BTC",
+            "address": "0xCA97CC9c1a1dfA54A252DaAFE9b5Cd1E16C81328",
+            "symbol": "WBTC",
+            "decimals": 8,
+            "chainId": 11155111,
+            "logoURI": "https://scroll-tech.github.io/token-list/data/WBTC/logo.svg"
+        },
+        {
             "name": "Tether",
             "chainId": 534352,
             "address": "0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df",
@@ -174,6 +232,14 @@
             "name": "Wrapped BTC",
             "chainId": 534352,
             "address": "0x3C1BCa5a656e69edCD0D4E36BEbb3FcDAcA60Cf1",
+            "symbol": "WBTC",
+            "decimals": 8,
+            "logoURI": "https://scroll-tech.github.io/token-list/data/WBTC/logo.svg"
+        },
+        {
+            "name": "Wrapped BTC",
+            "chainId": 534351,
+            "address": "0xb3B942b6d4a4858838aAb8f94DdaEdd479CD1594",
             "symbol": "WBTC",
             "decimals": 8,
             "logoURI": "https://scroll-tech.github.io/token-list/data/WBTC/logo.svg"
