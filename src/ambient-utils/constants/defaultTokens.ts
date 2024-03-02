@@ -44,6 +44,37 @@ export const blastUSDB: TokenIF = {
     symbol: 'USDB',
 };
 
+export const blastOrbit: TokenIF = {
+    address: '0x42E12D42b3d6C4A74a88A61063856756Ea2DB357',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Orbit Protocol',
+    symbol: 'ORBIT',
+    logoURI:
+        'https://dashboard-assets.dappradar.com/document/47902/orbitprotocol-project-defi-47902-logo-166x166_1e74c8301cbe3d05a57a80147dd2607d.png',
+};
+
+export const blastMIA: TokenIF = {
+    address: '0xA4C7aA67189EC5623121c6C94Ec757DfeD932D4B',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Mia',
+    symbol: 'MIA',
+    logoURI: 'https://miablastsoff.com/images/logo.png',
+};
+
+export const blastBAG: TokenIF = {
+    address: '0xb9dfCd4CF589bB8090569cb52FaC1b88Dbe4981F',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Bag',
+    symbol: 'BAG',
+    logoURI: 'https://assets.coingecko.com/coins/images/35417/thumb/bag-cg.png',
+};
+
 export const blastSepoliaETH: TokenIF = {
     address: '0x0000000000000000000000000000000000000000',
     chainId: 168587773,
