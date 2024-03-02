@@ -143,6 +143,7 @@ export const GraphDataContextProvider = (props: {
             changes: [],
         },
     );
+
     const [userLimitOrdersByPool, setUserLimitOrdersByPool] =
         React.useState<LimitOrdersByPool>({
             dataReceived: false,
@@ -212,6 +213,25 @@ export const GraphDataContextProvider = (props: {
         setSessionTransactionHashes([]);
     };
 
+    const resetPoolGraphData = () => {
+        setTransactionsByPool({
+            dataReceived: false,
+            changes: [],
+        });
+        setPositionsByPool({
+            dataReceived: false,
+            positions: [],
+        });
+        setLeaderboardByPool({
+            dataReceived: false,
+            positions: [],
+        });
+        setLimitOrdersByPool({
+            dataReceived: false,
+            limitOrders: [],
+        });
+    };
+
     const setLiquidity = (
         liqData: LiquidityDataIF,
         request: PoolRequestParams | undefined,
@@ -250,6 +270,10 @@ export const GraphDataContextProvider = (props: {
     useEffect(() => {
         resetUserGraphData();
     }, [isUserConnected, userAddress]);
+
+    useEffect(() => {
+        resetPoolGraphData();
+    }, [baseToken.address + quoteToken.address]);
 
     useEffect(() => {
         setUserPositionsByPool({
