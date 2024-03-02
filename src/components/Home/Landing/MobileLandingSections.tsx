@@ -5,12 +5,13 @@ import liquidityImage from '../../../assets/images/home/liquidity.png';
 import orderImage from '../../../assets/images/home/orders.png';
 import { Fade } from 'react-reveal';
 import blastLogo from '../../../assets/images/logos/blast_logo.svg';
+import scrollLogo from '../../../assets/images/logos/scroll_brand_logo.svg';
 
 import Stats from '../Stats/AmbientStats';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
 import TopPools from '../TopPools/TopPools';
 import Investors from './Investors';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
     MobileBg1,
     MobileBg2,
@@ -23,8 +24,11 @@ import {
 import { FlexContainer, Text } from '../../../styled/Common';
 import { Link } from 'react-router-dom';
 import { APP_ENVIRONMENT } from '../../../ambient-utils/constants';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 export default function MobileLandingSections() {
+    const { isActiveNetworkBlast, isActiveNetworkScroll } =
+        useContext(ChainDataContext);
     const [isIPhone, setIsIPhone] = useState(false);
     useEffect(() => {
         const userAgent = window.navigator.userAgent;
@@ -43,36 +47,90 @@ export default function MobileLandingSections() {
             fullHeight
         >
             <>
-                <MobileMainLogo
-                    justifyContent='center'
-                    alignItems='center'
-                    fullWidth
-                    className={styles.home_wallpaper_mobile}
-                >
-                    <FlexContainer
-                        flexDirection={'column'}
+                {isActiveNetworkBlast ? (
+                    <MobileMainLogo
+                        justifyContent='center'
                         alignItems='center'
-                        gap={4}
+                        fullWidth
+                        className={styles.home_wallpaper_mobile}
                     >
-                        <p
-                            className={styles.ambient_blast_logo}
-                            style={{ fontSize: '30px' }}
+                        <FlexContainer
+                            flexDirection={'column'}
+                            alignItems='center'
+                            gap={4}
                         >
-                            ambient
-                        </p>
-                        <Text
-                            fontWeight='100'
-                            color='text1'
-                            align='center'
-                            style={{
-                                fontSize: '30px',
-                            }}
+                            <p
+                                className={styles.ambient_blast_logo}
+                                style={{ fontSize: '30px' }}
+                            >
+                                ambient
+                            </p>
+                            <Text
+                                fontWeight='100'
+                                color='text1'
+                                align='center'
+                                style={{
+                                    fontSize: '20px',
+                                }}
+                            >
+                                X
+                            </Text>
+                            <img src={blastLogo} alt='' width='140px' />
+                        </FlexContainer>
+                    </MobileMainLogo>
+                ) : isActiveNetworkScroll ? (
+                    <MobileMainLogo
+                        justifyContent='center'
+                        alignItems='center'
+                        fullWidth
+                        className={styles.home_wallpaper_mobile}
+                    >
+                        <FlexContainer
+                            flexDirection={'column'}
+                            alignItems='center'
+                            gap={4}
                         >
-                            X
-                        </Text>
-                        <img src={blastLogo} alt='' width='100px' />
-                    </FlexContainer>
-                </MobileMainLogo>
+                            <p
+                                className={styles.ambient_blast_logo}
+                                style={{ fontSize: '30px' }}
+                            >
+                                ambient
+                            </p>
+                            <Text
+                                fontWeight='100'
+                                color='text1'
+                                align='center'
+                                style={{
+                                    fontSize: '20px',
+                                }}
+                            >
+                                X
+                            </Text>
+                            <img src={scrollLogo} alt='' width='130px' />
+                        </FlexContainer>
+                    </MobileMainLogo>
+                ) : (
+                    <MobileMainLogo
+                        justifyContent='center'
+                        alignItems='center'
+                        fullWidth
+                        className={styles.home_wallpaper_mobile}
+                    >
+                        <FlexContainer
+                            flexDirection={'column'}
+                            alignItems='center'
+                            gap={4}
+                        >
+                            <p
+                                className={styles.ambient_blast_logo}
+                                style={{ fontSize: '50px' }}
+                            >
+                                ambient
+                            </p>
+                        </FlexContainer>
+                    </MobileMainLogo>
+                )}
+
                 {APP_ENVIRONMENT !== 'production' && (
                     <FlexContainer
                         justifyContent='center'
