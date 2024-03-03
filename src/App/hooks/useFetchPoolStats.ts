@@ -203,29 +203,29 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                     setPoolVolume(volumeString);
                 }
 
-                try {
-                    const RANGE_WIDTH = 0.1;
+                // try {
+                //     const RANGE_WIDTH = 0.1;
 
-                    const apyEst = estimateFrom24HrRangeApr(
-                        RANGE_WIDTH,
-                        pool.base.address,
-                        pool.quote.address,
-                        crocEnv,
-                        provider,
-                        lastBlockNumber,
-                    );
-                    const apyResult = await apyEst;
+                //     const apyEst = estimateFrom24HrRangeApr(
+                //         RANGE_WIDTH,
+                //         pool.base.address,
+                //         pool.quote.address,
+                //         crocEnv,
+                //         provider,
+                //         lastBlockNumber,
+                //     );
+                //     const apyResult = await apyEst;
 
-                    if (apyResult) {
-                        const apyString = apyResult.toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                        });
-                        setPoolApy(apyString);
-                    }
-                } catch (error) {
-                    // IS_LOCAL_ENV && console.log({ error });
-                }
+                //     if (apyResult) {
+                //         const apyString = apyResult.toLocaleString(undefined, {
+                //             minimumFractionDigits: 2,
+                //             maximumFractionDigits: 2,
+                //         });
+                //         setPoolApy(apyString);
+                //     }
+                // } catch (error) {
+                //     // IS_LOCAL_ENV && console.log({ error });
+                // }
 
                 try {
                     const priceChangeResult = await cachedGet24hChange(
@@ -296,17 +296,16 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
     const minuteInterval = Math.floor(Date.now() / 1000 / 60);
 
     useEffect(() => {
-        // console.log({
-        //     isServerEnabled,
-        //     shouldInvertDisplay,
-        //     minuteInterval,
-        //     lastBlockNumber,
-        //     crocEnv,
-        //     provider,
-        //     poolIndex,
-        //     baseAddr,
-        //     quoteAddr,
-        // });
+        console.log({
+            isServerEnabled,
+            shouldInvertDisplay,
+            minuteInterval,
+            lastBlockNumber,
+            crocEnv,
+            provider,
+            poolIndex,
+            pool,
+        });
         if (isServerEnabled) fetchPoolStats();
     }, [
         isServerEnabled,
@@ -316,7 +315,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         !!crocEnv,
         !!provider,
         poolIndex,
-        baseAddr + quoteAddr,
+        pool.base.address + pool.quote.address,
     ]);
 
     return {
