@@ -135,22 +135,22 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
     );
 
     // Reset pool metric states that require asynchronous updates when pool changes
-    // const resetPoolStats = () => {
-    //     setPoolVolume(undefined);
-    //     setPoolTvl(undefined);
-    //     setPoolFeesTotal(undefined);
-    //     setPoolApy(undefined);
-    //     setQuoteTvlDecimal(undefined);
-    //     setBaseTvlDecimal(undefined);
-    //     setQuoteTvlUsd(undefined);
-    //     setBaseTvlUsd(undefined);
-    //     setPoolPriceChangePercent(undefined);
-    //     setIsPoolPriceChangePositive(true);
-    // };
+    const resetPoolStats = () => {
+        setPoolVolume(undefined);
+        setPoolTvl(undefined);
+        setPoolFeesTotal(undefined);
+        // setPoolApy(undefined);
+        setQuoteTvlDecimal(undefined);
+        setBaseTvlDecimal(undefined);
+        setQuoteTvlUsd(undefined);
+        setBaseTvlUsd(undefined);
+        setPoolPriceChangePercent(undefined);
+        setIsPoolPriceChangePositive(true);
+    };
 
-    // useEffect(() => {
-    //     resetPoolStats();
-    // }, [JSON.stringify(pool)]);
+    useEffect(() => {
+        resetPoolStats();
+    }, [baseAddr + quoteAddr]);
 
     const fetchPoolStats = () => {
         (async () => {
@@ -308,6 +308,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         });
         if (isServerEnabled) fetchPoolStats();
     }, [
+        poolVolume === undefined,
         isServerEnabled,
         shouldInvertDisplay,
         minuteInterval,
