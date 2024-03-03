@@ -293,12 +293,15 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         tokenB: quoteAddr,
     });
 
+    const minuteInterval = Math.floor(Date.now() / 1000 / 60);
+
     useEffect(() => {
         if (isServerEnabled) fetchPoolStats();
     }, [
         isServerEnabled,
         shouldInvertDisplay,
-        lastBlockNumber,
+        minuteInterval,
+        lastBlockNumber === 0,
         !!crocEnv,
         !!provider,
         poolIndex,

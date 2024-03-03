@@ -170,6 +170,10 @@ export const ChainDataContextProvider = (props: {
                 client
             ) {
                 try {
+                    // wait for 5 seconds before fetching token balances
+                    setTimeout(() => {
+                        return;
+                    }, 5000);
                     const tokenBalances: TokenIF[] =
                         await cachedFetchTokenBalances(
                             userAddress,
