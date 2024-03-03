@@ -1,6 +1,12 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { BigNumber } from 'ethers';
-import { ZERO_ADDRESS } from '../constants';
+import {
+    ZERO_ADDRESS,
+    blastBAG,
+    blastMIA,
+    blastORBIT,
+    blastUSDB,
+} from '../constants';
 import { TokenIF } from '../types/token/TokenIF';
 import { fetchDepositBalances } from './fetchDepositBalances';
 import { memoizePromiseFn } from '../dataLayer/functions/memoizePromiseFn';
@@ -110,11 +116,21 @@ export const fetchTokenBalances = async (
             chain === '0xa0c71fd'
                 ? '0x4200000000000000000000000000000000000022'
                 : '0x4300000000000000000000000000000000000003';
+
         const ethInWallet = (
             await crocEnv.token(ZERO_ADDRESS).wallet(address)
         ).toString();
         const usdbInWallet = (
             await crocEnv.token(usdbAddress).wallet(address)
+        ).toString();
+        const orbitInWallet = (
+            await crocEnv.token(blastORBIT.address).wallet(address)
+        ).toString();
+        const bagInWallet = (
+            await crocEnv.token(blastBAG.address).wallet(address)
+        ).toString();
+        const miaInWallet = (
+            await crocEnv.token(blastMIA.address).wallet(address)
         ).toString();
 
         const eth = {
@@ -129,18 +145,48 @@ export const fetchTokenBalances = async (
         const usdb = {
             chainId: 1,
             logoURI: '',
-            name: 'USDB',
+            name: blastUSDB.name,
             address:
                 chain === '0xa0c71fd'
                     ? '0x4200000000000000000000000000000000000022'
                     : '0x4300000000000000000000000000000000000003',
-            symbol: 'USDB',
+            symbol: blastUSDB.symbol,
             decimals: 18,
             walletBalance: usdbInWallet,
+        };
+        const orbit = {
+            chainId: 1,
+            logoURI: '',
+            name: blastORBIT.name,
+            address: blastORBIT.address,
+            symbol: blastORBIT.symbol,
+            decimals: 18,
+            walletBalance: orbitInWallet,
+        };
+        const bag = {
+            chainId: 1,
+            logoURI: '',
+            name: blastBAG.name,
+            address: blastBAG.address,
+            symbol: blastBAG.symbol,
+            decimals: 18,
+            walletBalance: bagInWallet,
+        };
+        const mia = {
+            chainId: 1,
+            logoURI: '',
+            name: blastMIA.name,
+            address: blastMIA.address,
+            symbol: blastMIA.symbol,
+            decimals: 18,
+            walletBalance: miaInWallet,
         };
 
         combinedBalances.push(eth);
         combinedBalances.push(usdb);
+        combinedBalances.push(orbit);
+        combinedBalances.push(bag);
+        combinedBalances.push(mia);
     }
 
     if (dexBalancesFromCache !== undefined) {
