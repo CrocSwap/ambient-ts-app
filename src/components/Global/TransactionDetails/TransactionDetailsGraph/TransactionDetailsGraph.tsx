@@ -1038,22 +1038,23 @@ export default function TransactionDetailsGraph(
                                               .domain()[1]
                                               .getTime();
 
-                                const bandPixel =
-                                    scaleData.xScale(timeEnd) -
-                                    scaleData.xScale(time);
+                                // zoom in when short period of time between mint and last candle
+                                // const bandPixel =
+                                //     scaleData.xScale(timeEnd) -
+                                //     scaleData.xScale(time);
 
-                                if (bandPixel < 20 && period) {
-                                    const tempDomain =
-                                        timeEnd + period * 1000 * 40;
-                                    const newMaxDomain = Math.min(
-                                        tempDomain,
-                                        scaleData.xScale.domain()[1].getTime(),
-                                    );
-                                    scaleData.xScale.domain([
-                                        time - period * 1000 * 20,
-                                        newMaxDomain,
-                                    ]);
-                                }
+                                // if (bandPixel < 20 && period) {
+                                //     const tempDomain =
+                                //         timeEnd + period * 1000 * 40;
+                                //     const newMaxDomain = Math.min(
+                                //         tempDomain,
+                                //         scaleData.xScale.domain()[1].getTime(),
+                                //     );
+                                //     scaleData.xScale.domain([
+                                //         time - period * 1000 * 20,
+                                //         newMaxDomain,
+                                //     ]);
+                                // }
 
                                 scaleData.xScaleCopy.domain(
                                     scaleData.xScale.domain(),

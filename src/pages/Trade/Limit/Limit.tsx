@@ -62,8 +62,12 @@ export default function Limit() {
         chainData: { chainId, gridSize, poolIndex },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
-    const { gasPriceInGwei, lastBlockNumber, isActiveNetworkBlast } =
-        useContext(ChainDataContext);
+    const {
+        gasPriceInGwei,
+        lastBlockNumber,
+        isActiveNetworkBlast,
+        isActiveNetworkScroll,
+    } = useContext(ChainDataContext);
     const { pool, isPoolInitialized } = useContext(PoolContext);
     const { userAddress } = useContext(UserDataContext);
     const { tokens } = useContext(TokenContext);
@@ -454,9 +458,16 @@ export default function Limit() {
         setIsWithdrawFromDexChecked(parseFloat(tokenADexBalance) > 0);
     }, [tokenADexBalance]);
 
-    const isScroll = chainId === '0x82750' || chainId === '0x8274f';
-    const [l1GasFeeLimitInGwei] = useState<number>(isScroll ? 0.0007 * 1e9 : 0);
-    const [extraL1GasFeeLimit] = useState(isScroll ? 1.5 : 0);
+    const [l1GasFeeLimitInGwei] = useState<number>(
+        isActiveNetworkScroll
+            ? 0.0007 * 1e9
+            : isActiveNetworkBlast
+            ? 0.0001 * 1e9
+            : 0,
+    );
+    const [extraL1GasFeeLimit] = useState(
+        isActiveNetworkScroll ? 1.5 : isActiveNetworkBlast ? 0.5 : 0,
+    );
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
