@@ -214,7 +214,6 @@ function RangeTokenInput(props: propsIF) {
                 }
                 amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
                 isInitPage={isInitPage}
-                tokenDecimals={tokenA.decimals}
             />
             {!hidePlus && (
                 <FlexContainer
@@ -254,7 +253,6 @@ function RangeTokenInput(props: propsIF) {
                 }
                 amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
                 isInitPage={isInitPage}
-                tokenDecimals={tokenB.decimals}
                 isWithdraw
             />
         </FlexContainer>

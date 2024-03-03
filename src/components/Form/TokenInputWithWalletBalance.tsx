@@ -34,7 +34,6 @@ interface propsIF {
     disabledContent?: React.ReactNode;
     amountToReduceNativeTokenQty: number;
     isInitPage?: boolean | undefined;
-    tokenDecimals?: number;
 }
 
 function TokenInputWithWalletBalance(props: propsIF) {
@@ -60,7 +59,6 @@ function TokenInputWithWalletBalance(props: propsIF) {
         handleRefresh,
         amountToReduceNativeTokenQty,
         isInitPage,
-        tokenDecimals,
     } = props;
 
     const {
@@ -74,6 +72,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
 
     const pricedToken = translateToken(token.address, chainId);
 
+    const tokenDecimals = token.decimals;
     useEffect(() => {
         if (!crocEnv) return;
         Promise.resolve(
@@ -122,6 +121,8 @@ function TokenInputWithWalletBalance(props: propsIF) {
             ? (parseFloat(balance) - amountToReduceNativeTokenQty).toFixed(18)
             : isInitPage
             ? (parseFloat(balance) - 1e-12).toFixed(tokenDecimals)
+            : tokenDecimals > 15
+            ? (parseFloat(balance) - 1e-15).toFixed(tokenDecimals)
             : balance;
 
     const balanceWithBuffer = balance ? subtractBuffer(balance) : '...';
