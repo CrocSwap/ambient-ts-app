@@ -296,6 +296,17 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
     const minuteInterval = Math.floor(Date.now() / 1000 / 60);
 
     useEffect(() => {
+        console.log({
+            isServerEnabled,
+            shouldInvertDisplay,
+            minuteInterval,
+            lastBlockNumber,
+            crocEnv,
+            provider,
+            poolIndex,
+            baseAddr,
+            quoteAddr,
+        });
         if (isServerEnabled) fetchPoolStats();
     }, [
         isServerEnabled,
