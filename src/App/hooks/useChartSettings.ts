@@ -97,9 +97,9 @@ export const useChartSettings = (
                 case 'pool':
                     time = chartSettings?.candleTimeGlobal
                         ? chartSettings?.candleTimeGlobal > 3600
-                            ? 300
+                            ? 900
                             : chartSettings?.candleTimeGlobal
-                        : 300;
+                        : 900;
                     break;
                 default:
                     return;
