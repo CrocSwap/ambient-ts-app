@@ -305,6 +305,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         !!crocEnv,
         !!provider,
         poolIndex,
+        baseAddr + quoteAddr,
     ]);
 
     return {
