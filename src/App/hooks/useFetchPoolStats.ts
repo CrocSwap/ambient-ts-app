@@ -9,7 +9,7 @@ import {
     getMoneynessRank,
     getFormattedNumber,
 } from '../../ambient-utils/dataLayer';
-import { estimateFrom24HrRangeApr } from '../../ambient-utils/api';
+// import { estimateFrom24HrRangeApr } from '../../ambient-utils/api';
 import { sortBaseQuoteTokens, toDisplayPrice } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
