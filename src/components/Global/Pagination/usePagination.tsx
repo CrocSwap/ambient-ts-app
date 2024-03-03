@@ -17,16 +17,8 @@ interface PaginationResult<T> {
     count: number;
 }
 
-function usePagination<T>(
-    data: T[],
-    isScreenShort: boolean,
-    isScreenTall: boolean,
-): PaginationResult<T> {
-    const DEFAULT_PAGE_COUNT: number = isScreenShort
-        ? 5
-        : isScreenTall
-        ? 20
-        : 10;
+function usePagination<T>(data: T[]): PaginationResult<T> {
+    const DEFAULT_PAGE_COUNT = 100;
 
     const ROWS_PER_PAGE_LS_KEY = 'table_rows_per_page';
 
