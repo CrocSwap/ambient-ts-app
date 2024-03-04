@@ -4,7 +4,6 @@ import {
     getFormattedNumber,
     getSupportedChainIds,
 } from '../../../ambient-utils/dataLayer';
-import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
@@ -24,6 +23,7 @@ import {
 } from '../../../ambient-utils/constants';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { useProvider } from 'wagmi';
+import { TokenContext } from '../../../contexts/TokenContext';
 
 interface StatCardProps {
     title: string;
@@ -59,10 +59,9 @@ function StatCard(props: StatCardProps) {
 }
 
 export default function Stats() {
-    const {
-        server: { isEnabled: isServerEnabled },
-    } = useContext(AppStateContext);
     const { mainnetProvider } = useContext(CrocEnvContext);
+    const { tokens } = useContext(TokenContext);
+    const allDefaultTokens = tokens.allDefaultTokens;
     const scrollProvider = useProvider({ chainId: +'0x82750' });
     const blastProvider = useProvider({ chainId: +'0x13e31' });
 
@@ -77,7 +76,12 @@ export default function Stats() {
     >();
 
     useEffect(() => {
-        if (isServerEnabled) {
+        if (
+            mainnetProvider !== undefined &&
+            scrollProvider !== undefined &&
+            blastProvider !== undefined &&
+            allDefaultTokens.length > 0
+        ) {
             let tvlTotalUsd = 0,
                 volumeTotalUsd = 0,
                 feesTotalUsd = 0;
@@ -101,6 +105,7 @@ export default function Stats() {
                     mainnetCrocEnv,
                     GCGO_ETHEREUM_URL,
                     cachedFetchTokenPrice,
+                    allDefaultTokens,
                 ).then((dexStats) => {
                     if (!dexStats) {
                         return;
@@ -146,6 +151,7 @@ export default function Stats() {
                     scrollCrocEnv,
                     GCGO_SCROLL_URL,
                     cachedFetchTokenPrice,
+                    allDefaultTokens,
                 ).then((dexStats) => {
                     if (!dexStats) {
                         return;
@@ -189,6 +195,7 @@ export default function Stats() {
                     blastCrocEnv,
                     GCGO_BLAST_URL,
                     cachedFetchTokenPrice,
+                    allDefaultTokens,
                 ).then((dexStats) => {
                     if (!dexStats) {
                         return;
@@ -224,7 +231,8 @@ export default function Stats() {
     }, [
         mainnetProvider !== undefined &&
             scrollProvider !== undefined &&
-            blastProvider !== undefined,
+            blastProvider !== undefined &&
+            allDefaultTokens.length > 0,
     ]);
 
     const statCardData = [
