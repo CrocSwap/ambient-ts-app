@@ -1070,7 +1070,6 @@ export default function Chart(props: propsIF) {
 
                                 clickedForLine = true;
                                 setPrevLastCandleTime(lastCandleData.time);
-                                calculateOrderHistoryTooltipPlacements();
 
                                 render();
                             }
@@ -5478,7 +5477,7 @@ export default function Chart(props: propsIF) {
         isUpdatingShape,
     };
 
-    const calculateOrderHistoryTooltipPlacements = () => {
+    const calculateOrderHistoryTooltipPlacements = (scaleData: scaleData) => {
         if (scaleData && circleScale) {
             const scale = d3.scaleLinear().range([60, 75]).domain([1000, 3000]);
 
@@ -5561,7 +5560,7 @@ export default function Chart(props: propsIF) {
     };
 
     useEffect(() => {
-        calculateOrderHistoryTooltipPlacements();
+        if (scaleData) calculateOrderHistoryTooltipPlacements(scaleData);
     }, [
         isSelectedOrderHistory,
         isHoveredOrderHistory,
