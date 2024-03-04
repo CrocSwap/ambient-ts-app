@@ -365,7 +365,7 @@ export default function Withdraw(props: propsIF) {
     return (
         <FlexContainer flexDirection='column' gap={16} padding={'16px'}>
             <Text fontSize='body' color='text2'>
-                Withdraw tokens from the exchange to your wallet
+                Withdraw tokens from the exchange to your wallet:
             </Text>
             {toggleContent}
             {transferAddressOrNull}
