@@ -10,6 +10,7 @@ import {
 import {
     GCGO_OVERRIDE_URL,
     CACHE_UPDATE_FREQ_IN_MS,
+    getDefaultPairForChain,
 } from '../../ambient-utils/constants';
 import {
     LimitOrderIF,
@@ -129,13 +130,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
     // Token and range housekeeping when switching pairs
     useEffect(() => {
         if (contextMatchesParams && props.crocEnv) {
-            if (!ticksInParams) {
-                setAdvancedLowTick(0);
-                setAdvancedHighTick(0);
-                setAdvancedMode(false);
-                props.setSimpleRangeWidth(10);
-            }
-
             const tokenAAddress = tokenA.address;
             const tokenBAddress = tokenB.address;
 
@@ -144,6 +138,26 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     tokenAAddress,
                     tokenBAddress,
                 );
+                if (!ticksInParams) {
+                    setAdvancedLowTick(0);
+                    setAdvancedHighTick(0);
+                    setAdvancedMode(false);
+                    const defaultPair = getDefaultPairForChain(
+                        props.chainData.chainId,
+                    );
+                    // set default range width to 5% for Blast ETH/USDB
+                    if (
+                        props.chainData.chainId === '0x13e31' &&
+                        sortedTokens[0].toLowerCase() ===
+                            defaultPair[0].address.toLowerCase() &&
+                        sortedTokens[1].toLowerCase() ===
+                            defaultPair[1].address.toLowerCase()
+                    ) {
+                        props.setSimpleRangeWidth(5);
+                    } else {
+                        props.setSimpleRangeWidth(10);
+                    }
+                }
 
                 setBaseTokenAddress(sortedTokens[0]);
                 setQuoteTokenAddress(sortedTokens[1]);
