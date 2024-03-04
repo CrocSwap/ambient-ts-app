@@ -179,27 +179,34 @@ export const ChainDataContextProvider = (props: {
                 try {
                     // wait for 5 seconds before fetching token balances
                     setTimeout(() => {
-                        return;
+                        (async () => {
+                            const tokenBalances: TokenIF[] =
+                                await cachedFetchTokenBalances(
+                                    userAddress,
+                                    chainData.chainId,
+                                    everyFiveMinutes,
+                                    cachedTokenDetails,
+                                    crocEnv,
+                                    activeNetwork.graphCacheUrl,
+                                    client,
+                                );
+                            const tokensWithLogos = tokenBalances.map(
+                                (token) => {
+                                    const oldToken: TokenIF | undefined =
+                                        tokens.getTokenByAddress(token.address);
+                                    const newToken = { ...token };
+                                    newToken.name = oldToken
+                                        ? oldToken.name
+                                        : '';
+                                    newToken.logoURI = oldToken
+                                        ? oldToken.logoURI
+                                        : '';
+                                    return newToken;
+                                },
+                            );
+                            setTokenBalances(tokensWithLogos);
+                        })();
                     }, 5000);
-                    const tokenBalances: TokenIF[] =
-                        await cachedFetchTokenBalances(
-                            userAddress,
-                            chainData.chainId,
-                            everyFiveMinutes,
-                            cachedTokenDetails,
-                            crocEnv,
-                            activeNetwork.graphCacheUrl,
-                            client,
-                        );
-                    const tokensWithLogos = tokenBalances.map((token) => {
-                        const oldToken: TokenIF | undefined =
-                            tokens.getTokenByAddress(token.address);
-                        const newToken = { ...token };
-                        newToken.name = oldToken ? oldToken.name : '';
-                        newToken.logoURI = oldToken ? oldToken.logoURI : '';
-                        return newToken;
-                    });
-                    setTokenBalances(tokensWithLogos);
                 } catch (error) {
                     // setTokenBalances(undefined);
                     console.error({ error });
