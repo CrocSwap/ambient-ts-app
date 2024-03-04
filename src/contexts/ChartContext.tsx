@@ -23,6 +23,7 @@ import {
     drawDataHistory,
     selectedDrawnData,
 } from '../pages/Chart/ChartUtils/chartUtils';
+import { ChainDataContext } from './ChainDataContext';
 
 type TradeTableState = 'Expanded' | 'Collapsed' | undefined;
 
@@ -206,7 +207,10 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
 
     const [isToolbarOpen, setIsToolbarOpen] =
         useState<boolean>(initialIsToolbarOpen);
-    const chartSettings = useChartSettings();
+
+    const { isActiveNetworkBlast } = useContext(ChainDataContext);
+
+    const chartSettings = useChartSettings(isActiveNetworkBlast);
 
     const chartContext = {
         chartSettings,

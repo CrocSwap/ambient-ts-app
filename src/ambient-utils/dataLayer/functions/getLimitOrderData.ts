@@ -68,6 +68,7 @@ export const getLimitOrderData = async (
     newOrder.quoteDecimals = quoteTokenDecimals;
 
     newOrder.baseSymbol = (await baseMetadata)?.symbol ?? '';
+
     newOrder.quoteSymbol = (await quoteMetadata)?.symbol ?? '';
 
     newOrder.baseName = (await baseMetadata)?.name ?? '';

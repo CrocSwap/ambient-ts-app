@@ -58,7 +58,6 @@ function TransactionDetailsModal(props: propsIF) {
         const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
             ? GCGO_OVERRIDE_URL + '/position_stats?'
             : activeNetwork.graphCacheUrl + '/position_stats?';
-
         fetch(
             positionStatsCacheEndpoint +
                 new URLSearchParams({
@@ -95,7 +94,9 @@ function TransactionDetailsModal(props: propsIF) {
                     skipENSFetch,
                 );
 
-                tx.timeFirstMint = positionStats.timeFirstMint;
+                if (positionStats.timeFirstMint) {
+                    tx.timeFirstMint = positionStats.timeFirstMint;
+                }
 
                 setUpdatedPositionApy(positionStats.aprEst * 100);
             })

@@ -46,7 +46,9 @@ export const ExploreContext = createContext<ExploreContextIF>(
 );
 
 export const ExploreContextProvider = (props: { children: ReactNode }) => {
-    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { lastBlockNumber, isActiveNetworkBlast } =
+        useContext(ChainDataContext);
+
     const {
         cachedPoolStatsFetch,
         cachedQuerySpotPrice,
@@ -91,7 +93,10 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             cachedFetchTokenPrice,
         );
 
-        if (!poolStats || poolStats.tvlTotalUsd < 100) {
+        if (
+            !poolStats ||
+            (!isActiveNetworkBlast && poolStats.tvlTotalUsd < 100)
+        ) {
             // return early
             const poolData: PoolDataIF = {
                 ...pool,

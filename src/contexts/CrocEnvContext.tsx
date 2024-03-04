@@ -28,6 +28,7 @@ import {
 } from '../ambient-utils/constants';
 import { UserDataContext } from './UserDataContext';
 import { TradeDataContext } from './TradeDataContext';
+import { ethers } from 'ethers';
 
 interface UrlRoutesTemplate {
     swap: string;
@@ -53,6 +54,10 @@ interface CrocEnvContextIF {
 
 export const CrocEnvContext = createContext<CrocEnvContextIF>(
     {} as CrocEnvContextIF,
+);
+const mainnetProvider = new ethers.providers.InfuraProvider(
+    'mainnet',
+    process.env.REACT_APP_INFURA_KEY || '360ea5fda45b4a22883de8522ebd639e',
 );
 
 export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
@@ -111,7 +116,6 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         useState<UrlRoutesTemplate>(initUrl);
 
     const provider = useProvider({ chainId: +chainData.chainId });
-    const mainnetProvider = useProvider({ chainId: +'0x1' });
 
     useBlacklist(userAddress);
 

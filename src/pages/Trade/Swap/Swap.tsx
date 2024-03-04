@@ -71,7 +71,8 @@ function Swap(props: propsIF) {
         provider,
     } = useContext(CrocEnvContext);
     const { userAddress } = useContext(UserDataContext);
-    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
+        useContext(ChainDataContext);
     const { isPoolInitialized } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
 
@@ -134,7 +135,9 @@ function Swap(props: propsIF) {
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] =
         useState<boolean>(false);
     const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] =
-        useState<boolean>(dexBalSwap.outputToDexBal.isEnabled);
+        useState<boolean>(
+            isActiveNetworkBlast ? false : dexBalSwap.outputToDexBal.isEnabled,
+        );
 
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
@@ -304,12 +307,11 @@ function Swap(props: propsIF) {
         setNewSwapTransactionHash('');
     }, [baseToken.address + quoteToken.address]);
 
-    const isScroll = chainId === '0x82750' || chainId === '0x8274f';
     const [l1GasFeeSwapInGwei, setL1GasFeeSwapInGwei] = useState<number>(
-        isScroll ? 0.0007 : 0,
+        isActiveNetworkScroll ? 0.0007 : isActiveNetworkBlast ? 0.0001 : 0,
     );
     const [extraL1GasFeeSwap, setExtraL1GasFeeSwap] = useState(
-        isScroll ? 1 : 0,
+        isActiveNetworkScroll ? 1 : isActiveNetworkBlast ? 0.3 : 0,
     );
 
     // calculate price of gas for swap
@@ -355,10 +357,15 @@ function Swap(props: propsIF) {
                 ethMainnetUsdPrice;
 
             setSwapGasPriceinDollars(
-                getFormattedNumber({
-                    value: gasPriceInDollarsNum + extraL1GasFeeSwap,
-                    isUSD: true,
-                }),
+                isActiveNetworkBlast
+                    ? getFormattedNumber({
+                          value: gasPriceInDollarsNum + extraL1GasFeeSwap,
+                          prefix: '$',
+                      })
+                    : getFormattedNumber({
+                          value: gasPriceInDollarsNum + extraL1GasFeeSwap,
+                          isUSD: true,
+                      }),
             );
         }
     }, [

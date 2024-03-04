@@ -4,6 +4,7 @@ import { TokenIF, TokenListIF } from '../../ambient-utils/types';
 import { chainNumToString, uriToHttp } from '../../ambient-utils/dataLayer';
 
 export interface tokenMethodsIF {
+    allDefaultTokens: TokenIF[];
     defaultTokens: TokenIF[];
     verify: (addr: string) => boolean;
     acknowledge: (tkn: TokenIF) => void;
@@ -280,6 +281,7 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
 
     return useMemo(
         () => ({
+            allDefaultTokens: defaultTokens,
             defaultTokens: defaultTokensInUniv,
             verify: verifyToken,
             acknowledge: ackToken,

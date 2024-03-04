@@ -12,7 +12,6 @@ export default function Explore() {
     const { poolList } = useContext(PoolContext);
     // full expanded data set
     const { pools } = useContext(ExploreContext);
-
     const getLimitedPools = async (): Promise<void> => {
         if (crocEnv && poolList.length) {
             pools.getLimited(poolList, crocEnv, chainData.chainId);

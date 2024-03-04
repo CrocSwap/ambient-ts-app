@@ -19,6 +19,7 @@ import {
 } from '../../../../pages/Chart/ChartUtils/chartUtils';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { useMediaQuery } from '@material-ui/core';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -68,6 +69,7 @@ export default function TransactionDetailsGraph(
     const [triangleRange, setTriangleRange] = useState();
     const [triangleLimit, setTriangleLimit] = useState();
     const [horizontalBand, setHorizontalBand] = useState();
+    const { isActiveNetworkBlast } = useContext(ChainDataContext);
 
     const [period, setPeriod] = useState<number | undefined>();
 
@@ -138,6 +140,7 @@ export default function TransactionDetailsGraph(
         (async () => {
             const isTimeFirstMintInRemovalRange =
                 transactionType === 'liqchange' &&
+                tx.changeType !== 'mint' &&
                 tx.timeFirstMint === undefined;
 
             if (isTimeFirstMintInRemovalRange) {
@@ -181,12 +184,15 @@ export default function TransactionDetailsGraph(
 
             let startTime = undefined;
 
-            let period = decidePeriod(Math.floor(diff / 1000 / 200));
+            let period = isActiveNetworkBlast
+                ? 300
+                : decidePeriod(Math.floor(diff / 1000 / 200));
 
-            if (
+            const isTxLiqRemove =
                 transactionType === 'liqchange' &&
-                tx.timeFirstMint !== tx.txTime
-            ) {
+                (tx.changeType === 'burn' || tx.changeType === 'harvest');
+
+            if (isTxLiqRemove) {
                 const diffTime = Math.abs(tx.txTime - tx.timeFirstMint);
                 if (diffTime < period) {
                     period = takeSmallerPeriodForRemoveRange(diffTime);
@@ -202,7 +208,7 @@ export default function TransactionDetailsGraph(
                 const maxNumCandlesNeeded = 2999;
 
                 const numCandlesNeeded = startTime
-                    ? 15
+                    ? 25
                     : calcNumberCandlesNeeded < maxNumCandlesNeeded
                     ? calcNumberCandlesNeeded
                     : maxNumCandlesNeeded;
@@ -248,7 +254,7 @@ export default function TransactionDetailsGraph(
                 }
             }
         })();
-    }, [fetchEnabled, tx.timeFirstMint]);
+    }, [fetchEnabled, tx.timeFirstMint, tx.changeType]);
 
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -1024,28 +1030,31 @@ export default function TransactionDetailsGraph(
                                     : tx.txTime * 1000;
 
                                 const timeEnd =
-                                    tx.txTime && tx.timeFirstMint !== tx.txTime
+                                    tx.txTime &&
+                                    tx.timeFirstMint !== tx.txTime &&
+                                    tx.changeType !== 'mint'
                                         ? tx.txTime * 1000
                                         : scaleData.xScale
                                               .domain()[1]
                                               .getTime();
 
-                                const bandPixel =
-                                    scaleData.xScale(timeEnd) -
-                                    scaleData.xScale(time);
+                                // zoom in when short period of time between mint and last candle
+                                // const bandPixel =
+                                //     scaleData.xScale(timeEnd) -
+                                //     scaleData.xScale(time);
 
-                                if (bandPixel < 20 && period) {
-                                    const tempDomain =
-                                        timeEnd + period * 1000 * 40;
-                                    const newMaxDomain = Math.min(
-                                        tempDomain,
-                                        scaleData.xScale.domain()[1].getTime(),
-                                    );
-                                    scaleData.xScale.domain([
-                                        time - period * 1000 * 20,
-                                        newMaxDomain,
-                                    ]);
-                                }
+                                // if (bandPixel < 20 && period) {
+                                //     const tempDomain =
+                                //         timeEnd + period * 1000 * 40;
+                                //     const newMaxDomain = Math.min(
+                                //         tempDomain,
+                                //         scaleData.xScale.domain()[1].getTime(),
+                                //     );
+                                //     scaleData.xScale.domain([
+                                //         time - period * 1000 * 20,
+                                //         newMaxDomain,
+                                //     ]);
+                                // }
 
                                 scaleData.xScaleCopy.domain(
                                     scaleData.xScale.domain(),
