@@ -252,10 +252,8 @@ function Reposition() {
     }, [simpleRangeWidth]);
 
     useEffect(() => {
-        if (simpleRangeWidth !== rangeWidthPercentage) {
-            setSimpleRangeWidth(rangeWidthPercentage);
-        }
-    }, [rangeWidthPercentage]);
+        setSimpleRangeWidth(defaultRangeWidth);
+    }, [defaultRangeWidth]);
 
     useEffect(() => {
         if (!position) {
