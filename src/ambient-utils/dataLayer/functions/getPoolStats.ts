@@ -2,6 +2,7 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 import { GCGO_OVERRIDE_URL } from '../../constants';
 import { TokenPriceFn } from '../../api';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
+import { TokenIF } from '../../types';
 
 const getLiquidityFee = async (
     base: string,
@@ -251,13 +252,13 @@ export async function getChainStats(
     crocEnv: CrocEnv,
     graphCacheUrl: string,
     cachedFetchTokenPrice: TokenPriceFn,
+    allDefaultTokens?: TokenIF[],
 ): Promise<DexAggStatsIF | undefined> {
     const N_TOKEN_CHAIN_SUMM = 10;
 
     const chainStatsFreshEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/chain_stats?'
         : graphCacheUrl + '/chain_stats?';
-
     return fetch(
         chainStatsFreshEndpoint +
             new URLSearchParams({
@@ -276,6 +277,7 @@ export async function getChainStats(
                 chainId,
                 crocEnv,
                 cachedFetchTokenPrice,
+                allDefaultTokens,
             );
         })
         .catch((e) => {
@@ -289,10 +291,17 @@ async function expandChainStats(
     chainId: string,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
+    allDefaultTokens?: TokenIF[],
 ): Promise<DexAggStatsIF> {
     const subAggs = await Promise.all(
         tokenStats.map((t) =>
-            expandTokenStats(t, chainId, crocEnv, cachedFetchTokenPrice),
+            expandTokenStats(
+                t,
+                chainId,
+                crocEnv,
+                cachedFetchTokenPrice,
+                allDefaultTokens,
+            ),
         ),
     );
 
@@ -319,8 +328,13 @@ async function expandTokenStats(
     chainId: string,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
+    allDefaultTokens?: TokenIF[],
 ): Promise<DexAggStatsIF> {
-    const decimals = crocEnv.token(stats.tokenAddr).decimals;
+    // check if tokenUniv includes the token's decimals value
+    const token = allDefaultTokens?.find(
+        (t) => t.address.toLowerCase() === stats.tokenAddr.toLowerCase(),
+    );
+    const decimals = token?.decimals || crocEnv.token(stats.tokenAddr).decimals;
     const usdPrice = cachedFetchTokenPrice(
         stats.tokenAddr,
         chainId,
