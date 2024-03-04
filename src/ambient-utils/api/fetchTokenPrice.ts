@@ -22,7 +22,12 @@ export const fetchTokenPrice = async (
     try {
         const body = {
             config_path: 'price',
-            asset_platform: chain === '0x82750' ? 'scroll' : 'ethereum',
+            asset_platform:
+                chain === '0x82750'
+                    ? 'scroll'
+                    : chain === '0x13e31'
+                    ? 'blast'
+                    : 'ethereum',
             token_address: address,
         };
 
@@ -33,8 +38,21 @@ export const fetchTokenPrice = async (
         return response.value;
     } catch (error) {
         const defaultPair = supportedNetworks[chain].defaultPair;
+        // if token is Dai on Scroll, return 0.999
+        if (
+            chain === '0x82750' &&
+            dispToken.toLowerCase() ===
+                '0xca77eb3fefe3725dc33bccb54edefc3d9f764f97'
+        ) {
+            return {
+                usdPrice: 0.9995309916951084,
+                usdPriceFormatted: 1,
+            };
+        }
         // if token is USDC, return 0.999
-        if (dispToken.toLowerCase() === defaultPair[1].address.toLowerCase()) {
+        else if (
+            dispToken.toLowerCase() === defaultPair[1].address.toLowerCase()
+        ) {
             return {
                 usdPrice: 0.9995309916951084,
                 usdPriceFormatted: 1,

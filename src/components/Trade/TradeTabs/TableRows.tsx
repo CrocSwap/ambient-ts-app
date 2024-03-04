@@ -74,7 +74,6 @@ function TableRows({
 
     // Transaction Modal Controls
     const closeTransactionModal = () => {
-        setCurrentTxActiveInTransactions('');
         closeDetailsModal();
         setActiveRecord(undefined);
     };
