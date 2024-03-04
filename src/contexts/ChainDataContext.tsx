@@ -109,8 +109,15 @@ export const ChainDataContextProvider = (props: {
     }, [chainData.nodeUrl, BLOCK_NUM_POLL_MS]);
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
+
+    const wsUrl =
+        chainData.wsUrl?.toLowerCase().includes('infura') &&
+        process.env.REACT_APP_INFURA_KEY
+            ? chainData.wsUrl.slice(0, -32) + process.env.REACT_APP_INFURA_KEY
+            : chainData.wsUrl;
+
     const { sendMessage: sendBlockHeaderSub, lastMessage: lastNewHeadMessage } =
-        useWebSocket(chainData.wsUrl || null, {
+        useWebSocket(wsUrl || null, {
             onOpen: () => {
                 sendBlockHeaderSub(
                     '{"jsonrpc":"2.0","method":"eth_subscribe","params":["newHeads"],"id":5}',
@@ -172,27 +179,34 @@ export const ChainDataContextProvider = (props: {
                 try {
                     // wait for 5 seconds before fetching token balances
                     setTimeout(() => {
-                        return;
+                        (async () => {
+                            const tokenBalances: TokenIF[] =
+                                await cachedFetchTokenBalances(
+                                    userAddress,
+                                    chainData.chainId,
+                                    everyFiveMinutes,
+                                    cachedTokenDetails,
+                                    crocEnv,
+                                    activeNetwork.graphCacheUrl,
+                                    client,
+                                );
+                            const tokensWithLogos = tokenBalances.map(
+                                (token) => {
+                                    const oldToken: TokenIF | undefined =
+                                        tokens.getTokenByAddress(token.address);
+                                    const newToken = { ...token };
+                                    newToken.name = oldToken
+                                        ? oldToken.name
+                                        : '';
+                                    newToken.logoURI = oldToken
+                                        ? oldToken.logoURI
+                                        : '';
+                                    return newToken;
+                                },
+                            );
+                            setTokenBalances(tokensWithLogos);
+                        })();
                     }, 5000);
-                    const tokenBalances: TokenIF[] =
-                        await cachedFetchTokenBalances(
-                            userAddress,
-                            chainData.chainId,
-                            everyFiveMinutes,
-                            cachedTokenDetails,
-                            crocEnv,
-                            activeNetwork.graphCacheUrl,
-                            client,
-                        );
-                    const tokensWithLogos = tokenBalances.map((token) => {
-                        const oldToken: TokenIF | undefined =
-                            tokens.getTokenByAddress(token.address);
-                        const newToken = { ...token };
-                        newToken.name = oldToken ? oldToken.name : '';
-                        newToken.logoURI = oldToken ? oldToken.logoURI : '';
-                        return newToken;
-                    });
-                    setTokenBalances(tokensWithLogos);
                 } catch (error) {
                     // setTokenBalances(undefined);
                     console.error({ error });
