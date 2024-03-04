@@ -75,6 +75,37 @@ export const blastBAG: TokenIF = {
     logoURI: 'https://assets.coingecko.com/coins/images/35417/thumb/bag-cg.png',
 };
 
+export const blastBEPE: TokenIF = {
+    address: '0xb582dc28968c725d2868130752afa0c13ebf9b1a',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Blast Pepe',
+    symbol: 'BEPE',
+    logoURI:
+        'https://assets.coingecko.com/coins/images/35658/standard/logo_200.png',
+};
+
+export const blastYES: TokenIF = {
+    address: '0x20fE91f17ec9080E3caC2d688b4EcB48C5aC3a9C',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Yes',
+    symbol: 'YES',
+    logoURI: '',
+};
+
+export const blastPACM: TokenIF = {
+    address: '0x48118D89B451f2898fBc39Dd35C148c0E716EbE6',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'BLURBLASTPacman TIESHANINU',
+    symbol: '$PACM',
+    logoURI: '',
+};
+
 export const blastWETH: TokenIF = {
     address: '0x4300000000000000000000000000000000000004',
     chainId: 81457,
