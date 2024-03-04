@@ -14,6 +14,7 @@ import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContex
 import { RangeContext } from '../../../../contexts/RangeContext';
 import { useModal } from '../../../Global/Modal/useModal';
 import { TradeModuleHeaderContainer } from '../../../../styled/Components/TradeModules';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     positionHash: string;
@@ -32,6 +33,7 @@ function RepositionHeader(props: propsIF) {
     const { bypassConfirmRepo, repoSlippage } = useContext(
         UserPreferenceContext,
     );
+    const { defaultRangeWidth } = useContext(TradeDataContext);
 
     const [isOpen, openModal, closeModal] = useModal();
 
@@ -61,8 +63,8 @@ function RepositionHeader(props: propsIF) {
                     className={styles.close_icon}
                     onClick={() => {
                         setAdvancedMode(false);
-                        setRangeWidthPercentage(10);
-                        setSimpleRangeWidth(10);
+                        setRangeWidthPercentage(defaultRangeWidth);
+                        setSimpleRangeWidth(defaultRangeWidth);
                         navigate(exitPath, { replace: true });
                         resetTxHash();
                         setCurrentRangeInReposition('');

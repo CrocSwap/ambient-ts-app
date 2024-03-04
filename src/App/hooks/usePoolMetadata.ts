@@ -10,7 +10,6 @@ import {
 import {
     GCGO_OVERRIDE_URL,
     CACHE_UPDATE_FREQ_IN_MS,
-    getDefaultPairForChain,
 } from '../../ambient-utils/constants';
 import {
     LimitOrderIF,
@@ -63,7 +62,7 @@ interface PoolParamsHookIF {
 
 // Hooks to update metadata and volume/TVL/liquidity curves on a per-pool basis
 export function usePoolMetadata(props: PoolParamsHookIF) {
-    const { tokenA, tokenB } = useContext(TradeDataContext);
+    const { tokenA, tokenB, defaultRangeWidth } = useContext(TradeDataContext);
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const {
         setUserPositionsByPool,
@@ -142,21 +141,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     setAdvancedLowTick(0);
                     setAdvancedHighTick(0);
                     setAdvancedMode(false);
-                    const defaultPair = getDefaultPairForChain(
-                        props.chainData.chainId,
-                    );
-                    // set default range width to 5% for Blast ETH/USDB
-                    if (
-                        props.chainData.chainId === '0x13e31' &&
-                        sortedTokens[0].toLowerCase() ===
-                            defaultPair[0].address.toLowerCase() &&
-                        sortedTokens[1].toLowerCase() ===
-                            defaultPair[1].address.toLowerCase()
-                    ) {
-                        props.setSimpleRangeWidth(5);
-                    } else {
-                        props.setSimpleRangeWidth(10);
-                    }
+                    props.setSimpleRangeWidth(defaultRangeWidth);
                 }
 
                 setBaseTokenAddress(sortedTokens[0]);

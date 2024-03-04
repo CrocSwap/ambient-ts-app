@@ -93,7 +93,7 @@ function RangesMenu(props: propsIF) {
 
     const { isUserConnected } = useContext(UserDataContext);
 
-    const { tokenA, tokenB } = useContext(TradeDataContext);
+    const { tokenA, tokenB, defaultRangeWidth } = useContext(TradeDataContext);
     const tokenAAddress = tokenA.address;
     const tokenBAddress = tokenB.address;
 
@@ -157,7 +157,7 @@ function RangesMenu(props: propsIF) {
             })}
             onClick={() => {
                 setActiveMobileComponent('trade');
-                setSimpleRangeWidth(10);
+                setSimpleRangeWidth(defaultRangeWidth);
                 setCurrentRangeInReposition(position.positionId);
                 setCurrentRangeInAdd('');
             }}
