@@ -65,11 +65,16 @@ function Reposition() {
         crocEnv,
         activeNetwork,
         provider,
-        chainData: { blockExplorer, chainId },
         ethMainnetUsdPrice,
+        chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
-    const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
+    const {
+        gasPriceInGwei,
+        lastBlockNumber,
+        isActiveNetworkBlast,
+        isActiveNetworkScroll,
+    } = useContext(ChainDataContext);
     const { bypassConfirmRepo, repoSlippage } = useContext(
         UserPreferenceContext,
     );
@@ -627,11 +632,12 @@ function Reposition() {
         string | undefined
     >();
 
-    const isScroll = chainId === '0x82750' || chainId === '0x8274f';
     // const [l1GasFeePoolInGwei] = useState<number>(
     //     isScroll ? 0.0009 * 1e9 : 0,
     // );
-    const [extraL1GasFeePool] = useState(isScroll ? 2.75 : 0);
+    const [extraL1GasFeePool] = useState(
+        isActiveNetworkScroll ? 2.75 : isActiveNetworkBlast ? 2.5 : 0,
+    );
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
