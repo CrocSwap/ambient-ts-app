@@ -109,8 +109,15 @@ export const ChainDataContextProvider = (props: {
     }, [chainData.nodeUrl, BLOCK_NUM_POLL_MS]);
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
+
+    const wsUrl =
+        chainData.wsUrl?.toLowerCase().includes('infura') &&
+        process.env.REACT_APP_INFURA_KEY
+            ? chainData.wsUrl.slice(0, -32) + process.env.REACT_APP_INFURA_KEY
+            : chainData.wsUrl;
+
     const { sendMessage: sendBlockHeaderSub, lastMessage: lastNewHeadMessage } =
-        useWebSocket(chainData.wsUrl || null, {
+        useWebSocket(wsUrl || null, {
             onOpen: () => {
                 sendBlockHeaderSub(
                     '{"jsonrpc":"2.0","method":"eth_subscribe","params":["newHeads"],"id":5}',
