@@ -49,6 +49,11 @@ export function lookupChainId(
         case '0x82750':
             chainIdHex = '0x82750';
             break;
+        case 'blast':
+        case '81457':
+        case '0x13e31':
+            chainIdHex = '0x13e31';
+            break;
     }
     // output variable
     let output: string | number | undefined;

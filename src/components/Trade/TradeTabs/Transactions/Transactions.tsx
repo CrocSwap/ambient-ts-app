@@ -121,14 +121,8 @@ function Transactions(props: propsIF) {
             isAccountView
                 ? activeAccountTransactionData || []
                 : !showAllData
-                ? userTransactionsByPool.changes.filter(
-                      (tx) =>
-                          tx.changeType !== 'fill' && tx.changeType !== 'cross',
-                  )
-                : transactionsByPool.changes.filter(
-                      (tx) =>
-                          tx.changeType !== 'fill' && tx.changeType !== 'cross',
-                  ),
+                ? userTransactionsByPool.changes
+                : transactionsByPool.changes,
         [
             showAllData,
             activeAccountTransactionData,
@@ -426,18 +420,18 @@ function Transactions(props: propsIF) {
     const [page, setPage] = useState(1);
     const resetPageToFirst = () => setPage(1);
 
-    const isScreenShort =
-        (isAccountView && useMediaQuery('(max-height: 900px)')) ||
-        (!isAccountView && useMediaQuery('(max-height: 700px)'));
+    // const isScreenShort =
+    //     (isAccountView && useMediaQuery('(max-height: 900px)')) ||
+    //     (!isAccountView && useMediaQuery('(max-height: 700px)'));
 
-    const isScreenTall =
-        (isAccountView && useMediaQuery('(min-height: 1100px)')) ||
-        (!isAccountView && useMediaQuery('(min-height: 1000px)'));
+    // const isScreenTall =
+    //     (isAccountView && useMediaQuery('(min-height: 1100px)')) ||
+    //     (!isAccountView && useMediaQuery('(min-height: 1000px)'));
 
     const _DATA = usePagination(
         sortedTransactions,
-        isScreenShort,
-        isScreenTall,
+        // isScreenShort,
+        // isScreenTall,
     );
 
     const {

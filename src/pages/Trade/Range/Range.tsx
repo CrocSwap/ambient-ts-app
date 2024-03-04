@@ -812,8 +812,12 @@ function Range() {
     ] = useState<number>(0.0007);
 
     const isScroll = chainId === '0x82750' || chainId === '0x8274f';
-    const [l1GasFeePoolInGwei] = useState<number>(isScroll ? 0.0009 * 1e9 : 0);
-    const [extraL1GasFeePool] = useState(isScroll ? 2.3 : 0);
+    const [l1GasFeePoolInGwei] = useState<number>(
+        isScroll ? 0.0004 * 1e9 : isActiveNetworkBlast ? 0.00025 * 1e9 : 0,
+    );
+    const [extraL1GasFeePool] = useState(
+        isScroll ? 1.5 : isActiveNetworkBlast ? 0.5 : 0,
+    );
 
     const amountToReduceNativeTokenQty =
         chainId === '0x82750' || chainId === '0x8274f'

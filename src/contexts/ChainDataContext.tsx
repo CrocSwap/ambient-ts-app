@@ -30,6 +30,7 @@ interface ChainDataContextIF {
     client: Client;
     connectedUserXp: UserXpDataIF;
     isActiveNetworkBlast: boolean;
+    isActiveNetworkScroll: boolean;
     isActiveNetworkL2: boolean;
 }
 
@@ -56,6 +57,10 @@ export const ChainDataContextProvider = (props: {
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
 
     const isActiveNetworkBlast = ['0x13e31', '0xa0c71fd'].includes(
+        chainData.chainId,
+    );
+
+    const isActiveNetworkScroll = ['0x82750', '0x8274f'].includes(
         chainData.chainId,
     );
 
@@ -104,8 +109,15 @@ export const ChainDataContextProvider = (props: {
     }, [chainData.nodeUrl, BLOCK_NUM_POLL_MS]);
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
+
+    const wsUrl =
+        chainData.wsUrl?.toLowerCase().includes('infura') &&
+        process.env.REACT_APP_INFURA_KEY
+            ? chainData.wsUrl.slice(0, -32) + process.env.REACT_APP_INFURA_KEY
+            : chainData.wsUrl;
+
     const { sendMessage: sendBlockHeaderSub, lastMessage: lastNewHeadMessage } =
-        useWebSocket(chainData.wsUrl || null, {
+        useWebSocket(wsUrl || null, {
             onOpen: () => {
                 sendBlockHeaderSub(
                     '{"jsonrpc":"2.0","method":"eth_subscribe","params":["newHeads"],"id":5}',
@@ -165,25 +177,36 @@ export const ChainDataContextProvider = (props: {
                 client
             ) {
                 try {
-                    const tokenBalances: TokenIF[] =
-                        await cachedFetchTokenBalances(
-                            userAddress,
-                            chainData.chainId,
-                            everyFiveMinutes,
-                            cachedTokenDetails,
-                            crocEnv,
-                            activeNetwork.graphCacheUrl,
-                            client,
-                        );
-                    const tokensWithLogos = tokenBalances.map((token) => {
-                        const oldToken: TokenIF | undefined =
-                            tokens.getTokenByAddress(token.address);
-                        const newToken = { ...token };
-                        newToken.name = oldToken ? oldToken.name : '';
-                        newToken.logoURI = oldToken ? oldToken.logoURI : '';
-                        return newToken;
-                    });
-                    setTokenBalances(tokensWithLogos);
+                    // wait for 5 seconds before fetching token balances
+                    setTimeout(() => {
+                        (async () => {
+                            const tokenBalances: TokenIF[] =
+                                await cachedFetchTokenBalances(
+                                    userAddress,
+                                    chainData.chainId,
+                                    everyFiveMinutes,
+                                    cachedTokenDetails,
+                                    crocEnv,
+                                    activeNetwork.graphCacheUrl,
+                                    client,
+                                );
+                            const tokensWithLogos = tokenBalances.map(
+                                (token) => {
+                                    const oldToken: TokenIF | undefined =
+                                        tokens.getTokenByAddress(token.address);
+                                    const newToken = { ...token };
+                                    newToken.name = oldToken
+                                        ? oldToken.name
+                                        : '';
+                                    newToken.logoURI = oldToken
+                                        ? oldToken.logoURI
+                                        : '';
+                                    return newToken;
+                                },
+                            );
+                            setTokenBalances(tokensWithLogos);
+                        })();
+                    }, 5000);
                 } catch (error) {
                     // setTokenBalances(undefined);
                     console.error({ error });
@@ -231,6 +254,7 @@ export const ChainDataContextProvider = (props: {
         connectedUserXp,
         setGasPriceinGwei,
         isActiveNetworkBlast,
+        isActiveNetworkScroll,
         client,
         isActiveNetworkL2,
     };
