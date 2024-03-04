@@ -33,7 +33,7 @@ function RepositionHeader(props: propsIF) {
     const { bypassConfirmRepo, repoSlippage } = useContext(
         UserPreferenceContext,
     );
-    const { defaultRangeWidth } = useContext(TradeDataContext);
+    const { defaultRangeWidthForActivePool } = useContext(TradeDataContext);
 
     const [isOpen, openModal, closeModal] = useModal();
 
@@ -63,8 +63,8 @@ function RepositionHeader(props: propsIF) {
                     className={styles.close_icon}
                     onClick={() => {
                         setAdvancedMode(false);
-                        setRangeWidthPercentage(defaultRangeWidth);
-                        setSimpleRangeWidth(defaultRangeWidth);
+                        setRangeWidthPercentage(defaultRangeWidthForActivePool);
+                        setSimpleRangeWidth(defaultRangeWidthForActivePool);
                         navigate(exitPath, { replace: true });
                         resetTxHash();
                         setCurrentRangeInReposition('');

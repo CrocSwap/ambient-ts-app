@@ -1,7 +1,12 @@
 import React, { createContext, useEffect, useMemo } from 'react';
 import { NetworkIF, TokenIF } from '../ambient-utils/types';
 import { ChainSpec, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
-import { getDefaultPairForChain, goerliETH } from '../ambient-utils/constants';
+import {
+    blastETH,
+    blastUSDB,
+    getDefaultPairForChain,
+    goerliETH,
+} from '../ambient-utils/constants';
 import { useAppChain } from '../App/hooks/useAppChain';
 
 export interface TradeDataContextIF {
@@ -42,7 +47,12 @@ export interface TradeDataContextIF {
     isWalletChainSupported: boolean;
     activeNetwork: NetworkIF;
     chooseNetwork: (network: NetworkIF) => void;
-    defaultRangeWidth: number;
+    defaultRangeWidthForActivePool: number;
+    getDefaultRangeWidthForTokenPair: (
+        chainId: string,
+        baseAddress: string,
+        quoteAddress: string,
+    ) => number;
 }
 
 export const TradeDataContext = createContext<TradeDataContextIF>(
@@ -129,26 +139,27 @@ export const TradeDataContextProvider = (props: {
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = React.useState(0);
     const [slippageTolerance, setSlippageTolerance] = React.useState(0.5);
 
-    const isPoolBlastEthUSDB = useMemo(() => {
-        return (
-            chainData.chainId === '0x13e31' &&
-            baseToken.address.toLowerCase() ===
-                dfltTokenA.address.toLowerCase() &&
-            quoteToken.address.toLowerCase() ===
-                dfltTokenB.address.toLowerCase()
-        );
-    }, [
-        baseToken.address +
-            quoteToken.address +
-            chainData.chainId +
-            dfltTokenA +
-            dfltTokenB,
-    ]);
-
-    const defaultRangeWidth = useMemo(() => {
+    const getDefaultRangeWidthForTokenPair = (
+        chainId: string,
+        baseAddress: string,
+        quoteAddress: string,
+    ) => {
+        const isPoolBlastEthUSDB =
+            chainId === '0x13e31' &&
+            baseAddress.toLowerCase() === blastETH.address.toLowerCase() &&
+            quoteAddress.toLowerCase() === blastUSDB.address.toLowerCase();
         const defaultWidth = isPoolBlastEthUSDB ? 5 : 10;
         return defaultWidth;
-    }, [isPoolBlastEthUSDB]);
+    };
+
+    const defaultRangeWidthForActivePool = useMemo(() => {
+        const defaultWidth = getDefaultRangeWidthForTokenPair(
+            chainData.chainId,
+            baseToken.address,
+            quoteToken.address,
+        );
+        return defaultWidth;
+    }, [baseToken.address + quoteToken.address + chainData.chainId]);
 
     const tradeDataContext = {
         tokenA,
@@ -184,7 +195,8 @@ export const TradeDataContextProvider = (props: {
         isWalletChainSupported,
         activeNetwork,
         chooseNetwork,
-        defaultRangeWidth,
+        defaultRangeWidthForActivePool,
+        getDefaultRangeWidthForTokenPair,
     };
 
     return (

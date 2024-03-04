@@ -173,7 +173,7 @@ function Reposition() {
         tokenB,
         isTokenABase,
         poolPriceNonDisplay: currentPoolPriceNonDisplay,
-        defaultRangeWidth,
+        getDefaultRangeWidthForTokenPair,
     } = useContext(TradeDataContext);
 
     const currentPoolPriceTick =
@@ -224,8 +224,13 @@ function Reposition() {
         closeModal();
     };
 
-    const [rangeWidthPercentage, setRangeWidthPercentage] =
-        useState(defaultRangeWidth);
+    const [rangeWidthPercentage, setRangeWidthPercentage] = useState(
+        getDefaultRangeWidthForTokenPair(
+            position.chainId,
+            position.base.toLowerCase(),
+            position.quote.toLowerCase(),
+        ),
+    );
 
     const [pinnedLowTick, setPinnedLowTick] = useState(0);
     const [pinnedHighTick, setPinnedHighTick] = useState(0);
@@ -237,7 +242,13 @@ function Reposition() {
     }, []);
 
     useEffect(() => {
-        setSimpleRangeWidth(defaultRangeWidth);
+        setSimpleRangeWidth(
+            getDefaultRangeWidthForTokenPair(
+                position.chainId,
+                position.base.toLowerCase(),
+                position.quote.toLowerCase(),
+            ),
+        );
         setNewRepositionTransactionHash('');
     }, [position]);
 
@@ -250,10 +261,6 @@ function Reposition() {
             if (sliderInput) sliderInput.value = simpleRangeWidth.toString();
         }
     }, [simpleRangeWidth]);
-
-    useEffect(() => {
-        setSimpleRangeWidth(defaultRangeWidth);
-    }, [defaultRangeWidth]);
 
     useEffect(() => {
         if (!position) {

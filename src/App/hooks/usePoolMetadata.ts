@@ -62,7 +62,8 @@ interface PoolParamsHookIF {
 
 // Hooks to update metadata and volume/TVL/liquidity curves on a per-pool basis
 export function usePoolMetadata(props: PoolParamsHookIF) {
-    const { tokenA, tokenB, defaultRangeWidth } = useContext(TradeDataContext);
+    const { tokenA, tokenB, defaultRangeWidthForActivePool } =
+        useContext(TradeDataContext);
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const {
         setUserPositionsByPool,
@@ -141,7 +142,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     setAdvancedLowTick(0);
                     setAdvancedHighTick(0);
                     setAdvancedMode(false);
-                    props.setSimpleRangeWidth(defaultRangeWidth);
+                    props.setSimpleRangeWidth(defaultRangeWidthForActivePool);
                 }
 
                 setBaseTokenAddress(sortedTokens[0]);
