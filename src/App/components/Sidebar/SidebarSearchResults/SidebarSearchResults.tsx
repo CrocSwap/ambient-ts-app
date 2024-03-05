@@ -20,7 +20,6 @@ interface propsIF {
 export default function SidebarSearchResults(props: propsIF) {
     const { searchData, cachedPoolStatsFetch, cachedFetchTokenPrice } = props;
     const { isUserConnected } = useContext(UserDataContext);
-
     return (
         <SearchResultsContainer
             flexDirection='column'
@@ -48,7 +47,7 @@ export default function SidebarSearchResults(props: propsIF) {
                     <PositionsSearchResults
                         searchedPositions={searchData.positions}
                     />
-                    <WalletSearchResults searchedWallets={searchData.wallet} />
+                    <WalletSearchResults searchedWallets={searchData.wallets} />
                 </>
             )}
         </SearchResultsContainer>

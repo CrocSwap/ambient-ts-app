@@ -1,8 +1,7 @@
-import { TransactionServerIF } from '../../../../ambient-utils/types';
 import { FlexContainer } from '../../../../styled/Common';
 
 interface propsIF {
-    searchedWallets: TransactionServerIF | null;
+    searchedWallets: string[] | null;
 }
 
 export default function WalletSearchResults(props: propsIF) {

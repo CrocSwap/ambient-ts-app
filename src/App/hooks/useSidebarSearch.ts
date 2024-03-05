@@ -34,7 +34,7 @@ export interface sidebarSearchIF {
     positions: PositionIF[];
     txs: TransactionIF[];
     limits: LimitOrderIF[];
-    wallet: TransactionServerIF | null;
+    wallets: string[] | null;
 }
 
 export const useSidebarSearch = (
@@ -331,8 +331,7 @@ export const useSidebarSearch = (
     }, [limitOrderList.length, validatedInput]);
 
     // data returned when querying address as a wallet
-    const [outputWallet, setOutputWallet] =
-        useState<TransactionServerIF | null>(null);
+    const [outputWallets, setOutputWallets] = useState<string[] | null>(null);
 
     // environmental data needed for wallet query
     const { activeNetwork, chainData } = useContext(CrocEnvContext);
@@ -341,7 +340,6 @@ export const useSidebarSearch = (
     useEffect(() => {
         // fn to construct and query an endpoint
         function fetchWallet(): Promise<void> {
-            // logic to construct an endpoint for query
             let walletEndpoint: string =
                 GCGO_OVERRIDE_URL ?? activeNetwork.graphCacheUrl;
             walletEndpoint += '/user_txs?';
@@ -357,18 +355,17 @@ export const useSidebarSearch = (
                     // infer from data whether or not address is a wallet
                     const isWallet = !!response.data;
                     // send data to state if wallet, otherwise nullify state
-                    setOutputWallet(isWallet ? response : null);
-                    console.log(response);
+                    setOutputWallets(isWallet ? [validatedInput] : null);
                 })
                 .catch((err) => {
                     IS_LOCAL_ENV && console.warn(err);
-                    setOutputWallet(null);
+                    setOutputWallets(null);
                 });
         }
         // logic router to only run a query if input validates as an address
         // if input validates, run the query (results may still be negative)
         // if input does not validate, do not query and nullify any prior data
-        searchAs !== 'address' ? setOutputWallet(null) : fetchWallet();
+        searchAs !== 'address' ? setOutputWallets(null) : fetchWallet();
     }, [validatedInput]);
 
     return {
@@ -380,6 +377,6 @@ export const useSidebarSearch = (
         positions: outputPositions,
         txs: outputTxs,
         limits: outputLimits,
-        wallet: outputWallet,
+        wallets: outputWallets,
     };
 };
