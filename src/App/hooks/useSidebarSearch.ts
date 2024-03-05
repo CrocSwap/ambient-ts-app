@@ -52,6 +52,9 @@ export const useSidebarSearch = (
 ): sidebarSearchIF => {
     const { poolList } = useContext(PoolContext);
 
+    // needed to resolve ENS addresses entered by user
+    const { mainnetProvider } = useContext(CrocEnvContext);
+
     // raw user input from the DOM
     const [rawInput, setRawInput] = useState<string>('');
 
@@ -72,7 +75,7 @@ export const useSidebarSearch = (
     }, [rawInput]);
 
     // search type ➜ presumed type of input provided by user
-    type searchType = 'address' | 'nameOrSymbol' | null;
+    type searchType = 'address' | 'nameOrSymbol' | 'ens' | null;
     const [searchAs, setSearchAs] = useState<searchType>(null);
 
     // value delineating which content set the DOM should render, this prevents a
@@ -89,6 +92,8 @@ export const useSidebarSearch = (
             (cleanInput.length === 40 && !cleanInput.startsWith('0x'))
         ) {
             setSearchAs('address');
+        } else if (dbInput.endsWith('.eth')) {
+            setSearchAs('ens');
         } else if (cleanInput.length > 0) {
             setSearchAs('nameOrSymbol');
             setContentGroup('token');
@@ -168,6 +173,7 @@ export const useSidebarSearch = (
             case 'nameOrSymbol':
                 filteredPools = searchByNameOrSymbol(validatedInput);
                 break;
+            case 'ens':
             case null:
             default:
                 filteredPools = noSearch();
@@ -248,6 +254,7 @@ export const useSidebarSearch = (
             case 'nameOrSymbol':
                 filteredRangePositions = searchByNameOrSymbol(validatedInput);
                 break;
+            case 'ens':
             case null:
             default:
                 filteredRangePositions = noSearch();
@@ -290,6 +297,7 @@ export const useSidebarSearch = (
             case 'nameOrSymbol':
                 filteredTxs = searchByNameOrSymbol(validatedInput);
                 break;
+            case 'ens':
             case null:
             default:
                 filteredTxs = noSearch();
@@ -336,6 +344,7 @@ export const useSidebarSearch = (
             case 'nameOrSymbol':
                 filteredLimits = searchByNameOrSymbol(validatedInput);
                 break;
+            case 'ens':
             case null:
             default:
                 filteredLimits = noSearch();
@@ -382,10 +391,38 @@ export const useSidebarSearch = (
                     setOutputWallets([]);
                 });
         }
+        // fn to query an ENS address
+        function fetchENS() {
+            if (mainnetProvider) {
+                mainnetProvider
+                    .resolveName(validatedInput)
+                    .then((res) => {
+                        console.log(res);
+                        return res;
+                    })
+                    .then((res) => {
+                        // res && setOutputWallets([res])
+                        if (res) {
+                            setOutputWallets([res]);
+                            setContentGroup('wallet');
+                        }
+                    })
+                    .catch((err) => {
+                        IS_LOCAL_ENV && console.warn(err);
+                        setOutputWallets([]);
+                    });
+            }
+        }
         // logic router to only run a query if input validates as an address
         // if input validates, run the query (results may still be negative)
         // if input does not validate, do not query and nullify any prior data
-        searchAs !== 'address' ? setOutputWallets([]) : fetchWallet();
+        if (searchAs === 'address') {
+            fetchWallet();
+        } else if (searchAs === 'ens') {
+            fetchENS();
+        } else {
+            setOutputWallets([]);
+        }
     }, [validatedInput]);
 
     return {
