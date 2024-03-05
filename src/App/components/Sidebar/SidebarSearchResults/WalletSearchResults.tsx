@@ -1,3 +1,4 @@
+import { trimString } from '../../../../ambient-utils/dataLayer';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { Results } from '../../../../styled/Components/Sidebar';
 
@@ -28,7 +29,7 @@ export default function WalletSearchResults(props: propsIF) {
                     padding='4px'
                     onClick={() => console.log(`clicked wallet ${wallet}`)}
                 >
-                    {wallet}
+                    {trimString(wallet, 20, 18)}
                 </Results>
             ))}
         </FlexContainer>
