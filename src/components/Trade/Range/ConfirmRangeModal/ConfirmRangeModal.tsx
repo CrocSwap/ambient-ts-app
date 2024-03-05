@@ -37,6 +37,7 @@ interface propsIF {
     tokenAQty: string;
     tokenBQty: string;
     onClose: () => void;
+    slippageTolerance: number;
 }
 
 function ConfirmRangeModal(props: propsIF) {
@@ -58,6 +59,7 @@ function ConfirmRangeModal(props: propsIF) {
         tokenAQty,
         tokenBQty,
         onClose = () => null,
+        slippageTolerance,
     } = props;
 
     const { tokenA, tokenB, isDenomBase } = useContext(TradeDataContext);
@@ -174,7 +176,8 @@ function ConfirmRangeModal(props: propsIF) {
                     </FlexContainer>
                 </GridContainer>
             </FeeTierDisplay>
-            {isAmbient || (
+
+            {
                 <SelectedRange
                     isDenomBase={isDenomBaseLocalToRangeConfirm}
                     setIsDenomBase={setIsDenomBaseocalToRangeConfirm}
@@ -184,8 +187,9 @@ function ConfirmRangeModal(props: propsIF) {
                     pinnedMinPriceDisplayTruncatedInQuote={memoMinPriceQuote}
                     pinnedMaxPriceDisplayTruncatedInBase={memoMaxPriceBase}
                     pinnedMaxPriceDisplayTruncatedInQuote={memoMaxPriceQuote}
+                    slippageTolerance={slippageTolerance}
                 />
-            )}
+            }
         </>
     );
 

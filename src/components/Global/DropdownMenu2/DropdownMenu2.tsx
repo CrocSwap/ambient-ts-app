@@ -1,9 +1,10 @@
-import { useState, useRef, ReactNode } from 'react';
+import { useState, useRef, ReactNode, useContext } from 'react';
 import { FaAngleDown } from 'react-icons/fa';
 import { dropdownAnimation } from '../../../utils/others/FramerMotionAnimations';
 import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { MenuContainer, Menu, MenuItem, Icon } from './DropdownMenu2.styles';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 // Interface for React functional components
 interface DropdownMenuPropsIF {
@@ -19,17 +20,27 @@ interface DropdownMenuPropsIF {
 export default function DropdownMenu2(props: DropdownMenuPropsIF) {
     const { title, children, marginTop, titleWidth, logo, left, right } = props;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+    const { appHeaderDropdown } = useContext(AppStateContext);
     const dropdownRefItem = useRef<HTMLDivElement>(null);
 
-    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-    const clickOutsideHandler = () => setIsMenuOpen(false);
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen);
+        if (!isMenuOpen) {
+            appHeaderDropdown.setIsActive(true);
+        } else appHeaderDropdown.setIsActive(false);
+    };
+    const clickOutsideHandler = () => {
+        setIsMenuOpen(false);
+    };
 
     UseOnClickOutside(dropdownRefItem, clickOutsideHandler);
 
     const dropdownMenuContent = (
         <MenuContainer
-            onClick={() => setIsMenuOpen(false)}
+            onClick={() => {
+                setIsMenuOpen(false);
+                appHeaderDropdown.setIsActive(false);
+            }}
             variants={dropdownAnimation}
             initial='hidden'
             animate='show'
@@ -45,7 +56,6 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
     );
 
     const desktopScreen = useMediaQuery('(min-width: 1020px)');
-
     return (
         <div ref={dropdownRefItem}>
             <Menu
@@ -69,24 +79,35 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
                             <img
                                 src={logo}
                                 alt={title}
-                                width='18px'
-                                height='18px'
-                                style={{ borderRadius: '50%' }}
+                                width={
+                                    title.includes('Scroll') ||
+                                    title.includes('Blast')
+                                        ? '20px'
+                                        : '15px'
+                                }
+                                height='20px'
+                                style={{
+                                    borderRadius: '50%',
+                                    marginLeft: '2px',
+                                }}
                             />
-                            {title}
+                            {title === 'Scroll Sepolia' ||
+                            title === 'Blast Sepolia'
+                                ? 'Sepolia'
+                                : title}
                         </Icon>
                     )}
                     {!desktopScreen && (
                         <img
                             src={logo}
                             alt={title}
-                            width='20px'
-                            height='20px'
-                            style={{ borderRadius: '50%' }}
+                            width='18px'
+                            height='18px'
+                            style={{ borderRadius: '50%', marginLeft: '2px' }}
                         />
                     )}
                 </MenuItem>
-                <FaAngleDown />
+                <FaAngleDown style={{ marginLeft: '4px', marginTop: '2px' }} />
             </Menu>
             {isMenuOpen && dropdownMenuContent}
         </div>
