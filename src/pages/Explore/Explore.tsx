@@ -1,17 +1,16 @@
 import { useContext, useEffect } from 'react';
-import { FiRefreshCw } from 'react-icons/fi';
 import TopPools from '../../components/Global/Analytics/TopPools';
 import { ExploreContext } from '../../contexts/ExploreContext';
+import styled from 'styled-components/macro';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
-import styled from 'styled-components/macro';
 
 export default function Explore() {
-    const { crocEnv, chainData } = useContext(CrocEnvContext);
-    // metadata only
-    const { poolList } = useContext(PoolContext);
     // full expanded data set
     const { pools } = useContext(ExploreContext);
+    const { crocEnv, chainData } = useContext(CrocEnvContext);
+    const { poolList } = useContext(PoolContext);
+
     const getLimitedPools = async (): Promise<void> => {
         if (crocEnv && poolList.length) {
             pools.getLimited(poolList, crocEnv, chainData.chainId);
@@ -41,15 +40,6 @@ export default function Explore() {
         <Section>
             <MainWrapper>
                 <TitleText>Top Pools on Ambient</TitleText>
-                <Refresh>
-                    <RefreshButton
-                        onClick={() => {
-                            getAllPools();
-                        }}
-                    >
-                        <RefreshIcon />
-                    </RefreshButton>
-                </Refresh>
             </MainWrapper>
             <TopPools allPools={pools.all} chainId={chainData.chainId} />
         </Section>
@@ -90,36 +80,4 @@ const TitleText = styled.h2`
     @media (max-width: 480px) {
         font-size: 20px;
     }
-`;
-const Refresh = styled.div`
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    font-size: var(--body-size);
-    font-style: italic;
-    color: var(--text1);
-    gap: 8px;
-`;
-const RefreshButton = styled.button`
-    width: 30px;
-    height: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--dark3);
-    border-radius: var(--border-radius);
-
-    border: none;
-    outline: none;
-`;
-
-// const RefreshText = styled.p`
-//     /* Hide the RefreshText on screens smaller than 600px */
-//     @media (max-width: 600px) {
-//         display: none;
-//     }
-// `;
-const RefreshIcon = styled(FiRefreshCw)`
-    font-size: var(--header2-size);
-    cursor: pointer;
 `;
