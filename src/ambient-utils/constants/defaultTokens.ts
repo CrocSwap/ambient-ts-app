@@ -136,7 +136,7 @@ export const blastWETH: TokenIF = {
     logoURI: '',
 };
 
-export const blastPump: TokenIF = {
+export const blastPUMP: TokenIF = {
     address: '0x216A5a1135A9dab49FA9Ad865E0f22FE22b5630A',
     chainId: 81457,
     decimals: 18,
@@ -146,7 +146,7 @@ export const blastPump: TokenIF = {
     logoURI: '',
 };
 
-export const blastOle: TokenIF = {
+export const blastOLE: TokenIF = {
     address: '0x73c369f61c90f03eb0dd172e95c90208a28dc5bc',
     chainId: 81457,
     decimals: 18,
@@ -156,7 +156,7 @@ export const blastOle: TokenIF = {
     logoURI: '',
 };
 
-export const blastVroom: TokenIF = {
+export const blastVROOM: TokenIF = {
     address: '0x891c9B37177Bdf8Edc891119C9d8aEefDa9A5246',
     chainId: 81457,
     decimals: 18,
@@ -232,7 +232,7 @@ export const mainnetDAI: TokenIF = {
     symbol: 'DAI',
 };
 
-export const mainnetRocketPool: TokenIF = {
+export const mainnetRPL: TokenIF = {
     address: '0xd33526068d116ce69f19a9ee46f0bd304f21a51f',
     chainId: 1,
     decimals: 18,
@@ -252,7 +252,7 @@ export const mainnetWstETH: TokenIF = {
     symbol: 'wstETH',
 };
 
-export const mainnetMatic: TokenIF = {
+export const mainnetMATIC: TokenIF = {
     address: '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0',
     chainId: 1,
     decimals: 18,
@@ -442,7 +442,7 @@ export const scrollwstETH: TokenIF = {
 export const scrollRocketPoolETH: TokenIF = {
     name: 'Rocket Pool ETH',
     address: '0x53878B874283351D26d206FA512aEcE1Bef6C0dD',
-    symbol: 'wstETH',
+    symbol: 'rETH',
     decimals: 18,
     chainId: 534352,
     logoURI: '',
@@ -543,9 +543,9 @@ export const defaultTokens: TokenIF[] = [
     mainnetFRAX,
     mainnetSYN,
     mainnetUSDT,
-    mainnetRocketPool,
+    mainnetRPL,
     mainnetWstETH,
-    mainnetMatic,
+    mainnetMATIC,
     blastETH,
     blastUSDB,
     blastMIA,
@@ -554,12 +554,12 @@ export const defaultTokens: TokenIF[] = [
     blastBAJA,
     blastBEPE,
     blastALIEN,
-    blastOle,
+    blastOLE,
     blastWETH,
-    blastPump,
+    blastPUMP,
     blastYES,
     blastPACM,
-    blastVroom,
+    blastVROOM,
     blastSepoliaETH,
     blastSepoliaUSDB,
     goerliETH,
