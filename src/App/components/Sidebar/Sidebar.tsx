@@ -50,7 +50,6 @@ import {
 } from '../../../styled/Components/Sidebar';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { FabPropsVariantOverrides } from '@mui/material';
 
 function Sidebar() {
     const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
@@ -77,91 +76,13 @@ function Sidebar() {
         .slice(0, 4);
     const mostRecentLimitOrders = _limitsByUser.slice(0, 4);
 
-    interface jsxMeta {
-        name: string;
-        icon: JSX.Element;
-        data: JSX.Element;
-    }
-
-    const recentPoolsData: jsxMeta[] = [
-        {
-            name: 'Recent Pools',
-            icon: <RecentPoolsIcon open={sidebar.isOpen} size={20} />,
-
-            data: (
-                <RecentPools
-                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    cachedFetchTokenPrice={cachedFetchTokenPrice}
-                />
-            ),
-        },
-    ];
-    const topPoolsSection: jsxMeta[] = [
-        {
-            name: 'Top Pools',
-            icon: <TopPoolsIcon open={sidebar.isOpen} size={20} />,
-            data: (
-                <TopPools
-                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    cachedFetchTokenPrice={cachedFetchTokenPrice}
-                />
-            ),
-        },
-    ];
-
-    const rangePositions: jsxMeta[] = [
-        {
-            name: 'Liquidity Positions',
-            icon: <RangesIcon open={sidebar.isOpen} size={20} />,
-            data: <SidebarRangePositions userPositions={mostRecentPositions} />,
-        },
-    ];
-
-    const recentLimitOrders: jsxMeta[] = [
-        {
-            name: 'Limit Orders',
-            icon: <LimitsIcon open={sidebar.isOpen} size={20} />,
-            data: (
-                <SidebarLimitOrders limitOrderByUser={mostRecentLimitOrders} />
-            ),
-        },
-    ];
-
-    const favoritePools: jsxMeta[] = [
-        {
-            name: 'Favorite Pools',
-            icon: <FavoritePoolsIcon open={sidebar.isOpen} size={20} />,
-
-            data: (
-                <FavoritePools
-                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    cachedFetchTokenPrice={cachedFetchTokenPrice}
-                />
-            ),
-        },
-    ];
-
-    const recentTransactions: jsxMeta[] = [
-        {
-            name: 'Transactions',
-            icon: <TransactionsIcon open={sidebar.isOpen} size={20} />,
-            data: (
-                <SidebarRecentTransactions
-                    mostRecentTransactions={mostRecentTxs}
-                />
-            ),
-        },
-    ];
-
+    // raw data processed according to search input from user
     const searchData: sidebarSearchIF = useSidebarSearch(
         _positionsByUser,
         _txsByUser,
         _limitsByUser,
         tokens,
     );
-
-    // ------------------------------------------
-    // ---------------------------Explore SEARCH CONTAINER-----------------------
 
     const focusInput = (): void => {
         const inputField = document.getElementById(
@@ -349,73 +270,88 @@ function Sidebar() {
 
     const regularSidebarDisplay: JSX.Element = (
         <ContentContainer flexDirection='column'>
-            {topPoolsSection.map((item, idx) => (
-                <SidebarAccordion
-                    sidebar={sidebar}
-                    shouldDisplayContentWhenUserNotLoggedIn={true}
-                    idx={idx}
-                    item={item}
-                    key={idx}
-                    openAllDefault={openAllDefault}
-                    isDefaultOverridden={isDefaultOverridden}
-                />
-            ))}
-            {favoritePools.map((item, idx) => (
-                <SidebarAccordion
-                    sidebar={sidebar}
-                    shouldDisplayContentWhenUserNotLoggedIn={true}
-                    idx={idx}
-                    item={item}
-                    key={idx}
-                    openAllDefault={openAllDefault}
-                    isDefaultOverridden={isDefaultOverridden}
-                />
-            ))}
-            {recentPoolsData.map((item, idx) => (
-                <SidebarAccordion
-                    sidebar={sidebar}
-                    shouldDisplayContentWhenUserNotLoggedIn={true}
-                    idx={idx}
-                    item={item}
-                    key={idx}
-                    openAllDefault={openAllDefault}
-                    isDefaultOverridden={isDefaultOverridden}
-                />
-            ))}
+            <SidebarAccordion
+                name='Top Pools'
+                icon={<TopPoolsIcon open={sidebar.isOpen} size={20} />}
+                data={
+                    <TopPools
+                        cachedPoolStatsFetch={cachedPoolStatsFetch}
+                        cachedFetchTokenPrice={cachedFetchTokenPrice}
+                    />
+                }
+                sidebar={sidebar}
+                shouldDisplayContentWhenUserNotLoggedIn={true}
+                openAllDefault={openAllDefault}
+                isDefaultOverridden={isDefaultOverridden}
+            />
+            <SidebarAccordion
+                name='Favorite Pools'
+                icon={<FavoritePoolsIcon open={sidebar.isOpen} size={20} />}
+                data={
+                    <FavoritePools
+                        cachedPoolStatsFetch={cachedPoolStatsFetch}
+                        cachedFetchTokenPrice={cachedFetchTokenPrice}
+                    />
+                }
+                sidebar={sidebar}
+                shouldDisplayContentWhenUserNotLoggedIn={true}
+                openAllDefault={openAllDefault}
+                isDefaultOverridden={isDefaultOverridden}
+            />
+            <SidebarAccordion
+                name='Recent Pools'
+                icon={<RecentPoolsIcon open={sidebar.isOpen} size={20} />}
+                data={
+                    <RecentPools
+                        cachedPoolStatsFetch={cachedPoolStatsFetch}
+                        cachedFetchTokenPrice={cachedFetchTokenPrice}
+                    />
+                }
+                sidebar={sidebar}
+                shouldDisplayContentWhenUserNotLoggedIn={true}
+                openAllDefault={openAllDefault}
+                isDefaultOverridden={isDefaultOverridden}
+            />
             <div style={{ margin: 'auto' }} />
-            {recentTransactions.map((item, idx) => (
-                <SidebarAccordion
-                    sidebar={sidebar}
-                    shouldDisplayContentWhenUserNotLoggedIn={false}
-                    idx={idx}
-                    item={item}
-                    key={idx}
-                    openAllDefault={openAllDefault}
-                    isDefaultOverridden={isDefaultOverridden}
-                />
-            ))}{' '}
-            {recentLimitOrders.map((item, idx) => (
-                <SidebarAccordion
-                    sidebar={sidebar}
-                    shouldDisplayContentWhenUserNotLoggedIn={false}
-                    idx={idx}
-                    item={item}
-                    key={idx}
-                    openAllDefault={openAllDefault}
-                    isDefaultOverridden={isDefaultOverridden}
-                />
-            ))}{' '}
-            {rangePositions.map((item, idx) => (
-                <SidebarAccordion
-                    sidebar={sidebar}
-                    shouldDisplayContentWhenUserNotLoggedIn={false}
-                    idx={idx}
-                    item={item}
-                    key={idx}
-                    openAllDefault={openAllDefault}
-                    isDefaultOverridden={isDefaultOverridden}
-                />
-            ))}
+            <SidebarAccordion
+                name='Transactions'
+                icon={<TransactionsIcon open={sidebar.isOpen} size={20} />}
+                data={
+                    <SidebarRecentTransactions
+                        mostRecentTransactions={mostRecentTxs}
+                    />
+                }
+                sidebar={sidebar}
+                shouldDisplayContentWhenUserNotLoggedIn={false}
+                openAllDefault={openAllDefault}
+                isDefaultOverridden={isDefaultOverridden}
+            />
+            <SidebarAccordion
+                name='Limit Orders'
+                icon={<LimitsIcon open={sidebar.isOpen} size={20} />}
+                data={
+                    <SidebarLimitOrders
+                        limitOrderByUser={mostRecentLimitOrders}
+                    />
+                }
+                sidebar={sidebar}
+                shouldDisplayContentWhenUserNotLoggedIn={false}
+                openAllDefault={openAllDefault}
+                isDefaultOverridden={isDefaultOverridden}
+            />
+            <SidebarAccordion
+                name='Liquidity Positions'
+                icon={<RangesIcon open={sidebar.isOpen} size={20} />}
+                data={
+                    <SidebarRangePositions
+                        userPositions={mostRecentPositions}
+                    />
+                }
+                sidebar={sidebar}
+                shouldDisplayContentWhenUserNotLoggedIn={false}
+                openAllDefault={openAllDefault}
+                isDefaultOverridden={isDefaultOverridden}
+            />
         </ContentContainer>
     );
 
