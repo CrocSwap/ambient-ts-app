@@ -19,6 +19,8 @@ interface propsIF {
     middleDisplayPrice: number;
     endDisplayPrice: number;
     onClose: () => void;
+    limitAllowed: boolean;
+    limitButtonErrorMessage: string;
 }
 
 export default function ConfirmLimitModal(props: propsIF) {
@@ -35,6 +37,8 @@ export default function ConfirmLimitModal(props: propsIF) {
         tokenAInputQty,
         tokenBInputQty,
         onClose = () => null,
+        limitAllowed,
+        limitButtonErrorMessage,
     } = props;
 
     const { poolPriceDisplay } = useContext(PoolContext);
@@ -54,13 +58,6 @@ export default function ConfirmLimitModal(props: propsIF) {
 
     const displayPoolPriceString = getFormattedNumber({
         value: displayPoolPriceWithDenom,
-    });
-
-    const localeSellString = getFormattedNumber({
-        value: parseFloat(tokenAInputQty),
-    });
-    const localeBuyString = getFormattedNumber({
-        value: parseFloat(tokenBInputQty),
     });
 
     const startPriceString = getFormattedNumber({
@@ -139,11 +136,14 @@ export default function ConfirmLimitModal(props: propsIF) {
             txErrorMessage={txErrorMessage}
             statusText={
                 !showConfirmation
-                    ? 'Submit Limit Order'
-                    : `Submitting Limit Order to Swap ${localeSellString} ${tokenA.symbol} for ${localeBuyString} ${tokenB.symbol}`
+                    ? limitAllowed
+                        ? 'Submit Limit Order'
+                        : limitButtonErrorMessage
+                    : `Submitting Limit Order to Swap ${tokenAInputQty} ${tokenA.symbol} for ${tokenBInputQty} ${tokenB.symbol}`
             }
             showConfirmation={showConfirmation}
             resetConfirmation={resetConfirmation}
+            isAllowed={limitAllowed}
         />
     );
 }

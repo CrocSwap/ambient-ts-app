@@ -237,7 +237,10 @@ function ChatPanel(props: propsIF) {
     const header = (
         <div
             className={styles.chat_header}
-            onClick={() => setIsChatOpen(!isChatOpen)}
+            onClick={() => {
+                setIsChatOpen(!isChatOpen);
+                // dismissSideBannerPopup && dismissSideBannerPopup();
+            }}
         >
             <h2 className={styles.chat_title}>Trollbox</h2>
             <section style={{ paddingRight: '10px' }}>
@@ -407,7 +410,7 @@ function ChatPanel(props: propsIF) {
                 chatNotification={chatNotification}
                 messageInput={messageInput}
                 userName={
-                    ens === null || ens === ''
+                    userAddress && !ens
                         ? trimString(userAddress as string, 6, 0, '…')
                         : (ens as string)
                 }

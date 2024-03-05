@@ -66,7 +66,8 @@ export default function Withdraw(props: propsIF) {
         setTokenModalOpen,
     } = props;
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
-    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
+        useContext(ChainDataContext);
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -207,6 +208,7 @@ export default function Withdraw(props: propsIF) {
                 addPendingTx(tx?.hash);
                 if (tx?.hash)
                     addTransactionByType({
+                        userAddress: userAddress || '',
                         txHash: tx.hash,
                         txType: 'Withdraw',
                         txDescription: `Withdrawal of ${selectedToken.symbol}`,
@@ -330,6 +332,9 @@ export default function Withdraw(props: propsIF) {
                 setInputValue(tokenExchangeDepositsDisplay);
         }
     };
+    const [extraL1GasFeeWithdraw] = useState(
+        isActiveNetworkScroll ? 1.2 : isActiveNetworkBlast ? 0.25 : 0,
+    );
 
     const [withdrawGasPriceinDollars, setWithdrawGasPriceinDollars] = useState<
         string | undefined
@@ -350,17 +355,17 @@ export default function Withdraw(props: propsIF) {
 
             setWithdrawGasPriceinDollars(
                 getFormattedNumber({
-                    value: gasPriceInDollarsNum,
+                    value: gasPriceInDollarsNum + extraL1GasFeeWithdraw,
                     isUSD: true,
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth]);
+    }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth, extraL1GasFeeWithdraw]);
 
     return (
         <FlexContainer flexDirection='column' gap={16} padding={'16px'}>
             <Text fontSize='body' color='text2'>
-                Withdraw tokens from the exchange to your wallet
+                Withdraw tokens from the exchange to your wallet:
             </Text>
             {toggleContent}
             {transferAddressOrNull}

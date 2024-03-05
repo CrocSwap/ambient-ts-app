@@ -18,8 +18,9 @@ import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
 import { Client } from '@covalenthq/client-sdk';
-import { UserDataContext } from './UserDataContext';
+import { UserDataContext, UserXpDataIF } from './UserDataContext';
 import { TokenBalanceContext } from './TokenBalanceContext';
+import { fetchBlockNumber, fetchUserXpData } from '../ambient-utils/api';
 
 interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
@@ -27,6 +28,11 @@ interface ChainDataContextIF {
     lastBlockNumber: number;
     setLastBlockNumber: Dispatch<SetStateAction<number>>;
     client: Client;
+    connectedUserXp: UserXpDataIF;
+    isActiveNetworkBlast: boolean;
+    isActiveNetworkScroll: boolean;
+    isActiveNetworkMainnet: boolean;
+    isActiveNetworkL2: boolean;
 }
 
 export const ChainDataContext = createContext<ChainDataContextIF>(
@@ -51,6 +57,26 @@ export const ChainDataContextProvider = (props: {
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
 
+    const isActiveNetworkBlast = ['0x13e31', '0xa0c71fd'].includes(
+        chainData.chainId,
+    );
+
+    const isActiveNetworkScroll = ['0x82750', '0x8274f'].includes(
+        chainData.chainId,
+    );
+    const isActiveNetworkMainnet = ['0x1'].includes(chainData.chainId);
+
+    // array of network IDs for supported L2 networks
+    const L2_NETWORKS: string[] = [
+        '0x13e31',
+        '0xa0c71fd',
+        '0x82750',
+        '0x8274f',
+    ];
+
+    // boolean representing whether the active network is an L2
+    const isActiveNetworkL2: boolean = L2_NETWORKS.includes(chainData.chainId);
+
     async function pollBlockNum(): Promise<void> {
         // if default RPC is Infura, use key from env variable
         const nodeUrl =
@@ -59,30 +85,14 @@ export const ChainDataContextProvider = (props: {
                 ? chainData.nodeUrl.slice(0, -32) +
                   process.env.REACT_APP_INFURA_KEY
                 : chainData.nodeUrl;
-
-        return fetch(nodeUrl, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                jsonrpc: '2.0',
-                method: 'eth_blockNumber',
-                params: [],
-                id: 'app-blockNum-sub', // Arbitary string (see JSON-RPC spec)
-            }),
-        })
-            .then((response) => response?.json())
-            .then((json) => json?.result)
-            .then(parseInt)
-            .then((blockNum) => {
-                if (blockNum > lastBlockNumber) {
-                    setLastBlockNumber(blockNum);
-                }
-            })
-            .catch(console.error);
+        try {
+            const lastBlockNumber = await fetchBlockNumber(nodeUrl);
+            if (lastBlockNumber > 0) setLastBlockNumber(lastBlockNumber);
+        } catch (error) {
+            console.error({ error });
+        }
     }
+
     const BLOCK_NUM_POLL_MS = 2000;
     useEffect(() => {
         (async () => {
@@ -101,8 +111,15 @@ export const ChainDataContextProvider = (props: {
     }, [chainData.nodeUrl, BLOCK_NUM_POLL_MS]);
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
+
+    const wsUrl =
+        chainData.wsUrl?.toLowerCase().includes('infura') &&
+        process.env.REACT_APP_INFURA_KEY
+            ? chainData.wsUrl.slice(0, -32) + process.env.REACT_APP_INFURA_KEY
+            : chainData.wsUrl;
+
     const { sendMessage: sendBlockHeaderSub, lastMessage: lastNewHeadMessage } =
-        useWebSocket(chainData.wsUrl || null, {
+        useWebSocket(wsUrl || null, {
             onOpen: () => {
                 sendBlockHeaderSub(
                     '{"jsonrpc":"2.0","method":"eth_subscribe","params":["newHeads"],"id":5}',
@@ -162,28 +179,38 @@ export const ChainDataContextProvider = (props: {
                 client
             ) {
                 try {
-                    const tokenBalances: TokenIF[] =
-                        await cachedFetchTokenBalances(
-                            userAddress,
-                            chainData.chainId,
-                            everyFiveMinutes,
-                            cachedTokenDetails,
-                            crocEnv,
-                            activeNetwork.graphCacheUrl,
-                            client,
-                        );
-                    const tokensWithLogos = tokenBalances.map((token) => {
-                        const oldToken: TokenIF | undefined =
-                            tokens.getTokenByAddress(token.address);
-                        const newToken = { ...token };
-                        newToken.name = oldToken ? oldToken.name : '';
-                        newToken.logoURI = oldToken ? oldToken.logoURI : '';
-                        return newToken;
-                    });
-
-                    setTokenBalances(tokensWithLogos);
+                    // wait for 7 seconds before fetching token balances
+                    setTimeout(() => {
+                        (async () => {
+                            const tokenBalances: TokenIF[] =
+                                await cachedFetchTokenBalances(
+                                    userAddress,
+                                    chainData.chainId,
+                                    everyFiveMinutes,
+                                    cachedTokenDetails,
+                                    crocEnv,
+                                    activeNetwork.graphCacheUrl,
+                                    client,
+                                );
+                            const tokensWithLogos = tokenBalances.map(
+                                (token) => {
+                                    const oldToken: TokenIF | undefined =
+                                        tokens.getTokenByAddress(token.address);
+                                    const newToken = { ...token };
+                                    newToken.name = oldToken
+                                        ? oldToken.name
+                                        : '';
+                                    newToken.logoURI = oldToken
+                                        ? oldToken.logoURI
+                                        : '';
+                                    return newToken;
+                                },
+                            );
+                            setTokenBalances(tokensWithLogos);
+                        })();
+                    }, 7000);
                 } catch (error) {
-                    setTokenBalances([]);
+                    // setTokenBalances(undefined);
                     console.error({ error });
                 }
             }
@@ -198,12 +225,41 @@ export const ChainDataContextProvider = (props: {
         activeNetwork.graphCacheUrl,
     ]);
 
+    const [connectedUserXp, setConnectedUserXp] = React.useState<UserXpDataIF>({
+        dataReceived: false,
+        data: undefined,
+    });
+
+    React.useEffect(() => {
+        if (userAddress) {
+            fetchUserXpData({
+                user: userAddress,
+                chainId: chainData.chainId,
+            }).then((data) => {
+                setConnectedUserXp({
+                    dataReceived: true,
+                    data: data ? data : undefined,
+                });
+            });
+        } else {
+            setConnectedUserXp({
+                dataReceived: false,
+                data: undefined,
+            });
+        }
+    }, [userAddress]);
+
     const chainDataContext = {
         lastBlockNumber,
         setLastBlockNumber,
         gasPriceInGwei,
+        connectedUserXp,
         setGasPriceinGwei,
+        isActiveNetworkBlast,
+        isActiveNetworkScroll,
+        isActiveNetworkMainnet,
         client,
+        isActiveNetworkL2,
     };
 
     return (

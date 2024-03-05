@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 // START: Import JSX Components
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
@@ -10,20 +10,13 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../ambient-utils/constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
-import {
-    getFormattedNumber,
-    exponentialNumRegEx,
-    getUnicodeCharacter,
-    getMoneynessRank,
-    truncateDecimals,
-} from '../../ambient-utils/dataLayer';
 
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import InitPoolTokenSelect from '../../components/Global/InitPoolTokenSelect/InitPoolTokenSelect';
 
 import { PoolContext } from '../../contexts/PoolContext';
 import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
-import { LuEdit2 } from 'react-icons/lu';
+import { LuPencil } from 'react-icons/lu';
 import { FiExternalLink, FiRefreshCw } from 'react-icons/fi';
 import { FlexContainer, Text } from '../../styled/Common';
 import Toggle from '../../components/Form/Toggle';
@@ -46,11 +39,16 @@ import { CurrencyQuantityInput } from '../../styled/Components/TradeModules';
 import RangeTokenInput from '../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
 import { useCreateRangePosition } from '../../App/hooks/useCreateRangePosition';
 import {
+    getFormattedNumber,
+    exponentialNumRegEx,
+    getUnicodeCharacter,
+    getMoneynessRank,
+    truncateDecimals,
     getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
     roundDownTick,
     roundUpTick,
-} from '../Trade/Range/rangeFunctions';
+} from '../../ambient-utils/dataLayer';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import {
     DEFAULT_MAX_PRICE_DIFF_PERCENTAGE,
@@ -77,7 +75,8 @@ import { RangeContext } from '../../contexts/RangeContext';
 import {
     GAS_DROPS_ESTIMATE_INIT_WITH_POOL,
     GAS_DROPS_ESTIMATE_INIT_WITHOUT_POOL,
-    RANGE_BUFFER_MULTIPLIER,
+    RANGE_BUFFER_MULTIPLIER_MAINNET,
+    RANGE_BUFFER_MULTIPLIER_SCROLL,
     GAS_DROPS_ESTIMATE_POOL,
     NUM_GWEI_IN_WEI,
 } from '../../ambient-utils/constants/';
@@ -123,6 +122,8 @@ export default function InitPool() {
         advancedLowTick,
         setAdvancedHighTick,
         setAdvancedLowTick,
+        setIsTokenAPrimaryRange,
+        setPrimaryQuantityRange,
     } = useContext(RangeContext);
     const { tokenA, tokenB, baseToken, quoteToken } =
         useContext(TradeDataContext);
@@ -183,7 +184,7 @@ export default function InitPool() {
     >();
 
     const [estimatedInitialPriceDisplay, setEstimatedInitialPriceDisplay] =
-        useState<string>('0');
+        useState<string>('2000');
 
     const [isAmbient, setIsAmbient] = useState(false);
 
@@ -815,6 +816,13 @@ export default function InitPool() {
             ? amountToReduceNativeTokenQtyScroll
             : amountToReduceNativeTokenQtyMainnet;
 
+    const activeRangeTxHash = useRef<string>('none');
+
+    // reset activeTxHash when the pair changes or user updates quantity
+    useEffect(() => {
+        activeRangeTxHash.current = '';
+    }, [tokenA.address + tokenB.address]);
+
     // calculate price of gas for pool init
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
@@ -826,20 +834,14 @@ export default function InitPool() {
                 gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
 
             setAmountToReduceNativeTokenQtyMainnet(
-                costOfMainnetPoolInETH * RANGE_BUFFER_MULTIPLIER,
+                costOfMainnetPoolInETH * RANGE_BUFFER_MULTIPLIER_MAINNET,
             );
 
             const costOfScrollPoolInETH =
                 gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
 
-            //   IS_LOCAL_ENV &&  console.log({
-            //         gasPriceInGwei,
-            //         costOfScrollPoolInETH,
-            //         amountToReduceNativeTokenQtyScroll,
-            //     });
-
             setAmountToReduceNativeTokenQtyScroll(
-                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER,
+                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER_SCROLL,
             );
 
             const gasPriceInDollarsNum =
@@ -891,10 +893,6 @@ export default function InitPool() {
 
         const timer = setTimeout(() => {
             inputField.focus();
-            inputField.setSelectionRange(
-                inputField.value.length,
-                inputField.value.length,
-            );
         }, 500);
         return () => clearTimeout(timer);
     };
@@ -943,14 +941,6 @@ export default function InitPool() {
 
     // Begin Range Logic
     const { createRangePosition } = useCreateRangePosition();
-
-    // const slippageTolerancePercentage = isStablePair(
-    //     tokenA.address,
-    //     tokenB.address,
-    //     chainId,
-    // )
-    //     ? mintSlippage.stable
-    //     : mintSlippage.volatile;
 
     const depositSkew = useMemo(
         () =>
@@ -1031,7 +1021,18 @@ export default function InitPool() {
             isMintLiqEnabled,
         );
 
+    useEffect(() => {
+        if (isTokenAInputDisabled) setIsTokenAPrimaryRange(false);
+        if (isTokenBInputDisabled) setIsTokenAPrimaryRange(true);
+    }, [isTokenAInputDisabled, isTokenBInputDisabled]);
+
     const isInitPage = true;
+
+    const clearTokenInputs = () => {
+        setTokenACollateral('');
+        setTokenBCollateral('');
+        setPrimaryQuantityRange('');
+    };
 
     const {
         tokenAllowed: tokenAAllowed,
@@ -1046,6 +1047,8 @@ export default function InitPool() {
         true, // hardcode pool initialized since we will be initializing it on confirm
         tokenAQtyCoveredByWalletBalance,
         amountToReduceNativeTokenQty,
+        activeRangeTxHash,
+        clearTokenInputs,
         isMintLiqEnabled,
         isInitPage,
     );
@@ -1062,6 +1065,8 @@ export default function InitPool() {
         true, // hardcode pool initialized since we will be initializing it on confirm
         tokenBQtyCoveredByWalletBalance,
         amountToReduceNativeTokenQty,
+        activeRangeTxHash,
+        clearTokenInputs,
         isMintLiqEnabled,
         isInitPage,
     );
@@ -1088,18 +1093,16 @@ export default function InitPool() {
             resetConfirmation,
             poolPrice: selectedPoolNonDisplayPrice,
             setIsTxCompletedRange: setIsTxCompletedRange,
+            activeRangeTxHash: activeRangeTxHash,
         };
-        console.log('Debug, calling createRangePosition', params);
         createRangePosition(params);
     };
 
     const sendTransaction = isMintLiqEnabled
         ? async () => {
-              console.log('initializing and minting');
               sendInit(initialPriceInBaseDenom, sendRangePosition);
           }
         : () => {
-              console.log('initializing');
               sendInit(initialPriceInBaseDenom);
           };
 
@@ -1334,6 +1337,7 @@ export default function InitPool() {
 
     const openEditMode = () => {
         setIsEditEnabled(true);
+        focusInput();
         if (
             initialPriceDisplay === '' &&
             (!isReferencePriceAvailable ||
@@ -1357,21 +1361,16 @@ export default function InitPool() {
                 }
             }
         }
-        focusInput();
         isReferencePriceAvailable && setUseReferencePrice(false);
     };
 
     function handleRefPriceToggle() {
+        if (useReferencePrice) openEditMode();
         setUseReferencePrice(!useReferencePrice);
         if (estimatedInitialPriceDisplay !== undefined) {
             setInitialPriceDisplay(estimatedInitialPriceDisplay);
         } else setInitialPriceDisplay('');
     }
-
-    useEffect(() => {
-        if (!useReferencePrice) openEditMode();
-    }, [useReferencePrice]);
-
     // toggle to use reference price
     const refPriceToggle = (
         <FlexContainer flexDirection='row' alignItems='center' gap={8}>
@@ -1398,7 +1397,7 @@ export default function InitPool() {
             ) : (
                 <FiRefreshCw size={20} onClick={handleRefresh} />
             )}
-            <LuEdit2 size={20} onClick={() => openEditMode()} />
+            <LuPencil size={20} onClick={() => openEditMode()} />
         </FlexContainer>
     );
 
@@ -1416,10 +1415,10 @@ export default function InitPool() {
                     </Text>
                 </FlexContainer>
                 {isReferencePriceAvailable ? refPriceToggle : initPriceEdit}
-            </FlexContainer>
+            </FlexContainer>{' '}
             <section
                 style={{ width: '100%' }}
-                onDoubleClick={() => {
+                onClick={() => {
                     if (!isEditEnabled) openEditMode();
                 }}
             >
@@ -1430,12 +1429,11 @@ export default function InitPool() {
                         alignItems='center'
                         padding='0 16px'
                     >
-                        {' '}
                         <Spinner size={24} bg='var(--dark2)' weight={2} />
                     </FlexContainer>
                 ) : (
                     <CurrencyQuantityInput
-                        disabled={!isEditEnabled}
+                        readOnly={!isEditEnabled}
                         id='initial-pool-price-quantity'
                         placeholder={placeholderText}
                         type='string'
@@ -1456,7 +1454,6 @@ export default function InitPool() {
     const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
         if (tokenAorB === 'A') {
             setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked);
-            console.log('toggled');
         } else {
             setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked);
         }
@@ -1634,6 +1631,7 @@ export default function InitPool() {
 
                     if (tx?.hash) {
                         addTransactionByType({
+                            userAddress: userAddress || '',
                             txHash: tx.hash,
                             txType: 'Withdraw',
                             txDescription: `Withdrawal of ${erc20TokenWithDexBalance.symbol}`,

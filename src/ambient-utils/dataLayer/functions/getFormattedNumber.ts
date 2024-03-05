@@ -14,6 +14,7 @@ type FormatParams = {
     isToken?: boolean;
     removeCommas?: boolean;
     abbrevThreshold?: number;
+    isLevel?: boolean;
 };
 
 export function getFormattedNumber({
@@ -30,6 +31,7 @@ export function getFormattedNumber({
     isToken = false,
     removeCommas = false,
     abbrevThreshold = 10000,
+    isLevel = false,
 }: FormatParams) {
     let valueString = '';
     if (value === 0) {
@@ -70,23 +72,25 @@ export function getFormattedNumber({
                 maximumFractionDigits: maxFracDigits,
             });
         }
-    } else if (value < 0) {
-        valueString = value.toLocaleString('en-US', {
-            minimumFractionDigits: minFracDigits,
-            maximumFractionDigits: maxFracDigits,
-        });
-    } else if (value <= 0.0001) {
+    } else if (Math.abs(value) <= 0.0001) {
         // use subscript format for small numbers
-        valueString = formatSubscript(value);
-    } else if (value < 1) {
+        if (value < 0) {
+            valueString = '-' + formatSubscript(Math.abs(value));
+        } else {
+            valueString = formatSubscript(value);
+        }
+    } else if (Math.abs(value) < 0.9) {
         // show 3 significant digits (after 0s)
         valueString = value.toPrecision(3);
-    } else if (value < 2) {
+    } else if (Math.abs(value) < 2) {
         // restrict to 3 places after decimal
-        valueString = value.toFixed(3);
-    } else if (value >= abbrevThreshold && !isInput) {
+        valueString = value.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 5,
+        });
+    } else if (Math.abs(value) >= abbrevThreshold && !isInput) {
         // use abbreviations (k, M, B, T) for big numbers
-        valueString = formatAbbrev(value, isTvl);
+        valueString = formatAbbrev(value, isTvl, isLevel ? 1 : 2);
     } else {
         valueString = value.toLocaleString('en-US', {
             minimumFractionDigits: minFracDigits,
@@ -132,11 +136,11 @@ const formatSubscript = (value: number, precision = 3) => {
     return `0.${subscriptUnicode[zeros]}${valueNonZero}`;
 };
 
-const formatAbbrev = (value: number, isTvl?: boolean) => {
+const formatAbbrev = (value: number, isTvl?: boolean, mantissa = 2) => {
     return numbro(value).format({
         average: true,
         ...(isTvl && { roundingFunction: (num: number) => Math.floor(num) }),
-        mantissa: 2,
+        mantissa: mantissa,
         abbreviations: {
             thousand: 'k',
             million: 'M',

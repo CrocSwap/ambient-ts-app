@@ -39,10 +39,20 @@ export function lookupChainId(
         case '0x5':
             chainIdHex = '0x5';
             break;
+        case 'sepolia':
+        case '11155111':
+        case '0xaa36a7':
+            chainIdHex = '0xaa36a7';
+            break;
         case 'scroll':
         case '534352':
         case '0x82750':
             chainIdHex = '0x82750';
+            break;
+        case 'blast':
+        case '81457':
+        case '0x13e31':
+            chainIdHex = '0x13e31';
             break;
     }
     // output variable

@@ -46,6 +46,7 @@ import Explore from '../pages/Explore/Explore';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
 import ExampleForm from '../pages/InitPool/FormExample';
+import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
 
 /** ***** React Function *******/
 export default function App() {
@@ -61,6 +62,9 @@ export default function App() {
         },
         theme: { selected: selectedTheme },
         wagmiModal: { isOpen: isWagmiModalOpen },
+        appHeaderDropdown,
+        showPointSystemPopup,
+        dismissPointSystemPopup,
     } = useContext(AppStateContext);
     const { isWalletChainSupported, defaultUrlParams } =
         useContext(CrocEnvContext);
@@ -69,13 +73,19 @@ export default function App() {
         sidebar: { isOpen: isSidebarOpen, toggle: toggleSidebar },
     } = useContext(SidebarContext);
 
-    // Take away margin from left if we are on homepage or swap
-    const swapBodyStyle = currentLocation.startsWith('/swap')
-        ? 'swap-body'
-        : null;
+    const smallScreen = useMediaQuery('(max-width: 500px)');
 
-    // Show sidebar on all pages except for home, swap, chat and 404
-    const sidebarRender = currentLocation !== '/' &&
+    // Take away margin from left if we are on homepage or swap
+    const swapBodyStyle =
+        currentLocation.startsWith('/swap') && !smallScreen
+            ? 'swap-body'
+            : null;
+
+    // Show sidebar on all pages except for home, swap, chat, and 404
+    const sidebarRender = smallScreen ? (
+        <Sidebar />
+    ) : (
+        currentLocation !== '/' &&
         currentLocation !== '/swap' &&
         currentLocation !== '/404' &&
         currentLocation !== '/terms' &&
@@ -85,22 +95,24 @@ export default function App() {
         !fullScreenChart && (
             // isChainSupported &&
             <Sidebar />
-        );
+        )
+    );
 
     const sidebarDislayStyle = isSidebarOpen
         ? 'sidebar_content_layout'
         : 'sidebar_content_layout_close';
 
-    const showSidebarOrNullStyle =
-        currentLocation == '/' ||
-        currentLocation == '/swap' ||
-        currentLocation == '/404' ||
-        currentLocation == '/terms' ||
-        currentLocation == '/privacy' ||
-        currentLocation.includes('/chat') ||
-        currentLocation.startsWith('/swap')
-            ? 'hide_sidebar'
-            : sidebarDislayStyle;
+    const showSidebarOrNullStyle = smallScreen
+        ? sidebarDislayStyle
+        : currentLocation == '/' ||
+          currentLocation == '/swap' ||
+          currentLocation == '/404' ||
+          currentLocation == '/terms' ||
+          currentLocation == '/privacy' ||
+          currentLocation.includes('/chat') ||
+          currentLocation.startsWith('/swap')
+        ? 'hide_sidebar'
+        : sidebarDislayStyle;
 
     const containerStyle = currentLocation.includes('trade')
         ? 'content-container-trade'
@@ -148,7 +160,7 @@ export default function App() {
             }
         }
     }, [isEscapePressed]);
-    const showMobileVersion = useMediaQuery('(max-width: 600px)');
+    const showMobileVersion = useMediaQuery('(max-width: 500px)');
 
     return (
         <>
@@ -158,12 +170,22 @@ export default function App() {
                 data-theme={selectedTheme}
             >
                 {!isWalletChainSupported && <SwitchNetwork />}
+                {showPointSystemPopup && (
+                    <PointSystemPopup
+                        dismissPointSystemPopup={dismissPointSystemPopup}
+                    />
+                )}
                 <AppOverlay />
                 <PageHeader />
+                <div
+                    className={appHeaderDropdown.isActive ? 'app_blur' : ''}
+                    onClick={() => appHeaderDropdown.setIsActive(false)}
+                />
                 <section
                     className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
                 >
-                    {!currentLocation.startsWith('/swap') && sidebarRender}
+                    {(!currentLocation.startsWith('/swap') || smallScreen) &&
+                        sidebarRender}
                     <Routes>
                         <Route index element={<Home />} />
                         <Route
@@ -245,8 +267,32 @@ export default function App() {
                         <Route path='initpool/:params' element={<InitPool />} />
                         <Route path='account' element={<Portfolio />} />
                         <Route
+                            path='xp-leaderboard'
+                            element={<Portfolio isLevelsPage isRanksPage />}
+                        />
+                        <Route
+                            path='account/xp'
+                            element={<Portfolio isLevelsPage />}
+                        />
+                        <Route
+                            path='account/:address/xp/history'
+                            element={
+                                <Portfolio isLevelsPage isViewMoreActive />
+                            }
+                        />
+                        <Route
+                            path='account/xp/history'
+                            element={
+                                <Portfolio isLevelsPage isViewMoreActive />
+                            }
+                        />
+                        <Route
                             path='account/:address'
                             element={<Portfolio />}
+                        />
+                        <Route
+                            path='account/:address/xp'
+                            element={<Portfolio isLevelsPage />}
                         />
                         <Route
                             path='swap'
@@ -268,6 +314,16 @@ export default function App() {
                             />
                         )}
                         <Route path='/:address' element={<Portfolio />} />
+                        <Route
+                            path='/:address/xp'
+                            element={<Portfolio isLevelsPage />}
+                        />
+                        <Route
+                            path='/:address/xp/history'
+                            element={
+                                <Portfolio isLevelsPage isViewMoreActive />
+                            }
+                        />
                         <Route path='/404' element={<NotFound />} />
                         <Route
                             path='*'

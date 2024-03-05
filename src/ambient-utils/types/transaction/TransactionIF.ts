@@ -21,6 +21,7 @@ export interface TransactionIF {
     changeType: string;
     positionType: string;
     txTime: number;
+    timeFirstMint: number;
     txHash: string;
     user: string;
     limitPrice: number;

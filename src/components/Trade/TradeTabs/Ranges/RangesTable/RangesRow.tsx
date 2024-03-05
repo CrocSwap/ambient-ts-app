@@ -12,7 +12,6 @@ import {
 } from '../../../../../ambient-utils/types';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
 import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
-import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import rangeRowConstants from '../rangeRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
@@ -46,11 +45,8 @@ function RangesRow(props: propsIF) {
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
-    const {
-        showAllData: showAllDataSelection,
-        currentPositionActive,
-        setCurrentPositionActive,
-    } = useContext(TradeTableContext);
+    const { showAllData: showAllDataSelection, currentPositionActive } =
+        useContext(TradeTableContext);
 
     const { currentRangeInReposition, currentRangeInAdd } =
         useContext(RangeContext);
@@ -126,16 +122,11 @@ function RangesRow(props: propsIF) {
         ? baseTokenCharacter
         : quoteTokenCharacter;
 
-    const clickOutsideHandler = () => {
-        setCurrentPositionActive('');
-    };
-    useOnClickOutside(activePositionRef, clickOutsideHandler);
-
     function scrollToDiv() {
         const element = document.getElementById(positionDomId);
         element?.scrollIntoView({
             behavior: 'smooth',
-            block: 'end',
+            block: 'nearest',
             inline: 'nearest',
         });
     }
@@ -283,6 +274,7 @@ function RangesRow(props: propsIF) {
                         openDetailsModal={openDetailsModal}
                         openActionModal={openActionModal}
                         setRangeModalAction={setRangeModalAction}
+                        tableView={tableView}
                     />
                 </div>
             </RangeRowStyled>

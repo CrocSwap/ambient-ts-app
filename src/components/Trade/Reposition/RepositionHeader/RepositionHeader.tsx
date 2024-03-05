@@ -9,12 +9,12 @@ import TransactionSettingsModal from '../../../Global/TransactionSettingsModal/T
 
 // START: Import Local Files
 import styles from './RepositionHeader.module.css';
-import { trimString } from '../../../../ambient-utils/dataLayer';
 import { useRepoExitPath } from './useRepoExitPath';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
 import { useModal } from '../../../Global/Modal/useModal';
 import { TradeModuleHeaderContainer } from '../../../../styled/Components/TradeModules';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     positionHash: string;
@@ -33,6 +33,7 @@ function RepositionHeader(props: propsIF) {
     const { bypassConfirmRepo, repoSlippage } = useContext(
         UserPreferenceContext,
     );
+    const { defaultRangeWidthForActivePool } = useContext(TradeDataContext);
 
     const [isOpen, openModal, closeModal] = useModal();
 
@@ -57,16 +58,13 @@ function RepositionHeader(props: propsIF) {
                     alt='settings'
                     onClick={openModal}
                 />
-                <p className={styles.title}>
-                    {' '}
-                    Reposition: {trimString(positionHash, 5, 4, '…')}
-                </p>
+                <p className={styles.title}> Reposition: {positionHash}</p>
                 <VscClose
                     className={styles.close_icon}
                     onClick={() => {
                         setAdvancedMode(false);
-                        setRangeWidthPercentage(10);
-                        setSimpleRangeWidth(10);
+                        setRangeWidthPercentage(defaultRangeWidthForActivePool);
+                        setSimpleRangeWidth(defaultRangeWidthForActivePool);
                         navigate(exitPath, { replace: true });
                         resetTxHash();
                         setCurrentRangeInReposition('');

@@ -21,11 +21,6 @@ import {
     tickToPrice,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
-import {
-    getPinnedPriceValuesFromDisplayPrices,
-    getPinnedPriceValuesFromTicks,
-    getPinnedTickFromDisplayPrice,
-} from '../Trade/Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import useHandleSwipeBack from '../../utils/hooks/useHandleSwipeBack';
 import { candleTimeIF } from '../../App/hooks/useChartSettings';
@@ -34,6 +29,10 @@ import {
     diffHashSig,
     diffHashSigChart,
     diffHashSigScaleData,
+    getFormattedNumber,
+    getPinnedPriceValuesFromDisplayPrices,
+    getPinnedPriceValuesFromTicks,
+    getPinnedTickFromDisplayPrice,
 } from '../../ambient-utils/dataLayer';
 import { CandleContext } from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
@@ -44,6 +43,7 @@ import {
     CandlesByPoolAndDurationIF,
     CandleDomainIF,
     CandleScaleIF,
+    TransactionIF,
 } from '../../ambient-utils/types';
 import CandleChart from './Candle/CandleChart';
 import LiquidityChart from './Liquidity/LiquidityChart';
@@ -58,15 +58,20 @@ import LimitLineChart from './LimitLine/LimitLineChart';
 import FeeRateChart from './FeeRate/FeeRateChart';
 import RangeLinesChart from './RangeLine/RangeLinesChart';
 import {
-    CHART_ANNOTATIONS_LS_KEY,
     CandleDataChart,
     SubChartValue,
     bandLineData,
+    calculateFibRetracement,
+    calculateFibRetracementBandAreas,
     chartItemStates,
+    checkShowLatestCandle,
     crosshair,
-    defaultCandleBandwith,
-    drawDataHistory,
     fillLiqAdvanced,
+    findSnapTime,
+    formatTimeDifference,
+    getInitialDisplayCandleCount,
+    getXandYLocationForChart,
+    getXandYLocationForChartDrag,
     lineData,
     lineValue,
     liquidityChartData,
@@ -88,18 +93,31 @@ import {
     distanceToLine,
 } from './Draw/DrawCanvas/LinearLineSeries';
 import {
+    createArrowPointsOfDPRangeLine,
     createBandArea,
     createPointsOfBandLine,
+    createPointsOfDPRangeLine,
 } from './Draw/DrawCanvas/BandArea';
-import { checkCricleLocation, createCircle } from './ChartUtils/circle';
+import { checkCircleLocation, createCircle } from './ChartUtils/circle';
 import DragCanvas from './Draw/DrawCanvas/DragCanvas';
-import Toolbar from './Draw/Toolbar/Toolbar';
 import FloatingToolbar from './Draw/FloatingToolbar/FloatingToolbar';
 import { updatesIF } from '../../utils/hooks/useUrlParams';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
-import { actionKeyIF } from './ChartUtils/useUndoRedo';
+import { formatDollarAmountAxis } from '../../utils/numbers';
+import { ChartContext } from '../../contexts/ChartContext';
+import { useDrawSettings } from '../../App/hooks/useDrawSettings';
+import {
+    LS_KEY_CHART_ANNOTATIONS,
+    defaultCandleBandwith,
+    mainCanvasElementId,
+    xAxisBuffer,
+    xAxisHeightPixel,
+} from './ChartUtils/chartConstants';
+import OrderHistoryCanvas from './OrderHistoryCh/OrderHistoryCanvas';
+import OrderHistoryTooltip from './OrderHistoryCh/OrderHistoryTooltip';
+import { TradeTableContext } from '../../contexts/TradeTableContext';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -137,17 +155,8 @@ interface propsIF {
     unparsedData: CandlesByPoolAndDurationIF;
     prevPeriod: number;
     candleTimeInSeconds: number;
-    undo: () => void;
-    redo: () => void;
-    drawnShapeHistory: drawDataHistory[];
-    setDrawnShapeHistory: React.Dispatch<
-        React.SetStateAction<drawDataHistory[]>
-    >;
-    deleteItem: (item: drawDataHistory) => void;
     updateURL: (changes: updatesIF) => void;
-    addDrawActionStack: (item: drawDataHistory, isNewShape: boolean) => void;
-    drawActionStack: Map<actionKeyIF, drawDataHistory[]>;
-    undoStack: Map<actionKeyIF, drawDataHistory[]>;
+    userTransactionData: Array<TransactionIF> | undefined;
 }
 
 export default function Chart(props: propsIF) {
@@ -172,27 +181,46 @@ export default function Chart(props: propsIF) {
         unparsedData,
         prevPeriod,
         candleTimeInSeconds,
-        undo,
-        redo,
-        drawnShapeHistory,
-        setDrawnShapeHistory,
-        deleteItem,
         updateURL,
-        addDrawActionStack,
-        drawActionStack,
-        undoStack,
+        userTransactionData,
     } = props;
 
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
     const { chainData } = useContext(CrocEnvContext);
+    const {
+        isMagnetActive,
+        setIsChangeScaleChart,
+        isToolbarOpen,
+        toolbarRef,
+        activeDrawingType,
+        setActiveDrawingType,
+        selectedDrawnShape,
+        setSelectedDrawnShape,
+        undoRedoOptions: {
+            drawnShapeHistory,
+            setDrawnShapeHistory,
+            undo,
+            redo,
+            drawActionStack,
+            undoStack,
+            addDrawActionStack,
+            deleteItem,
+        },
+        isMagnetActiveLocal,
+        setChartContainerOptions,
+    } = useContext(ChartContext);
+
     const chainId = chainData.chainId;
     const { setCandleDomains, setCandleScale, timeOfEndCandle } =
         useContext(CandleContext);
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
 
+    const [liqMaxActiveLiq, setLiqMaxActiveLiq] = useState<
+        number | undefined
+    >();
     const { setIsTokenAPrimaryRange, setIsLinesSwitched } =
         useContext(RangeContext);
     const [isUpdatingShape, setIsUpdatingShape] = useState(false);
@@ -231,6 +259,7 @@ export default function Chart(props: propsIF) {
     } = currentPool;
 
     const [isChartZoom, setIsChartZoom] = useState(false);
+    const [cursorStyleTrigger, setCursorStyleTrigger] = useState(false);
 
     const [chartHeights, setChartHeights] = useState(0);
     const { isUserConnected } = useContext(UserDataContext);
@@ -245,7 +274,7 @@ export default function Chart(props: propsIF) {
     const side =
         (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'buy' : 'sell';
     const sellOrderStyle = side === 'sell' ? 'order_sell' : 'order_buy';
-    const [activeDrawingType, setActiveDrawingType] = useState('Cross');
+    // const [activeDrawingType, setActiveDrawingType] = useState('Cross');
 
     const [chartMousemoveEvent, setChartMousemoveEvent] = useState<
         MouseEvent<HTMLDivElement> | undefined
@@ -257,7 +286,15 @@ export default function Chart(props: propsIF) {
     const lineSellColor = 'rgba(115, 113, 252)';
     const lineBuyColor = 'rgba(205, 193, 255)';
 
-    const { showFeeRate, showTvl, showVolume, liqMode } = props.chartItemStates;
+    const {
+        showFeeRate,
+        showTvl,
+        showVolume,
+        liqMode,
+        showSwap,
+        showLiquidity,
+        showHistorical,
+    } = props.chartItemStates;
 
     const poolPriceDisplay = poolPriceWithoutDenom
         ? isDenomBase && poolPriceWithoutDenom
@@ -266,6 +303,8 @@ export default function Chart(props: propsIF) {
         : 0;
 
     const d3Container = useRef<HTMLDivElement | null>(null);
+    // const toolbarRef = useRef<HTMLDivElement | null>(null);
+    const d3XaxisRef = useRef<HTMLInputElement | null>(null);
 
     const d3CanvasCrosshair = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasMarketLine = useRef<HTMLCanvasElement | null>(null);
@@ -313,25 +352,49 @@ export default function Chart(props: propsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [lineSeries, setLineSeries] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [dashedLineSeries, setDashedLineSeries] = useState<any>();
-
-    const [selectedDrawnShape, setSelectedDrawnShape] = useState<
-        selectedDrawnData | undefined
-    >(undefined);
+    const [annotationLineSeries, setAnnotationLineSeries] = useState<any>();
 
     const [hoveredDrawnShape, setHoveredDrawnShape] = useState<
         selectedDrawnData | undefined
     >(undefined);
 
-    const mobileView = useMediaQuery('(max-width: 600px)');
+    const [hoveredOrderHistory, setHoveredOrderHistory] =
+        useState<TransactionIF>();
 
-    const initialData = localStorage.getItem(CHART_ANNOTATIONS_LS_KEY);
+    const [isHoveredOrderHistory, setIsHoveredOrderHistory] =
+        useState<boolean>(false);
 
-    const initialIsToolbarOpen = initialData
-        ? JSON.parse(initialData).isOpenAnnotationPanel
-        : true;
+    const [isSelectedOrderHistory, setIsSelectedOrderHistory] =
+        useState<boolean>(false);
 
-    const [isToolbarOpen, setIsToolbarOpen] = useState(initialIsToolbarOpen);
+    const [selectedOrderHistory, setSelectedOrderHistory] =
+        useState<TransactionIF>();
+
+    const [hoverOHTooltip, setHoverOHTooltip] = useState<boolean>(true);
+
+    const [hoveredOrderTooltipPlacement, setHoveredOrderTooltipPlacement] =
+        useState<{ top: number; left: number; isOnLeftSide: boolean }>();
+    const [selectedOrderTooltipPlacement, setSelectedOrderTooltipPlacement] =
+        useState<{ top: number; left: number; isOnLeftSide: boolean }>();
+
+    const [circleScale, setCircleScale] =
+        useState<d3.ScaleLinear<number, number>>();
+
+    const mobileView = useMediaQuery('(max-width: 1200px)');
+    const smallScreen = useMediaQuery('(max-width: 500px)');
+
+    const drawSettings = useDrawSettings();
+
+    const {
+        setCurrentTxActiveInTransactions,
+        setShowAllData,
+        setOutsideControl,
+        setSelectedOutsideTab,
+    } = useContext(TradeTableContext);
+
+    const isShowLatestCandle = useMemo(() => {
+        return checkShowLatestCandle(period, scaleData?.xScale);
+    }, [period, diffHashSigScaleData(scaleData, 'x')]);
 
     const unparsedCandleData = useMemo(() => {
         const data = unparsedData.candles
@@ -340,7 +403,13 @@ export default function Chart(props: propsIF) {
                 ...item,
                 isFakeData: false,
             }));
-        if (poolPriceWithoutDenom && data && data.length > 0) {
+
+        if (
+            poolPriceWithoutDenom &&
+            data &&
+            data.length > 0 &&
+            isShowLatestCandle
+        ) {
             const closePriceWithDenom =
                 data[0].invPriceCloseExclMEVDecimalCorrected;
             const poolPriceWithDenom = 1 / poolPriceWithoutDenom;
@@ -393,7 +462,11 @@ export default function Chart(props: propsIF) {
         }
 
         return data;
-    }, [diffHashSigChart(unparsedData.candles), poolPriceWithoutDenom]);
+    }, [
+        diffHashSigChart(unparsedData.candles),
+        poolPriceWithoutDenom,
+        isShowLatestCandle,
+    ]);
 
     const calculateVisibleCandles = (
         scaleData: scaleData | undefined,
@@ -441,7 +514,16 @@ export default function Chart(props: propsIF) {
         return prev.time < current.time ? prev : current;
     });
 
-    const [lastCandleDataCenter, setLastCandleDataCenter] = useState(0);
+    const toolbarWidth = isToolbarOpen
+        ? 40 - (mobileView ? (smallScreen ? 0 : 25) : 5)
+        : 9 - (mobileView ? 0 : 4);
+
+    const [prevlastCandleTime, setPrevLastCandleTime] = useState<number>(
+        lastCandleData.time,
+    );
+    const [lastCandleDataCenterX, setLastCandleDataCenterX] = useState(0);
+    const [lastCandleDataCenterY, setLastCandleDataCenterY] = useState(0);
+
     const [subChartValues, setsubChartValues] = useState([
         {
             name: 'feeRate',
@@ -530,7 +612,7 @@ export default function Chart(props: propsIF) {
     }, [period]);
 
     useEffect(() => {
-        useHandleSwipeBack(d3Container);
+        useHandleSwipeBack(d3Container, toolbarRef);
     }, [d3Container === null]);
 
     useEffect(() => {
@@ -653,15 +735,63 @@ export default function Chart(props: propsIF) {
         return false;
     }, [hoveredDrawnShape, chartMousemoveEvent, mainCanvasBoundingClientRect]);
 
+    function updateDrawnShapeHistoryonLocalStorage() {
+        const storedData = localStorage.getItem(LS_KEY_CHART_ANNOTATIONS);
+        if (storedData) {
+            const parseStoredData = JSON.parse(storedData);
+            parseStoredData.drawnShapes = drawnShapeHistory;
+            parseStoredData.isOpenAnnotationPanel = isToolbarOpen;
+            localStorage.setItem(
+                LS_KEY_CHART_ANNOTATIONS,
+                JSON.stringify(parseStoredData),
+            );
+        }
+    }
     useEffect(() => {
-        localStorage.setItem(
-            CHART_ANNOTATIONS_LS_KEY,
-            JSON.stringify({
-                isOpenAnnotationPanel: isToolbarOpen,
-                drawnShapes: drawnShapeHistory,
-            }),
-        );
+        updateDrawnShapeHistoryonLocalStorage();
     }, [JSON.stringify(drawnShapeHistory), isToolbarOpen]);
+
+    useEffect(() => {
+        setMarketLineValue();
+    }, [poolPriceWithoutDenom, denomInBase]);
+
+    const setMarketLineValue = () => {
+        if (poolPriceWithoutDenom !== undefined) {
+            const lastCandlePrice = denomInBase
+                ? 1 / poolPriceWithoutDenom
+                : poolPriceWithoutDenom;
+
+            setMarket(() => {
+                return lastCandlePrice !== undefined ? lastCandlePrice : 0;
+            });
+        }
+    };
+
+    useEffect(() => {
+        if (cursorStyleTrigger && chartZoomEvent !== 'wheel') {
+            d3.select(d3CanvasMain.current).style('cursor', 'grabbing');
+
+            render();
+        } else {
+            const cursorType = d3.select(d3CanvasMain.current).style('cursor');
+
+            if (
+                !(
+                    isOnCandleOrVolumeMouseLocation && cursorType === 'pointer'
+                ) &&
+                !(!isOnCandleOrVolumeMouseLocation && cursorType === 'default')
+            ) {
+                d3.select(d3CanvasMain.current).style(
+                    'cursor',
+                    isOnCandleOrVolumeMouseLocation ? 'pointer' : 'default',
+                );
+            }
+        }
+    }, [
+        chartZoomEvent,
+        diffHashSig(cursorStyleTrigger),
+        isOnCandleOrVolumeMouseLocation,
+    ]);
 
     useEffect(() => {
         if (isLineDrag) {
@@ -669,10 +799,19 @@ export default function Chart(props: propsIF) {
         } else if (canUserDragLimit || canUserDragRange) {
             d3.select(d3CanvasMain.current).style('cursor', 'row-resize');
         } else {
-            d3.select(d3CanvasMain.current).style(
-                'cursor',
-                isOnCandleOrVolumeMouseLocation ? 'pointer' : 'default',
-            );
+            const cursorType = d3.select(d3CanvasMain.current).style('cursor');
+
+            if (
+                !(
+                    isOnCandleOrVolumeMouseLocation && cursorType === 'pointer'
+                ) &&
+                !(!isOnCandleOrVolumeMouseLocation && cursorType === 'default')
+            ) {
+                d3.select(d3CanvasMain.current).style(
+                    'cursor',
+                    isOnCandleOrVolumeMouseLocation ? 'pointer' : 'default',
+                );
+            }
         }
     }, [
         canUserDragLimit,
@@ -680,17 +819,6 @@ export default function Chart(props: propsIF) {
         isLineDrag,
         isOnCandleOrVolumeMouseLocation,
     ]);
-
-    useEffect(() => {
-        if (isChartZoom && chartZoomEvent !== 'wheel') {
-            d3.select(d3CanvasMain.current).style('cursor', 'grabbing');
-        } else {
-            d3.select(d3CanvasMain.current).style(
-                'cursor',
-                isOnCandleOrVolumeMouseLocation ? 'pointer' : 'default',
-            );
-        }
-    }, [chartZoomEvent, isChartZoom, isOnCandleOrVolumeMouseLocation]);
 
     useEffect(() => {
         // auto zoom active
@@ -729,9 +857,10 @@ export default function Chart(props: propsIF) {
 
             domainMax = domainMax < minDate ? minDate : domainMax;
 
-            const isShowLatestCandle =
-                xDomain[0] < lastCandleData?.time * 1000 &&
-                lastCandleData?.time * 1000 < xDomain[1];
+            const isShowLatestCandle = checkShowLatestCandle(
+                period,
+                scaleData?.xScale,
+            );
 
             setCandleScale((prev: CandleScaleIF) => {
                 return {
@@ -742,12 +871,13 @@ export default function Chart(props: propsIF) {
                 };
             });
         }
-    }, [
-        diffHashSigScaleData(scaleData, 'x'),
-        lastCandleData,
-        period,
-        isChartZoom,
-    ]);
+    }, [diffHashSigScaleData(scaleData, 'x'), period, isChartZoom]);
+
+    useEffect(() => {
+        if (isChartZoom) {
+            setIsChangeScaleChart(true);
+        }
+    }, [isChartZoom]);
 
     // Zoom
     useEffect(() => {
@@ -773,6 +903,7 @@ export default function Chart(props: propsIF) {
                     function (event) {
                         if (wheelTimeout === null) {
                             setIsChartZoom(true);
+                            setCursorStyleTrigger(true);
                         }
 
                         zoomBase.zoomWithWheel(
@@ -790,9 +921,12 @@ export default function Chart(props: propsIF) {
                         if (wheelTimeout) {
                             clearTimeout(wheelTimeout);
                         }
+
+                        setPrevLastCandleTime(lastCandleData.time);
                         // check wheel end
                         wheelTimeout = setTimeout(() => {
                             setIsChartZoom(false);
+                            setCursorStyleTrigger(false);
                             showLatestActive();
                         }, 200);
                     },
@@ -804,6 +938,7 @@ export default function Chart(props: propsIF) {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .on('start', (event: any) => {
                         setIsChartZoom(true);
+
                         if (event.sourceEvent.type.includes('touch')) {
                             // mobile
                             previousTouch = event.sourceEvent.touches[0];
@@ -890,6 +1025,7 @@ export default function Chart(props: propsIF) {
                                 }
 
                                 render();
+                                setCursorStyleTrigger(true);
 
                                 if (rescale) {
                                     changeScale();
@@ -933,6 +1069,8 @@ export default function Chart(props: propsIF) {
                                 }
 
                                 clickedForLine = true;
+                                setPrevLastCandleTime(lastCandleData.time);
+                                calculateOrderHistoryTooltipPlacements();
 
                                 render();
                             }
@@ -958,16 +1096,9 @@ export default function Chart(props: propsIF) {
                     .on('end', (event: any) => {
                         if (event.sourceEvent.type !== 'wheel') {
                             setIsChartZoom(false);
+                            setCursorStyleTrigger(false);
                             setChartZoomEvent('');
-                            if (
-                                event.sourceEvent &&
-                                event.sourceEvent.type != 'wheel'
-                            ) {
-                                d3.select(d3Container.current).style(
-                                    'cursor',
-                                    'default',
-                                );
-                            }
+
                             if (clickedForLine) {
                                 // fires click event when zoom takes too short
                                 if (
@@ -1014,8 +1145,16 @@ export default function Chart(props: propsIF) {
                                 event.targetTouches[0].clientY -
                                 rectCanvas?.top;
 
+                            const eventPointX =
+                                event.targetTouches[0].clientX -
+                                rectCanvas.left;
+
                             const mousePlacement =
                                 scaleData?.yScale.invert(eventPoint);
+
+                            const isHoverLiqidite = liqMaxActiveLiq
+                                ? liqMaxActiveLiq - eventPointX > 10
+                                : false;
 
                             const limitLineValue = limit;
 
@@ -1032,16 +1171,23 @@ export default function Chart(props: propsIF) {
                                 mousePlacement > limitLineValue - lineBuffer;
 
                             const isOnRangeMin =
-                                location.pathname.includes('/pool') &&
+                                (location.pathname.includes('pool') ||
+                                    location.pathname.includes('reposition')) &&
                                 mousePlacement < minRangeValue + lineBuffer &&
                                 mousePlacement > minRangeValue - lineBuffer;
 
                             const isOnRangeMax =
-                                location.pathname.includes('/pool') &&
+                                (location.pathname.includes('pool') ||
+                                    location.pathname.includes('reposition')) &&
                                 mousePlacement < maxRangeValue + lineBuffer &&
                                 mousePlacement > maxRangeValue - lineBuffer;
 
-                            return !isOnLimit && !isOnRangeMin && !isOnRangeMax;
+                            return (
+                                !isOnLimit &&
+                                !isOnRangeMin &&
+                                !isOnRangeMax &&
+                                isHoverLiqidite
+                            );
                         } else {
                             return !canUserDragRange && !canUserDragLimit;
                         }
@@ -1070,6 +1216,7 @@ export default function Chart(props: propsIF) {
         period,
         advancedMode,
         isChartZoom,
+        liqMaxActiveLiq,
     ]);
 
     useEffect(() => {
@@ -1127,21 +1274,6 @@ export default function Chart(props: propsIF) {
         }
     }, [rescale]);
 
-    useEffect(() => {
-        setMarketLineValue();
-    }, [poolPriceWithoutDenom, denomInBase]);
-
-    const setMarketLineValue = useCallback(() => {
-        if (poolPriceWithoutDenom !== undefined) {
-            const lastCandlePrice = denomInBase
-                ? 1 / poolPriceWithoutDenom
-                : poolPriceWithoutDenom;
-
-            setMarket(() => {
-                return lastCandlePrice !== undefined ? lastCandlePrice : 0;
-            });
-        }
-    }, [poolPriceWithoutDenom, denomInBase]);
     // set default limit tick
     useEffect(() => {
         if (limitTick && Math.abs(limitTick) === Infinity)
@@ -1480,9 +1612,9 @@ export default function Chart(props: propsIF) {
 
             let oldRangeMinValue: number | undefined = undefined;
             let oldRangeMaxValue: number | undefined = undefined;
-            let offsetY = 0;
             const dragRange = d3
                 .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
+                .filter((event) => filterDragEvent(event, rectCanvas.left))
                 .on('start', (event) => {
                     setCrosshairActive('none');
                     document.addEventListener('keydown', cancelDragEvent);
@@ -1490,9 +1622,12 @@ export default function Chart(props: propsIF) {
 
                     d3.select('#y-axis-canvas').style('cursor', 'none');
 
-                    const advancedValue = scaleData?.yScale.invert(
-                        event.sourceEvent.clientY - rectCanvas.top,
+                    const { offsetY: clientY } = getXandYLocationForChartDrag(
+                        event,
+                        rectCanvas,
                     );
+
+                    const advancedValue = scaleData?.yScale.invert(clientY);
 
                     const low = ranges.filter(
                         (target: lineValue) => target.name === 'Min',
@@ -1515,13 +1650,10 @@ export default function Chart(props: propsIF) {
                     }
                 })
                 .on('drag', function (event) {
-                    if (event.sourceEvent instanceof TouchEvent) {
-                        offsetY =
-                            event.sourceEvent.touches[0].clientY -
-                            rectCanvas?.top;
-                    } else {
-                        offsetY = event.sourceEvent.clientY - rectCanvas?.top;
-                    }
+                    const { offsetY } = getXandYLocationForChartDrag(
+                        event,
+                        rectCanvas,
+                    );
 
                     if (!cancelDrag && liquidityData) {
                         setIsLineDrag(true);
@@ -1740,7 +1872,6 @@ export default function Chart(props: propsIF) {
                             // to:do fix when advanced is fixed AdvancedPepe
                             setRanges((prevState) => {
                                 const newTargets = [...prevState];
-
                                 if (draggingLine === 'Max') {
                                     if (
                                         dragSwitched ||
@@ -1887,8 +2018,25 @@ export default function Chart(props: propsIF) {
         isTokenABase,
         chainData.gridSize,
         rescale,
+        liqMaxActiveLiq,
     ]);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function filterDragEvent(event: any, leftPositin: number) {
+        const checkMainCanvas =
+            event.target.offsetParent.id === mainCanvasElementId;
+        if (event.type.includes('touch') && checkMainCanvas) {
+            const eventPointX = event.targetTouches[0].clientX - leftPositin;
+
+            const isHoverLiqidite = liqMaxActiveLiq
+                ? liqMaxActiveLiq - eventPointX > 10
+                : false;
+
+            return isHoverLiqidite;
+        }
+
+        return true;
+    }
     // dragLimit
     useEffect(() => {
         const canvas = d3
@@ -1916,6 +2064,7 @@ export default function Chart(props: propsIF) {
         };
         const dragLimit = d3
             .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
+            .filter((event) => filterDragEvent(event, rectCanvas.left))
             .on('start', (event) => {
                 // When the drag starts:
                 // hide the cursor
@@ -1930,7 +2079,10 @@ export default function Chart(props: propsIF) {
                 oldLimitValue = limit;
                 newLimitValue = limit;
                 tempNewLimitValue = limit;
-                if (event.sourceEvent instanceof TouchEvent) {
+                if (
+                    typeof TouchEvent !== 'undefined' &&
+                    event.sourceEvent instanceof TouchEvent
+                ) {
                     tempMovemementY =
                         event.sourceEvent.touches[0].clientY - rectCanvas?.top;
                 }
@@ -1939,7 +2091,10 @@ export default function Chart(props: propsIF) {
                 (async () => {
                     // Indicate that line is dragging
                     setIsLineDrag(true);
-                    if (event.sourceEvent instanceof TouchEvent) {
+                    if (
+                        typeof TouchEvent !== 'undefined' &&
+                        event.sourceEvent instanceof TouchEvent
+                    ) {
                         offsetY =
                             event.sourceEvent.touches[0].clientY -
                             rectCanvas?.top;
@@ -1976,7 +2131,10 @@ export default function Chart(props: propsIF) {
                         }
                     }
                 })().then(() => {
-                    if (event.sourceEvent instanceof TouchEvent) {
+                    if (
+                        typeof TouchEvent !== 'undefined' &&
+                        event.sourceEvent instanceof TouchEvent
+                    ) {
                         tempMovemementY =
                             event.sourceEvent.touches[0].clientY -
                             rectCanvas?.top;
@@ -2034,20 +2192,8 @@ export default function Chart(props: propsIF) {
         isTokenABase,
         chainData.gridSize,
         rescale,
+        liqMaxActiveLiq,
     ]);
-
-    useEffect(() => {
-        setBandwidth(defaultCandleBandwith);
-
-        if (reset) {
-            const candleDomain = {
-                lastCandleDate: new Date().getTime(),
-                domainBoundry: lastCandleData?.time * 1000,
-            };
-
-            setCandleDomains(candleDomain);
-        }
-    }, [reset]);
 
     useEffect(() => {
         if (mainZoom && d3CanvasMain.current) {
@@ -2112,7 +2258,63 @@ export default function Chart(props: propsIF) {
                 return marketLine;
             });
         }
-    }, [scaleData, liquidityDepthScale, liquidityScale, isUserConnected]);
+    }, [
+        scaleData,
+        liquidityDepthScale,
+        liquidityScale,
+        isUserConnected,
+        isDenomBase,
+    ]);
+
+    function setXScaleDefault() {
+        if (scaleData) {
+            const localInitialDisplayCandleCount =
+                getInitialDisplayCandleCount(mobileView);
+            const nowDate = Date.now();
+
+            const snapDiff = nowDate % (period * 1000);
+            const snappedTime = nowDate + (period * 1000 - snapDiff);
+
+            const centerX = snappedTime;
+            const diff =
+                (localInitialDisplayCandleCount * period * 1000) / xAxisBuffer;
+
+            setPrevLastCandleTime(snappedTime / 1000);
+
+            scaleData?.xScale.domain([
+                centerX - diff * xAxisBuffer,
+                centerX + diff * (1 - xAxisBuffer),
+            ]);
+        }
+    }
+
+    function fetchCandleForResetOrLatest() {
+        if (reset && scaleData) {
+            const nowDate = Date.now();
+            const lastCandleDataTime =
+                lastCandleData?.time * 1000 - period * 1000;
+            const minDomain = Math.floor(scaleData?.xScale.domain()[0]);
+
+            const candleDomain = {
+                lastCandleDate: nowDate,
+                domainBoundry:
+                    lastCandleDataTime > minDomain
+                        ? minDomain
+                        : lastCandleDataTime,
+            };
+
+            setCandleDomains(candleDomain);
+        }
+    }
+    function resetFunc() {
+        if (scaleData) {
+            setBandwidth(defaultCandleBandwith);
+            setXScaleDefault();
+            fetchCandleForResetOrLatest();
+            setIsChangeScaleChart(false);
+            changeScale();
+        }
+    }
 
     // when click reset chart should be auto scale
     useEffect(() => {
@@ -2121,52 +2323,33 @@ export default function Chart(props: propsIF) {
             reset &&
             poolPriceDisplay !== undefined
         ) {
-            const nowDate = Date.now();
-
-            const snapDiff = nowDate % (period * 1000);
-
-            const snappedTime =
-                nowDate -
-                (snapDiff > period * 1000 - snapDiff
-                    ? -1 * (period * 1000 - snapDiff)
-                    : snapDiff);
-
-            const minDomain = snappedTime - 100 * 1000 * period;
-            const maxDomain = snappedTime + 39 * 1000 * period;
-
-            scaleData?.xScale.domain([minDomain, maxDomain]);
-
-            changeScale();
-
+            resetFunc();
             setReset(false);
             setShowLatest(false);
         }
     }, [reset, minTickForLimit, maxTickForLimit]);
 
+    // when click latest
     useEffect(() => {
         if (
             scaleData !== undefined &&
             latest &&
             unparsedCandleData !== undefined
         ) {
-            const latestCandleIndex = d3.maxIndex(
-                unparsedCandleData,
-                (d) => d.time,
-            );
-
-            const diff =
-                scaleData?.xScale.domain()[1] - scaleData?.xScale.domain()[0];
-
-            const centerX = unparsedCandleData[latestCandleIndex].time * 1000;
-
             if (rescale) {
-                scaleData?.xScale.domain([
-                    centerX - diff * 0.8,
-                    centerX + diff * 0.2,
-                ]);
-
-                changeScale();
+                resetFunc();
             } else {
+                fetchCandleForResetOrLatest();
+                const latestCandleIndex = d3.maxIndex(
+                    unparsedCandleData,
+                    (d) => d.time,
+                );
+                const diff =
+                    scaleData?.xScale.domain()[1] -
+                    scaleData?.xScale.domain()[0];
+
+                const centerX = findSnapTime(Date.now(), period);
+
                 const diffY =
                     scaleData?.yScale.domain()[1] -
                     scaleData?.yScale.domain()[0];
@@ -2189,22 +2372,17 @@ export default function Chart(props: propsIF) {
                 setYaxisDomain(domain[0], domain[1]);
 
                 scaleData?.xScale.domain([
-                    centerX - diff * 0.8,
-                    centerX + diff * 0.2,
+                    centerX - diff * xAxisBuffer,
+                    centerX + diff * (1 - xAxisBuffer),
                 ]);
+
+                render();
             }
 
             setLatest(false);
             setShowLatest(false);
         }
-    }, [
-        // diffHashSigScaleData(scaleData),
-        latest,
-        unparsedCandleData,
-        denomInBase,
-        rescale,
-        location.pathname,
-    ]);
+    }, [latest, unparsedCandleData, denomInBase, rescale, location.pathname]);
 
     const onClickRange = async (event: PointerEvent) => {
         if (scaleData && liquidityData) {
@@ -2476,6 +2654,7 @@ export default function Chart(props: propsIF) {
                     .select(d3Container.current)
                     .append('div')
                     .attr('class', 'xAxisTooltip')
+                    .style('z-index', '2')
                     .style('visibility', 'hidden');
 
                 setXaxisTooltip(() => {
@@ -2501,6 +2680,21 @@ export default function Chart(props: propsIF) {
 
                 setChartHeights(height);
                 render();
+            });
+
+            resizeObserver.observe(canvasDiv.node());
+
+            return () => resizeObserver.unobserve(canvasDiv.node());
+        }
+    }, []);
+
+    useEffect(() => {
+        if (d3Container) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const canvasDiv = d3.select(d3Container.current) as any;
+            const resizeObserver = new ResizeObserver(() => {
+                const chartRect = canvasDiv.node().getBoundingClientRect();
+                setChartContainerOptions(chartRect);
             });
 
             resizeObserver.observe(canvasDiv.node());
@@ -2567,10 +2761,13 @@ export default function Chart(props: propsIF) {
             .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
 
+        const canvasSize = canvas.getBoundingClientRect();
+
         if (scaleData && lineSeries) {
             const rayLine = createAnnotationLineSeries(
                 scaleData?.xScale.copy(),
                 scaleData?.yScale,
+                denomInBase,
             );
 
             const bandArea = createBandArea(
@@ -2586,33 +2783,432 @@ export default function Chart(props: propsIF) {
                     drawnShapeHistory?.forEach((item) => {
                         if (item.pool) {
                             const isShapeInCurrentPool =
-                                JSON.stringify(currentPool.tokenA) ===
-                                    JSON.stringify(
-                                        isTokenABase === item.pool.isTokenABase
-                                            ? item.pool.tokenA
-                                            : item.pool.tokenB,
-                                    ) &&
-                                JSON.stringify(currentPool.tokenB) ===
-                                    JSON.stringify(
-                                        isTokenABase === item.pool.isTokenABase
-                                            ? item.pool.tokenB
-                                            : item.pool.tokenA,
-                                    );
+                                currentPool.tokenA.address ===
+                                    (isTokenABase === item.pool.isTokenABase
+                                        ? item.pool.tokenA
+                                        : item.pool.tokenB) &&
+                                currentPool.tokenB.address ===
+                                    (isTokenABase === item.pool.isTokenABase
+                                        ? item.pool.tokenB
+                                        : item.pool.tokenA);
 
                             if (isShapeInCurrentPool) {
                                 if (
                                     item.type === 'Brush' ||
                                     item.type === 'Angle'
                                 ) {
-                                    if (ctx) ctx.setLineDash(item.style);
+                                    if (ctx) ctx.setLineDash(item.line.dash);
                                     lineSeries.decorate(
                                         (context: CanvasRenderingContext2D) => {
-                                            context.strokeStyle = item.color;
-                                            context.lineWidth = item.lineWidth;
+                                            context.strokeStyle =
+                                                item.line.color;
+                                            context.lineWidth =
+                                                item.line.lineWidth;
                                         },
                                     );
 
                                     lineSeries(item?.data);
+                                }
+
+                                if (
+                                    item.type === 'Rect' ||
+                                    item.type === 'DPRange'
+                                ) {
+                                    const range = [
+                                        scaleData?.xScale(item.data[0].x),
+                                        scaleData?.xScale(item.data[1].x),
+                                    ];
+
+                                    bandArea.xScale().range(range);
+
+                                    if (item.background.active) {
+                                        const checkDenom =
+                                            item.data[0].denomInBase ===
+                                            denomInBase;
+                                        const bandData = {
+                                            fromValue: checkDenom
+                                                ? item.data[0].y
+                                                : 1 / item.data[0].y,
+                                            toValue: checkDenom
+                                                ? item.data[1].y
+                                                : 1 / item.data[1].y,
+                                            denomInBase: denomInBase,
+                                        } as bandLineData;
+
+                                        if (item.background) {
+                                            bandArea.decorate(
+                                                (
+                                                    context: CanvasRenderingContext2D,
+                                                ) => {
+                                                    context.fillStyle =
+                                                        item.background.color;
+                                                },
+                                            );
+                                        }
+
+                                        bandArea([bandData]);
+                                    }
+
+                                    if (item.border.active) {
+                                        const lineOfBand =
+                                            createPointsOfBandLine(item.data);
+
+                                        lineOfBand?.forEach((line) => {
+                                            if (ctx)
+                                                ctx.setLineDash(
+                                                    item.border.dash,
+                                                );
+                                            lineSeries.decorate(
+                                                (
+                                                    context: CanvasRenderingContext2D,
+                                                ) => {
+                                                    context.strokeStyle =
+                                                        item.border.color;
+                                                    context.lineWidth =
+                                                        item.border.lineWidth;
+                                                },
+                                            );
+                                            lineSeries(line);
+
+                                            if (item.type === 'Rect')
+                                                if (
+                                                    (hoveredDrawnShape &&
+                                                        hoveredDrawnShape.data
+                                                            .time ===
+                                                            item.time) ||
+                                                    (selectedDrawnShape &&
+                                                        selectedDrawnShape.data
+                                                            .time === item.time)
+                                                ) {
+                                                    line.forEach(
+                                                        (element, _index) => {
+                                                            const selectedCircleIsActive =
+                                                                hoveredDrawnShape &&
+                                                                hoveredDrawnShape.selectedCircle &&
+                                                                hoveredDrawnShape
+                                                                    .selectedCircle
+                                                                    .x ===
+                                                                    element.x &&
+                                                                Number(
+                                                                    element.y.toFixed(
+                                                                        12,
+                                                                    ),
+                                                                ) ===
+                                                                    (element.denomInBase ===
+                                                                    denomInBase
+                                                                        ? Number(
+                                                                              hoveredDrawnShape?.selectedCircle.y.toFixed(
+                                                                                  12,
+                                                                              ),
+                                                                          )
+                                                                        : Number(
+                                                                              (
+                                                                                  1 /
+                                                                                  hoveredDrawnShape
+                                                                                      ?.selectedCircle
+                                                                                      .y
+                                                                              ).toFixed(
+                                                                                  12,
+                                                                              ),
+                                                                          ));
+
+                                                            if (
+                                                                selectedCircleIsActive
+                                                            ) {
+                                                                if (
+                                                                    !isUpdatingShape
+                                                                ) {
+                                                                    selectedCircleSeries(
+                                                                        [
+                                                                            element,
+                                                                        ],
+                                                                    );
+                                                                }
+                                                            } else {
+                                                                circleSeries([
+                                                                    element,
+                                                                ]);
+                                                            }
+                                                        },
+                                                    );
+                                                }
+                                        });
+                                    }
+
+                                    if (
+                                        item.type === 'Rect' &&
+                                        item.line.active
+                                    ) {
+                                        if (ctx)
+                                            ctx.setLineDash(item.line.dash);
+                                        lineSeries.decorate(
+                                            (
+                                                context: CanvasRenderingContext2D,
+                                            ) => {
+                                                context.strokeStyle =
+                                                    item.line.color;
+                                                context.lineWidth =
+                                                    item.line.lineWidth;
+                                            },
+                                        );
+                                        lineSeries(item.data);
+                                    }
+
+                                    if (item.type === 'DPRange') {
+                                        const lineOfDPRange =
+                                            createPointsOfDPRangeLine(
+                                                item.data,
+                                            );
+
+                                        lineOfDPRange?.forEach((line) => {
+                                            if (ctx)
+                                                ctx.setLineDash(item.line.dash);
+                                            lineSeries.decorate(
+                                                (
+                                                    context: CanvasRenderingContext2D,
+                                                ) => {
+                                                    context.strokeStyle =
+                                                        item.line.color;
+                                                    context.lineWidth =
+                                                        item.line.lineWidth;
+                                                },
+                                            );
+                                            lineSeries(line);
+                                        });
+
+                                        const firstPointYAxisData =
+                                            item.data[0].denomInBase ===
+                                            denomInBase
+                                                ? item.data[0].y
+                                                : 1 / item.data[0].y;
+                                        const secondPointYAxisData =
+                                            item.data[1].denomInBase ===
+                                            denomInBase
+                                                ? item.data[1].y
+                                                : 1 / item.data[1].y;
+
+                                        const filtered =
+                                            unparsedCandleData.filter(
+                                                (data: CandleDataIF) =>
+                                                    data.time * 1000 >=
+                                                        Math.min(
+                                                            item.data[0].x,
+                                                            item.data[1].x,
+                                                        ) &&
+                                                    data.time * 1000 <=
+                                                        Math.max(
+                                                            item.data[0].x,
+                                                            item.data[1].x,
+                                                        ),
+                                            );
+
+                                        const totalVolumeCovered =
+                                            filtered.reduce(
+                                                (sum, obj) =>
+                                                    sum + obj.volumeUSD,
+                                                0,
+                                            );
+
+                                        const height = Math.abs(
+                                            scaleData.yScale(
+                                                firstPointYAxisData,
+                                            ) -
+                                                scaleData.yScale(
+                                                    secondPointYAxisData,
+                                                ),
+                                        );
+
+                                        const width = Math.abs(
+                                            scaleData.xScale(item.data[0].x) -
+                                                scaleData.xScale(
+                                                    item.data[1].x,
+                                                ),
+                                        );
+
+                                        const lengthAsBars = Math.abs(
+                                            item.data[0].x - item.data[1].x,
+                                        );
+                                        const lengthAsDate =
+                                            (item.data[0].x > item.data[1].x
+                                                ? '-'
+                                                : '') +
+                                            formatTimeDifference(
+                                                new Date(
+                                                    Math.min(
+                                                        item.data[1].x,
+                                                        item.data[0].x,
+                                                    ),
+                                                ),
+                                                new Date(
+                                                    Math.max(
+                                                        item.data[1].x,
+                                                        item.data[0].x,
+                                                    ),
+                                                ),
+                                            );
+
+                                        const heightAsPrice =
+                                            secondPointYAxisData -
+                                            firstPointYAxisData;
+
+                                        const heightAsPercentage = (
+                                            (Number(heightAsPrice) /
+                                                Math.min(
+                                                    firstPointYAxisData,
+                                                    secondPointYAxisData,
+                                                )) *
+                                            100
+                                        ).toFixed(2);
+
+                                        const infoLabelHeight = 66;
+                                        const infoLabelWidth = 180;
+
+                                        const infoLabelXAxisData =
+                                            Math.min(
+                                                item.data[0].x,
+                                                item.data[1].x,
+                                            ) +
+                                            Math.abs(
+                                                item.data[0].x - item.data[1].x,
+                                            ) /
+                                                2;
+
+                                        const yAxisLabelPlacement =
+                                            scaleData.yScale(
+                                                firstPointYAxisData,
+                                            ) <
+                                            scaleData.yScale(
+                                                secondPointYAxisData,
+                                            )
+                                                ? scaleData.yScale(
+                                                      firstPointYAxisData,
+                                                  ) > canvas.height
+                                                    ? scaleData.yScale(
+                                                          secondPointYAxisData,
+                                                      ) + 15
+                                                    : Math.min(
+                                                          scaleData.yScale(
+                                                              secondPointYAxisData,
+                                                          ) + 15,
+                                                          canvasSize.height -
+                                                              (infoLabelHeight +
+                                                                  5),
+                                                      )
+                                                : scaleData.yScale(
+                                                      firstPointYAxisData,
+                                                  ) < 5
+                                                ? scaleData.yScale(
+                                                      secondPointYAxisData,
+                                                  ) -
+                                                  (infoLabelHeight + 15)
+                                                : Math.max(
+                                                      scaleData.yScale(
+                                                          secondPointYAxisData,
+                                                      ) -
+                                                          (infoLabelHeight +
+                                                              15),
+                                                      5,
+                                                  );
+
+                                        const arrowArray =
+                                            createArrowPointsOfDPRangeLine(
+                                                item.data,
+                                                scaleData,
+                                                denomInBase,
+                                                height > 30 && width > 30
+                                                    ? 10
+                                                    : 5,
+                                            );
+
+                                        arrowArray.forEach((arrow) => {
+                                            lineSeries(arrow);
+                                        });
+
+                                        if (ctx) {
+                                            ctx.beginPath();
+                                            ctx.fillStyle = 'rgb(34,44,58)';
+                                            ctx.fillRect(
+                                                scaleData.xScale(
+                                                    infoLabelXAxisData,
+                                                ) -
+                                                    infoLabelWidth / 2,
+                                                yAxisLabelPlacement,
+                                                infoLabelWidth,
+                                                infoLabelHeight,
+                                            );
+                                            ctx.fillStyle =
+                                                'rgba(210,210,210,1)';
+                                            ctx.font = '13.5px Lexend Deca';
+                                            ctx.textAlign = 'center';
+                                            ctx.textBaseline = 'middle';
+
+                                            const maxPrice =
+                                                secondPointYAxisData *
+                                                Math.pow(
+                                                    10,
+                                                    baseTokenDecimals -
+                                                        quoteTokenDecimals,
+                                                );
+
+                                            const minPrice =
+                                                firstPointYAxisData *
+                                                Math.pow(
+                                                    10,
+                                                    baseTokenDecimals -
+                                                        quoteTokenDecimals,
+                                                );
+
+                                            const dpRangeTickPrice =
+                                                maxPrice && minPrice
+                                                    ? Math.floor(
+                                                          Math.log(maxPrice) /
+                                                              Math.log(1.0001),
+                                                      ) -
+                                                      Math.floor(
+                                                          Math.log(minPrice) /
+                                                              Math.log(1.0001),
+                                                      )
+                                                    : 0;
+
+                                            ctx.fillText(
+                                                getFormattedNumber({
+                                                    value: heightAsPrice,
+                                                    abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                                                }) +
+                                                    ' ' +
+                                                    ' (' +
+                                                    heightAsPercentage.toString() +
+                                                    '%)  ' +
+                                                    dpRangeTickPrice,
+                                                scaleData.xScale(
+                                                    infoLabelXAxisData,
+                                                ),
+                                                yAxisLabelPlacement + 16,
+                                            );
+                                            ctx.fillText(
+                                                (lengthAsBars / (1000 * period))
+                                                    .toFixed(0)
+                                                    .toString() +
+                                                    ' bars,  ' +
+                                                    lengthAsDate,
+                                                scaleData.xScale(
+                                                    infoLabelXAxisData,
+                                                ),
+                                                yAxisLabelPlacement + 33,
+                                            );
+                                            ctx.fillText(
+                                                'Vol ' +
+                                                    formatDollarAmountAxis(
+                                                        totalVolumeCovered,
+                                                    ).replace('$', ''),
+                                                scaleData.xScale(
+                                                    infoLabelXAxisData,
+                                                ),
+                                                yAxisLabelPlacement + 50,
+                                            );
+                                        }
+                                    }
+
                                     if (
                                         (hoveredDrawnShape &&
                                             hoveredDrawnShape.data.time ===
@@ -2621,8 +3217,8 @@ export default function Chart(props: propsIF) {
                                             selectedDrawnShape.data.time ===
                                                 item.time)
                                     ) {
-                                        item.data.forEach((element) => {
-                                            if (
+                                        item.data.forEach((element, _index) => {
+                                            const selectedCircleIsActive =
                                                 hoveredDrawnShape &&
                                                 hoveredDrawnShape.selectedCircle &&
                                                 hoveredDrawnShape.selectedCircle
@@ -2644,8 +3240,9 @@ export default function Chart(props: propsIF) {
                                                                       ?.selectedCircle
                                                                       .y
                                                               ).toFixed(12),
-                                                          ))
-                                            ) {
+                                                          ));
+
+                                            if (selectedCircleIsActive) {
                                                 if (!isUpdatingShape) {
                                                     selectedCircleSeries([
                                                         element,
@@ -2656,263 +3253,6 @@ export default function Chart(props: propsIF) {
                                             }
                                         });
                                     }
-
-                                    if (item.type === 'Angle') {
-                                        const opposite = Math.abs(
-                                            scaleData.yScale(item?.data[0].y) -
-                                                scaleData.yScale(
-                                                    item?.data[1].y,
-                                                ),
-                                        );
-                                        const side = Math.abs(
-                                            scaleData.xScale(item?.data[0].x) -
-                                                scaleData.xScale(
-                                                    item?.data[1].x,
-                                                ),
-                                        );
-
-                                        const distance = opposite / side;
-
-                                        const minAngleLineLength =
-                                            side / 4 > 80
-                                                ? Math.abs(
-                                                      item?.data[0].x -
-                                                          item?.data[1].x,
-                                                  ) / 4
-                                                : scaleData.xScale.invert(
-                                                      scaleData.xScale(
-                                                          item?.data[0].x,
-                                                      ) + 80,
-                                                  ) - item?.data[0].x;
-
-                                        const minAngleTextLength =
-                                            item?.data[0].x +
-                                            minAngleLineLength +
-                                            scaleData.xScale.invert(
-                                                scaleData.xScale(
-                                                    item?.data[0].x,
-                                                ) + 20,
-                                            ) -
-                                            item?.data[0].x;
-
-                                        const angleLineData = [
-                                            {
-                                                x: item?.data[0].x,
-                                                y: item?.data[0].y,
-                                                denomInBase:
-                                                    item?.data[0].denomInBase,
-                                            },
-                                            {
-                                                x:
-                                                    item?.data[0].x +
-                                                    minAngleLineLength,
-                                                y: item?.data[0].y,
-                                                denomInBase:
-                                                    item?.data[0].denomInBase,
-                                            },
-                                        ];
-
-                                        const angle =
-                                            Math.atan(distance) *
-                                            (180 / Math.PI);
-
-                                        const supplement =
-                                            item?.data[1].x > item?.data[0].x
-                                                ? -Math.atan(distance)
-                                                : Math.PI + Math.atan(distance);
-
-                                        const arcX =
-                                            item?.data[1].y > item?.data[0].y
-                                                ? supplement
-                                                : 0;
-                                        const arcY =
-                                            item?.data[1].y > item?.data[0].y
-                                                ? 0
-                                                : -supplement;
-
-                                        const radius =
-                                            scaleData.xScale(
-                                                item?.data[0].x +
-                                                    minAngleLineLength,
-                                            ) -
-                                            scaleData.xScale(item?.data[0].x);
-
-                                        if (ctx) {
-                                            ctx.setLineDash([5, 3]);
-                                            dashedLineSeries.decorate(
-                                                (
-                                                    context: CanvasRenderingContext2D,
-                                                ) => {
-                                                    context.strokeStyle =
-                                                        item.color;
-                                                    context.lineWidth = 1;
-                                                },
-                                            );
-                                            dashedLineSeries(angleLineData);
-
-                                            ctx.beginPath();
-                                            ctx.arc(
-                                                scaleData.xScale(
-                                                    item.data[0].x,
-                                                ),
-                                                scaleData.yScale(
-                                                    item.data[0].y,
-                                                ),
-                                                radius,
-                                                arcX,
-                                                arcY,
-                                            );
-                                            ctx.stroke();
-
-                                            ctx.textAlign = 'center';
-                                            ctx.textBaseline = 'middle';
-                                            ctx.fillStyle = 'white';
-                                            ctx.font = '50 12px Lexend Deca';
-
-                                            const angleDisplay =
-                                                item?.data[1].x >
-                                                item?.data[0].x
-                                                    ? angle
-                                                    : 180 - angle;
-
-                                            ctx.fillText(
-                                                (item?.data[1].y >
-                                                item?.data[0].y
-                                                    ? ''
-                                                    : '-') +
-                                                    angleDisplay
-                                                        .toFixed(0)
-                                                        .toString() +
-                                                    'º',
-                                                scaleData.xScale(
-                                                    minAngleTextLength,
-                                                ),
-                                                scaleData.yScale(
-                                                    item?.data[0].y,
-                                                ),
-                                            );
-
-                                            ctx.closePath();
-                                        }
-                                    }
-                                }
-
-                                if (item.type === 'Square') {
-                                    const range = [
-                                        scaleData?.xScale(item.data[0].x),
-                                        scaleData?.xScale(item.data[1].x),
-                                    ];
-
-                                    bandArea.xScale().range(range);
-                                    const checkDenom =
-                                        item.data[0].denomInBase ===
-                                        denomInBase;
-                                    const bandData = {
-                                        fromValue: checkDenom
-                                            ? item.data[0].y
-                                            : 1 / item.data[0].y,
-                                        toValue: checkDenom
-                                            ? item.data[1].y
-                                            : 1 / item.data[1].y,
-                                        denomInBase: denomInBase,
-                                    } as bandLineData;
-
-                                    const rgbaValues =
-                                        item.color.match(/\d+(\.\d+)?/g);
-
-                                    if (rgbaValues) {
-                                        const alphaValue =
-                                            Number(rgbaValues[3]) < 0.3
-                                                ? Number(rgbaValues[3]) / 2
-                                                : '0.15';
-
-                                        const rectRgbaFiller =
-                                            'rgba(' +
-                                            rgbaValues[0] +
-                                            ',' +
-                                            rgbaValues[1] +
-                                            ',' +
-                                            rgbaValues[2] +
-                                            ',' +
-                                            alphaValue +
-                                            ')';
-
-                                        bandArea.decorate(
-                                            (
-                                                context: CanvasRenderingContext2D,
-                                            ) => {
-                                                context.fillStyle =
-                                                    rectRgbaFiller;
-                                            },
-                                        );
-                                    }
-
-                                    bandArea([bandData]);
-
-                                    const lineOfBand = createPointsOfBandLine(
-                                        item.data,
-                                    );
-
-                                    lineOfBand?.forEach((line) => {
-                                        if (ctx) ctx.setLineDash(item.style);
-                                        lineSeries.decorate(
-                                            (
-                                                context: CanvasRenderingContext2D,
-                                            ) => {
-                                                context.strokeStyle =
-                                                    item.color;
-                                                context.lineWidth =
-                                                    item.lineWidth;
-                                            },
-                                        );
-                                        lineSeries(line);
-
-                                        if (
-                                            (hoveredDrawnShape &&
-                                                hoveredDrawnShape.data.time ===
-                                                    item.time) ||
-                                            (selectedDrawnShape &&
-                                                selectedDrawnShape.data.time ===
-                                                    item.time)
-                                        ) {
-                                            line.forEach((element, _index) => {
-                                                const selectedCircleIsActive =
-                                                    hoveredDrawnShape &&
-                                                    hoveredDrawnShape.selectedCircle &&
-                                                    hoveredDrawnShape
-                                                        .selectedCircle.x ===
-                                                        element.x &&
-                                                    Number(
-                                                        element.y.toFixed(12),
-                                                    ) ===
-                                                        (element.denomInBase ===
-                                                        denomInBase
-                                                            ? Number(
-                                                                  hoveredDrawnShape?.selectedCircle.y.toFixed(
-                                                                      12,
-                                                                  ),
-                                                              )
-                                                            : Number(
-                                                                  (
-                                                                      1 /
-                                                                      hoveredDrawnShape
-                                                                          ?.selectedCircle
-                                                                          .y
-                                                                  ).toFixed(12),
-                                                              ));
-
-                                                if (selectedCircleIsActive) {
-                                                    if (!isUpdatingShape) {
-                                                        selectedCircleSeries([
-                                                            element,
-                                                        ]);
-                                                    }
-                                                } else {
-                                                    circleSeries([element]);
-                                                }
-                                            });
-                                        }
-                                    });
                                 }
 
                                 if (item.type === 'Ray') {
@@ -2930,11 +3270,14 @@ export default function Chart(props: propsIF) {
                                     ];
 
                                     rayLine.xScale().range(range);
-                                    if (ctx) ctx.setLineDash(item.style);
+
+                                    if (ctx) ctx.setLineDash(item.line.dash);
                                     rayLine.decorate(
                                         (context: CanvasRenderingContext2D) => {
-                                            context.strokeStyle = item.color;
-                                            context.lineWidth = item.lineWidth;
+                                            context.strokeStyle =
+                                                item.line.color;
+                                            context.lineWidth =
+                                                item.line.lineWidth;
                                         },
                                     );
 
@@ -2942,11 +3285,7 @@ export default function Chart(props: propsIF) {
                                         {
                                             denomInBase:
                                                 item.data[0].denomInBase,
-                                            y:
-                                                item.data[0].denomInBase ===
-                                                denomInBase
-                                                    ? item.data[0].y
-                                                    : 1 / item.data[0].y,
+                                            y: item.data[0].y,
                                         },
                                     ]);
                                     if (
@@ -2999,6 +3338,363 @@ export default function Chart(props: propsIF) {
                                         }
                                     }
                                 }
+
+                                if (
+                                    item.type === 'FibRetracement' &&
+                                    annotationLineSeries
+                                ) {
+                                    const data = structuredClone(item.data);
+
+                                    if (item.reverse) {
+                                        [data[0], data[1]] = [data[1], data[0]];
+                                    }
+
+                                    const range = [
+                                        item.extendLeft
+                                            ? scaleData.xScale.range()[0]
+                                            : scaleData?.xScale(
+                                                  Math.min(
+                                                      item.data[0].x,
+                                                      item.data[1].x,
+                                                  ),
+                                              ),
+                                        item.extendRight
+                                            ? scaleData.xScale.range()[1]
+                                            : scaleData?.xScale(
+                                                  Math.max(
+                                                      item.data[0].x,
+                                                      item.data[1].x,
+                                                  ),
+                                              ),
+                                    ];
+
+                                    bandArea.xScale().range(range);
+
+                                    annotationLineSeries.xScale().range(range);
+
+                                    const fibLineData = calculateFibRetracement(
+                                        data,
+                                        item.extraData,
+                                    );
+
+                                    const bandAreaData =
+                                        calculateFibRetracementBandAreas(
+                                            data,
+                                            item.extraData,
+                                        );
+
+                                    bandAreaData.forEach((bandData) => {
+                                        bandArea.decorate(
+                                            (
+                                                context: CanvasRenderingContext2D,
+                                            ) => {
+                                                context.fillStyle =
+                                                    bandData.areaColor.toString();
+                                            },
+                                        );
+
+                                        bandArea([bandData]);
+                                    });
+
+                                    fibLineData.forEach((lineData) => {
+                                        const lineLabel =
+                                            lineData[0].level +
+                                            ' (' +
+                                            lineData[0].y
+                                                .toFixed(2)
+                                                .toString() +
+                                            ')';
+
+                                        const lineMeasures =
+                                            ctx?.measureText(lineLabel);
+
+                                        if (
+                                            lineMeasures &&
+                                            (item.extendLeft ||
+                                                item.extendRight) &&
+                                            item.labelAlignment === 'Middle' &&
+                                            ctx
+                                        ) {
+                                            const bufferLeft =
+                                                item.extendLeft &&
+                                                item.labelPlacement === 'Left'
+                                                    ? lineMeasures.width + 15
+                                                    : 0;
+
+                                            const bufferRight =
+                                                canvasSize.width -
+                                                (item.extendRight &&
+                                                item.labelPlacement === 'Right'
+                                                    ? lineMeasures.width + 15
+                                                    : 0);
+
+                                            ctx.save();
+                                            ctx.beginPath();
+
+                                            ctx.rect(
+                                                bufferLeft,
+                                                0,
+                                                bufferRight,
+                                                canvasSize.height,
+                                            );
+
+                                            ctx.clip();
+                                        }
+
+                                        if (
+                                            item.labelPlacement === 'Center' &&
+                                            item.labelAlignment === 'Middle' &&
+                                            lineMeasures &&
+                                            ctx
+                                        ) {
+                                            const buffer = scaleData.xScale(
+                                                Math.min(
+                                                    lineData[0].x,
+                                                    lineData[1].x,
+                                                ) +
+                                                    Math.abs(
+                                                        lineData[0].x -
+                                                            lineData[1].x,
+                                                    ) /
+                                                        2,
+                                            );
+
+                                            ctx.save();
+                                            ctx.beginPath();
+
+                                            ctx.rect(
+                                                0,
+                                                0,
+                                                buffer -
+                                                    lineMeasures.width / 2 -
+                                                    5,
+                                                canvasSize.height,
+                                            );
+                                            ctx.rect(
+                                                buffer +
+                                                    lineMeasures.width / 2 +
+                                                    5,
+                                                0,
+                                                canvasSize.width,
+                                                canvasSize.height,
+                                            );
+
+                                            ctx.clip();
+                                        }
+
+                                        annotationLineSeries.decorate(
+                                            (
+                                                context: CanvasRenderingContext2D,
+                                            ) => {
+                                                context.strokeStyle =
+                                                    lineData[0].lineColor;
+
+                                                context.lineWidth = 1.5;
+                                            },
+                                        );
+
+                                        annotationLineSeries(lineData);
+
+                                        ctx?.restore();
+
+                                        const textColor = lineData[0].lineColor;
+
+                                        let alignment;
+                                        const textBaseline =
+                                            item.labelAlignment === 'Top'
+                                                ? 'bottom'
+                                                : item.labelAlignment ===
+                                                  'Bottom'
+                                                ? 'top'
+                                                : (item.labelAlignment.toLowerCase() as CanvasTextBaseline);
+
+                                        if (item.labelPlacement === 'Center') {
+                                            alignment = 'center';
+                                        } else {
+                                            if (item.extendLeft) {
+                                                alignment =
+                                                    item.extendRight &&
+                                                    item.labelPlacement ===
+                                                        'Right'
+                                                        ? 'right'
+                                                        : 'left';
+                                            } else if (
+                                                item.extendRight ||
+                                                item.labelPlacement === 'Left'
+                                            ) {
+                                                alignment = 'right';
+                                            } else {
+                                                alignment = 'left';
+                                            }
+                                        }
+
+                                        if (ctx) {
+                                            (ctx.fillStyle = textColor),
+                                                (ctx.font = '12px Lexend Deca');
+                                            ctx.textAlign =
+                                                alignment as CanvasTextAlign;
+                                            ctx.textBaseline = textBaseline;
+
+                                            let location: number = Math.min(
+                                                lineData[0].x,
+                                                lineData[1].x,
+                                            );
+
+                                            if (
+                                                item.labelPlacement === 'Center'
+                                            ) {
+                                                location =
+                                                    Math.min(
+                                                        lineData[0].x,
+                                                        lineData[1].x,
+                                                    ) +
+                                                    Math.abs(
+                                                        lineData[0].x -
+                                                            lineData[1].x,
+                                                    ) /
+                                                        2;
+                                            } else {
+                                                if (item.extendLeft) {
+                                                    if (
+                                                        item.labelPlacement ===
+                                                        'Left'
+                                                    ) {
+                                                        location =
+                                                            scaleData.xScale.domain()[0];
+                                                    } else if (
+                                                        item.labelPlacement ===
+                                                        'Right'
+                                                    ) {
+                                                        if (item.extendRight) {
+                                                            location =
+                                                                scaleData.xScale.domain()[1];
+                                                        } else {
+                                                            location = Math.max(
+                                                                lineData[0].x,
+                                                                lineData[1].x,
+                                                            );
+                                                        }
+                                                    }
+                                                } else if (item.extendRight) {
+                                                    location =
+                                                        item.labelPlacement ===
+                                                        'Left'
+                                                            ? Math.min(
+                                                                  lineData[0].x,
+                                                                  lineData[1].x,
+                                                              )
+                                                            : scaleData.xScale.domain()[1];
+                                                } else {
+                                                    location =
+                                                        item.labelPlacement ===
+                                                        'Left'
+                                                            ? Math.min(
+                                                                  lineData[0].x,
+                                                                  lineData[1].x,
+                                                              )
+                                                            : Math.max(
+                                                                  lineData[0].x,
+                                                                  lineData[1].x,
+                                                              );
+                                                }
+                                            }
+
+                                            const linePlacement =
+                                                scaleData.xScale(location) +
+                                                (alignment === 'right'
+                                                    ? -10
+                                                    : alignment === 'left'
+                                                    ? +10
+                                                    : 0);
+
+                                            ctx.fillText(
+                                                lineLabel,
+                                                linePlacement,
+                                                scaleData.yScale(
+                                                    denomInBase ===
+                                                        lineData[0].denomInBase
+                                                        ? lineData[0].y
+                                                        : 1 / lineData[0].y,
+                                                ) +
+                                                    (item.labelAlignment.toLowerCase() ===
+                                                    'bottom'
+                                                        ? 5
+                                                        : item.labelAlignment.toLowerCase() ===
+                                                          'top'
+                                                        ? -5
+                                                        : 0),
+                                            );
+                                        }
+                                    });
+
+                                    if (item.line.active) {
+                                        if (ctx)
+                                            ctx.setLineDash(item.line.dash);
+                                        lineSeries.decorate(
+                                            (
+                                                context: CanvasRenderingContext2D,
+                                            ) => {
+                                                context.strokeStyle =
+                                                    item.line.color;
+                                                context.lineWidth =
+                                                    item.line.lineWidth;
+                                            },
+                                        );
+                                        lineSeries(data);
+                                    }
+
+                                    if (ctx) ctx.setLineDash([0, 0]);
+                                }
+
+                                if (
+                                    item.type === 'Brush' ||
+                                    item.type === 'Angle' ||
+                                    item.type === 'FibRetracement'
+                                ) {
+                                    if (
+                                        (hoveredDrawnShape &&
+                                            hoveredDrawnShape.data.time ===
+                                                item.time) ||
+                                        (selectedDrawnShape &&
+                                            selectedDrawnShape.data.time ===
+                                                item.time)
+                                    ) {
+                                        item.data.forEach((element) => {
+                                            if (
+                                                hoveredDrawnShape &&
+                                                hoveredDrawnShape.selectedCircle &&
+                                                hoveredDrawnShape.selectedCircle
+                                                    .x === element.x &&
+                                                Number(
+                                                    element.y.toFixed(12),
+                                                ) ===
+                                                    (element.denomInBase ===
+                                                    denomInBase
+                                                        ? Number(
+                                                              hoveredDrawnShape?.selectedCircle.y.toFixed(
+                                                                  12,
+                                                              ),
+                                                          )
+                                                        : Number(
+                                                              (
+                                                                  1 /
+                                                                  hoveredDrawnShape
+                                                                      ?.selectedCircle
+                                                                      .y
+                                                              ).toFixed(12),
+                                                          ))
+                                            ) {
+                                                if (!isUpdatingShape) {
+                                                    selectedCircleSeries([
+                                                        element,
+                                                    ]);
+                                                }
+                                            } else {
+                                                circleSeries([element]);
+                                            }
+                                        });
+                                    }
+                                }
                             }
                         }
                     });
@@ -3009,9 +3705,9 @@ export default function Chart(props: propsIF) {
                     bandArea.context(ctx);
                     rayLine.context(ctx);
                     lineSeries.context(ctx);
+                    annotationLineSeries.context(ctx);
                     circleSeries.context(ctx);
                     selectedCircleSeries.context(ctx);
-                    dashedLineSeries.context(ctx);
                 });
 
             render();
@@ -3019,6 +3715,7 @@ export default function Chart(props: propsIF) {
     }, [
         diffHashSig(drawnShapeHistory),
         lineSeries,
+        annotationLineSeries,
         hoveredDrawnShape,
         selectedDrawnShape,
         isUpdatingShape,
@@ -3031,24 +3728,53 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const handleKeyDown = function (event: any) {
-            if ((event.ctrlKey || event.metaKey) && event.key === 'z') {
+            const isCtrlPressed = event.ctrlKey || event.metaKey;
+            if (isCtrlPressed && event.key === 'z') {
                 undo();
                 setSelectedDrawnShape(undefined);
-            } else if ((event.ctrlKey || event.metaKey) && event.key === 'y') {
+            } else if (isCtrlPressed && event.key === 'y') {
                 redo();
                 setSelectedDrawnShape(undefined);
             }
             if (event.key === 'Escape') {
                 setSelectedDrawnShape(undefined);
+                setActiveDrawingType('Cross');
+            }
+
+            if (
+                isCtrlPressed &&
+                (activeDrawingType !== 'Cross' || isDragActive)
+            ) {
+                isMagnetActive.value = !isMagnetActiveLocal;
             }
         };
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const handleKeyUp = function (event: any) {
+            if (
+                (event.key === 'Control' || event.key === 'Meta') &&
+                (activeDrawingType !== 'Cross' || isDragActive)
+            ) {
+                isMagnetActive.value = isMagnetActiveLocal;
+            }
+        };
         document.addEventListener('keydown', handleKeyDown);
+
+        document.addEventListener('keyup', handleKeyUp);
 
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
+            document.removeEventListener('keyup', handleKeyUp);
         };
-    }, [undo, redo, drawActionStack, undoStack]);
+    }, [
+        undo,
+        redo,
+        drawActionStack,
+        undoStack,
+        activeDrawingType,
+        isDragActive,
+        isMagnetActiveLocal,
+    ]);
 
     useEffect(() => {
         const canvas = d3
@@ -3177,8 +3903,10 @@ export default function Chart(props: propsIF) {
         isDenomBase,
     ]);
 
-    function changeScale() {
-        if (poolPriceDisplay && scaleData && rescale) {
+    const getYAxisBoundary = () => {
+        let minYBoundary = undefined;
+        let maxYBoundary = undefined;
+        if (scaleData) {
             const xmin = scaleData?.xScale.domain()[0];
             const xmax = scaleData?.xScale.domain()[1];
 
@@ -3186,7 +3914,6 @@ export default function Chart(props: propsIF) {
                 (data: CandleDataIF) =>
                     data.time * 1000 >= xmin && data.time * 1000 <= xmax,
             );
-
             if (
                 filtered !== undefined &&
                 filtered.length > 10 &&
@@ -3208,128 +3935,159 @@ export default function Chart(props: propsIF) {
                         : d.maxPriceExclMEVDecimalCorrected,
                 );
 
-                const marketPrice = market;
-
                 if (filteredMin && filteredMax) {
-                    const minYBoundary = Math.min(
-                        placeHolderPrice,
-                        filteredMin,
-                    );
-                    const maxYBoundary = Math.max(
-                        placeHolderPrice,
-                        filteredMax,
-                    );
-
-                    const diffBoundray = Math.abs(maxYBoundary - minYBoundary);
-                    const buffer = diffBoundray
-                        ? diffBoundray / 6
-                        : minYBoundary / 2;
-                    if (
-                        location.pathname.includes('pool') ||
-                        location.pathname.includes('reposition')
-                    ) {
-                        if (simpleRangeWidth !== 100 || advancedMode) {
-                            const min = ranges.filter(
-                                (target: lineValue) => target.name === 'Min',
-                            )[0].value;
-                            const max = ranges.filter(
-                                (target: lineValue) => target.name === 'Max',
-                            )[0].value;
-
-                            const low = Math.min(
-                                min,
-                                max,
-                                minYBoundary,
-                                marketPrice,
-                            );
-
-                            const high = Math.max(
-                                min,
-                                max,
-                                maxYBoundary,
-                                marketPrice,
-                            );
-
-                            const bufferForRange = Math.abs((low - high) / 6);
-
-                            const domain = [
-                                Math.min(low, high) - bufferForRange,
-                                Math.max(low, high) + bufferForRange / 2,
-                            ];
-
-                            setYaxisDomain(domain[0], domain[1]);
-                        } else {
-                            const lowTick =
-                                currentPoolPriceTick - simpleRangeWidth * 100;
-                            const highTick =
-                                currentPoolPriceTick + simpleRangeWidth * 100;
-
-                            const pinnedDisplayPrices =
-                                getPinnedPriceValuesFromTicks(
-                                    isDenomBase,
-                                    baseTokenDecimals,
-                                    quoteTokenDecimals,
-                                    lowTick,
-                                    highTick,
-                                    lookupChain(chainId).gridSize,
-                                );
-
-                            const low = 0;
-                            const high = parseFloat(
-                                pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                            );
-
-                            const bufferForRange = Math.abs((low - high) / 90);
-
-                            const domain = [
-                                Math.min(low, high) - bufferForRange,
-                                Math.max(low, high) + bufferForRange / 2,
-                            ];
-
-                            scaleData?.yScale.domain(domain);
-                        }
-                    } else if (location.pathname.includes('/limit')) {
-                        const value = limit;
-                        const low = Math.min(
-                            minYBoundary,
-                            value,
-                            minTickForLimit,
-                            marketPrice,
-                        );
-
-                        const high = Math.max(
-                            maxYBoundary,
-                            value,
-                            maxTickForLimit,
-                            marketPrice,
-                        );
-
-                        const bufferForLimit = Math.abs((low - high) / 6);
-                        if (value > 0 && Math.abs(value) !== Infinity) {
-                            const domain = [
-                                Math.min(low, high) - bufferForLimit,
-                                Math.max(low, high) + bufferForLimit / 2,
-                            ];
-
-                            setYaxisDomain(domain[0], domain[1]);
-                        }
-                    } else {
-                        const domain = [
-                            Math.min(minYBoundary, maxYBoundary, marketPrice) -
-                                buffer,
-                            Math.max(minYBoundary, maxYBoundary, marketPrice) +
-                                buffer / 2,
-                        ];
-
-                        setYaxisDomain(domain[0], domain[1]);
-                    }
+                    minYBoundary = Math.min(placeHolderPrice, filteredMin);
+                    maxYBoundary = Math.max(placeHolderPrice, filteredMax);
                 }
             }
-            render();
+        }
+
+        return { minYBoundary: minYBoundary, maxYBoundary: maxYBoundary };
+    };
+
+    function changeScaleSwap() {
+        if (scaleData && poolPriceWithoutDenom && rescale) {
+            const placeHolderPrice = denomInBase
+                ? 1 / poolPriceWithoutDenom
+                : poolPriceWithoutDenom;
+
+            const { minYBoundary, maxYBoundary } = getYAxisBoundary();
+
+            if (maxYBoundary !== undefined && minYBoundary !== undefined) {
+                const diffBoundary = Math.abs(maxYBoundary - minYBoundary);
+                const buffer = diffBoundary
+                    ? diffBoundary / 6
+                    : minYBoundary / 2;
+                const domain = [
+                    Math.min(minYBoundary, maxYBoundary, placeHolderPrice) -
+                        buffer,
+                    Math.max(minYBoundary, maxYBoundary, placeHolderPrice) +
+                        buffer / 2,
+                ];
+
+                setYaxisDomain(domain[0], domain[1]);
+            }
+        }
+
+        render();
+    }
+
+    function changeScaleLimit() {
+        if (scaleData && market && rescale) {
+            const { minYBoundary, maxYBoundary } = getYAxisBoundary();
+
+            if (maxYBoundary !== undefined && minYBoundary !== undefined) {
+                const value = limit;
+                const low = Math.min(
+                    minYBoundary,
+                    value,
+                    minTickForLimit,
+                    market,
+                );
+
+                const high = Math.max(
+                    maxYBoundary,
+                    value,
+                    maxTickForLimit,
+                    market,
+                );
+
+                const bufferForLimit = Math.abs((low - high) / 6);
+                if (value > 0 && Math.abs(value) !== Infinity) {
+                    const domain = [
+                        Math.min(low, high) - bufferForLimit,
+                        Math.max(low, high) + bufferForLimit / 2,
+                    ];
+
+                    setYaxisDomain(domain[0], domain[1]);
+                }
+            }
+        }
+
+        render();
+    }
+
+    function changeScaleRangeOrReposition() {
+        if (scaleData && rescale) {
+            const min = minPrice;
+            const max = maxPrice;
+
+            ranges[0] = { name: 'Min', value: minPrice };
+            ranges[1] = { name: 'Max', value: maxPrice };
+            if (!market) {
+                scaleData.yScale.domain(
+                    scaleData.priceRange(visibleCandleData),
+                );
+            }
+
+            const { minYBoundary, maxYBoundary } = getYAxisBoundary();
+
+            if (
+                maxYBoundary !== undefined &&
+                market &&
+                minYBoundary !== undefined
+            ) {
+                if (simpleRangeWidth !== 100 || advancedMode) {
+                    const low = Math.min(min, max, minYBoundary, market);
+
+                    const high = Math.max(min, max, maxYBoundary, market);
+
+                    const bufferForRange = Math.abs((low - high) / 6);
+
+                    const domain = [
+                        Math.min(low, high) - bufferForRange,
+                        Math.max(low, high) + bufferForRange / 2,
+                    ];
+
+                    setYaxisDomain(domain[0], domain[1]);
+                } else {
+                    const lowTick =
+                        currentPoolPriceTick - simpleRangeWidth * 100;
+                    const highTick =
+                        currentPoolPriceTick + simpleRangeWidth * 100;
+
+                    const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+                        isDenomBase,
+                        baseTokenDecimals,
+                        quoteTokenDecimals,
+                        lowTick,
+                        highTick,
+                        lookupChain(chainId).gridSize,
+                    );
+
+                    const low = 0;
+                    const high = parseFloat(
+                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                    );
+
+                    const bufferForRange = Math.abs((low - high) / 90);
+
+                    const domain = [
+                        Math.min(low, high) - bufferForRange,
+                        Math.max(low, high) + bufferForRange / 2,
+                    ];
+
+                    scaleData?.yScale.domain(domain);
+                }
+            }
+        }
+
+        render();
+    }
+
+    function changeScale() {
+        if (location.pathname.includes('limit')) {
+            changeScaleLimit();
+        } else if (
+            location.pathname.includes('pool') ||
+            location.pathname.includes('reposition')
+        ) {
+            changeScaleRangeOrReposition();
+        } else {
+            changeScaleSwap();
         }
     }
 
-    // autoScaleF
     useEffect(() => {
         if (
             rescale &&
@@ -3340,18 +4098,42 @@ export default function Chart(props: propsIF) {
             changeScale();
         }
     }, [
-        ranges,
-        limit,
-        location.pathname,
         period,
         diffHashSigChart(unparsedCandleData),
-        noGoZoneBoundaries,
-        maxTickForLimit,
-        minTickForLimit,
         prevPeriod === period,
         candleTimeInSeconds === period,
-        isLineDrag,
     ]);
+
+    useEffect(() => {
+        if (location.pathname.includes('/market')) {
+            changeScaleSwap();
+        }
+    }, [isDenomBase, poolPriceWithoutDenom, location.pathname]);
+
+    // autoScaleF
+    useEffect(() => {
+        if (!isLineDrag) {
+            if (
+                location.pathname.includes('pool') ||
+                location.pathname.includes('reposition')
+            ) {
+                changeScaleRangeOrReposition();
+            }
+        }
+    }, [
+        location.pathname.includes('pool') ||
+            location.pathname.includes('reposition'),
+        market,
+        isLineDrag,
+        minPrice,
+        maxPrice,
+    ]);
+
+    useEffect(() => {
+        if (!isLineDrag && location.pathname.includes('limit')) {
+            changeScaleLimit();
+        }
+    }, [location.pathname.includes('limit'), limit, isLineDrag]);
 
     function setYaxisDomain(minDomain: number, maxDomain: number) {
         if (scaleData) {
@@ -3382,6 +4164,15 @@ export default function Chart(props: propsIF) {
                 function (event: MouseEvent<HTMLDivElement>) {
                     mousemove(event);
                 },
+                { passive: true },
+            );
+
+            d3.select(d3CanvasMain.current).on(
+                'touchmove',
+                function (event: MouseEvent<HTMLDivElement>) {
+                    mousemove(event);
+                },
+                { passive: true },
             );
         }
     }, [
@@ -3395,6 +4186,7 @@ export default function Chart(props: propsIF) {
         isLineDrag,
         period,
         currentPool,
+        showSwap,
     ]);
 
     useEffect(() => {
@@ -3433,6 +4225,17 @@ export default function Chart(props: propsIF) {
                 }
             },
         );
+
+        d3.select(d3CanvasMain.current).on(
+            'touchend',
+            (event: MouseEvent<HTMLDivElement>) => {
+                if (!isChartZoom) {
+                    mouseLeaveCanvas();
+                    setChartMousemoveEvent(undefined);
+                    setMouseLeaveEvent(event);
+                }
+            },
+        );
     }, [isChartZoom]);
 
     // mouseenter
@@ -3457,44 +4260,64 @@ export default function Chart(props: propsIF) {
             // Define the 'onClickCanvas' event handler for canvas clicks
             const onClickCanvas = (event: PointerEvent) => {
                 // If the candle or volume click
-                const { isHoverCandleOrVolumeData, nearest } =
-                    candleOrVolumeDataHoverStatus(event.offsetX, event.offsetY);
-                selectedDateEvent(isHoverCandleOrVolumeData, nearest);
+                const offsetX = event.offsetX;
+                const offsetY = event.offsetY;
 
-                setCrosshairActive('none');
-                // Check if the location pathname includes 'pool' or 'reposition' and handle the click event.
-
-                setSelectedDrawnShape(undefined);
-
-                if (
-                    (location.pathname.includes('pool') ||
-                        location.pathname.includes('reposition')) &&
-                    scaleData !== undefined &&
-                    !isHoverCandleOrVolumeData
-                ) {
-                    onClickRange(event);
+                let isOrderHistorySelected = undefined;
+                if (showSwap) {
+                    isOrderHistorySelected = orderHistoryHoverStatus(
+                        event.offsetX,
+                        event.offsetY,
+                        true,
+                    );
                 }
 
-                // Check if the location pathname includes '/limit' and handle the click event.
                 if (
-                    location.pathname.includes('/limit') &&
-                    scaleData !== undefined &&
-                    !isHoverCandleOrVolumeData
+                    isOrderHistorySelected === undefined ||
+                    isOrderHistorySelected.order === undefined
                 ) {
-                    let newLimitValue = scaleData?.yScale.invert(event.offsetY);
+                    const { isHoverCandleOrVolumeData, nearest } =
+                        candleOrVolumeDataHoverStatus(offsetX, offsetY);
 
-                    if (newLimitValue < 0) newLimitValue = 0;
+                    selectedDateEvent(isHoverCandleOrVolumeData, nearest);
 
-                    const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
+                    setSelectedDrawnShape(undefined);
+                    // Check if the location pathname includes 'pool' or 'reposition' and handle the click event.
 
                     if (
-                        !(
-                            newLimitValue > noGoZoneMin &&
-                            newLimitValue < noGoZoneMax
-                        )
+                        (location.pathname.includes('pool') ||
+                            location.pathname.includes('reposition')) &&
+                        scaleData !== undefined &&
+                        !isHoverCandleOrVolumeData
                     ) {
-                        onBlurLimitRate(limit, newLimitValue);
+                        onClickRange(event);
                     }
+
+                    // Check if the location pathname includes '/limit' and handle the click event.
+                    if (
+                        location.pathname.includes('/limit') &&
+                        scaleData !== undefined &&
+                        !isHoverCandleOrVolumeData
+                    ) {
+                        let newLimitValue = scaleData?.yScale.invert(
+                            event.offsetY,
+                        );
+
+                        if (newLimitValue < 0) newLimitValue = 0;
+
+                        const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
+
+                        if (
+                            !(
+                                newLimitValue > noGoZoneMin &&
+                                newLimitValue < noGoZoneMax
+                            )
+                        ) {
+                            onBlurLimitRate(limit, newLimitValue);
+                        }
+                    }
+
+                    setSelectedOrderTooltipPlacement(() => undefined);
                 }
             };
 
@@ -3504,7 +4327,6 @@ export default function Chart(props: propsIF) {
                     onClickCanvas(event);
                 },
             );
-            render();
 
             d3.select(d3Container.current).on(
                 'mouseleave',
@@ -3573,6 +4395,9 @@ export default function Chart(props: propsIF) {
         diffHashSigChart(unparsedCandleData),
         liquidityData,
         hoveredDrawnShape,
+        isSelectedOrderHistory,
+        selectedOrderHistory,
+        showSwap,
     ]);
 
     function checkLineLocation(
@@ -3613,40 +4438,36 @@ export default function Chart(props: propsIF) {
         element: lineData[],
         mouseX: number,
         mouseY: number,
+        isDenomPrices: boolean,
     ) {
         let isOverLine = false;
 
         if (scaleData) {
             const threshold = 10;
-            const allBandLines = createPointsOfBandLine(element);
 
-            allBandLines.forEach(
-                (item: { x: number; y: number; denomInBase: boolean }[]) => {
-                    const startX = item[0].x;
-                    const startY =
-                        item[0].denomInBase === denomInBase
-                            ? item[0].y
-                            : 1 / item[0].y;
-                    const endX = item[1].x;
-                    const endY =
-                        item[1].denomInBase === denomInBase
-                            ? item[1].y
-                            : 1 / item[1].y;
+            const denomStartY =
+                element[0].denomInBase === denomInBase || isDenomPrices
+                    ? element[0].y
+                    : 1 / element[0].y;
+            const denomEndY =
+                element[0].denomInBase === denomInBase || isDenomPrices
+                    ? element[1].y
+                    : 1 / element[1].y;
 
-                    const distance = distanceToLine(
-                        mouseX,
-                        mouseY,
-                        scaleData.xScale(startX),
-                        scaleData.yScale(startY),
-                        scaleData.xScale(endX),
-                        scaleData.yScale(endY),
-                    );
+            const startY = Math.min(denomStartY, denomEndY);
+            const endY = Math.max(denomStartY, denomEndY);
 
-                    if (distance < threshold) {
-                        isOverLine = true;
-                    }
-                },
-            );
+            const startX = Math.min(element[0].x, element[1].x);
+            const endX = Math.max(element[0].x, element[1].x);
+
+            if (
+                mouseX > scaleData.xScale(startX) - threshold &&
+                mouseX < scaleData.xScale(endX) + threshold &&
+                mouseY < scaleData.yScale(startY) + threshold &&
+                mouseY > scaleData.yScale(endY) - threshold
+            ) {
+                isOverLine = true;
+            }
         }
 
         return isOverLine;
@@ -3686,29 +4507,120 @@ export default function Chart(props: propsIF) {
         return false;
     }
 
+    function checkSwapLoation(
+        element: lineData[],
+        mouseX: number,
+        mouseY: number,
+        diameter: number,
+    ) {
+        if (scaleData && circleScale) {
+            const startX = scaleData.xScale(element[0].x);
+            const startY = scaleData.yScale(element[0].y);
+
+            const circleDiameter = Math.sqrt(circleScale(diameter) / Math.PI);
+
+            let distance = false;
+
+            if (
+                startX < mouseX + circleDiameter &&
+                startY < mouseY + circleDiameter &&
+                startX > mouseX - circleDiameter &&
+                startY > mouseY - circleDiameter
+            ) {
+                distance = true;
+            }
+
+            return distance;
+        }
+
+        return false;
+    }
+
+    function checkFibonacciLocation(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data: any,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        extraData: any,
+        mouseX: number,
+        mouseY: number,
+        denomInBase: boolean,
+    ) {
+        if (scaleData) {
+            const fibLineData = calculateFibRetracement(data, extraData);
+
+            const startX = fibLineData[0][0].x;
+            const endX = fibLineData[0][1].x;
+            const tempStartXLocation = scaleData.xScale(startX);
+            const tempEndXLocation = scaleData.xScale(endX);
+
+            const threshold = 10;
+
+            const startXLocation = Math.min(
+                tempStartXLocation,
+                tempEndXLocation,
+            );
+            const endXLocation = Math.max(tempStartXLocation, tempEndXLocation);
+
+            let startY = Number.MAX_VALUE;
+            let endY = Number.MIN_VALUE;
+
+            for (const items of fibLineData) {
+                for (const item of items) {
+                    startY = Math.min(startY, item.y);
+                    endY = Math.max(endY, item.y);
+                }
+            }
+
+            startY = data[0].denomInBase === denomInBase ? startY : 1 / startY;
+            endY = data[0].denomInBase === denomInBase ? endY : 1 / endY;
+
+            const tempStartYLocation = scaleData.yScale(startY);
+            const tempEndYLocation = scaleData.yScale(endY);
+
+            const startYLocation = Math.min(
+                tempStartYLocation,
+                tempEndYLocation,
+            );
+            const endYLocation = Math.max(tempStartYLocation, tempEndYLocation);
+
+            const isIncludeX =
+                startXLocation - threshold < mouseX &&
+                mouseX < endXLocation + threshold;
+
+            const isIncludeY =
+                startYLocation - threshold < mouseY &&
+                mouseY < endYLocation + threshold;
+
+            return isIncludeX && isIncludeY;
+        }
+    }
+
     const drawnShapesHoverStatus = (mouseX: number, mouseY: number) => {
         let resElement = undefined;
 
         drawnShapeHistory.forEach((element) => {
             const isShapeInCurrentPool =
-                JSON.stringify(currentPool.tokenA) ===
-                    JSON.stringify(
-                        isTokenABase === element.pool.isTokenABase
-                            ? element.pool.tokenA
-                            : element.pool.tokenB,
-                    ) &&
-                JSON.stringify(currentPool.tokenB) ===
-                    JSON.stringify(
-                        isTokenABase === element.pool.isTokenABase
-                            ? element.pool.tokenB
-                            : element.pool.tokenA,
-                    );
+                currentPool.tokenA.address ===
+                    (isTokenABase === element.pool.isTokenABase
+                        ? element.pool.tokenA
+                        : element.pool.tokenB) &&
+                currentPool.tokenB.address ===
+                    (isTokenABase === element.pool.isTokenABase
+                        ? element.pool.tokenB
+                        : element.pool.tokenA);
 
             if (isShapeInCurrentPool) {
-                if (element.type === 'Brush' || element.type === 'Angle') {
+                if (element.type === 'FibRetracement') {
+                    const data = structuredClone(element.data);
+
+                    if (element.reverse) {
+                        [data[0], data[1]] = [data[1], data[0]];
+                    }
+
                     if (
-                        checkLineLocation(
-                            element.data,
+                        checkFibonacciLocation(
+                            data,
+                            element.extraData,
                             mouseX,
                             mouseY,
                             denomInBase,
@@ -3718,11 +4630,91 @@ export default function Chart(props: propsIF) {
                     }
                 }
 
-                if (element.type === 'Square') {
-                    if (checkRectLocation(element.data, mouseX, mouseY)) {
+                if (element.type === 'Brush' || element.type === 'Angle') {
+                    const lineData: Array<lineData[]> = [];
+                    lineData.push(element.data);
+
+                    lineData.forEach((line) => {
+                        if (
+                            checkLineLocation(line, mouseX, mouseY, denomInBase)
+                        ) {
+                            resElement = element;
+                        }
+                    });
+                }
+
+                if (element.type === 'Rect' || element.type === 'DPRange') {
+                    if (element.type === 'DPRange' && scaleData) {
+                        const endY =
+                            element.data[1].denomInBase === denomInBase
+                                ? element.data[1].y
+                                : 1 / element.data[1].y;
+                        const startY =
+                            element.data[0].denomInBase === denomInBase
+                                ? element.data[0].y
+                                : 1 / element.data[0].y;
+
+                        const dpRangeTooltipData: lineData[] = [
+                            {
+                                x: scaleData.xScale.invert(
+                                    scaleData.xScale(
+                                        Math.min(
+                                            element.data[0].x,
+                                            element.data[1].x,
+                                        ) +
+                                            Math.abs(
+                                                element.data[0].x -
+                                                    element.data[1].x,
+                                            ) /
+                                                2,
+                                    ) - 90,
+                                ),
+                                y: scaleData.yScale.invert(
+                                    scaleData.yScale(endY) +
+                                        (endY > startY ? -15 : 15),
+                                ),
+                                denomInBase: element.data[0].denomInBase,
+                            },
+                            {
+                                x: scaleData.xScale.invert(
+                                    scaleData.xScale(
+                                        Math.min(
+                                            element.data[0].x,
+                                            element.data[1].x,
+                                        ) +
+                                            Math.abs(
+                                                element.data[0].x -
+                                                    element.data[1].x,
+                                            ) /
+                                                2,
+                                    ) + 90,
+                                ),
+                                y: scaleData.yScale.invert(
+                                    scaleData.yScale(endY) +
+                                        (endY > startY ? -80 : 80),
+                                ),
+                                denomInBase: element.data[1].denomInBase,
+                            },
+                        ];
+
+                        if (
+                            checkRectLocation(
+                                dpRangeTooltipData,
+                                mouseX,
+                                mouseY,
+                                true,
+                            )
+                        ) {
+                            resElement = element;
+                        }
+                    }
+                    if (
+                        checkRectLocation(element.data, mouseX, mouseY, false)
+                    ) {
                         resElement = element;
                     }
                 }
+
                 if (element.type === 'Ray') {
                     if (
                         checkRayLineLocation(
@@ -3739,7 +4731,7 @@ export default function Chart(props: propsIF) {
         });
 
         if (resElement && scaleData) {
-            const selectedCircle = checkCricleLocation(
+            const selectedCircle = checkCircleLocation(
                 resElement,
                 mouseX,
                 mouseY,
@@ -3758,6 +4750,118 @@ export default function Chart(props: propsIF) {
             setHoveredDrawnShape(undefined);
         }
     };
+
+    useEffect(() => {
+        if (userTransactionData) {
+            const domainRight = d3.max(userTransactionData, (data) => {
+                if (data.entityType === 'swap') return data.totalValueUSD;
+            });
+            const domainLeft = d3.min(userTransactionData, (data) => {
+                if (data.entityType === 'swap') return data.totalValueUSD;
+            });
+
+            if (domainRight && domainLeft) {
+                const scale = d3
+                    .scaleLinear()
+                    .range([1000, 3000])
+                    .domain([domainLeft, domainRight]);
+
+                setCircleScale(() => {
+                    return scale;
+                });
+            }
+        }
+    }, [userTransactionData, denomInBase]);
+
+    const handleCardClick = (tx: TransactionIF): void => {
+        setSelectedDate(undefined);
+        setOutsideControl(true);
+        setSelectedOutsideTab(0);
+        setShowAllData(false);
+        setCurrentTxActiveInTransactions(tx.txId);
+    };
+
+    useEffect(() => {
+        if (!hoverOHTooltip) {
+            setHoveredOrderHistory(undefined);
+            setIsHoveredOrderHistory(false);
+        }
+    }, [hoverOHTooltip]);
+
+    const orderHistoryHoverStatus = (
+        mouseX: number,
+        mouseY: number,
+        onClick: boolean,
+    ) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let resElement: any = undefined;
+
+        if (scaleData && userTransactionData) {
+            userTransactionData.forEach((element) => {
+                if (element.entityType === 'swap' && showSwap) {
+                    const swapOrderData = [
+                        {
+                            x: element.txTime * 1000,
+                            y: denomInBase
+                                ? element.swapInvPriceDecimalCorrected
+                                : element.swapPriceDecimalCorrected,
+                            denomInBase: denomInBase,
+                        },
+                    ];
+                    if (
+                        checkSwapLoation(
+                            swapOrderData,
+                            mouseX,
+                            mouseY,
+                            element.totalValueUSD,
+                        )
+                    ) {
+                        resElement = element;
+                    }
+                }
+            });
+
+            if (resElement && scaleData) {
+                setHoveredOrderHistory(() => {
+                    return resElement;
+                });
+                setIsHoveredOrderHistory(true);
+                setHoverOHTooltip(true);
+            } else {
+                setHoveredOrderTooltipPlacement(() => undefined);
+                setHoveredOrderHistory(() => undefined);
+                setIsHoveredOrderHistory(false);
+                setHoverOHTooltip(false);
+            }
+
+            if (onClick && scaleData) {
+                if (resElement) {
+                    const shouldSelect = selectedOrderHistory
+                        ? resElement.txId !== selectedOrderHistory?.txId
+                        : true;
+
+                    shouldSelect && handleCardClick(resElement);
+
+                    setSelectedOrderHistory(() => {
+                        return shouldSelect ? resElement : undefined;
+                    });
+
+                    setIsSelectedOrderHistory(() => {
+                        !shouldSelect && setCurrentTxActiveInTransactions('');
+                        return shouldSelect;
+                    });
+                } else {
+                    setCurrentTxActiveInTransactions('');
+                    setSelectedOrderHistory(undefined);
+                    setIsSelectedOrderHistory(false);
+                }
+            }
+
+            return { order: resElement, isClicked: onClick };
+        }
+        return undefined;
+    };
+
     const candleOrVolumeDataHoverStatus = (mouseX: number, mouseY: number) => {
         const lastDate = scaleData?.xScale.invert(
             mouseX + bandwidth / 2,
@@ -3772,8 +4876,6 @@ export default function Chart(props: propsIF) {
 
         const xmin = scaleData?.xScale.domain()[0] as number;
         const xmax = scaleData?.xScale.domain()[1] as number;
-        const ymin = scaleData?.yScale.domain()[0] as number;
-        const ymax = scaleData?.yScale.domain()[1] as number;
 
         visibleCandleData.map((d: CandleDataIF) => {
             avaregeHeight =
@@ -3796,7 +4898,7 @@ export default function Chart(props: propsIF) {
             }
         });
 
-        const minHeight = avaregeHeight / unparsedCandleData.length;
+        const minHeight = avaregeHeight / visibleCandleData.length;
 
         longestValue = longestValue / 2;
 
@@ -3901,7 +5003,7 @@ export default function Chart(props: propsIF) {
             props.setCurrentVolumeData(nearest?.volumeUSD);
         } else if (selectedDate) {
             props.setCurrentVolumeData(
-                unparsedCandleData.find(
+                visibleCandleData.find(
                     (item: CandleDataIF) => item.time * 1000 === selectedDate,
                 )?.volumeUSD,
             );
@@ -3918,35 +5020,29 @@ export default function Chart(props: propsIF) {
             checkYLocation &&
             scaleData
         ) {
-            const canvas = d3
-                .select(d3CanvasMain.current)
-                .select('canvas')
-                .node() as HTMLCanvasElement;
+            if (mainCanvasBoundingClientRect) {
+                const ymin = scaleData?.yScale.domain()[0] as number;
+                const ymax = scaleData?.yScale.domain()[1] as number;
+                const tempOpen = Math.max(open, close);
+                const tempClose = Math.min(open, close);
 
-            const rect = canvas.getBoundingClientRect();
+                const localOpen = Math.min(tempOpen, ymax);
+                const localClose = Math.max(ymin, tempClose);
 
-            const rectTop = rect.top / 2.5;
+                const location =
+                    mainCanvasBoundingClientRect.top +
+                    scaleData.yScale((localOpen + localClose) / 2) -
+                    30;
 
-            const maxValue = Math.max(open, close);
-            const minValue = Math.min(open, close);
+                setLastCandleDataCenterY(location);
 
-            const checkDomain = maxValue > ymax && minValue < ymin;
-
-            if (checkDomain || chartHeights < 250) {
-                setLastCandleDataCenter(scaleData.yScale((ymin + ymax) / 2));
-            } else if (
-                scaleData.yScale(ymin) - scaleData?.yScale(maxValue) < 100 ||
-                ymin > minValue
-            ) {
-                setLastCandleDataCenter(scaleData.yScale(maxValue) - rectTop);
-            } else if (
-                scaleData?.yScale(maxValue) - scaleData.yScale(ymax) <
-                5
-            ) {
-                setLastCandleDataCenter(scaleData.yScale(minValue));
-            } else {
-                setLastCandleDataCenter(scaleData.yScale((open + close) / 2));
+                const positionX =
+                    mainCanvasBoundingClientRect.left +
+                    scaleData?.xScale(lastCandleData?.time * 1000) +
+                    bandwidth * 2;
+                setLastCandleDataCenterX(positionX);
             }
+
             setIsShowLastCandleTooltip(true);
         } else {
             setIsShowLastCandleTooltip(false);
@@ -3975,7 +5071,7 @@ export default function Chart(props: propsIF) {
             if (selectedDate === undefined || selectedDate !== _selectedDate) {
                 props.setCurrentData(nearest);
 
-                const volumeData = unparsedCandleData.find(
+                const volumeData = visibleCandleData.find(
                     (item: CandleDataIF) => item.time * 1000 === _selectedDate,
                 ) as CandleDataIF;
 
@@ -3985,6 +5081,7 @@ export default function Chart(props: propsIF) {
             } else {
                 setSelectedDate(undefined);
             }
+            render();
         }
     };
 
@@ -4041,14 +5138,37 @@ export default function Chart(props: propsIF) {
     };
     const mousemove = (event: MouseEvent<HTMLDivElement>) => {
         if (scaleData && mainCanvasBoundingClientRect) {
-            const offsetY = event.clientY - mainCanvasBoundingClientRect?.top;
-            const offsetX = event.clientX - mainCanvasBoundingClientRect?.left;
+            const { offsetX, offsetY } = getXandYLocationForChart(
+                event,
+                mainCanvasBoundingClientRect,
+            );
+
             if (!isLineDrag) {
                 setChartMousemoveEvent(event);
                 setCrossHairDataFunc(offsetX, offsetY);
+
                 const { isHoverCandleOrVolumeData } =
                     candleOrVolumeDataHoverStatus(offsetX, offsetY);
-                setIsOnCandleOrVolumeMouseLocation(isHoverCandleOrVolumeData);
+
+                let isOrderHistorySelected = undefined;
+                if (
+                    showSwap &&
+                    !isDragActive &&
+                    activeDrawingType === 'Cross'
+                ) {
+                    isOrderHistorySelected = orderHistoryHoverStatus(
+                        offsetX,
+                        offsetY,
+                        false,
+                    );
+                }
+
+                setIsOnCandleOrVolumeMouseLocation(
+                    isOrderHistorySelected !== undefined &&
+                        isOrderHistorySelected.order !== undefined
+                        ? true
+                        : isHoverCandleOrVolumeData,
+                );
 
                 drawnShapesHoverStatus(offsetX, offsetY);
             }
@@ -4072,7 +5192,14 @@ export default function Chart(props: propsIF) {
                 relocateTooltip(xAxisTooltip, lastCrDate);
             }
         }
-    }, [xAxisActiveTooltip, xAxisTooltip, isCrDataIndActive, lastCrDate]);
+    }, [
+        xAxisActiveTooltip,
+        xAxisTooltip,
+        isCrDataIndActive,
+        lastCrDate,
+        mainCanvasBoundingClientRect,
+        xAxisHeightPixel,
+    ]);
 
     useEffect(() => {
         if (xAxisTooltip && scaleData && xAxisActiveTooltip === 'egg') {
@@ -4087,20 +5214,31 @@ export default function Chart(props: propsIF) {
                 relocateTooltip(xAxisTooltip, timeOfEndCandle);
             }
         }
-    }, [xAxisTooltip, xAxisActiveTooltip, timeOfEndCandle]);
+    }, [
+        xAxisTooltip,
+        xAxisActiveTooltip,
+        timeOfEndCandle,
+        mainCanvasBoundingClientRect,
+        xAxisHeightPixel,
+    ]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const relocateTooltip = (tooltip: any, data: number) => {
         if (tooltip && scaleData) {
             const width = tooltip.style('width').split('p')[0] / 2;
-            const d3ContainerCanvas = d3
-                .select(d3Container.current)
-                .node() as HTMLDivElement;
 
-            const rectContainer = d3ContainerCanvas.getBoundingClientRect();
+            const xAxisNode = d3.select(d3XaxisRef.current).node();
+            const xAxisTop = xAxisNode?.getBoundingClientRect().top;
             tooltip
-                .style('top', rectContainer.height + 'px')
-                .style('left', scaleData.xScale(data) - width + 'px');
+                .style(
+                    'top',
+                    (xAxisTop && mainCanvasBoundingClientRect
+                        ? xAxisTop - mainCanvasBoundingClientRect.top
+                        : 0) -
+                        xAxisHeightPixel +
+                        'px',
+                )
+                .style('left', scaleData.xScale(data) - width / 1.5 + 'px');
         }
     };
     useEffect(() => {
@@ -4128,7 +5266,7 @@ export default function Chart(props: propsIF) {
     // Candle transactions
     useEffect(() => {
         if (selectedDate !== undefined) {
-            const candle = unparsedCandleData.find(
+            const candle = visibleCandleData.find(
                 (candle: CandleDataIF) => candle.time * 1000 === selectedDate,
             );
 
@@ -4138,7 +5276,8 @@ export default function Chart(props: propsIF) {
         } else {
             props.changeState(false, undefined);
         }
-    }, [selectedDate, unparsedCandleData]);
+        render();
+    }, [selectedDate, visibleCandleData]);
 
     const onBlurRange = (
         range: lineValue[],
@@ -4239,13 +5378,19 @@ export default function Chart(props: propsIF) {
 
             setLineSeries(() => lineSeries);
 
-            const dashedLineSeries = createLinearLineSeries(
-                scaleData?.xScale,
+            const annotationLineSeries = createAnnotationLineSeries(
+                scaleData?.xScale.copy(),
                 scaleData?.yScale,
                 denomInBase,
             );
 
-            setDashedLineSeries(() => dashedLineSeries);
+            annotationLineSeries.decorate(
+                (context: CanvasRenderingContext2D) => {
+                    context.fillStyle = 'transparent';
+                },
+            );
+
+            setAnnotationLineSeries(() => annotationLineSeries);
         }
     }, [scaleData, denomInBase]);
 
@@ -4326,7 +5471,102 @@ export default function Chart(props: propsIF) {
         poolPriceDisplay,
         isChartZoom,
         selectedDrawnShape,
+        isUpdatingShape,
     };
+
+    const calculateOrderHistoryTooltipPlacements = () => {
+        if (scaleData && circleScale) {
+            const scale = d3.scaleLinear().range([60, 75]).domain([1000, 3000]);
+
+            if (isHoveredOrderHistory && hoveredOrderHistory) {
+                setHoveredOrderTooltipPlacement(() => {
+                    const top = scaleData.yScale(
+                        denomInBase
+                            ? hoveredOrderHistory.swapInvPriceDecimalCorrected
+                            : hoveredOrderHistory.swapPriceDecimalCorrected,
+                    );
+
+                    const tempPlace =
+                        scaleData?.xScale(hoveredOrderHistory.txTime * 1000) +
+                        scale(circleScale(hoveredOrderHistory.totalValueUSD));
+
+                    const isOverLeft =
+                        isSelectedOrderHistory &&
+                        selectedOrderTooltipPlacement &&
+                        ((tempPlace + 75 <
+                            selectedOrderTooltipPlacement.left + 75 &&
+                            tempPlace + 75 >
+                                selectedOrderTooltipPlacement.left - 75) ||
+                            (tempPlace - 75 <
+                                selectedOrderTooltipPlacement.left + 75 &&
+                                tempPlace - 75 >
+                                    selectedOrderTooltipPlacement.left - 75));
+
+                    const isOverTop =
+                        isSelectedOrderHistory &&
+                        selectedOrderTooltipPlacement &&
+                        ((selectedOrderTooltipPlacement.top - 35 < top + 35 &&
+                            selectedOrderTooltipPlacement.top - 35 >
+                                top - 35) ||
+                            (selectedOrderTooltipPlacement.top + 35 >
+                                top - 35 &&
+                                selectedOrderTooltipPlacement.top + 35 <
+                                    top + 35));
+
+                    const left =
+                        scaleData?.xScale(hoveredOrderHistory.txTime * 1000) +
+                        (isOverLeft && isOverTop
+                            ? -scale(
+                                  circleScale(
+                                      hoveredOrderHistory.totalValueUSD,
+                                  ),
+                              ) +
+                              (circleScale(hoveredOrderHistory.totalValueUSD) <
+                              1500
+                                  ? -105
+                                  : -90)
+                            : +scale(
+                                  circleScale(
+                                      hoveredOrderHistory.totalValueUSD,
+                                  ),
+                              ));
+
+                    return {
+                        top,
+                        left,
+                        isOnLeftSide: !!(isOverLeft && isOverTop),
+                    };
+                });
+            }
+
+            if (isSelectedOrderHistory && selectedOrderHistory) {
+                setSelectedOrderTooltipPlacement(() => {
+                    const top = scaleData.yScale(
+                        denomInBase
+                            ? selectedOrderHistory.swapInvPriceDecimalCorrected
+                            : selectedOrderHistory.swapPriceDecimalCorrected,
+                    );
+                    const left =
+                        scaleData?.xScale(selectedOrderHistory.txTime * 1000) +
+                        scale(circleScale(selectedOrderHistory.totalValueUSD));
+
+                    return { top, left, isOnLeftSide: false };
+                });
+            }
+        }
+    };
+
+    useEffect(() => {
+        calculateOrderHistoryTooltipPlacements();
+    }, [
+        isSelectedOrderHistory,
+        isHoveredOrderHistory,
+        diffHashSig(selectedOrderHistory),
+        diffHashSig(hoveredOrderHistory),
+        diffHashSigScaleData(scaleData),
+        reset,
+        denomInBase,
+    ]);
 
     return (
         <div
@@ -4343,14 +5583,15 @@ export default function Chart(props: propsIF) {
                         height: '100%',
                     }}
                 >
-                    <div className='chart_grid'>
-                        <Toolbar
-                            activeDrawingType={activeDrawingType}
-                            setActiveDrawingType={setActiveDrawingType}
-                            isToolbarOpen={isToolbarOpen}
-                            setIsToolbarOpen={setIsToolbarOpen}
-                        />
-
+                    <div
+                        className='chart_grid'
+                        id='chart_grid'
+                        style={{
+                            gridTemplateColumns:
+                                toolbarWidth +
+                                'px auto 1fr auto minmax(1em, max-content)',
+                        }}
+                    >
                         <CandleChart
                             chartItemStates={props.chartItemStates}
                             data={visibleCandleData}
@@ -4361,6 +5602,8 @@ export default function Chart(props: propsIF) {
                             selectedDate={selectedDate}
                             showLatest={showLatest}
                             setBandwidth={setBandwidth}
+                            prevlastCandleTime={prevlastCandleTime}
+                            setPrevLastCandleTime={setPrevLastCandleTime}
                         />
 
                         <VolumeBarCanvas
@@ -4386,8 +5629,33 @@ export default function Chart(props: propsIF) {
                                 mainCanvasBoundingClientRect={
                                     mainCanvasBoundingClientRect
                                 }
+                                setLiqMaxActiveLiq={setLiqMaxActiveLiq}
                             />
                         )}
+
+                        {(showSwap || showLiquidity || showHistorical) &&
+                            circleScale &&
+                            scaleData && (
+                                <OrderHistoryCanvas
+                                    scaleData={scaleData}
+                                    denomInBase={denomInBase}
+                                    showSwap={showSwap}
+                                    showLiquidity={showLiquidity}
+                                    showHistorical={showHistorical}
+                                    hoveredOrderHistory={hoveredOrderHistory}
+                                    isHoveredOrderHistory={
+                                        isHoveredOrderHistory
+                                    }
+                                    drawSettings={drawSettings}
+                                    userTransactionData={userTransactionData}
+                                    circleScale={circleScale}
+                                    isSelectedOrderHistory={
+                                        isSelectedOrderHistory
+                                    }
+                                    selectedOrderHistory={selectedOrderHistory}
+                                />
+                            )}
+
                         <d3fc-canvas
                             ref={d3CanvasCrosshair}
                             className='cr-canvas'
@@ -4409,6 +5677,7 @@ export default function Chart(props: propsIF) {
                         <d3fc-canvas
                             ref={d3CanvasMain}
                             className='main-canvas'
+                            id={mainCanvasElementId}
                         ></d3fc-canvas>
 
                         {activeDrawingType !== 'Cross' && scaleData && (
@@ -4421,6 +5690,21 @@ export default function Chart(props: propsIF) {
                                 setSelectedDrawnShape={setSelectedDrawnShape}
                                 denomInBase={denomInBase}
                                 addDrawActionStack={addDrawActionStack}
+                                period={period}
+                                crosshairData={crosshairData}
+                                snapForCandle={snapForCandle}
+                                visibleCandleData={visibleCandleData}
+                                render={render}
+                                zoomBase={zoomBase}
+                                setIsChartZoom={setIsChartZoom}
+                                isChartZoom={isChartZoom}
+                                lastCandleData={lastCandleData}
+                                firstCandleData={firstCandleData}
+                                isMagnetActive={isMagnetActive}
+                                drawSettings={drawSettings}
+                                quoteTokenDecimals={quoteTokenDecimals}
+                                baseTokenDecimals={baseTokenDecimals}
+                                setIsUpdatingShape={setIsUpdatingShape}
                             />
                         )}
 
@@ -4437,6 +5721,14 @@ export default function Chart(props: propsIF) {
                                 setIsUpdatingShape={setIsUpdatingShape}
                                 denomInBase={denomInBase}
                                 addDrawActionStack={addDrawActionStack}
+                                snapForCandle={snapForCandle}
+                                visibleCandleData={visibleCandleData}
+                                zoomBase={zoomBase}
+                                setIsChartZoom={setIsChartZoom}
+                                isChartZoom={isChartZoom}
+                                lastCandleData={lastCandleData}
+                                firstCandleData={firstCandleData}
+                                setIsDragActive={setIsDragActive}
                             />
                         )}
                         <YAxisCanvas {...yAxisCanvasProps} />
@@ -4470,6 +5762,8 @@ export default function Chart(props: propsIF) {
                                 isChartZoom={isChartZoom}
                                 lastCandleData={lastCandleData}
                                 firstCandleData={firstCandleData}
+                                isToolbarOpen={isToolbarOpen}
+                                toolbarWidth={toolbarWidth}
                             />
                         </>
                     )}
@@ -4503,6 +5797,8 @@ export default function Chart(props: propsIF) {
                                 isChartZoom={isChartZoom}
                                 zoomBase={zoomBase}
                                 setIsChartZoom={setIsChartZoom}
+                                isToolbarOpen={isToolbarOpen}
+                                toolbarWidth={toolbarWidth}
                             />
                         </>
                     )}
@@ -4534,6 +5830,9 @@ export default function Chart(props: propsIF) {
                             isChartZoom={isChartZoom}
                             isToolbarOpen={isToolbarOpen}
                             selectedDrawnShape={selectedDrawnShape}
+                            toolbarWidth={toolbarWidth}
+                            d3Xaxis={d3XaxisRef}
+                            isUpdatingShape={isUpdatingShape}
                         />
                     </div>
                 </div>
@@ -4544,9 +5843,11 @@ export default function Chart(props: propsIF) {
                     mainCanvasBoundingClientRect={mainCanvasBoundingClientRect}
                     setDrawnShapeHistory={setDrawnShapeHistory}
                     setSelectedDrawnShape={setSelectedDrawnShape}
+                    setIsDragActive={setIsDragActive}
                     deleteItem={deleteItem}
                     setIsShapeEdited={setIsShapeEdited}
                     addDrawActionStack={addDrawActionStack}
+                    drawnShapeHistory={drawnShapeHistory}
                 />
             )}
 
@@ -4561,15 +5862,13 @@ export default function Chart(props: propsIF) {
                         className='lastCandleDiv'
                         style={{
                             fontSize: chartHeights > 280 ? 'medium' : '12px',
-                            top: lastCandleDataCenter,
-                            left:
-                                scaleData?.xScale(lastCandleData?.time * 1000) +
-                                bandwidth * 2,
+                            top: lastCandleDataCenterY,
+                            left: lastCandleDataCenterX,
                         }}
                     >
                         <div>
-                            A placeholder candle to align the latest candle
-                            close price with the current pool price{' '}
+                            A placeholder candle to align the latest close price
+                            with the current pool price{' '}
                         </div>
                         <Divider />
                         <div>
@@ -4579,6 +5878,49 @@ export default function Chart(props: propsIF) {
                     </div>
                 </CSSTransition>
             )}
+
+            {scaleData &&
+                showSwap &&
+                hoveredOrderHistory &&
+                hoveredOrderHistory.txId !== selectedOrderHistory?.txId &&
+                hoveredOrderTooltipPlacement && (
+                    <OrderHistoryTooltip
+                        hoveredOrderHistory={hoveredOrderHistory}
+                        isHoveredOrderHistory={isHoveredOrderHistory}
+                        denomInBase={denomInBase}
+                        hoveredOrderTooltipPlacement={
+                            hoveredOrderTooltipPlacement
+                        }
+                        handleCardClick={handleCardClick}
+                        setSelectedOrderHistory={setSelectedOrderHistory}
+                        setIsSelectedOrderHistory={setIsSelectedOrderHistory}
+                        pointerEvents={
+                            !isDragActive && activeDrawingType === 'Cross'
+                        }
+                        setHoverOHTooltip={setHoverOHTooltip}
+                    />
+                )}
+
+            {scaleData &&
+                showSwap &&
+                selectedOrderHistory &&
+                selectedOrderTooltipPlacement && (
+                    <OrderHistoryTooltip
+                        hoveredOrderHistory={selectedOrderHistory}
+                        isHoveredOrderHistory={isSelectedOrderHistory}
+                        denomInBase={denomInBase}
+                        hoveredOrderTooltipPlacement={
+                            selectedOrderTooltipPlacement
+                        }
+                        handleCardClick={handleCardClick}
+                        setSelectedOrderHistory={setSelectedOrderHistory}
+                        setIsSelectedOrderHistory={setIsSelectedOrderHistory}
+                        pointerEvents={
+                            !isDragActive && activeDrawingType === 'Cross'
+                        }
+                        setHoverOHTooltip={setHoverOHTooltip}
+                    />
+                )}
         </div>
     );
 }

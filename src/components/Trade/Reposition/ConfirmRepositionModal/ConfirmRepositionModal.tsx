@@ -30,6 +30,7 @@ interface propsIF {
     isTokenABase: boolean;
     isPositionInRange: boolean;
     onClose: () => void;
+    slippageTolerance: number;
 }
 
 export default function ConfirmRepositionModal(props: propsIF) {
@@ -52,6 +53,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
         isTokenABase,
         isPositionInRange,
         onClose,
+        slippageTolerance,
     } = props;
 
     const { tokenA, tokenB, isDenomBase } = useContext(TradeDataContext);
@@ -167,6 +169,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
                     pinnedMaxPriceDisplayTruncatedInQuote={
                         pinnedMaxPriceDisplayTruncatedInQuote
                     }
+                    slippageTolerance={slippageTolerance}
                 />
             )}
         </>
@@ -186,7 +189,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
                     ? isPositionInRange
                         ? 'Position Currently In Range'
                         : 'Send Reposition'
-                    : 'Repositioning'
+                    : `Repositioning ${tokenA.symbol} and ${tokenB.symbol}`
             }
             initiate={onSend}
             resetConfirmation={resetConfirmation}

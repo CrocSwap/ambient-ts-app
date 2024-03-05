@@ -1,5 +1,3 @@
-import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
-
 import {
     getChainExplorer,
     getUnicodeCharacter,
@@ -10,9 +8,10 @@ import {
 import { PositionIF } from '../../ambient-utils/types';
 import { useContext, useMemo } from 'react';
 import moment from 'moment';
-import { getAddress } from 'ethers/lib/utils.js';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { useFetchBatch } from '../../App/hooks/useFetchBatch';
+import { UserDataContext } from '../../contexts/UserDataContext';
+import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
 
 export const useProcessRange = (
     position: PositionIF,
@@ -22,6 +21,7 @@ export const useProcessRange = (
     const blockExplorer = getChainExplorer(position.chainId);
 
     const { isDenomBase, poolPriceNonDisplay } = useContext(TradeDataContext);
+    const { ensName: ensNameConnectedUser } = useContext(UserDataContext);
 
     const tokenAAddress = position.base;
     const tokenBAddress = position.quote;
@@ -69,7 +69,11 @@ export const useProcessRange = (
 
     let ensAddress = null;
     if (data && !error) {
-        ensAddress = data.ens_address;
+        // prevent showing ens address if it is the same as the connected user due to async issue when switching tables
+        ensAddress =
+            data.ens_address !== ensNameConnectedUser
+                ? data.ens_address
+                : undefined;
     }
 
     const ensName = ensAddress
@@ -78,31 +82,15 @@ export const useProcessRange = (
         ? position.ensResolution
         : null;
 
-    const ownerId = position.user ? getAddress(position.user) : position.user;
+    // const ownerId = position.user ? getAddress(position.user) : position.user;
 
     const isOwnerActiveAccount =
         position.user.toLowerCase() === account?.toLowerCase();
 
     // -------------------------------POSITION HASH------------------------
 
-    let posHash;
-    if (position.positionType == 'ambient') {
-        posHash = ambientPosSlot(
-            ownerId,
-            position.base,
-            position.quote,
-            position.poolIdx,
-        );
-    } else {
-        posHash = concPosSlot(
-            position.user ?? '',
-            position.base ?? '',
-            position.quote ?? '',
-            position.bidTick ?? 0,
-            position.askTick ?? 0,
-            position.poolIdx ?? 0,
-        ).toString();
-    }
+    const posHash = getPositionHash(position);
+    const serverPositionId = position.serverPositionId;
 
     // -----------------------------POSITIONS RANGE--------------------
     let isPositionInRange = position.isPositionInRange;
@@ -184,6 +172,7 @@ export const useProcessRange = (
 
     const usdValue = getFormattedNumber({
         value: usdValueNum,
+        prefix: '$',
     });
 
     const quantitiesAvailable = baseQty !== undefined || quoteQty !== undefined;
@@ -202,7 +191,7 @@ export const useProcessRange = (
         ? ensName.length > 16
             ? trimString(ensName, 11, 3, '…')
             : ensName
-        : trimString(ownerId, 6, 4, '…');
+        : trimString(position.user, 6, 4, '…');
 
     const posHashTruncated = trimString(posHash.toString(), 9, 0, '…');
 
@@ -218,6 +207,10 @@ export const useProcessRange = (
 
     const elapsedTimeInSecondsNum = positionTime
         ? moment(Date.now()).diff(positionTime * 1000, 'seconds')
+        : 0;
+
+    const elapsedTimeSinceFirstMintInSecondsNum = position.timeFirstMint
+        ? moment(Date.now()).diff(position.timeFirstMint * 1000, 'seconds')
         : 0;
 
     const elapsedTimeString =
@@ -237,10 +230,34 @@ export const useProcessRange = (
                 : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days `
             : 'Pending...';
 
+    const elapsedTimeSinceFirstMintString =
+        elapsedTimeSinceFirstMintInSecondsNum !== undefined
+            ? elapsedTimeSinceFirstMintInSecondsNum < 60
+                ? '< 1 min. '
+                : elapsedTimeSinceFirstMintInSecondsNum < 120
+                ? '1 min. '
+                : elapsedTimeSinceFirstMintInSecondsNum < 3600
+                ? `${Math.floor(
+                      elapsedTimeSinceFirstMintInSecondsNum / 60,
+                  )} min. `
+                : elapsedTimeSinceFirstMintInSecondsNum < 7200
+                ? '1 hour '
+                : elapsedTimeSinceFirstMintInSecondsNum < 86400
+                ? `${Math.floor(
+                      elapsedTimeSinceFirstMintInSecondsNum / 3600,
+                  )} hrs. `
+                : elapsedTimeSinceFirstMintInSecondsNum < 172800
+                ? '1 day '
+                : `${Math.floor(
+                      elapsedTimeSinceFirstMintInSecondsNum / 86400,
+                  )} days `
+            : 'Pending...';
+
     return {
         // wallet and id data
-        ownerId,
+        ownerId: position.user,
         posHash,
+        serverPositionId,
         ensName,
         userMatchesConnectedAccount,
         posHashTruncated,
@@ -291,6 +308,7 @@ export const useProcessRange = (
         width,
         blockExplorer,
         elapsedTimeString,
+        elapsedTimeSinceFirstMintString,
         baseTokenAddress: position.base,
         quoteTokenAddress: position.quote,
     };

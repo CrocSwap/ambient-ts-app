@@ -25,6 +25,7 @@ export const getLimitOrderData = async (
     cachedEnsResolve: FetchAddrFn,
     skipENSFetch?: boolean,
 ): Promise<LimitOrderIF> => {
+    if (!provider) throw Error('Can not proceed without an assigned provider');
     const newOrder = { ...order } as LimitOrderIF;
 
     const baseTokenAddress = order.base;
@@ -67,6 +68,7 @@ export const getLimitOrderData = async (
     newOrder.quoteDecimals = quoteTokenDecimals;
 
     newOrder.baseSymbol = (await baseMetadata)?.symbol ?? '';
+
     newOrder.quoteSymbol = (await quoteMetadata)?.symbol ?? '';
 
     newOrder.baseName = (await baseMetadata)?.name ?? '';

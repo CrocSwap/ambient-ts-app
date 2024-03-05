@@ -4,7 +4,7 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { useLocation } from 'react-router-dom';
 import { TokenIF } from '../../../ambient-utils/types';
-import { getPinnedPriceValuesFromTicks } from '../../Trade/Range/rangeFunctions';
+import { getPinnedPriceValuesFromTicks } from '../../../ambient-utils/dataLayer';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { RangeContext } from '../../../contexts/RangeContext';
 import { createTriangle } from '../ChartUtils/triangle';
@@ -133,7 +133,7 @@ export default function RangeLinesChart(props: propsIF) {
                 return horizontalBand;
             });
         }
-    }, [scaleData]);
+    }, [scaleData, isDenomBase]);
 
     useEffect(() => {
         if (
@@ -160,7 +160,7 @@ export default function RangeLinesChart(props: propsIF) {
                 return newTargets;
             });
         }
-    }, [minPrice, maxPrice, advancedMode, simpleRangeWidth]);
+    }, [minPrice, maxPrice, advancedMode, simpleRangeWidth, topBoundary]);
 
     useEffect(() => {
         if (position !== undefined) {
@@ -219,7 +219,7 @@ export default function RangeLinesChart(props: propsIF) {
                     });
             }
         }
-    }, [ranges, horizontalLine, location.pathname]);
+    }, [ranges, horizontalLine, horizontalBand, triangle, location.pathname]);
 
     useEffect(() => {
         const passValue =

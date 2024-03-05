@@ -22,7 +22,7 @@ export const HomeTitle = styled.div`
 `;
 
 export const HomeContent = styled(FlexContainer)`
-    max-width: 1200px;
+    max-width: 1500px;
     margin: 0 auto;
     list-style-type: none;
     display: flex;
@@ -240,12 +240,10 @@ export const MobileMainLogo = styled(FlexContainer)`
     height: 200px;
     background-size: cover;
     background-position: center center;
+    margin-top: 3rem;
 
     img {
-        width: 200px;
-        height: 100px;
         object-fit: contain;
-        margin-top: 3rem;
     }
 `;
 

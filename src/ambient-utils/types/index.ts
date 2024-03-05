@@ -18,6 +18,9 @@ export * from './token';
 // TransactionIF, TransactionServerIF
 export * from './transaction';
 
+// UserXpIF, XpLeaderboardIF
+export * from './xp';
+
 export * from './fetchBatch';
 
 export * from './GCServerPoolIF';
@@ -28,3 +31,8 @@ export * from './NetworkIF';
 export * from './ScaleDataIF';
 
 export * from './TradeTableDataRow';
+
+export enum RecordType {
+    Position = 'PositionIF',
+    LimitOrder = 'LimitOrderIF',
+}

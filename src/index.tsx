@@ -14,6 +14,7 @@ import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import { InjectedConnector } from 'wagmi/connectors/injected';
 import { GlobalContexts } from './contexts/GlobalContexts';
 import {
+    BLAST_RPC_URL,
     GLOBAL_MODAL_PORTAL_ID,
     supportedNetworks,
 } from './ambient-utils/constants';
@@ -40,15 +41,19 @@ if (!doReload) {
             infuraProvider({
                 apiKey:
                     process.env.REACT_APP_INFURA_KEY ||
-                    '360ea5fda45b4a22883de8522ebd639e', // croc labs #2
+                    '360ea5fda45b4a22883de8522ebd639e', // croc labs #2 // TODO Marking this in the codebase
             }),
 
             jsonRpcProvider({
                 rpc: (chain: Chain) => {
                     if (chain.id === 534352) {
                         return { http: 'https://rpc.scroll.io' };
+                    } else if (chain.id === 81457) {
+                        return { http: BLAST_RPC_URL };
                     } else if (chain.id === 534351) {
                         return { http: 'https://sepolia-rpc.scroll.io' };
+                    } else if (chain.id === 168587773) {
+                        return { http: 'https://sepolia.blast.io' };
                     } else {
                         return { http: '' };
                     }

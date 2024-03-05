@@ -1,7 +1,6 @@
 import { memo, useContext, useEffect, useRef } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
-import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { TransactionIF } from '../../../../../ambient-utils/types';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { txRowConstants } from '../txRowConstants';
@@ -60,11 +59,8 @@ function TransactionRow(props: propsIF) {
     const {
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
-    const {
-        showAllData: showAllDataSelection,
-        currentTxActiveInTransactions,
-        setCurrentTxActiveInTransactions,
-    } = useContext(TradeTableContext);
+    const { showAllData: showAllDataSelection, currentTxActiveInTransactions } =
+        useContext(TradeTableContext);
 
     // only show all data when on trade tab page
     const showAllData = !isAccountView && showAllDataSelection;
@@ -83,17 +79,12 @@ function TransactionRow(props: propsIF) {
         const element = document.getElementById(idForDOM);
         element?.scrollIntoView({
             behavior: 'smooth',
-            block: 'end',
+            block: 'nearest',
             inline: 'nearest',
         });
     }
 
     const activePositionRef = useRef(null);
-
-    const clickOutsideHandler = () => {
-        setCurrentTxActiveInTransactions('');
-    };
-    useOnClickOutside(activePositionRef, clickOutsideHandler);
 
     useEffect(() => {
         tx.txId === currentTxActiveInTransactions ? scrollToDiv() : null;
@@ -129,8 +120,6 @@ function TransactionRow(props: propsIF) {
     const handleKeyPress: React.KeyboardEventHandler<HTMLDivElement> = (
         event,
     ) => {
-        console.log('handleKeyPress');
-
         if (event.key === 'Enter') {
             openDetailsModal();
         } else if (event.ctrlKey && event.key === 'c') {

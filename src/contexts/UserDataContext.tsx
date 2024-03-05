@@ -1,7 +1,15 @@
-import React, { Dispatch, SetStateAction, createContext } from 'react';
+import React, {
+    Dispatch,
+    SetStateAction,
+    createContext,
+    useEffect,
+    useState,
+} from 'react';
 import { useAccount, useConnect, useDisconnect, useEnsName } from 'wagmi';
 import { ConnectArgs, Connector } from '@wagmi/core';
 import { checkBlacklist } from '../ambient-utils/constants';
+import { UserXpIF } from '../ambient-utils/types';
+import { fetchEnsAddress } from '../ambient-utils/api';
 
 interface UserDataContextIF {
     isUserConnected: boolean | undefined;
@@ -18,7 +26,15 @@ interface UserDataContextIF {
     ensName: string | null | undefined;
     resolvedAddressFromContext: string;
     setResolvedAddressInContext: Dispatch<SetStateAction<string>>;
+    secondaryEnsFromContext: string;
+    setSecondaryEnsInContext: Dispatch<SetStateAction<string>>;
 }
+
+export interface UserXpDataIF {
+    dataReceived: boolean;
+    data: UserXpIF | undefined;
+}
+
 export const UserDataContext = createContext<UserDataContextIF>(
     {} as UserDataContextIF,
 );
@@ -27,6 +43,8 @@ export const UserDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const [resolvedAddressFromContext, setResolvedAddressInContext] =
+        React.useState<string>('');
+    const [secondaryEnsFromContext, setSecondaryEnsInContext] =
         React.useState<string>('');
 
     const { address: userAddress, isConnected: isUserConnected } = useAccount();
@@ -47,7 +65,26 @@ export const UserDataContextProvider = (props: {
             if (isBlacklisted) disconnectUser();
         },
     });
-    const { data: ensName } = useEnsName({ address: userAddress });
+    const { data: ensNameFromWagmi } = useEnsName({ address: userAddress });
+
+    const [ensName, setEnsName] = useState('');
+    // check for ENS name account changes
+    useEffect(() => {
+        (async () => {
+            if (ensNameFromWagmi) {
+                setEnsName(ensNameFromWagmi);
+            } else if (userAddress) {
+                try {
+                    const ensResult = await fetchEnsAddress(userAddress);
+                    if (ensResult) setEnsName(ensResult);
+                    else setEnsName('');
+                } catch (error) {
+                    setEnsName('');
+                    console.error({ error });
+                }
+            }
+        })();
+    }, [ensNameFromWagmi, userAddress]);
 
     const userDataContext: UserDataContextIF = {
         isUserConnected,
@@ -61,6 +98,8 @@ export const UserDataContextProvider = (props: {
         pendingConnector,
         resolvedAddressFromContext,
         setResolvedAddressInContext,
+        secondaryEnsFromContext,
+        setSecondaryEnsInContext,
     };
 
     return (
