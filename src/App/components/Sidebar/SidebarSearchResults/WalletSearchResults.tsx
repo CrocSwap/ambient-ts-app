@@ -1,6 +1,10 @@
 import { trimString } from '../../../../ambient-utils/dataLayer';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { Results } from '../../../../styled/Components/Sidebar';
+import {
+    linkGenMethodsIF,
+    useLinkGen,
+} from '../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     searchedWallets: string[];
@@ -8,6 +12,10 @@ interface propsIF {
 
 export default function WalletSearchResults(props: propsIF) {
     const { searchedWallets } = props;
+
+    // hook to generate navigation actions with pre-loaded path to `/account`
+    const linkGenAccount: linkGenMethodsIF = useLinkGen('account');
+
     return (
         <FlexContainer
             flexDirection='column'
@@ -26,9 +34,9 @@ export default function WalletSearchResults(props: propsIF) {
                     fontSize='body'
                     color='text2'
                     padding='4px'
-                    onClick={() => console.log(`clicked wallet ${wallet}`)}
+                    onClick={() => linkGenAccount.navigate(wallet)}
                 >
-                    {trimString(wallet, 20, 18)}
+                    {trimString(wallet, 18, 16)}
                 </Results>
             ))}
         </FlexContainer>
