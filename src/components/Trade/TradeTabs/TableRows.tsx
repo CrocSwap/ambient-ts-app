@@ -58,7 +58,6 @@ function TableRows({
         useState<RangeModalAction>('Harvest');
 
     const closeRangeModal = (modalType: 'action' | 'details') => {
-        setCurrentPositionActive('');
         modalType === 'action' ? closeActionModal() : closeDetailsModal();
         setActiveRecord(undefined);
     };
@@ -96,7 +95,6 @@ function TableRows({
         useState<LimitModalAction>('Remove');
 
     const closeLimitModal = (modalType: 'action' | 'details') => {
-        setCurrentLimitOrderActive('');
         modalType === 'action' ? closeActionModal() : closeDetailsModal();
         setActiveRecord(undefined);
     };
@@ -140,6 +138,7 @@ function TableRows({
         currentPositionActive,
         currentLimitOrderActive,
         currentTxActiveInTransactions,
+        isDetailsModalOpen,
     ]);
 
     const rangeContent = () => {
