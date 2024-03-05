@@ -55,8 +55,8 @@ export const useSidebarSearch = (
     // raw user input from the DOM
     const [rawInput, setRawInput] = useState<string>('');
 
+    // debounced copy of `rawInput` (no sanitization)
     const [dbInput, setDbInput] = useState<string>('');
-
     useEffect(() => {
         const timer = setTimeout(() => setDbInput(rawInput), 400);
         return () => clearTimeout(timer);
@@ -66,13 +66,15 @@ export const useSidebarSearch = (
     type searchType = 'address' | 'nameOrSymbol' | null;
     const [searchAs, setSearchAs] = useState<searchType>(null);
 
-    // value delineating which content set the DOM should render
+    // value delineating which content set the DOM should render, this prevents a
+    // ... flash of token search content before displaying wallet search content
     const [contentGroup, setContentGroup] = useState<contentGroups>('standard');
 
     // cleaned and validated version of raw user input
     const validatedInput = useMemo<string>(() => {
         // trim string and make it lower case
         const cleanInput: string = dbInput.trim().toLowerCase();
+        // logic to determine which type of search to run based on input shape
         if (
             cleanInput.length === 42 ||
             (cleanInput.length === 40 && !cleanInput.startsWith('0x'))
@@ -87,12 +89,12 @@ export const useSidebarSearch = (
             setContentGroup('standard');
             return '';
         }
-        // add '0x' to the front of the cleaned string if not present
-        const fixedInput = cleanInput.startsWith('0x')
+        // declare an output variable
+        let output: string = cleanInput;
+        // extra formatting to handle contract addresses without leading '0x'
+        const fixedInput: string = cleanInput.startsWith('0x')
             ? cleanInput
             : '0x' + cleanInput;
-        // declare an output variable
-        let output = cleanInput;
         // check if string is a correctly-formed contract address
         if (
             // check if string has 42 characters
