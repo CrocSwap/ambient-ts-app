@@ -13,6 +13,8 @@ import ORBIT from './ORBIT.png';
 import BAG from './BAG.png';
 import PUMP from './PUMP.png';
 import $PACM from './$PACM.png';
+import ALIEN from './ALIEN.png';
+import YES from './YES.png';
 
 // export { DAI, ETH, PEPE, USDC, USDT, WBTC, FRAX, BAL };
 export {
@@ -31,4 +33,6 @@ export {
     BAG,
     PUMP,
     $PACM,
+    ALIEN,
+    YES,
 };
