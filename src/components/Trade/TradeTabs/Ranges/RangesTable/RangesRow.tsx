@@ -126,7 +126,7 @@ function RangesRow(props: propsIF) {
         const element = document.getElementById(positionDomId);
         element?.scrollIntoView({
             behavior: 'smooth',
-            block: 'start',
+            block: 'nearest',
             inline: 'nearest',
         });
     }
