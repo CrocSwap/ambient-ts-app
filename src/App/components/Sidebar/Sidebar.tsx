@@ -52,12 +52,15 @@ import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 function Sidebar() {
+    const { sidebar, toggleMobileModeVisibility, hideOnMobile } =
+        useContext(SidebarContext);
+
+    if (hideOnMobile) return null;
+
     const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
         useContext(CachedDataContext);
     const { chainData: chainData } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
-    const { sidebar, toggleMobileModeVisibility, hideOnMobile } =
-        useContext(SidebarContext);
 
     const { positionsByUser, limitOrdersByUser, transactionsByUser } =
         useContext(GraphDataContext);
@@ -354,8 +357,6 @@ function Sidebar() {
             />
         </ContentContainer>
     );
-
-    if (hideOnMobile) return null;
 
     return (
         <FlexContainer
