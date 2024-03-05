@@ -92,9 +92,7 @@ export const useChartSettings = (
         if (numCandlesFetched === undefined) {
             return undefined;
         }
-        // const chartSettings: chartSettingsIF | null = JSON.parse(
-        //     getLocalStorageItem(LS_KEY_CHART_SETTINGS) ?? '{}',
-        // );
+
         let newCandleDuration;
         if (currentCandleTimeGlobal === undefined) {
             if (numCandlesFetched >= 50) {
@@ -129,10 +127,15 @@ export const useChartSettings = (
     };
 
     useEffect(() => {
-        setCandleTimeGlobal((currentCandleTimeGlobal) =>
-            getCandleTime(currentCandleTimeGlobal),
+        const chartSettings: chartSettingsIF | null = JSON.parse(
+            getLocalStorageItem(LS_KEY_CHART_SETTINGS) ?? '{}',
         );
-    }, [numCandlesFetched]);
+        const currentCandleTimeGlobal = chartSettings?.candleTimeGlobal as
+            | TimeInSecondsType
+            | undefined;
+
+        setCandleTimeGlobal(() => getCandleTime(currentCandleTimeGlobal));
+    }, [numCandlesFetched, getLocalStorageItem]);
 
     const [marketOverlay, setMarketOverlay] = useState<OverlayType>(
         getOverlay('market') ?? 'depth',
@@ -155,12 +158,20 @@ export const useChartSettings = (
     // hook to update local storage any time one of the preference primitives changes
     // this must be implemented as a response to change, not in Subchart methods
     useEffect(() => {
+        const chartSettings: chartSettingsIF | null = JSON.parse(
+            getLocalStorageItem(LS_KEY_CHART_SETTINGS) ?? '{}',
+        );
+        const currentCandleTimeGlobal = chartSettings?.candleTimeGlobal as
+            | TimeInSecondsType
+            | undefined;
+
+        const candleTimeToSave = candleTimeGlobal || currentCandleTimeGlobal;
         localStorage.setItem(
             LS_KEY_CHART_SETTINGS,
             JSON.stringify({
                 marketOverlay,
                 poolOverlay,
-                candleTimeGlobal,
+                candleTimeGlobal: candleTimeToSave,
                 // candleTimeMarket,
                 // candleTimePool,
             }),
@@ -171,6 +182,7 @@ export const useChartSettings = (
         // candleTimeMarket,
         // candleTimePool,
         candleTimeGlobal,
+        getLocalStorageItem,
     ]);
 
     // class definition for overlay setting and methods
