@@ -21,11 +21,6 @@ export default function SidebarSearchResults(props: propsIF) {
     const { searchData, cachedPoolStatsFetch, cachedFetchTokenPrice } = props;
     const { isUserConnected } = useContext(UserDataContext);
 
-    // value for control flow to determine what data to show in search results
-    const displaySet: 'token' | 'wallet' = searchData.wallets.length
-        ? 'wallet'
-        : 'token';
-
     return (
         <SearchResultsContainer
             flexDirection='column'
