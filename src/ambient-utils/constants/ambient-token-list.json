@@ -112,6 +112,15 @@
             "logoURI": "https://assets.coingecko.com/coins/images/35417/thumb/bag-cg.png"
         },
         {
+            "address": "0x216A5a1135A9dab49FA9Ad865E0f22FE22b5630A",
+            "chainId": 81457,
+            "decimals": 18,
+            "fromList": "",
+            "name": "PUMP",
+            "symbol": "PUMP",
+            "logoURI": ""
+        },
+        {
             "name": "Native Ether",
             "address": "0x0000000000000000000000000000000000000000",
             "symbol": "ETH",
