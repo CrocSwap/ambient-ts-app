@@ -31,6 +31,7 @@ interface ChainDataContextIF {
     connectedUserXp: UserXpDataIF;
     isActiveNetworkBlast: boolean;
     isActiveNetworkScroll: boolean;
+    isActiveNetworkMainnet: boolean;
     isActiveNetworkL2: boolean;
 }
 
@@ -63,6 +64,7 @@ export const ChainDataContextProvider = (props: {
     const isActiveNetworkScroll = ['0x82750', '0x8274f'].includes(
         chainData.chainId,
     );
+    const isActiveNetworkMainnet = ['0x1'].includes(chainData.chainId);
 
     // array of network IDs for supported L2 networks
     const L2_NETWORKS: string[] = [
@@ -255,6 +257,7 @@ export const ChainDataContextProvider = (props: {
         setGasPriceinGwei,
         isActiveNetworkBlast,
         isActiveNetworkScroll,
+        isActiveNetworkMainnet,
         client,
         isActiveNetworkL2,
     };
