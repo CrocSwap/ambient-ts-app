@@ -1,5 +1,5 @@
 import { capitalConcFactor, concDepositSkew } from '@crocswap-libs/sdk';
-import { memo, useContext, useEffect, useMemo, useState } from 'react';
+import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import Button from '../../../components/Form/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
 
@@ -12,7 +12,10 @@ import RangeTokenInput from '../../../components/Trade/Range/RangeTokenInput/Ran
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
-import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
+import {
+    IS_LOCAL_ENV,
+    NUM_GWEI_IN_ETH,
+} from '../../../ambient-utils/constants';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
@@ -42,7 +45,8 @@ import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import {
     GAS_DROPS_ESTIMATE_POOL,
     NUM_GWEI_IN_WEI,
-    RANGE_BUFFER_MULTIPLIER,
+    RANGE_BUFFER_MULTIPLIER_MAINNET,
+    RANGE_BUFFER_MULTIPLIER_SCROLL,
 } from '../../../ambient-utils/constants/';
 
 export const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
@@ -52,8 +56,10 @@ function Range() {
     const {
         chainData: { chainId, gridSize },
         ethMainnetUsdPrice,
+        crocEnv,
     } = useContext(CrocEnvContext);
-    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { gasPriceInGwei, isActiveNetworkBlast } =
+        useContext(ChainDataContext);
     const { poolPriceDisplay, ambientApy, dailyVol } = useContext(PoolContext);
     const {
         advancedHighTick,
@@ -63,6 +69,7 @@ function Range() {
         setAdvancedLowTick,
         isTokenAPrimaryRange,
         primaryQuantityRange,
+        setPrimaryQuantityRange,
         setIsTokenAPrimaryRange,
         isLinesSwitched,
 
@@ -804,10 +811,25 @@ function Range() {
         setAmountToReduceNativeTokenQtyScroll,
     ] = useState<number>(0.0007);
 
+    const isScroll = chainId === '0x82750' || chainId === '0x8274f';
+    const [l1GasFeePoolInGwei] = useState<number>(
+        isScroll ? 0.0004 * 1e9 : isActiveNetworkBlast ? 0.00025 * 1e9 : 0,
+    );
+    const [extraL1GasFeePool] = useState(
+        isScroll ? 1.5 : isActiveNetworkBlast ? 0.5 : 0,
+    );
+
     const amountToReduceNativeTokenQty =
         chainId === '0x82750' || chainId === '0x8274f'
             ? amountToReduceNativeTokenQtyScroll
             : amountToReduceNativeTokenQtyMainnet;
+
+    const activeRangeTxHash = useRef<string>('');
+
+    // reset activeTxHash when the pair changes or user updates quantity
+    useEffect(() => {
+        activeRangeTxHash.current = '';
+    }, [tokenA.address + tokenB.address, primaryQuantityRange]);
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
@@ -815,20 +837,24 @@ function Range() {
                 gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
 
             setAmountToReduceNativeTokenQtyMainnet(
-                costOfMainnetPoolInETH * RANGE_BUFFER_MULTIPLIER,
+                costOfMainnetPoolInETH * RANGE_BUFFER_MULTIPLIER_MAINNET,
             );
 
-            const costOfScrollPoolInETH =
+            const l2CostOfScrollPoolInETH =
                 gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
 
-            //   IS_LOCAL_ENV &&  console.log({
-            //         gasPriceInGwei,
-            //         costOfScrollPoolInETH,
-            //         amountToReduceNativeTokenQtyScroll,
-            //     });
+            const l1CostOfScrollPoolInETH =
+                l1GasFeePoolInGwei / NUM_GWEI_IN_ETH;
+
+            const costOfScrollPoolInETH =
+                l1CostOfScrollPoolInETH + l2CostOfScrollPoolInETH;
 
             setAmountToReduceNativeTokenQtyScroll(
-                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER,
+                RANGE_BUFFER_MULTIPLIER_MAINNET * costOfScrollPoolInETH,
+            );
+
+            setAmountToReduceNativeTokenQtyScroll(
+                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER_SCROLL,
             );
 
             const gasPriceInDollarsNum =
@@ -838,15 +864,23 @@ function Range() {
                 ethMainnetUsdPrice;
 
             setRangeGasPriceinDollars(
-                getFormattedNumber({
-                    value: gasPriceInDollarsNum,
-                    isUSD: true,
-                }),
+                isActiveNetworkBlast
+                    ? getFormattedNumber({
+                          value: gasPriceInDollarsNum + extraL1GasFeePool,
+                          prefix: '$',
+                      })
+                    : getFormattedNumber({
+                          value: gasPriceInDollarsNum + extraL1GasFeePool,
+                          isUSD: true,
+                      }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice]);
-
-    const { crocEnv } = useContext(CrocEnvContext);
+    }, [
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
+        l1GasFeePoolInGwei,
+        extraL1GasFeePool,
+    ]);
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
@@ -877,6 +911,7 @@ function Range() {
             setTxErrorCode,
             setTxErrorMessage,
             resetConfirmation,
+            activeRangeTxHash,
         });
     };
 
@@ -898,6 +933,12 @@ function Range() {
         }
     };
 
+    const clearTokenInputs = () => {
+        setTokenAInputQty('');
+        setTokenBInputQty('');
+        setPrimaryQuantityRange('');
+    };
+
     const {
         tokenAllowed: tokenAAllowed,
         rangeButtonErrorMessage: rangeButtonErrorMessageTokenA,
@@ -911,6 +952,8 @@ function Range() {
         isPoolInitialized,
         tokenAQtyCoveredByWalletBalance,
         amountToReduceNativeTokenQty,
+        activeRangeTxHash,
+        clearTokenInputs,
     );
     const {
         tokenAllowed: tokenBAllowed,
@@ -925,6 +968,8 @@ function Range() {
         isPoolInitialized,
         tokenBQtyCoveredByWalletBalance,
         amountToReduceNativeTokenQty,
+        activeRangeTxHash,
+        clearTokenInputs,
     );
 
     const { approve, isApprovalPending } = useApprove();
@@ -1070,6 +1115,7 @@ function Range() {
                             pinnedMaxPriceDisplayTruncatedInQuote
                         }
                         onClose={handleModalClose}
+                        slippageTolerance={slippageTolerancePercentage}
                     />
                 ) : (
                     <></>

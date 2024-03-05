@@ -20,8 +20,10 @@ import {
     DEFAULT_SCROLL_GAS_PRICE_IN_GWEI,
     IS_LOCAL_ENV,
     NUM_WEI_IN_GWEI,
-    DEPOSIT_BUFFER_MULTIPLIER,
+    DEPOSIT_BUFFER_MULTIPLIER_MAINNET,
+    DEPOSIT_BUFFER_MULTIPLIER_SCROLL,
     ZERO_ADDRESS,
+    NUM_GWEI_IN_ETH,
 } from '../../../../ambient-utils/constants';
 import { FaGasPump } from 'react-icons/fa';
 import useDebounce from '../../../../App/hooks/useDebounce';
@@ -64,12 +66,13 @@ export default function Deposit(props: propsIF) {
         selectedTokenDecimals,
         setTokenModalOpen = () => null,
     } = props;
+    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
     const {
-        crocEnv,
-        ethMainnetUsdPrice,
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
-    const { gasPriceInGwei } = useContext(ChainDataContext);
+        gasPriceInGwei,
+        isActiveNetworkL2,
+        isActiveNetworkBlast,
+        isActiveNetworkScroll,
+    } = useContext(ChainDataContext);
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -85,30 +88,41 @@ export default function Deposit(props: propsIF) {
 
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
+    const [l1GasFeeLimitInGwei] = useState<number>(
+        isActiveNetworkL2 ? 0.0002 * 1e9 : 0,
+    );
+    const [extraL1GasFeeDeposit] = useState(
+        isActiveNetworkScroll ? 1.25 : isActiveNetworkBlast ? 0.3 : 0,
+    );
+
+    const [depositGasPriceinDollars, setDepositGasPriceinDollars] = useState<
+        string | undefined
+    >();
+
     const amountToReduceNativeTokenQtyMainnet = BigNumber.from(
         Math.ceil(gasPriceInGwei || DEFAULT_MAINNET_GAS_PRICE_IN_GWEI),
     )
         .mul(BigNumber.from(NUM_WEI_IN_GWEI))
         .mul(BigNumber.from(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE))
-        .mul(BigNumber.from(DEPOSIT_BUFFER_MULTIPLIER));
+        .mul(BigNumber.from(DEPOSIT_BUFFER_MULTIPLIER_MAINNET));
 
     const amountToReduceNativeTokenQtyScroll = BigNumber.from(
         Math.ceil(gasPriceInGwei || DEFAULT_SCROLL_GAS_PRICE_IN_GWEI),
     )
         .mul(BigNumber.from(NUM_WEI_IN_GWEI))
         .mul(BigNumber.from(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE))
-        .mul(BigNumber.from(DEPOSIT_BUFFER_MULTIPLIER));
+        .mul(BigNumber.from(DEPOSIT_BUFFER_MULTIPLIER_SCROLL));
 
-    const amountToReduceNativeTokenQty =
-        chainId === '0x82750' || chainId === '0x8274f'
-            ? amountToReduceNativeTokenQtyScroll
-            : amountToReduceNativeTokenQtyMainnet;
+    const amountToReduceNativeTokenQty = isActiveNetworkL2
+        ? amountToReduceNativeTokenQtyScroll
+        : amountToReduceNativeTokenQtyMainnet;
 
     const tokenWalletBalanceAdjustedNonDisplayString =
         isTokenEth && !!tokenWalletBalance
             ? BigNumber.from(tokenWalletBalance)
 
                   .sub(amountToReduceNativeTokenQty)
+                  .sub(BigNumber.from(l1GasFeeLimitInGwei * NUM_GWEI_IN_ETH))
                   .toString()
             : tokenWalletBalance;
 
@@ -263,6 +277,7 @@ export default function Deposit(props: propsIF) {
                 addPendingTx(tx?.hash);
                 if (tx?.hash)
                     addTransactionByType({
+                        userAddress: userAddress || '',
                         txHash: tx.hash,
                         txType: 'Deposit',
                         txDescription: `Deposit ${selectedToken.symbol}`,
@@ -352,10 +367,6 @@ export default function Deposit(props: propsIF) {
         }
     };
 
-    const [depositGasPriceinDollars, setDepositGasPriceinDollars] = useState<
-        string | undefined
-    >();
-
     // calculate price of gas for exchange balance deposit
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
@@ -369,12 +380,12 @@ export default function Deposit(props: propsIF) {
 
             setDepositGasPriceinDollars(
                 getFormattedNumber({
-                    value: gasPriceInDollarsNum,
+                    value: gasPriceInDollarsNum + extraL1GasFeeDeposit,
                     isUSD: true,
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth]);
+    }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth, extraL1GasFeeDeposit]);
 
     return (
         <FlexContainer flexDirection='column' gap={16} padding={'16px'}>

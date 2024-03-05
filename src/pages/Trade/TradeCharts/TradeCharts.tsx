@@ -19,7 +19,10 @@ import TutorialOverlay from '../../../components/Global/TutorialOverlay/Tutorial
 import { tradeChartTutorialSteps } from '../../../utils/tutorial/TradeChart';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChartContext } from '../../../contexts/ChartContext';
-import { LS_KEY_SUBCHART_SETTINGS } from '../../../ambient-utils/constants';
+import {
+    LS_KEY_ORDER_HISTORY_SETTINGS,
+    LS_KEY_SUBCHART_SETTINGS,
+} from '../../../ambient-utils/constants';
 import { getLocalStorageItem } from '../../../ambient-utils/dataLayer';
 import { CandleDataIF } from '../../../ambient-utils/types';
 import { TradeChartsHeader } from './TradeChartsHeader/TradeChartsHeader';
@@ -27,6 +30,8 @@ import { updatesIF } from '../../../utils/hooks/useUrlParams';
 import { FlexContainer } from '../../../styled/Common';
 import { MainContainer } from '../../../styled/Components/Chart';
 import { TutorialButton } from '../../../styled/Components/Tutorial';
+import OrderHistoryDisplay from './TradeChartsComponents/OrderHistoryDisplay';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -36,8 +41,6 @@ interface propsIF {
     ) => void;
     selectedDate: number | undefined;
     setSelectedDate: Dispatch<number | undefined>;
-    setIsChartLoading: Dispatch<React.SetStateAction<boolean>>;
-    isChartLoading: boolean;
     updateURL: (changes: updatesIF) => void;
 }
 export interface LiquidityDataLocal {
@@ -78,6 +81,8 @@ function TradeCharts(props: propsIF) {
         chartCanvasRef,
     } = useContext(ChartContext);
 
+    const { isUserConnected } = useContext(UserDataContext);
+
     const { pathname } = useLocation();
 
     const isMarketOrLimitModule =
@@ -104,6 +109,14 @@ function TradeCharts(props: propsIF) {
         getLocalStorageItem(LS_KEY_SUBCHART_SETTINGS) ?? '{}',
     );
 
+    const orderHistoryState: {
+        isSwapOrderHistoryEnabled: boolean;
+        isLiquidityOrderHistoryEnabled: boolean;
+        isHistoricalOrderHistoryEnabled: boolean;
+    } | null = JSON.parse(
+        getLocalStorageItem(LS_KEY_ORDER_HISTORY_SETTINGS) ?? '{}',
+    );
+
     const [showTvl, setShowTvl] = useState(
         subchartState?.isTvlSubchartEnabled ?? false,
     );
@@ -113,6 +126,15 @@ function TradeCharts(props: propsIF) {
     const [showVolume, setShowVolume] = useState(
         subchartState?.isVolumeSubchartEnabled ?? true,
     );
+    const [showSwap, setShowSwap] = useState(
+        orderHistoryState?.isSwapOrderHistoryEnabled ?? true,
+    );
+    const [showLiquidity, setShowLiquidity] = useState(
+        false, // orderHistoryState?.isLiquidityOrderHistoryEnabled ?? false,
+    );
+    const [showHistorical, setShowHistorical] = useState(
+        false, // orderHistoryState?.isHistoricalOrderHistoryEnabled ?? false,
+    );
 
     const chartItemStates = useMemo(() => {
         return {
@@ -120,6 +142,9 @@ function TradeCharts(props: propsIF) {
             showTvl,
             showVolume,
             liqMode: chartSettings.poolOverlay.overlay,
+            showSwap,
+            showLiquidity,
+            showHistorical,
         };
     }, [
         isMarketOrLimitModule,
@@ -127,7 +152,20 @@ function TradeCharts(props: propsIF) {
         showTvl,
         showVolume,
         showFeeRate,
+        showSwap,
+        showLiquidity,
+        showHistorical,
     ]);
+
+    useEffect(() => {
+        if (!isUserConnected) {
+            setShowSwap(false);
+            setShowLiquidity(false);
+            setShowHistorical(false);
+        } else {
+            setShowSwap(orderHistoryState?.isSwapOrderHistoryEnabled ?? true);
+        }
+    }, [isUserConnected]);
 
     // END OF CHART SETTINGS------------------------------------------------------------
 
@@ -163,6 +201,18 @@ function TradeCharts(props: propsIF) {
                     showFeeRate={showFeeRate}
                 />
             </div>
+            {isUserConnected && (
+                <div>
+                    <OrderHistoryDisplay
+                        setShowHistorical={setShowHistorical}
+                        setShowSwap={setShowSwap}
+                        setShowLiquidity={setShowLiquidity}
+                        showLiquidity={showLiquidity}
+                        showHistorical={showHistorical}
+                        showSwap={showSwap}
+                    />
+                </div>
+            )}
             <div>
                 <CurveDepth overlayMethods={chartSettings.poolOverlay} />
             </div>
@@ -239,8 +289,6 @@ function TradeCharts(props: propsIF) {
                         showLatest={showLatest}
                         setShowLatest={setShowLatest}
                         setShowTooltip={setShowTooltip}
-                        isLoading={props.isChartLoading}
-                        setIsLoading={props.setIsChartLoading}
                         updateURL={updateURL}
                     />
                 </div>

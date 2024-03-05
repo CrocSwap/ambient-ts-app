@@ -46,9 +46,16 @@ export const usePoolStats = (
         })();
     };
 
+    const minuteInterval = Math.floor(Date.now() / 1000 / 60);
+
     useEffect(() => {
         fetchPoolStats(); // NOTE: we assume that a block occurs more frequently than once a minute
-    }, [lastBlockNumber ?? []]);
+    }, [
+        minuteInterval,
+        lastBlockNumber === 0,
+        !!crocEnv,
+        pool.base.address + pool.quote.address,
+    ]);
 
     return [poolVolume ?? '…', poolTvl ?? '…'];
 };

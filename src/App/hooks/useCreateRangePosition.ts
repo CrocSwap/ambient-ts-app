@@ -1,9 +1,10 @@
-import { useContext } from 'react';
+import { MutableRefObject, useContext } from 'react';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
+    parseErrorMessage,
     TransactionError,
 } from '../../utils/TransactionError';
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
@@ -12,12 +13,16 @@ import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { RangeContext } from '../../contexts/RangeContext';
 import { createRangePositionTx } from '../../ambient-utils/dataLayer/transactions/range';
 import { ReceiptContext } from '../../contexts/ReceiptContext';
+import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
+import { UserDataContext } from '../../contexts/UserDataContext';
 
 export function useCreateRangePosition() {
     const {
         crocEnv,
         chainData: { gridSize, poolIndex },
     } = useContext(CrocEnvContext);
+
+    const { userAddress } = useContext(UserDataContext);
 
     const {
         baseToken: { address: baseTokenAddress },
@@ -28,6 +33,7 @@ export function useCreateRangePosition() {
     const {
         addPendingTx,
         addReceipt,
+        addPositionUpdate,
         addTransactionByType,
         removePendingTx,
         updateTransactionHash,
@@ -55,6 +61,7 @@ export function useCreateRangePosition() {
         setTxErrorMessage: (s: string) => void;
         resetConfirmation: () => void;
         setIsTxCompletedRange?: React.Dispatch<React.SetStateAction<boolean>>;
+        activeRangeTxHash: MutableRefObject<string>;
     }) => {
         const {
             slippageTolerancePercentage,
@@ -70,11 +77,22 @@ export function useCreateRangePosition() {
             setTxErrorCode,
             setTxErrorMessage,
             setIsTxCompletedRange,
+            activeRangeTxHash,
         } = params;
 
         if (!crocEnv) return;
 
         let tx;
+
+        const posHash = getPositionHash(undefined, {
+            isPositionTypeAmbient: isAmbient,
+            user: userAddress ?? '',
+            baseAddress: baseToken.address,
+            quoteAddress: quoteToken.address,
+            poolIdx: poolIndex,
+            bidTick: defaultLowTick,
+            askTick: defaultHighTick,
+        });
 
         try {
             tx = await createRangePositionTx({
@@ -97,8 +115,11 @@ export function useCreateRangePosition() {
 
             setNewRangeTransactionHash(tx?.hash);
             addPendingTx(tx?.hash);
+            activeRangeTxHash.current = tx?.hash;
+
             if (tx?.hash)
                 addTransactionByType({
+                    userAddress: userAddress || '',
                     txHash: tx.hash,
                     txAction: 'Add',
                     txType: 'Range',
@@ -119,13 +140,20 @@ export function useCreateRangePosition() {
                         gridSize: gridSize,
                     },
                 });
+
+            addPositionUpdate({
+                txHash: tx.hash,
+                positionID: posHash,
+                isLimit: false,
+                unixTimeAdded: Math.floor(Date.now() / 1000),
+            });
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
             console.error({ error });
             setTxErrorCode(error?.code);
-            setTxErrorMessage(error?.data?.message);
+            setTxErrorMessage(parseErrorMessage(error));
         }
 
         let receipt;
@@ -141,10 +169,17 @@ export function useCreateRangePosition() {
                 removePendingTx(error.hash);
                 const newTransactionHash = error.replacement.hash;
                 addPendingTx(newTransactionHash);
-
+                activeRangeTxHash.current = newTransactionHash;
+                addPositionUpdate({
+                    txHash: newTransactionHash,
+                    positionID: posHash,
+                    isLimit: false,
+                    unixTimeAdded: Math.floor(Date.now() / 1000),
+                });
                 updateTransactionHash(error.hash, error.replacement.hash);
                 setNewRangeTransactionHash(newTransactionHash);
             } else if (isTransactionFailedError(error)) {
+                activeRangeTxHash.current = '';
                 receipt = error.receipt;
             }
         }

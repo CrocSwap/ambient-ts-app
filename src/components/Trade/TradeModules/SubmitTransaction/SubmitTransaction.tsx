@@ -27,6 +27,7 @@ interface propsIF {
         | 'Reposition'
         | 'Remove'
         | 'Harvest'
+        | 'Claim'
         | 'Reset';
     newTransactionHash: string;
     txErrorCode: string;

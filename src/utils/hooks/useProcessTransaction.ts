@@ -231,7 +231,9 @@ export const useProcessTransaction = (
         });
 
         estimatedQuoteFlowDisplay = getFormattedNumber({
-            value: baseFlowAbsNum * middlePriceDisplayNum,
+            value: isDenomBase
+                ? baseFlowAbsNum * middlePriceDisplayNum
+                : baseFlowAbsNum / middlePriceDisplayNum,
             zeroDisplay: '0',
         });
     }
@@ -248,7 +250,9 @@ export const useProcessTransaction = (
             zeroDisplay: '0',
         });
         estimatedBaseFlowDisplay = getFormattedNumber({
-            value: quoteFlowAbsNum / middlePriceDisplayNum,
+            value: isDenomBase
+                ? quoteFlowAbsNum / middlePriceDisplayNum
+                : quoteFlowAbsNum * middlePriceDisplayNum,
             zeroDisplay: '0',
         });
     }

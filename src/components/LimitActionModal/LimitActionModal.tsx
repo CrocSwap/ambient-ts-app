@@ -9,13 +9,13 @@ import {
     TransactionError,
     isTransactionReplacedError,
     isTransactionFailedError,
+    parseErrorMessage,
 } from '../../utils/TransactionError';
 import LimitActionInfo from './LimitActionInfo/LimitActionInfo';
 import LimitActionSettings from './LimitActionSettings/LimitActionSettings';
 import LimitActionTokenHeader from './LimitActionTokenHeader/LimitActionTokenHeader';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { getFormattedNumber } from '../../ambient-utils/dataLayer';
-import { CrocPositionView } from '@crocswap-libs/sdk';
 import ModalHeader from '../Global/ModalHeader/ModalHeader';
 import { LimitActionType } from '../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import Modal from '../Global/Modal/Modal';
@@ -29,6 +29,7 @@ import {
     GAS_DROPS_ESTIMATE_LIMIT_CLAIM,
 } from '../../ambient-utils/constants/';
 import { ReceiptContext } from '../../contexts/ReceiptContext';
+import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -45,6 +46,7 @@ export default function LimitActionModal(props: propsIF) {
         addPendingTx,
         addReceipt,
         addTransactionByType,
+        addPositionUpdate,
         removePendingTx,
         updateTransactionHash,
     } = useContext(ReceiptContext);
@@ -109,8 +111,12 @@ export default function LimitActionModal(props: propsIF) {
     const updateLiq = async () => {
         try {
             if (!crocEnv || !limitOrder) return;
-            const pool = crocEnv.pool(limitOrder.base, limitOrder.quote);
-            const pos = new CrocPositionView(pool, limitOrder.user);
+            // const pos = new CrocPositionView(pool, limitOrder.user);
+            const pos = crocEnv.positions(
+                limitOrder.base,
+                limitOrder.quote,
+                limitOrder.user,
+            );
 
             const liqBigNum = (
                 await pos.queryKnockoutLivePos(
@@ -153,6 +159,16 @@ export default function LimitActionModal(props: propsIF) {
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
+    const posHash = getPositionHash(undefined, {
+        isPositionTypeAmbient: false,
+        user: userAddress ?? '',
+        baseAddress: limitOrder.base,
+        quoteAddress: limitOrder.quote,
+        poolIdx: poolIndex,
+        bidTick: limitOrder.bidTick,
+        askTick: limitOrder.askTick,
+    });
+
     const removeFn = async () => {
         if (!currentLiquidity) return;
         if (crocEnv) {
@@ -169,8 +185,9 @@ export default function LimitActionModal(props: propsIF) {
                         .burnLiq(currentLiquidity);
                     setNewTxHash(tx.hash);
                     addPendingTx(tx?.hash);
-                    if (tx?.hash)
+                    if (tx?.hash) {
                         addTransactionByType({
+                            userAddress: userAddress || '',
                             txHash: tx.hash,
                             txAction: 'Remove',
                             txType: 'Limit',
@@ -188,6 +205,13 @@ export default function LimitActionModal(props: propsIF) {
                                 isBid: limitOrder.isBid,
                             },
                         });
+                        addPositionUpdate({
+                            txHash: tx.hash,
+                            positionID: posHash,
+                            isLimit: true,
+                            unixTimeAdded: Math.floor(Date.now() / 1000),
+                        });
+                    }
                 } else {
                     tx = await crocEnv
                         .buy(limitOrder.base, 0)
@@ -195,8 +219,9 @@ export default function LimitActionModal(props: propsIF) {
                         .burnLiq(currentLiquidity);
                     setNewTxHash(tx.hash);
                     addPendingTx(tx?.hash);
-                    if (tx?.hash)
+                    if (tx?.hash) {
                         addTransactionByType({
+                            userAddress: userAddress || '',
                             txHash: tx.hash,
                             txAction: 'Remove',
                             txType: 'Limit',
@@ -214,11 +239,18 @@ export default function LimitActionModal(props: propsIF) {
                                 isBid: limitOrder.isBid,
                             },
                         });
+                        addPositionUpdate({
+                            txHash: tx.hash,
+                            positionID: posHash,
+                            isLimit: true,
+                            unixTimeAdded: Math.floor(Date.now() / 1000),
+                        });
+                    }
                 }
             } catch (error) {
                 console.error({ error });
                 setTxErrorCode(error?.code);
-                setTxErrorMessage(error?.data?.message);
+                setTxErrorMessage(parseErrorMessage(error));
                 if (
                     error.reason === 'sending a transaction requires a signer'
                 ) {
@@ -240,7 +272,12 @@ export default function LimitActionModal(props: propsIF) {
                     removePendingTx(error.hash);
                     const newTransactionHash = error.replacement.hash;
                     addPendingTx(newTransactionHash);
-
+                    addPositionUpdate({
+                        txHash: newTransactionHash,
+                        positionID: posHash,
+                        isLimit: true,
+                        unixTimeAdded: Math.floor(Date.now() / 1000),
+                    });
                     updateTransactionHash(error.hash, error.replacement.hash);
                     setNewTxHash(newTransactionHash);
                     IS_LOCAL_ENV && { newTransactionHash };
@@ -254,6 +291,16 @@ export default function LimitActionModal(props: propsIF) {
             if (receipt) {
                 addReceipt(JSON.stringify(receipt));
                 removePendingTx(receipt.transactionHash);
+                if (receipt.status === 1) {
+                    // track removals separately to identify limit mints that were subsequently removed
+                    addPositionUpdate({
+                        positionID: posHash,
+                        isLimit: true,
+                        isFullRemoval: true,
+                        txHash: receipt.transactionHash,
+                        unixTimeReceipt: Math.floor(Date.now() / 1000),
+                    });
+                }
             }
         }
     };
@@ -279,8 +326,9 @@ export default function LimitActionModal(props: propsIF) {
                         .recoverPost(claimablePivotTime, { surplus: false });
                     setNewTxHash(tx.hash);
                     addPendingTx(tx?.hash);
-                    if (tx?.hash)
+                    if (tx?.hash) {
                         addTransactionByType({
+                            userAddress: userAddress || '',
                             txHash: tx.hash,
                             txAction: 'Claim',
                             txType: 'Limit',
@@ -298,6 +346,13 @@ export default function LimitActionModal(props: propsIF) {
                                 isBid: limitOrder.isBid,
                             },
                         });
+                        addPositionUpdate({
+                            txHash: tx.hash,
+                            positionID: posHash,
+                            isLimit: true,
+                            unixTimeAdded: Math.floor(Date.now() / 1000),
+                        });
+                    }
                 } else {
                     tx = await crocEnv
                         .buy(limitOrder.base, 0)
@@ -305,8 +360,9 @@ export default function LimitActionModal(props: propsIF) {
                         .recoverPost(claimablePivotTime, { surplus: false });
                     setNewTxHash(tx.hash);
                     addPendingTx(tx?.hash);
-                    if (tx?.hash)
+                    if (tx?.hash) {
                         addTransactionByType({
+                            userAddress: userAddress || '',
                             txHash: tx.hash,
                             txAction: 'Claim',
                             txType: 'Limit',
@@ -324,11 +380,18 @@ export default function LimitActionModal(props: propsIF) {
                                 isBid: limitOrder.isBid,
                             },
                         });
+                        addPositionUpdate({
+                            txHash: tx.hash,
+                            positionID: posHash,
+                            isLimit: true,
+                            unixTimeAdded: Math.floor(Date.now() / 1000),
+                        });
+                    }
                 }
             } catch (error) {
                 console.error({ error });
                 setTxErrorCode(error?.code);
-                setTxErrorMessage(error?.data?.message);
+                setTxErrorMessage(parseErrorMessage(error));
                 if (
                     error.reason === 'sending a transaction requires a signer'
                 ) {
@@ -349,7 +412,12 @@ export default function LimitActionModal(props: propsIF) {
                     removePendingTx(error.hash);
                     const newTransactionHash = error.replacement.hash;
                     addPendingTx(newTransactionHash);
-
+                    addPositionUpdate({
+                        txHash: newTransactionHash,
+                        positionID: posHash,
+                        isLimit: true,
+                        unixTimeAdded: Math.floor(Date.now() / 1000),
+                    });
                     updateTransactionHash(error.hash, error.replacement.hash);
                     setNewTxHash(newTransactionHash);
                     IS_LOCAL_ENV && console.debug({ newTransactionHash });
@@ -363,6 +431,16 @@ export default function LimitActionModal(props: propsIF) {
             if (receipt) {
                 addReceipt(JSON.stringify(receipt));
                 removePendingTx(receipt.transactionHash);
+                if (receipt.status === 1) {
+                    // track claims separately to identify limit mints that were subsequently removed
+                    addPositionUpdate({
+                        positionID: posHash,
+                        isLimit: true,
+                        isFullRemoval: true,
+                        txHash: receipt.transactionHash,
+                        unixTimeReceipt: Math.floor(Date.now() / 1000),
+                    });
+                }
             }
         }
     };
@@ -392,6 +470,12 @@ export default function LimitActionModal(props: propsIF) {
                   receivingAmountAddress: limitOrder.isBid
                       ? baseTokenAddress
                       : quoteTokenAddress,
+                  claimableAmount: limitOrder.isBid
+                      ? quoteDisplay
+                      : baseDisplay,
+                  claimableAmountAddress: limitOrder.isBid
+                      ? quoteTokenAddress
+                      : baseTokenAddress,
                   networkFee,
               }
             : {
@@ -446,7 +530,7 @@ export default function LimitActionModal(props: propsIF) {
                     <LimitActionInfo {...limitInfoProps} />
                     {showConfirmation ? (
                         <SubmitTransaction
-                            type='Limit'
+                            type={type === 'Remove' ? 'Remove' : 'Claim'}
                             newTransactionHash={newTxHash}
                             txErrorCode={txErrorCode}
                             txErrorMessage={txErrorMessage}
