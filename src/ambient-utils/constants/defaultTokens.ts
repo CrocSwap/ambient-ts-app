@@ -166,16 +166,6 @@ export const blastVroom: TokenIF = {
     logoURI: '',
 };
 
-export const blastPacm: TokenIF = {
-    address: '0x0b4d0ee29857c3961b380d4ec138ea5814e346b9',
-    chainId: 81457,
-    decimals: 18,
-    fromList: '',
-    name: 'P@cman Blastoff',
-    symbol: '$PACM',
-    logoURI: '',
-};
-
 export const blastSepoliaETH: TokenIF = {
     address: '0x0000000000000000000000000000000000000000',
     chainId: 168587773,
@@ -561,10 +551,14 @@ export const defaultTokens: TokenIF[] = [
     blastMIA,
     blastORBIT,
     blastBAG,
+    blastBAJA,
+    blastBEPE,
+    blastALIEN,
     blastOle,
     blastWETH,
     blastPump,
-    blastPacm,
+    blastYES,
+    blastPACM,
     blastVroom,
     blastSepoliaETH,
     blastSepoliaUSDB,
