@@ -12,7 +12,6 @@ import {
     PoolIF,
     TokenIF,
     TransactionIF,
-    TransactionServerIF,
 } from '../../ambient-utils/types';
 import matchSearchInput from '../functions/matchSearchInput';
 import { tokenMethodsIF } from './useTokens';
