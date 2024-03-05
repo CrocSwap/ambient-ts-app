@@ -98,7 +98,6 @@ export const useSidebarSearch = (
             // if fixed string is valid, assign it to the output variable
             output = fixedInput;
         }
-        console.log(rawInput === output);
         // return output variable
         return output;
     }, [dbInput]);
