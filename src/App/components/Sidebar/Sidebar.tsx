@@ -153,10 +153,6 @@ function Sidebar() {
         tokens,
     );
 
-    const [searchInput, setSearchInput] = useState<string>('');
-    const [searchMode, setSearchMode] = useState(false);
-    false && searchMode;
-
     // ------------------------------------------
     // ---------------------------Explore SEARCH CONTAINER-----------------------
 
@@ -166,12 +162,6 @@ function Sidebar() {
         ) as HTMLInputElement;
 
         inputField.focus();
-    };
-
-    const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchMode(true);
-        searchData.setInput(e.target.value);
-        setSearchInput(e.target.value);
     };
 
     // id for search input HTML elem in the DOM
@@ -204,7 +194,7 @@ function Sidebar() {
                 value={searchData.rawInput}
                 placeholder='Search...'
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    handleSearchInput(e)
+                    searchData.setInput(e.target.value)
                 }
                 onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
                     if (e.code === 'Escape') {
@@ -212,19 +202,17 @@ function Sidebar() {
                         e.stopPropagation();
                         // clear search input, DOM will update
                         searchData.clearInput();
-                        setSearchInput('');
                     }
                 }}
                 spellCheck='false'
                 autoComplete='off'
                 tabIndex={1}
             />
-            {searchInput && (
+            {searchData.isInputValid && (
                 <FlexContainer
                     onClick={() => {
                         // clear search input, DOM will update
                         searchData.clearInput();
-                        setSearchInput('');
                         // manually focus DOM on the search input
                         const searchInput =
                             document.getElementById(searchInputElementId);
@@ -442,7 +430,7 @@ function Sidebar() {
                     fullHeight
                 >
                     {searchContainerDisplay}
-                    {searchData.isInputValid && sidebar.isOpen && searchMode ? (
+                    {searchData.isInputValid && sidebar.isOpen ? (
                         <SidebarSearchResults
                             searchData={searchData}
                             cachedPoolStatsFetch={cachedPoolStatsFetch}
