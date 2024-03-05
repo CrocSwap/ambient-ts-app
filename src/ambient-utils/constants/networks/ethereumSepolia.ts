@@ -4,6 +4,7 @@ import { sepoliaETH, sepoliaUSDC, sepoliaWBTC } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 import { GCGO_TESTNET_URL } from '../gcgo';
+import { Provider } from '@ethersproject/providers';
 
 const PROVIDER_KEY =
     process.env.NODE_ENV === 'test'
@@ -21,8 +22,14 @@ export const ethereumSepolia: NetworkIF = {
     topPools: [
         new TopPool(sepoliaETH, sepoliaUSDC, lookupChain('0xaa36a7').poolIndex),
         new TopPool(sepoliaETH, sepoliaWBTC, lookupChain('0xaa36a7').poolIndex),
+        new TopPool(
+            sepoliaUSDC,
+            sepoliaWBTC,
+            lookupChain('0xaa36a7').poolIndex,
+        ),
     ],
-    getGasPriceInGwei: async () => {
-        return 15;
+    getGasPriceInGwei: async (provider?: Provider) => {
+        if (!provider) return 0;
+        return (await provider.getGasPrice()).toNumber() * 1e-9;
     },
 };

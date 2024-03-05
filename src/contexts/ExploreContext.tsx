@@ -1,4 +1,11 @@
-import { ReactNode, createContext, useContext, useMemo, useState } from 'react';
+import {
+    ReactNode,
+    createContext,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
@@ -11,6 +18,7 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { CrocEnvContext } from './CrocEnvContext';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../ambient-utils/constants';
 import ambientTokenList from '../ambient-utils/constants/ambient-token-list.json';
+import { PoolContext } from './PoolContext';
 
 export interface ExploreContextIF {
     pools: {
@@ -46,7 +54,9 @@ export const ExploreContext = createContext<ExploreContextIF>(
 );
 
 export const ExploreContextProvider = (props: { children: ReactNode }) => {
-    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { lastBlockNumber, isActiveNetworkBlast } =
+        useContext(ChainDataContext);
+
     const {
         cachedPoolStatsFetch,
         cachedQuerySpotPrice,
@@ -54,7 +64,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         cachedGet24hChange,
     } = useContext(CachedDataContext);
 
-    const { activeNetwork } = useContext(CrocEnvContext);
+    const { crocEnv, chainData, activeNetwork } = useContext(CrocEnvContext);
 
     const [limitedPools, setLimitedPools] = useState<Array<PoolDataIF>>([]);
     const [extraPools, setExtraPools] = useState<Array<PoolDataIF>>([]);
@@ -63,6 +73,37 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         () => limitedPools.concat(extraPools),
         [limitedPools, extraPools],
     );
+    // metadata only
+    const { poolList } = useContext(PoolContext);
+
+    const getLimitedPools = async (): Promise<void> => {
+        if (crocEnv && poolList.length) {
+            getLimitedPoolData(poolList, crocEnv, chainData.chainId);
+        }
+    };
+
+    const getAllPools = async (): Promise<void> => {
+        // make sure crocEnv exists and pool metadata is present
+        if (crocEnv && poolList.length) {
+            // clear text in DOM for time since last update
+            setLimitedPools([]);
+            setExtraPools([]);
+            // use metadata to get expanded pool data
+            getLimitedPools().then(() => {
+                getExtraPoolData(poolList, crocEnv, chainData.chainId);
+            });
+        }
+    };
+
+    // get expanded pool metadata
+    useEffect(() => {
+        // wait 5 seconds to get data
+        setTimeout(() => {
+            if (crocEnv !== undefined && poolList.length > 0) {
+                getAllPools();
+            }
+        }, 5000);
+    }, [crocEnv, poolList.length]);
 
     // fn to get data on a single pool
     async function getPoolData(
@@ -91,7 +132,10 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             cachedFetchTokenPrice,
         );
 
-        if (!poolStats || poolStats.tvlTotalUsd < 100) {
+        if (
+            !poolStats ||
+            (!isActiveNetworkBlast && poolStats.tvlTotalUsd < 100)
+        ) {
             // return early
             const poolData: PoolDataIF = {
                 ...pool,
