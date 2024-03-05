@@ -1,4 +1,5 @@
 import { FlexContainer } from '../../../../styled/Common';
+import { Results } from '../../../../styled/Components/Sidebar';
 
 interface propsIF {
     searchedWallets: string[];
@@ -13,7 +14,20 @@ export default function WalletSearchResults(props: propsIF) {
             alignItems='flex-start'
             gap={8}
         >
-            {JSON.stringify(searchedWallets)}
+            {searchedWallets.map((wallet: string) => (
+                <Results
+                    key={wallet}
+                    numCols={1}
+                    fullWidth
+                    fontWeight='300'
+                    fontSize='body'
+                    color='text2'
+                    padding='4px'
+                    onClick={() => console.log(`clicked wallet ${wallet}`)}
+                >
+                    {wallet}
+                </Results>
+            ))}
         </FlexContainer>
     );
 }
