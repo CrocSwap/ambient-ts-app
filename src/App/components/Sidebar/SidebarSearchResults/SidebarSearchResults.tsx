@@ -20,6 +20,12 @@ interface propsIF {
 export default function SidebarSearchResults(props: propsIF) {
     const { searchData, cachedPoolStatsFetch, cachedFetchTokenPrice } = props;
     const { isUserConnected } = useContext(UserDataContext);
+
+    // value for control flow to determine what data to show in search results
+    const displaySet: 'token' | 'wallet' = searchData.wallets
+        ? 'wallet'
+        : 'token';
+
     return (
         <SearchResultsContainer
             flexDirection='column'
@@ -33,22 +39,28 @@ export default function SidebarSearchResults(props: propsIF) {
             <Text fontSize='header2' color='accent5'>
                 Search Results
             </Text>
-            <PoolsSearchResults
-                searchedPools={searchData.pools}
-                cachedPoolStatsFetch={cachedPoolStatsFetch}
-                cachedFetchTokenPrice={cachedFetchTokenPrice}
-            />
-            {isUserConnected && (
+            {displaySet === 'token' && (
                 <>
-                    <TxSearchResults searchedTxs={searchData.txs} />
-                    <OrdersSearchResults
-                        searchedLimitOrders={searchData.limits}
+                    <PoolsSearchResults
+                        searchedPools={searchData.pools}
+                        cachedPoolStatsFetch={cachedPoolStatsFetch}
+                        cachedFetchTokenPrice={cachedFetchTokenPrice}
                     />
-                    <PositionsSearchResults
-                        searchedPositions={searchData.positions}
-                    />
-                    <WalletSearchResults searchedWallets={searchData.wallets} />
+                    {isUserConnected && (
+                        <>
+                            <TxSearchResults searchedTxs={searchData.txs} />
+                            <OrdersSearchResults
+                                searchedLimitOrders={searchData.limits}
+                            />
+                            <PositionsSearchResults
+                                searchedPositions={searchData.positions}
+                            />
+                        </>
+                    )}
                 </>
+            )}
+            {displaySet === 'wallet' && (
+                <WalletSearchResults searchedWallets={searchData.wallets} />
             )}
         </SearchResultsContainer>
     );
