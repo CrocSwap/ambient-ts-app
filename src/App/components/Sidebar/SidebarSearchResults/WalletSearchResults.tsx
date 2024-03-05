@@ -1,7 +1,7 @@
 import { FlexContainer } from '../../../../styled/Common';
 
 interface propsIF {
-    searchedWallets: string[] | null;
+    searchedWallets: string[];
 }
 
 export default function WalletSearchResults(props: propsIF) {
