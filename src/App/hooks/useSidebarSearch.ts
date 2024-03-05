@@ -58,11 +58,6 @@ export const useSidebarSearch = (
     type searchType = 'address' | 'nameOrSymbol' | null;
     const [searchAs, setSearchAs] = useState<searchType>(null);
 
-    // fn to clear the search input
-    function clearInput(): void {
-        setRawInput('');
-    }
-
     // cleaned and validated version of raw user input
     const validatedInput = useMemo<string>(() => {
         // trim string and make it lower case
@@ -369,7 +364,7 @@ export const useSidebarSearch = (
     return {
         rawInput,
         setInput: setRawInput,
-        clearInput: clearInput,
+        clearInput: () => setRawInput(''),
         isInputValid: !!searchAs,
         pools: outputPools,
         positions: outputPositions,
