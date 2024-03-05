@@ -29,6 +29,7 @@ interface propsIF {
     onClose?: () => void;
     isTokenAPrimary: boolean;
     priceImpactWarning: JSX.Element | undefined;
+    isSaveAsDexSurplusChecked: boolean;
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
@@ -51,6 +52,7 @@ export default function ConfirmSwapModal(props: propsIF) {
         onClose = () => null,
         isTokenAPrimary,
         priceImpactWarning,
+        isSaveAsDexSurplusChecked,
     } = props;
 
     const { pool } = useContext(PoolContext);
@@ -74,6 +76,21 @@ export default function ConfirmSwapModal(props: propsIF) {
 
     const [isWaitingForPriceChangeAckt, setIsWaitingForPriceChangeAckt] =
         useState<boolean>(false);
+
+    // logic to prevent swap quantities updating during/after swap completion
+    const [memoTokenAQty, setMemoTokenAQty] = useState<string | undefined>();
+    const [memoTokenBQty, setMemoTokenBQty] = useState<string | undefined>();
+    const [memoEffectivePrice, setMemoEffectivePrice] = useState<
+        number | undefined
+    >();
+
+    useEffect(() => {
+        if (newSwapTransactionHash === '') {
+            setMemoTokenAQty(sellQtyString);
+            setMemoTokenBQty(buyQtyString);
+            setMemoEffectivePrice(effectivePrice);
+        }
+    }, [newSwapTransactionHash, sellQtyString, buyQtyString, effectivePrice]);
 
     const setBaselinePriceAsync = async () => {
         if (!pool) return;
@@ -129,10 +146,10 @@ export default function ConfirmSwapModal(props: propsIF) {
         (isDenomBaseLocal && !isSellTokenBase) ||
         (!isDenomBaseLocal && isSellTokenBase);
 
-    const effectivePriceWithDenom = effectivePrice
+    const effectivePriceWithDenom = memoEffectivePrice
         ? isPriceInverted
-            ? 1 / effectivePrice
-            : effectivePrice
+            ? 1 / memoEffectivePrice
+            : memoEffectivePrice
         : undefined;
 
     const priceIncreaseComponent = (
@@ -164,7 +181,7 @@ export default function ConfirmSwapModal(props: propsIF) {
                         Expected Output
                     </Text>
                     <Text fontSize='body' color='text2'>
-                        {buyQtyString} {buyTokenData.symbol}
+                        {memoTokenBQty} {buyTokenData.symbol}
                     </Text>
                 </FlexContainer>
             ) : (
@@ -176,10 +193,25 @@ export default function ConfirmSwapModal(props: propsIF) {
                         Expected Input
                     </Text>
                     <Text fontSize='body' color='text2'>
-                        {sellQtyString} {sellTokenData.symbol}
+                        {memoTokenAQty} {sellTokenData.symbol}
                     </Text>
                 </FlexContainer>
             )}
+            {
+                <FlexContainer
+                    justifyContent='space-between'
+                    alignItems='center'
+                >
+                    <Text fontSize='body' color='text2'>
+                        Output Destination
+                    </Text>
+                    <Text fontSize='body' color='text2'>
+                        {isSaveAsDexSurplusChecked
+                            ? 'Exchange Balance'
+                            : 'Wallet'}
+                    </Text>
+                </FlexContainer>
+            }
             <FlexContainer justifyContent='space-between' alignItems='center'>
                 <Text fontSize='body' color='text2'>
                     Effective Conversion Rate
@@ -216,8 +248,8 @@ export default function ConfirmSwapModal(props: propsIF) {
         <TradeConfirmationSkeleton
             onClose={onClose}
             type='Swap'
-            tokenA={{ token: sellTokenData, quantity: sellQtyString }}
-            tokenB={{ token: buyTokenData, quantity: buyQtyString }}
+            tokenA={{ token: sellTokenData, quantity: memoTokenAQty }}
+            tokenB={{ token: buyTokenData, quantity: memoTokenBQty }}
             transactionDetails={transactionDetails}
             transactionHash={newSwapTransactionHash}
             txErrorCode={txErrorCode}

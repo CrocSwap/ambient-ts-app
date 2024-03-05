@@ -45,7 +45,6 @@
     padding: 1px;
     border-radius: 50%;
     box-shadow: 0 0 0 2px var(--text3);
-    margin: 2px;
     background: var(--title-gradient);
 }
 .in_range_display {

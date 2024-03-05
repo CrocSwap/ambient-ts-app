@@ -2,6 +2,7 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 
 interface PerformSwapParams {
     crocEnv: CrocEnv;
+    isQtySell: boolean;
     qty: string;
     buyTokenAddress: string;
     sellTokenAddress: string;
@@ -13,20 +14,28 @@ interface PerformSwapParams {
 export async function performSwap(params: PerformSwapParams) {
     const {
         crocEnv,
+        isQtySell,
         qty,
         buyTokenAddress,
         sellTokenAddress,
         slippageTolerancePercentage,
-        isWithdrawFromDexChecked = false,
-        isSaveAsDexSurplusChecked = true,
+        isWithdrawFromDexChecked = true,
+        isSaveAsDexSurplusChecked = false,
     } = params;
 
-    const plan = crocEnv.sell(sellTokenAddress, qty).for(buyTokenAddress, {
-        slippage: slippageTolerancePercentage / 100,
-    });
+    const plan = isQtySell
+        ? crocEnv.sell(sellTokenAddress, qty).for(buyTokenAddress, {
+              slippage: slippageTolerancePercentage / 100,
+          })
+        : crocEnv.buy(buyTokenAddress, qty).with(sellTokenAddress, {
+              slippage: slippageTolerancePercentage / 100,
+          });
 
     const tx = await plan.swap({
-        surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked],
+        settlement: {
+            sellDexSurplus: isWithdrawFromDexChecked,
+            buyDexSurplus: isSaveAsDexSurplusChecked,
+        },
     });
 
     return tx;

@@ -26,7 +26,7 @@ export interface HeaderItem {
 }
 
 interface propsIF {
-    allPools: PoolDataIF[];
+    allPools: Array<PoolDataIF>;
     chainId: string;
 }
 
@@ -70,6 +70,7 @@ function TopPools(props: propsIF) {
             responsive: 'sm',
             sortable: false,
         },
+        { label: 'Volume', hidden: false, align: 'right', sortable: true },
         {
             label: 'TVL',
             hidden: false,
@@ -77,7 +78,6 @@ function TopPools(props: propsIF) {
             responsive: 'sm',
             sortable: true,
         },
-        { label: 'Volume', hidden: false, align: 'right', sortable: true },
         {
             label: 'Change',
             hidden: true,

@@ -143,7 +143,7 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
                         target='_blank'
                         rel='noreferrer'
                         tabIndex={0}
-                        aria-label='View on Etherscan'
+                        aria-label='View on Block Explorer'
                     >
                         <RiExternalLinkLine size={20} color='#7371fc ' />
                     </a>

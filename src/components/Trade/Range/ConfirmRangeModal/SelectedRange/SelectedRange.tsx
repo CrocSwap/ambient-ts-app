@@ -9,13 +9,14 @@ import { GraphDataContext } from '../../../../../contexts/GraphDataContext';
 interface propsIF {
     isTokenABase: boolean;
     isAmbient: boolean;
-    pinnedMinPriceDisplayTruncatedInBase: string;
-    pinnedMinPriceDisplayTruncatedInQuote: string;
-    pinnedMaxPriceDisplayTruncatedInBase: string;
-    pinnedMaxPriceDisplayTruncatedInQuote: string;
+    pinnedMinPriceDisplayTruncatedInBase: string | undefined;
+    pinnedMinPriceDisplayTruncatedInQuote: string | undefined;
+    pinnedMaxPriceDisplayTruncatedInBase: string | undefined;
+    pinnedMaxPriceDisplayTruncatedInQuote: string | undefined;
     showOnlyFeeTier?: boolean;
     isDenomBase: boolean;
     setIsDenomBase: Dispatch<SetStateAction<boolean>>;
+    slippageTolerance: number;
     initialPrice?: number;
     isInitPage?: boolean;
 }
@@ -32,6 +33,7 @@ function SelectedRange(props: propsIF) {
         showOnlyFeeTier,
         initialPrice,
         isInitPage,
+        slippageTolerance,
     } = props;
 
     const { poolPriceDisplay } = useContext(PoolContext);
@@ -51,12 +53,12 @@ function SelectedRange(props: propsIF) {
         (isTokenABase && isDenomBase) || (!isTokenABase && !isDenomBase);
 
     const minPrice = isDenomBase
-        ? pinnedMinPriceDisplayTruncatedInBase
-        : pinnedMinPriceDisplayTruncatedInQuote;
+        ? pinnedMinPriceDisplayTruncatedInBase || '...'
+        : pinnedMinPriceDisplayTruncatedInQuote || '...';
 
     const maxPrice = isDenomBase
-        ? pinnedMaxPriceDisplayTruncatedInBase
-        : pinnedMaxPriceDisplayTruncatedInQuote;
+        ? pinnedMaxPriceDisplayTruncatedInBase || '...'
+        : pinnedMaxPriceDisplayTruncatedInQuote || '...';
 
     const displayPriceWithDenom =
         isInitPage && initialPrice
@@ -168,6 +170,19 @@ function SelectedRange(props: propsIF) {
                     }`}
                 </Text>
             </FlexContainer>
+            {!isInitPage && (
+                <FlexContainer
+                    justifyContent='space-between'
+                    alignItems='center'
+                >
+                    <Text fontSize='body' color='text2'>
+                        {'Slippage Tolerance'}
+                    </Text>
+                    <Text fontSize='body' color='text2'>
+                        {`${slippageTolerance}%`}
+                    </Text>
+                </FlexContainer>
+            )}
             <FlexContainer justifyContent='space-between' alignItems='center'>
                 <Text fontSize='body' color='text2'>
                     {isInitPage ? 'Initial Fee Rate' : 'Current Fee Rate'}
@@ -182,7 +197,7 @@ function SelectedRange(props: propsIF) {
 
     return (
         <FlexContainer flexDirection='column' gap={8}>
-            {selectedRangeDisplay}
+            {!isAmbient && selectedRangeDisplay}
             <div style={{ padding: isInitPage ? '0 4rem' : '0 1rem' }}>
                 {extraInfoData}
             </div>

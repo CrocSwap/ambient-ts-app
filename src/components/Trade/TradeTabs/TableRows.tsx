@@ -21,6 +21,7 @@ import OrderDetailsModal from '../../OrderDetails/OrderDetailsModal/OrderDetails
 interface propsIF {
     type: 'Transaction' | 'Order' | 'Range';
     data: TransactionIF[] | LimitOrderIF[] | PositionIF[];
+    fullData: TransactionIF[] | LimitOrderIF[] | PositionIF[];
     tableView: 'small' | 'medium' | 'large';
     isAccountView: boolean;
     isLeaderboard?: boolean;
@@ -32,6 +33,7 @@ type ActiveRecord = TransactionIF | LimitOrderIF | PositionIF | undefined;
 function TableRows({
     type,
     data,
+    fullData,
     isAccountView,
     tableView,
     isLeaderboard,
@@ -56,7 +58,6 @@ function TableRows({
         useState<RangeModalAction>('Harvest');
 
     const closeRangeModal = (modalType: 'action' | 'details') => {
-        setCurrentPositionActive('');
         modalType === 'action' ? closeActionModal() : closeDetailsModal();
         setActiveRecord(undefined);
     };
@@ -72,7 +73,6 @@ function TableRows({
 
     // Transaction Modal Controls
     const closeTransactionModal = () => {
-        setCurrentTxActiveInTransactions('');
         closeDetailsModal();
         setActiveRecord(undefined);
     };
@@ -95,7 +95,6 @@ function TableRows({
         useState<LimitModalAction>('Remove');
 
     const closeLimitModal = (modalType: 'action' | 'details') => {
-        setCurrentLimitOrderActive('');
         modalType === 'action' ? closeActionModal() : closeDetailsModal();
         setActiveRecord(undefined);
     };
@@ -116,29 +115,30 @@ function TableRows({
     useEffect(() => {
         if (type === 'Range') {
             setActiveRecord(
-                (data as PositionIF[]).find((position) => {
+                (fullData as PositionIF[]).find((position) => {
                     return position.positionId === currentPositionActive;
                 }),
             );
         } else if (type === 'Order') {
             setActiveRecord(
-                (data as LimitOrderIF[]).find((order) => {
+                (fullData as LimitOrderIF[]).find((order) => {
                     return order.limitOrderId === currentLimitOrderActive;
                 }),
             );
         } else {
             setActiveRecord(
-                (data as TransactionIF[]).find((tx) => {
+                (fullData as TransactionIF[]).find((tx) => {
                     return tx.txId === currentTxActiveInTransactions;
                 }),
             );
         }
     }, [
         type,
-        data,
+        fullData,
         currentPositionActive,
         currentLimitOrderActive,
         currentTxActiveInTransactions,
+        isDetailsModalOpen,
     ]);
 
     const rangeContent = () => {

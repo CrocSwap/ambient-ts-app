@@ -1,7 +1,6 @@
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { PositionIF, TokenIF } from '../../../../ambient-utils/types';
-import { NavLink } from 'react-router-dom';
 import { ZERO_ADDRESS } from '../../../../ambient-utils/constants';
 import Medal from '../../../Global/Medal/Medal';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -17,6 +16,7 @@ import { TokenContext } from '../../../../contexts/TokenContext';
 import { RowItem } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import moment from 'moment';
+
 interface propsIF {
     posHashTruncated: string;
     usdValue: string;
@@ -138,7 +138,7 @@ export default function rangeRowConstants(props: propsIF) {
             data-label='value'
             className='base_color'
         >
-            {'$' + usdValue}
+            {usdValue}
         </FlexContainer>
     );
 
@@ -256,11 +256,24 @@ export default function rangeRowConstants(props: propsIF) {
             className='base_color'
             onClick={(event) => event.stopPropagation()}
         >
-            <NavLink to={linkGenPool.getFullURL(poolLinkParams)}>
-                <div>
-                    {baseTokenSymbol} / {quoteTokenSymbol}
-                </div>
-            </NavLink>
+            <RowItem hover>
+                <a
+                    href={linkGenPool.getFullURL(poolLinkParams)}
+                    target='_blank'
+                    rel='noreferrer'
+                >
+                    <div>
+                        <span>
+                            {baseTokenSymbol} / {quoteTokenSymbol}
+                        </span>
+                        <FiExternalLink
+                            size={10}
+                            color='white'
+                            style={{ marginLeft: '.5rem' }}
+                        />
+                    </div>
+                </a>
+            </RowItem>
         </div>
     );
 
@@ -478,7 +491,7 @@ export default function rangeRowConstants(props: propsIF) {
     );
 
     const rangeDisplay = (
-        <FlexContainer padding='0 0 0 8px' data-label='status'>
+        <FlexContainer padding='0 0 0 18px' data-label='status'>
             <RangeStatus
                 isInRange={isPositionInRange}
                 isAmbient={isAmbient}

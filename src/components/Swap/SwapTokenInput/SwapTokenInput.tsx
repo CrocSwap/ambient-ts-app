@@ -178,9 +178,19 @@ function SwapTokenInput(props: propsIF) {
 
         isTokenAPrimary ? setIsBuyLoading(false) : setIsSellLoading(false);
 
+        // prevent swaps with a price impact in excess of -99.99% or 1 million percent
         if (impact) {
-            setIsLiquidityInsufficient(false);
-            return parseFloat(sellToken ? impact.buyQty : impact.sellQty);
+            if (
+                impact.percentChange < -0.9999 ||
+                impact.percentChange > 10000
+            ) {
+                setIsLiquidityInsufficient(true);
+                setSwapAllowed(false);
+                return undefined;
+            } else {
+                setIsLiquidityInsufficient(false);
+                return parseFloat(sellToken ? impact.buyQty : impact.sellQty);
+            }
         } else {
             setIsLiquidityInsufficient(true);
             setSwapAllowed(false);
@@ -189,7 +199,7 @@ function SwapTokenInput(props: propsIF) {
     }
 
     const debouncedTokenAChangeEvent = (value: string) => {
-        setIsBuyLoading(true);
+        if (parseFloat(value) > 0) setIsBuyLoading(true);
         setSellQtyString(value);
         setPrimaryQuantity(value);
         setLastInput(value);
@@ -198,7 +208,7 @@ function SwapTokenInput(props: propsIF) {
     };
 
     const debouncedTokenBChangeEvent = (value: string) => {
-        setIsSellLoading(true);
+        if (parseFloat(value) > 0) setIsSellLoading(true);
         setBuyQtyString(value);
         setPrimaryQuantity(value);
         setLastInput(value);
@@ -210,7 +220,6 @@ function SwapTokenInput(props: propsIF) {
         () => async (value?: string) => {
             if (!crocEnv) return;
             setDisableReverseTokens(true);
-
             let rawTokenBQty = undefined;
             if (value !== undefined) {
                 if (parseFloat(value) !== 0) {
@@ -241,6 +250,7 @@ function SwapTokenInput(props: propsIF) {
             isTokenAPrimary,
             sellQtyString,
             buyQtyString,
+            primaryQuantity,
         ],
     );
 
@@ -281,6 +291,7 @@ function SwapTokenInput(props: propsIF) {
             isTokenAPrimary,
             sellQtyString,
             buyQtyString,
+            primaryQuantity,
         ],
     );
 
@@ -308,9 +319,9 @@ function SwapTokenInput(props: propsIF) {
                 tokenAorB='A'
                 token={tokenA}
                 tokenInput={
-                    buyQtyString !== '' ||
-                    (sellQtyString !== '' &&
-                        (isBuyLoading || parseFloat(sellQtyString) === 0))
+                    isTokenAPrimary ||
+                    isLiquidityInsufficient ||
+                    (!isTokenAPrimary && parseFloat(buyQtyString) > 0)
                         ? sellQtyString
                         : ''
                 }
@@ -365,10 +376,9 @@ function SwapTokenInput(props: propsIF) {
                 tokenAorB='B'
                 token={tokenB}
                 tokenInput={
-                    sellQtyString !== '' ||
+                    !isTokenAPrimary ||
                     isLiquidityInsufficient ||
-                    (buyQtyString !== '' &&
-                        (isSellLoading || parseFloat(buyQtyString) === 0))
+                    parseFloat(sellQtyString) > 0
                         ? buyQtyString
                         : ''
                 }

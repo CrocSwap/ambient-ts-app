@@ -11,8 +11,11 @@ import {
     goerliUSDT,
     mainnetDAI,
     mainnetUSDC,
+    blastUSDB,
+    blastSepoliaUSDB,
     mainnetUSDT,
     scrollAxlUSDC,
+    sepoliaUSDC,
     scrollSepoliaUSDC,
     scrollUSDC,
 } from '../../constants/defaultTokens';
@@ -42,6 +45,7 @@ export function isWethToken(addr: string): boolean {
 export const STABLE_USD_TOKENS = [
     mainnetDAI.address,
     mainnetUSDC.address,
+    blastUSDB.address,
     mainnetUSDT.address,
     goerliDAI.address,
     goerliUSDC.address,
@@ -50,13 +54,18 @@ export const STABLE_USD_TOKENS = [
     arbGoerliUSDC.address,
     scrollUSDC.address,
     scrollAxlUSDC.address,
+    sepoliaUSDC.address,
+    blastSepoliaUSDB.address,
     scrollSepoliaUSDC.address,
 ].map((x) => x.toLowerCase());
 
 export const USDC_TOKENS = [
     mainnetUSDC.address,
+    blastUSDB.address,
     goerliUSDC.address,
     arbGoerliUSDC.address,
+    sepoliaUSDC.address,
+    blastSepoliaUSDB.address,
     scrollSepoliaUSDC.address,
     scrollUSDC.address,
 ].map((x) => x.toLowerCase());
@@ -65,4 +74,7 @@ export const WETH_TOKENS = [
     '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // Mainnet
     '0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6', // Goerli
     '0x5300000000000000000000000000000000000004', // Scroll (test and main)
+    '0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14', // Sepolia
+    '0x4300000000000000000000000000000000000004', // Blast
+    '0x4200000000000000000000000000000000000023', // Blast Seploia
 ].map((x) => x.toLowerCase());

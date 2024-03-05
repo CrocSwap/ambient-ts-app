@@ -83,7 +83,7 @@ export default function PriceInfo(props: propsIF) {
                     token={!isBid ? quoteToken : baseToken}
                     src={!isBid ? quoteTokenLogo : baseTokenLogo}
                     alt={!isBid ? quoteTokenSymbol : baseTokenSymbol}
-                    size='xl'
+                    size='s'
                 />
             </p>
         </div>
@@ -104,7 +104,7 @@ export default function PriceInfo(props: propsIF) {
                     token={isBid ? quoteToken : baseToken}
                     src={isBid ? quoteTokenLogo : baseTokenLogo}
                     alt={isBid ? quoteTokenSymbol : baseTokenSymbol}
-                    size='xl'
+                    size='s'
                 />
             </p>
         </div>
@@ -173,13 +173,13 @@ export default function PriceInfo(props: propsIF) {
             <div className={styles.price_info_container}>
                 {tokenPairDetails}
                 {orderType}
-                {totalValue}
                 {(isDenomBase && isBid) || (!isDenomBase && !isBid)
                     ? sellContent
                     : buyContent}
                 {(isDenomBase && isBid) || (!isDenomBase && !isBid)
                     ? buyContent
                     : sellContent}
+                {totalValue}
                 {priceStatusContent}
             </div>
         </div>

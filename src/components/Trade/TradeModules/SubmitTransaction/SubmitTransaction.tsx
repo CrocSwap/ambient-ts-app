@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { RiArrowUpSLine, RiArrowDownSLine } from 'react-icons/ri';
 import { uriToHttp } from '../../../../ambient-utils/dataLayer';
 import {
@@ -27,6 +27,7 @@ interface propsIF {
         | 'Reposition'
         | 'Remove'
         | 'Harvest'
+        | 'Claim'
         | 'Reset';
     newTransactionHash: string;
     txErrorCode: string;
@@ -88,12 +89,22 @@ export default function SubmitTransaction(props: propsIF) {
         <TransactionException txErrorMessage={txErrorMessage} />
     );
 
-    const lastReceipt =
-        sessionReceipts.length > 0
-            ? JSON.parse(sessionReceipts[sessionReceipts.length - 1])
-            : null;
+    const [isTransactionFailed, setIsTransactionFailed] =
+        useState<boolean>(false);
 
-    const isLastReceiptSuccess = lastReceipt?.status === 1;
+    // set isTransactionFailed to true if last receipt failed
+    useEffect(() => {
+        const lastReceipt =
+            sessionReceipts.length > 0 ? JSON.parse(sessionReceipts[0]) : null;
+        if (
+            lastReceipt?.status === 0 &&
+            lastReceipt.transactionHash === newTransactionHash
+        ) {
+            setIsTransactionFailed(true);
+        } else {
+            setIsTransactionFailed(false);
+        }
+    }, [sessionReceipts, newTransactionHash]);
 
     const transactionSubmitted = (
         <TransactionSubmitted
@@ -105,6 +116,7 @@ export default function SubmitTransaction(props: propsIF) {
             tokenBImage={uriToHttp(tokenB.logoURI)}
             chainId={tokenB.chainId}
             isConfirmed={isTransactionConfirmed}
+            isTransactionFailed={isTransactionFailed}
             noAnimation
         />
     );
@@ -114,14 +126,12 @@ export default function SubmitTransaction(props: propsIF) {
         ? transactionDenied
         : isTransactionApproved
         ? transactionSubmitted
-        : lastReceipt && !isLastReceiptSuccess
+        : isTransactionFailed
         ? transactionFailed
         : confirmSendMessage;
 
     const buttonColor =
-        isTransactionException ||
-        isTransactionDenied ||
-        (lastReceipt && !isLastReceiptSuccess)
+        isTransactionException || isTransactionDenied || isTransactionFailed
             ? 'var(--negative)'
             : isTransactionApproved
             ? 'var(--positive)'
@@ -129,7 +139,7 @@ export default function SubmitTransaction(props: propsIF) {
 
     const animationDisplay = isTransactionException ? (
         <CircleLoaderFailed size='30px' />
-    ) : isTransactionDenied || (lastReceipt && !isLastReceiptSuccess) ? (
+    ) : isTransactionDenied || isTransactionFailed ? (
         <CircleLoaderFailed size='30px' />
     ) : isTransactionApproved ? (
         <CircleLoaderCompleted size='30px' />
@@ -143,7 +153,7 @@ export default function SubmitTransaction(props: propsIF) {
             : 'Transaction Exception'
         : isTransactionDenied
         ? 'Transaction Denied'
-        : lastReceipt && !isLastReceiptSuccess
+        : isTransactionFailed
         ? 'Transaction Failed'
         : isTransactionConfirmed
         ? 'Transaction Confirmed'

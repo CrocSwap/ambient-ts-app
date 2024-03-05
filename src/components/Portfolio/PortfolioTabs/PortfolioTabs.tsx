@@ -43,6 +43,8 @@ import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { PortfolioTabsPortfolioTabsContainer } from '../../../styled/Components/Portfolio';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { DataLoadingContext } from '../../../contexts/DataLoadingContext';
+import Points from '../../Global/Account/AccountTabs/Points/Points';
+import { UserXpDataIF } from '../../../contexts/UserDataContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -50,6 +52,7 @@ interface propsIF {
     resolvedAddress: string | undefined;
     connectedAccountActive: boolean;
     fullLayoutActive: boolean;
+    resolvedUserXp: UserXpDataIF;
 }
 
 // React functional component
@@ -59,6 +62,7 @@ export default function PortfolioTabs(props: propsIF) {
         resolvedAddress,
         connectedAccountActive,
         fullLayoutActive,
+        resolvedUserXp,
     } = props;
 
     const {
@@ -76,7 +80,7 @@ export default function PortfolioTabs(props: propsIF) {
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
-    const { positionsByUser, limitOrdersByUser, changesByUser } =
+    const { positionsByUser, limitOrdersByUser, transactionsByUser } =
         useContext(GraphDataContext);
 
     // TODO: can pull into GraphDataContext
@@ -84,7 +88,7 @@ export default function PortfolioTabs(props: propsIF) {
         x.chainId === chainId;
 
     const _positionsByUser = positionsByUser.positions.filter(filterFn);
-    const _txsByUser = changesByUser.changes.filter(filterFn);
+    const _txsByUser = transactionsByUser.changes.filter(filterFn);
     const _limitsByUser = limitOrdersByUser.limitOrders.filter(filterFn);
 
     const [lookupAccountPositionData, setLookupAccountPositionData] = useState<
@@ -137,21 +141,22 @@ export default function PortfolioTabs(props: propsIF) {
                                 skipENSFetch,
                             );
                         }),
-                    ).then((updatedPositions) => {
-                        setLookupAccountPositionData(
-                            updatedPositions.filter((p) => p.positionLiq > 0),
-                        );
-                    });
+                    )
+                        .then((updatedPositions) => {
+                            setLookupAccountPositionData(
+                                updatedPositions.filter(
+                                    (p) => p.positionLiq > 0,
+                                ),
+                            );
+                        })
+                        .finally(() => {
+                            setDataLoadingStatus({
+                                datasetName: 'isLookupUserRangeDataLoading',
+                                loadingStatus: false,
+                            });
+                        });
                 }
-                IS_LOCAL_ENV && console.debug('dispatch');
-            })
-            .finally(() => {
-                setDataLoadingStatus({
-                    datasetName: 'isLookupUserRangeDataLoading',
-                    loadingStatus: false,
-                });
             });
-
     const getLookupUserLimitOrders = async (accountToSearch: string) =>
         fetch(
             userLimitOrdersCacheEndpoint +
@@ -186,18 +191,20 @@ export default function PortfolioTabs(props: propsIF) {
                                 );
                             },
                         ),
-                    ).then((updatedLimitOrderStates) => {
-                        setLookupAccountLimitOrderData(updatedLimitOrderStates);
-                    });
+                    )
+                        .then((updatedLimitOrderStates) => {
+                            setLookupAccountLimitOrderData(
+                                updatedLimitOrderStates,
+                            );
+                        })
+                        .finally(() => {
+                            setDataLoadingStatus({
+                                datasetName: 'isLookupUserOrderDataLoading',
+                                loadingStatus: false,
+                            });
+                        });
                 }
-            })
-            .finally(() => {
-                setDataLoadingStatus({
-                    datasetName: 'isLookupUserOrderDataLoading',
-                    loadingStatus: false,
-                });
             });
-
     const getLookupUserTransactions = async (accountToSearch: string) => {
         if (crocEnv && provider) {
             fetchUserRecentChanges({
@@ -311,6 +318,12 @@ export default function PortfolioTabs(props: propsIF) {
         isAccountView: true,
     };
 
+    // props for <Points/> React Element
+    const pointsProps = {
+        resolvedUserXp: resolvedUserXp,
+        connectedAccountActive: connectedAccountActive,
+    };
+
     // props for <Transactions/> React Element
     const transactionsProps = {
         activeAccountTransactionData: activeAccountTransactionData,
@@ -344,6 +357,11 @@ export default function PortfolioTabs(props: propsIF) {
             icon: rangePositionsImage,
         },
         {
+            label: 'Points',
+            content: <Points {...pointsProps} />,
+            icon: rangePositionsImage,
+        },
+        {
             label: 'Exchange Balances',
             content: <Exchange {...exchangeProps} />,
             icon: exchangeImage,
@@ -367,8 +385,13 @@ export default function PortfolioTabs(props: propsIF) {
             icon: openOrdersImage,
         },
         {
-            label: 'Ranges',
+            label: 'Liquidity',
             content: <Ranges {...rangeProps} />,
+            icon: rangePositionsImage,
+        },
+        {
+            label: 'Points',
+            content: <Points {...pointsProps} />,
             icon: rangePositionsImage,
         },
         {

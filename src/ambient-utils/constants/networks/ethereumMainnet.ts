@@ -4,12 +4,13 @@ import {
     mainnetETH,
     mainnetUSDC,
     mainnetWBTC,
-    mainnetDAI,
     mainnetUSDT,
+    mainnetSYN,
 } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 import { GCGO_ETHEREUM_URL } from '../gcgo';
+import { Provider } from '@ethersproject/providers';
 
 const PROVIDER_KEY =
     process.env.NODE_ENV === 'test'
@@ -27,14 +28,12 @@ export const ethereumMainnet: NetworkIF = {
     topPools: [
         new TopPool(mainnetETH, mainnetUSDC, lookupChain('0x1').poolIndex),
         new TopPool(mainnetETH, mainnetWBTC, lookupChain('0x1').poolIndex),
-        new TopPool(mainnetDAI, mainnetUSDC, lookupChain('0x1').poolIndex),
+        new TopPool(mainnetSYN, mainnetETH, lookupChain('0x1').poolIndex),
         new TopPool(mainnetUSDT, mainnetUSDC, lookupChain('0x1').poolIndex),
+        new TopPool(mainnetETH, mainnetUSDT, lookupChain('0x1').poolIndex),
     ],
-    getGasPriceInGwei: async () => {
-        const response = await fetch(
-            'https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=KNJM7A9ST1Q1EESYXPPQITIP7I8EFSY456',
-        );
-        const gasPrice = (await response.json()).result.ProposeGasPrice;
-        return gasPrice ? parseInt(gasPrice) : undefined;
+    getGasPriceInGwei: async (provider?: Provider) => {
+        if (!provider) return 0;
+        return (await provider.getGasPrice()).toNumber() * 1e-9;
     },
 };

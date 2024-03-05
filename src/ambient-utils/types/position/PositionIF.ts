@@ -1,5 +1,6 @@
 export interface PositionIF {
     chainId: string;
+    serverPositionId: string;
     positionId: string;
     askTick: number;
     bidTick: number;
@@ -44,6 +45,7 @@ export interface PositionIF {
     latestUpdateTime: number;
     positionLiqTotalUSD: number;
     totalValueUSD: number;
+    feesValueUSD: number;
     bidTickPriceDecimalCorrected: number;
     bidTickInvPriceDecimalCorrected: number;
     askTickPriceDecimalCorrected: number;

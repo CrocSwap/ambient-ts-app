@@ -2,11 +2,14 @@ import React, { createContext } from 'react';
 
 interface ReceiptContextIF {
     sessionReceipts: Array<string>;
+    allReceipts: Array<string>;
     pendingTransactions: Array<string>;
     transactionsByType: Array<TransactionByType>;
+    sessionPositionUpdates: PositionUpdateIF[];
     addTransactionByType: (txByType: TransactionByType) => void;
     addReceipt: (receipt: string) => void;
     addPendingTx: (tx: string) => void;
+    addPositionUpdate: (positionUpdate: PositionUpdateIF) => void;
     updateTransactionHash: (oldHash: string, newHash: string) => void;
     removePendingTx: (pendingTx: string) => void;
     removeReceipt: (txHash: string) => void;
@@ -14,6 +17,7 @@ interface ReceiptContextIF {
 }
 
 interface TransactionByType {
+    userAddress: string;
     txHash: string;
     txAction?:
         | 'Sell'
@@ -46,7 +50,19 @@ interface TransactionByType {
         highTick?: number;
         isBid?: boolean;
         gridSize?: number;
+        originalLowTick?: number;
+        originalHighTick?: number;
     };
+}
+
+export interface PositionUpdateIF {
+    positionID: string;
+    isLimit: boolean;
+    isFullRemoval?: boolean;
+    txHash?: string;
+    unixTimeAdded?: number;
+    unixTimeIndexed?: number;
+    unixTimeReceipt?: number;
 }
 
 export const ReceiptContext = createContext<ReceiptContextIF>(
@@ -57,8 +73,13 @@ export const ReceiptContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const [sessionReceipts, setSessionReceipts] = React.useState<string[]>([]);
+    const [allReceipts, setAllReceipts] = React.useState<string[]>([]);
     const [pendingTransactions, setPendingTransactions] = React.useState<
         string[]
+    >([]);
+
+    const [sessionPositionUpdates, setSessionPositionUpdates] = React.useState<
+        Array<PositionUpdateIF>
     >([]);
 
     const [transactionsByType, setTransactionsByType] = React.useState<
@@ -70,9 +91,13 @@ export const ReceiptContextProvider = (props: {
     };
     const addReceipt = (receipt: string) => {
         setSessionReceipts((prev) => [receipt, ...prev]);
+        setAllReceipts((prev) => [receipt, ...prev]);
     };
     const addPendingTx = (tx: string) => {
         setPendingTransactions((prev) => [tx, ...prev]);
+    };
+    const addPositionUpdate = (positionUpdate: PositionUpdateIF) => {
+        setSessionPositionUpdates((prev) => [positionUpdate, ...prev]);
     };
     const updateTransactionHash = (oldHash: string, newHash: string) => {
         const txIndex = transactionsByType.findIndex(
@@ -87,21 +112,21 @@ export const ReceiptContextProvider = (props: {
     };
 
     const removePendingTx = (pendingTx: string) => {
-        const updatedPendingTransactions = pendingTransactions.filter(
-            (p) => p !== pendingTx,
+        setPendingTransactions((pendingTransactions) =>
+            pendingTransactions.filter((p) => p !== pendingTx),
         );
-        setPendingTransactions(updatedPendingTransactions);
     };
 
     const removeReceipt = (txHash: string) => {
         removePendingTx(txHash);
 
-        const updatedReceipts = sessionReceipts.filter(
-            (r) =>
-                JSON.parse(r).transactionHash.toLowerCase() !==
-                txHash.toLowerCase(),
+        setSessionReceipts((sessionReceipts) =>
+            sessionReceipts.filter(
+                (r) =>
+                    JSON.parse(r).transactionHash.toLowerCase() !==
+                    txHash.toLowerCase(),
+            ),
         );
-        setSessionReceipts(updatedReceipts);
     };
 
     const resetReceiptData = () => {
@@ -112,11 +137,14 @@ export const ReceiptContextProvider = (props: {
 
     const receiptContext: ReceiptContextIF = {
         sessionReceipts,
+        allReceipts,
         transactionsByType,
         pendingTransactions,
+        sessionPositionUpdates,
         addTransactionByType,
         addReceipt,
         addPendingTx,
+        addPositionUpdate,
         updateTransactionHash,
         removePendingTx,
         removeReceipt,

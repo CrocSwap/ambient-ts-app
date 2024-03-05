@@ -12,7 +12,6 @@ import {
 import { LimitOrderIF } from '../../ambient-utils/types';
 
 import {
-    concPosSlot,
     priceHalfAboveTick,
     priceHalfBelowTick,
     toDisplayPrice,
@@ -23,6 +22,8 @@ import moment from 'moment';
 import { getAddress } from 'ethers/lib/utils.js';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { useFetchBatch } from '../../App/hooks/useFetchBatch';
+import { UserDataContext } from '../../contexts/UserDataContext';
+import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
@@ -30,6 +31,8 @@ export const useProcessOrder = (
     isAccountView = false,
 ) => {
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
+    const { ensName: ensNameConnectedUser } = useContext(UserDataContext);
+
     const blockExplorer = getChainExplorer(limitOrder.chainId);
 
     const selectedBaseToken = baseToken.address.toLowerCase();
@@ -53,7 +56,11 @@ export const useProcessOrder = (
 
     let ensAddress = null;
     if (data && !error) {
-        ensAddress = data.ens_address;
+        // prevent showing ens address if it is the same as the connected user due to async issue when switching tables
+        ensAddress =
+            data.ens_address !== ensNameConnectedUser
+                ? data.ens_address
+                : undefined;
     }
 
     const ownerId = ensAddress || getAddress(limitOrder.user);
@@ -61,14 +68,16 @@ export const useProcessOrder = (
 
     const isOrderFilled = limitOrder.claimableLiq > 0;
 
-    const posHash = concPosSlot(
-        limitOrder.user ?? '',
-        limitOrder.base ?? '',
-        limitOrder.quote ?? '',
-        limitOrder.bidTick ?? '',
-        limitOrder.askTick ?? '',
-        limitOrder.poolIdx ?? '',
-    ).toString();
+    const posHash = getPositionHash(undefined, {
+        isPositionTypeAmbient: false,
+        user: limitOrder.user ?? '',
+        baseAddress: limitOrder.base ?? '',
+        quoteAddress: limitOrder.quote ?? '',
+        poolIdx: limitOrder.poolIdx ?? 0,
+        bidTick: limitOrder.bidTick ?? 0,
+        askTick: limitOrder.askTick ?? 0,
+    });
+
     const posHashTruncated = trimString(posHash ?? '', 9, 0, '…');
 
     const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<
@@ -204,7 +213,7 @@ export const useProcessOrder = (
 
     const usdValue = getFormattedNumber({
         value: usdValueNum,
-        isUSD: true,
+        prefix: '$',
     });
 
     // -----------------------------------------------------------------------------------------
@@ -230,7 +239,21 @@ export const useProcessOrder = (
         ? moment(Date.now()).diff(positionTime * 1000, 'seconds')
         : 0;
 
+    const elapsedTimeSinceFirstMintInSecondsNum = limitOrder.timeFirstMint
+        ? moment(Date.now()).diff(limitOrder.timeFirstMint * 1000, 'seconds')
+        : 0;
+
+    const elapsedTimeSinceCrossInSecondsNum = limitOrder.crossTime
+        ? moment(Date.now()).diff(limitOrder.crossTime * 1000, 'seconds')
+        : 0;
+
     const elapsedTimeString = getElapsedTime(elapsedTimeInSecondsNum);
+    const elapsedTimeSinceFirstMintString = getElapsedTime(
+        elapsedTimeSinceFirstMintInSecondsNum,
+    );
+    const elapsedTimeSinceCrossString = getElapsedTime(
+        elapsedTimeSinceCrossInSecondsNum,
+    );
 
     // ----------------------------------------------------------------------
 
@@ -468,6 +491,8 @@ export const useProcessOrder = (
         blockExplorer,
 
         elapsedTimeString,
+        elapsedTimeSinceFirstMintString,
+        elapsedTimeSinceCrossString,
         initialTokenQty,
         baseTokenAddress: limitOrder.base,
         quoteTokenAddress: limitOrder.quote,
