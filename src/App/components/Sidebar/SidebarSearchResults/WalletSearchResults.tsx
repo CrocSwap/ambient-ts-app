@@ -25,6 +25,7 @@ export default function WalletSearchResults(props: propsIF) {
 
     return (
         <FlexContainer
+            as='ul'
             flexDirection='column'
             justifyContent='center'
             alignItems='flex-start'
@@ -35,6 +36,7 @@ export default function WalletSearchResults(props: propsIF) {
             </Text>
             {searchData.wallets.map((wallet: string) => (
                 <Results
+                    as='li'
                     key={wallet}
                     fullWidth
                     fontWeight='300'
