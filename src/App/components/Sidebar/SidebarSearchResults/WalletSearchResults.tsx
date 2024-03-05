@@ -5,16 +5,23 @@ import {
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
+import { sidebarSearchIF } from '../../../hooks/useSidebarSearch';
 
 interface propsIF {
-    searchedWallets: string[];
+    searchData: sidebarSearchIF;
 }
 
 export default function WalletSearchResults(props: propsIF) {
-    const { searchedWallets } = props;
+    const { searchData } = props;
 
     // hook to generate navigation actions with pre-loaded path to `/account`
     const linkGenAccount: linkGenMethodsIF = useLinkGen('account');
+
+    // fn to navigate user on click and clear input
+    function handleClick(addr: string): void {
+        linkGenAccount.navigate(addr);
+        searchData.clearInput();
+    }
 
     return (
         <FlexContainer
@@ -26,7 +33,7 @@ export default function WalletSearchResults(props: propsIF) {
             <Text fontWeight='500' fontSize='body' color='accent5'>
                 Wallets
             </Text>
-            {searchedWallets.map((wallet: string) => (
+            {searchData.wallets.map((wallet: string) => (
                 <Results
                     key={wallet}
                     fullWidth
@@ -34,7 +41,7 @@ export default function WalletSearchResults(props: propsIF) {
                     fontSize='body'
                     color='text2'
                     padding='4px'
-                    onClick={() => linkGenAccount.navigate(wallet)}
+                    onClick={() => handleClick(wallet)}
                 >
                     {trimString(wallet, 18, 16)}
                 </Results>

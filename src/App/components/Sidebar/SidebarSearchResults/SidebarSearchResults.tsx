@@ -55,7 +55,7 @@ export default function SidebarSearchResults(props: propsIF) {
                 </>
             )}
             {searchData.contentGroup === 'wallet' && (
-                <WalletSearchResults searchedWallets={searchData.wallets} />
+                <WalletSearchResults searchData={searchData} />
             )}
         </SearchResultsContainer>
     );
