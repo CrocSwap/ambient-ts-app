@@ -99,6 +99,7 @@ export const useSidebarSearch = (
             // if fixed string is valid, assign it to the output variable
             output = fixedInput;
         }
+        console.log(rawInput === output);
         // return output variable
         return output;
     }, [dbInput]);
@@ -357,6 +358,7 @@ export const useSidebarSearch = (
                     const isWallet = !!response.data;
                     // send data to state if wallet, otherwise nullify state
                     setOutputWallet(isWallet ? response : null);
+                    console.log(response);
                 })
                 .catch((err) => {
                     IS_LOCAL_ENV && console.warn(err);

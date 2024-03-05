@@ -9,6 +9,7 @@ import { SearchResultsContainer } from '../../../../styled/Components/Sidebar';
 import { Text } from '../../../../styled/Common';
 import { useContext } from 'react';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import WalletSearchResults from './WalletSearchResults';
 
 interface propsIF {
     cachedPoolStatsFetch: PoolStatsFn;
@@ -47,6 +48,7 @@ export default function SidebarSearchResults(props: propsIF) {
                     <PositionsSearchResults
                         searchedPositions={searchData.positions}
                     />
+                    <WalletSearchResults searchedWallets={searchData.wallet} />
                 </>
             )}
         </SearchResultsContainer>
