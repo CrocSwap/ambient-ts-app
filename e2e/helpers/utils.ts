@@ -28,6 +28,7 @@ export async function fill(selector: string, page: Page, value: string) {
         await el.fill(value);
     }
 }
+
 export async function clickmmask(selector: string, page: Page) {
     return click('[data-testid="' + selector + '"]', page);
 }
@@ -39,6 +40,7 @@ export async function checkAndClickMMask(selector: string, page: Page) {
 export async function fillmmask(selector: string, page: Page, value: string) {
     return fill('[data-testid="' + selector + '"]', page, value);
 }
+
 export async function waiter(delay: number) {
     return new Promise((resolve, reject) => {
         setTimeout(
@@ -70,7 +72,7 @@ export async function prepareBrowser() {
 }
 
 export async function initWallet(context: BrowserContext) {
-    await waiter(2);
+    await waiter(5);
 
     console.log('.............................');
     console.log(process.env);
@@ -151,7 +153,7 @@ export async function initWallet(context: BrowserContext) {
                 spanElement.click();
             }
             setTimeout(async () => {
-                page.close();
+                // page.close();
             }, 300);
         }, 500);
     }
