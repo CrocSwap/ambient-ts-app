@@ -24,7 +24,6 @@ import {
     drawDataHistory,
     selectedDrawnData,
 } from '../pages/Chart/ChartUtils/chartUtils';
-import { ChainDataContext } from './ChainDataContext';
 
 type TradeTableState = 'Expanded' | 'Collapsed' | undefined;
 
@@ -51,6 +50,8 @@ interface ChartContextIF {
     isChangeScaleChart: boolean;
     setIsChangeScaleChart: React.Dispatch<boolean>;
     isCandleDataNull: boolean;
+    setNumCandlesFetched: React.Dispatch<number | undefined>;
+    numCandlesFetched: number | undefined;
     setIsCandleDataNull: Dispatch<SetStateAction<boolean>>;
     isToolbarOpen: boolean;
     setIsToolbarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -109,7 +110,6 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
 
     const [isCandleDataNull, setIsCandleDataNull] = useState(false);
 
-    console.log({ isCandleDataNull });
     const chartAnnotations: {
         isMagnetActive: boolean;
     } | null = JSON.parse(
@@ -214,11 +214,18 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     const [isToolbarOpen, setIsToolbarOpen] =
         useState<boolean>(initialIsToolbarOpen);
 
-    const { isActiveNetworkBlast } = useContext(ChainDataContext);
+    const [numCandlesFetched, setNumCandlesFetched] = useState<
+        number | undefined
+    >();
+
+    const currentPoolString =
+        undoRedoOptions.currentPool.tokenA.address +
+        '/' +
+        undoRedoOptions.currentPool.tokenB.address;
 
     const chartSettings = useChartSettings(
-        isActiveNetworkBlast,
-        isCandleDataNull,
+        numCandlesFetched,
+        currentPoolString,
     );
 
     const chartContext = {
@@ -251,6 +258,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         setIsChartHeightMinimum,
         isMagnetActiveLocal,
         setIsMagnetActiveLocal,
+        numCandlesFetched,
+        setNumCandlesFetched,
     };
 
     useEffect(() => {

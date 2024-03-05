@@ -154,7 +154,7 @@ interface propsIF {
     candleTime: candleTimeIF;
     unparsedData: CandlesByPoolAndDurationIF;
     prevPeriod: number;
-    candleTimeInSeconds: number;
+    candleTimeInSeconds: number | undefined;
     updateURL: (changes: updatesIF) => void;
     userTransactionData: Array<TransactionIF> | undefined;
 }
