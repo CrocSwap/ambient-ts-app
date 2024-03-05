@@ -97,13 +97,13 @@ export const useChartSettings = (
         // );
         let newCandleDuration;
         if (currentCandleTimeGlobal === undefined) {
-            if (numCandlesFetched >= 100) {
+            if (numCandlesFetched >= 50) {
                 newCandleDuration = 3600;
             } else {
                 newCandleDuration = 900;
             }
         } else {
-            if (numCandlesFetched >= 100) {
+            if (numCandlesFetched >= 50) {
                 newCandleDuration = currentCandleTimeGlobal;
             } else {
                 if (currentCandleTimeGlobal === 86400) {
