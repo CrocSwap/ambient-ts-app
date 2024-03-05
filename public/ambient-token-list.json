@@ -59,6 +59,51 @@
             "logoURI": "https://miablastsoff.com/images/logo.png"
         },
         {
+            "address": "0xB582Dc28968c725D2868130752aFa0c13EbF9b1a",
+            "chainId": 81457,
+            "decimals": 18,
+            "fromList": "/ambient-token-list.json",
+            "name": "Blast Pepe",
+            "symbol": "BEPE",
+            "logoURI": "https://assets.coingecko.com/coins/images/35658/standard/logo_200.png"
+        },
+        {
+            "address": "0x20fE91f17ec9080E3caC2d688b4EcB48C5aC3a9C",
+            "chainId": 81457,
+            "decimals": 18,
+            "fromList": "/ambient-token-list.json",
+            "name": "Yes",
+            "symbol": "YES",
+            "logoURI": ""
+        },
+        {
+            "address": "0x0B4d0ee29857c3961b380d4ec138EA5814E346b9",
+            "chainId": 81457,
+            "decimals": 18,
+            "fromList": "/ambient-token-list.json",
+            "name": "P@cman Blastoff",
+            "symbol": "$PACM",
+            "logoURI": ""
+        },
+        {
+            "address": "0xCa84812E477eE5a96a92328689D8Ce2589aB6FfD",
+            "chainId": 81457,
+            "decimals": 18,
+            "fromList": "/ambient-token-list.json",
+            "name": "Alien",
+            "symbol": "ALIEN",
+            "logoURI": ""
+        },
+        {
+            "address": "0x5FE8534a6F96cb01261Bd96e98c17C2c1Cab3204",
+            "chainId": 81457,
+            "decimals": 18,
+            "fromList": "/ambient-token-list.json",
+            "name": "Baja",
+            "symbol": "BAJA",
+            "logoURI": ""
+        },
+        {
             "address": "0xb9dfCd4CF589bB8090569cb52FaC1b88Dbe4981F",
             "chainId": 81457,
             "decimals": 18,

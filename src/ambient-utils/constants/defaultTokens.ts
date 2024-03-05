@@ -76,7 +76,7 @@ export const blastBAG: TokenIF = {
 };
 
 export const blastBEPE: TokenIF = {
-    address: '0xb582dc28968c725d2868130752afa0c13ebf9b1a',
+    address: '0xB582Dc28968c725D2868130752aFa0c13EbF9b1a',
     chainId: 81457,
     decimals: 18,
     fromList: '/ambient-token-list.json',
@@ -84,6 +84,26 @@ export const blastBEPE: TokenIF = {
     symbol: 'BEPE',
     logoURI:
         'https://assets.coingecko.com/coins/images/35658/standard/logo_200.png',
+};
+
+export const blastALIEN: TokenIF = {
+    address: '0xCa84812E477eE5a96a92328689D8Ce2589aB6FfD',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Alien',
+    symbol: 'ALIEN',
+    logoURI: '',
+};
+
+export const blastBAJA: TokenIF = {
+    address: '0x5FE8534a6F96cb01261Bd96e98c17C2c1Cab3204',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Baja',
+    symbol: 'BAJA',
+    logoURI: '',
 };
 
 export const blastYES: TokenIF = {
@@ -97,11 +117,11 @@ export const blastYES: TokenIF = {
 };
 
 export const blastPACM: TokenIF = {
-    address: '0x48118D89B451f2898fBc39Dd35C148c0E716EbE6',
+    address: '0x0B4d0ee29857c3961b380d4ec138EA5814E346b9',
     chainId: 81457,
     decimals: 18,
     fromList: '/ambient-token-list.json',
-    name: 'BLURBLASTPacman TIESHANINU',
+    name: 'P@cman Blastoff',
     symbol: '$PACM',
     logoURI: '',
 };
