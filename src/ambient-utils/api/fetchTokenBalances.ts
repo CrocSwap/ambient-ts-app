@@ -2,10 +2,16 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 import { BigNumber } from 'ethers';
 import {
     ZERO_ADDRESS,
+    blastALIEN,
     blastBAG,
+    blastBAJA,
+    blastBEPE,
     blastMIA,
     blastORBIT,
+    blastPACM,
+    blastPUMP,
     blastUSDB,
+    blastYES,
 } from '../constants';
 import { TokenIF } from '../types/token/TokenIF';
 import { fetchDepositBalances } from './fetchDepositBalances';
@@ -132,6 +138,24 @@ export const fetchTokenBalances = async (
         const miaInWallet = (
             await crocEnv.token(blastMIA.address).wallet(address)
         ).toString();
+        const alienInWallet = (
+            await crocEnv.token(blastALIEN.address).wallet(address)
+        ).toString();
+        const bajaInWallet = (
+            await crocEnv.token(blastBAJA.address).wallet(address)
+        ).toString();
+        const bepeInWallet = (
+            await crocEnv.token(blastBEPE.address).wallet(address)
+        ).toString();
+        const pacmInWallet = (
+            await crocEnv.token(blastPACM.address).wallet(address)
+        ).toString();
+        const pumpInWallet = (
+            await crocEnv.token(blastPUMP.address).wallet(address)
+        ).toString();
+        const yesInWallet = (
+            await crocEnv.token(blastYES.address).wallet(address)
+        ).toString();
 
         const eth = {
             chainId: 1,
@@ -181,12 +205,71 @@ export const fetchTokenBalances = async (
             decimals: 18,
             walletBalance: miaInWallet,
         };
-
+        const alien = {
+            chainId: 1,
+            logoURI: '',
+            name: blastALIEN.name,
+            address: blastALIEN.address,
+            symbol: blastALIEN.symbol,
+            decimals: 18,
+            walletBalance: alienInWallet,
+        };
+        const baja = {
+            chainId: 1,
+            logoURI: '',
+            name: blastBAJA.name,
+            address: blastBAJA.address,
+            symbol: blastBAJA.symbol,
+            decimals: 18,
+            walletBalance: bajaInWallet,
+        };
+        const bepe = {
+            chainId: 1,
+            logoURI: '',
+            name: blastBEPE.name,
+            address: blastBEPE.address,
+            symbol: blastBEPE.symbol,
+            decimals: 18,
+            walletBalance: bepeInWallet,
+        };
+        const pacm = {
+            chainId: 1,
+            logoURI: '',
+            name: blastPACM.name,
+            address: blastPACM.address,
+            symbol: blastPACM.symbol,
+            decimals: 18,
+            walletBalance: pacmInWallet,
+        };
+        const pump = {
+            chainId: 1,
+            logoURI: '',
+            name: blastPUMP.name,
+            address: blastPUMP.address,
+            symbol: blastPUMP.symbol,
+            decimals: 18,
+            walletBalance: pumpInWallet,
+        };
+        const yes = {
+            chainId: 1,
+            logoURI: '',
+            name: blastYES.name,
+            address: blastYES.address,
+            symbol: blastYES.symbol,
+            decimals: 18,
+            walletBalance: yesInWallet,
+        };
         combinedBalances.push(eth);
         combinedBalances.push(usdb);
         combinedBalances.push(orbit);
         combinedBalances.push(bag);
         combinedBalances.push(mia);
+        combinedBalances.push(alien);
+        combinedBalances.push(baja);
+        combinedBalances.push(bepe);
+        combinedBalances.push(pacm);
+        combinedBalances.push(pump);
+        combinedBalances.push(yes);
     }
 
     if (dexBalancesFromCache !== undefined) {

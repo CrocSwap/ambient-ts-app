@@ -177,7 +177,7 @@ export const ChainDataContextProvider = (props: {
                 client
             ) {
                 try {
-                    // wait for 5 seconds before fetching token balances
+                    // wait for 7 seconds before fetching token balances
                     setTimeout(() => {
                         (async () => {
                             const tokenBalances: TokenIF[] =
@@ -206,7 +206,7 @@ export const ChainDataContextProvider = (props: {
                             );
                             setTokenBalances(tokensWithLogos);
                         })();
-                    }, 5000);
+                    }, 7000);
                 } catch (error) {
                     // setTokenBalances(undefined);
                     console.error({ error });
