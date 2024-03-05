@@ -47,7 +47,7 @@ if (!doReload) {
             jsonRpcProvider({
                 rpc: (chain: Chain) => {
                     if (chain.id === 534352) {
-                        return { http: 'https://rpc.scroll.io' };
+                        return { http: 'https://rpc.ankr.com/scroll' };
                     } else if (chain.id === 81457) {
                         return { http: BLAST_RPC_URL };
                     } else if (chain.id === 534351) {

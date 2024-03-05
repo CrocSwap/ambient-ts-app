@@ -23,7 +23,7 @@ const wagmiChain = {
     },
     rpcUrls: {
         default: {
-            http: ['https://rpc.scroll.io/'],
+            http: ['https://rpc.ankr.com/scroll'],
         },
         public: {
             http: ['https://rpc.scroll.io/'],
@@ -41,7 +41,7 @@ const wagmiChain = {
 export const scrollMainnet: NetworkIF = {
     chainId: '0x82750',
     graphCacheUrl: GCGO_SCROLL_URL,
-    evmRpcUrl: 'https://rpc.scroll.io/',
+    evmRpcUrl: 'https://rpc.ankr.com/scroll',
     wagmiChain,
     shouldPollBlock: true,
     marketData: '0x82750',
