@@ -75,6 +75,57 @@ export const blastBAG: TokenIF = {
     logoURI: 'https://assets.coingecko.com/coins/images/35417/thumb/bag-cg.png',
 };
 
+export const blastBEPE: TokenIF = {
+    address: '0xB582Dc28968c725D2868130752aFa0c13EbF9b1a',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Blast Pepe',
+    symbol: 'BEPE',
+    logoURI:
+        'https://assets.coingecko.com/coins/images/35658/standard/logo_200.png',
+};
+
+export const blastALIEN: TokenIF = {
+    address: '0xCa84812E477eE5a96a92328689D8Ce2589aB6FfD',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Alien',
+    symbol: 'ALIEN',
+    logoURI: '',
+};
+
+export const blastBAJA: TokenIF = {
+    address: '0x5FE8534a6F96cb01261Bd96e98c17C2c1Cab3204',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Baja',
+    symbol: 'BAJA',
+    logoURI: '',
+};
+
+export const blastYES: TokenIF = {
+    address: '0x20fE91f17ec9080E3caC2d688b4EcB48C5aC3a9C',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Yes',
+    symbol: 'YES',
+    logoURI: '',
+};
+
+export const blastPACM: TokenIF = {
+    address: '0x0B4d0ee29857c3961b380d4ec138EA5814E346b9',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'P@cman Blastoff',
+    symbol: '$PACM',
+    logoURI: '',
+};
+
 export const blastWETH: TokenIF = {
     address: '0x4300000000000000000000000000000000000004',
     chainId: 81457,
@@ -85,7 +136,7 @@ export const blastWETH: TokenIF = {
     logoURI: '',
 };
 
-export const blastPump: TokenIF = {
+export const blastPUMP: TokenIF = {
     address: '0x216A5a1135A9dab49FA9Ad865E0f22FE22b5630A',
     chainId: 81457,
     decimals: 18,
@@ -95,7 +146,7 @@ export const blastPump: TokenIF = {
     logoURI: '',
 };
 
-export const blastOle: TokenIF = {
+export const blastOLE: TokenIF = {
     address: '0x73c369f61c90f03eb0dd172e95c90208a28dc5bc',
     chainId: 81457,
     decimals: 18,
@@ -105,23 +156,13 @@ export const blastOle: TokenIF = {
     logoURI: '',
 };
 
-export const blastVroom: TokenIF = {
+export const blastVROOM: TokenIF = {
     address: '0x891c9B37177Bdf8Edc891119C9d8aEefDa9A5246',
     chainId: 81457,
     decimals: 18,
     fromList: '',
     name: 'VROOM',
     symbol: 'VROOM',
-    logoURI: '',
-};
-
-export const blastPacm: TokenIF = {
-    address: '0x0b4d0ee29857c3961b380d4ec138ea5814e346b9',
-    chainId: 81457,
-    decimals: 18,
-    fromList: '',
-    name: 'P@cman Blastoff',
-    symbol: '$PACM',
     logoURI: '',
 };
 
@@ -191,7 +232,7 @@ export const mainnetDAI: TokenIF = {
     symbol: 'DAI',
 };
 
-export const mainnetRocketPool: TokenIF = {
+export const mainnetRPL: TokenIF = {
     address: '0xd33526068d116ce69f19a9ee46f0bd304f21a51f',
     chainId: 1,
     decimals: 18,
@@ -211,7 +252,7 @@ export const mainnetWstETH: TokenIF = {
     symbol: 'wstETH',
 };
 
-export const mainnetMatic: TokenIF = {
+export const mainnetMATIC: TokenIF = {
     address: '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0',
     chainId: 1,
     decimals: 18,
@@ -401,7 +442,7 @@ export const scrollwstETH: TokenIF = {
 export const scrollRocketPoolETH: TokenIF = {
     name: 'Rocket Pool ETH',
     address: '0x53878B874283351D26d206FA512aEcE1Bef6C0dD',
-    symbol: 'wstETH',
+    symbol: 'rETH',
     decimals: 18,
     chainId: 534352,
     logoURI: '',
@@ -502,19 +543,23 @@ export const defaultTokens: TokenIF[] = [
     mainnetFRAX,
     mainnetSYN,
     mainnetUSDT,
-    mainnetRocketPool,
+    mainnetRPL,
     mainnetWstETH,
-    mainnetMatic,
+    mainnetMATIC,
     blastETH,
     blastUSDB,
     blastMIA,
     blastORBIT,
     blastBAG,
-    blastOle,
+    blastBAJA,
+    blastBEPE,
+    blastALIEN,
+    blastOLE,
     blastWETH,
-    blastPump,
-    blastPacm,
-    blastVroom,
+    blastPUMP,
+    blastYES,
+    blastPACM,
+    blastVROOM,
     blastSepoliaETH,
     blastSepoliaUSDB,
     goerliETH,
