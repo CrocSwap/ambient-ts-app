@@ -21,7 +21,6 @@ export default function WalletSearchResults(props: propsIF) {
             {searchedWallets.map((wallet: string) => (
                 <Results
                     key={wallet}
-                    numCols={1}
                     fullWidth
                     fontWeight='300'
                     fontSize='body'
