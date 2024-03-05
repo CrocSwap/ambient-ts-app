@@ -19,7 +19,6 @@ import {
 } from '../../../../pages/Chart/ChartUtils/chartUtils';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { useMediaQuery } from '@material-ui/core';
-import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -42,7 +41,6 @@ export default function TransactionDetailsGraph(
     } = props;
     const { chainData, crocEnv, activeNetwork } = useContext(CrocEnvContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
-    const oneHourMiliseconds = 60 * 60 * 1000;
 
     const isServerEnabled =
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
@@ -66,34 +64,15 @@ export default function TransactionDetailsGraph(
     const [crossPoint, setCrossPoint] = useState<any>();
     const [priceLine, setPriceLine] = useState();
     const [limitPriceLine, setLimitPriceLine] = useState();
+    const [verticalDashLine, setVerticalDashLine] = useState();
     const [triangleRange, setTriangleRange] = useState();
     const [triangleLimit, setTriangleLimit] = useState();
     const [horizontalBand, setHorizontalBand] = useState();
-    const { isActiveNetworkBlast } = useContext(ChainDataContext);
-
     const [period, setPeriod] = useState<number | undefined>();
-
     const [yAxis, setYaxis] = useState<any>();
     const [xAxis, setXaxis] = useState<any>();
-
-    const decidePeriod = (diff: number) => {
-        return diff <= 60
-            ? 60
-            : diff <= 300
-            ? 300
-            : diff <= 900
-            ? 900
-            : diff <= 3600
-            ? 3600
-            : diff <= 14400
-            ? 14400
-            : 86400;
-    };
-
     const takeSmallerPeriodForRemoveRange = (diff: number) => {
-        if (diff <= 60) {
-            return 60;
-        } else if (diff <= 300) {
+        if (diff <= 600) {
             return 60;
         } else if (diff <= 900) {
             return 300;
@@ -138,6 +117,12 @@ export default function TransactionDetailsGraph(
 
     useEffect(() => {
         (async () => {
+            console.log(
+                'tx.timeFirstMint :',
+                tx.timeFirstMint,
+                new Date(tx.timeFirstMint * 1000),
+            );
+
             const isTimeFirstMintInRemovalRange =
                 transactionType === 'liqchange' &&
                 tx.changeType !== 'mint' &&
@@ -153,71 +138,67 @@ export default function TransactionDetailsGraph(
             const time = () => {
                 switch (transactionType) {
                     case 'swap':
-                        return tx?.txTime !== undefined
-                            ? tx.txTime
-                            : new Date().getTime();
+                        return tx.txTime;
                     case 'limitOrder':
-                        return tx?.txTime !== undefined
-                            ? tx?.txTime
-                            : tx.timeFirstMint;
+                        return tx.timeFirstMint ? tx.timeFirstMint : tx.txTime;
                     case 'liqchange':
-                        return tx.timeFirstMint !== undefined
-                            ? tx.timeFirstMint
-                            : tx.txTime;
+                        return tx.timeFirstMint ? tx.timeFirstMint : tx.txTime;
                     default:
                         return new Date().getTime();
                 }
             };
 
-            let minDateDiff = oneHourMiliseconds * 24 * 7;
+            const minTime = time() * 1000;
 
-            if (transactionType === 'swap') {
-                minDateDiff = oneHourMiliseconds * 8;
-            }
+            const nowTime = Date.now();
+            let maxTime = nowTime;
 
-            const minDate = time() * 1000 - minDateDiff;
+            const diff = nowTime - minTime;
 
-            const diff =
-                new Date().getTime() - minDate < 43200000
-                    ? 43200000
-                    : new Date().getTime() - minDate;
+            let tempPeriod = takeSmallerPeriodForRemoveRange(
+                Math.floor(diff / 1000 / 200),
+            );
 
-            let startTime = undefined;
-
-            let period = isActiveNetworkBlast
-                ? 300
-                : decidePeriod(Math.floor(diff / 1000 / 200));
-
-            const isTxLiqRemove =
+            const isLiqChangeAndHasTxTime =
                 transactionType === 'liqchange' &&
-                (tx.changeType === 'burn' || tx.changeType === 'harvest');
-
-            if (isTxLiqRemove) {
-                const diffTime = Math.abs(tx.txTime - tx.timeFirstMint);
-                if (diffTime < period) {
-                    period = takeSmallerPeriodForRemoveRange(diffTime);
-                    startTime = tx.txTime + 5 * period;
+                tx.txTime &&
+                tx.timeFirstMint;
+            if (isLiqChangeAndHasTxTime) {
+                const diffTime = Math.abs(tx.txTime - tx.timeFirstMint) / 2;
+                if (diffTime < tempPeriod) {
+                    tempPeriod = takeSmallerPeriodForRemoveRange(diffTime);
+                    maxTime = tx.txTime * 1000 + 100 * tempPeriod * 1000;
                 }
             }
 
-            setPeriod(period);
-            if (period !== undefined) {
-                const calcNumberCandlesNeeded = Math.floor(
-                    (diff * 2) / (period * 1000),
-                );
-                const maxNumCandlesNeeded = 2999;
+            setPeriod(tempPeriod);
+            if (tempPeriod !== undefined) {
+                if (maxTime / (tempPeriod * 1000) < 5) {
+                    maxTime = maxTime + 15 * 1000 * tempPeriod;
+                }
 
-                const numCandlesNeeded = startTime
-                    ? 25
-                    : calcNumberCandlesNeeded < maxNumCandlesNeeded
-                    ? calcNumberCandlesNeeded
-                    : maxNumCandlesNeeded;
+                const maxNumCandlesNeeded = 2999;
+                const minNumCandlesNeeded = 500;
+
+                const localMinTime = minTime - 50 * 1000 * tempPeriod;
+                const localMaxTime = maxTime + 15 * 1000 * tempPeriod;
+
+                const calcNumberCandlesNeeded = Math.max(
+                    Math.floor(
+                        (localMaxTime - localMinTime) / (tempPeriod * 1000),
+                    ),
+                    minNumCandlesNeeded,
+                );
+
+                const numCandlesNeeded = Math.min(
+                    calcNumberCandlesNeeded,
+                    maxNumCandlesNeeded,
+                );
 
                 const offsetInSeconds = 120;
 
-                const startBoundary = startTime
-                    ? startTime
-                    : Math.floor(new Date().getTime() / 1000) - offsetInSeconds;
+                const startBoundary =
+                    Math.floor(localMaxTime / 1000) - offsetInSeconds;
 
                 try {
                     if (!crocEnv) {
@@ -227,7 +208,7 @@ export default function TransactionDetailsGraph(
                         fetchEnabled,
                         chainData,
                         activeNetwork.graphCacheUrl,
-                        period,
+                        tempPeriod,
                         baseTokenAddress,
                         quoteTokenAddress,
                         startBoundary,
@@ -325,6 +306,42 @@ export default function TransactionDetailsGraph(
 
             setLimitPriceLine(() => {
                 return limitPriceLine;
+            });
+
+            const verticalDashLine = d3fc
+                .annotationSvgLine()
+                .orient('vertical')
+                .label((d: any) => d.label)
+                .value((d: any) => d.time)
+                .xScale(scaleData?.xScale)
+                .yScale(scaleData?.yScale);
+
+            verticalDashLine.decorate((selection: any) => {
+                selection.enter().select('line').attr('class', 'verticalLine');
+
+                // const topHandles = selection.selectAll('g-.top-handle');
+                // topHandles.attr('transform',  `translate(${60}, ${-25})`);
+                const topHandles = selection.select('g.top-handle').nodes();
+                topHandles.forEach((element: any, i: number) => {
+                    d3.select(element).attr(
+                        'transform',
+                        `translate(${53 + -i * 23}, ${-24})`,
+                    );
+
+                    const textNode = d3.select(element) as any;
+                    const bbox = textNode.node().getBBox();
+                    textNode
+                        .insert('rect', ':first-child')
+                        .attr('x', bbox.x)
+                        .attr('y', bbox.y)
+                        .attr('width', bbox.width)
+                        .attr('height', bbox.height)
+                        .style('fill', '#61646F');
+                });
+            });
+
+            setVerticalDashLine(() => {
+                return verticalDashLine;
             });
 
             const triangleRange = d3fc
@@ -434,7 +451,7 @@ export default function TransactionDetailsGraph(
     ]);
 
     useEffect(() => {
-        if (graphData !== undefined) {
+        if (graphData !== undefined && period !== undefined) {
             const yExtent = d3fc
                 .extentLinear()
                 .accessors([
@@ -457,40 +474,78 @@ export default function TransactionDetailsGraph(
             const yScale = d3.scaleLinear();
 
             const localDomain = xExtent(graphData);
-            xScale.domain(localDomain);
 
             const minDomain = localDomain[0].getTime();
             const maxDomain = localDomain[1].getTime();
 
-            if (transactionType === 'limitOrder' && tx !== undefined) {
-                const buffer = oneHourMiliseconds * 24 * 3;
+            const svgDiv = d3.select(graphMainDiv.current) as any;
+
+            const svg = svgDiv.select('svg').node() as HTMLCanvasElement;
+
+            const svgHeight = svg.getBoundingClientRect().height;
+            const svgWidth = svg.getBoundingClientRect().width;
+
+            xScale.range([0, svgWidth]);
+            yScale.range([svgHeight, 0]);
+
+            xScale.domain([minDomain, maxDomain]);
+
+            const minDomainPixel = xScale(minDomain);
+            const maxDomainPixel = xScale(maxDomain);
+
+            const bufferOneCandle = period * 1000;
+            const bufferPixel = 30;
+            const oneCandlePixel =
+                xScale(maxDomain) - xScale(maxDomain - period * 1000);
+
+            if (
+                transactionType === 'limitOrder' &&
+                tx !== undefined &&
+                period
+            ) {
                 const time = tx.timeFirstMint
                     ? tx.timeFirstMint * 1000
                     : tx.txTime * 1000;
 
-                if (time + buffer >= maxDomain) {
-                    xScale.domain([minDomain, maxDomain + buffer]);
+                const maxDiffPixel = maxDomainPixel - xScale(time);
+                const minDiffPixel = xScale(time) - minDomainPixel;
+                const candleCountForBuffer = bufferPixel / oneCandlePixel;
+
+                if (maxDiffPixel < 30) {
+                    xScale.domain([
+                        minDomain,
+                        maxDomain + bufferOneCandle * candleCountForBuffer,
+                    ]);
                 }
 
-                if (time - buffer <= minDomain) {
-                    xScale.domain([time - buffer, maxDomain]);
+                if (minDiffPixel < 30) {
+                    xScale.domain([
+                        time - bufferOneCandle * candleCountForBuffer,
+                        maxDomain,
+                    ]);
                 }
             }
 
             if (transactionType === 'swap') {
-                const buffer = oneHourMiliseconds * 1;
+                const bufferPixel = maxDomainPixel - xScale(tx.txTime * 1000);
+                const tempBuffer = 30 / oneCandlePixel;
 
-                if (tx.txTime * 1000 + buffer >= maxDomain) {
-                    xScale.domain([minDomain, maxDomain + buffer]);
+                if (bufferPixel < 10) {
+                    xScale.domain([
+                        minDomain,
+                        maxDomain + bufferOneCandle * tempBuffer,
+                    ]);
                 }
 
-                if (tx.txTime * 1000 - buffer <= minDomain) {
-                    xScale.domain([tx.txTime * 1000 - buffer, maxDomain]);
+                if (xScale(tx.txTime * 1000) - minDomainPixel < 10) {
+                    xScale.domain([
+                        tx.txTime * 1000 - bufferOneCandle * tempBuffer,
+                        maxDomain,
+                    ]);
                 }
             }
 
-            if (transactionType === 'liqchange' && period) {
-                const buffer = period * 1000;
+            if (transactionType === 'liqchange') {
                 const firstTime = tx.timeFirstMint
                     ? tx.timeFirstMint * 1000
                     : tx.txTime * 1000;
@@ -499,18 +554,43 @@ export default function TransactionDetailsGraph(
                     ? tx.txTime * 1000
                     : tx.timeFirstMint * 1000;
 
-                if (lastTime + buffer * 3 >= maxDomain) {
+                const diffPixel = maxDomainPixel - xScale(lastTime);
+                const tempBuffer = 60 / oneCandlePixel;
+
+                if (xScale(firstTime) - minDomainPixel < 10) {
+                    const tempBuffer = 30 / oneCandlePixel;
+
                     xScale.domain([
-                        xScale.domain()[0].getTime(),
-                        maxDomain + buffer * 20,
+                        firstTime - bufferOneCandle * tempBuffer,
+                        maxDomain,
                     ]);
                 }
 
-                if (firstTime - buffer * 3 <= minDomain) {
+                if (diffPixel < 50) {
                     xScale.domain([
-                        firstTime - buffer * 100,
-                        xScale.domain()[1].getTime(),
+                        minDomain,
+                        maxDomain + tempBuffer * bufferOneCandle,
                     ]);
+                }
+
+                if (
+                    tx.txTime &&
+                    tx.timeFirstMint &&
+                    tx.txTime !== tx.timeFirstMint
+                ) {
+                    const openPositionPixel = xScale(firstTime);
+                    const addLiqPixel = xScale(lastTime);
+                    const tempBuffer = 3 / oneCandlePixel;
+
+                    const diffPixel = addLiqPixel - openPositionPixel;
+
+                    if (diffPixel < 105) {
+                        xScale.domain([
+                            firstTime - bufferOneCandle * tempBuffer,
+                            lastTime +
+                                bufferOneCandle * (diffPixel < 50 ? 10 : 50),
+                        ]);
+                    }
                 }
             }
 
@@ -522,7 +602,17 @@ export default function TransactionDetailsGraph(
                         tx.swapPriceDecimalCorrected,
                     );
                 }
+
                 yScale.domain(yExtent(graphData));
+
+                const yDomainMin = yScale.domain()[0];
+                const yDomainMax = yScale.domain()[1];
+
+                if (yDomainMin === yDomainMax) {
+                    const buffer = (5 * yDomainMax) / svgHeight;
+
+                    yScale.domain([yDomainMin - buffer, yDomainMax + buffer]);
+                }
             } else if (transactionType === 'limitOrder') {
                 if (tx !== undefined) {
                     const lowBoundary = Math.min(
@@ -890,7 +980,8 @@ export default function TransactionDetailsGraph(
             triangleRange !== undefined &&
             triangleLimit !== undefined &&
             limitPriceLine !== undefined &&
-            priceLine !== undefined
+            priceLine !== undefined &&
+            verticalDashLine !== undefined
         ) {
             drawChart(
                 graphData,
@@ -902,6 +993,7 @@ export default function TransactionDetailsGraph(
                 horizontalBand,
                 triangleRange,
                 triangleLimit,
+                verticalDashLine,
             );
         }
     }, [
@@ -915,6 +1007,7 @@ export default function TransactionDetailsGraph(
         horizontalBand,
         triangleRange,
         triangleLimit,
+        verticalDashLine,
     ]);
 
     const addExtraCandle = (
@@ -941,6 +1034,7 @@ export default function TransactionDetailsGraph(
             horizontalBand: any,
             triangleRange: any,
             triangleLimit: any,
+            verticalDashLine: any,
         ) => {
             if (graphData.length > 0) {
                 const lineJoin = d3fc.dataJoin('g', 'lineJoin');
@@ -954,7 +1048,7 @@ export default function TransactionDetailsGraph(
                 const limitPriceLineJoin = d3fc.dataJoin('g', 'limitPriceLine');
                 const triangleRangeJoin = d3fc.dataJoin('g', 'triangleRange');
                 const triangleLimitJoin = d3fc.dataJoin('g', 'triangleLimit');
-
+                const verticalLinesJoin = d3fc.dataJoin('g', 'verticalLines');
                 d3.select(d3PlotGraph.current).on(
                     'measure',
                     function (event: any) {
@@ -1024,92 +1118,92 @@ export default function TransactionDetailsGraph(
                             transactionType === 'liqchange' &&
                             tx !== undefined
                         ) {
-                            if (tx.positionType !== 'ambient') {
-                                const time = tx.timeFirstMint
-                                    ? tx.timeFirstMint * 1000
-                                    : tx.txTime * 1000;
+                            const time = tx.timeFirstMint
+                                ? tx.timeFirstMint * 1000
+                                : tx.txTime * 1000;
 
-                                const timeEnd =
-                                    tx.txTime &&
-                                    tx.timeFirstMint !== tx.txTime &&
-                                    tx.changeType !== 'mint'
-                                        ? tx.txTime * 1000
-                                        : scaleData.xScale
-                                              .domain()[1]
-                                              .getTime();
+                            const timeEnd =
+                                tx.txTime &&
+                                tx.timeFirstMint !== tx.txTime &&
+                                tx.changeType !== 'mint'
+                                    ? tx.txTime * 1000
+                                    : scaleData.xScale.domain()[1].getTime();
 
-                                // zoom in when short period of time between mint and last candle
-                                // const bandPixel =
-                                //     scaleData.xScale(timeEnd) -
-                                //     scaleData.xScale(time);
+                            scaleData.xScaleCopy.domain(
+                                scaleData.xScale.domain(),
+                            );
+                            scaleData.xScaleCopy.range([
+                                0,
+                                scaleData.xScale(timeEnd) -
+                                    scaleData.xScale(time),
+                            ]);
 
-                                // if (bandPixel < 20 && period) {
-                                //     const tempDomain =
-                                //         timeEnd + period * 1000 * 40;
-                                //     const newMaxDomain = Math.min(
-                                //         tempDomain,
-                                //         scaleData.xScale.domain()[1].getTime(),
-                                //     );
-                                //     scaleData.xScale.domain([
-                                //         time - period * 1000 * 20,
-                                //         newMaxDomain,
-                                //     ]);
-                                // }
+                            const bidLine = (
+                                !isAccountView
+                                    ? isDenomBase
+                                    : !isBaseTokenMoneynessGreaterOrEqual
+                            )
+                                ? tx.bidTickInvPriceDecimalCorrected
+                                : tx.bidTickPriceDecimalCorrected;
 
-                                scaleData.xScaleCopy.domain(
-                                    scaleData.xScale.domain(),
+                            const askLine = (
+                                !isAccountView
+                                    ? isDenomBase
+                                    : !isBaseTokenMoneynessGreaterOrEqual
+                            )
+                                ? tx.askTickInvPriceDecimalCorrected
+                                : tx.askTickPriceDecimalCorrected;
+
+                            horizontalBandData[0] = [bidLine, askLine];
+
+                            const timeStart = tx.timeFirstMint
+                                ? tx.timeFirstMint * 1000
+                                : tx.txTime * 1000;
+
+                            const rangeLinesDataBid = [
+                                { x: timeStart, y: bidLine },
+                                { x: timeEnd, y: bidLine },
+                            ];
+
+                            const rangeLinesDataAsk = [
+                                { x: timeStart, y: askLine },
+                                { x: timeEnd, y: askLine },
+                            ];
+
+                            const triangleData = [
+                                { x: timeStart, y: bidLine },
+                                {
+                                    x: timeEnd,
+                                    y: bidLine,
+                                },
+                                { x: timeStart, y: askLine },
+                                {
+                                    x: timeEnd,
+                                    y: askLine,
+                                },
+                            ];
+
+                            if (
+                                (tx.changeType === 'mint' ||
+                                    tx.positionType === 'ambient') &&
+                                tx.txTime &&
+                                tx.timeFirstMint &&
+                                tx.txTime !== tx.timeFirstMint
+                            ) {
+                                const mintData = [
+                                    { label: 'Open Position', time: timeStart },
+                                    {
+                                        label: 'Add Liq.',
+                                        time: tx.txTime * 1000,
+                                    },
+                                ];
+
+                                verticalLinesJoin(svg, [mintData]).call(
+                                    verticalDashLine,
                                 );
-                                scaleData.xScaleCopy.range([
-                                    0,
-                                    scaleData.xScale(timeEnd) -
-                                        scaleData.xScale(time),
-                                ]);
+                            }
 
-                                const bidLine = (
-                                    !isAccountView
-                                        ? isDenomBase
-                                        : !isBaseTokenMoneynessGreaterOrEqual
-                                )
-                                    ? tx.bidTickInvPriceDecimalCorrected
-                                    : tx.bidTickPriceDecimalCorrected;
-
-                                const askLine = (
-                                    !isAccountView
-                                        ? isDenomBase
-                                        : !isBaseTokenMoneynessGreaterOrEqual
-                                )
-                                    ? tx.askTickInvPriceDecimalCorrected
-                                    : tx.askTickPriceDecimalCorrected;
-
-                                horizontalBandData[0] = [bidLine, askLine];
-
-                                const timeStart = tx.timeFirstMint
-                                    ? tx.timeFirstMint * 1000
-                                    : tx.txTime * 1000;
-
-                                const rangeLinesDataBid = [
-                                    { x: timeStart, y: bidLine },
-                                    { x: timeEnd, y: bidLine },
-                                ];
-
-                                const rangeLinesDataAsk = [
-                                    { x: timeStart, y: askLine },
-                                    { x: timeEnd, y: askLine },
-                                ];
-
-                                const triangleData = [
-                                    { x: timeStart, y: bidLine },
-                                    {
-                                        x: timeEnd,
-                                        y: bidLine,
-                                    },
-                                    { x: timeStart, y: askLine },
-                                    {
-                                        x: timeEnd,
-                                        y: askLine,
-                                    },
-                                ];
-
+                            if (tx.positionType !== 'ambient') {
                                 horizontalBandJoin(svg, [
                                     horizontalBandData,
                                 ]).call(horizontalBand);
