@@ -1,5 +1,6 @@
 import React, {
     createContext,
+    Dispatch,
     SetStateAction,
     useContext,
     useEffect,
@@ -49,6 +50,8 @@ interface ChartContextIF {
     setIsMagnetActive: React.Dispatch<{ value: boolean }>;
     isChangeScaleChart: boolean;
     setIsChangeScaleChart: React.Dispatch<boolean>;
+    isCandleDataNull: boolean;
+    setIsCandleDataNull: Dispatch<SetStateAction<boolean>>;
     isToolbarOpen: boolean;
     setIsToolbarOpen: React.Dispatch<React.SetStateAction<boolean>>;
     undoRedoOptions: {
@@ -104,6 +107,9 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         CHART_SAVED_HEIGHT = parseInt(CHART_SAVED_HEIGHT_LOCAL_STORAGE);
     }
 
+    const [isCandleDataNull, setIsCandleDataNull] = useState(false);
+
+    console.log({ isCandleDataNull });
     const chartAnnotations: {
         isMagnetActive: boolean;
     } | null = JSON.parse(
@@ -210,7 +216,10 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
 
     const { isActiveNetworkBlast } = useContext(ChainDataContext);
 
-    const chartSettings = useChartSettings(isActiveNetworkBlast);
+    const chartSettings = useChartSettings(
+        isActiveNetworkBlast,
+        isCandleDataNull,
+    );
 
     const chartContext = {
         chartSettings,
@@ -226,6 +235,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         setIsMagnetActive,
         isChangeScaleChart,
         setIsChangeScaleChart,
+        isCandleDataNull,
+        setIsCandleDataNull,
         isToolbarOpen,
         setIsToolbarOpen,
         undoRedoOptions,

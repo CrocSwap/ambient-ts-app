@@ -53,6 +53,7 @@ export interface chartSettingsMethodsIF {
 // hook to manage user preferences for chart settings
 export const useChartSettings = (
     isActiveNetworkBlast: boolean,
+    isCandleDataNull: boolean,
 ): chartSettingsMethodsIF => {
     // fn to get user preference for overlay to display on the chart by module
     // will return `undefined` if the value does not exist yet
@@ -63,6 +64,8 @@ export const useChartSettings = (
         const chartSettings: chartSettingsIF | null = JSON.parse(
             getLocalStorageItem(LS_KEY_CHART_SETTINGS) ?? '{}',
         );
+        console.log({ chartSettings, isCandleDataNull });
+
         // declare an output variable to be assigned in switch router
         let output: string | undefined;
         // logic router to assign a value to output
@@ -188,8 +191,8 @@ export const useChartSettings = (
                   { readable: '5m', seconds: 300 },
                   { readable: '15m', seconds: 900 },
                   { readable: '1h', seconds: 3600 },
-                  //   { readable: '4h', seconds: 14400 },
-                  //   { readable: '1d', seconds: 86400 },
+                  { readable: '4h', seconds: 14400 },
+                  { readable: '1d', seconds: 86400 },
               ]
             : [
                   { readable: '1m', seconds: 60 },

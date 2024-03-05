@@ -26,8 +26,7 @@ interface CandleContextIF {
     setCandleData: Dispatch<
         SetStateAction<CandlesByPoolAndDurationIF | undefined>
     >;
-    isCandleDataNull: boolean;
-    setIsCandleDataNull: Dispatch<SetStateAction<boolean>>;
+
     isManualCandleFetchRequested: boolean;
     setIsManualCandleFetchRequested: Dispatch<SetStateAction<boolean>>;
     isCandleSelected: boolean | undefined;
@@ -50,8 +49,12 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const {
         server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
     } = useContext(AppStateContext);
-    const { chartSettings, isEnabled: isChartEnabled } =
-        useContext(ChartContext);
+    const {
+        chartSettings,
+        isEnabled: isChartEnabled,
+        isCandleDataNull,
+        setIsCandleDataNull,
+    } = useContext(ChartContext);
     const { chainData, crocEnv, activeNetwork } = useContext(CrocEnvContext);
     const {
         baseToken: { address: baseTokenAddress },
@@ -65,7 +68,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const [candleData, setCandleData] = useState<
         CandlesByPoolAndDurationIF | undefined
     >();
-    const [isCandleDataNull, setIsCandleDataNull] = useState(false);
     const [isCandleSelected, setIsCandleSelected] = useState<
         boolean | undefined
     >();
@@ -104,8 +106,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const candleContext = {
         candleData,
         setCandleData,
-        isCandleDataNull,
-        setIsCandleDataNull,
         isCandleSelected,
         setIsCandleSelected,
         isManualCandleFetchRequested,
@@ -312,7 +312,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             fetchCandlesByNumDurations(numDurationsNeeded);
         }
     }, [numDurationsNeeded]);
-
+    console.log({ isCandleDataNull });
     useEffect(() => {
         if (abortController && isZoomRequestCanceled.value) {
             abortController.abort();
