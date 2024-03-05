@@ -33,7 +33,7 @@ export interface sidebarSearchIF {
     positions: PositionIF[];
     txs: TransactionIF[];
     limits: LimitOrderIF[];
-    wallets: string[] | null;
+    wallets: string[];
 }
 
 export const useSidebarSearch = (
@@ -330,7 +330,7 @@ export const useSidebarSearch = (
     }, [limitOrderList.length, validatedInput]);
 
     // data returned when querying address as a wallet
-    const [outputWallets, setOutputWallets] = useState<string[] | null>(null);
+    const [outputWallets, setOutputWallets] = useState<string[]>([]);
 
     // environmental data needed for wallet query
     const { activeNetwork, chainData } = useContext(CrocEnvContext);
@@ -354,17 +354,17 @@ export const useSidebarSearch = (
                     // infer from data whether or not address is a wallet
                     const isWallet = !!response.data;
                     // send data to state if wallet, otherwise nullify state
-                    setOutputWallets(isWallet ? [validatedInput] : null);
+                    setOutputWallets(isWallet ? [validatedInput] : []);
                 })
                 .catch((err) => {
                     IS_LOCAL_ENV && console.warn(err);
-                    setOutputWallets(null);
+                    setOutputWallets([]);
                 });
         }
         // logic router to only run a query if input validates as an address
         // if input validates, run the query (results may still be negative)
         // if input does not validate, do not query and nullify any prior data
-        searchAs !== 'address' ? setOutputWallets(null) : fetchWallet();
+        searchAs !== 'address' ? setOutputWallets([]) : fetchWallet();
     }, [validatedInput]);
 
     return {

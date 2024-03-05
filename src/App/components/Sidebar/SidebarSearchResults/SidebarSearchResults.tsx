@@ -22,7 +22,7 @@ export default function SidebarSearchResults(props: propsIF) {
     const { isUserConnected } = useContext(UserDataContext);
 
     // value for control flow to determine what data to show in search results
-    const displaySet: 'token' | 'wallet' = searchData.wallets
+    const displaySet: 'token' | 'wallet' = searchData.wallets.length
         ? 'wallet'
         : 'token';
 
