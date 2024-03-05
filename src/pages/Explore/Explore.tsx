@@ -1,13 +1,40 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import TopPools from '../../components/Global/Analytics/TopPools';
 import { ExploreContext } from '../../contexts/ExploreContext';
 import styled from 'styled-components/macro';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { PoolContext } from '../../contexts/PoolContext';
 
 export default function Explore() {
     // full expanded data set
     const { pools } = useContext(ExploreContext);
-    const { chainData } = useContext(CrocEnvContext);
+    const { crocEnv, chainData } = useContext(CrocEnvContext);
+    const { poolList } = useContext(PoolContext);
+
+    const getLimitedPools = async (): Promise<void> => {
+        if (crocEnv && poolList.length) {
+            pools.getLimited(poolList, crocEnv, chainData.chainId);
+        }
+    };
+
+    const getAllPools = async (): Promise<void> => {
+        // make sure crocEnv exists and pool metadata is present
+        if (crocEnv && poolList.length) {
+            // clear text in DOM for time since last update
+            pools.resetPoolData();
+            // use metadata to get expanded pool data
+            getLimitedPools().then(() => {
+                pools.getExtra(poolList, crocEnv, chainData.chainId);
+            });
+        }
+    };
+
+    // get expanded pool metadata
+    useEffect(() => {
+        if (crocEnv !== undefined && poolList.length > 0) {
+            getAllPools();
+        }
+    }, [crocEnv, poolList.length]);
 
     return (
         <Section>
