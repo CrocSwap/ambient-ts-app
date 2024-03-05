@@ -50,6 +50,7 @@ import {
 } from '../../../styled/Components/Sidebar';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { FabPropsVariantOverrides } from '@mui/material';
 
 function Sidebar() {
     const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
@@ -76,7 +77,13 @@ function Sidebar() {
         .slice(0, 4);
     const mostRecentLimitOrders = _limitsByUser.slice(0, 4);
 
-    const recentPoolsData = [
+    interface jsxMeta {
+        name: string;
+        icon: JSX.Element;
+        data: JSX.Element;
+    }
+
+    const recentPoolsData: jsxMeta[] = [
         {
             name: 'Recent Pools',
             icon: <RecentPoolsIcon open={sidebar.isOpen} size={20} />,
@@ -89,7 +96,7 @@ function Sidebar() {
             ),
         },
     ];
-    const topPoolsSection = [
+    const topPoolsSection: jsxMeta[] = [
         {
             name: 'Top Pools',
             icon: <TopPoolsIcon open={sidebar.isOpen} size={20} />,
@@ -102,7 +109,7 @@ function Sidebar() {
         },
     ];
 
-    const rangePositions = [
+    const rangePositions: jsxMeta[] = [
         {
             name: 'Liquidity Positions',
             icon: <RangesIcon open={sidebar.isOpen} size={20} />,
@@ -110,7 +117,7 @@ function Sidebar() {
         },
     ];
 
-    const recentLimitOrders = [
+    const recentLimitOrders: jsxMeta[] = [
         {
             name: 'Limit Orders',
             icon: <LimitsIcon open={sidebar.isOpen} size={20} />,
@@ -120,7 +127,7 @@ function Sidebar() {
         },
     ];
 
-    const favoritePools = [
+    const favoritePools: jsxMeta[] = [
         {
             name: 'Favorite Pools',
             icon: <FavoritePoolsIcon open={sidebar.isOpen} size={20} />,
@@ -134,7 +141,7 @@ function Sidebar() {
         },
     ];
 
-    const recentTransactions = [
+    const recentTransactions: jsxMeta[] = [
         {
             name: 'Transactions',
             icon: <TransactionsIcon open={sidebar.isOpen} size={20} />,
@@ -156,7 +163,7 @@ function Sidebar() {
     // ------------------------------------------
     // ---------------------------Explore SEARCH CONTAINER-----------------------
 
-    const focusInput = () => {
+    const focusInput = (): void => {
         const inputField = document.getElementById(
             'sidebar_search_input',
         ) as HTMLInputElement;
@@ -167,9 +174,9 @@ function Sidebar() {
     // id for search input HTML elem in the DOM
     // defined in a const because we reference this multiple places
     const searchInputElementId = 'sidebar_search_input';
-    const smallScreen = useMediaQuery('(max-width: 500px)');
+    const smallScreen: boolean = useMediaQuery('(max-width: 500px)');
 
-    const searchContainer = (
+    const searchContainer: JSX.Element = (
         <SearchContainer
             flexDirection='row'
             alignItems='center'
@@ -227,27 +234,30 @@ function Sidebar() {
         </SearchContainer>
     );
 
-    const [openAllDefault, setOpenAllDefault] = useState(false);
-    const [isDefaultOverridden, setIsDefaultOverridden] = useState(false);
+    const [openAllDefault, setOpenAllDefault] = useState<boolean>(false);
+    const [isDefaultOverridden, setIsDefaultOverridden] =
+        useState<boolean>(false);
 
-    const getInitialSidebarLockedStatus = () =>
+    const getInitialSidebarLockedStatus = (): boolean =>
         sidebar.getStoredStatus() === 'open';
-    const [isLocked, setIsLocked] = useState(getInitialSidebarLockedStatus());
+    const [isLocked, setIsLocked] = useState<boolean>(
+        getInitialSidebarLockedStatus(),
+    );
 
-    const toggleLockSidebar = () => {
+    const toggleLockSidebar = (): void => {
         sidebar.open(!isLocked);
         isLocked && sidebar.resetStoredStatus();
         setIsLocked(!isLocked);
     };
 
-    const toggleExpandCollapseAll = () => {
+    const toggleExpandCollapseAll = (): void => {
         setIsDefaultOverridden(true);
         setOpenAllDefault(!openAllDefault);
     };
 
     // TODO: why are we using an `<input>` as a clickable to close the sidebar?
 
-    const searchContainerDisplay = (
+    const searchContainerDisplay: JSX.Element = (
         <FlexContainer
             flexDirection='row'
             alignItems='center'
@@ -337,7 +347,7 @@ function Sidebar() {
     );
     const sidebarRef = useRef<HTMLDivElement>(null);
 
-    const regularSidebarDisplay = (
+    const regularSidebarDisplay: JSX.Element = (
         <ContentContainer flexDirection='column'>
             {topPoolsSection.map((item, idx) => (
                 <SidebarAccordion
