@@ -39,7 +39,7 @@ export default function SidebarSearchResults(props: propsIF) {
             <Text fontSize='header2' color='accent5'>
                 Search Results
             </Text>
-            {displaySet === 'token' && (
+            {searchData.contentGroup === 'token' && (
                 <>
                     <PoolsSearchResults
                         searchedPools={searchData.pools}
@@ -59,7 +59,7 @@ export default function SidebarSearchResults(props: propsIF) {
                     )}
                 </>
             )}
-            {displaySet === 'wallet' && (
+            {searchData.contentGroup === 'wallet' && (
                 <WalletSearchResults searchedWallets={searchData.wallets} />
             )}
         </SearchResultsContainer>

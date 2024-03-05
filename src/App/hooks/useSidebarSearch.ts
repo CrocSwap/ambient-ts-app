@@ -24,8 +24,16 @@ import {
 import { PoolContext } from '../../contexts/PoolContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
+// types specifying which results set should render in the dom
+// `standard` ⮕ standard sidebar content
+// `token` ⮕ content when user searches for a token address, name, or symbol
+// `wallet` ⮕ content when user searches for a wallet address or ENS
+export type contentGroups = 'standard' | 'token' | 'wallet';
+
+// shape of object returned by this hook
 export interface sidebarSearchIF {
     rawInput: string;
+    contentGroup: contentGroups;
     setInput: Dispatch<SetStateAction<string>>;
     clearInput: () => void;
     isInputValid: boolean;
@@ -58,23 +66,25 @@ export const useSidebarSearch = (
     type searchType = 'address' | 'nameOrSymbol' | null;
     const [searchAs, setSearchAs] = useState<searchType>(null);
 
+    // value delineating which content set the DOM should render
+    const [contentGroup, setContentGroup] = useState<contentGroups>('standard');
+
     // cleaned and validated version of raw user input
     const validatedInput = useMemo<string>(() => {
         // trim string and make it lower case
         const cleanInput: string = dbInput.trim().toLowerCase();
-        // action if input appears to be a contract address
         if (
             cleanInput.length === 42 ||
             (cleanInput.length === 40 && !cleanInput.startsWith('0x'))
         ) {
             setSearchAs('address');
-            // if not an apparent token address, search name and symbol
         } else if (cleanInput.length > 0) {
             setSearchAs('nameOrSymbol');
+            setContentGroup('token');
             return cleanInput;
-            // otherwise treat as if there is no input entered
         } else {
             setSearchAs(null);
+            setContentGroup('standard');
             return '';
         }
         // add '0x' to the front of the cleaned string if not present
@@ -348,7 +358,13 @@ export const useSidebarSearch = (
                     // infer from data whether or not address is a wallet
                     const isWallet = !!response.data;
                     // send data to state if wallet, otherwise nullify state
-                    setOutputWallets(isWallet ? [validatedInput] : []);
+                    if (isWallet) {
+                        setOutputWallets([validatedInput]);
+                        setContentGroup('wallet');
+                    } else {
+                        setOutputWallets([]);
+                        setContentGroup('token');
+                    }
                 })
                 .catch((err) => {
                     IS_LOCAL_ENV && console.warn(err);
@@ -363,6 +379,7 @@ export const useSidebarSearch = (
 
     return {
         rawInput,
+        contentGroup,
         setInput: setRawInput,
         clearInput: () => setRawInput(''),
         isInputValid: !!searchAs,
