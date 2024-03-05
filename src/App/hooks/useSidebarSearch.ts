@@ -58,7 +58,16 @@ export const useSidebarSearch = (
     // debounced copy of `rawInput` (no sanitization)
     const [dbInput, setDbInput] = useState<string>('');
     useEffect(() => {
-        const timer = setTimeout(() => setDbInput(rawInput), 400);
+        // prevent debouncing when input has been cleared
+        if (!rawInput) {
+            setDbInput(rawInput);
+            return;
+        }
+        // time in ms to debounce input
+        const delayTime = 400;
+        // update `dbInput` after the indicated delay
+        const timer = setTimeout(() => setDbInput(rawInput), delayTime);
+        // clear the timeout from the DOM
         return () => clearTimeout(timer);
     }, [rawInput]);
 
