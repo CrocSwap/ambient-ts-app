@@ -79,7 +79,7 @@ function TransactionRow(props: propsIF) {
         const element = document.getElementById(idForDOM);
         element?.scrollIntoView({
             behavior: 'smooth',
-            block: 'start',
+            block: 'nearest',
             inline: 'nearest',
         });
     }
