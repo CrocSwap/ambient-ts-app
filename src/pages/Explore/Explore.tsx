@@ -36,7 +36,7 @@ export default function Explore() {
         }
     };
 
-    // get expanded pool metadata
+    // get expanded pool metadata, if not already fetched
     useEffect(() => {
         if (
             crocEnv !== undefined &&
