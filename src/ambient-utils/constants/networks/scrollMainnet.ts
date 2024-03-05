@@ -12,6 +12,11 @@ import { TopPool } from './TopPool';
 import { Provider } from '@ethersproject/providers';
 import { GCGO_SCROLL_URL } from '../gcgo';
 
+export const SCROLL_RPC_URL =
+    process.env.REACT_APP_SCROLL_RPC_URL !== undefined
+        ? process.env.REACT_APP_SCROLL_RPC_URL
+        : 'https://rpc.scroll.io/';
+
 const wagmiChain = {
     id: 534352,
     name: 'Scroll',
@@ -23,7 +28,7 @@ const wagmiChain = {
     },
     rpcUrls: {
         default: {
-            http: ['https://rpc.scroll.io/'],
+            http: [SCROLL_RPC_URL],
         },
         public: {
             http: ['https://rpc.scroll.io/'],
@@ -41,7 +46,7 @@ const wagmiChain = {
 export const scrollMainnet: NetworkIF = {
     chainId: '0x82750',
     graphCacheUrl: GCGO_SCROLL_URL,
-    evmRpcUrl: 'https://rpc.scroll.io/',
+    evmRpcUrl: SCROLL_RPC_URL,
     wagmiChain,
     shouldPollBlock: true,
     marketData: '0x82750',
