@@ -31,6 +31,7 @@ interface ChainDataContextIF {
     connectedUserXp: UserXpDataIF;
     isActiveNetworkBlast: boolean;
     isActiveNetworkScroll: boolean;
+    isActiveNetworkMainnet: boolean;
     isActiveNetworkL2: boolean;
 }
 
@@ -63,6 +64,7 @@ export const ChainDataContextProvider = (props: {
     const isActiveNetworkScroll = ['0x82750', '0x8274f'].includes(
         chainData.chainId,
     );
+    const isActiveNetworkMainnet = ['0x1'].includes(chainData.chainId);
 
     // array of network IDs for supported L2 networks
     const L2_NETWORKS: string[] = [
@@ -177,7 +179,7 @@ export const ChainDataContextProvider = (props: {
                 client
             ) {
                 try {
-                    // wait for 5 seconds before fetching token balances
+                    // wait for 7 seconds before fetching token balances
                     setTimeout(() => {
                         (async () => {
                             const tokenBalances: TokenIF[] =
@@ -206,7 +208,7 @@ export const ChainDataContextProvider = (props: {
                             );
                             setTokenBalances(tokensWithLogos);
                         })();
-                    }, 5000);
+                    }, 7000);
                 } catch (error) {
                     // setTokenBalances(undefined);
                     console.error({ error });
@@ -255,6 +257,7 @@ export const ChainDataContextProvider = (props: {
         setGasPriceinGwei,
         isActiveNetworkBlast,
         isActiveNetworkScroll,
+        isActiveNetworkMainnet,
         client,
         isActiveNetworkL2,
     };

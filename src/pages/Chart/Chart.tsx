@@ -4782,10 +4782,6 @@ export default function Chart(props: propsIF) {
     };
 
     useEffect(() => {
-        setCurrentTxActiveInTransactions('');
-    }, [denomInBase]);
-
-    useEffect(() => {
         if (!hoverOHTooltip) {
             setHoveredOrderHistory(undefined);
             setIsHoveredOrderHistory(false);
