@@ -369,13 +369,13 @@ export const useSidebarSearch = (
     // logic to query search input as a wallet
     useEffect(() => {
         // fn to run query when user enters a hex address
-        async function fetchWalletByHex(): Promise<void> {
+        async function fetchWalletByHex(searchStr: string): Promise<void> {
             // construct a queryable endpoint for wallet data
             let walletEndpoint: string =
                 GCGO_OVERRIDE_URL ?? activeNetwork.graphCacheUrl;
             walletEndpoint += '/user_txs?';
             walletEndpoint += new URLSearchParams({
-                user: validatedInput,
+                user: searchStr,
                 chainId: chainData.chainId,
                 n: '1',
             });
@@ -389,10 +389,10 @@ export const useSidebarSearch = (
                 });
             // search for an ENS address if input is a wallet, otherwise reset state data
             if (isWallet) {
-                const ens = await fetchEnsAddress(validatedInput);
+                const ens = await fetchEnsAddress(searchStr);
                 setOutputWallets([
                     {
-                        hex: validatedInput,
+                        hex: searchStr,
                         ens: ens ?? null,
                     },
                 ]);
@@ -403,10 +403,10 @@ export const useSidebarSearch = (
             }
         }
         // fn to run query when user enters an ENS address
-        function fetchWalletByENS() {
+        function fetchWalletByENS(searchStr: string) {
             if (mainnetProvider) {
                 mainnetProvider
-                    .resolveName(validatedInput)
+                    .resolveName(searchStr)
                     .then((res) => {
                         console.log(res);
                         return res;
@@ -417,7 +417,7 @@ export const useSidebarSearch = (
                             setOutputWallets([
                                 {
                                     hex: res,
-                                    ens: validatedInput,
+                                    ens: searchStr,
                                 },
                             ]);
                             setContentGroup('wallet');
@@ -433,9 +433,9 @@ export const useSidebarSearch = (
         // if input validates, run the query (results may still be negative)
         // if input does not validate, do not query and nullify any prior data
         if (searchAs === 'address') {
-            fetchWalletByHex();
+            fetchWalletByHex(validatedInput);
         } else if (searchAs === 'ens') {
-            fetchWalletByENS();
+            fetchWalletByENS(validatedInput);
         } else {
             setOutputWallets([]);
         }
