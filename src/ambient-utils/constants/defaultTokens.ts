@@ -230,6 +230,36 @@ export const mainnetPEPE: TokenIF = {
     symbol: 'PEPE',
 };
 
+export const mainnetSWETH: TokenIF = {
+    address: '0xf951e335afb289353dc249e82926178eac7ded78',
+    chainId: 1,
+    decimals: 18,
+    fromList: '',
+    logoURI: 'https://etherscan.io/token/images/swellnetwork_32.png?=v83',
+    name: 'Swell Ethereum',
+    symbol: 'swETH',
+};
+
+export const mainnetLIDO: TokenIF = {
+    address: '0x5a98fcbea516cf06857215779fd812ca3bef1b32',
+    chainId: 1,
+    decimals: 18,
+    fromList: '',
+    logoURI: 'https://etherscan.io/token/images/lido-dao_32.png',
+    name: 'Lido DAO Token',
+    symbol: 'LDO',
+};
+
+export const mainnetMKR: TokenIF = {
+    address: '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2',
+    chainId: 1,
+    decimals: 18,
+    fromList: '',
+    logoURI: 'https://etherscan.io/token/images/mkr-etherscan-35.png',
+    name: 'Maker',
+    symbol: 'MKR',
+};
+
 export const mainnetSYN: TokenIF = {
     address: '0x0f2d719407fdbeff09d87557abb7232601fd9f29',
     chainId: 1,
@@ -486,6 +516,16 @@ export const scrollBalancer: TokenIF = {
     logoURI: '',
 };
 
+export const scrollDODO: TokenIF = {
+    name: 'DODO bird',
+    address: '0x912aB742e1ab30ffa87038C425F9Bc8ED12B3EF4',
+    symbol: 'DODO',
+    decimals: 18,
+    chainId: 534352,
+    logoURI:
+        'https://assets.coingecko.com/coins/images/12651/standard/dodo_logo.png?1696512458',
+};
+
 export const scrollUSDC: TokenIF = {
     name: 'USDCoin',
     address: '0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4',
@@ -514,6 +554,14 @@ export const scrollDAI: TokenIF = {
     chainId: 534352,
     logoURI:
         'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
+};
+export const scrollKNC: TokenIF = {
+    name: 'Kyber Network Crystal v2',
+    address: '0x608ef9a3bffe206b86c3108218003b3cfbf99c84',
+    symbol: 'KNC',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: 'https://scrollscan.com/token/images/kybernetworkknc_32.png',
 };
 
 export const scrollUSDT: TokenIF = {
@@ -566,6 +614,9 @@ export const defaultTokens: TokenIF[] = [
     mainnetRPL,
     mainnetWstETH,
     mainnetMATIC,
+    mainnetSWETH,
+    mainnetMKR,
+    mainnetLIDO,
     blastETH,
     blastUSDB,
     blastMIA,
@@ -594,9 +645,10 @@ export const defaultTokens: TokenIF[] = [
     arbGoerliWBTC,
     scrollETH,
     scrollUSDC,
+    scrollDODO,
     scrollDAI,
     scrollUSDT,
-    scrollDAI,
+    scrollKNC,
     scrollBalancer,
     scrollAxlUSDC,
     scrollWBTC,
