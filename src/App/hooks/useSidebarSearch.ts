@@ -408,11 +408,6 @@ export const useSidebarSearch = (
                 mainnetProvider
                     .resolveName(searchStr)
                     .then((res) => {
-                        console.log(res);
-                        return res;
-                    })
-                    .then((res) => {
-                        // res && setOutputWallets([res])
                         if (res) {
                             setOutputWallets([
                                 {
