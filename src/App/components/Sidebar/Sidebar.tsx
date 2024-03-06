@@ -55,8 +55,6 @@ function Sidebar() {
     const { sidebar, toggleMobileModeVisibility, hideOnMobile } =
         useContext(SidebarContext);
 
-    if (hideOnMobile) return null;
-
     const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
         useContext(CachedDataContext);
     const { chainData: chainData } = useContext(CrocEnvContext);
@@ -357,6 +355,8 @@ function Sidebar() {
             />
         </ContentContainer>
     );
+
+    if (hideOnMobile) return null;
 
     return (
         <FlexContainer
