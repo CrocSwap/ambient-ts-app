@@ -5,7 +5,10 @@ import {
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
-import { sidebarSearchIF } from '../../../hooks/useSidebarSearch';
+import {
+    sidebarSearchIF,
+    walletHexAndENS,
+} from '../../../hooks/useSidebarSearch';
 
 interface propsIF {
     searchData: sidebarSearchIF;
@@ -18,8 +21,9 @@ export default function WalletSearchResults(props: propsIF) {
     const linkGenAccount: linkGenMethodsIF = useLinkGen('account');
 
     // fn to navigate user on click and clear input
-    function handleClick(addr: string): void {
-        linkGenAccount.navigate(addr);
+    function handleClick(w: walletHexAndENS): void {
+        const address: string = w.ens ?? w.hex;
+        linkGenAccount.navigate(address);
         searchData.clearInput();
     }
 
@@ -34,10 +38,10 @@ export default function WalletSearchResults(props: propsIF) {
             <Text fontWeight='500' fontSize='body' color='accent5'>
                 Wallets
             </Text>
-            {searchData.wallets.map((wallet: string) => (
+            {searchData.wallets.map((wallet: walletHexAndENS) => (
                 <Results
                     as='li'
-                    key={wallet}
+                    key={wallet.hex}
                     fullWidth
                     fontWeight='300'
                     fontSize='body'
@@ -45,7 +49,10 @@ export default function WalletSearchResults(props: propsIF) {
                     padding='4px'
                     onClick={() => handleClick(wallet)}
                 >
-                    {trimString(wallet, 18, 16)}
+                    {wallet.ens && (
+                        <div>ENS: {trimString(wallet.ens, 18, 16)}</div>
+                    )}
+                    <div>Hex: {trimString(wallet.hex, 15, 13)}</div>
                 </Results>
             ))}
         </FlexContainer>

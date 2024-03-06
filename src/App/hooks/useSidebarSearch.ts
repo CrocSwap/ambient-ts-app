@@ -30,6 +30,11 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 // `wallet` ⮕ content when user searches for a wallet address or ENS
 export type contentGroups = 'standard' | 'token' | 'wallet';
 
+export interface walletHexAndENS {
+    hex: string;
+    ens: string | null;
+}
+
 // shape of object returned by this hook
 export interface sidebarSearchIF {
     rawInput: string;
@@ -41,7 +46,7 @@ export interface sidebarSearchIF {
     positions: PositionIF[];
     txs: TransactionIF[];
     limits: LimitOrderIF[];
-    wallets: string[];
+    wallets: walletHexAndENS[];
 }
 
 export const useSidebarSearch = (
@@ -354,14 +359,15 @@ export const useSidebarSearch = (
     }, [limitOrderList.length, validatedInput]);
 
     // data returned when querying address as a wallet
-    const [outputWallets, setOutputWallets] = useState<string[]>([]);
+    const [outputWallets, setOutputWallets] = useState<walletHexAndENS[]>([]);
 
     // environmental data needed for wallet query
     const { activeNetwork, chainData } = useContext(CrocEnvContext);
 
     // logic to query search input as a wallet
     useEffect(() => {
-        // fn to construct and query an endpoint
+        // fn to construct and query an endpoint with a hex address, this confirms the
+        // ... address is a wallet but does not create new information
         function fetchWallet(): Promise<void> {
             let walletEndpoint: string =
                 GCGO_OVERRIDE_URL ?? activeNetwork.graphCacheUrl;
@@ -379,7 +385,12 @@ export const useSidebarSearch = (
                     const isWallet = !!response.data;
                     // send data to state if wallet, otherwise nullify state
                     if (isWallet) {
-                        setOutputWallets([validatedInput]);
+                        setOutputWallets([
+                            {
+                                hex: validatedInput,
+                                ens: null,
+                            },
+                        ]);
                         setContentGroup('wallet');
                     } else {
                         setOutputWallets([]);
@@ -403,7 +414,12 @@ export const useSidebarSearch = (
                     .then((res) => {
                         // res && setOutputWallets([res])
                         if (res) {
-                            setOutputWallets([res]);
+                            setOutputWallets([
+                                {
+                                    hex: res,
+                                    ens: validatedInput,
+                                },
+                            ]);
                             setContentGroup('wallet');
                         }
                     })
