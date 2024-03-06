@@ -493,7 +493,23 @@ function ChatPanel(props: propsIF) {
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleFocusedMessageOnScroll = (e: any) => {
+        if (messageEnd && messageEnd.current) {
+            const rect = messageEnd.current.getBoundingClientRect();
+            const bubbles = document.querySelectorAll('.messageBubble');
+            bubbles.forEach((el) => {
+                if (el.getBoundingClientRect().top < rect.top) {
+                    console.log(el);
+                    return;
+                }
+            });
+            // domDebug('centerPoint' ,centerPoint.toString());
+        }
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleScroll = (e: any) => {
+        handleFocusedMessageOnScroll(e);
         const tolerance = 0.6;
 
         if (

@@ -803,7 +803,7 @@ function SentMessagePanel(props: SentMessageProps) {
         >
             {!props.message.isDeleted || props.isModerator ? (
                 <div className={styles.msg_bubble_content}>
-                    <div className={styles.msg_bubble_front}>
+                    <div className={styles.msg_bubble_front + ' messageBubble'}>
                         {/* <div
                             className={styles.flip_trigger}
                             onClick={() => {
