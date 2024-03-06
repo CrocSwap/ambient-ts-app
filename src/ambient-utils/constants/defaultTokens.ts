@@ -150,10 +150,30 @@ export const blastOLE: TokenIF = {
     address: '0x73c369f61c90f03eb0dd172e95c90208a28dc5bc',
     chainId: 81457,
     decimals: 18,
-    fromList: '',
-    name: 'OLE',
+    fromList: '/ambient-token-list.json',
+    name: 'OpenLeverage',
     symbol: 'OLE',
-    logoURI: '',
+    logoURI: 'https://blastscan.io/token/images/openleverageole_32.png',
+};
+
+export const blastFINGER: TokenIF = {
+    address: '0x7217124c626f0b7077be91df939195c9a8184ecc',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Finger Blast',
+    symbol: 'FINGER',
+    logoURI: 'https://blastscan.io/token/images/fingerblast_32.png',
+};
+
+export const blastGLORY: TokenIF = {
+    address: '0xd582879453337bd149ae53ec2092b0af5281d1d7',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Sekai Glory',
+    symbol: 'GLORY',
+    logoURI: 'https://blastscan.io/token/images/sekaiglory_32.png',
 };
 
 export const blastVROOM: TokenIF = {
@@ -555,6 +575,8 @@ export const defaultTokens: TokenIF[] = [
     blastBEPE,
     blastALIEN,
     blastOLE,
+    blastFINGER,
+    blastGLORY,
     blastWETH,
     blastPUMP,
     blastYES,
