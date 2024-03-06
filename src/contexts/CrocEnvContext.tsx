@@ -123,11 +123,13 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         useState<UrlRoutesTemplate>(initUrl);
 
     const provider =
-        chainData.chainId === '0x82750'
+        chainData.chainId === '0x1'
+            ? mainnetProvider
+            : chainData.chainId === '0x82750'
             ? scrollProvider
             : chainData.chainId === '0x13e31'
             ? blastProvider
-            : mainnetProvider;
+            : new ethers.providers.JsonRpcProvider(chainData.nodeUrl);
 
     useBlacklist(userAddress);
 
