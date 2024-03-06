@@ -366,9 +366,8 @@ export const useSidebarSearch = (
 
     // logic to query search input as a wallet
     useEffect(() => {
-        // fn to construct and query an endpoint with a hex address, this confirms the
-        // ... address is a wallet but does not create new information
-        function fetchWallet(): Promise<void> {
+        // fn to run query when user enters a hex address
+        function fetchWalletByHex(): Promise<void> {
             let walletEndpoint: string =
                 GCGO_OVERRIDE_URL ?? activeNetwork.graphCacheUrl;
             walletEndpoint += '/user_txs?';
@@ -402,8 +401,8 @@ export const useSidebarSearch = (
                     setOutputWallets([]);
                 });
         }
-        // fn to query an ENS address
-        function fetchENS() {
+        // fn to run query when user enters an ENS address
+        function fetchWalletByENS() {
             if (mainnetProvider) {
                 mainnetProvider
                     .resolveName(validatedInput)
@@ -433,9 +432,9 @@ export const useSidebarSearch = (
         // if input validates, run the query (results may still be negative)
         // if input does not validate, do not query and nullify any prior data
         if (searchAs === 'address') {
-            fetchWallet();
+            fetchWalletByHex();
         } else if (searchAs === 'ens') {
-            fetchENS();
+            fetchWalletByENS();
         } else {
             setOutputWallets([]);
         }
