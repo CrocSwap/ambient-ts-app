@@ -121,7 +121,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         // pool index
         const poolIdx: number = lookupChain(chainId).poolIndex;
 
-        const poolStats = await cachedPoolStatsFetch(
+        const poolStatsNow = await cachedPoolStatsFetch(
             chainId,
             pool.base.address,
             pool.quote.address,
@@ -131,10 +131,34 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             activeNetwork.graphCacheUrl,
             cachedFetchTokenPrice,
         );
+        const ydayTime = Math.floor(Date.now() / 1000 - 24 * 3600);
+
+        const poolStats24hAgo = await cachedPoolStatsFetch(
+            chainId,
+            pool.base.address,
+            pool.quote.address,
+            poolIdx,
+            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+            crocEnv,
+            activeNetwork.graphCacheUrl,
+            cachedFetchTokenPrice,
+            ydayTime,
+        );
+
+        const baseVolumeUsdNow = poolStatsNow?.baseVolumeUsd;
+        const quoteVolumeUsdNow = poolStatsNow?.quoteVolumeUsd;
+
+        const baseVolumeUsd24hAgo = poolStats24hAgo?.baseVolumeUsd;
+        const quoteVolumeUsd24hAgo = poolStats24hAgo?.quoteVolumeUsd;
+
+        const volumeChange24h =
+            baseVolumeUsdNow +
+            quoteVolumeUsdNow -
+            (baseVolumeUsd24hAgo + quoteVolumeUsd24hAgo);
 
         if (
-            !poolStats ||
-            (!isActiveNetworkBlast && poolStats.tvlTotalUsd < 100)
+            !poolStatsNow ||
+            (!isActiveNetworkBlast && poolStatsNow.tvlTotalUsd < 100)
         ) {
             // return early
             const poolData: PoolDataIF = {
@@ -157,17 +181,17 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         }
 
         // format TVL, use empty string as backup value
-        const tvlDisplay: string = poolStats.tvlTotalUsd
+        const tvlDisplay: string = poolStatsNow.tvlTotalUsd
             ? getFormattedNumber({
-                  value: poolStats.tvlTotalUsd,
+                  value: poolStatsNow.tvlTotalUsd,
                   isTvl: true,
                   prefix: '$',
               })
             : '';
         // format volume, use empty string as backup value
-        const volumeDisplay: string = poolStats.volumeTotalUsd
+        const volumeDisplay: string = volumeChange24h
             ? getFormattedNumber({
-                  value: poolStats.volumeTotalUsd,
+                  value: volumeChange24h,
                   prefix: '$',
               })
             : '';
@@ -229,9 +253,9 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
             }),
             poolIdx,
-            tvl: poolStats.tvlTotalUsd,
+            tvl: poolStatsNow.tvlTotalUsd,
             tvlStr: tvlDisplay,
-            volume: poolStats.volumeTotalUsd,
+            volume: volumeChange24h,
             volumeStr: volumeDisplay,
             priceChange: priceChangeRaw ?? 0,
             priceChangeStr: priceChangePercent,

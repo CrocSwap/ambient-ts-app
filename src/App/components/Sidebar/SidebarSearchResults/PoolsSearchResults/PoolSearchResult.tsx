@@ -2,8 +2,8 @@ import { PoolIF } from '../../../../../ambient-utils/types';
 import { PoolStatsFn } from '../../../../../ambient-utils/dataLayer';
 import { TokenPriceFn } from '../../../../../ambient-utils/api';
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { usePoolStats } from '../../../../hooks/usePoolStats';
 import { Results } from '../../../../../styled/Components/Sidebar';
+import useFetchPoolStats from '../../../../hooks/useFetchPoolStats';
 
 interface propsIF {
     pool: PoolIF;
@@ -14,22 +14,9 @@ interface propsIF {
 }
 
 export default function PoolSearchResult(props: propsIF) {
-    const {
-        pool,
-        handleClick,
-        cachedPoolStatsFetch,
-        cachedFetchTokenPrice,
-        crocEnv,
-    } = props;
+    const { pool, handleClick } = props;
 
-    // hook to get volume and TVL for the current pool
-    const [volume, tvl] = usePoolStats(
-        pool,
-        undefined,
-        cachedPoolStatsFetch,
-        cachedFetchTokenPrice,
-        crocEnv,
-    );
+    const poolData = useFetchPoolStats(pool);
 
     return (
         <Results
@@ -44,8 +31,12 @@ export default function PoolSearchResult(props: propsIF) {
             <p>
                 {pool.base.symbol ?? '--'} / {pool.quote.symbol ?? '--'}
             </p>
-            <p style={{ textAlign: 'center' }}>{volume}</p>
-            <p style={{ textAlign: 'center' }}>{tvl}</p>
+            <p style={{ textAlign: 'center' }}>
+                {'$' + (poolData.poolVolume24h || '0.00')}
+            </p>
+            <p style={{ textAlign: 'center' }}>
+                {'$' + (poolData.poolTvl || '0.00')}
+            </p>
         </Results>
     );
 }
