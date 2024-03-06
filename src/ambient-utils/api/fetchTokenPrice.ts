@@ -37,7 +37,8 @@ export const fetchTokenPrice = async (
 
         return response.value;
     } catch (error) {
-        const defaultPair = supportedNetworks[chain].defaultPair;
+        const defaultPair = supportedNetworks[chain]?.defaultPair;
+        if (!defaultPair) return;
         // if token is Dai on Scroll, return 0.999
         if (
             chain === '0x82750' &&
