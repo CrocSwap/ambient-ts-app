@@ -23,6 +23,7 @@ import {
 } from '../../ambient-utils/constants';
 import { PoolContext } from '../../contexts/PoolContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { fetchEnsAddress } from '../../ambient-utils/api';
 
 // types specifying which results set should render in the dom
 // `standard` ⮕ standard sidebar content
@@ -368,7 +369,7 @@ export const useSidebarSearch = (
     // logic to query search input as a wallet
     useEffect(() => {
         // fn to run query when user enters a hex address
-        function fetchWalletByHex(): Promise<void> {
+        async function fetchWalletByHex(): Promise<void> {
             let walletEndpoint: string =
                 GCGO_OVERRIDE_URL ?? activeNetwork.graphCacheUrl;
             walletEndpoint += '/user_txs?';
@@ -377,30 +378,26 @@ export const useSidebarSearch = (
                 chainId: chainData.chainId,
                 n: '1',
             });
-            // dispatch fetch request and process return
-            return fetch(walletEndpoint)
+            const isWallet: boolean | undefined = await fetch(walletEndpoint)
                 .then((response) => response.json())
-                .then((response) => {
-                    // infer from data whether or not address is a wallet
-                    const isWallet = !!response.data;
-                    // send data to state if wallet, otherwise nullify state
-                    if (isWallet) {
-                        setOutputWallets([
-                            {
-                                hex: validatedInput,
-                                ens: null,
-                            },
-                        ]);
-                        setContentGroup('wallet');
-                    } else {
-                        setOutputWallets([]);
-                        setContentGroup('token');
-                    }
-                })
+                .then((response) => !!response.data)
                 .catch((err) => {
                     IS_LOCAL_ENV && console.warn(err);
-                    setOutputWallets([]);
+                    return undefined;
                 });
+            if (isWallet) {
+                const ens = await fetchEnsAddress(validatedInput);
+                setOutputWallets([
+                    {
+                        hex: validatedInput,
+                        ens: ens ?? null,
+                    },
+                ]);
+                setContentGroup('wallet');
+            } else {
+                setOutputWallets([]);
+                setContentGroup('token');
+            }
         }
         // fn to run query when user enters an ENS address
         function fetchWalletByENS() {
