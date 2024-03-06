@@ -71,7 +71,7 @@ export const TradeTableContextProvider = (props: {
     useEffect(() => {
         resetPoolDataLoadingStatus();
         resetConnectedUserDataLoadingStatus();
-        setShowAllData(true);
+        // setShowAllData(true);
     }, [baseToken.address + quoteToken.address]);
 
     const tradeTableContext = {

@@ -17,18 +17,12 @@ interface PositionsOnlyToggleProps {
         candleData: CandleDataIF | undefined,
     ) => void;
     setSelectedDate: React.Dispatch<number | undefined>;
-    setHasUserSelectedViewAll: Dispatch<SetStateAction<boolean>>;
 }
 
 const noFilterByUserTabs = ['Leaderboard', 'Info'];
 
 export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
-    const {
-        setTransactionFilter,
-        changeState,
-        setSelectedDate,
-        setHasUserSelectedViewAll,
-    } = props;
+    const { setTransactionFilter, changeState, setSelectedDate } = props;
 
     const {
         isCandleSelected,
@@ -81,7 +75,6 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
             <Toggle
                 isOn={!showAllData}
                 handleToggle={() => {
-                    setHasUserSelectedViewAll(true);
                     setShowAllData(!showAllData);
                     if (!showAllData) {
                         setIsCandleSelected(false);
