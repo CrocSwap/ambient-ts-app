@@ -20,6 +20,8 @@ import CircularProgressBar from '../../../Global/OpenOrderStatus/CircularProgres
 import { User, getUserLabel, userLabelForFilter } from '../../Model/UserModel';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
 import MentionAutoComplete from './MentionAutoComplete/MentionAutoComplete';
+import { isLink, filterMessage, formatURL } from '../../ChatUtils';
+import { isLinkInCrocodileLabsLinksForInput } from '../../ChatRenderUtils';
 
 interface MessageInputProps {
     currentUser: string;
@@ -40,14 +42,9 @@ interface MessageInputProps {
     ) => void;
     inputListener?: (e: string) => void;
     users: User[];
-    isLinkInCrocodileLabsLinks(word: string): boolean;
-    isLink(url: string): boolean;
     isInputDisabled: boolean;
-    filterMessage(message: string): boolean;
     showPopUp: boolean;
     setShowPopUp: Dispatch<SetStateAction<boolean>>;
-    formatURL(url: string): string;
-    isLinkInCrocodileLabsLinksForInput(word: string): boolean;
     setPopUpText: Dispatch<SetStateAction<string>>;
     popUpText: string;
     isReplyButtonPressed: boolean;
@@ -172,14 +169,15 @@ export default function MessageInput(props: MessageInputProps) {
         if (message === '') {
             return;
         }
+        const normalizedMessage = formatURL(message);
         if (
-            (props.isLink(message) || props.filterMessage(message)) &&
-            !props.isLinkInCrocodileLabsLinksForInput(message)
+            (isLink(normalizedMessage) || filterMessage(normalizedMessage)) &&
+            !isLinkInCrocodileLabsLinksForInput(normalizedMessage)
         ) {
             props.setShowPopUp(true);
             props.setPopUpText('You cannot send this link.');
         } else {
-            handleSendMsg(props.formatURL(message), roomId);
+            handleSendMsg(formatURL(message), roomId);
             setMessage('');
             setMentUser(null);
             setPossibleMentUser(null);
@@ -257,15 +255,15 @@ export default function MessageInput(props: MessageInputProps) {
 
         if (e.key === 'Enter') {
             if (
-                (props.isLink(message) || props.filterMessage(message)) &&
-                !props.isLinkInCrocodileLabsLinksForInput(message)
+                (isLink(message) || filterMessage(message)) &&
+                !isLinkInCrocodileLabsLinksForInput(message)
             ) {
                 props.setShowPopUp(true);
                 props.setPopUpText('You cannot send this link.');
             } else {
                 // send msg if ment panel is not active
                 if (!mentPanelActive) {
-                    handleSendMsg(props.formatURL(message), roomId);
+                    handleSendMsg(formatURL(message), roomId);
                     setMentUser(null);
                     setPossibleMentUser(null);
                     setMessage('');

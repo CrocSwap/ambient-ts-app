@@ -99,3 +99,22 @@ export const formatMessageTime = (time: string) => {
     const strTime = hours + ':' + _min + ' ' + ampm;
     return strTime;
 };
+
+export const isLink = (url: string) => {
+    const urlPattern =
+        /^(https?:\/\/)?((www\.)?([a-z0-9]+([-]{1}[a-z0-9]+)*\.[a-z]{2,7}))(\/.*)?$/i;
+    return urlPattern.test(url);
+};
+
+const blockPattern = /\b\w+\.(?:com|org|net|co|io|edu|gov|mil|ac)\b.*$/;
+
+export const filterMessage = (message: string) => {
+    return blockPattern.test(message);
+};
+
+export const formatURL = (url: string) => {
+    if (/^https?:\/\//i.test(url)) {
+        url = url.replace(/^https?:\/\//i, '');
+    }
+    return url;
+};
