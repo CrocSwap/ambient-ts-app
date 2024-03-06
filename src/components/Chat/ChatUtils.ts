@@ -1,4 +1,5 @@
 import { Message } from './Model/MessageModel';
+import { CROCODILE_LABS_LINKS } from '../../ambient-utils/constants';
 
 export const LS_USER_VERIFY_TOKEN = 'CHAT_user_verify';
 export const LS_USER_NON_VERIFIED_MESSAGES = 'CHAT_non_verified_messages';
@@ -98,4 +99,85 @@ export const formatMessageTime = (time: string) => {
     const _min = minutes.toString().padStart(2, '0');
     const strTime = hours + ':' + _min + ' ' + ampm;
     return strTime;
+};
+
+export const isLink = (url: string) => {
+    const urlPattern =
+        /^(https?:\/\/)?((www\.)?([a-z0-9]+([-]{1}[a-z0-9]+)*\.[a-z]{2,7}))(\/.*)?$/i;
+    return urlPattern.test(url);
+};
+
+const blockPattern = /\b\w+\.(?:com|org|net|co|io|edu|gov|mil|ac)\b.*$/;
+
+export const filterMessage = (message: string) => {
+    return blockPattern.test(message);
+};
+
+export const formatURL = (url: string) => {
+    if (/^https?:\/\//i.test(url)) {
+        url = url.replace(/^https?:\/\//i, '');
+    }
+    return url;
+};
+
+export const isValidUrl = (urlString: string) => {
+    // Correct the format if it starts with "https:" followed directly by a domain name
+    let formattedUrlString = urlString;
+    if (
+        formattedUrlString.startsWith('https:') &&
+        !formattedUrlString.startsWith('https://')
+    ) {
+        formattedUrlString = formattedUrlString.replace('https:', 'https://');
+    }
+
+    // Check for obviously incorrect protocols or malformed URLs
+    if (
+        formattedUrlString.includes(':') &&
+        !formattedUrlString.match(/^https?:\/\/.*/)
+    ) {
+        return false;
+    }
+
+    // Prepend 'https://' to strings that don't start with 'http://' or 'https://'
+    // This is to handle cases like 'twitter.com' where the protocol is missing
+    if (
+        !formattedUrlString.startsWith('http://') &&
+        !formattedUrlString.startsWith('https://')
+    ) {
+        formattedUrlString = `https://${formattedUrlString}`;
+    }
+
+    try {
+        // Attempt to parse the URL
+
+        // Further validation can be added here if necessary
+        return true;
+    } catch (e) {
+        // Parsing failed, so it's not a valid URL
+        return false;
+    }
+};
+
+export const isLinkInCrocodileLabsLinks = (word: string) => {
+    return CROCODILE_LABS_LINKS.some((link: string) => {
+        const linkUrl = new URL(link);
+        const linkDomain = linkUrl.hostname.replace(/^www\./, ''); // Remove 'www.' prefix if present
+        const wordDomain = word
+            .replace(/^https?:\/\/(www\.)?/, '')
+            .split('/')[0]; // Remove scheme and 'www.', then get the domain part
+        return linkDomain === wordDomain;
+    });
+};
+
+export const isLinkInCrocodileLabsLinksForInput = (word: string) => {
+    return CROCODILE_LABS_LINKS.some((link: string) => {
+        try {
+            const url = new URL(link);
+            const domain = url.hostname;
+            return word.toLowerCase().includes(domain);
+        } catch (error) {
+            console.error('Invalid URL:', link);
+            return false;
+        }
+    });
 };

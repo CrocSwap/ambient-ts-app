@@ -4,7 +4,6 @@ import { AiOutlineCheck, AiOutlineClose, AiOutlineUser } from 'react-icons/ai';
 import { BsChatLeftFill } from 'react-icons/bs';
 import { IoIosArrowDown, IoIosArrowUp, IoIosClose } from 'react-icons/io';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
-import { CROCODILE_LABS_LINKS } from '../../ambient-utils/constants';
 import { trimString } from '../../ambient-utils/dataLayer';
 import { PoolIF } from '../../ambient-utils/types';
 import { AppStateContext } from '../../contexts/AppStateContext';
@@ -26,6 +25,7 @@ import { UserSummaryModel } from './Model/UserSummaryModel';
 import useChatApi from './Service/ChatApi';
 import useChatSocket from './Service/useChatSocket';
 import { domDebug } from './DomDebugger/DomDebuggerUtils';
+import ChatToaster from './ChatToaster/ChatToaster';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -108,6 +108,11 @@ function ChatPanel(props: propsIF) {
         useState(false);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
+    const [
+        showVerifyWalletConfirmationInDelete,
+        setShowVerifyWalletConfirmationInDelete,
+    ] = useState(false);
+
     const [confirmationPanelContent, setConfirmationPanelContent] = useState(0);
 
     // some tricky date set for old messages verification. if it is not changed by confirmation panel, some future date will be used to not verify any messages
@@ -171,42 +176,6 @@ function ChatPanel(props: propsIF) {
         useContext(UserDataContext);
 
     const defaultEnsName = 'defaultValue';
-
-    function isLink(url: string) {
-        const urlPattern =
-            /^(https|http|ftp|ftps?:\/\/)?([a-z0-9]+([-.]{1}[a-z0-9]+)*\.[a-z]{2,7})(:[0-9]{1,5})?(\/.*)?$/gm;
-        return urlPattern.test(url);
-    }
-
-    const blockPattern = /\b\w+\.(?:com|org|net|co|io|edu|gov|mil|ac)\b.*$/;
-
-    function filterMessage(message: string) {
-        return blockPattern.test(message);
-    }
-
-    function formatURL(url: string) {
-        if (/^https?:\/\//i.test(url)) {
-            url = url.replace(/^https?:\/\//i, '');
-        }
-        return url;
-    }
-
-    function isLinkInCrocodileLabsLinks(word: string) {
-        return CROCODILE_LABS_LINKS.some((link) => word.includes(link));
-    }
-
-    function isLinkInCrocodileLabsLinksForInput(word: string) {
-        return CROCODILE_LABS_LINKS.some((link) => {
-            try {
-                const url = new URL(link);
-                const domain = url.hostname;
-                return word.includes(domain);
-            } catch (error) {
-                console.error('Invalid URL:', link);
-                return false;
-            }
-        });
-    }
 
     function closeOnEscapeKeyDown(e: KeyboardEvent) {
         if (e.code === 'Escape') {
@@ -819,9 +788,6 @@ function ChatPanel(props: propsIF) {
                                     : messages[i + 1]
                             }
                             previousMessage={i === 0 ? null : messages[i - 1]}
-                            isLinkInCrocodileLabsLinks={
-                                isLinkInCrocodileLabsLinks
-                            }
                             mentionIndex={
                                 item.mentionedWalletID === userAddress
                                     ? mentionIxdexPointer - 1
@@ -832,10 +798,6 @@ function ChatPanel(props: propsIF) {
                             userMap={userMap}
                             verifyWalletWithMessage={verifyWalletWithMessage}
                             isUserVerified={isVerified}
-                            formatURL={formatURL}
-                            isLinkInCrocodileLabsLinksForInput={
-                                isLinkInCrocodileLabsLinksForInput
-                            }
                             showPopUp={showPopUp}
                             setShowPopUp={setShowPopUp}
                             popUpText={popUpText}
@@ -873,6 +835,12 @@ function ChatPanel(props: propsIF) {
                             }
                             setSelectedMessageIdForDeletion={
                                 setSelectedMessageIdForDeletion
+                            }
+                            showVerifyWalletConfirmationInDelete={
+                                showVerifyWalletConfirmationInDelete
+                            }
+                            setShowVerifyWalletConfirmationInDelete={
+                                setShowVerifyWalletConfirmationInDelete
                             }
                         />
                     );
@@ -1018,15 +986,8 @@ function ChatPanel(props: propsIF) {
             sendMsg={sendMsg}
             inputListener={messageInputListener}
             users={users}
-            isLinkInCrocodileLabsLinks={isLinkInCrocodileLabsLinks}
-            isLink={isLink}
             showPopUp={showPopUp}
             setShowPopUp={setShowPopUp}
-            filterMessage={filterMessage}
-            formatURL={formatURL}
-            isLinkInCrocodileLabsLinksForInput={
-                isLinkInCrocodileLabsLinksForInput
-            }
             popUpText={popUpText}
             setPopUpText={setPopUpText}
             isReplyButtonPressed={isReplyButtonPressed}
@@ -1055,6 +1016,9 @@ function ChatPanel(props: propsIF) {
 
             case 2:
                 return 'These messages may not sent from this browser. Do you want to verify?';
+
+            case 3:
+                return 'You should verify your wallet to delete that messgae. Do you want to verify?';
 
             default:
                 return '';
@@ -1236,6 +1200,26 @@ function ChatPanel(props: propsIF) {
                     cancelListener={handleCancelDelete}
                 />
             )}
+
+            {showVerifyWalletConfirmationInDelete && (
+                <ChatConfirmationPanel
+                    isActive={showVerifyOldMessagesPanel && isChatOpen}
+                    title='Verify Your Wallet'
+                    content='You should verify your wallet to delete that message.Do you want to verify?'
+                    cancelListener={() => {
+                        setShowVerifyOldMessagesPanel(false);
+                    }}
+                    confirmListener={async (e) =>
+                        verifyWallet(0, new Date(), e)
+                    }
+                />
+            )}
+            <ChatToaster
+                isActive={toastrActive && isChatOpen}
+                activator={setToastrActive}
+                text={toastrText}
+                type={toastrType}
+            />
 
             <DomDebugger />
         </div>
