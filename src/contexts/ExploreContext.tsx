@@ -145,16 +145,10 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             ydayTime,
         );
 
-        const baseVolumeUsdNow = poolStatsNow?.baseVolumeUsd;
-        const quoteVolumeUsdNow = poolStatsNow?.quoteVolumeUsd;
+        const volumeTotalNow = poolStatsNow?.volumeTotalUsd;
+        const volumeTotal24hAgo = poolStats24hAgo?.volumeTotalUsd;
 
-        const baseVolumeUsd24hAgo = poolStats24hAgo?.baseVolumeUsd;
-        const quoteVolumeUsd24hAgo = poolStats24hAgo?.quoteVolumeUsd;
-
-        const volumeChange24h =
-            baseVolumeUsdNow +
-            quoteVolumeUsdNow -
-            (baseVolumeUsd24hAgo + quoteVolumeUsd24hAgo);
+        const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
 
         if (
             !poolStatsNow ||
