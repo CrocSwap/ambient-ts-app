@@ -73,8 +73,6 @@ export default function TransactionDetailsGraph(
     const [xAxis, setXaxis] = useState<any>();
     const takeSmallerPeriodForRemoveRange = (diff: number) => {
         if (diff <= 600) {
-            return 60;
-        } else if (diff <= 900) {
             return 300;
         } else if (diff <= 3600) {
             return 900;
@@ -117,11 +115,11 @@ export default function TransactionDetailsGraph(
 
     useEffect(() => {
         (async () => {
-            console.log(
-                'tx.timeFirstMint :',
-                tx.timeFirstMint,
-                new Date(tx.timeFirstMint * 1000),
-            );
+            // console.log(
+            //     'tx.timeFirstMint :',
+            //     tx.timeFirstMint,
+            //     new Date(tx.timeFirstMint * 1000),
+            // );
 
             const isTimeFirstMintInRemovalRange =
                 transactionType === 'liqchange' &&
@@ -178,7 +176,7 @@ export default function TransactionDetailsGraph(
                 }
 
                 const maxNumCandlesNeeded = 2999;
-                const minNumCandlesNeeded = 500;
+                const minNumCandlesNeeded = 2020;
 
                 const localMinTime = minTime - 50 * 1000 * tempPeriod;
                 const localMaxTime = maxTime + 15 * 1000 * tempPeriod;
@@ -552,45 +550,72 @@ export default function TransactionDetailsGraph(
 
                 const lastTime = tx.txTime
                     ? tx.txTime * 1000
-                    : tx.timeFirstMint * 1000;
+                    : xScale.domain()[1].getTime();
 
-                const diffPixel = maxDomainPixel - xScale(lastTime);
-                const tempBuffer = 60 / oneCandlePixel;
+                let openPositionPixel = xScale(firstTime);
+                let addLiqPixel = xScale(lastTime);
+                let diffBandPixel = addLiqPixel - openPositionPixel;
+                console.log({ diffBandPixel });
 
-                if (xScale(firstTime) - minDomainPixel < 10) {
-                    const tempBuffer = 30 / oneCandlePixel;
-
-                    xScale.domain([
-                        firstTime - bufferOneCandle * tempBuffer,
-                        maxDomain,
-                    ]);
+                if (diffBandPixel < 30 && tx.txTime !== tx.timeFirstMint) {
+                    const newMaxDomain = xScale.invert(maxDomainPixel - 30);
+                    const newMinDomain = xScale.invert(30);
+                    xScale.domain([newMinDomain, newMaxDomain]);
                 }
 
-                if (diffPixel < 50) {
-                    xScale.domain([
-                        minDomain,
-                        maxDomain + tempBuffer * bufferOneCandle,
-                    ]);
-                }
+                // if (xScale(firstTime) - minDomainPixel < 10) {
+                //     const tempBuffer = 30 / oneCandlePixel;
 
+                //     xScale.domain([
+                //         firstTime - bufferOneCandle * tempBuffer,
+                //         maxDomain,
+                //     ]);
+                // }
+
+                // if (diffPixel < 50) {
+                //     xScale.domain([
+                //         minDomain,
+                //         maxDomain + tempBuffer * bufferOneCandle,
+                //     ]);
+                // }
+
+                const hasVerticalLines =
+                    tx.changeType === 'mint' || tx.positionType === 'ambient';
                 if (
                     tx.txTime &&
                     tx.timeFirstMint &&
-                    tx.txTime !== tx.timeFirstMint
+                    tx.txTime !== tx.timeFirstMint &&
+                    hasVerticalLines
                 ) {
-                    const openPositionPixel = xScale(firstTime);
-                    const addLiqPixel = xScale(lastTime);
-                    const tempBuffer = 3 / oneCandlePixel;
+                    addLiqPixel = xScale(lastTime);
 
-                    const diffPixel = addLiqPixel - openPositionPixel;
+                    const diffMaxDomainPixel = maxDomainPixel - addLiqPixel;
+                    const newMaxDomain = xScale.invert(maxDomainPixel + 60);
 
-                    if (diffPixel < 105) {
-                        xScale.domain([
-                            firstTime - bufferOneCandle * tempBuffer,
-                            lastTime +
-                                bufferOneCandle * (diffPixel < 50 ? 10 : 50),
-                        ]);
+                    if (diffMaxDomainPixel < 60) {
+                        xScale.domain([xScale.domain()[0], newMaxDomain]);
                     }
+
+                    // need the same code because the scale may have changed
+                    addLiqPixel = xScale(lastTime);
+                    openPositionPixel = xScale(firstTime);
+                    diffBandPixel = addLiqPixel - openPositionPixel;
+
+                    const newMinDomain = xScale.invert(80);
+                    console.log(diffBandPixel);
+
+                    if (diffBandPixel < 120) {
+                        xScale.domain([newMinDomain, xScale.domain()[1]]);
+                    }
+
+                    // if (diffBandPixel < oneCandlePixel) {
+
+                    //     xScale.domain([
+                    //         firstTime- bufferOneCandle,
+                    //         lastTime +bufferOneCandle
+                    //     ]);
+
+                    // }
                 }
             }
 
