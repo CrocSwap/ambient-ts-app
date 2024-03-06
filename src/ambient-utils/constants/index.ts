@@ -45,6 +45,11 @@ export const BLAST_RPC_URL =
         ? process.env.REACT_APP_BLAST_RPC_URL
         : 'https://rpc.blast.io/';
 
+export const SCROLL_RPC_URL =
+    process.env.REACT_APP_SCROLL_RPC_URL !== undefined
+        ? process.env.REACT_APP_SCROLL_RPC_URL
+        : 'https://rpc.scroll.io/';
+
 export const INCLUDE_CANTO_LINK =
     process.env.REACT_APP_INCLUDE_CANTO_LINK !== undefined
         ? process.env.REACT_APP_INCLUDE_CANTO_LINK.toLowerCase() === 'true'
