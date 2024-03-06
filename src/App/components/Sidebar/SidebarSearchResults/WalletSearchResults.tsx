@@ -17,8 +17,12 @@ interface propsIF {
 export default function WalletSearchResults(props: propsIF) {
     const { searchData } = props;
 
+    // TODO:    this file will use the index page rather than the `/account` page to show
+    // TODO:    ... account data for the user due bugs changing networks on that URL route,
+    // TODO:    ... once that bug is fixed we should refactor to use the `/account` route
+
     // hook to generate navigation actions with pre-loaded path to `/account`
-    const linkGenAccount: linkGenMethodsIF = useLinkGen('account');
+    const linkGenAccount: linkGenMethodsIF = useLinkGen('index');
 
     // fn to navigate user on click and clear input
     function handleClick(w: walletHexAndENS): void {
