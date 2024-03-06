@@ -12,6 +12,9 @@ import {
     blastPUMP,
     blastUSDB,
     blastYES,
+    blastOLE,
+    blastGLORY,
+    blastFINGER,
 } from '../constants';
 import { TokenIF } from '../types/token/TokenIF';
 import { fetchDepositBalances } from './fetchDepositBalances';
@@ -156,6 +159,15 @@ export const fetchTokenBalances = async (
         const yesInWallet = (
             await crocEnv.token(blastYES.address).wallet(address)
         ).toString();
+        const oleInWallet = (
+            await crocEnv.token(blastOLE.address).wallet(address)
+        ).toString();
+        const gloryInWallet = (
+            await crocEnv.token(blastGLORY.address).wallet(address)
+        ).toString();
+        const fingerInWallet = (
+            await crocEnv.token(blastFINGER.address).wallet(address)
+        ).toString();
 
         const eth = {
             chainId: 1,
@@ -259,6 +271,33 @@ export const fetchTokenBalances = async (
             decimals: 18,
             walletBalance: yesInWallet,
         };
+        const ole = {
+            chainId: 1,
+            logoURI: '',
+            name: blastOLE.name,
+            address: blastOLE.address,
+            symbol: blastOLE.symbol,
+            decimals: 18,
+            walletBalance: oleInWallet,
+        };
+        const glory = {
+            chainId: 1,
+            logoURI: '',
+            name: blastGLORY.name,
+            address: blastGLORY.address,
+            symbol: blastGLORY.symbol,
+            decimals: 18,
+            walletBalance: gloryInWallet,
+        };
+        const finger = {
+            chainId: 1,
+            logoURI: '',
+            name: blastFINGER.name,
+            address: blastFINGER.address,
+            symbol: blastFINGER.symbol,
+            decimals: 18,
+            walletBalance: fingerInWallet,
+        };
         combinedBalances.push(eth);
         combinedBalances.push(usdb);
         combinedBalances.push(orbit);
@@ -270,6 +309,9 @@ export const fetchTokenBalances = async (
         combinedBalances.push(pacm);
         combinedBalances.push(pump);
         combinedBalances.push(yes);
+        combinedBalances.push(ole);
+        combinedBalances.push(glory);
+        combinedBalances.push(finger);
     }
 
     if (dexBalancesFromCache !== undefined) {
