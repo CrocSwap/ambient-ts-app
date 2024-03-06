@@ -22,7 +22,6 @@ interface propsIF {
     setShowDeleteConfirmation: Dispatch<SetStateAction<boolean>>;
     selectedMessageIdForDeletion: string;
     setSelectedMessageIdForDeletion: Dispatch<SetStateAction<string>>;
-    handleConfirmationDialog: any;
     setShowVerifyWalletConfirmationInDelete: Dispatch<SetStateAction<boolean>>;
     showVerifyWalletConfirmationInDelete: boolean;
 }
@@ -114,10 +113,6 @@ export default function Options(props: propsIF) {
                             );
                         } else {
                             props.setShowVerifyWalletConfirmationInDelete(true);
-                            props.handleConfirmationDialog(
-                                1,
-                                new Date((props.message as Message).createdAt),
-                            );
                         }
                     }}
                     size={14}

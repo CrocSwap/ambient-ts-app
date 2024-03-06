@@ -861,9 +861,6 @@ function SentMessagePanel(props: SentMessageProps) {
                                     selectedMessageIdForDeletion={
                                         props.selectedMessageIdForDeletion
                                     }
-                                    handleConfirmationDialog={
-                                        props.handleConfirmationDialog
-                                    }
                                     setShowVerifyWalletConfirmationInDelete={
                                         props.setShowVerifyWalletConfirmationInDelete
                                     }

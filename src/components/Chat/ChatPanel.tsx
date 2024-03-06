@@ -4,7 +4,6 @@ import { AiOutlineCheck, AiOutlineClose, AiOutlineUser } from 'react-icons/ai';
 import { BsChatLeftFill } from 'react-icons/bs';
 import { IoIosArrowDown, IoIosArrowUp, IoIosClose } from 'react-icons/io';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
-import { CROCODILE_LABS_LINKS } from '../../ambient-utils/constants';
 import { trimString } from '../../ambient-utils/dataLayer';
 import { PoolIF } from '../../ambient-utils/types';
 import { AppStateContext } from '../../contexts/AppStateContext';

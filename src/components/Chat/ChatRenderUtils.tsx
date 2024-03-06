@@ -56,7 +56,6 @@ export const isValidUrl = (urlString: string) => {
 
     try {
         // Attempt to parse the URL
-        const url = new URL(formattedUrlString);
 
         // Further validation can be added here if necessary
         return true;
