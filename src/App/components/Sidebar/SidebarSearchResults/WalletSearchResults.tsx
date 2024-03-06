@@ -26,8 +26,11 @@ export default function WalletSearchResults(props: propsIF) {
 
     // fn to navigate user on click and clear input
     function handleClick(w: walletHexAndENS): void {
+        // consume ENS if present, otherwise fall back on hex
         const address: string = w.ens ?? w.hex;
+        // navigate to `/account` page for the given wallet
         linkGenAccount.navigate(address);
+        // clear user input from the search field
         searchData.clearInput();
     }
 
