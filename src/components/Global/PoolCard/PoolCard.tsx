@@ -15,10 +15,9 @@ export default function PoolCard(props: propsIF) {
     const poolData = useFetchPoolStats(pool);
 
     const {
-        poolVolume,
+        poolVolume24h,
         poolPrice,
         poolTvl,
-        poolApy,
         poolPriceChangePercent,
         isPoolPriceChangePositive,
         poolLink,
@@ -50,9 +49,9 @@ export default function PoolCard(props: propsIF) {
 
     const ariaDescription = `pool for ${pool.base.symbol} and ${
         pool.quote.symbol
-    }. 24 hour volume is ${poolVolume ? poolVolume : 'not available'}. APY is ${
-        poolApy ? poolApy + '%' : 'not available'
-    }. TVL is ${poolTvl}. 24 hours pool price change is ${poolPriceChangePercent}. Pool price is ${
+    }. 24 hour volume is ${
+        poolVolume24h ? poolVolume24h : 'not available'
+    }.  TVL is ${poolTvl}. 24 hours pool price change is ${poolPriceChangePercent}. Pool price is ${
         poolPrice ? poolPrice : 'not available'
     }. `;
 
@@ -141,11 +140,11 @@ export default function PoolCard(props: propsIF) {
                             </div>
                         </div> */}
                         <div className={styles.row}>
-                            <div className={styles.row_title}>Volume</div>
+                            <div className={styles.row_title}>24h Vol.</div>
                             <div className={styles.vol}>
-                                {poolVolume === undefined
+                                {poolVolume24h === undefined
                                     ? '…'
-                                    : `$${poolVolume}`}
+                                    : `$${poolVolume24h}`}
                             </div>
                         </div>
                         <div className={styles.row}>

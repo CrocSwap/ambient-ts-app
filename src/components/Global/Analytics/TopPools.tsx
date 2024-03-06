@@ -70,7 +70,7 @@ function TopPools(props: propsIF) {
             responsive: 'sm',
             sortable: false,
         },
-        { label: 'Volume', hidden: false, align: 'right', sortable: true },
+        { label: '24h Vol.', hidden: false, align: 'right', sortable: true },
         {
             label: 'TVL',
             hidden: false,
