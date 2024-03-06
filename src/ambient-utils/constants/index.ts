@@ -40,6 +40,11 @@ export const CHAT_ENABLED =
         ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
         : true;
 
+export const BLOCK_POLLING_RPC_URL =
+    process.env.REACT_APP_BLOCK_POLLING_RPC_URL !== undefined
+        ? process.env.REACT_APP_BLOCK_POLLING_RPC_URL
+        : '';
+
 export const BLAST_RPC_URL =
     process.env.REACT_APP_BLAST_RPC_URL !== undefined
         ? process.env.REACT_APP_BLAST_RPC_URL
