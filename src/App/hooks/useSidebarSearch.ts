@@ -97,8 +97,9 @@ export const useSidebarSearch = (
             (cleanInput.length === 40 && !cleanInput.startsWith('0x'))
         ) {
             setSearchAs('address');
-        } else if (dbInput.endsWith('.eth')) {
+        } else if (dbInput.includes('.')) {
             setSearchAs('ens');
+            return dbInput.split('.')[0] + '.eth';
         } else if (cleanInput.length > 0) {
             setSearchAs('nameOrSymbol');
             setContentGroup('token');
