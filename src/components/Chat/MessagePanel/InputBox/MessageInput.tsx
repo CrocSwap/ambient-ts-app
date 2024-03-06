@@ -20,8 +20,12 @@ import CircularProgressBar from '../../../Global/OpenOrderStatus/CircularProgres
 import { User, getUserLabel, userLabelForFilter } from '../../Model/UserModel';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
 import MentionAutoComplete from './MentionAutoComplete/MentionAutoComplete';
-import { isLink, filterMessage, formatURL } from '../../ChatUtils';
-import { isLinkInCrocodileLabsLinksForInput } from '../../ChatRenderUtils';
+import {
+    isLink,
+    filterMessage,
+    formatURL,
+    isLinkInCrocodileLabsLinksForInput,
+} from '../../ChatUtils';
 
 interface MessageInputProps {
     currentUser: string;

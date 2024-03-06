@@ -25,15 +25,13 @@ import {
     getLS,
     getShownName,
     hasEns,
+    isLinkInCrocodileLabsLinks,
+    isLinkInCrocodileLabsLinksForInput,
+    isValidUrl,
 } from '../../ChatUtils';
 import Options from '../Options/Options';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
 import { LikeDislikePayload, MentFoundParam } from '../../ChatIFs';
-import {
-    isLinkInCrocodileLabsLinks,
-    isLinkInCrocodileLabsLinksForInput,
-    isValidUrl,
-} from '../../ChatRenderUtils';
 
 interface SentMessageProps {
     message: Message;
