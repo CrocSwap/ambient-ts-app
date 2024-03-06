@@ -25,6 +25,9 @@ import {
     getLS,
     getShownName,
     hasEns,
+    isLinkInCrocodileLabsLinks,
+    isLinkInCrocodileLabsLinksForInput,
+    isValidUrl,
 } from '../../ChatUtils';
 import Options from '../Options/Options';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
@@ -47,7 +50,6 @@ interface SentMessageProps {
     previousMessage: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     nextMessage: any;
-    isLinkInCrocodileLabsLinks(word: string): boolean;
     mentionIndex?: number;
     updateLikeDislike: (messageId: string, like: LikeDislikePayload) => void;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -59,8 +61,6 @@ interface SentMessageProps {
         e?: React.MouseEvent<HTMLDivElement>,
     ) => void;
     isUserVerified: boolean;
-    formatURL(url: string): void;
-    isLinkInCrocodileLabsLinksForInput(word: string): boolean;
     showPopUp: boolean;
     setShowPopUp: Dispatch<SetStateAction<boolean>>;
     popUpText: string;
@@ -90,6 +90,8 @@ interface SentMessageProps {
         React.SetStateAction<string>
     >;
     selectedMessageIdForDeletion: string;
+    setShowVerifyWalletConfirmationInDelete: Dispatch<SetStateAction<boolean>>;
+    showVerifyWalletConfirmationInDelete: boolean;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
@@ -338,7 +340,11 @@ function SentMessagePanel(props: SentMessageProps) {
     }
 
     function handleOpenExplorerAddHttp(url: string) {
-        window.open(convertToFullUrl(url));
+        if (!url.includes('https')) {
+            window.open(convertToFullUrl(url));
+        } else {
+            window.open(url);
+        }
     }
 
     function convertToFullUrl(domain: string): string {
@@ -347,7 +353,7 @@ function SentMessagePanel(props: SentMessageProps) {
     }
 
     function returnDomain(word: string) {
-        if (props.isLinkInCrocodileLabsLinks(word)) {
+        if (isLinkInCrocodileLabsLinks(word)) {
             const url = new URL(word);
             return url.hostname + url.pathname;
         } else {
@@ -363,18 +369,16 @@ function SentMessagePanel(props: SentMessageProps) {
                     {words.map((word, index) => (
                         <span
                             onClick={() =>
-                                props.isLinkInCrocodileLabsLinks(word)
+                                isLinkInCrocodileLabsLinks(word)
                                     ? handleOpenExplorer(word)
-                                    : props.isLinkInCrocodileLabsLinksForInput(
-                                          word,
-                                      )
+                                    : isLinkInCrocodileLabsLinksForInput(word)
                                     ? handleOpenExplorerAddHttp(word)
                                     : ''
                             }
                             key={index}
                             style={
-                                props.isLinkInCrocodileLabsLinks(word) ||
-                                props.isLinkInCrocodileLabsLinksForInput(word)
+                                isLinkInCrocodileLabsLinks(word) ||
+                                isLinkInCrocodileLabsLinksForInput(word)
                                     ? {
                                           color: '#ab7de7',
                                           cursor: 'pointer',
@@ -392,16 +396,16 @@ function SentMessagePanel(props: SentMessageProps) {
             );
         } else {
             if (
-                props.isLinkInCrocodileLabsLinks(url) ||
-                props.isLinkInCrocodileLabsLinksForInput(url)
+                isLinkInCrocodileLabsLinks(url) ||
+                isLinkInCrocodileLabsLinksForInput(url)
             ) {
                 return (
                     <p
                         style={{ color: '#ab7de7', cursor: 'pointer' }}
                         onClick={() =>
-                            props.isLinkInCrocodileLabsLinks(url)
+                            isLinkInCrocodileLabsLinks(url)
                                 ? handleOpenExplorer(url)
-                                : props.isLinkInCrocodileLabsLinksForInput(url)
+                                : isLinkInCrocodileLabsLinksForInput(url)
                                 ? handleOpenExplorerAddHttp(url)
                                 : ''
                         }
@@ -520,8 +524,9 @@ function SentMessagePanel(props: SentMessageProps) {
     function buildMessageToken(word: string, mentFound: MentFoundParam) {
         let ret = <></>;
         if (
-            props.isLinkInCrocodileLabsLinks(word) ||
-            props.isLinkInCrocodileLabsLinksForInput(word)
+            (isLinkInCrocodileLabsLinks(word) ||
+                isLinkInCrocodileLabsLinksForInput(word)) &&
+            isValidUrl(word)
         ) {
             ret = (
                 <span
@@ -853,6 +858,12 @@ function SentMessagePanel(props: SentMessageProps) {
                                     }
                                     selectedMessageIdForDeletion={
                                         props.selectedMessageIdForDeletion
+                                    }
+                                    setShowVerifyWalletConfirmationInDelete={
+                                        props.setShowVerifyWalletConfirmationInDelete
+                                    }
+                                    showVerifyWalletConfirmationInDelete={
+                                        props.showVerifyWalletConfirmationInDelete
                                     }
                                 />
                             )}

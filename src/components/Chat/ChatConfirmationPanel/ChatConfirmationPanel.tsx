@@ -5,7 +5,7 @@ interface propsIF {
     isActive: boolean;
     title: string;
     content: string;
-    confirmListener?: () => void;
+    confirmListener?: (e?: any) => void;
     cancelListener?: () => void;
 }
 

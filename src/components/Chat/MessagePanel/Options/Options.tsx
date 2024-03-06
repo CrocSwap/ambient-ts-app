@@ -22,6 +22,8 @@ interface propsIF {
     setShowDeleteConfirmation: Dispatch<SetStateAction<boolean>>;
     selectedMessageIdForDeletion: string;
     setSelectedMessageIdForDeletion: Dispatch<SetStateAction<string>>;
+    setShowVerifyWalletConfirmationInDelete: Dispatch<SetStateAction<boolean>>;
+    showVerifyWalletConfirmationInDelete: boolean;
 }
 export default function Options(props: propsIF) {
     const [showDetailsGroup, setShowDetailsGroup] = useState(false);
@@ -104,10 +106,14 @@ export default function Options(props: propsIF) {
             >
                 <AiOutlineDelete
                     onClick={() => {
-                        props.setShowDeleteConfirmation(true);
-                        props.setSelectedMessageIdForDeletion(
-                            props.message ? props.message._id : '',
-                        );
+                        if (props.isUserVerified) {
+                            props.setShowDeleteConfirmation(true);
+                            props.setSelectedMessageIdForDeletion(
+                                props.message ? props.message._id : '',
+                            );
+                        } else {
+                            props.setShowVerifyWalletConfirmationInDelete(true);
+                        }
                     }}
                     size={14}
                 />
@@ -182,8 +188,7 @@ export default function Options(props: propsIF) {
             <div key={props.tsForRefresh}>
                 <div className={styles.dropdown_item}>
                     {ReplyWithTooltip}
-                    {(props.isUsersMessage && props.isUserVerified) ||
-                    (props.isModerator && props.isUserVerified) ? (
+                    {props.isUsersMessage || props.isModerator ? (
                         deleteMessage
                     ) : (
                         <></>
