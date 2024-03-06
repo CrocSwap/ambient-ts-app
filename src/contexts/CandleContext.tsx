@@ -153,6 +153,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isUserOnline,
         baseTokenAddress + quoteTokenAddress,
         candleScale?.isFetchForTimeframe,
+        candleTimeLocal,
     ]);
 
     useEffect(() => {

@@ -95,13 +95,13 @@ export const useChartSettings = (
 
         let newCandleDuration;
         if (currentCandleTimeGlobal === undefined) {
-            if (numCandlesFetched >= 50) {
+            if (numCandlesFetched >= 7) {
                 newCandleDuration = 3600;
             } else {
                 newCandleDuration = 900;
             }
         } else {
-            if (numCandlesFetched >= 50) {
+            if (numCandlesFetched >= 7) {
                 newCandleDuration = currentCandleTimeGlobal;
             } else {
                 if (currentCandleTimeGlobal === 86400) {
@@ -135,7 +135,7 @@ export const useChartSettings = (
             | undefined;
 
         setCandleTimeGlobal(() => getCandleTime(currentCandleTimeGlobal));
-    }, [numCandlesFetched, getLocalStorageItem]);
+    }, [numCandlesFetched]);
 
     const [marketOverlay, setMarketOverlay] = useState<OverlayType>(
         getOverlay('market') ?? 'depth',
