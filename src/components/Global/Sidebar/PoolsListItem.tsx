@@ -98,8 +98,12 @@ export default function PoolsListItem(props: propsIF) {
                         ? pool.base.symbol
                         : pool.quote.symbol
                 }`,
-                '$' + poolData.poolVolume24h,
-                '$' + poolData.poolTvl,
+                `${
+                    poolData.poolVolume24h
+                        ? '$' + poolData.poolVolume24h
+                        : '...'
+                }`,
+                `${poolData.poolTvl ? '$' + poolData.poolTvl : '...'}`,
             ].map((item, idx) => (
                 <FlexContainer
                     key={idx}

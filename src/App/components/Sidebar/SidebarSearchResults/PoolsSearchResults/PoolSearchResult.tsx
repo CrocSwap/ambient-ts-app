@@ -32,10 +32,14 @@ export default function PoolSearchResult(props: propsIF) {
                 {pool.base.symbol ?? '--'} / {pool.quote.symbol ?? '--'}
             </p>
             <p style={{ textAlign: 'center' }}>
-                {'$' + (poolData.poolVolume24h || '0.00')}
+                {`${
+                    poolData.poolVolume24h
+                        ? '$' + poolData.poolVolume24h
+                        : '...'
+                }`}
             </p>
             <p style={{ textAlign: 'center' }}>
-                {'$' + (poolData.poolTvl || '0.00')}
+                {`${poolData.poolTvl ? '$' + poolData.poolTvl : '...'}`}
             </p>
         </Results>
     );
