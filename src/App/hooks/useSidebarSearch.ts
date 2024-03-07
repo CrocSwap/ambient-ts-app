@@ -34,6 +34,7 @@ export type contentGroups = 'standard' | 'token' | 'wallet';
 export interface walletHexAndENS {
     hex: string;
     ens: string | null;
+    message?: string;
 }
 
 // shape of object returned by this hook
@@ -98,7 +99,7 @@ export const useSidebarSearch = (
             (cleanInput.length === 40 && !cleanInput.startsWith('0x'))
         ) {
             setSearchAs('address');
-        } else if (dbInput.includes('.')) {
+        } else if (dbInput.includes('.eth')) {
             setSearchAs('ens');
             return dbInput.split('.')[0] + '.eth';
         } else if (cleanInput.length > 0) {
@@ -413,6 +414,15 @@ export const useSidebarSearch = (
                                 {
                                     hex: res,
                                     ens: searchStr,
+                                },
+                            ]);
+                            setContentGroup('wallet');
+                        } else {
+                            setOutputWallets([
+                                {
+                                    hex: '',
+                                    ens: '',
+                                    message: 'No address found for ENS name',
                                 },
                             ]);
                             setContentGroup('wallet');

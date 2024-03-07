@@ -29,9 +29,11 @@ export default function WalletSearchResults(props: propsIF) {
         // consume ENS if present, otherwise fall back on hex
         const address: string = w.ens ?? w.hex;
         // navigate to `/account` page for the given wallet
-        linkGenAccount.navigate(address);
-        // clear user input from the search field
-        searchData.clearInput();
+        if (address) {
+            linkGenAccount.navigate(address);
+            // clear user input from the search field
+            searchData.clearInput();
+        }
     }
 
     return (
@@ -62,7 +64,7 @@ export default function WalletSearchResults(props: propsIF) {
                             {trimString(wallet.ens, 15, 3, '…')} -{' '}
                             {trimString(wallet.hex, 7, 4, '…')}
                         </div>
-                    ) : (
+                    ) : wallet.hex ? (
                         <div
                             style={{
                                 fontFamily: 'monospace',
@@ -70,6 +72,16 @@ export default function WalletSearchResults(props: propsIF) {
                             }}
                         >
                             {trimString(wallet.hex, 7, 4, '…')}
+                        </div>
+                    ) : (
+                        <div
+                            style={{
+                                cursor: 'default',
+                                fontFamily: 'monospace',
+                                textAlign: 'left',
+                            }}
+                        >
+                            {wallet.message}
                         </div>
                     )}
                 </Results>
