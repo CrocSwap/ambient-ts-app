@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useEffect, useState, useContext, memo, useRef } from 'react';
+import { useEffect, useState, useContext, memo, useRef, useMemo } from 'react';
 
 // START: Import Local Files
 import { Pagination } from '@mui/material';
@@ -79,50 +79,50 @@ function Ranges(props: propsIF) {
     const baseTokenAddress = baseToken.address;
     const quoteTokenAddress = quoteToken.address;
 
-    const [rangeData, setRangeData] = useState<PositionIF[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
     const path = useLocation().pathname;
 
     if (!path.includes('reposition')) {
         setCurrentRangeInReposition('');
     }
 
-    useEffect(() => {
-        if (isAccountView) setRangeData(activeAccountPositionData || []);
-        else if (!showAllData)
-            setRangeData(
-                userPositionsByPool?.positions.filter(
-                    (position) => position.positionLiq != 0,
-                ),
-            );
-        else {
-            setRangeData(positionsByPool.positions);
-        }
-    }, [
-        showAllData,
-        isAccountView,
-        activeAccountPositionData,
-        positionsByPool,
-        userPositionsByPool,
-    ]);
+    const rangeData = useMemo(
+        () =>
+            isAccountView
+                ? activeAccountPositionData || []
+                : !showAllData
+                ? userPositionsByPool?.positions
+                : // ? userPositionsByPool?.positions.filter(
+                  //       (position) => position.positionLiq != 0,
+                  //   )
+                  positionsByPool.positions,
+        [
+            showAllData,
+            isAccountView,
+            activeAccountPositionData,
+            positionsByPool,
+            userPositionsByPool,
+        ],
+    );
 
-    useEffect(() => {
-        if (isAccountView && connectedAccountActive)
-            setIsLoading(dataLoadingStatus.isConnectedUserRangeDataLoading);
-        else if (isAccountView)
-            setIsLoading(dataLoadingStatus.isLookupUserRangeDataLoading);
-        else if (!showAllData)
-            setIsLoading(dataLoadingStatus.isConnectedUserPoolRangeDataLoading);
-        else setIsLoading(dataLoadingStatus.isPoolRangeDataLoading);
-    }, [
-        showAllData,
-        isAccountView,
-        connectedAccountActive,
-        dataLoadingStatus.isConnectedUserRangeDataLoading,
-        dataLoadingStatus.isConnectedUserPoolRangeDataLoading,
-        dataLoadingStatus.isLookupUserRangeDataLoading,
-        dataLoadingStatus.isPoolRangeDataLoading,
-    ]);
+    const isLoading = useMemo(
+        () =>
+            isAccountView && connectedAccountActive
+                ? dataLoadingStatus.isConnectedUserRangeDataLoading
+                : isAccountView
+                ? dataLoadingStatus.isLookupUserRangeDataLoading
+                : !showAllData
+                ? dataLoadingStatus.isConnectedUserPoolRangeDataLoading
+                : dataLoadingStatus.isPoolRangeDataLoading,
+        [
+            showAllData,
+            isAccountView,
+            connectedAccountActive,
+            dataLoadingStatus.isConnectedUserRangeDataLoading,
+            dataLoadingStatus.isConnectedUserPoolRangeDataLoading,
+            dataLoadingStatus.isLookupUserRangeDataLoading,
+            dataLoadingStatus.isPoolRangeDataLoading,
+        ],
+    );
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =
         useSortedPositions('time', rangeData);
@@ -154,15 +154,18 @@ function Ranges(props: propsIF) {
     const [page, setPage] = useState(1);
     const resetPageToFirst = () => setPage(1);
 
-    const isScreenShort =
-        (isAccountView && useMediaQuery('(max-height: 900px)')) ||
-        (!isAccountView && useMediaQuery('(max-height: 700px)'));
+    // const isScreenShort =
+    //     (isAccountView && useMediaQuery('(max-height: 900px)')) ||
+    //     (!isAccountView && useMediaQuery('(max-height: 700px)'));
 
-    const isScreenTall =
-        (isAccountView && useMediaQuery('(min-height: 1100px)')) ||
-        (!isAccountView && useMediaQuery('(min-height: 1000px)'));
+    // const isScreenTall =
+    //     (isAccountView && useMediaQuery('(min-height: 1100px)')) ||
+    //     (!isAccountView && useMediaQuery('(min-height: 1000px)'));
 
-    const _DATA = usePagination(sortedPositions, isScreenShort, isScreenTall);
+    const _DATA = usePagination(
+        sortedPositions,
+        // , isScreenShort, isScreenTall
+    );
 
     const {
         showingFrom,
@@ -172,6 +175,7 @@ function Ranges(props: propsIF) {
         rowsPerPage,
         changeRowsPerPage,
         count,
+        fullData,
     } = _DATA;
     const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
         setPage(p);
@@ -427,6 +431,7 @@ function Ranges(props: propsIF) {
                 <TableRows
                     type='Range'
                     data={_DATA.currentData}
+                    fullData={fullData}
                     isAccountView={isAccountView}
                     tableView={tableView}
                 />

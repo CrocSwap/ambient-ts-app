@@ -1,94 +1,36 @@
-import { useContext, useState } from 'react';
-import { FlexContainer } from '../../styled/Common';
-import StepperComponent from '../../components/Global/MultiStepTransaction/StepperComponent';
-import { AppStateContext } from '../../contexts/AppStateContext';
+import { ZERO_ADDRESS } from '../../ambient-utils/constants';
+// import HarvestPositionInfo from '../../components/RangeActionModal/RangeActionInfo/HarvestPositionInfo';
+import RemoveRangeInfo from '../../components/RangeActionModal/RangeActionInfo/RemoveRangeInfo';
 
 export default function TestPage() {
-    const [activeStep, setActiveStep] = useState(0);
-    // For demonstration-------------------------------
-    const questions = [
-        { text: 'What is 2 + 2?', answer: 4 },
-        { text: 'What is 5 + 3?', answer: 8 },
-        { text: 'What is 10 + 10?', answer: 20 },
-    ];
-
-    const [activeQuestion, setActiveQuestion] = useState(0);
-    const [userAnswer, setUserAnswer] = useState('');
-    const [isError, setIsError] = useState(false);
-
-    const handleAnswer = () => {
-        const parsedAnswer = parseInt(userAnswer, 10);
-        if (
-            !isNaN(parsedAnswer) &&
-            parsedAnswer === questions[activeQuestion].answer
-        ) {
-            if (activeQuestion === questions.length - 1) {
-                setActiveQuestion(0);
-                setActiveStep(0);
-            } else {
-                setActiveQuestion(
-                    (prevActiveQuestion) => prevActiveQuestion + 1,
-                );
-                setActiveStep((prevActiveStep) => prevActiveStep + 1);
-                setIsError(false);
-            }
-            setUserAnswer('');
-        } else {
-            setIsError(true);
-        }
-    };
-
-    const questionContent = (
-        <div>
-            <p>{questions[activeQuestion].text}</p>
-            <input
-                type='number'
-                value={userAnswer}
-                onChange={(e) => setUserAnswer(e.target.value)}
-            />
-            <button onClick={handleAnswer}>Submit Answer</button>
-
-            <div>
-                <p>Active Step: {activeStep}</p>
-            </div>
-        </div>
-    );
-
-    // ENd of for demonstration--------------------
-    const {
-        snackbar: { open: openSnackbar },
-    } = useContext(AppStateContext);
-
-    function handleCopyAddress() {
-        openSnackbar(
-            'this is  copied if you dont lijke toweqroi eqhjo joqj ioja oiqj oiwey csn do whqrt toy wqn',
-        );
-    }
-
-    const yes = true;
-
-    if (yes)
-        return (
-            <FlexContainer flexDirection='row' justifyContent='center'>
-                <button onClick={handleCopyAddress}>Click button</button>
-            </FlexContainer>
-        );
-
     return (
-        <FlexContainer flexDirection='row' justifyContent='space-around'>
-            {questionContent}
-
-            <StepperComponent
-                orientation='vertical'
-                steps={[
-                    { label: 'Question 1' },
-                    { label: 'Question 2' },
-                    { label: 'Question 3' },
-                ]}
-                activeStep={activeStep}
-                setActiveStep={setActiveStep}
-                isError={isError}
-            />
-        </FlexContainer>
+        // <HarvestPositionInfo
+        //     baseTokenSymbol='ETH'
+        //     quoteTokenSymbol='USDC'
+        //     fiatHarvestNum={`$ ${27}`}
+        //     baseTokenLogoURI='https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png'
+        //     quoteTokenLogoURI='https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png'
+        //     baseHarvestNum={undefined}
+        //     quoteHarvestNum={undefined}
+        //     baseTokenAddress={ZERO_ADDRESS}
+        //     quoteTokenAddress='0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C'
+        // />
+        <RemoveRangeInfo
+            baseTokenAddress={ZERO_ADDRESS}
+            quoteTokenAddress='0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C'
+            baseTokenSymbol='ETH'
+            quoteTokenSymbol='USDC'
+            baseTokenLogoURI='https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png'
+            quoteTokenLogoURI='https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png'
+            posLiqBaseDecimalCorrected={11}
+            posLiqQuoteDecimalCorrected={12}
+            feeLiqBaseDecimalCorrected={13}
+            feeLiqQuoteDecimalCorrected={14}
+            removalPercentage={55}
+            baseRemovalNum={18}
+            quoteRemovalNum={19}
+            fiatRemovalVal={`$ ${73}`}
+            isAmbient={true}
+        />
     );
 }

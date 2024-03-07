@@ -102,6 +102,8 @@ export type scaleData = {
     yScale: d3.ScaleLinear<number, number>;
     volumeScale: d3.ScaleLinear<number, number>;
     xExtent: [number, number];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    priceRange: any;
 };
 
 export type crosshair = {
@@ -499,4 +501,22 @@ export function isTimeZoneStart(date: Date): boolean {
     } catch (error) {
         return false;
     }
+}
+
+export function checkShowLatestCandle(
+    period: number,
+    xScale?: d3.ScaleLinear<number, number, never>,
+) {
+    if (xScale) {
+        const xDomain = xScale.domain();
+        const nowDate = Date.now();
+        const snapDiff = nowDate % (period * 1000);
+        const snappedTime = nowDate + (period * 1000 - snapDiff);
+
+        const isShowLatestCandle =
+            xDomain[0] < snappedTime && snappedTime < xDomain[1];
+
+        return isShowLatestCandle;
+    }
+    return false;
 }

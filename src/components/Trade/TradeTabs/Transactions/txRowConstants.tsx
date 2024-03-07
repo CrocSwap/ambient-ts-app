@@ -6,7 +6,6 @@ import {
     TextOnlyTooltip,
 } from '../../../Global/StyledTooltip/StyledTooltip';
 import { TokenIF, TransactionIF } from '../../../../ambient-utils/types';
-import { NavLink } from 'react-router-dom';
 import moment from 'moment';
 import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
@@ -291,9 +290,20 @@ export const txRowConstants = (props: propsIF) => {
             className='base_color'
             onClick={(event) => event.stopPropagation()}
         >
-            <NavLink to={tradeLinkPath}>
-                {tx.baseSymbol} / {tx.quoteSymbol}
-            </NavLink>
+            <RowItem hover>
+                <a href={tradeLinkPath} target='_blank' rel='noreferrer'>
+                    <div>
+                        <span>
+                            {tx.baseSymbol} / {tx.quoteSymbol}
+                        </span>
+                        <FiExternalLink
+                            size={10}
+                            color='white'
+                            style={{ marginLeft: '.5rem' }}
+                        />
+                    </div>
+                </a>
+            </RowItem>
         </div>
     );
 

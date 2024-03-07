@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect } from 'react';
 import { fetchUserRecentChanges, fetchRecords } from '../ambient-utils/api';
 import useDebounce from '../App/hooks/useDebounce';
-import { IS_LOCAL_ENV } from '../ambient-utils/constants';
 import {
     TokenIF,
     PositionIF,
@@ -19,6 +18,7 @@ import { UserDataContext } from './UserDataContext';
 import { DataLoadingContext } from './DataLoadingContext';
 import { PositionUpdateIF, ReceiptContext } from './ReceiptContext';
 import { getPositionHash } from '../ambient-utils/dataLayer/functions/getPositionHash';
+import { TradeDataContext } from './TradeDataContext';
 
 interface Changes {
     dataReceived: boolean;
@@ -66,7 +66,10 @@ interface GraphDataContextIF {
     liquidityFee: number;
 
     setLiquidityPending: (params: PoolRequestParams) => void;
-    setLiquidity: (liqData: LiquidityDataIF) => void;
+    setLiquidity: (
+        liqData: LiquidityDataIF,
+        request: PoolRequestParams | undefined,
+    ) => void;
     setLiquidityFee: React.Dispatch<React.SetStateAction<number>>;
     setTransactionsByPool: React.Dispatch<React.SetStateAction<Changes>>;
     setTransactionsByUser: React.Dispatch<React.SetStateAction<Changes>>;
@@ -140,6 +143,7 @@ export const GraphDataContextProvider = (props: {
             changes: [],
         },
     );
+
     const [userLimitOrdersByPool, setUserLimitOrdersByPool] =
         React.useState<LimitOrdersByPool>({
             dataReceived: false,
@@ -155,15 +159,14 @@ export const GraphDataContextProvider = (props: {
         LiquidityDataIF | undefined
     >(undefined);
 
-    const [liquidityRequest, setLiquidityRequest] = React.useState<
-        PoolRequestParams | undefined
-    >(undefined);
     const [liquidityFee, setLiquidityFee] = React.useState<number>(0);
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
 
-    const { pendingTransactions, sessionReceipts, sessionPositionUpdates } =
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
+
+    const { pendingTransactions, allReceipts, sessionPositionUpdates } =
         useContext(ReceiptContext);
 
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
@@ -195,10 +198,44 @@ export const GraphDataContextProvider = (props: {
             dataReceived: false,
             changes: [],
         });
+        setUserPositionsByPool({
+            dataReceived: false,
+            positions: [],
+        });
+        setUserLimitOrdersByPool({
+            dataReceived: false,
+            limitOrders: [],
+        });
+        setUserTransactionsByPool({
+            dataReceived: false,
+            changes: [],
+        });
         setSessionTransactionHashes([]);
     };
 
-    const setLiquidity = (liqData: LiquidityDataIF) => {
+    const resetPoolGraphData = () => {
+        setTransactionsByPool({
+            dataReceived: false,
+            changes: [],
+        });
+        setPositionsByPool({
+            dataReceived: false,
+            positions: [],
+        });
+        setLeaderboardByPool({
+            dataReceived: false,
+            positions: [],
+        });
+        setLimitOrdersByPool({
+            dataReceived: false,
+            limitOrders: [],
+        });
+    };
+
+    const setLiquidity = (
+        liqData: LiquidityDataIF,
+        request: PoolRequestParams | undefined,
+    ) => {
         // Sanitize the raw result from the backend
         const base = normalizeAddr(liqData.curveState.base);
         const quote = normalizeAddr(liqData.curveState.quote);
@@ -207,10 +244,10 @@ export const GraphDataContextProvider = (props: {
 
         // Verify that the result matches the current request in case multiple are in-flight
         if (
-            liquidityRequest?.baseAddress.toLowerCase() === base &&
-            liquidityRequest?.quoteAddress.toLowerCase() === quote &&
-            liquidityRequest?.poolIndex === liqData.curveState.poolIdx &&
-            liquidityRequest?.chainId === chainId
+            request?.baseAddress.toLowerCase() === base &&
+            request?.quoteAddress.toLowerCase() === quote &&
+            request?.poolIndex === liqData.curveState.poolIdx &&
+            request?.chainId === chainId
         ) {
             setLiquidityData({ ...liqData, curveState });
         } else {
@@ -223,8 +260,7 @@ export const GraphDataContextProvider = (props: {
         }
     };
 
-    const setLiquidityPending = (params: PoolRequestParams) => {
-        setLiquidityRequest(params);
+    const setLiquidityPending = () => {
         setLiquidityData(undefined);
     };
 
@@ -234,6 +270,25 @@ export const GraphDataContextProvider = (props: {
     useEffect(() => {
         resetUserGraphData();
     }, [isUserConnected, userAddress]);
+
+    useEffect(() => {
+        resetPoolGraphData();
+    }, [baseToken.address + quoteToken.address]);
+
+    useEffect(() => {
+        setUserPositionsByPool({
+            dataReceived: false,
+            positions: [],
+        });
+        setUserLimitOrdersByPool({
+            dataReceived: false,
+            limitOrders: [],
+        });
+        setUserTransactionsByPool({
+            dataReceived: false,
+            changes: [],
+        });
+    }, [baseToken.address + quoteToken.address]);
 
     const userTxByPoolHashArray = userTransactionsByPool.changes.map(
         (change) => change.txHash,
@@ -281,7 +336,7 @@ export const GraphDataContextProvider = (props: {
         (tx) => !userTxByPoolHashArray.includes(tx),
     );
 
-    const failedSessionTransactionHashes = sessionReceipts
+    const failedSessionTransactionHashes = allReceipts
         .filter((r) => JSON.parse(r).status === 0)
         .map((r) => JSON.parse(r).transactionHash);
 
@@ -362,10 +417,6 @@ export const GraphDataContextProvider = (props: {
             }
             const recordTargets = [RecordType.Position, RecordType.LimitOrder];
             for (let i = 0; i < recordTargets.length; i++) {
-                IS_LOCAL_ENV &&
-                    console.debug(
-                        'fetching user positions for ' + recordTargets[i],
-                    );
                 try {
                     const updatedLedger = await fetchRecords({
                         recordType: recordTargets[i],
@@ -405,10 +456,6 @@ export const GraphDataContextProvider = (props: {
                 } catch (error) {
                     console.error(error);
                 }
-                IS_LOCAL_ENV &&
-                    console.debug(
-                        'fetching user limit orders ' + recordTargets[i],
-                    );
             }
 
             try {

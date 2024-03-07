@@ -79,7 +79,7 @@ function TransactionRow(props: propsIF) {
         const element = document.getElementById(idForDOM);
         element?.scrollIntoView({
             behavior: 'smooth',
-            block: 'start',
+            block: 'nearest',
             inline: 'nearest',
         });
     }
@@ -120,8 +120,6 @@ function TransactionRow(props: propsIF) {
     const handleKeyPress: React.KeyboardEventHandler<HTMLDivElement> = (
         event,
     ) => {
-        console.log('handleKeyPress');
-
         if (event.key === 'Enter') {
             openDetailsModal();
         } else if (event.ctrlKey && event.key === 'c') {

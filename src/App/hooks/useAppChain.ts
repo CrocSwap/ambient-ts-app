@@ -21,11 +21,11 @@ export const useAppChain = (): {
     // metadata on chain authenticated in connected wallet
     const { chain: chainNetwork, chains: chns } = useNetwork();
     const { switchNetwork } = useSwitchNetwork();
-
     // hook to generate navigation actions with pre-loaded path
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
     const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
+    const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
     const [searchParams] = useSearchParams();
     const chainParam = searchParams.get('chain');
     const networkParam = searchParams.get('network');
@@ -81,9 +81,11 @@ export const useAppChain = (): {
     // trigger chain switch in wallet when chain in URL changes
     useEffect(() => {
         if (chainInURLValidated && switchNetwork) {
-            switchNetwork(parseInt(chainInURLValidated));
+            if (activeNetwork.chainId !== chainInURLValidated) {
+                switchNetwork(parseInt(chainInURLValidated));
+            }
         }
-    }, [chainInURLValidated, switchNetwork]);
+    }, [switchNetwork === undefined]);
 
     // listen for the wallet to change in connected wallet and process that change in the app
     useEffect(() => {
@@ -111,6 +113,15 @@ export const useAppChain = (): {
                         // if no, navigate to index page
                         // first part seems unnecessary but appears to help stability
                         const { pathname } = window.location;
+
+                        const isPathENS = pathname.slice(1)?.endsWith('.eth');
+                        const isPathHex =
+                            pathname.slice(1)?.startsWith('0x') &&
+                            pathname.slice(1)?.length == 42;
+                        const isPathUserAddress = isPathENS || isPathHex;
+                        const isPathUserXpOrLeaderboard =
+                            pathname.includes('/xp');
+
                         if (chainInURLValidated === incomingChainFromWallet) {
                             // generate params chain manually and navigate user
                             let templateURL = pathname;
@@ -133,6 +144,11 @@ export const useAppChain = (): {
                                 linkGenCurrent.navigate(
                                     `chain=${incomingChainFromWallet}`,
                                 );
+                            } else if (
+                                isPathUserAddress ||
+                                isPathUserXpOrLeaderboard
+                            ) {
+                                window.location.reload();
                             } else {
                                 linkGenCurrent.navigate();
                             }
@@ -148,64 +164,9 @@ export const useAppChain = (): {
                 chainInWalletValidated.current = incomingChainFromWallet;
             }
         }
-    }, [chainNetwork?.id]);
+    }, [chainNetwork?.id, chainInWalletValidated.current]);
 
     const defaultChain = getDefaultChainId();
-
-    // metadata about the active network in the app
-    const [activeNetwork, setActiveNetwork] = useState<NetworkIF>(
-        findNetworkData(
-            chainInURLValidated ??
-                localStorage.getItem(CHAIN_LS_KEY) ??
-                defaultChain,
-        ),
-    );
-
-    function findNetworkData(chn: keyof typeof supportedNetworks): NetworkIF {
-        const output = supportedNetworks[chn];
-        // console.log(output);
-        return output;
-    }
-    // logic to update `activeNetwork` when the connected wallet changes networks
-    // this doesn't kick in if the user does not have a connected wallet
-    useEffect(() => {
-        // see if there is a connected wallet with a valid network
-        if (chainInWalletValidated.current) {
-            // find network metaData for validated wallet
-            const chainMetadata: NetworkIF =
-                supportedNetworks[chainInWalletValidated.current];
-            // if found, update local state with retrieved metadata
-            chainMetadata && setActiveNetwork(chainMetadata);
-        }
-    }, [chainInWalletValidated.current]);
-
-    // fn to allow user to manually switch chains in the app because everything
-    // ... else in this file responds to changes in the browser environment
-    function chooseNetwork(network: NetworkIF): void {
-        localStorage.setItem(CHAIN_LS_KEY, network.chainId);
-        const { pathname } = window.location;
-        setActiveNetwork(network);
-        if (
-            linkGenCurrent.currentPage === 'initpool' ||
-            linkGenCurrent.currentPage === 'reposition'
-        ) {
-            linkGenPool.navigate(`chain=${network.chainId}`);
-        } else if (pathname.includes('chain')) {
-            linkGenCurrent.navigate(`chain=${network.chainId}`);
-        } else {
-            linkGenCurrent.navigate();
-        }
-        window.location.reload();
-    }
-
-    // data from the SDK about the current chain in the connected wallet
-    // chain is validated upstream of this process
-    const chainData = useMemo<ChainSpec>(() => {
-        const output: ChainSpec =
-            lookupChain(activeNetwork.chainId) ?? lookupChain(defaultChain);
-        // return output varibale (chain data)
-        return output;
-    }, [activeNetwork.chainId]);
 
     // boolean showing if the current chain in connected wallet is supported
     // this is used to launch the network switcher automatically
@@ -224,6 +185,73 @@ export const useAppChain = (): {
         // return output variable
         return isSupported;
     }, [chainNetwork]);
+
+    // metadata about the active network in the app
+    const [activeNetwork, setActiveNetwork] = useState<NetworkIF>(
+        findNetworkData(
+            chainInURLValidated
+                ? chainInURLValidated
+                : isWalletChainSupported
+                ? localStorage.getItem(CHAIN_LS_KEY) ?? defaultChain
+                : defaultChain,
+        ) || findNetworkData(defaultChain),
+    );
+
+    function findNetworkData(chn: keyof typeof supportedNetworks): NetworkIF {
+        const output = supportedNetworks[chn];
+        return output;
+    }
+    // logic to update `activeNetwork` when the connected wallet changes networks
+    // this doesn't kick in if the user does not have a connected wallet
+    useEffect(() => {
+        // see if there is a connected wallet with a valid network
+        if (chainInWalletValidated.current) {
+            // find network metaData for validated wallet
+            const chainMetadata: NetworkIF =
+                supportedNetworks[chainInWalletValidated.current];
+            // if found, update local state with retrieved metadata
+            chainMetadata && setActiveNetwork(chainMetadata);
+        }
+    }, [chainInWalletValidated.current !== null]);
+
+    // fn to allow user to manually switch chains in the app because everything
+    // ... else in this file responds to changes in the browser environment
+    function chooseNetwork(network: NetworkIF): void {
+        localStorage.setItem(CHAIN_LS_KEY, network.chainId);
+        const { pathname } = window.location;
+
+        setActiveNetwork(network);
+        const isPathENS = pathname.slice(1)?.endsWith('.eth');
+        const isPathHex =
+            pathname.slice(1)?.startsWith('0x') &&
+            pathname.slice(1)?.length == 42;
+        const isPathUserAddress = isPathENS || isPathHex;
+        const isPathUserXpOrLeaderboard = pathname.includes('/xp');
+        if (
+            linkGenCurrent.currentPage === 'initpool' ||
+            linkGenCurrent.currentPage === 'reposition'
+        ) {
+            linkGenPool.navigate(`chain=${network.chainId}`);
+        } else if (linkGenCurrent.currentPage === 'swap') {
+            linkGenSwap.navigate(`chain=${network.chainId}`);
+        } else if (pathname.includes('chain')) {
+            linkGenCurrent.navigate(`chain=${network.chainId}`);
+        } else if (isPathUserAddress || isPathUserXpOrLeaderboard) {
+            window.location.reload();
+        } else {
+            linkGenCurrent.navigate();
+        }
+        window.location.reload();
+    }
+
+    // data from the SDK about the current chain in the connected wallet
+    // chain is validated upstream of this process
+    const chainData = useMemo<ChainSpec>(() => {
+        const output: ChainSpec =
+            lookupChain(activeNetwork.chainId) ?? lookupChain(defaultChain);
+        // return output varibale (chain data)
+        return output;
+    }, [activeNetwork.chainId]);
 
     return {
         chainData,

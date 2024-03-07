@@ -17,3 +17,4 @@ export * from './fetchWithFallbacks';
 export * from './fetchUserPositions';
 export * from './fetchBlockNumber';
 export * from './fetchTokenUniverse';
+export * from './fetchXp';

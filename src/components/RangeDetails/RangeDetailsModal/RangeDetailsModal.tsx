@@ -1,5 +1,5 @@
 import PriceInfo from '.././PriceInfo/PriceInfo';
-import styles from './RangeDetailsModal.module.css';
+import styles from '../../../components/Global/TransactionDetails/TransactionDetailsModal.module.css';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
 import { PositionIF, PositionServerIF } from '../../../ambient-utils/types';
 import RangeDetailsHeader from '.././RangeDetailsHeader/RangeDetailsHeader';
@@ -52,6 +52,7 @@ function RangeDetailsModal(props: propsIF) {
 
     const {
         posHash,
+        serverPositionId,
         isAmbient,
         isBaseTokenMoneynessGreaterOrEqual,
         minRangeDenomByMoneyness,
@@ -188,11 +189,7 @@ function RangeDetailsModal(props: propsIF) {
                         }),
                     );
 
-                    setUpdatedPositionApy(
-                        positionStats.aprEst
-                            ? positionStats.aprEst * 100
-                            : undefined,
-                    );
+                    setUpdatedPositionApy(positionStats.aprEst * 100);
 
                     const baseFeeDisplayNum =
                         positionStats.feesLiqBaseDecimalCorrected;
@@ -216,7 +213,11 @@ function RangeDetailsModal(props: propsIF) {
     }, [lastBlockNumber, !!crocEnv, !!provider, chainId]);
 
     const shareComponent = (
-        <div ref={detailsRef} className={styles.main_outer_container}>
+        <div
+            ref={detailsRef}
+            className={styles.main_outer_container}
+            style={{ height: 'auto' }}
+        >
             <div className={styles.main_content}>
                 <div className={styles.left_container}>
                     <PriceInfo
@@ -238,6 +239,7 @@ function RangeDetailsModal(props: propsIF) {
                         maxRangeDenomByMoneyness={maxRangeDenomByMoneyness}
                         baseTokenAddress={baseTokenAddress}
                         quoteTokenAddress={quoteTokenAddress}
+                        positionId={serverPositionId}
                     />
                 </div>
                 <div className={styles.right_container}>

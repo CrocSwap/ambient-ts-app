@@ -5,6 +5,7 @@ import {
     isTransactionFailedError,
     isTransactionReplacedError,
     TransactionError,
+    parseErrorMessage,
 } from '../../utils/TransactionError';
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
@@ -93,7 +94,7 @@ export function useSendInit(
                 }
                 console.error({ error });
                 setTxErrorCode(error?.code);
-                setTxErrorMessage(error?.data?.message);
+                setTxErrorMessage(parseErrorMessage(error));
             } finally {
                 setIsInitPending(false);
             }
