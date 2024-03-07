@@ -12,6 +12,10 @@ import {
     blastPUMP,
     blastUSDB,
     blastYES,
+    blastOLE,
+    blastGLORY,
+    blastFINGER,
+    blastMIM,
 } from '../constants';
 import { TokenIF } from '../types/token/TokenIF';
 import { fetchDepositBalances } from './fetchDepositBalances';
@@ -138,6 +142,9 @@ export const fetchTokenBalances = async (
         const miaInWallet = (
             await crocEnv.token(blastMIA.address).wallet(address)
         ).toString();
+        const mimInWallet = (
+            await crocEnv.token(blastMIM.address).wallet(address)
+        ).toString();
         const alienInWallet = (
             await crocEnv.token(blastALIEN.address).wallet(address)
         ).toString();
@@ -156,9 +163,18 @@ export const fetchTokenBalances = async (
         const yesInWallet = (
             await crocEnv.token(blastYES.address).wallet(address)
         ).toString();
+        const oleInWallet = (
+            await crocEnv.token(blastOLE.address).wallet(address)
+        ).toString();
+        const gloryInWallet = (
+            await crocEnv.token(blastGLORY.address).wallet(address)
+        ).toString();
+        const fingerInWallet = (
+            await crocEnv.token(blastFINGER.address).wallet(address)
+        ).toString();
 
         const eth = {
-            chainId: 1,
+            chainId: 81457,
             logoURI: '',
             name: 'Ether',
             address: '0x0000000000000000000000000000000000000000',
@@ -167,7 +183,7 @@ export const fetchTokenBalances = async (
             walletBalance: ethInWallet,
         };
         const usdb = {
-            chainId: 1,
+            chainId: 81457,
             logoURI: '',
             name: blastUSDB.name,
             address:
@@ -179,7 +195,7 @@ export const fetchTokenBalances = async (
             walletBalance: usdbInWallet,
         };
         const orbit = {
-            chainId: 1,
+            chainId: 81457,
             logoURI: '',
             name: blastORBIT.name,
             address: blastORBIT.address,
@@ -188,7 +204,7 @@ export const fetchTokenBalances = async (
             walletBalance: orbitInWallet,
         };
         const bag = {
-            chainId: 1,
+            chainId: 81457,
             logoURI: '',
             name: blastBAG.name,
             address: blastBAG.address,
@@ -197,7 +213,7 @@ export const fetchTokenBalances = async (
             walletBalance: bagInWallet,
         };
         const mia = {
-            chainId: 1,
+            chainId: 81457,
             logoURI: '',
             name: blastMIA.name,
             address: blastMIA.address,
@@ -205,8 +221,17 @@ export const fetchTokenBalances = async (
             decimals: 18,
             walletBalance: miaInWallet,
         };
+        const mim = {
+            chainId: 81457,
+            logoURI: '',
+            name: blastMIM.name,
+            address: blastMIM.address,
+            symbol: blastMIM.symbol,
+            decimals: 18,
+            walletBalance: mimInWallet,
+        };
         const alien = {
-            chainId: 1,
+            chainId: 81457,
             logoURI: '',
             name: blastALIEN.name,
             address: blastALIEN.address,
@@ -215,7 +240,7 @@ export const fetchTokenBalances = async (
             walletBalance: alienInWallet,
         };
         const baja = {
-            chainId: 1,
+            chainId: 81457,
             logoURI: '',
             name: blastBAJA.name,
             address: blastBAJA.address,
@@ -224,7 +249,7 @@ export const fetchTokenBalances = async (
             walletBalance: bajaInWallet,
         };
         const bepe = {
-            chainId: 1,
+            chainId: 81457,
             logoURI: '',
             name: blastBEPE.name,
             address: blastBEPE.address,
@@ -233,7 +258,7 @@ export const fetchTokenBalances = async (
             walletBalance: bepeInWallet,
         };
         const pacm = {
-            chainId: 1,
+            chainId: 81457,
             logoURI: '',
             name: blastPACM.name,
             address: blastPACM.address,
@@ -242,7 +267,7 @@ export const fetchTokenBalances = async (
             walletBalance: pacmInWallet,
         };
         const pump = {
-            chainId: 1,
+            chainId: 81457,
             logoURI: '',
             name: blastPUMP.name,
             address: blastPUMP.address,
@@ -251,7 +276,7 @@ export const fetchTokenBalances = async (
             walletBalance: pumpInWallet,
         };
         const yes = {
-            chainId: 1,
+            chainId: 81457,
             logoURI: '',
             name: blastYES.name,
             address: blastYES.address,
@@ -259,17 +284,48 @@ export const fetchTokenBalances = async (
             decimals: 18,
             walletBalance: yesInWallet,
         };
+        const ole = {
+            chainId: 81457,
+            logoURI: '',
+            name: blastOLE.name,
+            address: blastOLE.address,
+            symbol: blastOLE.symbol,
+            decimals: 18,
+            walletBalance: oleInWallet,
+        };
+        const glory = {
+            chainId: 81457,
+            logoURI: '',
+            name: blastGLORY.name,
+            address: blastGLORY.address,
+            symbol: blastGLORY.symbol,
+            decimals: 18,
+            walletBalance: gloryInWallet,
+        };
+        const finger = {
+            chainId: 81457,
+            logoURI: '',
+            name: blastFINGER.name,
+            address: blastFINGER.address,
+            symbol: blastFINGER.symbol,
+            decimals: 18,
+            walletBalance: fingerInWallet,
+        };
         combinedBalances.push(eth);
         combinedBalances.push(usdb);
         combinedBalances.push(orbit);
         combinedBalances.push(bag);
         combinedBalances.push(mia);
+        combinedBalances.push(mim);
         combinedBalances.push(alien);
         combinedBalances.push(baja);
         combinedBalances.push(bepe);
         combinedBalances.push(pacm);
         combinedBalances.push(pump);
         combinedBalances.push(yes);
+        combinedBalances.push(ole);
+        combinedBalances.push(glory);
+        combinedBalances.push(finger);
     }
 
     if (dexBalancesFromCache !== undefined) {

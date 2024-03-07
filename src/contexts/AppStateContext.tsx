@@ -13,7 +13,8 @@ import {
 import {
     CHAT_ENABLED,
     CACHE_UPDATE_FREQ_IN_MS,
-    DEFAULT_CTA_DISMISSAL_DURATION_MINUTES,
+    DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES,
+    DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES,
 } from '../ambient-utils/constants';
 import {
     getCtaDismissalsFromLocalStorage,
@@ -99,16 +100,22 @@ export const AppStateContextProvider = (props: {
     ] = useModal();
 
     const pointsModalDismissalDuration =
-        DEFAULT_CTA_DISMISSAL_DURATION_MINUTES || 5;
+        DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES || 1440;
 
     const pointsBannerDismissalDuration =
-        DEFAULT_CTA_DISMISSAL_DURATION_MINUTES || 5;
+        DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES || 1440;
+
+    const ctaPopupDismissalTime =
+        getCtaDismissalsFromLocalStorage().find(
+            (x) => x.ctaId === 'points_modal_cta',
+        )?.unixTimeOfDismissal || 0;
 
     const [showPointSystemPopup, setShowPointSystemPopup] = useState(
-        (getCtaDismissalsFromLocalStorage().find(
-            (x) => x.ctaId === 'points_modal_cta',
-        )?.unixTimeOfDismissal || 0) <
-            Math.floor(Date.now() / 1000 - 60 * pointsModalDismissalDuration),
+        !ctaPopupDismissalTime ||
+            ctaPopupDismissalTime <
+                Math.floor(
+                    Date.now() / 1000 - 60 * pointsModalDismissalDuration,
+                ),
     );
 
     const dismissPointSystemPopup = () => {
@@ -116,11 +123,17 @@ export const AppStateContextProvider = (props: {
         saveCtaDismissalToLocalStorage({ ctaId: 'points_modal_cta' });
     };
 
-    const [showTopPtsBanner, setShowTopPtsBanner] = useState<boolean>(
-        (getCtaDismissalsFromLocalStorage().find(
+    const ctaBannerDismissalTime =
+        getCtaDismissalsFromLocalStorage().find(
             (x) => x.ctaId === 'top_points_banner_cta',
-        )?.unixTimeOfDismissal || 0) <
-            Math.floor(Date.now() / 1000 - 60 * pointsBannerDismissalDuration),
+        )?.unixTimeOfDismissal || 0;
+
+    const [showTopPtsBanner, setShowTopPtsBanner] = useState<boolean>(
+        !ctaBannerDismissalTime ||
+            ctaBannerDismissalTime <
+                Math.floor(
+                    Date.now() / 1000 - 60 * pointsBannerDismissalDuration,
+                ),
     );
 
     const dismissTopBannerPopup = () => {
