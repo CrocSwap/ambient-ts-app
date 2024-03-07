@@ -16,6 +16,7 @@ import { TokenContext } from '../../../../contexts/TokenContext';
 import { RowItem } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import moment from 'moment';
+import { Link } from 'react-router-dom';
 
 interface propsIF {
     posHashTruncated: string;
@@ -256,24 +257,36 @@ export default function rangeRowConstants(props: propsIF) {
             className='base_color'
             onClick={(event) => event.stopPropagation()}
         >
-            <RowItem hover>
-                <a
-                    href={linkGenPool.getFullURL(poolLinkParams)}
-                    target='_blank'
-                    rel='noreferrer'
-                >
-                    <div>
-                        <span>
-                            {baseTokenSymbol} / {quoteTokenSymbol}
-                        </span>
-                        <FiExternalLink
-                            size={10}
-                            color='white'
-                            style={{ marginLeft: '.5rem' }}
-                        />
-                    </div>
-                </a>
-            </RowItem>
+            {isOwnerActiveAccount ? (
+                <RowItem hover>
+                    <Link to={linkGenPool.getFullURL(poolLinkParams)}>
+                        {
+                            <span>
+                                {baseTokenSymbol} / {quoteTokenSymbol}
+                            </span>
+                        }
+                    </Link>
+                </RowItem>
+            ) : (
+                <RowItem hover>
+                    <a
+                        href={linkGenPool.getFullURL(poolLinkParams)}
+                        target='_blank'
+                        rel='noreferrer'
+                    >
+                        <div>
+                            <span>
+                                {baseTokenSymbol} / {quoteTokenSymbol}
+                            </span>
+                            <FiExternalLink
+                                size={10}
+                                color='white'
+                                style={{ marginLeft: '.5rem' }}
+                            />
+                        </div>
+                    </a>
+                </RowItem>
+            )}
         </div>
     );
 

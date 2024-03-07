@@ -14,6 +14,7 @@ import {
 } from '../../../../utils/hooks/useLinkGen';
 import { RowItem } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
+import { Link } from 'react-router-dom';
 
 interface propsIF {
     posHashTruncated: string;
@@ -253,24 +254,36 @@ export const orderRowConstants = (props: propsIF) => {
             className='base_color'
             onClick={(event) => event.stopPropagation()}
         >
-            <RowItem hover>
-                <a
-                    href={linkGenLimit.getFullURL(limitLinkParams)}
-                    target='_blank'
-                    rel='noreferrer'
-                >
-                    <div>
-                        <span>
-                            {baseTokenSymbol} / {quoteTokenSymbol}
-                        </span>
-                        <FiExternalLink
-                            size={10}
-                            color='white'
-                            style={{ marginLeft: '.5rem' }}
-                        />
-                    </div>
-                </a>
-            </RowItem>
+            {isOwnerActiveAccount ? (
+                <RowItem hover>
+                    <Link to={linkGenLimit.getFullURL(limitLinkParams)}>
+                        {
+                            <span>
+                                {baseTokenSymbol} / {quoteTokenSymbol}
+                            </span>
+                        }
+                    </Link>
+                </RowItem>
+            ) : (
+                <RowItem hover>
+                    <a
+                        href={linkGenLimit.getFullURL(limitLinkParams)}
+                        target='_blank'
+                        rel='noreferrer'
+                    >
+                        <div>
+                            <span>
+                                {baseTokenSymbol} / {quoteTokenSymbol}
+                            </span>
+                            <FiExternalLink
+                                size={10}
+                                color='white'
+                                style={{ marginLeft: '.5rem' }}
+                            />
+                        </div>
+                    </a>
+                </RowItem>
+            )}
         </div>
     );
 
