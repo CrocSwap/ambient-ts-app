@@ -11,8 +11,6 @@ import BAJA from './BAJA.png';
 import MIA from './MIA.png';
 import ORBIT from './ORBIT.png';
 import BAG from './BAG.png';
-import PUMP from './PUMP.png';
-import $PACM from './$PACM.png';
 import ALIEN from './ALIEN.png';
 import YES from './YES.png';
 
@@ -31,8 +29,6 @@ export {
     MIA,
     ORBIT,
     BAG,
-    PUMP,
-    $PACM,
     ALIEN,
     YES,
 };
