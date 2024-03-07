@@ -64,6 +64,16 @@ export const blastMIA: TokenIF = {
     logoURI: 'https://miablastsoff.com/images/logo.png',
 };
 
+export const blastMIM: TokenIF = {
+    address: '0x76DA31D7C9CbEAE102aff34D3398bC450c8374c1',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Magic Internet Money',
+    symbol: 'MIM',
+    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/162.png',
+};
+
 export const blastBAG: TokenIF = {
     address: '0xb9dfCd4CF589bB8090569cb52FaC1b88Dbe4981F',
     chainId: 81457,
@@ -619,6 +629,7 @@ export const defaultTokens: TokenIF[] = [
     blastETH,
     blastUSDB,
     blastMIA,
+    blastMIM,
     blastORBIT,
     blastBAG,
     blastBAJA,
