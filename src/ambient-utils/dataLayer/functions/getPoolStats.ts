@@ -276,6 +276,7 @@ export interface DexTokenAggServerIF {
     dexVolume: number;
     dexTvl: number;
     dexFees: number;
+    latestTime: number;
 }
 
 // fn signature to return chain stats in cumulative form
