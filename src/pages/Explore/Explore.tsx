@@ -7,17 +7,23 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { useTokenStats } from './useTokenStats';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { TokenContext } from '../../contexts/TokenContext';
 
 export default function Explore() {
     // full expanded data set
     const { pools } = useContext(ExploreContext);
-    const { crocEnv, chainData } = useContext(CrocEnvContext);
+    const { activeNetwork, crocEnv, chainData } = useContext(CrocEnvContext);
     const { poolList } = useContext(PoolContext);
     const {
         isActiveNetworkBlast,
         isActiveNetworkScroll,
         isActiveNetworkMainnet,
     } = useContext(ChainDataContext);
+
+    const { tokens } = useContext(TokenContext);
+
+    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
     const getLimitedPools = async (): Promise<void> => {
         if (crocEnv && poolList.length) {
@@ -48,7 +54,13 @@ export default function Explore() {
         }
     }, [crocEnv, poolList.length, pools.all.length]);
 
-    useTokenStats();
+    useTokenStats(
+        chainData.chainId,
+        crocEnv,
+        activeNetwork.graphCacheUrl,
+        cachedFetchTokenPrice,
+        tokens.allDefaultTokens,
+    );
 
     const titleText = isActiveNetworkMainnet
         ? 'Top Ambient Pools on Ethereum'
