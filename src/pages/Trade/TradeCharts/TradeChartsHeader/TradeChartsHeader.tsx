@@ -7,7 +7,6 @@ import { ChartContext } from '../../../../contexts/ChartContext';
 import { printDomToImage } from '../../../../ambient-utils/dataLayer';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import TradeChartsTokenInfo from '../TradeChartsComponents/TradeChartsTokenInfo';
-import { CandleContext } from '../../../../contexts/CandleContext';
 import { useSimulatedIsPoolInitialized } from '../../../../App/hooks/useSimulatedIsPoolInitialized';
 import { FlexContainer } from '../../../../styled/Common';
 import { HeaderButtons } from '../../../../styled/Components/Chart';
@@ -20,8 +19,8 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
         chartCanvasRef,
         chartHeights,
         tradeTableState,
+        isCandleDataNull,
     } = useContext(ChartContext);
-    const { isCandleDataNull } = useContext(CandleContext);
 
     const [, copy] = useCopyToClipboard();
     const {
