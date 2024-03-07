@@ -33,18 +33,17 @@ export const useTokenStats = (
             ).then((tokenStats) => {
                 if (tokenStats) {
                     const expandedTokenStats: dexTokenData[] = tokenStats.map(
-                        (ts: DexTokenAggServerIF) => {
-                            return {
-                                ...ts,
-                                tokenMeta: tokenMethods.getTokenByAddress(
-                                    ts.tokenAddr,
-                                ),
-                            };
-                        },
+                        (ts: DexTokenAggServerIF) => decorate(ts),
                     );
                     setDexTokens(expandedTokenStats);
                 }
             });
+        }
+        function decorate(t: DexTokenAggServerIF): dexTokenData {
+            return {
+                ...t,
+                tokenMeta: tokenMethods.getTokenByAddress(t.tokenAddr),
+            };
         }
     }, [crocEnv]);
 
