@@ -9,6 +9,7 @@ import { SearchResultsContainer } from '../../../../styled/Components/Sidebar';
 import { Text } from '../../../../styled/Common';
 import { useContext } from 'react';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import WalletSearchResults from './WalletSearchResults';
 
 interface propsIF {
     cachedPoolStatsFetch: PoolStatsFn;
@@ -33,21 +34,28 @@ export default function SidebarSearchResults(props: propsIF) {
             <Text fontSize='header2' color='accent5'>
                 Search Results
             </Text>
-            <PoolsSearchResults
-                searchedPools={searchData.pools}
-                cachedPoolStatsFetch={cachedPoolStatsFetch}
-                cachedFetchTokenPrice={cachedFetchTokenPrice}
-            />
-            {isUserConnected && (
+            {searchData.contentGroup === 'token' && (
                 <>
-                    <TxSearchResults searchedTxs={searchData.txs} />
-                    <OrdersSearchResults
-                        searchedLimitOrders={searchData.limits}
+                    <PoolsSearchResults
+                        searchedPools={searchData.pools}
+                        cachedPoolStatsFetch={cachedPoolStatsFetch}
+                        cachedFetchTokenPrice={cachedFetchTokenPrice}
                     />
-                    <PositionsSearchResults
-                        searchedPositions={searchData.positions}
-                    />
+                    {isUserConnected && (
+                        <>
+                            <TxSearchResults searchedTxs={searchData.txs} />
+                            <OrdersSearchResults
+                                searchedLimitOrders={searchData.limits}
+                            />
+                            <PositionsSearchResults
+                                searchedPositions={searchData.positions}
+                            />
+                        </>
+                    )}
                 </>
+            )}
+            {searchData.contentGroup === 'wallet' && (
+                <WalletSearchResults searchData={searchData} />
             )}
         </SearchResultsContainer>
     );

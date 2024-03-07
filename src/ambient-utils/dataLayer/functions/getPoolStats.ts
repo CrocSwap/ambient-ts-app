@@ -48,37 +48,68 @@ const fetchPoolStats = async (
     crocEnv: CrocEnv,
     graphCacheUrl: string,
     cachedFetchTokenPrice: TokenPriceFn,
+    histTime?: number,
 ): Promise<PoolStatsIF | undefined> => {
     const poolStatsFreshEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/pool_stats?'
         : graphCacheUrl + '/pool_stats?';
 
-    return fetch(
-        poolStatsFreshEndpoint +
-            new URLSearchParams({
-                chainId: chainId,
-                base: base,
-                quote: quote,
-                poolIdx: poolIdx.toString(),
-            }),
-    )
-        .then((response) => response.json())
-        .then((json) => {
-            if (!json?.data) {
-                return;
-            }
-            const payload = json.data as PoolStatsServerIF;
+    if (histTime) {
+        return fetch(
+            poolStatsFreshEndpoint +
+                new URLSearchParams({
+                    chainId: chainId,
+                    base: base,
+                    quote: quote,
+                    poolIdx: poolIdx.toString(),
+                    histTime: histTime.toString(),
+                }),
+        )
+            .then((response) => response.json())
+            .then((json) => {
+                if (!json?.data) {
+                    return;
+                }
+                const payload = json.data as PoolStatsServerIF;
 
-            return expandPoolStats(
-                payload,
-                base,
-                quote,
-                poolIdx,
-                chainId,
-                crocEnv,
-                cachedFetchTokenPrice,
-            );
-        });
+                return expandPoolStats(
+                    payload,
+                    base,
+                    quote,
+                    poolIdx,
+                    chainId,
+                    crocEnv,
+                    cachedFetchTokenPrice,
+                );
+            });
+    } else {
+        return fetch(
+            poolStatsFreshEndpoint +
+                new URLSearchParams({
+                    chainId: chainId,
+                    base: base,
+                    quote: quote,
+                    poolIdx: poolIdx.toString(),
+                }),
+        )
+            .then((response) => response.json())
+            .then((json) => {
+                if (!json?.data) {
+                    return;
+                }
+                const payload = json.data as PoolStatsServerIF;
+
+                return expandPoolStats(
+                    payload,
+                    base,
+                    quote,
+                    poolIdx,
+                    chainId,
+                    crocEnv,
+                    cachedFetchTokenPrice,
+                );
+            });
+    }
 };
 
 async function expandPoolStats(
@@ -358,6 +389,7 @@ export type PoolStatsFn = (
     crocEnv: CrocEnv,
     graphCacheUrl: string,
     cachedFetchTokenPrice: TokenPriceFn,
+    histTime?: number,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ) => Promise<PoolStatsIF>;
 
