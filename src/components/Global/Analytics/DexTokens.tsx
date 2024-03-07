@@ -15,6 +15,7 @@ import {
     TableBody,
 } from '../../../styled/Components/Analytics';
 import { FlexContainer } from '../../../styled/Common';
+import { DexTokenAggServerIF } from '../../../ambient-utils/dataLayer';
 export interface HeaderItem {
     label: string;
     hidden: boolean;
@@ -26,12 +27,15 @@ export interface HeaderItem {
 }
 
 interface propsIF {
+    dexTokens: DexTokenAggServerIF[];
     allPools: Array<PoolDataIF>;
     chainId: string;
 }
 
 function DexTokens(props: propsIF) {
-    const { allPools, chainId } = props;
+    const { dexTokens, allPools, chainId } = props;
+
+    console.log(dexTokens);
 
     // logic to handle onClick navigation action
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
@@ -48,13 +52,12 @@ function DexTokens(props: propsIF) {
 
     // !important:  any changes to `sortable` values must be accompanied by an update
     // !important:  ... to the type definition `sortType` in `useSortedPools.ts`
-    const topPoolsHeaderItems: HeaderItem[] = [
+    const dexTokensHeaderItems: HeaderItem[] = [
         {
-            label: 'Tokens',
+            label: 'Token',
             hidden: false,
             align: 'left',
             sortable: false,
-            pxValue: 8,
         },
         {
             label: 'Pool',
@@ -100,7 +103,7 @@ function DexTokens(props: propsIF) {
                 <ShadowBox>
                     <Table>
                         <TableHead
-                            headerItems={topPoolsHeaderItems}
+                            headerItems={dexTokensHeaderItems}
                             sortedPools={sortedPools}
                         />
                         <TableBody>

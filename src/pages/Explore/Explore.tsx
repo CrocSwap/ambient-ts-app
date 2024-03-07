@@ -110,7 +110,11 @@ export default function Explore() {
                 <TopPools allPools={pools.all} chainId={chainData.chainId} />
             )}
             {activeTable === 'tokens' && (
-                <DexTokens allPools={pools.all} chainId={chainData.chainId} />
+                <DexTokens
+                    dexTokens={dexTokens}
+                    allPools={pools.all}
+                    chainId={chainData.chainId}
+                />
             )}
         </Section>
     );
