@@ -1,5 +1,4 @@
 import { memo } from 'react';
-import PoolRow from './PoolRow';
 import { PoolDataIF } from '../../../contexts/ExploreContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { SortedPoolMethodsIF, useSortedPools } from './useSortedPools';
@@ -15,7 +14,9 @@ import {
     TableBody,
 } from '../../../styled/Components/Analytics';
 import { FlexContainer } from '../../../styled/Common';
-import { DexTokenAggServerIF } from '../../../ambient-utils/dataLayer';
+import TokenRow from './TokenRow';
+import { useSortedDexTokens } from './useSortedDexTokens';
+import { dexTokenData } from '../../../pages/Explore/useTokenStats';
 export interface HeaderItem {
     label: string;
     hidden: boolean;
@@ -27,7 +28,7 @@ export interface HeaderItem {
 }
 
 interface propsIF {
-    dexTokens: DexTokenAggServerIF[];
+    dexTokens: dexTokenData[];
     allPools: Array<PoolDataIF>;
     chainId: string;
 }
@@ -35,7 +36,8 @@ interface propsIF {
 function DexTokens(props: propsIF) {
     const { dexTokens, allPools, chainId } = props;
 
-    console.log(dexTokens);
+    const sorted = useSortedDexTokens(dexTokens);
+    sorted.sorted.forEach((s) => console.log(s.tokenMeta));
 
     // logic to handle onClick navigation action
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
@@ -54,43 +56,36 @@ function DexTokens(props: propsIF) {
     // !important:  ... to the type definition `sortType` in `useSortedPools.ts`
     const dexTokensHeaderItems: HeaderItem[] = [
         {
-            label: 'Token',
+            label: 'Name',
             hidden: false,
-            align: 'left',
-            sortable: false,
-        },
-        {
-            label: 'Pool',
-            hidden: true,
             align: 'left',
             responsive: 'sm',
             sortable: false,
         },
         {
-            label: 'Price',
-            hidden: true,
+            label: 'Symbol',
+            hidden: false,
             align: 'right',
             responsive: 'sm',
             sortable: false,
         },
-        { label: '24h Vol.', hidden: false, align: 'right', sortable: true },
         {
-            label: 'TVL',
+            label: 'Volume',
             hidden: false,
             align: 'right',
             responsive: 'sm',
             sortable: true,
         },
         {
-            label: 'Change',
-            hidden: true,
+            label: 'TVL',
+            hidden: false,
             align: 'right',
             responsive: 'lg',
             sortable: true,
         },
         {
-            label: '',
-            hidden: true,
+            label: 'Fees',
+            hidden: false,
             responsive: 'sm',
             align: 'right',
             sortable: false,
@@ -114,7 +109,7 @@ function DexTokens(props: propsIF) {
                                             !checkPoolForWETH(pool),
                                     )
                                     .map((pool: PoolDataIF, idx: number) => (
-                                        <PoolRow
+                                        <TokenRow
                                             key={JSON.stringify(pool) + idx}
                                             pool={pool}
                                             goToMarket={goToMarket}

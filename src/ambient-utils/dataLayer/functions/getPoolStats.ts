@@ -308,7 +308,7 @@ export async function getChainStats(
     cachedFetchTokenPrice: TokenPriceFn,
     allDefaultTokens?: TokenIF[],
 ): Promise<DexAggStatsIF | DexTokenAggServerIF[] | undefined> {
-    const N_TOKEN_CHAIN_SUMM = 10;
+    const N_TOKEN_CHAIN_SUMM = 100;
 
     const chainStatsFreshEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/chain_stats?'

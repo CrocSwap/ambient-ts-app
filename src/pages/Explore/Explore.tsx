@@ -7,15 +7,15 @@ import styled from 'styled-components/macro';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
-import { useTokenStats } from './useTokenStats';
+import { dexTokenData, useTokenStats } from './useTokenStats';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { TokenContext } from '../../contexts/TokenContext';
-import { DexTokenAggServerIF } from '../../ambient-utils/dataLayer';
 
 export default function Explore() {
     // full expanded data set
     const { pools } = useContext(ExploreContext);
-    const { activeNetwork, crocEnv, chainData } = useContext(CrocEnvContext);
+    const { activeNetwork, crocEnv, chainData, provider } =
+        useContext(CrocEnvContext);
     const { poolList } = useContext(PoolContext);
     const {
         isActiveNetworkBlast,
@@ -56,14 +56,14 @@ export default function Explore() {
         }
     }, [crocEnv, poolList.length, pools.all.length]);
 
-    const dexTokens: DexTokenAggServerIF[] = useTokenStats(
+    const dexTokens: dexTokenData[] = useTokenStats(
         chainData.chainId,
         crocEnv,
         activeNetwork.graphCacheUrl,
         cachedFetchTokenPrice,
         tokens,
+        provider,
     );
-    console.log(dexTokens);
 
     const titleTextPools: string = isActiveNetworkMainnet
         ? 'Top Ambient Pools on Ethereum'
