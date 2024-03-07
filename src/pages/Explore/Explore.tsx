@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { FiRefreshCw } from 'react-icons/fi';
 import TopPools from '../../components/Global/Analytics/TopPools';
+import DexTokens from '../../components/Global/Analytics/DexTokens';
 import { ExploreContext } from '../../contexts/ExploreContext';
 import styled from 'styled-components/macro';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
@@ -64,7 +65,7 @@ export default function Explore() {
     );
     console.log(dexTokens);
 
-    const titleText = isActiveNetworkMainnet
+    const titleTextPools: string = isActiveNetworkMainnet
         ? 'Top Ambient Pools on Ethereum'
         : isActiveNetworkBlast
         ? 'Top Ambient Pools on Blast'
@@ -72,12 +73,23 @@ export default function Explore() {
         ? 'Top Ambient Pools on Scroll'
         : 'Top Pools on Ambient';
 
+    const titleTextTokens: string = isActiveNetworkMainnet
+        ? 'Active Tokens on Ethereum'
+        : isActiveNetworkBlast
+        ? 'Active Tokens on Blast'
+        : isActiveNetworkScroll
+        ? 'Active Tokens on Scroll'
+        : 'Top Pools on Ambient';
+
     const [activeTable, setActiveTable] = useState<'pools' | 'tokens'>('pools');
+
+    const titleTextForDOM: string =
+        activeTable === 'pools' ? titleTextPools : titleTextTokens;
 
     return (
         <Section>
             <MainWrapper>
-                <TitleText>{titleText}</TitleText>
+                <TitleText>{titleTextForDOM}</TitleText>
                 <Refresh>
                     <RefreshButton
                         onClick={() => {
@@ -96,6 +108,9 @@ export default function Explore() {
             </button>
             {activeTable === 'pools' && (
                 <TopPools allPools={pools.all} chainId={chainData.chainId} />
+            )}
+            {activeTable === 'tokens' && (
+                <DexTokens allPools={pools.all} chainId={chainData.chainId} />
             )}
         </Section>
     );
