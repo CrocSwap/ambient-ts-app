@@ -13,7 +13,12 @@ import NotFound from '../../pages/NotFound/NotFound';
 import DividerDark from '../Global/DividerDark/DividerDark';
 import ChatConfirmationPanel from './ChatConfirmationPanel/ChatConfirmationPanel';
 import styles from './ChatPanel.module.css';
-import { LS_USER_VERIFY_TOKEN, setLS } from './ChatUtils';
+import {
+    LS_LAST_FOCUSED_MSG,
+    LS_USER_VERIFY_TOKEN,
+    getLS,
+    setLS,
+} from './ChatUtils';
 import DomDebugger from './DomDebugger/DomDebugger';
 import FullChat from './FullChat/FullChat';
 import MessageInput from './MessagePanel/InputBox/MessageInput';
@@ -384,6 +389,26 @@ function ChatPanel(props: propsIF) {
         setIsScrollToBottomButtonPressed(false);
         scrollToBottom();
         setNotificationCount(0);
+
+        if (isChatOpen) {
+            const lastFocused = getLS(LS_LAST_FOCUSED_MSG);
+            if (lastFocused && lastFocused.length > 0) {
+                const msgEl = document.querySelector(
+                    '.messageBubble[data-message-id="' + lastFocused + '"]',
+                );
+                if (msgEl && messageEnd.current) {
+                    const wrapperTop =
+                        messageEnd.current.getBoundingClientRect().top;
+                    const msgElTop = msgEl.getBoundingClientRect().top;
+                    messageEnd.current.scrollTop = msgElTop - wrapperTop;
+                    domDebug(
+                        'scroll set to',
+                        (msgElTop - wrapperTop).toString(),
+                    );
+                }
+            }
+            console.log('is chat opened');
+        }
     }, [isChatOpen]);
 
     useEffect(() => {
@@ -466,12 +491,18 @@ function ChatPanel(props: propsIF) {
         if (messageEnd && messageEnd.current) {
             const rect = messageEnd.current.getBoundingClientRect();
             const bubbles = document.querySelectorAll('.messageBubble');
-            bubbles.forEach((el) => {
-                if (el.getBoundingClientRect().top < rect.top) {
+            for (let i = 0; i < bubbles.length; i++) {
+                const el = bubbles[i];
+                if (el.getBoundingClientRect().top > rect.top) {
                     console.log(el);
-                    return;
+                    const msgId = el.getAttribute('data-message-id');
+                    const msgContent = el.getAttribute('data-message-content');
+                    domDebug('selected message id', msgId ? msgId : '-');
+                    domDebug('selected message', msgContent ? msgContent : '-');
+                    setLS(LS_LAST_FOCUSED_MSG, msgId ? msgId : '');
+                    break;
                 }
-            });
+            }
             // domDebug('centerPoint' ,centerPoint.toString());
         }
     };

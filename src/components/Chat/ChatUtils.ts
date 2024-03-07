@@ -3,6 +3,7 @@ import { CROCODILE_LABS_LINKS } from '../../ambient-utils/constants';
 
 export const LS_USER_VERIFY_TOKEN = 'CHAT_user_verify';
 export const LS_USER_NON_VERIFIED_MESSAGES = 'CHAT_non_verified_messages';
+export const LS_LAST_FOCUSED_MSG = 'CHAT_last_focused_msg';
 
 export const getMessageWithRestEndpoint =
     '/chat/api/messages/getMsgWithoutWebSocket/';
