@@ -15,6 +15,7 @@ import {
     blastOLE,
     blastGLORY,
     blastFINGER,
+    blastMIM,
 } from '../constants';
 import { TokenIF } from '../types/token/TokenIF';
 import { fetchDepositBalances } from './fetchDepositBalances';
@@ -141,6 +142,9 @@ export const fetchTokenBalances = async (
         const miaInWallet = (
             await crocEnv.token(blastMIA.address).wallet(address)
         ).toString();
+        const mimInWallet = (
+            await crocEnv.token(blastMIM.address).wallet(address)
+        ).toString();
         const alienInWallet = (
             await crocEnv.token(blastALIEN.address).wallet(address)
         ).toString();
@@ -216,6 +220,15 @@ export const fetchTokenBalances = async (
             symbol: blastMIA.symbol,
             decimals: 18,
             walletBalance: miaInWallet,
+        };
+        const mim = {
+            chainId: 1,
+            logoURI: '',
+            name: blastMIM.name,
+            address: blastMIM.address,
+            symbol: blastMIM.symbol,
+            decimals: 18,
+            walletBalance: mimInWallet,
         };
         const alien = {
             chainId: 1,
@@ -303,6 +316,7 @@ export const fetchTokenBalances = async (
         combinedBalances.push(orbit);
         combinedBalances.push(bag);
         combinedBalances.push(mia);
+        combinedBalances.push(mim);
         combinedBalances.push(alien);
         combinedBalances.push(baja);
         combinedBalances.push(bepe);

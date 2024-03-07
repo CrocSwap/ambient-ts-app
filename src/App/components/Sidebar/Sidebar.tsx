@@ -52,12 +52,13 @@ import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 function Sidebar() {
+    const { sidebar, toggleMobileModeVisibility, hideOnMobile } =
+        useContext(SidebarContext);
+
     const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
         useContext(CachedDataContext);
     const { chainData: chainData } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
-    const { sidebar, toggleMobileModeVisibility, hideOnMobile } =
-        useContext(SidebarContext);
 
     const { positionsByUser, limitOrdersByUser, transactionsByUser } =
         useContext(GraphDataContext);
@@ -76,76 +77,7 @@ function Sidebar() {
         .slice(0, 4);
     const mostRecentLimitOrders = _limitsByUser.slice(0, 4);
 
-    const recentPoolsData = [
-        {
-            name: 'Recent Pools',
-            icon: <RecentPoolsIcon open={sidebar.isOpen} size={20} />,
-
-            data: (
-                <RecentPools
-                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    cachedFetchTokenPrice={cachedFetchTokenPrice}
-                />
-            ),
-        },
-    ];
-    const topPoolsSection = [
-        {
-            name: 'Top Pools',
-            icon: <TopPoolsIcon open={sidebar.isOpen} size={20} />,
-            data: (
-                <TopPools
-                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    cachedFetchTokenPrice={cachedFetchTokenPrice}
-                />
-            ),
-        },
-    ];
-
-    const rangePositions = [
-        {
-            name: 'Liquidity Positions',
-            icon: <RangesIcon open={sidebar.isOpen} size={20} />,
-            data: <SidebarRangePositions userPositions={mostRecentPositions} />,
-        },
-    ];
-
-    const recentLimitOrders = [
-        {
-            name: 'Limit Orders',
-            icon: <LimitsIcon open={sidebar.isOpen} size={20} />,
-            data: (
-                <SidebarLimitOrders limitOrderByUser={mostRecentLimitOrders} />
-            ),
-        },
-    ];
-
-    const favoritePools = [
-        {
-            name: 'Favorite Pools',
-            icon: <FavoritePoolsIcon open={sidebar.isOpen} size={20} />,
-
-            data: (
-                <FavoritePools
-                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    cachedFetchTokenPrice={cachedFetchTokenPrice}
-                />
-            ),
-        },
-    ];
-
-    const recentTransactions = [
-        {
-            name: 'Transactions',
-            icon: <TransactionsIcon open={sidebar.isOpen} size={20} />,
-            data: (
-                <SidebarRecentTransactions
-                    mostRecentTransactions={mostRecentTxs}
-                />
-            ),
-        },
-    ];
-
+    // raw data processed according to search input from user
     const searchData: sidebarSearchIF = useSidebarSearch(
         _positionsByUser,
         _txsByUser,
@@ -153,14 +85,7 @@ function Sidebar() {
         tokens,
     );
 
-    const [searchInput, setSearchInput] = useState<string>('');
-    const [searchMode, setSearchMode] = useState(false);
-    false && searchMode;
-
-    // ------------------------------------------
-    // ---------------------------Explore SEARCH CONTAINER-----------------------
-
-    const focusInput = () => {
+    const focusInput = (): void => {
         const inputField = document.getElementById(
             'sidebar_search_input',
         ) as HTMLInputElement;
@@ -168,18 +93,12 @@ function Sidebar() {
         inputField.focus();
     };
 
-    const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchMode(true);
-        searchData.setInput(e.target.value);
-        setSearchInput(e.target.value);
-    };
-
     // id for search input HTML elem in the DOM
     // defined in a const because we reference this multiple places
     const searchInputElementId = 'sidebar_search_input';
-    const smallScreen = useMediaQuery('(max-width: 500px)');
+    const smallScreen: boolean = useMediaQuery('(max-width: 500px)');
 
-    const searchContainer = (
+    const searchContainer: JSX.Element = (
         <SearchContainer
             flexDirection='row'
             alignItems='center'
@@ -204,7 +123,7 @@ function Sidebar() {
                 value={searchData.rawInput}
                 placeholder='Search...'
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    handleSearchInput(e)
+                    searchData.setInput(e.target.value)
                 }
                 onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
                     if (e.code === 'Escape') {
@@ -212,19 +131,17 @@ function Sidebar() {
                         e.stopPropagation();
                         // clear search input, DOM will update
                         searchData.clearInput();
-                        setSearchInput('');
                     }
                 }}
                 spellCheck='false'
                 autoComplete='off'
                 tabIndex={1}
             />
-            {searchInput && (
+            {searchData.isInputValid && (
                 <FlexContainer
                     onClick={() => {
                         // clear search input, DOM will update
                         searchData.clearInput();
-                        setSearchInput('');
                         // manually focus DOM on the search input
                         const searchInput =
                             document.getElementById(searchInputElementId);
@@ -239,27 +156,30 @@ function Sidebar() {
         </SearchContainer>
     );
 
-    const [openAllDefault, setOpenAllDefault] = useState(false);
-    const [isDefaultOverridden, setIsDefaultOverridden] = useState(false);
+    const [openAllDefault, setOpenAllDefault] = useState<boolean>(false);
+    const [isDefaultOverridden, setIsDefaultOverridden] =
+        useState<boolean>(false);
 
-    const getInitialSidebarLockedStatus = () =>
+    const getInitialSidebarLockedStatus = (): boolean =>
         sidebar.getStoredStatus() === 'open';
-    const [isLocked, setIsLocked] = useState(getInitialSidebarLockedStatus());
+    const [isLocked, setIsLocked] = useState<boolean>(
+        getInitialSidebarLockedStatus(),
+    );
 
-    const toggleLockSidebar = () => {
+    const toggleLockSidebar = (): void => {
         sidebar.open(!isLocked);
         isLocked && sidebar.resetStoredStatus();
         setIsLocked(!isLocked);
     };
 
-    const toggleExpandCollapseAll = () => {
+    const toggleExpandCollapseAll = (): void => {
         setIsDefaultOverridden(true);
         setOpenAllDefault(!openAllDefault);
     };
 
     // TODO: why are we using an `<input>` as a clickable to close the sidebar?
 
-    const searchContainerDisplay = (
+    const searchContainerDisplay: JSX.Element = (
         <FlexContainer
             flexDirection='row'
             alignItems='center'
@@ -349,75 +269,90 @@ function Sidebar() {
     );
     const sidebarRef = useRef<HTMLDivElement>(null);
 
-    const regularSidebarDisplay = (
+    const regularSidebarDisplay: JSX.Element = (
         <ContentContainer flexDirection='column'>
-            {topPoolsSection.map((item, idx) => (
-                <SidebarAccordion
-                    sidebar={sidebar}
-                    shouldDisplayContentWhenUserNotLoggedIn={true}
-                    idx={idx}
-                    item={item}
-                    key={idx}
-                    openAllDefault={openAllDefault}
-                    isDefaultOverridden={isDefaultOverridden}
-                />
-            ))}
-            {favoritePools.map((item, idx) => (
-                <SidebarAccordion
-                    sidebar={sidebar}
-                    shouldDisplayContentWhenUserNotLoggedIn={true}
-                    idx={idx}
-                    item={item}
-                    key={idx}
-                    openAllDefault={openAllDefault}
-                    isDefaultOverridden={isDefaultOverridden}
-                />
-            ))}
-            {recentPoolsData.map((item, idx) => (
-                <SidebarAccordion
-                    sidebar={sidebar}
-                    shouldDisplayContentWhenUserNotLoggedIn={true}
-                    idx={idx}
-                    item={item}
-                    key={idx}
-                    openAllDefault={openAllDefault}
-                    isDefaultOverridden={isDefaultOverridden}
-                />
-            ))}
+            <SidebarAccordion
+                name='Top Pools'
+                icon={<TopPoolsIcon open={sidebar.isOpen} size={20} />}
+                data={
+                    <TopPools
+                        cachedPoolStatsFetch={cachedPoolStatsFetch}
+                        cachedFetchTokenPrice={cachedFetchTokenPrice}
+                    />
+                }
+                sidebar={sidebar}
+                shouldDisplayContentWhenUserNotLoggedIn={true}
+                openAllDefault={openAllDefault}
+                isDefaultOverridden={isDefaultOverridden}
+            />
+            <SidebarAccordion
+                name='Favorite Pools'
+                icon={<FavoritePoolsIcon open={sidebar.isOpen} size={20} />}
+                data={
+                    <FavoritePools
+                        cachedPoolStatsFetch={cachedPoolStatsFetch}
+                        cachedFetchTokenPrice={cachedFetchTokenPrice}
+                    />
+                }
+                sidebar={sidebar}
+                shouldDisplayContentWhenUserNotLoggedIn={true}
+                openAllDefault={openAllDefault}
+                isDefaultOverridden={isDefaultOverridden}
+            />
+            <SidebarAccordion
+                name='Recent Pools'
+                icon={<RecentPoolsIcon open={sidebar.isOpen} size={20} />}
+                data={
+                    <RecentPools
+                        cachedPoolStatsFetch={cachedPoolStatsFetch}
+                        cachedFetchTokenPrice={cachedFetchTokenPrice}
+                    />
+                }
+                sidebar={sidebar}
+                shouldDisplayContentWhenUserNotLoggedIn={true}
+                openAllDefault={openAllDefault}
+                isDefaultOverridden={isDefaultOverridden}
+            />
             <div style={{ margin: 'auto' }} />
-            {recentTransactions.map((item, idx) => (
-                <SidebarAccordion
-                    sidebar={sidebar}
-                    shouldDisplayContentWhenUserNotLoggedIn={false}
-                    idx={idx}
-                    item={item}
-                    key={idx}
-                    openAllDefault={openAllDefault}
-                    isDefaultOverridden={isDefaultOverridden}
-                />
-            ))}{' '}
-            {recentLimitOrders.map((item, idx) => (
-                <SidebarAccordion
-                    sidebar={sidebar}
-                    shouldDisplayContentWhenUserNotLoggedIn={false}
-                    idx={idx}
-                    item={item}
-                    key={idx}
-                    openAllDefault={openAllDefault}
-                    isDefaultOverridden={isDefaultOverridden}
-                />
-            ))}{' '}
-            {rangePositions.map((item, idx) => (
-                <SidebarAccordion
-                    sidebar={sidebar}
-                    shouldDisplayContentWhenUserNotLoggedIn={false}
-                    idx={idx}
-                    item={item}
-                    key={idx}
-                    openAllDefault={openAllDefault}
-                    isDefaultOverridden={isDefaultOverridden}
-                />
-            ))}
+            <SidebarAccordion
+                name='Transactions'
+                icon={<TransactionsIcon open={sidebar.isOpen} size={20} />}
+                data={
+                    <SidebarRecentTransactions
+                        mostRecentTransactions={mostRecentTxs}
+                    />
+                }
+                sidebar={sidebar}
+                shouldDisplayContentWhenUserNotLoggedIn={false}
+                openAllDefault={openAllDefault}
+                isDefaultOverridden={isDefaultOverridden}
+            />
+            <SidebarAccordion
+                name='Limit Orders'
+                icon={<LimitsIcon open={sidebar.isOpen} size={20} />}
+                data={
+                    <SidebarLimitOrders
+                        limitOrderByUser={mostRecentLimitOrders}
+                    />
+                }
+                sidebar={sidebar}
+                shouldDisplayContentWhenUserNotLoggedIn={false}
+                openAllDefault={openAllDefault}
+                isDefaultOverridden={isDefaultOverridden}
+            />
+            <SidebarAccordion
+                name='Liquidity Positions'
+                icon={<RangesIcon open={sidebar.isOpen} size={20} />}
+                data={
+                    <SidebarRangePositions
+                        userPositions={mostRecentPositions}
+                    />
+                }
+                sidebar={sidebar}
+                shouldDisplayContentWhenUserNotLoggedIn={false}
+                openAllDefault={openAllDefault}
+                isDefaultOverridden={isDefaultOverridden}
+            />
         </ContentContainer>
     );
 
@@ -442,7 +377,7 @@ function Sidebar() {
                     fullHeight
                 >
                     {searchContainerDisplay}
-                    {searchData.isInputValid && sidebar.isOpen && searchMode ? (
+                    {searchData.isInputValid && sidebar.isOpen ? (
                         <SidebarSearchResults
                             searchData={searchData}
                             cachedPoolStatsFetch={cachedPoolStatsFetch}
