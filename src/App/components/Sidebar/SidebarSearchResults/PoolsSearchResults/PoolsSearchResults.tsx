@@ -77,7 +77,7 @@ export default function PoolsSearchResults(props: propsIF) {
                         style={{ borderBottom: '1px solid var(--dark3)' }}
                         padding='0 0 4px 0'
                     >
-                        {['Pool', 'Volume', 'TVL'].map((item, idx) => (
+                        {['Pool', '24h Vol.', 'TVL'].map((item, idx) => (
                             <Text
                                 key={idx}
                                 fontWeight='300'
