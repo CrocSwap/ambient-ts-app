@@ -6,6 +6,7 @@ import styled from 'styled-components/macro';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { useTokenStats } from './useTokenStats';
 
 export default function Explore() {
     // full expanded data set
@@ -46,6 +47,8 @@ export default function Explore() {
             getAllPools();
         }
     }, [crocEnv, poolList.length, pools.all.length]);
+
+    useTokenStats();
 
     const titleText = isActiveNetworkMainnet
         ? 'Top Ambient Pools on Ethereum'
