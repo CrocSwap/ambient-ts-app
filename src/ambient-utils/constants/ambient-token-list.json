@@ -48,7 +48,7 @@
             "decimals": 18,
             "name": "Orbit Protocol",
             "symbol": "ORBIT",
-            "logoURI": "https://dashboard-assets.dappradar.com/document/47902/orbitprotocol-project-defi-47902-logo-166x166_1e74c8301cbe3d05a57a80147dd2607d.png"
+            "logoURI": "https://blastscan.io/token/images/orbit_32.png"
         },
         {
             "address": "0xA4C7aA67189EC5623121c6C94Ec757DfeD932D4B",
@@ -57,6 +57,14 @@
             "name": "Mia",
             "symbol": "MIA",
             "logoURI": "https://miablastsoff.com/images/logo.png"
+        },
+        {
+            "address": "0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3",
+            "chainId": 81457,
+            "decimals": 18,
+            "name": "Magic Internet Money",
+            "symbol": "MIM",
+            "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/162.png"
         },
         {
             "address": "0xB582Dc28968c725D2868130752aFa0c13EbF9b1a",
