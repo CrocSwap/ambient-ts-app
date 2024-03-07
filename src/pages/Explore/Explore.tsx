@@ -61,7 +61,7 @@ export default function Explore() {
         crocEnv,
         activeNetwork.graphCacheUrl,
         cachedFetchTokenPrice,
-        tokens.allDefaultTokens,
+        tokens,
     );
     console.log(dexTokens);
 

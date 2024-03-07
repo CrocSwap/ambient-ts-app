@@ -6,15 +6,20 @@ import {
     getChainStats,
 } from '../../ambient-utils/dataLayer';
 import { TokenIF } from '../../ambient-utils/types';
+import { tokenMethodsIF } from '../../App/hooks/useTokens';
+
+export interface dexTokenData extends DexTokenAggServerIF {
+    tokenMeta: TokenIF | undefined;
+}
 
 export const useTokenStats = (
     chainId: string,
     crocEnv: CrocEnv | undefined,
     backupEndpoint: string,
     cachedFetchTokenPrice: TokenPriceFn,
-    allDefaultTokens: TokenIF[],
-): DexTokenAggServerIF[] => {
-    const [dexTokens, setDexTokens] = useState<DexTokenAggServerIF[]>([]);
+    tokenMethods: tokenMethodsIF,
+): dexTokenData[] => {
+    const [dexTokens, setDexTokens] = useState<dexTokenData[]>([]);
 
     useEffect(() => {
         if (crocEnv) {
@@ -24,8 +29,22 @@ export const useTokenStats = (
                 crocEnv,
                 backupEndpoint,
                 cachedFetchTokenPrice,
-                allDefaultTokens,
-            ).then((dexStats) => dexStats && setDexTokens(dexStats));
+                tokenMethods.allDefaultTokens,
+            ).then((tokenStats) => {
+                if (tokenStats) {
+                    const expandedTokenStats: dexTokenData[] = tokenStats.map(
+                        (ts: DexTokenAggServerIF) => {
+                            return {
+                                ...ts,
+                                tokenMeta: tokenMethods.getTokenByAddress(
+                                    ts.tokenAddr,
+                                ),
+                            };
+                        },
+                    );
+                    setDexTokens(expandedTokenStats);
+                }
+            });
         }
     }, [crocEnv]);
 
