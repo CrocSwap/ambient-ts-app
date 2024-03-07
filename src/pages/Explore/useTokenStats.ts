@@ -1,7 +1,10 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { TokenPriceFn } from '../../ambient-utils/api';
-import { getChainStats } from '../../ambient-utils/dataLayer';
+import {
+    DexTokenAggServerIF,
+    getChainStats,
+} from '../../ambient-utils/dataLayer';
 import { TokenIF } from '../../ambient-utils/types';
 
 export const useTokenStats = (
@@ -10,8 +13,9 @@ export const useTokenStats = (
     backupEndpoint: string,
     cachedFetchTokenPrice: TokenPriceFn,
     allDefaultTokens: TokenIF[],
-) => {
-    console.log('ran hook useTokenStats');
+): DexTokenAggServerIF[] => {
+    const [dexTokens, setDexTokens] = useState<DexTokenAggServerIF[]>([]);
+
     useEffect(() => {
         if (crocEnv) {
             getChainStats(
@@ -21,9 +25,9 @@ export const useTokenStats = (
                 backupEndpoint,
                 cachedFetchTokenPrice,
                 allDefaultTokens,
-            ).then((dexStats) => {
-                console.log(dexStats);
-            });
+            ).then((dexStats) => dexStats && setDexTokens(dexStats));
         }
     }, [crocEnv]);
+
+    return dexTokens;
 };

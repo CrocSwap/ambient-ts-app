@@ -271,7 +271,7 @@ interface DexAggStatsIF {
     feesTotalUsd: number;
 }
 
-interface DexTokenAggServerIF {
+export interface DexTokenAggServerIF {
     tokenAddr: string;
     dexVolume: number;
     dexTvl: number;

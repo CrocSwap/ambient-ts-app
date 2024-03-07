@@ -9,6 +9,7 @@ import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { useTokenStats } from './useTokenStats';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { TokenContext } from '../../contexts/TokenContext';
+import { DexTokenAggServerIF } from '../../ambient-utils/dataLayer';
 
 export default function Explore() {
     // full expanded data set
@@ -54,13 +55,14 @@ export default function Explore() {
         }
     }, [crocEnv, poolList.length, pools.all.length]);
 
-    useTokenStats(
+    const dexTokens: DexTokenAggServerIF[] = useTokenStats(
         chainData.chainId,
         crocEnv,
         activeNetwork.graphCacheUrl,
         cachedFetchTokenPrice,
         tokens.allDefaultTokens,
     );
+    console.log(dexTokens);
 
     const titleText = isActiveNetworkMainnet
         ? 'Top Ambient Pools on Ethereum'
