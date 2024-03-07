@@ -59,6 +59,14 @@
             "logoURI": "https://miablastsoff.com/images/logo.png"
         },
         {
+            "address": "0x76DA31D7C9CbEAE102aff34D3398bC450c8374c1",
+            "chainId": 81457,
+            "decimals": 18,
+            "name": "Magic Internet Money",
+            "symbol": "MIM",
+            "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/162.png"
+        },
+        {
             "address": "0xB582Dc28968c725D2868130752aFa0c13EbF9b1a",
             "chainId": 81457,
             "decimals": 18,
