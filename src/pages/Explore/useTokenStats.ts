@@ -10,7 +10,7 @@ import { tokenMethodsIF } from '../../App/hooks/useTokens';
 import { ethers } from 'ethers';
 
 export interface dexTokenData extends DexTokenAggServerIF {
-    tokenMeta: Promise<TokenIF> | TokenIF | undefined;
+    tokenMeta: TokenIF | undefined;
 }
 
 export const useTokenStats = (

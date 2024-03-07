@@ -4,7 +4,7 @@ import { dexTokenData } from '../../../pages/Explore/useTokenStats';
 type sortByTypes = 'default' | 'time';
 
 interface sortedDexTokensIF {
-    sorted: dexTokenData[];
+    data: dexTokenData[];
     update: (s: sortByTypes) => void;
 }
 
@@ -32,7 +32,7 @@ export const useSortedDexTokens = (
     }
 
     return {
-        sorted: sortedData,
+        data: sortedData,
         update: (s: sortByTypes) => setSortBy(s),
     };
 };
