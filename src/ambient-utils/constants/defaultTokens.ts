@@ -51,8 +51,7 @@ export const blastORBIT: TokenIF = {
     fromList: '/ambient-token-list.json',
     name: 'Orbit Protocol',
     symbol: 'ORBIT',
-    logoURI:
-        'https://dashboard-assets.dappradar.com/document/47902/orbitprotocol-project-defi-47902-logo-166x166_1e74c8301cbe3d05a57a80147dd2607d.png',
+    logoURI: 'https://blastscan.io/token/images/orbit_32.png',
 };
 
 export const blastMIA: TokenIF = {
