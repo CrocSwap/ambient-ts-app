@@ -77,7 +77,6 @@ export default function WalletSearchResults(props: propsIF) {
                         <div
                             style={{
                                 cursor: 'default',
-                                fontFamily: 'monospace',
                                 textAlign: 'left',
                             }}
                         >

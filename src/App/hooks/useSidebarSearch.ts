@@ -422,7 +422,8 @@ export const useSidebarSearch = (
                                 {
                                     hex: '',
                                     ens: '',
-                                    message: 'No address found for ENS name',
+                                    message:
+                                        'No address was found for this ENS name',
                                 },
                             ]);
                             setContentGroup('wallet');
