@@ -91,7 +91,7 @@ export const useSidebarSearch = (
     // cleaned and validated version of raw user input
     const validatedInput = useMemo<string>(() => {
         // trim string and make it lower case
-        const cleanInput: string = dbInput.trim().toLowerCase();
+        const cleanInput: string = dbInput.trim();
         // logic to determine which type of search to run based on input shape
         if (
             cleanInput.length === 42 ||

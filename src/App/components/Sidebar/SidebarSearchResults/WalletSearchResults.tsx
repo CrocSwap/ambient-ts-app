@@ -48,7 +48,7 @@ export default function WalletSearchResults(props: propsIF) {
             {searchData.wallets.map((wallet: walletHexAndENS) => (
                 <Results
                     as='li'
-                    numCols={2}
+                    numCols={1}
                     key={wallet.hex}
                     fullWidth
                     fontWeight='300'
@@ -57,16 +57,21 @@ export default function WalletSearchResults(props: propsIF) {
                     padding='4px'
                     onClick={() => handleClick(wallet)}
                 >
-                    {wallet.ens && (
+                    {wallet.ens ? (
                         <div style={{ fontFamily: 'monospace' }}>
-                            {trimString(wallet.ens, 6, 6, '...')}
+                            {trimString(wallet.ens, 15, 3, '…')} -{' '}
+                            {trimString(wallet.hex, 7, 4, '…')}
+                        </div>
+                    ) : (
+                        <div
+                            style={{
+                                fontFamily: 'monospace',
+                                textAlign: 'left',
+                            }}
+                        >
+                            {trimString(wallet.hex, 7, 4, '…')}
                         </div>
                     )}
-                    <div
-                        style={{ fontFamily: 'monospace', textAlign: 'right' }}
-                    >
-                        {trimString(wallet.hex, 6, 4, '...')}
-                    </div>
                 </Results>
             ))}
         </FlexContainer>

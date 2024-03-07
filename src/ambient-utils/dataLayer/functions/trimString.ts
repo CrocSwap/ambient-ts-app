@@ -11,7 +11,7 @@ export function trimString(
     separator = '…',
 ): string {
     // return input unchanged if shorter than the number of characters to use
-    if (input.length <= startLength + endLength) return input;
+    if (input.length <= startLength + endLength + 1) return input;
     // get `startLength` number of characters from the start of the string
     const start: string = input.slice(0, startLength);
     // get `endLength` number of characters from the end of the string
