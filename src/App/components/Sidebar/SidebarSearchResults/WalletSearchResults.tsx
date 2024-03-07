@@ -56,10 +56,8 @@ export default function WalletSearchResults(props: propsIF) {
                     padding='4px'
                     onClick={() => handleClick(wallet)}
                 >
-                    {wallet.ens && (
-                        <div>ENS: {trimString(wallet.ens, 18, 16)}</div>
-                    )}
-                    <div>Hex: {trimString(wallet.hex, 15, 13)}</div>
+                    {wallet.ens && <div>{trimString(wallet.ens, 18, 16)}</div>}
+                    <div>{trimString(wallet.hex, 7, 4)}</div>
                 </Results>
             ))}
         </FlexContainer>
