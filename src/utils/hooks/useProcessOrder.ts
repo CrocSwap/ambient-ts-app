@@ -261,7 +261,7 @@ export const useProcessOrder = (
         ? ensName.length > 16
             ? trimString(ensName, 11, 3, '…')
             : ensName
-        : trimString(ownerId, 6, 4, '…');
+        : trimString(ownerId, 7, 4, '…');
 
     const userNameToDisplay = isOwnerActiveAccount
         ? 'You'
