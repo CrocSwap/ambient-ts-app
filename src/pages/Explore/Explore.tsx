@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { FiRefreshCw } from 'react-icons/fi';
 import TopPools from '../../components/Global/Analytics/TopPools';
 import { ExploreContext } from '../../contexts/ExploreContext';
@@ -72,6 +72,8 @@ export default function Explore() {
         ? 'Top Ambient Pools on Scroll'
         : 'Top Pools on Ambient';
 
+    const [activeTable, setActiveTable] = useState<'pools' | 'tokens'>('pools');
+
     return (
         <Section>
             <MainWrapper>
@@ -86,7 +88,15 @@ export default function Explore() {
                     </RefreshButton>
                 </Refresh>
             </MainWrapper>
-            <TopPools allPools={pools.all} chainId={chainData.chainId} />
+            <button onClick={() => setActiveTable('pools')}>
+                Show Top Pools
+            </button>
+            <button onClick={() => setActiveTable('tokens')}>
+                Show Dex Tokens
+            </button>
+            {activeTable === 'pools' && (
+                <TopPools allPools={pools.all} chainId={chainData.chainId} />
+            )}
         </Section>
     );
 }
