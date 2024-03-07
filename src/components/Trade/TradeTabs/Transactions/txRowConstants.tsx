@@ -294,11 +294,14 @@ export const txRowConstants = (props: propsIF) => {
             {isOwnerActiveAccount ? (
                 <RowItem hover>
                     <Link to={tradeLinkPath}>
-                        {
-                            <span>
-                                {tx.baseSymbol} / {tx.quoteSymbol}
-                            </span>
-                        }
+                        <span>
+                            {tx.baseSymbol} / {tx.quoteSymbol}
+                        </span>
+                        <FiExternalLink
+                            size={10}
+                            color='white'
+                            style={{ marginLeft: '.5rem' }}
+                        />
                     </Link>
                 </RowItem>
             ) : (

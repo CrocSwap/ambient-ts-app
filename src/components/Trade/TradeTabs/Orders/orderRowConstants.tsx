@@ -257,11 +257,14 @@ export const orderRowConstants = (props: propsIF) => {
             {isOwnerActiveAccount ? (
                 <RowItem hover>
                     <Link to={linkGenLimit.getFullURL(limitLinkParams)}>
-                        {
-                            <span>
-                                {baseTokenSymbol} / {quoteTokenSymbol}
-                            </span>
-                        }
+                        <span>
+                            {baseTokenSymbol} / {quoteTokenSymbol}
+                        </span>
+                        <FiExternalLink
+                            size={10}
+                            color='white'
+                            style={{ marginLeft: '.5rem' }}
+                        />
                     </Link>
                 </RowItem>
             ) : (

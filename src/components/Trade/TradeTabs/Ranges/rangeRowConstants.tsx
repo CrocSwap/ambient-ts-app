@@ -260,11 +260,14 @@ export default function rangeRowConstants(props: propsIF) {
             {isOwnerActiveAccount ? (
                 <RowItem hover>
                     <Link to={linkGenPool.getFullURL(poolLinkParams)}>
-                        {
-                            <span>
-                                {baseTokenSymbol} / {quoteTokenSymbol}
-                            </span>
-                        }
+                        <span>
+                            {baseTokenSymbol} / {quoteTokenSymbol}
+                        </span>
+                        <FiExternalLink
+                            size={10}
+                            color='white'
+                            style={{ marginLeft: '.5rem' }}
+                        />
                     </Link>
                 </RowItem>
             ) : (
