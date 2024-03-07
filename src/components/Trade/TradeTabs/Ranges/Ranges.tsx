@@ -29,6 +29,7 @@ import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import TableRows from '../TableRows';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -47,12 +48,15 @@ function Ranges(props: propsIF) {
 
     const { showAllData: showAllDataSelection, toggleTradeTable } =
         useContext(TradeTableContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
+
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
     const { setCurrentRangeInReposition } = useContext(RangeContext);
     const { tradeTableState } = useContext(ChartContext);
     const {
+        crocEnv,
         chainData: { poolIndex },
     } = useContext(CrocEnvContext);
 
@@ -406,6 +410,107 @@ function Ranges(props: propsIF) {
             tx.txDetails?.poolIdx === poolIndex,
     );
 
+    const [updatedPendingPositions, setUpdatedPendingPositions] = useState<
+        PositionIF[]
+    >([]);
+
+    useEffect(() => {
+        (async () => {
+            console.log({ relevantTransactionsByType });
+            const newPositions = relevantTransactionsByType.map(
+                (pendingPosition) => {
+                    if (!crocEnv || !pendingPosition.txDetails)
+                        return {} as PositionIF;
+                    const pos = crocEnv.positions(
+                        pendingPosition.txDetails.baseAddress,
+                        pendingPosition.txDetails.quoteAddress,
+                        pendingPosition.userAddress,
+                    );
+
+                    (async () => {
+                        if (!pendingPosition.txDetails) return {} as PositionIF;
+                        const liqBigNum = pendingPosition.txDetails.isAmbient
+                            ? (await pos.queryAmbient()).seeds
+                            : (
+                                  await pos.queryRangePos(
+                                      pendingPosition.txDetails.lowTick || 0,
+                                      pendingPosition.txDetails.highTick || 0,
+                                  )
+                              ).liq;
+                        const liqString = liqBigNum.toString();
+                        console.log({ liqString });
+                    })();
+
+                    console.log({ pos, pendingPosition });
+                    const onChainPosition: PositionIF = {
+                        chainId: '0xaa36a7',
+                        base: '0x0000000000000000000000000000000000000000',
+                        quote: '0x60bba138a74c5e7326885de5090700626950d509',
+                        poolIdx: 36000,
+                        bidTick: 192880,
+                        askTick: 194896,
+                        isBid: false,
+                        user: '0xa86dabfbb529a4c8186bdd52bd226ac81757e090',
+                        timeFirstMint: 1709845452,
+                        latestUpdateTime: 1709845452,
+                        lastMintTx:
+                            '0x7f830ba5cc254554543003f1087d787d69db03fcca71330075bf0935dbc1a245',
+                        firstMintTx:
+                            '0x7f830ba5cc254554543003f1087d787d69db03fcca71330075bf0935dbc1a245',
+                        positionType: 'concentrated',
+                        ambientLiq: 0,
+                        concLiq: 1261875634176,
+                        rewardLiq: 0,
+                        liqRefreshTime: 1709845559,
+                        aprDuration: 218,
+                        aprPostLiq: 1261875634176,
+                        aprContributedLiq: 1261875634176,
+                        // aprEst: 0,
+                        poolPriceInTicks: 193882.26311152513,
+                        isPositionInRange: true,
+                        baseDecimals: 18,
+                        quoteDecimals: 6,
+                        baseSymbol: 'ETH',
+                        quoteSymbol: 'USDC',
+                        baseName: 'Native Ether',
+                        quoteName: 'USDCoin',
+                        lowRangeDisplayInBase: '3,437.14',
+                        highRangeDisplayInBase: '4,204.81',
+                        lowRangeDisplayInQuote: '0.000238',
+                        highRangeDisplayInQuote: '0.000291',
+                        lowRangeShortDisplayInBase: '3,437',
+                        lowRangeShortDisplayInQuote: '0.000238',
+                        highRangeShortDisplayInBase: '4,205',
+                        highRangeShortDisplayInQuote: '0.000291',
+                        bidTickPriceDecimalCorrected: 0.00023782262110302573,
+                        bidTickInvPriceDecimalCorrected: 3437.141793336572,
+                        askTickPriceDecimalCorrected: 0.0002909394084173815,
+                        askTickInvPriceDecimalCorrected: 4204.8144762764005,
+                        positionLiq: 1261875634176,
+                        positionLiqBase: 999999999959011,
+                        positionLiqQuote: 3846283,
+                        feesLiqBase: 0,
+                        feesLiqQuote: 0,
+                        feesLiqBaseDecimalCorrected: 0,
+                        feesLiqQuoteDecimalCorrected: 0,
+                        positionLiqBaseDecimalCorrected: 0.000999999999959011,
+                        positionLiqQuoteDecimalCorrected: 3.846283,
+                        positionLiqBaseTruncated: '0.00100',
+                        positionLiqQuoteTruncated: '3.85',
+                        totalValueUSD: 17.77481334866799,
+                        apy: 0,
+                        serverPositionId:
+                            'pos_e3f2bc533b364a14af1fb331dbf344944dbd4f63307dee3c8a0e80c3f0975508',
+                    } as PositionIF;
+                    return onChainPosition;
+                },
+            );
+            if (newPositions.length) {
+                setUpdatedPendingPositions(newPositions);
+            }
+        })();
+    }, [relevantTransactionsByType.length, lastBlockNumber]);
+
     const shouldDisplayNoTableData =
         !isLoading &&
         !rangeData.length &&
@@ -428,6 +533,14 @@ function Ranges(props: propsIF) {
                             tableView={tableView}
                         />
                     ))}
+
+                <TableRows
+                    type='Range'
+                    data={updatedPendingPositions}
+                    fullData={fullData}
+                    isAccountView={isAccountView}
+                    tableView={tableView}
+                />
                 <TableRows
                     type='Range'
                     data={_DATA.currentData}
