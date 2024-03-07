@@ -27,7 +27,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
     const {
         isCandleSelected,
         setIsCandleSelected,
-        isCandleDataNull,
+
         setIsManualCandleFetchRequested,
     } = useContext(CandleContext);
     const {
@@ -37,7 +37,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
         setShowAllData,
     } = useContext(TradeTableContext);
 
-    const { tradeTableState } = useContext(ChartContext);
+    const { tradeTableState, isCandleDataNull } = useContext(ChartContext);
 
     const { isUserConnected } = useContext(UserDataContext);
 
