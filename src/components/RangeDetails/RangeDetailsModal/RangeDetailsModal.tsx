@@ -140,8 +140,8 @@ function RangeDetailsModal(props: propsIF) {
                     position.askTick,
                 );
 
-                const baseRewards = positionRewards.baseRewards.toNumber();
-                const quoteRewards = positionRewards.quoteRewards.toNumber();
+                const baseRewards = parseFloat(positionRewards.baseRewards);
+                const quoteRewards = parseFloat(positionRewards.quoteRewards);
 
                 const feesLiqBaseDecimalCorrected =
                     baseRewards / Math.pow(10, position.baseDecimals);
