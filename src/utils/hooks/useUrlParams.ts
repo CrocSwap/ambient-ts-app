@@ -184,7 +184,12 @@ export const useUrlParams = (
         } else {
             // const provider = inflateProvider(chainId);
             if (provider) {
-                return fetchContractDetails(provider, addr, chainId);
+                return fetchContractDetails(
+                    provider,
+                    addr,
+                    chainId,
+                    'fetched_per_url_param',
+                );
             }
         }
     }

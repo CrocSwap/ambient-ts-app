@@ -12,11 +12,16 @@ export interface ContractDetails {
     name: string | undefined;
 }
 
+// !important:  the `provenance` argument should be used to label what part of the app
+// !important:  ... as the point of entry for a token fetched from on-chain data
+
 export const fetchContractDetails = async (
     provider: ethers.providers.Provider,
     address: string,
     _chainId: string,
+    provenance: string,
 ): Promise<TokenIF> => {
+    // TODO:    update this logic to work on chains where the native token is not ETH
     if (address === ZERO_ADDRESS) {
         return {
             address: address,
@@ -71,7 +76,7 @@ export const fetchContractDetails = async (
         decimals: decimals,
         symbol: symbol,
         name: name,
-        fromList: 'custom_token',
+        fromList: provenance,
         logoURI: '',
     };
 };
