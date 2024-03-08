@@ -4999,6 +4999,7 @@ export default function Chart(props: propsIF) {
         });
 
         if (selectedDate === undefined) {
+            props.setShowTooltip(true);
             props.setCurrentData(nearest);
             props.setCurrentVolumeData(nearest?.volumeUSD);
         } else if (selectedDate) {
