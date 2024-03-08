@@ -384,7 +384,7 @@ function ChatPanel(props: propsIF) {
 
     useEffect(() => {
         setIsScrollToBottomButtonPressed(false);
-        scrollToBottom();
+        scrollToBottom(true);
         setNotificationCount(0);
 
         if (isChatOpen) {
@@ -473,7 +473,7 @@ function ChatPanel(props: propsIF) {
         }
     };
 
-    const scrollToBottom = async () => {
+    const scrollToBottom = async (bypassInterval?: boolean) => {
         if (notConnectedUserInterval) return;
         if (lastScrolledMessage && lastScrolledMessage.length > 0) return;
         const timer = setTimeout(() => {
