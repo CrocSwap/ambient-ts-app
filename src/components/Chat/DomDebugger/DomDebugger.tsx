@@ -18,11 +18,24 @@ import { clearDomDebug } from './DomDebuggerUtils';
 //   })();
 
 export default function DomDebugger() {
+    const debugWhiteList = [
+        'localhost',
+        'proven-chat-test',
+        'ambient-proven-test',
+    ];
+
     const [debugEnabled, setDebugEnabled] = useState(false);
     useEffect(() => {
         const lsVal = getLS('debugEnabled');
         if (lsVal) {
-            setDebugEnabled(window.location.href.indexOf('localhost:') >= 0);
+            let debug = false;
+            for (const domain of debugWhiteList) {
+                if (window.location.href.indexOf(domain) >= 0) {
+                    debug = true;
+                    break;
+                }
+            }
+            setDebugEnabled(debug);
         }
     }, []);
 
