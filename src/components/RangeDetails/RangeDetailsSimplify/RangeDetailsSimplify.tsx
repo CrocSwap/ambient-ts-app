@@ -76,9 +76,7 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
     const [_, copy] = useCopyToClipboard();
 
     function handleOpenWallet() {
-        const walletUrl = isOwnerActiveAccount
-            ? '/account'
-            : `/account/${ownerId}`;
+        const walletUrl = isOwnerActiveAccount ? '/account' : `/${ownerId}`;
         window.open(walletUrl);
     }
 

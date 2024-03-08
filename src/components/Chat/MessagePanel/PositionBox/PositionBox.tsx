@@ -201,7 +201,7 @@ export default function PositionBox(props: propsIF) {
         } else {
             const walletUrl = props.isCurrentUser
                 ? '/account'
-                : `/account/${props.walletExplorer}`;
+                : `/${props.walletExplorer}`;
             window.open(walletUrl);
         }
     }
