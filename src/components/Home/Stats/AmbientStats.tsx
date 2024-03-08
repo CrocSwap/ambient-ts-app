@@ -98,6 +98,7 @@ export default function Stats() {
                 mainnetCrocEnv,
                 GCGO_ETHEREUM_URL,
                 cachedFetchTokenPrice,
+                10,
                 allDefaultTokens,
             ).then((dexStats) => {
                 if (!dexStats) {
@@ -138,6 +139,7 @@ export default function Stats() {
                 scrollCrocEnv,
                 GCGO_SCROLL_URL,
                 cachedFetchTokenPrice,
+                10,
                 allDefaultTokens,
             ).then((dexStats) => {
                 if (!dexStats) {
@@ -176,6 +178,7 @@ export default function Stats() {
                 blastCrocEnv,
                 GCGO_BLAST_URL,
                 cachedFetchTokenPrice,
+                10,
                 allDefaultTokens,
             ).then((dexStats) => {
                 if (!dexStats) {

@@ -1,7 +1,4 @@
 import { memo } from 'react';
-import { PoolDataIF } from '../../../contexts/ExploreContext';
-import { SortedPoolMethodsIF, useSortedPools } from './useSortedPools';
-import TableHead from './TableHead';
 import Spinner from '../Spinner/Spinner';
 import {
     ScrollableContainer,
@@ -12,8 +9,9 @@ import {
 } from '../../../styled/Components/Analytics';
 import { FlexContainer } from '../../../styled/Common';
 import TokenRow from './TokenRow';
-import { useSortedDexTokens } from './useSortedDexTokens';
+import { useSortedDexTokens, sortedDexTokensIF } from './useSortedDexTokens';
 import { dexTokenData } from '../../../pages/Explore/useTokenStats';
+import TableHeadTokens from './TableHeadTokens';
 export interface HeaderItem {
     label: string;
     hidden: boolean;
@@ -26,17 +24,12 @@ export interface HeaderItem {
 
 interface propsIF {
     dexTokens: dexTokenData[];
-    allPools: Array<PoolDataIF>;
-    chainId: string;
 }
 
 function DexTokens(props: propsIF) {
-    const { dexTokens, allPools, chainId } = props;
+    const { dexTokens } = props;
 
-    const sortedTokens = useSortedDexTokens(dexTokens);
-
-    // logic to take raw pool list and sort them based on user input
-    const sortedPools: SortedPoolMethodsIF = useSortedPools(allPools);
+    const sortedTokens: sortedDexTokensIF = useSortedDexTokens(dexTokens);
 
     // !important:  any changes to `sortable` values must be accompanied by an update
     // !important:  ... to the type definition `sortType` in `useSortedPools.ts`
@@ -60,14 +53,14 @@ function DexTokens(props: propsIF) {
             hidden: false,
             align: 'right',
             responsive: 'sm',
-            sortable: true,
+            sortable: false,
         },
         {
             label: 'Volume',
             hidden: false,
             align: 'right',
             responsive: 'lg',
-            sortable: true,
+            sortable: false,
         },
     ];
 
@@ -76,10 +69,7 @@ function DexTokens(props: propsIF) {
             <ScrollableContainer>
                 <ShadowBox>
                     <Table>
-                        <TableHead
-                            headerItems={dexTokensHeaderItems}
-                            sortedPools={sortedPools}
-                        />
+                        <TableHeadTokens headerItems={dexTokensHeaderItems} />
                         <TableBody>
                             {sortedTokens.data.length ? (
                                 sortedTokens.data.map((token: dexTokenData) => (

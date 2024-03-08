@@ -10,6 +10,8 @@ import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { dexTokenData, useTokenStats } from './useTokenStats';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { TokenContext } from '../../contexts/TokenContext';
+import Toggle from '../../components/Form/Toggle';
+import { FlexContainer, Text } from '../../styled/Common';
 
 export default function Explore() {
     // full expanded data set
@@ -81,7 +83,20 @@ export default function Explore() {
         ? 'Active Tokens on Scroll'
         : 'Top Pools on Ambient';
 
-    const [activeTable, setActiveTable] = useState<'pools' | 'tokens'>('pools');
+    type tables = 'pools' | 'tokens';
+    const [activeTable, setActiveTable] = useState<tables>('pools');
+    function toggleTable(current: tables): void {
+        let nextTable: tables;
+        switch (current) {
+            case 'pools':
+                nextTable = 'tokens';
+                break;
+            case 'tokens':
+                nextTable = 'pools';
+                break;
+        }
+        setActiveTable(nextTable);
+    }
 
     const titleTextForDOM: string =
         activeTable === 'pools' ? titleTextPools : titleTextTokens;
@@ -100,22 +115,24 @@ export default function Explore() {
                     </RefreshButton>
                 </Refresh>
             </MainWrapper>
-            <button onClick={() => setActiveTable('pools')}>
-                Show Top Pools
-            </button>
-            <button onClick={() => setActiveTable('tokens')}>
-                Show Dex Tokens
-            </button>
+            <FlexContainer
+                flexDirection='row'
+                alignItems='center'
+                gap={12}
+                marginLeft='12px'
+            >
+                <Text>Pools</Text>
+                <Toggle
+                    isOn={activeTable === 'tokens'}
+                    id={'explore_page_'}
+                    handleToggle={() => toggleTable(activeTable)}
+                />
+                <Text>Tokens</Text>
+            </FlexContainer>
             {activeTable === 'pools' && (
                 <TopPools allPools={pools.all} chainId={chainData.chainId} />
             )}
-            {activeTable === 'tokens' && (
-                <DexTokens
-                    dexTokens={dexTokens}
-                    allPools={pools.all}
-                    chainId={chainData.chainId}
-                />
-            )}
+            {activeTable === 'tokens' && <DexTokens dexTokens={dexTokens} />}
         </Section>
     );
 }

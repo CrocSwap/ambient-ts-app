@@ -1,17 +1,17 @@
 import { useMemo, useState } from 'react';
 import { dexTokenData } from '../../../pages/Explore/useTokenStats';
 
-type sortByTypes = 'default' | 'time';
+type sortTypes = 'default' | 'time';
 
-interface sortedDexTokensIF {
+export interface sortedDexTokensIF {
     data: dexTokenData[];
-    update: (s: sortByTypes) => void;
+    update: (s: sortTypes) => void;
 }
 
 export const useSortedDexTokens = (
     unsorted: dexTokenData[],
 ): sortedDexTokensIF => {
-    const [sortBy, setSortBy] = useState<sortByTypes>('default');
+    const [sortBy, setSortBy] = useState<sortTypes>('default');
 
     const sortedData = useMemo<dexTokenData[]>(() => {
         let output: dexTokenData[];
@@ -33,6 +33,6 @@ export const useSortedDexTokens = (
 
     return {
         data: sortedData,
-        update: (s: sortByTypes) => setSortBy(s),
+        update: (s: sortTypes) => setSortBy(s),
     };
 };

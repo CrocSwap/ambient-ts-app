@@ -33,6 +33,7 @@ export const useTokenStats = (
                         crocEnv,
                         backupEndpoint,
                         cachedFetchTokenPrice,
+                        20,
                         tokenMethods.allDefaultTokens,
                     );
 

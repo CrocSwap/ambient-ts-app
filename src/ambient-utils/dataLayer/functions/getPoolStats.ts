@@ -286,6 +286,7 @@ export async function getChainStats(
     crocEnv: CrocEnv,
     graphCacheUrl: string,
     cachedFetchTokenPrice: TokenPriceFn,
+    tokenCount: number,
     allDefaultTokens?: TokenIF[],
 ): Promise<DexAggStatsIF | undefined>;
 
@@ -296,6 +297,7 @@ export async function getChainStats(
     crocEnv: CrocEnv,
     graphCacheUrl: string,
     cachedFetchTokenPrice: TokenPriceFn,
+    tokenCount: number,
     allDefaultTokens?: TokenIF[],
 ): Promise<DexTokenAggServerIF[] | undefined>;
 
@@ -306,10 +308,9 @@ export async function getChainStats(
     crocEnv: CrocEnv,
     graphCacheUrl: string,
     cachedFetchTokenPrice: TokenPriceFn,
+    tokenCount: number,
     allDefaultTokens?: TokenIF[],
 ): Promise<DexAggStatsIF | DexTokenAggServerIF[] | undefined> {
-    const N_TOKEN_CHAIN_SUMM = 100;
-
     const chainStatsFreshEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/chain_stats?'
         : graphCacheUrl + '/chain_stats?';
@@ -317,7 +318,7 @@ export async function getChainStats(
         chainStatsFreshEndpoint +
             new URLSearchParams({
                 chainId: chainId,
-                n: N_TOKEN_CHAIN_SUMM.toString(),
+                n: tokenCount.toString(),
             }),
     )
         .then((response) => response?.json())
