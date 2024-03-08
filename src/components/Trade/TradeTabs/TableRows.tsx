@@ -113,24 +113,26 @@ function TableRows({
     const [activeRecord, setActiveRecord] = useState<ActiveRecord>(undefined);
 
     useEffect(() => {
-        if (type === 'Range') {
-            setActiveRecord(
-                (fullData as PositionIF[]).find((position) => {
-                    return position.positionId === currentPositionActive;
-                }),
-            );
-        } else if (type === 'Order') {
-            setActiveRecord(
-                (fullData as LimitOrderIF[]).find((order) => {
-                    return order.limitOrderId === currentLimitOrderActive;
-                }),
-            );
-        } else {
-            setActiveRecord(
-                (fullData as TransactionIF[]).find((tx) => {
-                    return tx.txId === currentTxActiveInTransactions;
-                }),
-            );
+        if (isDetailsModalOpen || isActionModalOpen) {
+            if (type === 'Range') {
+                setActiveRecord(
+                    (fullData as PositionIF[]).find((position) => {
+                        return position.positionId === currentPositionActive;
+                    }),
+                );
+            } else if (type === 'Order') {
+                setActiveRecord(
+                    (fullData as LimitOrderIF[]).find((order) => {
+                        return order.limitOrderId === currentLimitOrderActive;
+                    }),
+                );
+            } else {
+                setActiveRecord(
+                    (fullData as TransactionIF[]).find((tx) => {
+                        return tx.txId === currentTxActiveInTransactions;
+                    }),
+                );
+            }
         }
     }, [
         type,
@@ -139,6 +141,7 @@ function TableRows({
         currentLimitOrderActive,
         currentTxActiveInTransactions,
         isDetailsModalOpen,
+        isActionModalOpen,
     ]);
 
     const rangeContent = () => {

@@ -152,7 +152,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isChartEnabled,
         isUserOnline,
         baseTokenAddress + quoteTokenAddress,
-        candleTimeLocal,
+        candleScale?.isFetchForTimeframe,
     ]);
 
     useEffect(() => {
@@ -213,11 +213,21 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
                 const candleSeries = candles?.candles;
                 if (candleSeries && candleSeries.length > 0) {
+                    if (candles?.candles.length < nCandles) {
+                        const localCandles = candles?.candles;
+
+                        setTimeOfEndCandle(
+                            localCandles[localCandles.length - 1].time * 1000,
+                        );
+                    }
                     setIsCandleDataNull(false);
                 } else {
                     setIsCandleDataNull(true);
                 }
-                setIsFetchingCandle(false);
+
+                if (candleSeries && candles?.candles.length > 7) {
+                    setIsFetchingCandle(false);
+                }
                 setIsFirstFetch(false);
             });
         } else {
