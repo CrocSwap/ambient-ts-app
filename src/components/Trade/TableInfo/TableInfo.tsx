@@ -23,6 +23,7 @@ export default function TableInfo() {
         baseTvlUsd,
         poolFeesTotal,
         poolVolume,
+        poolVolume24h,
     } = poolData;
 
     const featuredData = [
@@ -64,6 +65,10 @@ export default function TableInfo() {
                             <DetailedBox
                                 label='Total Vol.'
                                 value={`$${poolVolume?.toString() || '...'}`}
+                            />
+                            <DetailedBox
+                                label='24h Vol.'
+                                value={`$${poolVolume24h?.toString() || '...'}`}
                             />
                             <DetailedBox
                                 label='TVL'

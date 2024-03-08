@@ -51,8 +51,7 @@ export const blastORBIT: TokenIF = {
     fromList: '/ambient-token-list.json',
     name: 'Orbit Protocol',
     symbol: 'ORBIT',
-    logoURI:
-        'https://dashboard-assets.dappradar.com/document/47902/orbitprotocol-project-defi-47902-logo-166x166_1e74c8301cbe3d05a57a80147dd2607d.png',
+    logoURI: 'https://blastscan.io/token/images/orbit_32.png',
 };
 
 export const blastMIA: TokenIF = {
@@ -65,6 +64,16 @@ export const blastMIA: TokenIF = {
     logoURI: 'https://miablastsoff.com/images/logo.png',
 };
 
+export const blastMIM: TokenIF = {
+    address: '0x76DA31D7C9CbEAE102aff34D3398bC450c8374c1',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Magic Internet Money',
+    symbol: 'MIM',
+    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/162.png',
+};
+
 export const blastBAG: TokenIF = {
     address: '0xb9dfCd4CF589bB8090569cb52FaC1b88Dbe4981F',
     chainId: 81457,
@@ -73,6 +82,57 @@ export const blastBAG: TokenIF = {
     name: 'Bag',
     symbol: 'BAG',
     logoURI: 'https://assets.coingecko.com/coins/images/35417/thumb/bag-cg.png',
+};
+
+export const blastBEPE: TokenIF = {
+    address: '0xB582Dc28968c725D2868130752aFa0c13EbF9b1a',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Blast Pepe',
+    symbol: 'BEPE',
+    logoURI:
+        'https://assets.coingecko.com/coins/images/35658/standard/logo_200.png',
+};
+
+export const blastALIEN: TokenIF = {
+    address: '0xCa84812E477eE5a96a92328689D8Ce2589aB6FfD',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Alien',
+    symbol: 'ALIEN',
+    logoURI: '',
+};
+
+export const blastBAJA: TokenIF = {
+    address: '0x5FE8534a6F96cb01261Bd96e98c17C2c1Cab3204',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Baja',
+    symbol: 'BAJA',
+    logoURI: '',
+};
+
+export const blastYES: TokenIF = {
+    address: '0x20fE91f17ec9080E3caC2d688b4EcB48C5aC3a9C',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Yes',
+    symbol: 'YES',
+    logoURI: '',
+};
+
+export const blastPACM: TokenIF = {
+    address: '0x0B4d0ee29857c3961b380d4ec138EA5814E346b9',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'P@cman Blastoff',
+    symbol: '$PACM',
+    logoURI: '',
 };
 
 export const blastWETH: TokenIF = {
@@ -85,7 +145,7 @@ export const blastWETH: TokenIF = {
     logoURI: '',
 };
 
-export const blastPump: TokenIF = {
+export const blastPUMP: TokenIF = {
     address: '0x216A5a1135A9dab49FA9Ad865E0f22FE22b5630A',
     chainId: 81457,
     decimals: 18,
@@ -95,33 +155,43 @@ export const blastPump: TokenIF = {
     logoURI: '',
 };
 
-export const blastOle: TokenIF = {
+export const blastOLE: TokenIF = {
     address: '0x73c369f61c90f03eb0dd172e95c90208a28dc5bc',
     chainId: 81457,
     decimals: 18,
-    fromList: '',
-    name: 'OLE',
+    fromList: '/ambient-token-list.json',
+    name: 'OpenLeverage',
     symbol: 'OLE',
-    logoURI: '',
+    logoURI: 'https://blastscan.io/token/images/openleverageole_32.png',
 };
 
-export const blastVroom: TokenIF = {
+export const blastFINGER: TokenIF = {
+    address: '0x7217124c626f0b7077be91df939195c9a8184ecc',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Finger Blast',
+    symbol: 'FINGER',
+    logoURI: 'https://blastscan.io/token/images/fingerblast_32.png',
+};
+
+export const blastGLORY: TokenIF = {
+    address: '0xd582879453337bd149ae53ec2092b0af5281d1d7',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Sekai Glory',
+    symbol: 'GLORY',
+    logoURI: 'https://blastscan.io/token/images/sekaiglory_32.png',
+};
+
+export const blastVROOM: TokenIF = {
     address: '0x891c9B37177Bdf8Edc891119C9d8aEefDa9A5246',
     chainId: 81457,
     decimals: 18,
     fromList: '',
     name: 'VROOM',
     symbol: 'VROOM',
-    logoURI: '',
-};
-
-export const blastPacm: TokenIF = {
-    address: '0x0b4d0ee29857c3961b380d4ec138ea5814e346b9',
-    chainId: 81457,
-    decimals: 18,
-    fromList: '',
-    name: 'P@cman Blastoff',
-    symbol: '$PACM',
     logoURI: '',
 };
 
@@ -169,6 +239,36 @@ export const mainnetPEPE: TokenIF = {
     symbol: 'PEPE',
 };
 
+export const mainnetSWETH: TokenIF = {
+    address: '0xf951e335afb289353dc249e82926178eac7ded78',
+    chainId: 1,
+    decimals: 18,
+    fromList: '',
+    logoURI: 'https://etherscan.io/token/images/swellnetwork_32.png?=v83',
+    name: 'Swell Ethereum',
+    symbol: 'swETH',
+};
+
+export const mainnetLIDO: TokenIF = {
+    address: '0x5a98fcbea516cf06857215779fd812ca3bef1b32',
+    chainId: 1,
+    decimals: 18,
+    fromList: '',
+    logoURI: 'https://etherscan.io/token/images/lido-dao_32.png',
+    name: 'Lido DAO Token',
+    symbol: 'LDO',
+};
+
+export const mainnetMKR: TokenIF = {
+    address: '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2',
+    chainId: 1,
+    decimals: 18,
+    fromList: '',
+    logoURI: 'https://etherscan.io/token/images/mkr-etherscan-35.png',
+    name: 'Maker',
+    symbol: 'MKR',
+};
+
 export const mainnetSYN: TokenIF = {
     address: '0x0f2d719407fdbeff09d87557abb7232601fd9f29',
     chainId: 1,
@@ -191,7 +291,7 @@ export const mainnetDAI: TokenIF = {
     symbol: 'DAI',
 };
 
-export const mainnetRocketPool: TokenIF = {
+export const mainnetRPL: TokenIF = {
     address: '0xd33526068d116ce69f19a9ee46f0bd304f21a51f',
     chainId: 1,
     decimals: 18,
@@ -211,7 +311,7 @@ export const mainnetWstETH: TokenIF = {
     symbol: 'wstETH',
 };
 
-export const mainnetMatic: TokenIF = {
+export const mainnetMATIC: TokenIF = {
     address: '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0',
     chainId: 1,
     decimals: 18,
@@ -401,7 +501,7 @@ export const scrollwstETH: TokenIF = {
 export const scrollRocketPoolETH: TokenIF = {
     name: 'Rocket Pool ETH',
     address: '0x53878B874283351D26d206FA512aEcE1Bef6C0dD',
-    symbol: 'wstETH',
+    symbol: 'rETH',
     decimals: 18,
     chainId: 534352,
     logoURI: '',
@@ -423,6 +523,16 @@ export const scrollBalancer: TokenIF = {
     decimals: 18,
     chainId: 534352,
     logoURI: '',
+};
+
+export const scrollDODO: TokenIF = {
+    name: 'DODO bird',
+    address: '0x912aB742e1ab30ffa87038C425F9Bc8ED12B3EF4',
+    symbol: 'DODO',
+    decimals: 18,
+    chainId: 534352,
+    logoURI:
+        'https://assets.coingecko.com/coins/images/12651/standard/dodo_logo.png?1696512458',
 };
 
 export const scrollUSDC: TokenIF = {
@@ -453,6 +563,14 @@ export const scrollDAI: TokenIF = {
     chainId: 534352,
     logoURI:
         'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
+};
+export const scrollKNC: TokenIF = {
+    name: 'Kyber Network Crystal v2',
+    address: '0x608ef9a3bffe206b86c3108218003b3cfbf99c84',
+    symbol: 'KNC',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: 'https://scrollscan.com/token/images/kybernetworkknc_32.png',
 };
 
 export const scrollUSDT: TokenIF = {
@@ -502,19 +620,29 @@ export const defaultTokens: TokenIF[] = [
     mainnetFRAX,
     mainnetSYN,
     mainnetUSDT,
-    mainnetRocketPool,
+    mainnetRPL,
     mainnetWstETH,
-    mainnetMatic,
+    mainnetMATIC,
+    mainnetSWETH,
+    mainnetMKR,
+    mainnetLIDO,
     blastETH,
     blastUSDB,
     blastMIA,
+    blastMIM,
     blastORBIT,
     blastBAG,
-    blastOle,
+    blastBAJA,
+    blastBEPE,
+    blastALIEN,
+    blastOLE,
+    blastFINGER,
+    blastGLORY,
     blastWETH,
-    blastPump,
-    blastPacm,
-    blastVroom,
+    blastPUMP,
+    blastYES,
+    blastPACM,
+    blastVROOM,
     blastSepoliaETH,
     blastSepoliaUSDB,
     goerliETH,
@@ -527,9 +655,10 @@ export const defaultTokens: TokenIF[] = [
     arbGoerliWBTC,
     scrollETH,
     scrollUSDC,
+    scrollDODO,
     scrollDAI,
     scrollUSDT,
-    scrollDAI,
+    scrollKNC,
     scrollBalancer,
     scrollAxlUSDC,
     scrollWBTC,

@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import useWebSocket from 'react-use-websocket';
 import {
+    BLOCK_POLLING_RPC_URL,
     IS_LOCAL_ENV,
     SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
     supportedNetworks,
@@ -31,6 +32,7 @@ interface ChainDataContextIF {
     connectedUserXp: UserXpDataIF;
     isActiveNetworkBlast: boolean;
     isActiveNetworkScroll: boolean;
+    isActiveNetworkMainnet: boolean;
     isActiveNetworkL2: boolean;
 }
 
@@ -63,6 +65,11 @@ export const ChainDataContextProvider = (props: {
     const isActiveNetworkScroll = ['0x82750', '0x8274f'].includes(
         chainData.chainId,
     );
+    const isActiveNetworkMainnet = ['0x1'].includes(chainData.chainId);
+
+    const blockPollingUrl = BLOCK_POLLING_RPC_URL
+        ? BLOCK_POLLING_RPC_URL
+        : chainData.nodeUrl;
 
     // array of network IDs for supported L2 networks
     const L2_NETWORKS: string[] = [
@@ -82,7 +89,7 @@ export const ChainDataContextProvider = (props: {
             process.env.REACT_APP_INFURA_KEY
                 ? chainData.nodeUrl.slice(0, -32) +
                   process.env.REACT_APP_INFURA_KEY
-                : chainData.nodeUrl;
+                : blockPollingUrl;
         try {
             const lastBlockNumber = await fetchBlockNumber(nodeUrl);
             if (lastBlockNumber > 0) setLastBlockNumber(lastBlockNumber);
@@ -106,7 +113,7 @@ export const ChainDataContextProvider = (props: {
             }, BLOCK_NUM_POLL_MS);
             return () => clearInterval(interval);
         })();
-    }, [chainData.nodeUrl, BLOCK_NUM_POLL_MS]);
+    }, [blockPollingUrl, BLOCK_NUM_POLL_MS]);
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
 
@@ -177,7 +184,7 @@ export const ChainDataContextProvider = (props: {
                 client
             ) {
                 try {
-                    // wait for 5 seconds before fetching token balances
+                    // wait for 7 seconds before fetching token balances
                     setTimeout(() => {
                         (async () => {
                             const tokenBalances: TokenIF[] =
@@ -206,7 +213,7 @@ export const ChainDataContextProvider = (props: {
                             );
                             setTokenBalances(tokensWithLogos);
                         })();
-                    }, 5000);
+                    }, 7000);
                 } catch (error) {
                     // setTokenBalances(undefined);
                     console.error({ error });
@@ -255,6 +262,7 @@ export const ChainDataContextProvider = (props: {
         setGasPriceinGwei,
         isActiveNetworkBlast,
         isActiveNetworkScroll,
+        isActiveNetworkMainnet,
         client,
         isActiveNetworkL2,
     };

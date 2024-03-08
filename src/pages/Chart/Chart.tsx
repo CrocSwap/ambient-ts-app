@@ -154,7 +154,7 @@ interface propsIF {
     candleTime: candleTimeIF;
     unparsedData: CandlesByPoolAndDurationIF;
     prevPeriod: number;
-    candleTimeInSeconds: number;
+    candleTimeInSeconds: number | undefined;
     updateURL: (changes: updatesIF) => void;
     userTransactionData: Array<TransactionIF> | undefined;
 }
@@ -4780,10 +4780,6 @@ export default function Chart(props: propsIF) {
         setShowAllData(false);
         setCurrentTxActiveInTransactions(tx.txId);
     };
-
-    useEffect(() => {
-        setCurrentTxActiveInTransactions('');
-    }, [denomInBase]);
 
     useEffect(() => {
         if (!hoverOHTooltip) {
