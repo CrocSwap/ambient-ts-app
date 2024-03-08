@@ -66,9 +66,7 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
         tx.entityType === 'limitOrder' && tx.changeType === 'burn';
 
     function handleOpenWallet() {
-        const walletUrl = isOwnerActiveAccount
-            ? '/account'
-            : `/account/${ownerId}`;
+        const walletUrl = isOwnerActiveAccount ? '/account' : `/${ownerId}`;
         window.open(walletUrl);
     }
     function handleOpenExplorer() {
