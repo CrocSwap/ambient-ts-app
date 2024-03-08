@@ -267,7 +267,7 @@ that will merged manually
         } else {
             const walletUrl = props.isCurrentUser
                 ? '/account'
-                : `/account/${props.walletExplorer}`;
+                : `/${props.walletExplorer}`;
             window.open(walletUrl);
         }
     }

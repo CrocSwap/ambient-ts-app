@@ -16,6 +16,7 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
+    parseErrorMessage,
     TransactionError,
 } from '../../../utils/TransactionError';
 import useDebounce from '../../../App/hooks/useDebounce';
@@ -32,6 +33,7 @@ import {
     getPositionData,
     getFormattedNumber,
     getPinnedPriceValuesFromTicks,
+    isStablePair,
 } from '../../../ambient-utils/dataLayer';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
@@ -63,12 +65,19 @@ function Reposition() {
         crocEnv,
         activeNetwork,
         provider,
-        chainData: { blockExplorer },
         ethMainnetUsdPrice,
+        chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
-    const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
-    const { bypassConfirmRepo } = useContext(UserPreferenceContext);
+    const {
+        gasPriceInGwei,
+        lastBlockNumber,
+        isActiveNetworkBlast,
+        isActiveNetworkScroll,
+    } = useContext(ChainDataContext);
+    const { bypassConfirmRepo, repoSlippage } = useContext(
+        UserPreferenceContext,
+    );
     const {
         addPendingTx,
         addReceipt,
@@ -125,6 +134,13 @@ function Reposition() {
 
     const { position } = locationHook.state as { position: PositionIF };
 
+    const slippageTolerancePercentage = isStablePair(
+        position.base,
+        position.quote,
+    )
+        ? repoSlippage.stable
+        : repoSlippage.volatile;
+
     const { posHashTruncated } = useProcessRange(position);
 
     useEffect(() => {
@@ -162,6 +178,7 @@ function Reposition() {
         tokenB,
         isTokenABase,
         poolPriceNonDisplay: currentPoolPriceNonDisplay,
+        getDefaultRangeWidthForTokenPair,
     } = useContext(TradeDataContext);
 
     const currentPoolPriceTick =
@@ -212,7 +229,13 @@ function Reposition() {
         closeModal();
     };
 
-    const [rangeWidthPercentage, setRangeWidthPercentage] = useState(10);
+    const [rangeWidthPercentage, setRangeWidthPercentage] = useState(
+        getDefaultRangeWidthForTokenPair(
+            position.chainId,
+            position.base.toLowerCase(),
+            position.quote.toLowerCase(),
+        ),
+    );
 
     const [pinnedLowTick, setPinnedLowTick] = useState(0);
     const [pinnedHighTick, setPinnedHighTick] = useState(0);
@@ -224,27 +247,25 @@ function Reposition() {
     }, []);
 
     useEffect(() => {
-        setSimpleRangeWidth(10);
+        setSimpleRangeWidth(
+            getDefaultRangeWidthForTokenPair(
+                position.chainId,
+                position.base.toLowerCase(),
+                position.quote.toLowerCase(),
+            ),
+        );
         setNewRepositionTransactionHash('');
     }, [position]);
 
     useEffect(() => {
         if (simpleRangeWidth !== rangeWidthPercentage) {
-            setSimpleRangeWidth(simpleRangeWidth);
             setRangeWidthPercentage(simpleRangeWidth);
             const sliderInput = document.getElementById(
-                'reposition-input-slider-range',
+                'input-slider-range',
             ) as HTMLInputElement;
             if (sliderInput) sliderInput.value = simpleRangeWidth.toString();
         }
     }, [simpleRangeWidth]);
-
-    useEffect(() => {
-        if (simpleRangeWidth !== rangeWidthPercentage) {
-            setSimpleRangeWidth(rangeWidthPercentage);
-            setRangeWidthPercentage(rangeWidthPercentage);
-        }
-    }, [rangeWidthPercentage]);
 
     useEffect(() => {
         if (!position) {
@@ -298,11 +319,15 @@ function Reposition() {
 
         try {
             const pool = crocEnv.pool(position.base, position.quote);
-            const repo = new CrocReposition(pool, {
-                liquidity: concLiq,
-                burn: [position.bidTick, position.askTick],
-                mint: mintArgsForReposition(pinnedLowTick, pinnedHighTick),
-            });
+            const repo = new CrocReposition(
+                pool,
+                {
+                    liquidity: concLiq,
+                    burn: [position.bidTick, position.askTick],
+                    mint: mintArgsForReposition(pinnedLowTick, pinnedHighTick),
+                },
+                { impact: slippageTolerancePercentage / 100 },
+            );
 
             tx = await repo.rebal();
             setNewRepositionTransactionHash(tx?.hash);
@@ -325,6 +350,9 @@ function Reposition() {
                         lowTick: pinnedLowTick,
                         highTick: pinnedHighTick,
                         gridSize: lookupChain(position.chainId).gridSize,
+                        originalLowTick: position.bidTick,
+                        originalHighTick: position.askTick,
+                        isBid: position.positionLiqQuote === 0,
                     },
                 });
                 const posHash = getPositionHash(position);
@@ -343,7 +371,7 @@ function Reposition() {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
-            setTxErrorMessage(error?.data?.message);
+            setTxErrorMessage(parseErrorMessage(error));
         }
 
         let receipt;
@@ -421,6 +449,7 @@ function Reposition() {
 
     const [currentBaseQtyDisplayTruncated, setCurrentBaseQtyDisplayTruncated] =
         useState<string>(position?.positionLiqBaseTruncated || '0.00');
+
     const [
         currentQuoteQtyDisplayTruncated,
         setCurrentQuoteQtyDisplayTruncated,
@@ -603,6 +632,13 @@ function Reposition() {
         string | undefined
     >();
 
+    // const [l1GasFeePoolInGwei] = useState<number>(
+    //     isScroll ? 0.0009 * 1e9 : 0,
+    // );
+    const [extraL1GasFeePool] = useState(
+        isActiveNetworkScroll ? 2.75 : isActiveNetworkBlast ? 2.5 : 0,
+    );
+
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const gasPriceInDollarsNum =
@@ -613,12 +649,12 @@ function Reposition() {
 
             setRangeGasPriceinDollars(
                 getFormattedNumber({
-                    value: gasPriceInDollarsNum,
+                    value: gasPriceInDollarsNum + extraL1GasFeePool,
                     isUSD: true,
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+    }, [gasPriceInGwei, ethMainnetUsdPrice, extraL1GasFeePool]);
 
     const txUrlOnBlockExplorer = `${blockExplorer}tx/${newRepositionTransactionHash}`;
 
@@ -765,6 +801,7 @@ function Reposition() {
                     }
                     isTokenABase={isTokenABase}
                     onClose={handleModalClose}
+                    slippageTolerance={slippageTolerancePercentage}
                 />
             )}
         </>

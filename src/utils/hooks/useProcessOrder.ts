@@ -239,7 +239,21 @@ export const useProcessOrder = (
         ? moment(Date.now()).diff(positionTime * 1000, 'seconds')
         : 0;
 
+    const elapsedTimeSinceFirstMintInSecondsNum = limitOrder.timeFirstMint
+        ? moment(Date.now()).diff(limitOrder.timeFirstMint * 1000, 'seconds')
+        : 0;
+
+    const elapsedTimeSinceCrossInSecondsNum = limitOrder.crossTime
+        ? moment(Date.now()).diff(limitOrder.crossTime * 1000, 'seconds')
+        : 0;
+
     const elapsedTimeString = getElapsedTime(elapsedTimeInSecondsNum);
+    const elapsedTimeSinceFirstMintString = getElapsedTime(
+        elapsedTimeSinceFirstMintInSecondsNum,
+    );
+    const elapsedTimeSinceCrossString = getElapsedTime(
+        elapsedTimeSinceCrossInSecondsNum,
+    );
 
     // ----------------------------------------------------------------------
 
@@ -247,7 +261,7 @@ export const useProcessOrder = (
         ? ensName.length > 16
             ? trimString(ensName, 11, 3, '…')
             : ensName
-        : trimString(ownerId, 6, 4, '…');
+        : trimString(ownerId, 7, 4, '…');
 
     const userNameToDisplay = isOwnerActiveAccount
         ? 'You'
@@ -477,6 +491,8 @@ export const useProcessOrder = (
         blockExplorer,
 
         elapsedTimeString,
+        elapsedTimeSinceFirstMintString,
+        elapsedTimeSinceCrossString,
         initialTokenQty,
         baseTokenAddress: limitOrder.base,
         quoteTokenAddress: limitOrder.quote,

@@ -2,56 +2,69 @@ import { useContext, useEffect } from 'react';
 import { FiRefreshCw } from 'react-icons/fi';
 import TopPools from '../../components/Global/Analytics/TopPools';
 import { ExploreContext } from '../../contexts/ExploreContext';
+import styled from 'styled-components/macro';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
-import styled from 'styled-components/macro';
-import { useTimeElapsed, useTimeElapsedIF } from './useTimeElapsed';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 
 export default function Explore() {
-    const { crocEnv, chainData } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
-    // metadata only
-    const { poolList } = useContext(PoolContext);
     // full expanded data set
     const { pools } = useContext(ExploreContext);
+    const { crocEnv, chainData } = useContext(CrocEnvContext);
+    const { poolList } = useContext(PoolContext);
+    const {
+        isActiveNetworkBlast,
+        isActiveNetworkScroll,
+        isActiveNetworkMainnet,
+    } = useContext(ChainDataContext);
 
-    // hook to produce human-readable time since fetch for DOM
-    const timeSince: useTimeElapsedIF = useTimeElapsed(
-        pools.all.length,
-        pools.retrievedAt,
-        lastBlockNumber,
-    );
-
-    // fn wrapper to get pools
-    const getPools = async (): Promise<void> => {
-        // make sure crocEnv exists and pool metadata is present
+    const getLimitedPools = async (): Promise<void> => {
         if (crocEnv && poolList.length) {
-            // clear text in DOM for time since last update
-            timeSince.reset();
-            // use metadata to get expanded pool data
-            pools.getAll(poolList, crocEnv, chainData.chainId);
-            // disable autopolling of infura
-            pools.autopoll.disable();
+            pools.getLimited(poolList, crocEnv, chainData.chainId);
         }
     };
 
-    // get expanded pool metadata
+    const getAllPools = async (): Promise<void> => {
+        // make sure crocEnv exists and pool metadata is present
+        if (crocEnv && poolList.length) {
+            // clear text in DOM for time since last update
+            pools.resetPoolData();
+            // use metadata to get expanded pool data
+            getLimitedPools().then(() => {
+                pools.getExtra(poolList, crocEnv, chainData.chainId);
+            });
+        }
+    };
+
+    // get expanded pool metadata, if not already fetched
     useEffect(() => {
-        // prevent rapid-fire of requests to infura
-        pools.autopoll.allowed && getPools();
-    }, [crocEnv, chainData.chainId, poolList.length]);
+        if (
+            crocEnv !== undefined &&
+            poolList.length > 0 &&
+            pools.all.length === 0
+        ) {
+            getAllPools();
+        }
+    }, [crocEnv, poolList.length, pools.all.length]);
+
+    const titleText = isActiveNetworkMainnet
+        ? 'Top Ambient Pools on Ethereum'
+        : isActiveNetworkBlast
+        ? 'Top Ambient Pools on Blast'
+        : isActiveNetworkScroll
+        ? 'Top Ambient Pools on Scroll'
+        : 'Top Pools on Ambient';
 
     return (
         <Section>
             <MainWrapper>
-                <TitleText>Top Pools on Ambient</TitleText>
+                <TitleText>{titleText}</TitleText>
                 <Refresh>
-                    {/* <RefreshText>{timeSince.value}</RefreshText> */}
-                    {/* Above line was commented to temporarily remove 'Last Updated: ' timestamp */}
-                    {/* Refer to issue #2737 */}
-
-                    <RefreshButton onClick={() => getPools()}>
+                    <RefreshButton
+                        onClick={() => {
+                            getAllPools();
+                        }}
+                    >
                         <RefreshIcon />
                     </RefreshButton>
                 </Refresh>
@@ -63,7 +76,7 @@ export default function Explore() {
 
 const Section = styled.section`
     background: var(--dark2);
-    height: calc(100vh - 56px);
+    height: calc(100vh - 120px);
     padding: 16px;
     display: flex;
     flex-direction: column;
@@ -96,6 +109,7 @@ const TitleText = styled.h2`
         font-size: 20px;
     }
 `;
+
 const Refresh = styled.div`
     display: flex;
     flex-direction: row;
@@ -113,7 +127,6 @@ const RefreshButton = styled.button`
     align-items: center;
     background-color: var(--dark3);
     border-radius: var(--border-radius);
-
     border: none;
     outline: none;
 `;

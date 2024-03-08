@@ -1,5 +1,6 @@
 import React, {
     createContext,
+    Dispatch,
     SetStateAction,
     useContext,
     useEffect,
@@ -48,6 +49,10 @@ interface ChartContextIF {
     setIsMagnetActive: React.Dispatch<{ value: boolean }>;
     isChangeScaleChart: boolean;
     setIsChangeScaleChart: React.Dispatch<boolean>;
+    isCandleDataNull: boolean;
+    setNumCandlesFetched: React.Dispatch<number | undefined>;
+    numCandlesFetched: number | undefined;
+    setIsCandleDataNull: Dispatch<SetStateAction<boolean>>;
     isToolbarOpen: boolean;
     setIsToolbarOpen: React.Dispatch<React.SetStateAction<boolean>>;
     undoRedoOptions: {
@@ -102,6 +107,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     if (CHART_SAVED_HEIGHT_LOCAL_STORAGE) {
         CHART_SAVED_HEIGHT = parseInt(CHART_SAVED_HEIGHT_LOCAL_STORAGE);
     }
+
+    const [isCandleDataNull, setIsCandleDataNull] = useState(false);
 
     const chartAnnotations: {
         isMagnetActive: boolean;
@@ -206,7 +213,20 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
 
     const [isToolbarOpen, setIsToolbarOpen] =
         useState<boolean>(initialIsToolbarOpen);
-    const chartSettings = useChartSettings();
+
+    const [numCandlesFetched, setNumCandlesFetched] = useState<
+        number | undefined
+    >();
+
+    const currentPoolString =
+        undoRedoOptions.currentPool.tokenA.address +
+        '/' +
+        undoRedoOptions.currentPool.tokenB.address;
+
+    const chartSettings = useChartSettings(
+        numCandlesFetched,
+        currentPoolString,
+    );
 
     const chartContext = {
         chartSettings,
@@ -222,6 +242,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         setIsMagnetActive,
         isChangeScaleChart,
         setIsChangeScaleChart,
+        isCandleDataNull,
+        setIsCandleDataNull,
         isToolbarOpen,
         setIsToolbarOpen,
         undoRedoOptions,
@@ -236,6 +258,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         setIsChartHeightMinimum,
         isMagnetActiveLocal,
         setIsMagnetActiveLocal,
+        numCandlesFetched,
+        setNumCandlesFetched,
     };
 
     useEffect(() => {

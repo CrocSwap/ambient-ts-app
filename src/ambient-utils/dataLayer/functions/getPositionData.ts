@@ -81,6 +81,7 @@ export const getPositionData = async (
     newPosition.quoteDecimals = quoteTokenDecimals;
 
     newPosition.baseSymbol = (await baseMetadata)?.symbol ?? '';
+
     newPosition.quoteSymbol = (await quoteMetadata)?.symbol ?? '';
 
     newPosition.baseName = (await baseMetadata)?.name ?? '';
@@ -236,21 +237,37 @@ export const getPositionData = async (
         newPosition.totalValueUSD =
             quotePrice.usdPrice * newPosition.positionLiqQuoteDecimalCorrected +
             basePrice.usdPrice * newPosition.positionLiqBaseDecimalCorrected;
+        if (
+            newPosition.feesLiqQuoteDecimalCorrected &&
+            newPosition.feesLiqBaseDecimalCorrected
+        )
+            newPosition.feesValueUSD =
+                quotePrice.usdPrice * newPosition.feesLiqQuoteDecimalCorrected +
+                basePrice.usdPrice * newPosition.feesLiqBaseDecimalCorrected;
     } else if (basePrice) {
         const quotePrice = basePrice.usdPrice * poolPrice;
         newPosition.totalValueUSD =
             quotePrice * newPosition.positionLiqQuoteDecimalCorrected +
             basePrice.usdPrice * newPosition.positionLiqBaseDecimalCorrected;
+        if (newPosition.feesLiqBaseDecimalCorrected)
+            newPosition.feesValueUSD =
+                basePrice.usdPrice * newPosition.feesLiqBaseDecimalCorrected;
     } else if (quotePrice) {
         const basePrice = quotePrice.usdPrice / poolPrice;
         newPosition.totalValueUSD =
             basePrice * newPosition.positionLiqBaseDecimalCorrected +
             quotePrice.usdPrice * newPosition.positionLiqQuoteDecimalCorrected;
+        if (newPosition.feesLiqQuoteDecimalCorrected)
+            newPosition.feesValueUSD =
+                quotePrice.usdPrice * newPosition.feesLiqQuoteDecimalCorrected;
     } else {
         newPosition.totalValueUSD = 0.0;
+        newPosition.feesValueUSD = 0.0;
     }
 
     newPosition.apy = position.aprEst * 100;
+
+    newPosition.serverPositionId = position.positionId;
 
     return newPosition;
 };

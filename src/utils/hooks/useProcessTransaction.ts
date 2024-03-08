@@ -231,7 +231,9 @@ export const useProcessTransaction = (
         });
 
         estimatedQuoteFlowDisplay = getFormattedNumber({
-            value: baseFlowAbsNum * middlePriceDisplayNum,
+            value: isDenomBase
+                ? baseFlowAbsNum * middlePriceDisplayNum
+                : baseFlowAbsNum / middlePriceDisplayNum,
             zeroDisplay: '0',
         });
     }
@@ -248,7 +250,9 @@ export const useProcessTransaction = (
             zeroDisplay: '0',
         });
         estimatedBaseFlowDisplay = getFormattedNumber({
-            value: quoteFlowAbsNum / middlePriceDisplayNum,
+            value: isDenomBase
+                ? quoteFlowAbsNum / middlePriceDisplayNum
+                : quoteFlowAbsNum * middlePriceDisplayNum,
             zeroDisplay: '0',
         });
     }
@@ -344,7 +348,7 @@ export const useProcessTransaction = (
         ? ensName.length > 16
             ? trimString(ensName, 11, 3, '…')
             : ensName
-        : trimString(ownerId, 6, 4, '…');
+        : trimString(ownerId, 7, 4, '…');
 
     const txHashTruncated = trimString(txHash, 9, 0, '…');
 

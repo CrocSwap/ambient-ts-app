@@ -67,7 +67,8 @@ export default function Transfer(props: propsIF) {
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
     const { userAddress } = useContext(UserDataContext);
 
-    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { gasPriceInGwei, isActiveNetworkScroll, isActiveNetworkBlast } =
+        useContext(ChainDataContext);
     const {
         addPendingTx,
         addReceipt,
@@ -292,6 +293,10 @@ export default function Transfer(props: propsIF) {
         }
     };
 
+    const [extraL1GasFeeTransfer] = useState(
+        isActiveNetworkScroll ? 1.25 : isActiveNetworkBlast ? 0.35 : 0,
+    );
+
     const [transferGasPriceinDollars, setTransferGasPriceinDollars] = useState<
         string | undefined
     >();
@@ -311,12 +316,12 @@ export default function Transfer(props: propsIF) {
 
             setTransferGasPriceinDollars(
                 getFormattedNumber({
-                    value: gasPriceInDollarsNum,
+                    value: gasPriceInDollarsNum + extraL1GasFeeTransfer,
                     isUSD: true,
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth]);
+    }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth, extraL1GasFeeTransfer]);
 
     return (
         <FlexContainer flexDirection='column' gap={16} padding={'16px'}>

@@ -90,6 +90,7 @@ export const useProcessRange = (
     // -------------------------------POSITION HASH------------------------
 
     const posHash = getPositionHash(position);
+    const serverPositionId = position.serverPositionId;
 
     // -----------------------------POSITIONS RANGE--------------------
     let isPositionInRange = position.isPositionInRange;
@@ -190,7 +191,7 @@ export const useProcessRange = (
         ? ensName.length > 16
             ? trimString(ensName, 11, 3, '…')
             : ensName
-        : trimString(position.user, 6, 4, '…');
+        : trimString(position.user, 7, 4, '…');
 
     const posHashTruncated = trimString(posHash.toString(), 9, 0, '…');
 
@@ -206,6 +207,10 @@ export const useProcessRange = (
 
     const elapsedTimeInSecondsNum = positionTime
         ? moment(Date.now()).diff(positionTime * 1000, 'seconds')
+        : 0;
+
+    const elapsedTimeSinceFirstMintInSecondsNum = position.timeFirstMint
+        ? moment(Date.now()).diff(position.timeFirstMint * 1000, 'seconds')
         : 0;
 
     const elapsedTimeString =
@@ -225,10 +230,34 @@ export const useProcessRange = (
                 : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days `
             : 'Pending...';
 
+    const elapsedTimeSinceFirstMintString =
+        elapsedTimeSinceFirstMintInSecondsNum !== undefined
+            ? elapsedTimeSinceFirstMintInSecondsNum < 60
+                ? '< 1 min. '
+                : elapsedTimeSinceFirstMintInSecondsNum < 120
+                ? '1 min. '
+                : elapsedTimeSinceFirstMintInSecondsNum < 3600
+                ? `${Math.floor(
+                      elapsedTimeSinceFirstMintInSecondsNum / 60,
+                  )} min. `
+                : elapsedTimeSinceFirstMintInSecondsNum < 7200
+                ? '1 hour '
+                : elapsedTimeSinceFirstMintInSecondsNum < 86400
+                ? `${Math.floor(
+                      elapsedTimeSinceFirstMintInSecondsNum / 3600,
+                  )} hrs. `
+                : elapsedTimeSinceFirstMintInSecondsNum < 172800
+                ? '1 day '
+                : `${Math.floor(
+                      elapsedTimeSinceFirstMintInSecondsNum / 86400,
+                  )} days `
+            : 'Pending...';
+
     return {
         // wallet and id data
         ownerId: position.user,
         posHash,
+        serverPositionId,
         ensName,
         userMatchesConnectedAccount,
         posHashTruncated,
@@ -279,6 +308,7 @@ export const useProcessRange = (
         width,
         blockExplorer,
         elapsedTimeString,
+        elapsedTimeSinceFirstMintString,
         baseTokenAddress: position.base,
         quoteTokenAddress: position.quote,
     };

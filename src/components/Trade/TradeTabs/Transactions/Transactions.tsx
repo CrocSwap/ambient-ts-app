@@ -121,14 +121,8 @@ function Transactions(props: propsIF) {
             isAccountView
                 ? activeAccountTransactionData || []
                 : !showAllData
-                ? userTransactionsByPool.changes.filter(
-                      (tx) =>
-                          tx.changeType !== 'fill' && tx.changeType !== 'cross',
-                  )
-                : transactionsByPool.changes.filter(
-                      (tx) =>
-                          tx.changeType !== 'fill' && tx.changeType !== 'cross',
-                  ),
+                ? userTransactionsByPool.changes
+                : transactionsByPool.changes,
         [
             showAllData,
             activeAccountTransactionData,
@@ -182,7 +176,7 @@ function Transactions(props: propsIF) {
     );
 
     // TODO: Use these as media width constants
-    const isSmallScreen = useMediaQuery('(max-width: 600px)');
+    const isSmallScreen = useMediaQuery('(max-width: 800px)');
     const isLargeScreen = useMediaQuery('(min-width: 1600px)');
 
     const tableView =
@@ -426,18 +420,18 @@ function Transactions(props: propsIF) {
     const [page, setPage] = useState(1);
     const resetPageToFirst = () => setPage(1);
 
-    const isScreenShort =
-        (isAccountView && useMediaQuery('(max-height: 900px)')) ||
-        (!isAccountView && useMediaQuery('(max-height: 700px)'));
+    // const isScreenShort =
+    //     (isAccountView && useMediaQuery('(max-height: 900px)')) ||
+    //     (!isAccountView && useMediaQuery('(max-height: 700px)'));
 
-    const isScreenTall =
-        (isAccountView && useMediaQuery('(min-height: 1100px)')) ||
-        (!isAccountView && useMediaQuery('(min-height: 1000px)'));
+    // const isScreenTall =
+    //     (isAccountView && useMediaQuery('(min-height: 1100px)')) ||
+    //     (!isAccountView && useMediaQuery('(min-height: 1000px)'));
 
     const _DATA = usePagination(
         sortedTransactions,
-        isScreenShort,
-        isScreenTall,
+        // isScreenShort,
+        // isScreenTall,
     );
 
     const {
@@ -448,6 +442,7 @@ function Transactions(props: propsIF) {
         rowsPerPage,
         changeRowsPerPage,
         count,
+        fullData,
     } = _DATA;
     const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
         setPage(p);
@@ -593,6 +588,7 @@ function Transactions(props: propsIF) {
                                             lowTick: tx.txDetails?.lowTick,
                                             highTick: tx.txDetails?.highTick,
                                             gridSize: tx.txDetails?.gridSize,
+                                            isBid: tx.txDetails?.isBid,
                                         },
                                     }}
                                     tableView={tableView}
@@ -642,8 +638,10 @@ function Transactions(props: propsIF) {
                                             quoteTokenDecimals:
                                                 tx.txDetails
                                                     ?.quoteTokenDecimals,
-                                            lowTick: tx.txDetails?.lowTick,
-                                            highTick: tx.txDetails?.highTick,
+                                            lowTick:
+                                                tx.txDetails?.originalLowTick,
+                                            highTick:
+                                                tx.txDetails?.originalHighTick,
                                             gridSize: tx.txDetails?.gridSize,
                                         },
                                     }}
@@ -655,6 +653,7 @@ function Transactions(props: propsIF) {
                 <TableRows
                     type='Transaction'
                     data={_DATA.currentData}
+                    fullData={fullData}
                     tableView={tableView}
                     isAccountView={isAccountView}
                 />
@@ -692,7 +691,9 @@ function Transactions(props: propsIF) {
                         ? dataLoadingStatus.isCandleDataLoading
                         : isLoading
                 ) ? (
-                    <Spinner size={100} bg='var(--dark1)' centered />
+                    <div style={{ height: isSmallScreen ? '80vh' : '100%' }}>
+                        <Spinner size={100} bg='var(--dark1)' centered />
+                    </div>
                 ) : (
                     transactionDataOrNull
                 )}

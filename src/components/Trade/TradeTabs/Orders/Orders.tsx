@@ -137,7 +137,7 @@ function Orders(props: propsIF) {
         useSortedLimits('time', limitOrderData);
 
     // TODO: Use these as media width constants
-    const isSmallScreen = useMediaQuery('(max-width: 600px)');
+    const isSmallScreen = useMediaQuery('(max-width: 750px)');
     const isLargeScreen = useMediaQuery('(min-width: 1600px)');
 
     const tableView =
@@ -302,15 +302,18 @@ function Orders(props: propsIF) {
     const [page, setPage] = useState(1);
     const resetPageToFirst = () => setPage(1);
 
-    const isScreenShort =
-        (isAccountView && useMediaQuery('(max-height: 900px)')) ||
-        (!isAccountView && useMediaQuery('(max-height: 700px)'));
+    // const isScreenShort =
+    //     (isAccountView && useMediaQuery('(max-height: 900px)')) ||
+    //     (!isAccountView && useMediaQuery('(max-height: 700px)'));
 
-    const isScreenTall =
-        (isAccountView && useMediaQuery('(min-height: 1100px)')) ||
-        (!isAccountView && useMediaQuery('(min-height: 1000px)'));
+    // const isScreenTall =
+    //     (isAccountView && useMediaQuery('(min-height: 1100px)')) ||
+    //     (!isAccountView && useMediaQuery('(min-height: 1000px)'));
 
-    const _DATA = usePagination(sortedLimits, isScreenShort, isScreenTall);
+    const _DATA = usePagination(
+        sortedLimits,
+        // , isScreenShort, isScreenTall
+    );
 
     const {
         showingFrom,
@@ -320,6 +323,7 @@ function Orders(props: propsIF) {
         rowsPerPage,
         changeRowsPerPage,
         count,
+        fullData,
     } = _DATA;
     const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
         setPage(p);
@@ -447,6 +451,7 @@ function Orders(props: propsIF) {
                 <TableRows
                     type='Order'
                     data={_DATA.currentData}
+                    fullData={fullData}
                     tableView={tableView}
                     isAccountView={isAccountView}
                 />

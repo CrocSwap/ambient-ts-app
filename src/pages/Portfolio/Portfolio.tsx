@@ -10,11 +10,11 @@ import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileS
 
 // START: Import Other Local Files
 import { TokenIF } from '../../ambient-utils/types';
-import { fetchEnsAddress } from '../../ambient-utils/api';
+import { fetchEnsAddress, fetchUserXpData } from '../../ambient-utils/api';
 import { Navigate, useParams } from 'react-router-dom';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { diffHashSig } from '../../ambient-utils/dataLayer';
+import { trimString } from '../../ambient-utils/dataLayer';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { TokenContext } from '../../contexts/TokenContext';
@@ -26,11 +26,23 @@ import {
     PortfolioTabsContainer,
 } from '../../styled/Components/Portfolio';
 import { FlexContainer, Text } from '../../styled/Common';
-import { UserDataContext } from '../../contexts/UserDataContext';
+import { UserDataContext, UserXpDataIF } from '../../contexts/UserDataContext';
+import Level from '../Level/Level';
 
-function Portfolio() {
-    const { userAddress, setResolvedAddressInContext, ensName } =
-        useContext(UserDataContext);
+interface PortfolioPropsIF {
+    isLevelsPage?: boolean;
+    isRanksPage?: boolean;
+    isViewMoreActive?: boolean;
+}
+
+function Portfolio(props: PortfolioPropsIF) {
+    const {
+        userAddress,
+        setResolvedAddressInContext,
+        ensName,
+        setSecondaryEnsInContext,
+    } = useContext(UserDataContext);
+    const { isLevelsPage, isRanksPage, isViewMoreActive } = props;
 
     const isUserConnected = useSimulatedIsUserConnected();
 
@@ -66,10 +78,12 @@ function Portfolio() {
         () =>
             userAddress
                 ? addressFromParams
-                    ? resolvedAddress?.toLowerCase() ===
-                      userAddress.toLowerCase()
-                        ? true
-                        : false
+                    ? resolvedAddress
+                        ? resolvedAddress?.toLowerCase() ===
+                          userAddress.toLowerCase()
+                            ? true
+                            : false
+                        : true
                     : true
                 : false,
         [addressFromParams, resolvedAddress, userAddress],
@@ -79,6 +93,7 @@ function Portfolio() {
         (async () => {
             if (addressFromParams && isAddressEns && mainnetProvider) {
                 try {
+                    // @emily
                     const newResolvedAddress =
                         await mainnetProvider.resolveName(addressFromParams);
                     setResolvedAddress(newResolvedAddress ?? '');
@@ -104,17 +119,43 @@ function Portfolio() {
                 try {
                     const ensName = await fetchEnsAddress(addressFromParams);
 
-                    if (ensName) setSecondaryEnsName(ensName);
-                    else setSecondaryEnsName('');
+                    if (ensName) {
+                        setSecondaryEnsName(ensName);
+                        setSecondaryEnsInContext(ensName);
+                    } else {
+                        setSecondaryEnsName('');
+                        setSecondaryEnsInContext('');
+                    }
                 } catch (error) {
                     setSecondaryEnsName('');
+                    setSecondaryEnsInContext('');
                     console.error({ error });
                 }
             } else if (addressFromParams && isAddressEns) {
                 setSecondaryEnsName(addressFromParams);
+                setSecondaryEnsInContext(addressFromParams);
             }
         })();
     }, [addressFromParams, isAddressEns]);
+
+    const [resolvedUserXp, setResolvedUserXp] = useState<UserXpDataIF>({
+        dataReceived: false,
+        data: undefined,
+    });
+
+    // fetch xp data for resolved address if not connected user account
+    useEffect(() => {
+        if (!connectedAccountActive && resolvedAddress) {
+            fetchUserXpData({ user: resolvedAddress, chainId: chainId }).then(
+                (resolvedUserXp) => {
+                    setResolvedUserXp({
+                        dataReceived: true,
+                        data: resolvedUserXp ? resolvedUserXp : undefined,
+                    });
+                },
+            );
+        }
+    }, [connectedAccountActive, resolvedAddress]);
 
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
     const exchangeBalanceComponent = (
@@ -147,7 +188,8 @@ function Portfolio() {
                 !connectedAccountActive
             ) {
                 try {
-                    const updatedTokens: TokenIF[] = resolvedAddressTokens;
+                    setResolvedAddressTokens([]);
+                    const updatedTokens: TokenIF[] = [];
 
                     const tokenBalanceResults = await cachedFetchTokenBalances(
                         resolvedAddress,
@@ -169,20 +211,13 @@ function Portfolio() {
                     });
 
                     tokensWithLogos.map((newToken: TokenIF) => {
-                        const indexOfExistingToken =
-                            resolvedAddressTokens.findIndex(
-                                (existingToken) =>
-                                    existingToken.address === newToken.address,
-                            );
+                        const indexOfExistingToken = updatedTokens.findIndex(
+                            (existingToken) =>
+                                existingToken.address === newToken.address,
+                        );
 
                         if (indexOfExistingToken === -1) {
                             updatedTokens.push(newToken);
-                        } else if (
-                            diffHashSig(
-                                resolvedAddressTokens[indexOfExistingToken],
-                            ) !== diffHashSig(newToken)
-                        ) {
-                            updatedTokens[indexOfExistingToken] = newToken;
                         }
                     });
                     setResolvedAddressTokens(updatedTokens);
@@ -257,6 +292,7 @@ function Portfolio() {
         resolvedAddress: resolvedAddress,
         connectedAccountActive: connectedAccountActive,
         fullLayoutActive: fullLayoutActive,
+        resolvedUserXp: resolvedUserXp,
     };
 
     const portfolioBannerProps = {
@@ -268,6 +304,24 @@ function Portfolio() {
         resolvedAddress: resolvedAddress ?? '',
         setShowProfileSettings: setShowProfileSettings,
         connectedAccountActive: connectedAccountActive,
+        resolvedUserXp: resolvedUserXp,
+    };
+
+    const truncatedAccountAddressOrEnsName = connectedAccountActive
+        ? ensName
+            ? ensName
+            : trimString(userAddress ?? '', 6, 6, '…')
+        : secondaryEnsName
+        ? secondaryEnsName
+        : trimString(resolvedAddress ?? '', 6, 6, '…');
+
+    const levelsProps = {
+        resolvedAddress: resolvedAddress ?? '',
+        truncatedAccountAddressOrEnsName: truncatedAccountAddressOrEnsName,
+        connectedAccountActive: connectedAccountActive,
+        isDisplayRank: isRanksPage,
+        resolvedUserXp,
+        isViewMoreActive,
     };
 
     const profileSettingsProps = {
@@ -304,8 +358,8 @@ function Portfolio() {
             {contentToRenderOnMobile}
         </FlexContainer>
     );
-
-    if (showActiveMobileComponent) return mobilePortfolio;
+    if (showActiveMobileComponent && !isLevelsPage) return mobilePortfolio;
+    if (isLevelsPage) return <Level {...levelsProps} />;
 
     return (
         <PortfolioContainer

@@ -90,10 +90,10 @@ function Ranges(props: propsIF) {
             isAccountView
                 ? activeAccountPositionData || []
                 : !showAllData
-                ? userPositionsByPool?.positions.filter(
+                ? userPositionsByPool?.positions
+                : positionsByPool.positions.filter(
                       (position) => position.positionLiq != 0,
-                  )
-                : positionsByPool.positions,
+                  ),
         [
             showAllData,
             isAccountView,
@@ -153,15 +153,18 @@ function Ranges(props: propsIF) {
     const [page, setPage] = useState(1);
     const resetPageToFirst = () => setPage(1);
 
-    const isScreenShort =
-        (isAccountView && useMediaQuery('(max-height: 900px)')) ||
-        (!isAccountView && useMediaQuery('(max-height: 700px)'));
+    // const isScreenShort =
+    //     (isAccountView && useMediaQuery('(max-height: 900px)')) ||
+    //     (!isAccountView && useMediaQuery('(max-height: 700px)'));
 
-    const isScreenTall =
-        (isAccountView && useMediaQuery('(min-height: 1100px)')) ||
-        (!isAccountView && useMediaQuery('(min-height: 1000px)'));
+    // const isScreenTall =
+    //     (isAccountView && useMediaQuery('(min-height: 1100px)')) ||
+    //     (!isAccountView && useMediaQuery('(min-height: 1000px)'));
 
-    const _DATA = usePagination(sortedPositions, isScreenShort, isScreenTall);
+    const _DATA = usePagination(
+        sortedPositions,
+        // , isScreenShort, isScreenTall
+    );
 
     const {
         showingFrom,
@@ -171,6 +174,7 @@ function Ranges(props: propsIF) {
         rowsPerPage,
         changeRowsPerPage,
         count,
+        fullData,
     } = _DATA;
     const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
         setPage(p);
@@ -426,6 +430,7 @@ function Ranges(props: propsIF) {
                 <TableRows
                     type='Range'
                     data={_DATA.currentData}
+                    fullData={fullData}
                     isAccountView={isAccountView}
                     tableView={tableView}
                 />

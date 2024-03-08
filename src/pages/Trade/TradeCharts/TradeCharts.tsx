@@ -41,8 +41,6 @@ interface propsIF {
     ) => void;
     selectedDate: number | undefined;
     setSelectedDate: Dispatch<number | undefined>;
-    setIsChartLoading: Dispatch<React.SetStateAction<boolean>>;
-    isChartLoading: boolean;
     updateURL: (changes: updatesIF) => void;
 }
 export interface LiquidityDataLocal {
@@ -129,7 +127,7 @@ function TradeCharts(props: propsIF) {
         subchartState?.isVolumeSubchartEnabled ?? true,
     );
     const [showSwap, setShowSwap] = useState(
-        orderHistoryState?.isSwapOrderHistoryEnabled ?? false,
+        orderHistoryState?.isSwapOrderHistoryEnabled ?? true,
     );
     const [showLiquidity, setShowLiquidity] = useState(
         false, // orderHistoryState?.isLiquidityOrderHistoryEnabled ?? false,
@@ -164,6 +162,8 @@ function TradeCharts(props: propsIF) {
             setShowSwap(false);
             setShowLiquidity(false);
             setShowHistorical(false);
+        } else {
+            setShowSwap(orderHistoryState?.isSwapOrderHistoryEnabled ?? true);
         }
     }, [isUserConnected]);
 
@@ -289,8 +289,6 @@ function TradeCharts(props: propsIF) {
                         showLatest={showLatest}
                         setShowLatest={setShowLatest}
                         setShowTooltip={setShowTooltip}
-                        isLoading={props.isChartLoading}
-                        setIsLoading={props.setIsChartLoading}
                         updateURL={updateURL}
                     />
                 </div>

@@ -6,6 +6,8 @@ export const MainContainer = styled.div`
     width: 380px;
     height: calc(100vh - 9rem);
     position: absolute;
+    border-radius: var(--border-radius);
+
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -22,17 +24,20 @@ export const Container = styled(FlexContainer)`
     box-shadow: 0px 35px 20px rgba(0, 0, 0, 0.3);
     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     right: 0;
+    border: 1px solid var(--accent1);
 `;
 
 export const Header = styled.section`
     color: var(--text1);
     padding: 1rem;
     background: var(--dark1);
+    border-radius: var(--border-radius);
     height: 50px;
 `;
 export const Footer = styled.section`
     padding: 1rem;
     background: var(--dark1);
+    border-radius: var(--border-radius);
     height: 50px;
 `;
 

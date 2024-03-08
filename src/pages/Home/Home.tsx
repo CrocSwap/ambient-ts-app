@@ -4,12 +4,17 @@ import Stats from '../../components/Home/Stats/AmbientStats';
 import TopPools from '../../components/Home/TopPools/TopPools';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import MobileLandingSections from '../../components/Home/Landing/MobileLandingSections';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useSwitchNetwork } from 'wagmi';
-import { supportedNetworks } from '../../ambient-utils/constants';
+import {
+    APP_ENVIRONMENT,
+    supportedNetworks,
+} from '../../ambient-utils/constants';
 import { useContext, useEffect } from 'react';
 import { lookupChainId } from '../../ambient-utils/dataLayer';
 import { UserDataContext } from '../../contexts/UserDataContext';
+import { Text } from '../../styled/Common';
+import styled from 'styled-components';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 export default function Home() {
@@ -50,13 +55,52 @@ export default function Home() {
             }
         }
     }, [switchNetwork]);
+
+    const PointSystemContainer = styled.section`
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: auto;
+        width: auto;
+        background: var(--dark2);
+        border-radius: 4px;
+        gap: 1rem;
+
+        @media (min-width: 720px) {
+            height: 127px;
+            width: 842px;
+        }
+    `;
+
     if (showMobileVersion) return <MobileLandingSections />;
+
     return (
         <section data-testid={'home'}>
             {!showMobileVersion && (
                 <div style={{ width: '100%', height: '480px' }}>
                     <Hero />
                 </div>
+            )}
+            {APP_ENVIRONMENT !== 'production' && (
+                <PointSystemContainer>
+                    <Text fontSize='header1'>Points system now live!</Text>
+
+                    <Link
+                        to={isUserConnected ? '/account/xp' : '/xp-leaderboard'}
+                    >
+                        <Text
+                            fontSize='header2'
+                            color='accent1'
+                            style={{ textDecoration: 'underline' }}
+                        >
+                            {isUserConnected
+                                ? ' View your current XP here'
+                                : 'View XP leaderboard'}
+                        </Text>
+                    </Link>
+                </PointSystemContainer>
             )}
             <div>
                 <TopPools />

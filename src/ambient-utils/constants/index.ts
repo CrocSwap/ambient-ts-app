@@ -40,6 +40,21 @@ export const CHAT_ENABLED =
         ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
         : true;
 
+export const BLOCK_POLLING_RPC_URL =
+    process.env.REACT_APP_BLOCK_POLLING_RPC_URL !== undefined
+        ? process.env.REACT_APP_BLOCK_POLLING_RPC_URL
+        : '';
+
+export const BLAST_RPC_URL =
+    process.env.REACT_APP_BLAST_RPC_URL !== undefined
+        ? process.env.REACT_APP_BLAST_RPC_URL
+        : 'https://rpc.blast.io/';
+
+export const SCROLL_RPC_URL =
+    process.env.REACT_APP_SCROLL_RPC_URL !== undefined
+        ? process.env.REACT_APP_SCROLL_RPC_URL
+        : 'https://rpc.scroll.io/';
+
 export const INCLUDE_CANTO_LINK =
     process.env.REACT_APP_INCLUDE_CANTO_LINK !== undefined
         ? process.env.REACT_APP_INCLUDE_CANTO_LINK.toLowerCase() === 'true'
@@ -96,6 +111,20 @@ export const REQUEST_TIMEOUT_DELAY = process.env.REACT_APP_REQUEST_TIMEOUT_DELAY
 
 export const NETWORK_ACCESS = process.env.NETWORK_ACCESS || 'disabled';
 export const CACHE_UPDATE_FREQ_IN_MS = 60000; // 1 minute
+
+export const DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES = process.env
+    .REACT_APP_DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES
+    ? parseFloat(
+          process.env.REACT_APP_DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES,
+      )
+    : undefined;
+
+export const DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES = process.env
+    .REACT_APP_DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES
+    ? parseFloat(
+          process.env.REACT_APP_DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES,
+      )
+    : undefined;
 
 // Allowed links
 export const CROCODILE_LABS_LINKS = [
