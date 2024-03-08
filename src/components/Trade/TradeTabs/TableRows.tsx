@@ -139,6 +139,7 @@ function TableRows({
         currentLimitOrderActive,
         currentTxActiveInTransactions,
         isDetailsModalOpen,
+        isActionModalOpen,
     ]);
 
     const rangeContent = () => {
