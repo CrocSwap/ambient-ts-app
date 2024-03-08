@@ -1,7 +1,7 @@
 import { ERC20_ABI } from '@crocswap-libs/sdk';
 import { Contract, ethers } from 'ethers';
 import { memoizeProviderFn } from '../dataLayer/functions/memoizePromiseFn';
-import { TokenIF } from '../types/token/TokenIF';
+import { TokenIF, otherTokenSources } from '../types/token/TokenIF';
 import { ZERO_ADDRESS } from '../constants';
 
 export interface ContractDetails {
@@ -19,7 +19,7 @@ export const fetchContractDetails = async (
     provider: ethers.providers.Provider,
     address: string,
     _chainId: string,
-    provenance: string,
+    provenance: otherTokenSources,
 ): Promise<TokenIF> => {
     // TODO:    update this logic to work on chains where the native token is not ETH
     if (address === ZERO_ADDRESS) {
