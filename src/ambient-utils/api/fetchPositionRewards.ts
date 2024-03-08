@@ -1,5 +1,6 @@
 // import { USE_MOCK_POSITION_REWARDS_DATA } from '../constants';
 // import { getFormattedNumber } from '../dataLayer';
+import { IS_LOCAL_ENV } from '../constants';
 import // PositionRewardsDataIF,
 // PositionRewardsServerIF
 '../types';
@@ -40,7 +41,7 @@ interface argsIF {
 
 export const fetchPositionRewardsData = async (args: argsIF) => {
     const { positionId } = args;
-    console.log(`Fetching Xp for positionId ${positionId}...`);
+    IS_LOCAL_ENV && console.log(`Fetching Xp for positionId ${positionId}...`);
 
     // if (!USE_MOCK_DATA) {
     //     console.log(getMockPositionRewards());
