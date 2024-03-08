@@ -188,7 +188,7 @@ export const useUrlParams = (
                     provider,
                     addr,
                     chainId,
-                    'fetched_per_url_param',
+                    'on_chain_by_URL_param',
                 );
             }
         }
