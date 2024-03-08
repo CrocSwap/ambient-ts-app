@@ -13,13 +13,10 @@ import NotFound from '../../pages/NotFound/NotFound';
 import DividerDark from '../Global/DividerDark/DividerDark';
 import ChatConfirmationPanel from './ChatConfirmationPanel/ChatConfirmationPanel';
 import styles from './ChatPanel.module.css';
-import {
-    LS_LAST_FOCUSED_MSG,
-    LS_USER_VERIFY_TOKEN,
-    getLS,
-    setLS,
-} from './ChatUtils';
+import ChatToaster from './ChatToaster/ChatToaster';
+import { LS_USER_VERIFY_TOKEN, setLS } from './ChatUtils';
 import DomDebugger from './DomDebugger/DomDebugger';
+import { domDebug } from './DomDebugger/DomDebuggerUtils';
 import FullChat from './FullChat/FullChat';
 import MessageInput from './MessagePanel/InputBox/MessageInput';
 import Room from './MessagePanel/Room/Room';
@@ -29,8 +26,6 @@ import { Message } from './Model/MessageModel';
 import { UserSummaryModel } from './Model/UserSummaryModel';
 import useChatApi from './Service/ChatApi';
 import useChatSocket from './Service/useChatSocket';
-import { domDebug } from './DomDebugger/DomDebuggerUtils';
-import ChatToaster from './ChatToaster/ChatToaster';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -182,6 +177,12 @@ function ChatPanel(props: propsIF) {
 
     const defaultEnsName = 'defaultValue';
 
+    const [lastScrolledMessage, setLastScrolledMessage] = useState('');
+    const [lastScrollListenerActive, setLastScrollListenerActive] =
+        useState(false);
+    const lastScrollListenerRef = useRef<boolean>();
+    lastScrollListenerRef.current = lastScrollListenerActive;
+
     function closeOnEscapeKeyDown(e: KeyboardEvent) {
         if (e.code === 'Escape') {
             if (showPicker) {
@@ -205,7 +206,6 @@ function ChatPanel(props: propsIF) {
     async function mentionHoverListener(elementTop: number, walletID: string) {
         // CHAT_FEATURES_WBO -  Feature : User Summary
         const userDetails = await getUserSummaryDetails(walletID);
-        console.log(userDetails);
         setSelectedUserSummary(userDetails);
         if (!messageEnd.current) return;
 
@@ -252,8 +252,6 @@ function ChatPanel(props: propsIF) {
         event: React.MouseEvent,
         data: IEmojiData,
     ) => {
-        console.log(focusedMessage);
-        console.log(currentUser);
         if (focusedMessage && currentUser) {
             addReaction(focusedMessage._id, currentUser, data.emoji);
             setShowPicker(false);
@@ -305,18 +303,17 @@ function ChatPanel(props: propsIF) {
                 }
             } else if (messageUser === currentUser) {
                 setIsScrollToBottomButtonPressed(true);
-                scrollToBottomButton();
+                scrollToBottom();
 
                 setNotificationCount(0);
             }
         } else {
-            scrollToBottomButton();
+            scrollToBottom();
         }
     }, [lastMessage]);
 
     useEffect(() => {
         setScrollDirection('Scroll Down');
-        console.log(userAddress);
         if (userAddress) {
             if (ens === null || ens === undefined) {
                 setEnsName(defaultEnsName);
@@ -391,27 +388,34 @@ function ChatPanel(props: propsIF) {
         setNotificationCount(0);
 
         if (isChatOpen) {
-            const lastFocused = getLS(LS_LAST_FOCUSED_MSG);
-            if (lastFocused && lastFocused.length > 0) {
+            setTimeout(() => {
+                setLastScrollListenerActive(true);
+            }, 1000);
+            if (lastScrolledMessage && lastScrolledMessage.length > 0) {
                 const msgEl = document.querySelector(
-                    '.messageBubble[data-message-id="' + lastFocused + '"]',
+                    '.messageBubble[data-message-id="' +
+                        lastScrolledMessage +
+                        '"]',
                 );
                 if (msgEl && messageEnd.current) {
-                    const wrapperTop =
-                        messageEnd.current.getBoundingClientRect().top;
-                    const msgElTop = msgEl.getBoundingClientRect().top;
-                    messageEnd.current.scrollTop = msgElTop - wrapperTop;
-                    domDebug(
-                        'scroll set to',
-                        (msgElTop - wrapperTop).toString(),
-                    );
+                    // messageEnd.current.scrollTop = messageEnd.current.scrollHeight - msgElOffsetTop + msgElHeight - messageEnd.current.getBoundingClientRect().height;
+                    setTimeout(() => {
+                        const target =
+                            calculateScrollTarget(lastScrolledMessage);
+                        domDebug('target', new Date().getTime());
+                        if (messageEnd && messageEnd.current) {
+                            messageEnd.current.scrollTop = target;
+                        }
+                    }, 100);
                 }
             }
-            console.log('is chat opened');
+        } else {
+            setLastScrollListenerActive(false);
         }
     }, [isChatOpen]);
 
     useEffect(() => {
+        domDebug('messages', messages.length);
         const mentionsInScope = messages.filter((item) => {
             return item.mentionedWalletID == userAddress;
         });
@@ -423,8 +427,6 @@ function ChatPanel(props: propsIF) {
         if (messages.length == 0) return;
     }, [messages, setMessages]);
 
-    domDebug('isModerator', isModerator ? 'true' : '-');
-    domDebug('isVerified', isVerified ? 'true' : '-');
     // domDebug('address', userAddress);
 
     function handleCloseChatPanel() {
@@ -433,7 +435,8 @@ function ChatPanel(props: propsIF) {
 
     const scrollToBottomButton = async () => {
         if (!messageEnd.current) return;
-        if (notConnectedUserInterval) return;
+
+        console.log('scroll to bottom button');
 
         messageEnd.current.scrollTo(0, messageEnd.current.scrollHeight);
         setTimeout(() => {
@@ -471,10 +474,12 @@ function ChatPanel(props: propsIF) {
     };
 
     const scrollToBottom = async () => {
+        if (notConnectedUserInterval) return;
+        if (lastScrolledMessage && lastScrolledMessage.length > 0) return;
         const timer = setTimeout(() => {
             if (!messageEnd.current) return;
             messageEnd.current.scrollTo(0, messageEnd.current.scrollHeight);
-        }, 1000);
+        }, 200);
         setScrollDirection('Scroll Down');
         return () => clearTimeout(timer);
     };
@@ -486,20 +491,47 @@ function ChatPanel(props: propsIF) {
         return elTop - containerEl?.getBoundingClientRect().top;
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleFocusedMessageOnScroll = (e: any) => {
+    const calculateScrollTarget = (messageId: string) => {
+        if (
+            messageEnd &&
+            messageEnd.current &&
+            messageId &&
+            messageId.length > 0
+        ) {
+            const msgEl = document.querySelector(
+                '.messageBubble[data-message-id="' + messageId + '"]',
+            );
+            if (msgEl) {
+                const msgElOffsetTop = (msgEl as HTMLElement).offsetTop;
+                const target = msgElOffsetTop - 120;
+                domDebug('potential scroll target', target);
+
+                return target;
+            }
+            return messageEnd.current.scrollHeight;
+        }
+        return 0;
+    };
+
+    const handleFocusedMessageOnScroll = () => {
         if (messageEnd && messageEnd.current) {
             const rect = messageEnd.current.getBoundingClientRect();
             const bubbles = document.querySelectorAll('.messageBubble');
             for (let i = 0; i < bubbles.length; i++) {
                 const el = bubbles[i];
                 if (el.getBoundingClientRect().top > rect.top) {
-                    console.log(el);
                     const msgId = el.getAttribute('data-message-id');
                     const msgContent = el.getAttribute('data-message-content');
-                    domDebug('selected message id', msgId ? msgId : '-');
                     domDebug('selected message', msgContent ? msgContent : '-');
-                    setLS(LS_LAST_FOCUSED_MSG, msgId ? msgId : '');
+                    domDebug('selectedMsgOffet', (el as HTMLElement).offsetTop);
+                    domDebug(
+                        'panelHeight',
+                        messageEnd.current.getBoundingClientRect().height,
+                    );
+                    domDebug('scrollheight', messageEnd.current.scrollHeight);
+                    domDebug('panelScrollTop', messageEnd.current.scrollTop);
+                    calculateScrollTarget(msgId ? msgId : '');
+                    setLastScrolledMessage(msgId ? msgId : '');
                     break;
                 }
             }
@@ -509,7 +541,21 @@ function ChatPanel(props: propsIF) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleScroll = (e: any) => {
-        handleFocusedMessageOnScroll(e);
+        if (lastScrollListenerRef.current === true) {
+            if (isChatOpen && messageEnd.current) {
+                const panelScrollHeight = messageEnd.current.scrollHeight;
+                const panelHeight =
+                    messageEnd.current.getBoundingClientRect().height;
+                const panelScrollTop = messageEnd.current.scrollTop;
+                if (panelScrollHeight - panelHeight - panelScrollTop > 40) {
+                    handleFocusedMessageOnScroll();
+                } else {
+                    domDebug('selected message', '');
+                    setLastScrolledMessage('');
+                }
+            }
+        }
+
         const tolerance = 0.6;
 
         if (
@@ -1047,7 +1093,6 @@ function ChatPanel(props: propsIF) {
     );
 
     const handleConfirmDelete = async () => {
-        console.log('Deleting message with ID:', selectedMessageIdForDeletion);
         deleteMsgFromList(selectedMessageIdForDeletion);
         setShowDeleteConfirmation(false);
     };

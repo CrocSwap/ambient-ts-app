@@ -4,6 +4,19 @@ import styles from './DomDebugger.module.css';
 import { clearDomDebug } from './DomDebuggerUtils';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+// TODO network tab logger will be implemented for dom debugger to track requests been sent from app
+// (function() {
+//     const originalFetch = window.fetch;
+//     window.fetch = async function(...args) {
+//       console.log('Fetch request made to:', args);
+//         console.log(args[0])
+//         console.log(args[1]?.method)
+//         console.log('........')
+//       return originalFetch.apply(this, args);
+
+//     };
+//   })();
+
 export default function DomDebugger() {
     const [debugEnabled, setDebugEnabled] = useState(false);
     useEffect(() => {

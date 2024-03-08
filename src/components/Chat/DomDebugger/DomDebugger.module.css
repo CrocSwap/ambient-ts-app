@@ -62,7 +62,7 @@
 }
 
 .dom_debug_node:nth-child(4n){
-    border-right: none;
+    /* border-right: none; */
 }
 
 .dom_debug_key{
@@ -83,6 +83,9 @@
 .dom_debug_value{
     color: #9b9aff;
     opacity: 1;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .dom_debug_signal{

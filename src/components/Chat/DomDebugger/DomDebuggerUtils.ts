@@ -1,6 +1,7 @@
 import styles from './DomDebugger.module.css';
 
-export const domDebug = (key: string, value: string) => {
+export const domDebug = (key: string, value: string | number) => {
+    value = value.toString();
     const el = document.getElementById('dom-debugger');
     if (el === null) {
         return; // not in debug mode
@@ -55,6 +56,7 @@ export const domDebug = (key: string, value: string) => {
         newNode.appendChild(keyDiv);
 
         const valueDiv = document.createElement('div');
+        valueDiv.title = value;
         valueDiv.classList.add(styles.dom_debug_value);
         valueDiv.innerHTML = value;
         newNode.appendChild(valueDiv);

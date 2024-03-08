@@ -120,33 +120,39 @@ export default function ReplyMessage(props: propsIF) {
         <motion.div>
             <TextOnlyTooltip
                 title={
-                    <div className={styles.message_tooltip_wrapper}>
-                        <div className={styles.tooltip_top_info}>
-                            <div className={styles.avatar_jazzicons}>
-                                {replyJazzIcon}
-                            </div>
+                    props.messageObj.message.length < 32 ? (
+                        <></>
+                    ) : (
+                        <div className={styles.message_tooltip_wrapper}>
+                            <div className={styles.tooltip_top_info}>
+                                <div className={styles.avatar_jazzicons}>
+                                    {replyJazzIcon}
+                                </div>
 
-                            <div
-                                className={`${styles.shown_name}  ${
-                                    props.currentUserId ==
-                                    props.messageObj?.sender
-                                        ? styles.current_user_name
-                                        : styles.name
-                                }`}
-                            >
-                                {getShownName(props.messageObj)}
-                                {renderVerificationIcon()}
+                                <div
+                                    className={`${styles.shown_name}  ${
+                                        props.currentUserId ==
+                                        props.messageObj?.sender
+                                            ? styles.current_user_name
+                                            : styles.name
+                                    }`}
+                                >
+                                    {getShownName(props.messageObj)}
+                                    {renderVerificationIcon()}
+                                </div>
+                                <div className={styles.tooltip_message_time}>
+                                    {formatMessageTime(
+                                        props.messageObj.createdAt,
+                                    )}
+                                </div>
                             </div>
-                            <div className={styles.tooltip_message_time}>
-                                {formatMessageTime(props.messageObj.createdAt)}
+                            <div className={styles.tooltip_message_content}>
+                                {renderMsgContent(false)}
                             </div>
                         </div>
-                        <div className={styles.tooltip_message_content}>
-                            {renderMsgContent(false)}
-                        </div>
-                    </div>
+                    )
                 }
-                enterDelay={20}
+                enterDelay={10}
                 placement='top'
             >
                 <div className={styles.replied_message_box}>

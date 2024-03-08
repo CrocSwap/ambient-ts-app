@@ -337,7 +337,6 @@ const useChatSocket = (
         if (socketRef && socketRef.current) {
             // eslint-disable-next-line
             socketRef.current.on('msg-recieve-2', (data: any) => {
-                console.log('recieve 2');
                 if (
                     data &&
                     data.sender &&
