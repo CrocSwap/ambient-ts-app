@@ -52,11 +52,24 @@ export default function TabComponent(props: TabPropsIF) {
         setOutsideControl,
         selectedOutsideTab,
         toggleTradeTable,
+        setCurrentTxActiveInTransactions,
+        setCurrentLimitOrderActive,
+        setCurrentPositionActive,
     } = useContext(TradeTableContext);
 
     const { tradeTableState } = useContext(ChartContext);
 
     const [selectedTab, setSelectedTab] = useState(data[0]);
+
+    const resetActiveRow = () => {
+        setCurrentTxActiveInTransactions('');
+        setCurrentLimitOrderActive('');
+        setCurrentPositionActive('');
+    };
+
+    useEffect(() => {
+        resetActiveRow();
+    }, [selectedTab.label]);
 
     function handleSelectedTab(item: tabData) {
         setOutsideControl(false);
