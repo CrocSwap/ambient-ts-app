@@ -30,6 +30,14 @@ import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import TableRows from '../TableRows';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import {
+    bigNumToFloat,
+    baseTokenForConcLiq,
+    tickToPrice,
+    quoteTokenForConcLiq,
+} from '@crocswap-libs/sdk';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -57,8 +65,10 @@ function Ranges(props: propsIF) {
     const { tradeTableState } = useContext(ChartContext);
     const {
         crocEnv,
-        chainData: { poolIndex },
+        chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
+
+    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
@@ -415,10 +425,17 @@ function Ranges(props: propsIF) {
     >([]);
 
     useEffect(() => {
+        console.log({ updatedPendingPositions });
+    }, [updatedPendingPositions]);
+
+    useEffect(() => {
         (async () => {
             console.log({ relevantTransactionsByType });
-            const newPositions = relevantTransactionsByType.map(
-                (pendingPosition) => {
+            if (relevantTransactionsByType.length === 0) {
+                setUpdatedPendingPositions([]);
+            }
+            const newPositions = await Promise.all(
+                relevantTransactionsByType.map(async (pendingPosition) => {
                     if (!crocEnv || !pendingPosition.txDetails)
                         return {} as PositionIF;
                     const pos = crocEnv.positions(
@@ -427,21 +444,83 @@ function Ranges(props: propsIF) {
                         pendingPosition.userAddress,
                     );
 
-                    (async () => {
-                        if (!pendingPosition.txDetails) return {} as PositionIF;
-                        const liqBigNum = pendingPosition.txDetails.isAmbient
-                            ? (await pos.queryAmbient()).seeds
-                            : (
-                                  await pos.queryRangePos(
-                                      pendingPosition.txDetails.lowTick || 0,
-                                      pendingPosition.txDetails.highTick || 0,
-                                  )
-                              ).liq;
-                        const liqString = liqBigNum.toString();
-                        console.log({ liqString });
-                    })();
+                    const poolPriceNonDisplay = cachedQuerySpotPrice(
+                        crocEnv,
+                        baseTokenAddress,
+                        quoteTokenAddress,
+                        chainId,
+                        lastBlockNumber,
+                    );
 
-                    console.log({ pos, pendingPosition });
+                    let positionLiqBase, positionLiqQuote;
+
+                    if (!pendingPosition.txDetails) return {} as PositionIF;
+                    const liqBigNum = pendingPosition.txDetails.isAmbient
+                        ? (await pos.queryAmbient()).seeds
+                        : (
+                              await pos.queryRangePos(
+                                  pendingPosition.txDetails.lowTick || 0,
+                                  pendingPosition.txDetails.highTick || 0,
+                              )
+                          ).liq;
+                    const liqNum = liqBigNum.toNumber();
+                    if (pendingPosition.txDetails.isAmbient) {
+                        positionLiqBase =
+                            liqNum * Math.sqrt(await poolPriceNonDisplay);
+                        positionLiqQuote =
+                            liqNum / Math.sqrt(await poolPriceNonDisplay);
+                    } else {
+                        positionLiqBase = bigNumToFloat(
+                            baseTokenForConcLiq(
+                                await poolPriceNonDisplay,
+                                liqBigNum,
+                                tickToPrice(
+                                    pendingPosition.txDetails.lowTick || 0,
+                                ),
+                                tickToPrice(
+                                    pendingPosition.txDetails.highTick || 0,
+                                ),
+                            ),
+                        );
+                        positionLiqQuote = bigNumToFloat(
+                            quoteTokenForConcLiq(
+                                await poolPriceNonDisplay,
+                                liqBigNum,
+                                tickToPrice(
+                                    pendingPosition.txDetails.lowTick || 0,
+                                ),
+                                tickToPrice(
+                                    pendingPosition.txDetails.highTick || 0,
+                                ),
+                            ),
+                        );
+                    }
+                    const liqBaseDecimalCorrected =
+                        positionLiqBase /
+                        Math.pow(
+                            10,
+                            pendingPosition.txDetails.baseTokenDecimals || 0,
+                        );
+                    const liqQuoteDecimalCorrected =
+                        positionLiqQuote /
+                        Math.pow(
+                            10,
+                            pendingPosition.txDetails.quoteTokenDecimals || 0,
+                        );
+
+                    const positionLiqBaseTruncated = getFormattedNumber({
+                        value: liqBaseDecimalCorrected,
+                        zeroDisplay: '0',
+                    });
+                    const positionLiqQuoteTruncated = getFormattedNumber({
+                        value: liqQuoteDecimalCorrected,
+                        zeroDisplay: '0',
+                    });
+
+                    console.log({
+                        positionLiqBaseTruncated,
+                        positionLiqQuoteTruncated,
+                    });
                     const onChainPosition: PositionIF = {
                         chainId: '0xaa36a7',
                         base: '0x0000000000000000000000000000000000000000',
@@ -493,23 +572,46 @@ function Ranges(props: propsIF) {
                         feesLiqQuote: 0,
                         feesLiqBaseDecimalCorrected: 0,
                         feesLiqQuoteDecimalCorrected: 0,
-                        positionLiqBaseDecimalCorrected: 0.000999999999959011,
-                        positionLiqQuoteDecimalCorrected: 3.846283,
-                        positionLiqBaseTruncated: '0.00100',
-                        positionLiqQuoteTruncated: '3.85',
-                        totalValueUSD: 17.77481334866799,
+                        positionLiqBaseDecimalCorrected: 0,
+                        positionLiqQuoteDecimalCorrected: 0,
+                        positionLiqBaseTruncated: '...',
+                        positionLiqQuoteTruncated: '...',
+                        totalValueUSD: 0,
                         apy: 0,
                         serverPositionId:
                             'pos_e3f2bc533b364a14af1fb331dbf344944dbd4f63307dee3c8a0e80c3f0975508',
                     } as PositionIF;
-                    return onChainPosition;
-                },
+
+                    onChainPosition.positionLiqBaseDecimalCorrected =
+                        liqBaseDecimalCorrected;
+
+                    onChainPosition.positionLiqQuoteDecimalCorrected =
+                        liqQuoteDecimalCorrected;
+
+                    onChainPosition.positionLiqBaseTruncated =
+                        positionLiqBaseTruncated;
+
+                    onChainPosition.positionLiqQuoteTruncated =
+                        positionLiqQuoteTruncated;
+                    if (
+                        onChainPosition.positionLiqBaseDecimalCorrected !== 0 ||
+                        onChainPosition.positionLiqQuoteDecimalCorrected !== 0
+                    ) {
+                        return onChainPosition;
+                    } else {
+                        return undefined;
+                    }
+                }),
             );
-            if (newPositions.length) {
-                setUpdatedPendingPositions(newPositions);
-            }
+
+            const definedPositions: PositionIF[] = newPositions.filter(
+                (position) => position !== undefined,
+            ) as PositionIF[];
+            console.log({ definedPositions });
+            if (definedPositions.length)
+                setUpdatedPendingPositions(definedPositions);
         })();
-    }, [relevantTransactionsByType.length, lastBlockNumber]);
+    }, [JSON.stringify(relevantTransactionsByType), lastBlockNumber]);
 
     const shouldDisplayNoTableData =
         !isLoading &&
