@@ -29,7 +29,7 @@ export default function TopPools(props: propsIF) {
     return (
         <FlexContainer flexDirection='column' fontSize='body' fullHeight>
             <HeaderGrid numCols={3} color='text2' padding='4px 0'>
-                {['Pool', 'Volume', 'TVL'].map((item) => (
+                {['Pool', '24h Vol.', 'TVL'].map((item) => (
                     <FlexContainer key={item} justifyContent='center'>
                         {item}
                     </FlexContainer>

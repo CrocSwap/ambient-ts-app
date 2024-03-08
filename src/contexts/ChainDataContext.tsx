@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import useWebSocket from 'react-use-websocket';
 import {
+    BLOCK_POLLING_RPC_URL,
     IS_LOCAL_ENV,
     SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
     supportedNetworks,
@@ -66,6 +67,10 @@ export const ChainDataContextProvider = (props: {
     );
     const isActiveNetworkMainnet = ['0x1'].includes(chainData.chainId);
 
+    const blockPollingUrl = BLOCK_POLLING_RPC_URL
+        ? BLOCK_POLLING_RPC_URL
+        : chainData.nodeUrl;
+
     // array of network IDs for supported L2 networks
     const L2_NETWORKS: string[] = [
         '0x13e31',
@@ -84,7 +89,7 @@ export const ChainDataContextProvider = (props: {
             process.env.REACT_APP_INFURA_KEY
                 ? chainData.nodeUrl.slice(0, -32) +
                   process.env.REACT_APP_INFURA_KEY
-                : chainData.nodeUrl;
+                : blockPollingUrl;
         try {
             const lastBlockNumber = await fetchBlockNumber(nodeUrl);
             if (lastBlockNumber > 0) setLastBlockNumber(lastBlockNumber);
@@ -108,7 +113,7 @@ export const ChainDataContextProvider = (props: {
             }, BLOCK_NUM_POLL_MS);
             return () => clearInterval(interval);
         })();
-    }, [chainData.nodeUrl, BLOCK_NUM_POLL_MS]);
+    }, [blockPollingUrl, BLOCK_NUM_POLL_MS]);
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
 

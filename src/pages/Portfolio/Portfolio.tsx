@@ -93,6 +93,7 @@ function Portfolio(props: PortfolioPropsIF) {
         (async () => {
             if (addressFromParams && isAddressEns && mainnetProvider) {
                 try {
+                    // @emily
                     const newResolvedAddress =
                         await mainnetProvider.resolveName(addressFromParams);
                     setResolvedAddress(newResolvedAddress ?? '');

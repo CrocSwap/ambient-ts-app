@@ -48,7 +48,7 @@
             "decimals": 18,
             "name": "Orbit Protocol",
             "symbol": "ORBIT",
-            "logoURI": "https://dashboard-assets.dappradar.com/document/47902/orbitprotocol-project-defi-47902-logo-166x166_1e74c8301cbe3d05a57a80147dd2607d.png"
+            "logoURI": "https://blastscan.io/token/images/orbit_32.png"
         },
         {
             "address": "0xA4C7aA67189EC5623121c6C94Ec757DfeD932D4B",
@@ -57,6 +57,14 @@
             "name": "Mia",
             "symbol": "MIA",
             "logoURI": "https://miablastsoff.com/images/logo.png"
+        },
+        {
+            "address": "0x76DA31D7C9CbEAE102aff34D3398bC450c8374c1",
+            "chainId": 81457,
+            "decimals": 18,
+            "name": "Magic Internet Money",
+            "symbol": "MIM",
+            "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/162.png"
         },
         {
             "address": "0xB582Dc28968c725D2868130752aFa0c13EbF9b1a",
@@ -74,7 +82,7 @@
             "fromList": "/ambient-token-list.json",
             "name": "Yes",
             "symbol": "YES",
-            "logoURI": ""
+            "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/29620.png"
         },
         {
             "address": "0x216A5a1135A9dab49FA9Ad865E0f22FE22b5630A",
@@ -83,7 +91,7 @@
             "fromList": "/ambient-token-list.json",
             "name": "PUMP",
             "symbol": "PUMP",
-            "logoURI": ""
+            "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/29601.png"
         },
         {
             "address": "0x0B4d0ee29857c3961b380d4ec138EA5814E346b9",
@@ -92,7 +100,7 @@
             "fromList": "/ambient-token-list.json",
             "name": "P@cman Blastoff",
             "symbol": "$PACM",
-            "logoURI": ""
+            "logoURI": "https://www.pacman.meme/images/tokens/pacman.svg"
         },
         {
             "address": "0xCa84812E477eE5a96a92328689D8Ce2589aB6FfD",
