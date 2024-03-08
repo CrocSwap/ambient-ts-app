@@ -299,7 +299,6 @@ export async function getChainStats(
     )
         .then((response) => response?.json())
         .then((json) => {
-            console.log({ json });
             if (!json?.data) {
                 return undefined;
             }
