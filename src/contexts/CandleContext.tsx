@@ -152,7 +152,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isChartEnabled,
         isUserOnline,
         baseTokenAddress + quoteTokenAddress,
-        candleTimeLocal,
+        candleScale?.isFetchForTimeframe,
     ]);
 
     useEffect(() => {
@@ -224,7 +224,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 } else {
                     setIsCandleDataNull(true);
                 }
-                setIsFetchingCandle(false);
+
+                if (candleSeries && candles?.candles.length > 7) {
+                    setIsFetchingCandle(false);
+                }
                 setIsFirstFetch(false);
             });
         } else {
