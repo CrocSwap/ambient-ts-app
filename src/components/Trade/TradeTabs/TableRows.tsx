@@ -113,7 +113,7 @@ function TableRows({
     const [activeRecord, setActiveRecord] = useState<ActiveRecord>(undefined);
 
     useEffect(() => {
-        if (isDetailsModalOpen) {
+        if (isDetailsModalOpen || isActionModalOpen) {
             if (type === 'Range') {
                 setActiveRecord(
                     (fullData as PositionIF[]).find((position) => {
