@@ -434,10 +434,6 @@ function Ranges(props: propsIF) {
     >([]);
 
     useEffect(() => {
-        console.log({ updatedPendingPositions });
-    }, [updatedPendingPositions]);
-
-    useEffect(() => {
         (async () => {
             if (relevantTransactionsByType.length === 0) {
                 setUpdatedPendingPositions([]);
@@ -613,10 +609,14 @@ function Ranges(props: propsIF) {
                             positionData.highRangeShortDisplayInBase,
                         highRangeShortDisplayInQuote:
                             positionData.highRangeShortDisplayInQuote,
-                        bidTickPriceDecimalCorrected: 0,
-                        bidTickInvPriceDecimalCorrected: 0,
-                        askTickPriceDecimalCorrected: 0,
-                        askTickInvPriceDecimalCorrected: 0,
+                        bidTickPriceDecimalCorrected:
+                            positionData.bidTickPriceDecimalCorrected,
+                        bidTickInvPriceDecimalCorrected:
+                            positionData.bidTickInvPriceDecimalCorrected,
+                        askTickPriceDecimalCorrected:
+                            positionData.askTickPriceDecimalCorrected,
+                        askTickInvPriceDecimalCorrected:
+                            positionData.askTickInvPriceDecimalCorrected,
                         positionLiq: liqNum,
                         positionLiqBase: positionLiqBase,
                         positionLiqQuote: positionLiqQuote,
