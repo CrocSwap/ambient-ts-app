@@ -1298,11 +1298,13 @@ function ChatPanel(props: propsIF) {
 
             {showVerifyWalletConfirmationInDelete && (
                 <ChatConfirmationPanel
-                    isActive={showVerifyOldMessagesPanel && isChatOpen}
+                    isActive={
+                        showVerifyWalletConfirmationInDelete && isChatOpen
+                    }
                     title='Verify Your Wallet'
                     content='You should verify your wallet to delete that message.Do you want to verify?'
                     cancelListener={() => {
-                        setShowVerifyOldMessagesPanel(false);
+                        setShowVerifyWalletConfirmationInDelete(false);
                     }}
                     confirmListener={async (e) =>
                         verifyWallet(0, new Date(), e)
