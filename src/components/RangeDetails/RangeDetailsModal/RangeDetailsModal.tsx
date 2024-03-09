@@ -22,6 +22,7 @@ import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import Modal from '../../Global/Modal/Modal';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { bigNumToFloat } from '@crocswap-libs/sdk';
 
 interface propsIF {
     position: PositionIF;
@@ -140,8 +141,10 @@ function RangeDetailsModal(props: propsIF) {
                     position.askTick,
                 );
 
-                const baseRewards = parseFloat(positionRewards.baseRewards);
-                const quoteRewards = parseFloat(positionRewards.quoteRewards);
+                const baseRewards = bigNumToFloat(positionRewards.baseRewards);
+                const quoteRewards = bigNumToFloat(
+                    positionRewards.quoteRewards,
+                );
 
                 const feesLiqBaseDecimalCorrected =
                     baseRewards / Math.pow(10, position.baseDecimals);
