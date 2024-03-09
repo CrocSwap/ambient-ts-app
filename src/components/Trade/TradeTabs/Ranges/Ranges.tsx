@@ -439,12 +439,14 @@ function Ranges(props: propsIF) {
 
     useEffect(() => {
         (async () => {
-            console.log({ relevantTransactionsByType });
             if (relevantTransactionsByType.length === 0) {
                 setUpdatedPendingPositions([]);
             }
+            const newAdds = relevantTransactionsByType.filter((tx) => {
+                return tx.txAction === 'Add';
+            });
             const newPositions = await Promise.all(
-                relevantTransactionsByType.map(async (pendingPosition) => {
+                newAdds.map(async (pendingPosition) => {
                     if (!crocEnv || !pendingPosition.txDetails)
                         return {} as PositionIF;
                     const pos = crocEnv.positions(
@@ -495,7 +497,7 @@ function Ranges(props: propsIF) {
                         );
                         positionLiqQuote = bigNumToFloat(
                             quoteTokenForConcLiq(
-                                await poolPriceNonDisplay,
+                                poolPriceNonDisplay,
                                 liqBigNum,
                                 tickToPrice(
                                     pendingPosition.txDetails.lowTick || 0,
@@ -651,7 +653,6 @@ function Ranges(props: propsIF) {
             const definedPositions: PositionIF[] = newPositions.filter(
                 (position) => position !== undefined,
             ) as PositionIF[];
-            console.log({ definedPositions });
             if (definedPositions.length)
                 setUpdatedPendingPositions(definedPositions);
         })();
