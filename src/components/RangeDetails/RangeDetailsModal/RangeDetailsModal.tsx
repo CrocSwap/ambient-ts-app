@@ -201,9 +201,12 @@ function RangeDetailsModal(props: propsIF) {
                     if (!crocEnv || !provider || !json?.data) {
                         setBaseCollateralDisplay(positionLiqBaseTruncated);
                         setQuoteCollateralDisplay(positionLiqQuoteTruncated);
-                        setUsdValue(totalValueUSD.toString());
-                        // setBaseFeesDisplay(undefined);
-                        // setQuoteFeesDisplay(undefined);
+                        setUsdValue(
+                            getFormattedNumber({
+                                value: totalValueUSD,
+                                prefix: '$',
+                            }),
+                        );
                         return;
                     }
                     setServerPositionId(json?.data?.positionId);
