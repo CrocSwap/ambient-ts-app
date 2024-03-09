@@ -27,7 +27,10 @@ export const getPositionData = async (
     cachedEnsResolve: FetchAddrFn,
     skipENSFetch?: boolean,
 ): Promise<PositionIF> => {
-    const newPosition = { ...position } as PositionIF;
+    const newPosition = {
+        serverPositionId: position.positionId,
+        ...position,
+    } as PositionIF;
 
     const baseTokenAddress =
         position.base.length === 40 ? '0x' + position.base : position.base;

@@ -46,13 +46,16 @@ function RangeDetailsModal(props: propsIF) {
         bidTick,
         askTick,
         apy: positionApy,
+        positionLiqBaseTruncated,
+        positionLiqQuoteTruncated,
+        totalValueUSD,
     } = position;
 
     const { userAddress } = useContext(UserDataContext);
 
     const {
         posHash,
-        serverPositionId,
+        // serverPositionId,
         isAmbient,
         isBaseTokenMoneynessGreaterOrEqual,
         minRangeDenomByMoneyness,
@@ -60,6 +63,10 @@ function RangeDetailsModal(props: propsIF) {
         ambientOrMin: lowRangeDisplay,
         ambientOrMax: highRangeDisplay,
     } = useProcessRange(position, userAddress);
+
+    const [serverPositionId, setServerPositionId] = useState<
+        string | undefined
+    >();
 
     const {
         snackbar: { open: openSnackbar },
@@ -170,6 +177,8 @@ function RangeDetailsModal(props: propsIF) {
             ? GCGO_OVERRIDE_URL + '/position_stats?'
             : activeNetwork.graphCacheUrl + '/position_stats?';
 
+        updateRewards();
+
         if (position.positionType) {
             fetch(
                 positionStatsCacheEndpoint +
@@ -187,17 +196,17 @@ function RangeDetailsModal(props: propsIF) {
                 .then((response) => response?.json())
                 .then(async (json) => {
                     if (!crocEnv || !provider || !json?.data) {
-                        setBaseCollateralDisplay(undefined);
-                        setQuoteCollateralDisplay(undefined);
-                        setUsdValue(undefined);
-                        setBaseFeesDisplay(undefined);
-                        setQuoteFeesDisplay(undefined);
+                        setBaseCollateralDisplay(positionLiqBaseTruncated);
+                        setQuoteCollateralDisplay(positionLiqQuoteTruncated);
+                        setUsdValue(totalValueUSD.toString());
+                        // setBaseFeesDisplay(undefined);
+                        // setQuoteFeesDisplay(undefined);
                         return;
                     }
+                    setServerPositionId(json?.data?.positionId);
                     // temporarily skip ENS fetch
                     const skipENSFetch = true;
                     const positionPayload = json?.data as PositionServerIF;
-                    await updateRewards();
                     const positionStats = await getPositionData(
                         positionPayload,
                         tokens.tokenUniv,
@@ -266,7 +275,7 @@ function RangeDetailsModal(props: propsIF) {
                         maxRangeDenomByMoneyness={maxRangeDenomByMoneyness}
                         baseTokenAddress={baseTokenAddress}
                         quoteTokenAddress={quoteTokenAddress}
-                        positionId={serverPositionId}
+                        positionId={serverPositionId || ''}
                     />
                 </div>
                 <div className={styles.right_container}>
