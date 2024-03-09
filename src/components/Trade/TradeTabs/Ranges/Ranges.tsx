@@ -4,7 +4,7 @@ import { useEffect, useState, useContext, memo, useRef, useMemo } from 'react';
 // START: Import Local Files
 import { Pagination } from '@mui/material';
 import { useSortedPositions } from '../useSortedPositions';
-import { PositionIF } from '../../../../ambient-utils/types';
+import { PositionIF, PositionServerIF } from '../../../../ambient-utils/types';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
 import NoTableData from '../NoTableData/NoTableData';
@@ -36,8 +36,11 @@ import {
     baseTokenForConcLiq,
     tickToPrice,
     quoteTokenForConcLiq,
+    priceToTick,
 } from '@crocswap-libs/sdk';
-import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
+import { getPositionData } from '../../../../ambient-utils/dataLayer';
+import { TokenContext } from '../../../../contexts/TokenContext';
+import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -57,6 +60,7 @@ function Ranges(props: propsIF) {
     const { showAllData: showAllDataSelection, toggleTradeTable } =
         useContext(TradeTableContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
+    const { tokens } = useContext(TokenContext);
 
     const {
         sidebar: { isOpen: isSidebarOpen },
@@ -65,10 +69,16 @@ function Ranges(props: propsIF) {
     const { tradeTableState } = useContext(ChartContext);
     const {
         crocEnv,
+        provider,
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
 
-    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
+    const {
+        cachedFetchTokenPrice,
+        cachedQuerySpotPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
@@ -258,7 +268,7 @@ function Ranges(props: propsIF) {
             <p>Max</p>
         </>
     );
-    const tokens = isAccountView ? (
+    const tokensDisplay = isAccountView ? (
         <>Tokens</>
     ) : (
         <>
@@ -348,7 +358,7 @@ function Ranges(props: propsIF) {
             alignRight: true,
         },
         {
-            name: tokens,
+            name: tokensDisplay,
             className: 'tokens',
             show: tableView === 'medium',
             slug: 'tokens',
@@ -443,13 +453,15 @@ function Ranges(props: propsIF) {
                         pendingPosition.userAddress,
                     );
 
-                    const poolPriceNonDisplay = cachedQuerySpotPrice(
+                    const poolPriceNonDisplay = await cachedQuerySpotPrice(
                         crocEnv,
                         baseTokenAddress,
                         quoteTokenAddress,
                         chainId,
                         lastBlockNumber,
                     );
+
+                    const poolPriceInTicks = priceToTick(poolPriceNonDisplay);
 
                     let positionLiqBase, positionLiqQuote;
 
@@ -462,16 +474,16 @@ function Ranges(props: propsIF) {
                                   pendingPosition.txDetails.highTick || 0,
                               )
                           ).liq;
-                    const liqNum = liqBigNum.toNumber();
+                    const liqNum = bigNumToFloat(liqBigNum);
                     if (pendingPosition.txDetails.isAmbient) {
                         positionLiqBase =
-                            liqNum * Math.sqrt(await poolPriceNonDisplay);
+                            liqNum * Math.sqrt(poolPriceNonDisplay);
                         positionLiqQuote =
-                            liqNum / Math.sqrt(await poolPriceNonDisplay);
+                            liqNum / Math.sqrt(poolPriceNonDisplay);
                     } else {
                         positionLiqBase = bigNumToFloat(
                             baseTokenForConcLiq(
-                                await poolPriceNonDisplay,
+                                poolPriceNonDisplay,
                                 liqBigNum,
                                 tickToPrice(
                                     pendingPosition.txDetails.lowTick || 0,
@@ -494,104 +506,137 @@ function Ranges(props: propsIF) {
                             ),
                         );
                     }
-                    const liqBaseDecimalCorrected =
-                        positionLiqBase /
-                        Math.pow(
-                            10,
-                            pendingPosition.txDetails.baseTokenDecimals || 0,
-                        );
-                    const liqQuoteDecimalCorrected =
-                        positionLiqQuote /
-                        Math.pow(
-                            10,
-                            pendingPosition.txDetails.quoteTokenDecimals || 0,
-                        );
 
-                    const positionLiqBaseTruncated = getFormattedNumber({
-                        value: liqBaseDecimalCorrected,
-                        zeroDisplay: '0',
-                    });
-                    const positionLiqQuoteTruncated = getFormattedNumber({
-                        value: liqQuoteDecimalCorrected,
-                        zeroDisplay: '0',
+                    const currentTime = Math.floor(Date.now() / 1000);
+
+                    const posHash = getPositionHash(undefined, {
+                        isPositionTypeAmbient:
+                            pendingPosition.txDetails.isAmbient || false,
+                        user: pendingPosition.userAddress,
+                        baseAddress: pendingPosition.txDetails.baseAddress,
+                        quoteAddress: pendingPosition.txDetails.quoteAddress,
+                        poolIdx: pendingPosition.txDetails.poolIdx,
+                        bidTick: pendingPosition.txDetails.lowTick || 0,
+                        askTick: pendingPosition.txDetails.highTick || 0,
                     });
 
-                    console.log({
-                        positionLiqBaseTruncated,
-                        positionLiqQuoteTruncated,
-                    });
+                    const mockServerPosition: PositionServerIF = {
+                        positionId: posHash,
+                        chainId: chainId,
+                        askTick: pendingPosition.txDetails.highTick || 0,
+                        bidTick: pendingPosition.txDetails.lowTick || 0,
+                        poolIdx: pendingPosition.txDetails.poolIdx,
+                        base: pendingPosition.txDetails.baseAddress,
+                        quote: pendingPosition.txDetails.quoteAddress,
+                        user: pendingPosition.userAddress,
+                        ambientLiq: pendingPosition.txDetails.isAmbient
+                            ? liqNum
+                            : 0,
+                        concLiq: !pendingPosition.txDetails.isAmbient
+                            ? liqNum
+                            : 0,
+                        rewardLiq: 0, // unknown
+                        positionType: pendingPosition.txDetails.isAmbient
+                            ? 'ambient'
+                            : 'concentrated',
+                        timeFirstMint: currentTime, // unknown
+                        lastMintTx: '', // unknown
+                        firstMintTx: '', // unknown
+                        aprEst: 0, // unknown
+                    };
+                    const positionData = await getPositionData(
+                        mockServerPosition,
+                        tokens.tokenUniv,
+                        crocEnv,
+                        provider,
+                        chainId,
+                        lastBlockNumber,
+                        cachedFetchTokenPrice,
+                        cachedQuerySpotPrice,
+                        cachedTokenDetails,
+                        cachedEnsResolve,
+                        true,
+                    );
                     const onChainPosition: PositionIF = {
-                        chainId: '0xaa36a7',
-                        base: '0x0000000000000000000000000000000000000000',
-                        quote: '0x60bba138a74c5e7326885de5090700626950d509',
-                        poolIdx: 36000,
-                        bidTick: 192880,
-                        askTick: 194896,
-                        isBid: false,
-                        user: '0xa86dabfbb529a4c8186bdd52bd226ac81757e090',
-                        timeFirstMint: 1709845452,
-                        latestUpdateTime: 1709845452,
-                        lastMintTx:
-                            '0x7f830ba5cc254554543003f1087d787d69db03fcca71330075bf0935dbc1a245',
-                        firstMintTx:
-                            '0x7f830ba5cc254554543003f1087d787d69db03fcca71330075bf0935dbc1a245',
-                        positionType: 'concentrated',
-                        ambientLiq: 0,
-                        concLiq: 1261875634176,
-                        rewardLiq: 0,
-                        liqRefreshTime: 1709845559,
-                        aprDuration: 218,
-                        aprPostLiq: 1261875634176,
-                        aprContributedLiq: 1261875634176,
+                        chainId: chainId,
+                        base: pendingPosition.txDetails.baseAddress,
+                        quote: pendingPosition.txDetails.quoteAddress,
+                        poolIdx: pendingPosition.txDetails.poolIdx,
+                        bidTick: pendingPosition.txDetails.lowTick,
+                        askTick: pendingPosition.txDetails.highTick,
+                        isBid: pendingPosition.txDetails.isBid,
+                        user: pendingPosition.userAddress,
+                        timeFirstMint: currentTime, // unknown
+                        latestUpdateTime: currentTime, // unknown
+                        lastMintTx: '', // unknown
+                        firstMintTx: '', // unknown
+                        positionType: pendingPosition.txDetails.isAmbient
+                            ? 'ambient'
+                            : 'concentrated',
+                        ambientLiq: pendingPosition.txDetails.isAmbient
+                            ? liqNum
+                            : 0,
+                        concLiq: !pendingPosition.txDetails.isAmbient
+                            ? liqNum
+                            : 0,
+                        rewardLiq: 0, // unknown
+                        liqRefreshTime: 0, // unknown
+                        aprDuration: 0, // unknown
+                        aprPostLiq: 0,
+                        aprContributedLiq: 0,
                         // aprEst: 0,
-                        poolPriceInTicks: 193882.26311152513,
-                        isPositionInRange: true,
-                        baseDecimals: 18,
-                        quoteDecimals: 6,
-                        baseSymbol: 'ETH',
-                        quoteSymbol: 'USDC',
-                        baseName: 'Native Ether',
-                        quoteName: 'USDCoin',
-                        lowRangeDisplayInBase: '3,437.14',
-                        highRangeDisplayInBase: '4,204.81',
-                        lowRangeDisplayInQuote: '0.000238',
-                        highRangeDisplayInQuote: '0.000291',
-                        lowRangeShortDisplayInBase: '3,437',
-                        lowRangeShortDisplayInQuote: '0.000238',
-                        highRangeShortDisplayInBase: '4,205',
-                        highRangeShortDisplayInQuote: '0.000291',
-                        bidTickPriceDecimalCorrected: 0.00023782262110302573,
-                        bidTickInvPriceDecimalCorrected: 3437.141793336572,
-                        askTickPriceDecimalCorrected: 0.0002909394084173815,
-                        askTickInvPriceDecimalCorrected: 4204.8144762764005,
-                        positionLiq: 1261875634176,
-                        positionLiqBase: 999999999959011,
-                        positionLiqQuote: 3846283,
-                        feesLiqBase: 0,
-                        feesLiqQuote: 0,
-                        feesLiqBaseDecimalCorrected: 0,
-                        feesLiqQuoteDecimalCorrected: 0,
-                        positionLiqBaseDecimalCorrected: 0,
-                        positionLiqQuoteDecimalCorrected: 0,
-                        positionLiqBaseTruncated: '...',
-                        positionLiqQuoteTruncated: '...',
-                        totalValueUSD: 0,
-                        apy: 0,
-                        serverPositionId:
-                            'pos_e3f2bc533b364a14af1fb331dbf344944dbd4f63307dee3c8a0e80c3f0975508',
+                        poolPriceInTicks: poolPriceInTicks,
+                        isPositionInRange: true, // unknown
+                        baseDecimals:
+                            pendingPosition.txDetails.baseTokenDecimals,
+                        quoteDecimals:
+                            pendingPosition.txDetails.quoteTokenDecimals,
+                        baseSymbol: pendingPosition.txDetails.baseSymbol,
+                        quoteSymbol: pendingPosition.txDetails.quoteSymbol,
+                        baseName: '',
+                        quoteName: '',
+                        lowRangeDisplayInBase:
+                            positionData.lowRangeDisplayInBase,
+                        highRangeDisplayInBase:
+                            positionData.highRangeDisplayInBase,
+                        lowRangeDisplayInQuote:
+                            positionData.lowRangeDisplayInQuote,
+                        highRangeDisplayInQuote:
+                            positionData.highRangeDisplayInQuote,
+                        lowRangeShortDisplayInBase:
+                            positionData.lowRangeShortDisplayInBase,
+                        lowRangeShortDisplayInQuote:
+                            positionData.lowRangeShortDisplayInQuote,
+                        highRangeShortDisplayInBase:
+                            positionData.highRangeShortDisplayInBase,
+                        highRangeShortDisplayInQuote:
+                            positionData.highRangeShortDisplayInQuote,
+                        bidTickPriceDecimalCorrected: 0,
+                        bidTickInvPriceDecimalCorrected: 0,
+                        askTickPriceDecimalCorrected: 0,
+                        askTickInvPriceDecimalCorrected: 0,
+                        positionLiq: liqNum,
+                        positionLiqBase: positionLiqBase,
+                        positionLiqQuote: positionLiqQuote,
+                        feesLiqBase: positionData.feesLiqBase,
+                        feesLiqQuote: positionData.feesLiqQuote,
+                        feesLiqBaseDecimalCorrected:
+                            positionData.feesLiqBaseDecimalCorrected,
+                        feesLiqQuoteDecimalCorrected:
+                            positionData.feesLiqQuoteDecimalCorrected,
+                        positionLiqBaseDecimalCorrected:
+                            positionData.positionLiqBaseDecimalCorrected,
+                        positionLiqQuoteDecimalCorrected:
+                            positionData.positionLiqQuoteDecimalCorrected,
+                        positionLiqBaseTruncated:
+                            positionData.positionLiqBaseTruncated,
+                        positionLiqQuoteTruncated:
+                            positionData.positionLiqQuoteTruncated,
+                        totalValueUSD: positionData.totalValueUSD,
+                        apy: positionData.apy,
+                        positionId: positionData.positionId,
                     } as PositionIF;
 
-                    onChainPosition.positionLiqBaseDecimalCorrected =
-                        liqBaseDecimalCorrected;
-
-                    onChainPosition.positionLiqQuoteDecimalCorrected =
-                        liqQuoteDecimalCorrected;
-
-                    onChainPosition.positionLiqBaseTruncated =
-                        positionLiqBaseTruncated;
-
-                    onChainPosition.positionLiqQuoteTruncated =
-                        positionLiqQuoteTruncated;
                     if (
                         onChainPosition.positionLiqBaseDecimalCorrected !== 0 ||
                         onChainPosition.positionLiqQuoteDecimalCorrected !== 0
@@ -637,15 +682,8 @@ function Ranges(props: propsIF) {
 
                 <TableRows
                     type='Range'
-                    data={updatedPendingPositions}
-                    fullData={fullData}
-                    isAccountView={isAccountView}
-                    tableView={tableView}
-                />
-                <TableRows
-                    type='Range'
-                    data={_DATA.currentData}
-                    fullData={fullData}
+                    data={updatedPendingPositions.concat(_DATA.currentData)}
+                    fullData={updatedPendingPositions.concat(fullData)}
                     isAccountView={isAccountView}
                     tableView={tableView}
                 />
