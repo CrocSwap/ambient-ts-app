@@ -663,23 +663,46 @@ function Ranges(props: propsIF) {
         !rangeData.length &&
         unindexedNonFailedSessionPositionUpdates.length === 0;
 
+    const updatedPositionHashes = updatedPendingPositions.map(
+        (pos) => pos.positionId,
+    );
+
+    const pendingPositionsToDisplayPlaceholder =
+        relevantTransactionsByType.filter(
+            (pos) =>
+                !updatedPositionHashes.includes(
+                    getPositionHash(undefined, {
+                        isPositionTypeAmbient:
+                            pos.txDetails?.isAmbient || false,
+                        user: pos.userAddress,
+                        baseAddress: pos.txDetails?.baseAddress || '',
+                        quoteAddress: pos.txDetails?.quoteAddress || '',
+                        poolIdx: pos.txDetails?.poolIdx || 0,
+                        bidTick: pos.txDetails?.lowTick || 0,
+                        askTick: pos.txDetails?.highTick || 0,
+                    }),
+                ),
+        );
+
     const rangeDataOrNull = !shouldDisplayNoTableData ? (
         <div>
             <ul ref={listRef} id='current_row_scroll'>
                 {!isAccountView &&
-                    relevantTransactionsByType.length > 0 &&
-                    relevantTransactionsByType.reverse().map((tx, idx) => (
-                        <RangesRowPlaceholder
-                            key={idx}
-                            transaction={{
-                                hash: tx.txHash,
-                                side: tx.txAction,
-                                type: tx.txType,
-                                details: tx.txDetails,
-                            }}
-                            tableView={tableView}
-                        />
-                    ))}
+                    pendingPositionsToDisplayPlaceholder.length > 0 &&
+                    pendingPositionsToDisplayPlaceholder
+                        .reverse()
+                        .map((tx, idx) => (
+                            <RangesRowPlaceholder
+                                key={idx}
+                                transaction={{
+                                    hash: tx.txHash,
+                                    side: tx.txAction,
+                                    type: tx.txType,
+                                    details: tx.txDetails,
+                                }}
+                                tableView={tableView}
+                            />
+                        ))}
 
                 <TableRows
                     type='Range'
