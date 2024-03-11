@@ -71,8 +71,8 @@ export default function TransactionException(props: propsIF) {
                         suggestionToCheckWalletETHBalance
                     ) : isSlippageError ? (
                         <p>
-                            Please try increasing your slippage tolerance in
-                            settings
+                            Consider increasing your slippage tolerance in
+                            settings.
                         </p>
                     ) : (
                         <p>
