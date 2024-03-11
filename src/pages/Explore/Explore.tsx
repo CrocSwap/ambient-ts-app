@@ -76,11 +76,11 @@ export default function Explore() {
         : 'Top Pools on Ambient';
 
     const titleTextTokens: string = isActiveNetworkMainnet
-        ? 'Recently Added Tokens on Ethereum'
+        ? 'Active Tokens on Ethereum'
         : isActiveNetworkBlast
-        ? 'Recently Added on Blast'
+        ? 'Active on Blast'
         : isActiveNetworkScroll
-        ? 'Recently Added on Scroll'
+        ? 'Active on Scroll'
         : 'Top Pools on Ambient';
 
     type tables = 'pools' | 'tokens';
