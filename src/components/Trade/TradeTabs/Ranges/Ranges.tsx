@@ -681,7 +681,8 @@ function Ranges(props: propsIF) {
                         bidTick: pos.txDetails?.lowTick || 0,
                         askTick: pos.txDetails?.highTick || 0,
                     }),
-                ),
+                    // prevent placeholder from disappearing when the update is an add
+                ) || pos.txDescription.startsWith('Add to Range'),
         );
 
     const rangeDataOrNull = !shouldDisplayNoTableData ? (
@@ -706,7 +707,13 @@ function Ranges(props: propsIF) {
 
                 <TableRows
                     type='Range'
-                    data={updatedPendingPositions.concat(_DATA.currentData)}
+                    data={updatedPendingPositions.concat(
+                        _DATA.currentData.filter(
+                            (pos) =>
+                                // remove existing row for adds
+                                !updatedPositionHashes.includes(pos.positionId),
+                        ),
+                    )}
                     fullData={updatedPendingPositions.concat(fullData)}
                     isAccountView={isAccountView}
                     tableView={tableView}
@@ -714,7 +721,6 @@ function Ranges(props: propsIF) {
             </ul>
             {
                 // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
-                // TODO (#1804): we should instead be adding results to RTK
                 !isTradeTableExpanded &&
                     !props.isAccountView &&
                     sortedPositions.length > NUM_RANGES_WHEN_COLLAPSED && (
