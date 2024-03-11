@@ -30,6 +30,7 @@ function DexTokens(props: propsIF) {
     const { dexTokens } = props;
 
     const sortedTokens: sortedDexTokensIF = useSortedDexTokens(dexTokens);
+    console.log(sortedTokens.data);
 
     // !important:  any changes to `sortable` values must be accompanied by an update
     // !important:  ... to the type definition `sortType` in `useSortedPools.ts`

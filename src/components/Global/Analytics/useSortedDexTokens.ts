@@ -26,7 +26,7 @@ export const useSortedDexTokens = (
 
     function sortByTime(tkns: dexTokenData[]): dexTokenData[] {
         const data = tkns.sort((a: dexTokenData, b: dexTokenData) => {
-            return a.latestTime - b.latestTime;
+            return b.latestTime - a.latestTime;
         });
         return data;
     }
