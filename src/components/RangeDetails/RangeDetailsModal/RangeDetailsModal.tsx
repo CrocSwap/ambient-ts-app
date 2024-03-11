@@ -22,6 +22,7 @@ import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import Modal from '../../Global/Modal/Modal';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { bigNumToFloat } from '@crocswap-libs/sdk';
 
 interface propsIF {
     position: PositionIF;
@@ -122,6 +123,51 @@ function RangeDetailsModal(props: propsIF) {
         openSnackbar(`${posHash.toString()} copied`, 'info');
     }
 
+    const updateRewards = async () => {
+        try {
+            if (!crocEnv || !position) return;
+            const pos = crocEnv.positions(
+                position.base,
+                position.quote,
+                position.user,
+            );
+
+            if (isAmbient) {
+                setBaseFeesDisplay('...');
+                setQuoteFeesDisplay('...');
+            } else {
+                const positionRewards = await pos.queryRewards(
+                    position.bidTick,
+                    position.askTick,
+                );
+
+                const baseRewards = bigNumToFloat(positionRewards.baseRewards);
+                const quoteRewards = bigNumToFloat(
+                    positionRewards.quoteRewards,
+                );
+
+                const feesLiqBaseDecimalCorrected =
+                    baseRewards / Math.pow(10, position.baseDecimals);
+                const feesLiqQuoteDecimalCorrected =
+                    quoteRewards / Math.pow(10, position.quoteDecimals);
+
+                const baseFeeDisplayTruncated = getFormattedNumber({
+                    value: feesLiqBaseDecimalCorrected,
+                    zeroDisplay: '0',
+                });
+                setBaseFeesDisplay(baseFeeDisplayTruncated);
+
+                const quoteFeesDisplayTruncated = getFormattedNumber({
+                    value: feesLiqQuoteDecimalCorrected,
+                    zeroDisplay: '0',
+                });
+                setQuoteFeesDisplay(quoteFeesDisplayTruncated);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     useEffect(() => {
         const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
             ? GCGO_OVERRIDE_URL + '/position_stats?'
@@ -154,6 +200,7 @@ function RangeDetailsModal(props: propsIF) {
                     // temporarily skip ENS fetch
                     const skipENSFetch = true;
                     const positionPayload = json?.data as PositionServerIF;
+                    await updateRewards();
                     const positionStats = await getPositionData(
                         positionPayload,
                         tokens.tokenUniv,
@@ -190,23 +237,6 @@ function RangeDetailsModal(props: propsIF) {
                     );
 
                     setUpdatedPositionApy(positionStats.aprEst * 100);
-
-                    const baseFeeDisplayNum =
-                        positionStats.feesLiqBaseDecimalCorrected;
-                    const quoteFeeDisplayNum =
-                        positionStats.feesLiqQuoteDecimalCorrected;
-
-                    const baseFeeDisplayTruncated = getFormattedNumber({
-                        value: baseFeeDisplayNum,
-                        zeroDisplay: '0',
-                    });
-                    setBaseFeesDisplay(baseFeeDisplayTruncated);
-
-                    const quoteFeesDisplayTruncated = getFormattedNumber({
-                        value: quoteFeeDisplayNum,
-                        zeroDisplay: '0',
-                    });
-                    setQuoteFeesDisplay(quoteFeesDisplayTruncated);
                 })
                 .catch(console.error);
         }
