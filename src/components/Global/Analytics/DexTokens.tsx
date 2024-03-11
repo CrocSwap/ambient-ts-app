@@ -72,6 +72,9 @@ function DexTokens(props: propsIF) {
                     <Table>
                         <TableHeadTokens headerItems={dexTokensHeaderItems} />
                         <TableBody>
+                            {/* 
+                                TODO:   change this logic to use React <Suspense />
+                            */}
                             {sortedTokens.data.length ? (
                                 sortedTokens.data.map((token: dexTokenData) => (
                                     <TokenRow
