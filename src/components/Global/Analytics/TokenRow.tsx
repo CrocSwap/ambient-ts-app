@@ -12,10 +12,7 @@ import {
 import { FlexContainer } from '../../../styled/Common';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { dexTokenData } from '../../../pages/Explore/useTokenStats';
-import { PoolIF, TokenIF } from '../../../ambient-utils/types';
-import { useContext } from 'react';
-import { PoolContext } from '../../../contexts/PoolContext';
-import { getDefaultPairForChain } from '../../../ambient-utils/constants';
+import { PoolIF } from '../../../ambient-utils/types';
 import styles from './TokenRow.module.css';
 
 interface propsIF {
@@ -26,23 +23,10 @@ interface propsIF {
 }
 
 export default function TokenRow(props: propsIF) {
-    const { token, samplePool, goToMarket, chainId } = props;
+    const { token, samplePool, goToMarket } = props;
     if (!token.tokenMeta) return null;
 
     const mobileScrenView = useMediaQuery('(max-width: 500px)');
-
-    const { findPool } = useContext(PoolContext);
-    const defaultTokensForChain: [TokenIF, TokenIF] =
-        getDefaultPairForChain(chainId);
-    const p1: PoolIF | undefined = findPool(
-        token.tokenAddr,
-        defaultTokensForChain[0],
-    );
-    const p2: PoolIF | undefined = findPool(
-        token.tokenAddr,
-        defaultTokensForChain[1],
-    );
-    console.log(p1, p2);
 
     return (
         <TableRow className={styles.token_row}>
@@ -128,8 +112,5 @@ export default function TokenRow(props: propsIF) {
                 )}
             </TableCell>
         </TableRow>
-        // <li className={styles.token_row}>
-        //     <TokenIcon token={token.tokenMeta} />
-        // </li>
     );
 }
