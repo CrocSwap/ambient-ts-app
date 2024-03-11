@@ -35,7 +35,7 @@ export default function Explore() {
         // make sure crocEnv exists and pool metadata is present
         if (crocEnv && poolList.length) {
             // clear text in DOM for time since last update
-            exploreData.pools.resetPoolData();
+            exploreData.pools.reset();
             // use metadata to get expanded pool data
             getLimitedPools().then(() => {
                 exploreData.pools.getExtra(

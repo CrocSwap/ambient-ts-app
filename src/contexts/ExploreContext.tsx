@@ -37,7 +37,7 @@ export interface ExploreContextIF {
             crocEnv: CrocEnv,
             chainId: string,
         ) => void;
-        resetPoolData: () => void;
+        reset: () => void;
     };
     tokens: {
         data: dexTokenData[];
@@ -385,7 +385,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             all: allPools,
             getLimited: getLimitedPoolData,
             getExtra: getExtraPoolData,
-            resetPoolData: () => {
+            reset: () => {
                 setLimitedPools([]);
                 setExtraPools([]);
             },
