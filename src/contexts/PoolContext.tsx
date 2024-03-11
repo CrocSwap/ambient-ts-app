@@ -58,6 +58,22 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         crocEnv,
     );
 
+    // function getPool(tkn1: TokenIF, tkn2: TokenIF): PoolIF|undefined {
+    //     const tkn1Fixed: string = tkn1.toLowerCase();
+    //     const tkn2Fixed: string = tkn2.toLowerCase();
+    //     const pool: PoolIF|undefined = poolList.find(
+    //         (p: PoolIF) => {
+    //             const poolBaseAddr: string = p.base.address.toLowerCase();
+    //             const poolQuoteAddr: string = p.quote.address.toLowerCase();
+    //             return (
+    //                 (
+    //                     tkn1Fixed === poolBaseAddr
+    //                 )
+    //             );
+    //         }
+    //     );
+    // };
+
     const pool = useMemo(
         () => crocEnv?.pool(baseToken.address, quoteToken.address),
         [crocEnv, baseToken.address, quoteToken.address],
