@@ -479,7 +479,7 @@ function ChatPanel(props: propsIF) {
         const timer = setTimeout(() => {
             if (!messageEnd.current) return;
             messageEnd.current.scrollTo(0, messageEnd.current.scrollHeight);
-        }, 200);
+        }, 1000);
         setScrollDirection('Scroll Down');
         return () => clearTimeout(timer);
     };
