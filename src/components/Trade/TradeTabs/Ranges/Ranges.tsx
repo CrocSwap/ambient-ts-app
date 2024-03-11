@@ -429,26 +429,32 @@ function Ranges(props: propsIF) {
             tx.txDetails?.poolIdx === poolIndex,
     );
 
-    const [updatedPendingPositions, setUpdatedPendingPositions] = useState<
+    const [unindexedUpdatedPositions, setUnindexedUpdatedPositions] = useState<
         PositionIF[]
     >([]);
 
     useEffect(() => {
         (async () => {
             if (relevantTransactionsByType.length === 0) {
-                setUpdatedPendingPositions([]);
+                setUnindexedUpdatedPositions([]);
             }
-            const newAdds = relevantTransactionsByType.filter((tx) => {
-                return tx.txAction === 'Add' || tx.txAction === 'Reposition';
-            });
-            const newPositions = await Promise.all(
-                newAdds.map(async (pendingPosition) => {
-                    if (!crocEnv || !pendingPosition.txDetails)
+            const pendingPositionUpdates = relevantTransactionsByType.filter(
+                (tx) => {
+                    return (
+                        tx.txAction === 'Add' ||
+                        tx.txAction === 'Reposition' ||
+                        tx.txAction === 'Remove'
+                    );
+                },
+            );
+            const newlyUpdatedPositions = await Promise.all(
+                pendingPositionUpdates.map(async (pendingPositionUpdate) => {
+                    if (!crocEnv || !pendingPositionUpdate.txDetails)
                         return {} as PositionIF;
                     const pos = crocEnv.positions(
-                        pendingPosition.txDetails.baseAddress,
-                        pendingPosition.txDetails.quoteAddress,
-                        pendingPosition.userAddress,
+                        pendingPositionUpdate.txDetails.baseAddress,
+                        pendingPositionUpdate.txDetails.quoteAddress,
+                        pendingPositionUpdate.userAddress,
                     );
 
                     const poolPriceNonDisplay = await cachedQuerySpotPrice(
@@ -459,23 +465,23 @@ function Ranges(props: propsIF) {
                         lastBlockNumber,
                     );
 
-                    const position = pendingPosition.txDetails.isAmbient
+                    const position = pendingPositionUpdate.txDetails.isAmbient
                         ? await pos.queryAmbient()
                         : await pos.queryRangePos(
-                              pendingPosition.txDetails.lowTick || 0,
-                              pendingPosition.txDetails.highTick || 0,
+                              pendingPositionUpdate.txDetails.lowTick || 0,
+                              pendingPositionUpdate.txDetails.highTick || 0,
                           );
-
                     const poolPriceInTicks = priceToTick(poolPriceNonDisplay);
 
                     let positionLiqBase, positionLiqQuote;
 
-                    if (!pendingPosition.txDetails) return {} as PositionIF;
-                    const liqBigNum = pendingPosition.txDetails.isAmbient
+                    if (!pendingPositionUpdate.txDetails)
+                        return {} as PositionIF;
+                    const liqBigNum = pendingPositionUpdate.txDetails.isAmbient
                         ? position.seeds
                         : position.liq;
                     const liqNum = bigNumToFloat(liqBigNum);
-                    if (pendingPosition.txDetails.isAmbient) {
+                    if (pendingPositionUpdate.txDetails.isAmbient) {
                         positionLiqBase =
                             liqNum * Math.sqrt(poolPriceNonDisplay);
                         positionLiqQuote =
@@ -486,10 +492,12 @@ function Ranges(props: propsIF) {
                                 poolPriceNonDisplay,
                                 liqBigNum,
                                 tickToPrice(
-                                    pendingPosition.txDetails.lowTick || 0,
+                                    pendingPositionUpdate.txDetails.lowTick ||
+                                        0,
                                 ),
                                 tickToPrice(
-                                    pendingPosition.txDetails.highTick || 0,
+                                    pendingPositionUpdate.txDetails.highTick ||
+                                        0,
                                 ),
                             ),
                         );
@@ -498,10 +506,12 @@ function Ranges(props: propsIF) {
                                 poolPriceNonDisplay,
                                 liqBigNum,
                                 tickToPrice(
-                                    pendingPosition.txDetails.lowTick || 0,
+                                    pendingPositionUpdate.txDetails.lowTick ||
+                                        0,
                                 ),
                                 tickToPrice(
-                                    pendingPosition.txDetails.highTick || 0,
+                                    pendingPositionUpdate.txDetails.highTick ||
+                                        0,
                                 ),
                             ),
                         );
@@ -511,32 +521,34 @@ function Ranges(props: propsIF) {
 
                     const posHash = getPositionHash(undefined, {
                         isPositionTypeAmbient:
-                            pendingPosition.txDetails.isAmbient || false,
-                        user: pendingPosition.userAddress,
-                        baseAddress: pendingPosition.txDetails.baseAddress,
-                        quoteAddress: pendingPosition.txDetails.quoteAddress,
-                        poolIdx: pendingPosition.txDetails.poolIdx,
-                        bidTick: pendingPosition.txDetails.lowTick || 0,
-                        askTick: pendingPosition.txDetails.highTick || 0,
+                            pendingPositionUpdate.txDetails.isAmbient || false,
+                        user: pendingPositionUpdate.userAddress,
+                        baseAddress:
+                            pendingPositionUpdate.txDetails.baseAddress,
+                        quoteAddress:
+                            pendingPositionUpdate.txDetails.quoteAddress,
+                        poolIdx: pendingPositionUpdate.txDetails.poolIdx,
+                        bidTick: pendingPositionUpdate.txDetails.lowTick || 0,
+                        askTick: pendingPositionUpdate.txDetails.highTick || 0,
                     });
 
                     const mockServerPosition: PositionServerIF = {
                         positionId: posHash,
                         chainId: chainId,
-                        askTick: pendingPosition.txDetails.highTick || 0,
-                        bidTick: pendingPosition.txDetails.lowTick || 0,
-                        poolIdx: pendingPosition.txDetails.poolIdx,
-                        base: pendingPosition.txDetails.baseAddress,
-                        quote: pendingPosition.txDetails.quoteAddress,
-                        user: pendingPosition.userAddress,
-                        ambientLiq: pendingPosition.txDetails.isAmbient
+                        askTick: pendingPositionUpdate.txDetails.highTick || 0,
+                        bidTick: pendingPositionUpdate.txDetails.lowTick || 0,
+                        poolIdx: pendingPositionUpdate.txDetails.poolIdx,
+                        base: pendingPositionUpdate.txDetails.baseAddress,
+                        quote: pendingPositionUpdate.txDetails.quoteAddress,
+                        user: pendingPositionUpdate.userAddress,
+                        ambientLiq: pendingPositionUpdate.txDetails.isAmbient
                             ? liqNum
                             : 0,
-                        concLiq: !pendingPosition.txDetails.isAmbient
+                        concLiq: !pendingPositionUpdate.txDetails.isAmbient
                             ? liqNum
                             : 0,
                         rewardLiq: 0, // unknown
-                        positionType: pendingPosition.txDetails.isAmbient
+                        positionType: pendingPositionUpdate.txDetails.isAmbient
                             ? 'ambient'
                             : 'concentrated',
                         timeFirstMint: currentTime, // unknown
@@ -559,24 +571,24 @@ function Ranges(props: propsIF) {
                     );
                     const onChainPosition: PositionIF = {
                         chainId: chainId,
-                        base: pendingPosition.txDetails.baseAddress,
-                        quote: pendingPosition.txDetails.quoteAddress,
-                        poolIdx: pendingPosition.txDetails.poolIdx,
-                        bidTick: pendingPosition.txDetails.lowTick,
-                        askTick: pendingPosition.txDetails.highTick,
-                        isBid: pendingPosition.txDetails.isBid,
-                        user: pendingPosition.userAddress,
-                        timeFirstMint: position.timestamp, // unknown
-                        latestUpdateTime: position.timestamp, // unknown
+                        base: pendingPositionUpdate.txDetails.baseAddress,
+                        quote: pendingPositionUpdate.txDetails.quoteAddress,
+                        poolIdx: pendingPositionUpdate.txDetails.poolIdx,
+                        bidTick: pendingPositionUpdate.txDetails.lowTick,
+                        askTick: pendingPositionUpdate.txDetails.highTick,
+                        isBid: pendingPositionUpdate.txDetails.isBid,
+                        user: pendingPositionUpdate.userAddress,
+                        timeFirstMint: position.timestamp, // from on-chain call (not updated for removes?)
+                        latestUpdateTime: position.timestamp, // from on-chain call (not updated for removes?)
                         lastMintTx: '', // unknown
                         firstMintTx: '', // unknown
-                        positionType: pendingPosition.txDetails.isAmbient
+                        positionType: pendingPositionUpdate.txDetails.isAmbient
                             ? 'ambient'
                             : 'concentrated',
-                        ambientLiq: pendingPosition.txDetails.isAmbient
+                        ambientLiq: pendingPositionUpdate.txDetails.isAmbient
                             ? liqNum
                             : 0,
-                        concLiq: !pendingPosition.txDetails.isAmbient
+                        concLiq: !pendingPositionUpdate.txDetails.isAmbient
                             ? liqNum
                             : 0,
                         rewardLiq: 0, // unknown
@@ -588,11 +600,12 @@ function Ranges(props: propsIF) {
                         poolPriceInTicks: poolPriceInTicks,
                         isPositionInRange: true, // unknown
                         baseDecimals:
-                            pendingPosition.txDetails.baseTokenDecimals,
+                            pendingPositionUpdate.txDetails.baseTokenDecimals,
                         quoteDecimals:
-                            pendingPosition.txDetails.quoteTokenDecimals,
-                        baseSymbol: pendingPosition.txDetails.baseSymbol,
-                        quoteSymbol: pendingPosition.txDetails.quoteSymbol,
+                            pendingPositionUpdate.txDetails.quoteTokenDecimals,
+                        baseSymbol: pendingPositionUpdate.txDetails.baseSymbol,
+                        quoteSymbol:
+                            pendingPositionUpdate.txDetails.quoteSymbol,
                         baseName: '',
                         quoteName: '',
                         lowRangeDisplayInBase:
@@ -652,11 +665,12 @@ function Ranges(props: propsIF) {
                 }),
             );
 
-            const definedPositions: PositionIF[] = newPositions.filter(
-                (position) => position !== undefined,
-            ) as PositionIF[];
-            if (definedPositions.length)
-                setUpdatedPendingPositions(definedPositions);
+            const definedUpdatedPositions: PositionIF[] =
+                newlyUpdatedPositions.filter(
+                    (position) => position !== undefined,
+                ) as PositionIF[];
+            if (definedUpdatedPositions.length)
+                setUnindexedUpdatedPositions(definedUpdatedPositions);
         })();
     }, [JSON.stringify(relevantTransactionsByType), lastBlockNumber]);
 
@@ -665,7 +679,7 @@ function Ranges(props: propsIF) {
         !rangeData.length &&
         unindexedNonFailedSessionPositionUpdates.length === 0;
 
-    const updatedPositionHashes = updatedPendingPositions.map(
+    const unindexedUpdatedPositionHashes = unindexedUpdatedPositions.map(
         (pos) => pos.positionId,
     );
 
@@ -680,17 +694,18 @@ function Ranges(props: propsIF) {
                 bidTick: pos.txDetails?.lowTick || 0,
                 askTick: pos.txDetails?.highTick || 0,
             });
-            const matchingPosition = updatedPendingPositions.find(
-                (updatedPosition) => {
-                    return pendingPosHash === updatedPosition.positionId;
+            const matchingPosition = unindexedUpdatedPositions.find(
+                (unindexedPosition) => {
+                    return pendingPosHash === unindexedPosition.positionId;
                 },
             );
             const matchingPositionUpdatedInLastMinute =
                 (matchingPosition?.liqRefreshTime || 0) -
                     (matchingPosition?.latestUpdateTime || 0) <
                 60;
+            // identify completed adds when update time in last minute (does not work for removes)
             return (
-                !updatedPositionHashes.includes(pendingPosHash) ||
+                !unindexedUpdatedPositionHashes.includes(pendingPosHash) ||
                 (matchingPosition && !matchingPositionUpdatedInLastMinute)
                 // show pulsing placeholder until existing position is updated
             );
@@ -718,14 +733,16 @@ function Ranges(props: propsIF) {
 
                 <TableRows
                     type='Range'
-                    data={updatedPendingPositions.concat(
+                    data={unindexedUpdatedPositions.concat(
                         _DATA.currentData.filter(
                             (pos) =>
                                 // remove existing row for adds
-                                !updatedPositionHashes.includes(pos.positionId),
+                                !unindexedUpdatedPositionHashes.includes(
+                                    pos.positionId,
+                                ),
                         ),
                     )}
-                    fullData={updatedPendingPositions.concat(fullData)}
+                    fullData={unindexedUpdatedPositions.concat(fullData)}
                     isAccountView={isAccountView}
                     tableView={tableView}
                 />
