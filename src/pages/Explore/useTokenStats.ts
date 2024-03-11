@@ -4,6 +4,7 @@ import { TokenPriceFn, fetchContractDetails } from '../../ambient-utils/api';
 import {
     DexTokenAggServerIF,
     getChainStats,
+    isWethToken,
 } from '../../ambient-utils/dataLayer';
 import { TokenIF } from '../../ambient-utils/types';
 import { tokenMethodsIF } from '../../App/hooks/useTokens';
@@ -61,7 +62,9 @@ export const useTokenStats = (
                             .map(
                                 (result) =>
                                     (result as { value: dexTokenData }).value,
-                            );
+                            )
+                            .filter((t) => !isWethToken(t.tokenAddr));
+                        console.log(fulfilledResults);
                         setDexTokens(fulfilledResults);
                     }
                 } catch (error) {
