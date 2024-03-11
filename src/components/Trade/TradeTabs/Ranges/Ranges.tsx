@@ -459,19 +459,21 @@ function Ranges(props: propsIF) {
                         lastBlockNumber,
                     );
 
+                    const position = pendingPosition.txDetails.isAmbient
+                        ? await pos.queryAmbient()
+                        : await pos.queryRangePos(
+                              pendingPosition.txDetails.lowTick || 0,
+                              pendingPosition.txDetails.highTick || 0,
+                          );
+
                     const poolPriceInTicks = priceToTick(poolPriceNonDisplay);
 
                     let positionLiqBase, positionLiqQuote;
 
                     if (!pendingPosition.txDetails) return {} as PositionIF;
                     const liqBigNum = pendingPosition.txDetails.isAmbient
-                        ? (await pos.queryAmbient()).seeds
-                        : (
-                              await pos.queryRangePos(
-                                  pendingPosition.txDetails.lowTick || 0,
-                                  pendingPosition.txDetails.highTick || 0,
-                              )
-                          ).liq;
+                        ? position.seeds
+                        : position.liq;
                     const liqNum = bigNumToFloat(liqBigNum);
                     if (pendingPosition.txDetails.isAmbient) {
                         positionLiqBase =
@@ -564,8 +566,8 @@ function Ranges(props: propsIF) {
                         askTick: pendingPosition.txDetails.highTick,
                         isBid: pendingPosition.txDetails.isBid,
                         user: pendingPosition.userAddress,
-                        timeFirstMint: currentTime, // unknown
-                        latestUpdateTime: currentTime, // unknown
+                        timeFirstMint: position.timestamp, // unknown
+                        latestUpdateTime: position.timestamp, // unknown
                         lastMintTx: '', // unknown
                         firstMintTx: '', // unknown
                         positionType: pendingPosition.txDetails.isAmbient
@@ -578,7 +580,7 @@ function Ranges(props: propsIF) {
                             ? liqNum
                             : 0,
                         rewardLiq: 0, // unknown
-                        liqRefreshTime: 0, // unknown
+                        liqRefreshTime: currentTime, // unknown
                         aprDuration: 0, // unknown
                         aprPostLiq: 0,
                         aprContributedLiq: 0,
@@ -668,22 +670,31 @@ function Ranges(props: propsIF) {
     );
 
     const pendingPositionsToDisplayPlaceholder =
-        relevantTransactionsByType.filter(
-            (pos) =>
-                !updatedPositionHashes.includes(
-                    getPositionHash(undefined, {
-                        isPositionTypeAmbient:
-                            pos.txDetails?.isAmbient || false,
-                        user: pos.userAddress,
-                        baseAddress: pos.txDetails?.baseAddress || '',
-                        quoteAddress: pos.txDetails?.quoteAddress || '',
-                        poolIdx: pos.txDetails?.poolIdx || 0,
-                        bidTick: pos.txDetails?.lowTick || 0,
-                        askTick: pos.txDetails?.highTick || 0,
-                    }),
-                    // prevent placeholder from disappearing when the update is an add
-                ) || pos.txDescription.startsWith('Add to Range'),
-        );
+        relevantTransactionsByType.filter((pos) => {
+            const pendingPosHash = getPositionHash(undefined, {
+                isPositionTypeAmbient: pos.txDetails?.isAmbient || false,
+                user: pos.userAddress,
+                baseAddress: pos.txDetails?.baseAddress || '',
+                quoteAddress: pos.txDetails?.quoteAddress || '',
+                poolIdx: pos.txDetails?.poolIdx || 0,
+                bidTick: pos.txDetails?.lowTick || 0,
+                askTick: pos.txDetails?.highTick || 0,
+            });
+            const matchingPosition = updatedPendingPositions.find(
+                (updatedPosition) => {
+                    return pendingPosHash === updatedPosition.positionId;
+                },
+            );
+            const matchingPositionUpdatedInLastMinute =
+                (matchingPosition?.liqRefreshTime || 0) -
+                    (matchingPosition?.latestUpdateTime || 0) <
+                60;
+            return (
+                !updatedPositionHashes.includes(pendingPosHash) ||
+                (matchingPosition && !matchingPositionUpdatedInLastMinute)
+                // show pulsing placeholder until existing position is updated
+            );
+        });
 
     const rangeDataOrNull = !shouldDisplayNoTableData ? (
         <div>
