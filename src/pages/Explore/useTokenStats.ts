@@ -64,7 +64,6 @@ export const useTokenStats = (
                                     (result as { value: dexTokenData }).value,
                             )
                             .filter((t) => !isWethToken(t.tokenAddr));
-                        console.log(fulfilledResults);
                         setDexTokens(fulfilledResults);
                     }
                 } catch (error) {
