@@ -439,7 +439,7 @@ function Ranges(props: propsIF) {
                 setUpdatedPendingPositions([]);
             }
             const newAdds = relevantTransactionsByType.filter((tx) => {
-                return tx.txAction === 'Add';
+                return tx.txAction === 'Add' || tx.txAction === 'Reposition';
             });
             const newPositions = await Promise.all(
                 newAdds.map(async (pendingPosition) => {
