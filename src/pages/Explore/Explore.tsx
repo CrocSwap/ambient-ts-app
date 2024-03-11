@@ -2,23 +2,22 @@ import { useContext, useEffect } from 'react';
 import { FiRefreshCw } from 'react-icons/fi';
 import TopPools from '../../components/Global/Analytics/TopPools';
 import DexTokens from '../../components/Global/Analytics/DexTokens';
-import { ExploreContext } from '../../contexts/ExploreContext';
+import {
+    ExploreContext,
+    ExploreContextIF,
+} from '../../contexts/ExploreContext';
 import styled from 'styled-components/macro';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
-import { dexTokenData, useTokenStats } from './useTokenStats';
-import { CachedDataContext } from '../../contexts/CachedDataContext';
-import { TokenContext } from '../../contexts/TokenContext';
 import Toggle from '../../components/Form/Toggle';
 import { FlexContainer, Text } from '../../styled/Common';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 
 export default function Explore() {
     // full expanded data set
-    const { tab, pools } = useContext(ExploreContext);
-    const { activeNetwork, crocEnv, chainData, provider } =
-        useContext(CrocEnvContext);
+    const exploreData: ExploreContextIF = useContext(ExploreContext);
+    const { crocEnv, chainData } = useContext(CrocEnvContext);
     const { poolList } = useContext(PoolContext);
     const {
         isActiveNetworkBlast,
@@ -26,13 +25,9 @@ export default function Explore() {
         isActiveNetworkMainnet,
     } = useContext(ChainDataContext);
 
-    const { tokens } = useContext(TokenContext);
-
-    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
-
     const getLimitedPools = async (): Promise<void> => {
         if (crocEnv && poolList.length) {
-            pools.getLimited(poolList, crocEnv, chainData.chainId);
+            exploreData.pools.getLimited(poolList, crocEnv, chainData.chainId);
         }
     };
 
@@ -40,10 +35,14 @@ export default function Explore() {
         // make sure crocEnv exists and pool metadata is present
         if (crocEnv && poolList.length) {
             // clear text in DOM for time since last update
-            pools.resetPoolData();
+            exploreData.pools.resetPoolData();
             // use metadata to get expanded pool data
             getLimitedPools().then(() => {
-                pools.getExtra(poolList, crocEnv, chainData.chainId);
+                exploreData.pools.getExtra(
+                    poolList,
+                    crocEnv,
+                    chainData.chainId,
+                );
             });
         }
     };
@@ -53,11 +52,11 @@ export default function Explore() {
         if (
             crocEnv !== undefined &&
             poolList.length > 0 &&
-            pools.all.length === 0
+            exploreData.pools.all.length === 0
         ) {
             getAllPools();
         }
-    }, [crocEnv, poolList.length, pools.all.length]);
+    }, [crocEnv, poolList.length, exploreData.pools.all.length]);
 
     // logic to handle onClick navigation action
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
@@ -68,15 +67,6 @@ export default function Explore() {
             tokenB: tknB,
         });
     }
-
-    const dexTokens: dexTokenData[] = useTokenStats(
-        chainData.chainId,
-        crocEnv,
-        activeNetwork.graphCacheUrl,
-        cachedFetchTokenPrice,
-        tokens,
-        provider,
-    );
 
     const titleTextPools: string = isActiveNetworkMainnet
         ? 'Top Ambient Pools on Ethereum'
@@ -95,7 +85,7 @@ export default function Explore() {
         : 'Top Pools on Ambient';
 
     const titleTextForDOM: string =
-        tab.active === 'pools' ? titleTextPools : titleTextTokens;
+        exploreData.tab.active === 'pools' ? titleTextPools : titleTextTokens;
 
     return (
         <Section>
@@ -119,18 +109,21 @@ export default function Explore() {
             >
                 <Text>Pools</Text>
                 <Toggle
-                    isOn={tab.active === 'tokens'}
+                    isOn={exploreData.tab.active === 'tokens'}
                     id={'explore_page_'}
-                    handleToggle={() => tab.toggle()}
+                    handleToggle={() => exploreData.tab.toggle()}
                 />
                 <Text>Tokens</Text>
             </FlexContainer>
-            {tab.active === 'pools' && (
-                <TopPools allPools={pools.all} goToMarket={goToMarket} />
+            {exploreData.tab.active === 'pools' && (
+                <TopPools
+                    allPools={exploreData.pools.all}
+                    goToMarket={goToMarket}
+                />
             )}
-            {tab.active === 'tokens' && (
+            {exploreData.tab.active === 'tokens' && (
                 <DexTokens
-                    dexTokens={dexTokens}
+                    dexTokens={exploreData.tokens}
                     chainId={chainData.chainId}
                     goToMarket={goToMarket}
                 />
@@ -196,12 +189,6 @@ const RefreshButton = styled.button`
     outline: none;
 `;
 
-// const RefreshText = styled.p`
-//     /* Hide the RefreshText on screens smaller than 600px */
-//     @media (max-width: 600px) {
-//         display: none;
-//     }
-// `;
 const RefreshIcon = styled(FiRefreshCw)`
     font-size: var(--header2-size);
     cursor: pointer;

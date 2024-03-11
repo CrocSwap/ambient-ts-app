@@ -19,6 +19,8 @@ import { CrocEnvContext } from './CrocEnvContext';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../ambient-utils/constants';
 import ambientTokenList from '../ambient-utils/constants/ambient-token-list.json';
 import { PoolContext } from './PoolContext';
+import { dexTokenData, useTokenStats } from '../pages/Explore/useTokenStats';
+import { TokenContext } from './TokenContext';
 
 type tabs = 'pools' | 'tokens';
 
@@ -37,6 +39,7 @@ export interface ExploreContextIF {
         ) => void;
         resetPoolData: () => void;
     };
+    tokens: dexTokenData[];
 }
 
 export interface PoolDataIF extends PoolIF {
@@ -70,7 +73,9 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         cachedGet24hChange,
     } = useContext(CachedDataContext);
 
-    const { crocEnv, chainData, activeNetwork } = useContext(CrocEnvContext);
+    const { crocEnv, chainData, activeNetwork, provider } =
+        useContext(CrocEnvContext);
+    const { tokens } = useContext(TokenContext);
 
     const [limitedPools, setLimitedPools] = useState<Array<PoolDataIF>>([]);
     const [extraPools, setExtraPools] = useState<Array<PoolDataIF>>([]);
@@ -359,6 +364,15 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         setActiveTab(newTab);
     }
 
+    const dexTokens: dexTokenData[] = useTokenStats(
+        chainData.chainId,
+        crocEnv,
+        activeNetwork.graphCacheUrl,
+        cachedFetchTokenPrice,
+        tokens,
+        provider,
+    );
+
     const exploreContext: ExploreContextIF = {
         tab: {
             active: activeTab,
@@ -373,6 +387,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 setExtraPools([]);
             },
         },
+        tokens: dexTokens,
     };
 
     return (
