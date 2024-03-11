@@ -40,19 +40,23 @@ export default function TokenRow(props: propsIF) {
                     justifyContent='flex-start'
                     gap={8}
                 >
-                    <TokenIcon
-                        token={token.tokenMeta}
-                        src={uriToHttp(token.tokenMeta?.logoURI ?? '')}
-                        alt={token.tokenMeta?.logoURI ?? ''}
-                        size={mobileScrenView ? 's' : '2xl'}
-                        empty={
-                            !(
-                                !!token.tokenMeta?.logoURI &&
-                                !!token.tokenMeta.symbol
-                            )
-                        }
-                    />
-                    <p>{token.tokenMeta?.symbol}</p>
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            gap: '12px',
+                        }}
+                    >
+                        <TokenIcon
+                            token={token.tokenMeta}
+                            src={uriToHttp(token.tokenMeta?.logoURI ?? '')}
+                            alt={token.tokenMeta?.symbol ?? ''}
+                            size={mobileScrenView ? 's' : '2xl'}
+                        />
+                        <p>{token.tokenMeta?.symbol}</p>
+                    </div>
+                    {smallScreen || <p>({token.tokenMeta?.name})</p>}
                 </FlexContainer>
             </TableCell>
             {smallScreen || (

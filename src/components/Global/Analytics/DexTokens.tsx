@@ -45,8 +45,6 @@ function DexTokens(props: propsIF) {
 
     const smallScreen: boolean = useMediaQuery('(max-width: 800px)');
 
-    // !important:  any changes to `sortable` values must be accompanied by an update
-    // !important:  ... to the type definition `sortType` in `useSortedPools.ts`
     const dexTokensHeaderItems: HeaderItem[] = [
         {
             label: 'Token',
