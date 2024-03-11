@@ -39,7 +39,10 @@ export interface ExploreContextIF {
         ) => void;
         resetPoolData: () => void;
     };
-    tokens: dexTokenData[];
+    tokens: {
+        data: dexTokenData[];
+        reset: () => void;
+    };
 }
 
 export interface PoolDataIF extends PoolIF {
@@ -387,7 +390,10 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 setExtraPools([]);
             },
         },
-        tokens: dexTokens,
+        tokens: {
+            data: dexTokens,
+            reset: () => null,
+        },
     };
 
     return (

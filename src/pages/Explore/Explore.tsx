@@ -87,16 +87,24 @@ export default function Explore() {
     const titleTextForDOM: string =
         exploreData.tab.active === 'pools' ? titleTextPools : titleTextTokens;
 
+    // logic router to dispatch the correct action for a refresh button click
+    function handleRefresh(): void {
+        switch (exploreData.tab.active) {
+            case 'pools':
+                getAllPools();
+                break;
+            case 'tokens':
+                exploreData.tokens.reset();
+                break;
+        }
+    }
+
     return (
         <Section>
             <MainWrapper>
                 <TitleText>{titleTextForDOM}</TitleText>
                 <Refresh>
-                    <RefreshButton
-                        onClick={() => {
-                            getAllPools();
-                        }}
-                    >
+                    <RefreshButton onClick={() => handleRefresh()}>
                         <RefreshIcon />
                     </RefreshButton>
                 </Refresh>
@@ -123,7 +131,7 @@ export default function Explore() {
             )}
             {exploreData.tab.active === 'tokens' && (
                 <DexTokens
-                    dexTokens={exploreData.tokens}
+                    dexTokens={exploreData.tokens.data}
                     chainId={chainData.chainId}
                     goToMarket={goToMarket}
                 />
