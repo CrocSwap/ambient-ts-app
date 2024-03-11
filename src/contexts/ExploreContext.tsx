@@ -20,7 +20,13 @@ import { CACHE_UPDATE_FREQ_IN_MS } from '../ambient-utils/constants';
 import ambientTokenList from '../ambient-utils/constants/ambient-token-list.json';
 import { PoolContext } from './PoolContext';
 
+type tabs = 'pools' | 'tokens';
+
 export interface ExploreContextIF {
+    tab: {
+        active: tabs;
+        toggle: () => void;
+    };
     pools: {
         all: Array<PoolDataIF>;
         getLimited(poolList: PoolIF[], crocEnv: CrocEnv, chainId: string): void;
@@ -339,7 +345,25 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             });
     }
 
+    const [activeTab, setActiveTab] = useState<tabs>('pools');
+    function toggleTab(): void {
+        let newTab: tabs;
+        switch (activeTab) {
+            case 'pools':
+                newTab = 'tokens';
+                break;
+            case 'tokens':
+                newTab = 'pools';
+                break;
+        }
+        setActiveTab(newTab);
+    }
+
     const exploreContext: ExploreContextIF = {
+        tab: {
+            active: activeTab,
+            toggle: toggleTab,
+        },
         pools: {
             all: allPools,
             getLimited: getLimitedPoolData,

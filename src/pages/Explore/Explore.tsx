@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect } from 'react';
 import { FiRefreshCw } from 'react-icons/fi';
 import TopPools from '../../components/Global/Analytics/TopPools';
 import DexTokens from '../../components/Global/Analytics/DexTokens';
@@ -16,7 +16,7 @@ import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 
 export default function Explore() {
     // full expanded data set
-    const { pools } = useContext(ExploreContext);
+    const { tab, pools } = useContext(ExploreContext);
     const { activeNetwork, crocEnv, chainData, provider } =
         useContext(CrocEnvContext);
     const { poolList } = useContext(PoolContext);
@@ -94,23 +94,8 @@ export default function Explore() {
         ? 'Active on Scroll'
         : 'Top Pools on Ambient';
 
-    type tables = 'pools' | 'tokens';
-    const [activeTable, setActiveTable] = useState<tables>('pools');
-    function toggleTable(current: tables): void {
-        let nextTable: tables;
-        switch (current) {
-            case 'pools':
-                nextTable = 'tokens';
-                break;
-            case 'tokens':
-                nextTable = 'pools';
-                break;
-        }
-        setActiveTable(nextTable);
-    }
-
     const titleTextForDOM: string =
-        activeTable === 'pools' ? titleTextPools : titleTextTokens;
+        tab.active === 'pools' ? titleTextPools : titleTextTokens;
 
     return (
         <Section>
@@ -134,16 +119,16 @@ export default function Explore() {
             >
                 <Text>Pools</Text>
                 <Toggle
-                    isOn={activeTable === 'tokens'}
+                    isOn={tab.active === 'tokens'}
                     id={'explore_page_'}
-                    handleToggle={() => toggleTable(activeTable)}
+                    handleToggle={() => tab.toggle()}
                 />
                 <Text>Tokens</Text>
             </FlexContainer>
-            {activeTable === 'pools' && (
+            {tab.active === 'pools' && (
                 <TopPools allPools={pools.all} goToMarket={goToMarket} />
             )}
-            {activeTable === 'tokens' && (
+            {tab.active === 'tokens' && (
                 <DexTokens
                     dexTokens={dexTokens}
                     chainId={chainData.chainId}

@@ -123,19 +123,6 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         cachedQuerySpotPrice,
     });
 
-    const poolContext = {
-        poolList,
-        findPool,
-        pool,
-        isPoolInitialized,
-        poolPriceDisplay,
-        isPoolPriceChangePositive,
-        poolPriceChangePercent,
-        ambientApy,
-        dailyVol,
-        poolData,
-    };
-
     // Asynchronously query the APY and volatility estimates from the backend
     useEffect(() => {
         (async () => {
@@ -166,6 +153,19 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         !!crocEnv,
         !!provider,
     ]);
+
+    const poolContext = {
+        poolList,
+        findPool,
+        pool,
+        isPoolInitialized,
+        poolPriceDisplay,
+        isPoolPriceChangePositive,
+        poolPriceChangePercent,
+        ambientApy,
+        dailyVol,
+        poolData,
+    };
 
     return (
         <PoolContext.Provider value={poolContext}>

@@ -43,7 +43,7 @@ function DexTokens(props: propsIF) {
 
     const sortedTokens: sortedDexTokensIF = useSortedDexTokens(dexTokens);
 
-    const smallScreen = useMediaQuery('(max-width: 1000px)');
+    const smallScreen: boolean = useMediaQuery('(max-width: 800px)');
 
     // !important:  any changes to `sortable` values must be accompanied by an update
     // !important:  ... to the type definition `sortType` in `useSortedPools.ts`
@@ -51,6 +51,13 @@ function DexTokens(props: propsIF) {
         {
             label: 'Token',
             hidden: false,
+            align: 'left',
+            responsive: 'sm',
+            sortable: false,
+        },
+        {
+            label: 'Name',
+            hidden: smallScreen,
             align: 'left',
             responsive: 'sm',
             sortable: false,
@@ -74,6 +81,13 @@ function DexTokens(props: propsIF) {
             hidden: false,
             align: 'right',
             responsive: 'lg',
+            sortable: false,
+        },
+        {
+            label: '',
+            hidden: false,
+            align: 'right',
+            responsive: 'sm',
             sortable: false,
         },
     ];

@@ -28,37 +28,36 @@ export default function TokenRow(props: propsIF) {
     const mobileScrenView = useMediaQuery('(max-width: 500px)');
 
     return (
-        <TableRow>
+        <TableRow
+            onClick={() =>
+                samplePool &&
+                goToMarket(samplePool.base.address, samplePool.quote.address)
+            }
+        >
             <TableCell>
                 <FlexContainer
                     alignItems='center'
-                    justifyContent='space-between'
+                    justifyContent='flex-start'
+                    gap={8}
                 >
-                    <div
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            gap: '12px',
-                        }}
-                    >
-                        <TokenIcon
-                            token={token.tokenMeta}
-                            src={uriToHttp(token.tokenMeta?.logoURI ?? '')}
-                            alt={token.tokenMeta?.logoURI ?? ''}
-                            size={mobileScrenView ? 's' : '2xl'}
-                            empty={
-                                !(
-                                    !!token.tokenMeta?.logoURI &&
-                                    !!token.tokenMeta.symbol
-                                )
-                            }
-                        />
-                        <p>{token.tokenMeta?.symbol}</p>
-                    </div>
-                    {smallScreen || <p>({token.tokenMeta?.name})</p>}
+                    <TokenIcon
+                        token={token.tokenMeta}
+                        src={uriToHttp(token.tokenMeta?.logoURI ?? '')}
+                        alt={token.tokenMeta?.logoURI ?? ''}
+                        size={mobileScrenView ? 's' : '2xl'}
+                        empty={
+                            !(
+                                !!token.tokenMeta?.logoURI &&
+                                !!token.tokenMeta.symbol
+                            )
+                        }
+                    />
+                    <p>{token.tokenMeta?.symbol}</p>
                 </FlexContainer>
             </TableCell>
+            {smallScreen || (
+                <TableCell left>({token.tokenMeta?.name})</TableCell>
+            )}
             <TableCell>
                 <p style={{ textTransform: 'none' }}>
                     {getFormattedNumber({
@@ -91,24 +90,13 @@ export default function TokenRow(props: propsIF) {
                 </p>
             </TableCell>
             <TableCell>
-                {samplePool && (
-                    <FlexContainer
-                        fullHeight
-                        alignItems='center'
-                        justifyContent='flex-end'
-                    >
-                        <TradeButton
-                            onClick={() =>
-                                goToMarket(
-                                    samplePool.base.address,
-                                    samplePool.quote.address,
-                                )
-                            }
-                        >
-                            Trade
-                        </TradeButton>
-                    </FlexContainer>
-                )}
+                <FlexContainer
+                    fullHeight
+                    alignItems='center'
+                    justifyContent='flex-end'
+                >
+                    <TradeButton>Trade</TradeButton>
+                </FlexContainer>
             </TableCell>
         </TableRow>
     );
