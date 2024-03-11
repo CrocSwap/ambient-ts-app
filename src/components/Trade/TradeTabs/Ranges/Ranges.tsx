@@ -443,7 +443,8 @@ function Ranges(props: propsIF) {
                     return (
                         tx.txAction === 'Add' ||
                         tx.txAction === 'Reposition' ||
-                        tx.txAction === 'Remove'
+                        tx.txAction === 'Remove' ||
+                        tx.txAction === 'Harvest'
                     );
                 },
             );
@@ -652,6 +653,7 @@ function Ranges(props: propsIF) {
                         totalValueUSD: positionData.totalValueUSD,
                         apy: positionData.apy,
                         positionId: positionData.positionId,
+                        onChainConstructedPosition: true,
                     } as PositionIF;
 
                     if (

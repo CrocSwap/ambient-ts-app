@@ -62,4 +62,5 @@ export interface PositionIF {
     aprDuration?: number;
     aprPostLiq?: number;
     aprContributedLiq?: number;
+    onChainConstructedPosition?: boolean;
 }
