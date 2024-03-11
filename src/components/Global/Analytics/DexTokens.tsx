@@ -15,6 +15,7 @@ import TableHeadTokens from './TableHeadTokens';
 import { getDefaultPairForChain } from '../../../ambient-utils/constants';
 import { TokenIF } from '../../../ambient-utils/types';
 import { PoolContext } from '../../../contexts/PoolContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 export interface HeaderItem {
     label: string;
@@ -41,6 +42,8 @@ function DexTokens(props: propsIF) {
         getDefaultPairForChain(chainId);
 
     const sortedTokens: sortedDexTokensIF = useSortedDexTokens(dexTokens);
+
+    const smallScreen = useMediaQuery('(max-width: 1000px)');
 
     // !important:  any changes to `sortable` values must be accompanied by an update
     // !important:  ... to the type definition `sortType` in `useSortedPools.ts`
@@ -101,6 +104,7 @@ function DexTokens(props: propsIF) {
                                             )
                                         }
                                         goToMarket={goToMarket}
+                                        smallScreen={smallScreen}
                                     />
                                 ))
                             ) : (

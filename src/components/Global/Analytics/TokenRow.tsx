@@ -13,22 +13,22 @@ import { FlexContainer } from '../../../styled/Common';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { dexTokenData } from '../../../pages/Explore/useTokenStats';
 import { PoolIF } from '../../../ambient-utils/types';
-import styles from './TokenRow.module.css';
 
 interface propsIF {
     token: dexTokenData;
     samplePool: PoolIF | undefined;
     goToMarket: (tknA: string, tknB: string) => void;
+    smallScreen: boolean;
 }
 
 export default function TokenRow(props: propsIF) {
-    const { token, samplePool, goToMarket } = props;
+    const { token, samplePool, goToMarket, smallScreen } = props;
     if (!token.tokenMeta) return null;
 
     const mobileScrenView = useMediaQuery('(max-width: 500px)');
 
     return (
-        <TableRow className={styles.token_row}>
+        <TableRow>
             <TableCell>
                 <FlexContainer
                     alignItems='center'
@@ -56,7 +56,7 @@ export default function TokenRow(props: propsIF) {
                         />
                         <p>{token.tokenMeta?.symbol}</p>
                     </div>
-                    <p>({token.tokenMeta?.name})</p>
+                    {smallScreen || <p>({token.tokenMeta?.name})</p>}
                 </FlexContainer>
             </TableCell>
             <TableCell>
