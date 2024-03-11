@@ -45,14 +45,8 @@ export default function TokenRow(props: propsIF) {
                         <TokenIcon
                             token={token.tokenMeta}
                             src={uriToHttp(token.tokenMeta?.logoURI ?? '')}
-                            alt={token.tokenMeta?.logoURI ?? ''}
+                            alt={token.tokenMeta?.symbol ?? ''}
                             size={mobileScrenView ? 's' : '2xl'}
-                            empty={
-                                !(
-                                    !!token.tokenMeta?.logoURI &&
-                                    !!token.tokenMeta.symbol
-                                )
-                            }
                         />
                         <p>{token.tokenMeta?.symbol}</p>
                     </div>
