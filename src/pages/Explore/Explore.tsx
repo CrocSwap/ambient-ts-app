@@ -12,6 +12,7 @@ import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { TokenContext } from '../../contexts/TokenContext';
 import Toggle from '../../components/Form/Toggle';
 import { FlexContainer, Text } from '../../styled/Common';
+import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 
 export default function Explore() {
     // full expanded data set
@@ -57,6 +58,16 @@ export default function Explore() {
             getAllPools();
         }
     }, [crocEnv, poolList.length, pools.all.length]);
+
+    // logic to handle onClick navigation action
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+    function goToMarket(tknA: string, tknB: string): void {
+        linkGenMarket.navigate({
+            chain: chainData.chainId,
+            tokenA: tknA,
+            tokenB: tknB,
+        });
+    }
 
     const dexTokens: dexTokenData[] = useTokenStats(
         chainData.chainId,
@@ -130,9 +141,15 @@ export default function Explore() {
                 <Text>Tokens</Text>
             </FlexContainer>
             {activeTable === 'pools' && (
-                <TopPools allPools={pools.all} chainId={chainData.chainId} />
+                <TopPools allPools={pools.all} goToMarket={goToMarket} />
             )}
-            {activeTable === 'tokens' && <DexTokens dexTokens={dexTokens} />}
+            {activeTable === 'tokens' && (
+                <DexTokens
+                    dexTokens={dexTokens}
+                    chainId={chainData.chainId}
+                    goToMarket={goToMarket}
+                />
+            )}
         </Section>
     );
 }

@@ -82,7 +82,6 @@ export const useTokenStats = (
                     a,
                     chainId,
                 );
-                console.log(tokenPromise);
                 return tokenPromise;
             } catch (error) {
                 console.error(

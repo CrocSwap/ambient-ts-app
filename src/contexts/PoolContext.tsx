@@ -19,7 +19,6 @@ import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
 import { UserDataContext } from './UserDataContext';
 import { TradeDataContext } from './TradeDataContext';
 import { ReceiptContext } from './ReceiptContext';
-import areArraysEqual from '../App/functions/areArraysEqual';
 
 interface PoolContextIF {
     poolList: PoolIF[];
@@ -69,19 +68,21 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         tkn2: TokenIF | string,
     ): PoolIF | undefined {
         // handle multiple input types
-        const tkn1Addr: string = typeof tkn1 === 'string' ? tkn1 : tkn1.address;
-        const tkn2Addr: string = typeof tkn2 === 'string' ? tkn2 : tkn2.address;
-        // put token pair for search into an array
-        const inputTokens: [string, string] = [
-            tkn1Addr.toLowerCase(),
-            tkn2Addr.toLowerCase(),
-        ];
+        function fixAddress(t: TokenIF | string): string {
+            const addr: string = typeof t === 'string' ? t : t.address;
+            return addr.toLowerCase();
+        }
+        // fix capitalization on input addresses
+        const tkn1Addr: string = fixAddress(tkn1);
+        const tkn2Addr: string = fixAddress(tkn2);
         // search `poolList` for a pool with the both tokens from params
         return poolList.find((p: PoolIF) => {
-            areArraysEqual(inputTokens, [
-                p.base.address.toLowerCase(),
-                p.quote.address.toLowerCase(),
-            ]);
+            const baseAddr: string = p.base.address.toLowerCase();
+            const quoteAddr: string = p.quote.address.toLowerCase();
+            const isMatch: boolean =
+                (baseAddr === tkn1Addr && quoteAddr === tkn2Addr) ||
+                (baseAddr === tkn2Addr && quoteAddr === tkn1Addr);
+            return isMatch;
         });
     }
 
