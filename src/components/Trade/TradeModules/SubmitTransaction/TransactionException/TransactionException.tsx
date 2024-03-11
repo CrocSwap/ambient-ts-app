@@ -33,7 +33,9 @@ export default function TransactionException(props: propsIF) {
         </p>
     );
 
-    const isSlippageError = txErrorMessage === 'execution reverted: K';
+    const isSlippageError =
+        txErrorMessage === 'execution reverted: K' ||
+        txErrorMessage === 'Internal JSON-RPC error.';
 
     return (
         <div className={styles.removal_pending}>
