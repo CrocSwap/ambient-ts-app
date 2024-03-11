@@ -56,7 +56,6 @@ export default function TokenRow(props: propsIF) {
                         />
                         <p>{token.tokenMeta?.symbol}</p>
                     </div>
-                    {smallScreen || <p>({token.tokenMeta?.name})</p>}
                 </FlexContainer>
             </TableCell>
             {smallScreen || (
