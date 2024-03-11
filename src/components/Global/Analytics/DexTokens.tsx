@@ -101,7 +101,6 @@ function DexTokens(props: propsIF) {
                                             )
                                         }
                                         goToMarket={goToMarket}
-                                        chainId={chainId}
                                     />
                                 ))
                             ) : (

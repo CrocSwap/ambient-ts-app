@@ -19,7 +19,6 @@ interface propsIF {
     token: dexTokenData;
     samplePool: PoolIF | undefined;
     goToMarket: (tknA: string, tknB: string) => void;
-    chainId: string;
 }
 
 export default function TokenRow(props: propsIF) {
