@@ -474,7 +474,7 @@ function ChatPanel(props: propsIF) {
     };
 
     const scrollToBottom = async (bypassInterval?: boolean) => {
-        if (notConnectedUserInterval) return;
+        if (notConnectedUserInterval && !bypassInterval) return;
         if (lastScrolledMessage && lastScrolledMessage.length > 0) return;
         const timer = setTimeout(() => {
             if (!messageEnd.current) return;
