@@ -14,14 +14,19 @@ import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
 import { usePoolList } from '../App/hooks/usePoolList';
-import { PoolIF, PoolStatIF } from '../ambient-utils/types';
+import { PoolIF, PoolStatIF, TokenIF } from '../ambient-utils/types';
 import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
 import { UserDataContext } from './UserDataContext';
 import { TradeDataContext } from './TradeDataContext';
 import { ReceiptContext } from './ReceiptContext';
+import areArraysEqual from '../App/functions/areArraysEqual';
 
 interface PoolContextIF {
     poolList: PoolIF[];
+    findPool: (
+        tkn1: TokenIF | string,
+        tkn2: TokenIF | string,
+    ) => PoolIF | undefined;
     pool: CrocPoolView | undefined;
     isPoolInitialized: boolean | undefined;
     poolPriceDisplay: number | undefined;
@@ -58,21 +63,27 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         crocEnv,
     );
 
-    // function getPool(tkn1: TokenIF, tkn2: TokenIF): PoolIF|undefined {
-    //     const tkn1Fixed: string = tkn1.toLowerCase();
-    //     const tkn2Fixed: string = tkn2.toLowerCase();
-    //     const pool: PoolIF|undefined = poolList.find(
-    //         (p: PoolIF) => {
-    //             const poolBaseAddr: string = p.base.address.toLowerCase();
-    //             const poolQuoteAddr: string = p.quote.address.toLowerCase();
-    //             return (
-    //                 (
-    //                     tkn1Fixed === poolBaseAddr
-    //                 )
-    //             );
-    //         }
-    //     );
-    // };
+    // fn to determine if a given token pair exists in `poolList`
+    function findPool(
+        tkn1: TokenIF | string,
+        tkn2: TokenIF | string,
+    ): PoolIF | undefined {
+        // handle multiple input types
+        const tkn1Addr: string = typeof tkn1 === 'string' ? tkn1 : tkn1.address;
+        const tkn2Addr: string = typeof tkn2 === 'string' ? tkn2 : tkn2.address;
+        // put token pair for search into an array
+        const inputTokens: [string, string] = [
+            tkn1Addr.toLowerCase(),
+            tkn2Addr.toLowerCase(),
+        ];
+        // search `poolList` for a pool with the both tokens from params
+        return poolList.find((p: PoolIF) => {
+            areArraysEqual(inputTokens, [
+                p.base.address.toLowerCase(),
+                p.quote.address.toLowerCase(),
+            ]);
+        });
+    }
 
     const pool = useMemo(
         () => crocEnv?.pool(baseToken.address, quoteToken.address),
@@ -113,6 +124,7 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
 
     const poolContext = {
         poolList,
+        findPool,
         pool,
         isPoolInitialized,
         poolPriceDisplay,
