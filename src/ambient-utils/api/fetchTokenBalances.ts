@@ -59,6 +59,46 @@ export const fetchTokenBalances = async (
 
     const combinedBalances: TokenIF[] = [];
 
+    async function fetchDexBalances() {
+        if (!crocEnv) return;
+        const dexBalancesFromCache = await fetchDepositBalances({
+            chainId: chain,
+            user: address,
+            crocEnv: crocEnv,
+            graphCacheUrl: graphCacheUrl,
+            cachedTokenDetails: cachedTokenDetails,
+            tokenList: tokenList,
+        });
+        if (dexBalancesFromCache !== undefined) {
+            dexBalancesFromCache.map(
+                (balanceFromCache: IDepositedTokenBalance) => {
+                    const indexOfExistingToken = (
+                        combinedBalances ?? []
+                    ).findIndex(
+                        (existingToken) =>
+                            existingToken.address === balanceFromCache.token,
+                    );
+
+                    const newToken =
+                        getTokenInfoFromCacheBalance(balanceFromCache);
+
+                    if (indexOfExistingToken === -1) {
+                        combinedBalances.push(newToken);
+                    } else {
+                        const existingToken =
+                            combinedBalances[indexOfExistingToken];
+
+                        const updatedToken = { ...existingToken };
+
+                        updatedToken.dexBalance = newToken.dexBalance;
+
+                        combinedBalances[indexOfExistingToken] = updatedToken;
+                    }
+                },
+            );
+        }
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const getTokenInfoFromCovalentBalance = (tokenBalance: any): TokenIF => {
         const tokenBalanceBigNumber = BigNumber.from(
@@ -96,15 +136,6 @@ export const fetchTokenBalances = async (
         };
     };
 
-    const dexBalancesFromCache = await fetchDepositBalances({
-        chainId: chain,
-        user: address,
-        crocEnv: crocEnv,
-        graphCacheUrl: graphCacheUrl,
-        cachedTokenDetails: cachedTokenDetails,
-        tokenList: tokenList,
-    });
-
     if (covalentChainString !== undefined) {
         const covalentBalancesResponse =
             await client.BalanceService.getTokenBalancesForWalletAddress(
@@ -124,6 +155,7 @@ export const fetchTokenBalances = async (
                 getTokenInfoFromCovalentBalance(tokenBalance);
             combinedBalances.push(newToken);
         });
+        fetchDexBalances();
     } else {
         const usdbAddress =
             chain === '0xa0c71fd'
@@ -333,30 +365,10 @@ export const fetchTokenBalances = async (
             combinedBalances.push(ole);
             combinedBalances.push(glory);
             combinedBalances.push(finger);
+
+            // after delay, add dex balances
+            fetchDexBalances();
         }
-    }
-
-    if (dexBalancesFromCache !== undefined) {
-        dexBalancesFromCache.map((balanceFromCache: IDepositedTokenBalance) => {
-            const indexOfExistingToken = (combinedBalances ?? []).findIndex(
-                (existingToken) =>
-                    existingToken.address === balanceFromCache.token,
-            );
-
-            const newToken = getTokenInfoFromCacheBalance(balanceFromCache);
-
-            if (indexOfExistingToken === -1) {
-                combinedBalances.push(newToken);
-            } else {
-                const existingToken = combinedBalances[indexOfExistingToken];
-
-                const updatedToken = { ...existingToken };
-
-                updatedToken.dexBalance = newToken.dexBalance;
-
-                combinedBalances[indexOfExistingToken] = updatedToken;
-            }
-        });
     }
 
     return combinedBalances;
