@@ -59,8 +59,8 @@ function DexTokens(props: propsIF) {
     );
 
     useEffect(() => {
-        fetch();
-    }, []);
+        if (!dexTokens.length) fetch();
+    }, [dexTokens.length]);
 
     const dexTokensHeaderItems: HeaderItem[] = [
         {
