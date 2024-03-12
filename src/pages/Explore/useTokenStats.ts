@@ -77,8 +77,6 @@ export const useTokenStats = (
             setDexTokens([]);
             fetchData();
             setShouldDexTokensUpdate(false);
-        } else {
-            fetchData();
         }
     }, [crocEnv, shouldDexTokensUpdate]);
 

@@ -55,14 +55,10 @@ export default function Explore() {
 
     // get expanded pool metadata, if not already fetched
     useEffect(() => {
-        if (
-            crocEnv !== undefined &&
-            poolList.length > 0 &&
-            exploreData.pools.all.length === 0
-        ) {
+        if (crocEnv !== undefined && poolList.length > 0) {
             getAllPools();
         }
-    }, [crocEnv, poolList.length, exploreData.pools.all.length]);
+    }, [crocEnv, poolList.length]);
 
     // logic to handle onClick navigation action
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
@@ -85,9 +81,9 @@ export default function Explore() {
     const titleTextTokens: string = isActiveNetworkMainnet
         ? 'Active Tokens on Ethereum'
         : isActiveNetworkBlast
-        ? 'Active on Blast'
+        ? 'Active Tokens on Blast'
         : isActiveNetworkScroll
-        ? 'Active on Scroll'
+        ? 'Active Tokens on Scroll'
         : 'Top Pools on Ambient';
 
     const titleTextForDOM: string =
@@ -100,7 +96,7 @@ export default function Explore() {
                 getAllPools();
                 break;
             case 'tokens':
-                exploreData.tokens.reset();
+                exploreData.tokens.fetch();
                 break;
         }
     }
@@ -138,6 +134,7 @@ export default function Explore() {
             {exploreData.tab.active === 'tokens' && (
                 <DexTokens
                     dexTokens={exploreData.tokens.data}
+                    fetch={exploreData.tokens.fetch}
                     chainId={chainData.chainId}
                     goToMarket={goToMarket}
                 />

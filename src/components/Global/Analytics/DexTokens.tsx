@@ -1,4 +1,4 @@
-import { memo, useContext } from 'react';
+import { memo, useContext, useEffect } from 'react';
 import Spinner from '../Spinner/Spinner';
 import {
     ScrollableContainer,
@@ -34,10 +34,11 @@ interface propsIF {
     dexTokens: dexTokenData[];
     chainId: string;
     goToMarket: (tknA: string, tknB: string) => void;
+    fetch: () => void;
 }
 
 function DexTokens(props: propsIF) {
-    const { dexTokens, chainId, goToMarket } = props;
+    const { dexTokens, chainId, goToMarket, fetch } = props;
 
     const { findPool } = useContext(PoolContext);
 
@@ -56,6 +57,10 @@ function DexTokens(props: propsIF) {
         activeNetwork.graphCacheUrl,
         crocEnv,
     );
+
+    useEffect(() => {
+        fetch();
+    }, []);
 
     const dexTokensHeaderItems: HeaderItem[] = [
         {

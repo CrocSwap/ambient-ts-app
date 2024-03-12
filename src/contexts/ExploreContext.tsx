@@ -41,7 +41,7 @@ export interface ExploreContextIF {
     };
     tokens: {
         data: dexTokenData[];
-        reset: () => void;
+        fetch: () => void;
     };
 }
 
@@ -397,7 +397,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         },
         tokens: {
             data: dexTokens,
-            reset: () => setShouldDexTokensUpdate(true),
+            fetch: () => setShouldDexTokensUpdate(true),
         },
     };
 
