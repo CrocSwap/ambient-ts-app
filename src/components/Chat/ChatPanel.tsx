@@ -1086,7 +1086,7 @@ function ChatPanel(props: propsIF) {
 
     const sendMessageListener = () => {
         if (isChatOpen) {
-            scrollToBottom(true, true, 300);
+            scrollToBottom(true, true, 700);
         }
     };
 
