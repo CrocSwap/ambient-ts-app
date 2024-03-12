@@ -1,5 +1,5 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { TokenPriceFn, fetchContractDetails } from '../../ambient-utils/api';
 import {
     DexTokenAggServerIF,
@@ -21,6 +21,8 @@ export const useTokenStats = (
     cachedFetchTokenPrice: TokenPriceFn,
     tokenMethods: tokenMethodsIF,
     provider: ethers.providers.Provider,
+    shouldDexTokensUpdate: boolean,
+    setShouldDexTokensUpdate: Dispatch<SetStateAction<boolean>>,
 ): dexTokenData[] => {
     const [dexTokens, setDexTokens] = useState<dexTokenData[]>([]);
 
@@ -71,9 +73,14 @@ export const useTokenStats = (
                 }
             }
         };
-
-        fetchData();
-    }, [crocEnv]);
+        if (shouldDexTokensUpdate) {
+            setDexTokens([]);
+            fetchData();
+            setShouldDexTokensUpdate(false);
+        } else {
+            fetchData();
+        }
+    }, [crocEnv, shouldDexTokensUpdate]);
 
     const decorate = async (t: DexTokenAggServerIF): Promise<dexTokenData> => {
         const tokenLocal = tokenMethods.getTokenByAddress(t.tokenAddr);

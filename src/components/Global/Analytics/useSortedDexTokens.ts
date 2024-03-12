@@ -22,7 +22,7 @@ export const useSortedDexTokens = (
                 output = sortByTime(unsorted);
         }
         return output;
-    }, [sortBy]);
+    }, [sortBy, JSON.stringify(unsorted)]);
 
     function sortByTime(tkns: dexTokenData[]): dexTokenData[] {
         const data = tkns.sort((a: dexTokenData, b: dexTokenData) => {

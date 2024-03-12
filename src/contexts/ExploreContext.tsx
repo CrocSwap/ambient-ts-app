@@ -367,6 +367,9 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         setActiveTab(newTab);
     }
 
+    const [shouldDexTokensUpdate, setShouldDexTokensUpdate] =
+        useState<boolean>(false);
+
     const dexTokens: dexTokenData[] = useTokenStats(
         chainData.chainId,
         crocEnv,
@@ -374,6 +377,8 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         cachedFetchTokenPrice,
         tokens,
         provider,
+        shouldDexTokensUpdate,
+        setShouldDexTokensUpdate,
     );
 
     const exploreContext: ExploreContextIF = {
@@ -392,7 +397,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         },
         tokens: {
             data: dexTokens,
-            reset: () => null,
+            reset: () => setShouldDexTokensUpdate(true),
         },
     };
 
