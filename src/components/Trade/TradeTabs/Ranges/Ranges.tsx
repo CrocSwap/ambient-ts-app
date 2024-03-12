@@ -30,9 +30,6 @@ import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import TableRows from '../TableRows';
 
-const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
-// NOTE: this is done to improve rendering speed for this page.
-
 // interface for props
 interface propsIF {
     activeAccountPositionData?: PositionIF[];
@@ -437,10 +434,9 @@ function Ranges(props: propsIF) {
             </ul>
             {
                 // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
-                // TODO (#1804): we should instead be adding results to RTK
                 !isTradeTableExpanded &&
                     !props.isAccountView &&
-                    sortedPositions.length > NUM_RANGES_WHEN_COLLAPSED && (
+                    sortedPositions.length > rowsPerPage && (
                         <FlexContainer
                             justifyContent='center'
                             alignItems='center'
