@@ -473,13 +473,24 @@ function ChatPanel(props: propsIF) {
         }
     };
 
-    const scrollToBottom = async (bypassInterval?: boolean) => {
+    const scrollToBottom = async (
+        bypassInterval?: boolean,
+        bypassLastScrolled?: boolean,
+        overrideTimeout?: number,
+    ) => {
         if (notConnectedUserInterval && !bypassInterval) return;
-        if (lastScrolledMessage && lastScrolledMessage.length > 0) return;
+        if (
+            lastScrolledMessage &&
+            lastScrolledMessage.length > 0 &&
+            !bypassLastScrolled
+        )
+            return;
+
+        const timeout = overrideTimeout ? overrideTimeout : 1000;
         const timer = setTimeout(() => {
             if (!messageEnd.current) return;
             messageEnd.current.scrollTo(0, messageEnd.current.scrollHeight);
-        }, 1000);
+        }, timeout);
         setScrollDirection('Scroll Down');
         return () => clearTimeout(timer);
     };
@@ -962,6 +973,7 @@ function ChatPanel(props: propsIF) {
         <div className={styles.chat_notification}>
             {notificationCount > 0 &&
             scrollDirection === 'Scroll Up' &&
+            !isReplyButtonPressed &&
             !isScrollToBottomButtonPressed ? (
                 isFullScreen ? (
                     <div className={styles.chat_notification}>
@@ -988,6 +1000,7 @@ function ChatPanel(props: propsIF) {
                                 aria-label='Scroll to bottom'
                                 style={{ cursor: 'pointer' }}
                                 title={'Scroll To Bottom'}
+                                className={styles.scroll_to_bottom_icon}
                             />
                         </span>
                     </div>
@@ -1019,18 +1032,20 @@ function ChatPanel(props: propsIF) {
                 )
             ) : scrollDirection === 'Scroll Up' &&
               notificationCount <= 0 &&
+              !isReplyButtonPressed &&
               !isScrollToBottomButtonPressed ? (
                 isFullScreen ? (
                     <span style={{ marginTop: '-18px', cursor: 'pointer' }}>
                         <RiArrowDownSLine
                             role='button'
-                            size={27}
+                            size={32}
                             color='#7371fc'
                             onClick={() => scrollToBottomButton()}
                             tabIndex={0}
                             aria-label='Scroll to bottom'
                             style={{ cursor: 'pointer' }}
                             title={'Scroll To Bottom'}
+                            className={styles.scroll_to_icon}
                         />
                     </span>
                 ) : (
@@ -1041,9 +1056,10 @@ function ChatPanel(props: propsIF) {
                             color='#7371fc'
                             onClick={() => scrollToBottomButton()}
                             tabIndex={0}
-                            aria-label='Scroll to bottom'
+                            aria-label='Scroll to bottom zzzz'
                             style={{ cursor: 'pointer' }}
                             title={'Scroll To Bottom'}
+                            className={styles.scroll_to_icon}
                         />
                     </span>
                 )
@@ -1067,6 +1083,12 @@ function ChatPanel(props: propsIF) {
             </div>
         </div>
     );
+
+    const sendMessageListener = () => {
+        if (isChatOpen) {
+            scrollToBottom(true, true, 300);
+        }
+    };
 
     const messageInput = (
         <MessageInput
@@ -1092,6 +1114,7 @@ function ChatPanel(props: propsIF) {
             sendMessageCooldown={sendMessageCooldown}
             selectedMessageForReply={selectedMessageforReply}
             setSelectedMessageForReply={setSelectedMessageForReply}
+            sendMessageListener={sendMessageListener}
         />
     );
 
@@ -1161,6 +1184,9 @@ function ChatPanel(props: propsIF) {
                     showPicker={showPicker}
                     setShowPicker={setShowPicker}
                     addReactionEmojiPickListener={addReactionEmojiPickListener}
+                    showDeleteConfirmation={showDeleteConfirmation}
+                    handleConfirmDelete={handleConfirmDelete}
+                    handleCancelDelete={handleCancelDelete}
                 />
             </>
         );
@@ -1214,6 +1240,7 @@ function ChatPanel(props: propsIF) {
                                 aria-label='Show previous messages'
                                 style={{ cursor: 'pointer' }}
                                 title='Show previous messages'
+                                className={styles.scroll_to_icon}
                             />
                         ) : (
                             ''

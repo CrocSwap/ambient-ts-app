@@ -74,14 +74,11 @@
 }
 
 .chat_notification {
-    
     position: absolute;
-    top: 26rem;
-    left: 19.5rem;
-    width: 95%;
-    height: 1%;
+    top: 25rem;
+    right: 1rem;
+
     cursor: default;
-       
 }
 .pop_up {
     padding: 5px 81px;
@@ -336,6 +333,19 @@
     opacity: 1;
 }
 
+.scroll_to_icon{
+    transition: all .2s ease-in-out;
+    font-size: 1rem;
+    border-radius: 10rem;
+    background: #7371fc33;
+    border: 1px solid #7371fc88;
+    backdrop-filter: blur(10px);
+}
+
+.scroll_to_icon:hover{
+    background: #7371fc55;
+    border: 1px solid #7371fcaa;
+}
 
 @media only screen and (max-width: 600px){
     .chat_notification {

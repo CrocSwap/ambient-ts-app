@@ -817,11 +817,12 @@ function SentMessagePanel(props: SentMessageProps) {
                                 setFlipped(true);
                             }}
                         ></div> */}
-                        <div
-                            ref={optionsButtonRef}
-                            className={styles.options_button}
-                        >
-                            {props.address && (
+
+                        {props.address && !props.message.isDeleted && (
+                            <div
+                                ref={optionsButtonRef}
+                                className={styles.options_button}
+                            >
                                 <Options
                                     setIsReplyButtonPressed={
                                         props.setIsReplyButtonPressed
@@ -868,8 +869,8 @@ function SentMessagePanel(props: SentMessageProps) {
                                         props.showVerifyWalletConfirmationInDelete
                                     }
                                 />
-                            )}
-                        </div>
+                            </div>
+                        )}
 
                         <div>
                             {daySeparator === '' ? (

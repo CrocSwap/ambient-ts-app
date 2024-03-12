@@ -77,6 +77,9 @@ interface FullChatPropsIF {
         data: IEmojiData,
     ) => void;
     setShowPicker: Dispatch<SetStateAction<boolean>>;
+    showDeleteConfirmation: boolean;
+    handleConfirmDelete: () => void;
+    handleCancelDelete: () => void;
 }
 
 interface ChannelDisplayPropsIF {
@@ -809,7 +812,6 @@ function FullChat(props: FullChatPropsIF) {
                 </header>
                 {chatChanels}
             </section>
-
             <section className={styles.right_container}>
                 <header className={styles.right_container_header}>
                     {favButton} {currentRoomIsGlobal ? '#' : ''}{' '}
@@ -824,6 +826,14 @@ function FullChat(props: FullChatPropsIF) {
                 text={props.toastrText}
                 type={props.toastrType}
             />
+            <ChatConfirmationPanel
+                isActive={props.showDeleteConfirmation}
+                title='Delete Message'
+                content='Are you sure you want to delete this message?'
+                confirmListener={props.handleConfirmDelete}
+                cancelListener={props.handleCancelDelete}
+            />
+            )
             <ChatConfirmationPanel
                 isActive={props.showVerifyOldMessagesPanel && props.isChatOpen}
                 title='Verify Old Messages'

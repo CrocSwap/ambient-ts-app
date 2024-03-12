@@ -56,9 +56,14 @@ interface MessageInputProps {
     selectedMessageForReply: Message | undefined;
     setSelectedMessageForReply: Dispatch<SetStateAction<Message | undefined>>;
     sendMessageCooldown: number;
+    sendMessageListener?: () => void;
 }
 
 export default function MessageInput(props: MessageInputProps) {
+    const isMobileDevice = () => {
+        return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    };
+
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [cursorPosition, setCursorPosition] = useState<number | null>(null);
 
@@ -67,6 +72,7 @@ export default function MessageInput(props: MessageInputProps) {
     const [isInfoPressed, setIsInfoPressed] = useState(false);
     const { userAddress, isUserConnected } = useContext(UserDataContext);
     const [isPosition, setIsPosition] = useState(false);
+    const [isMobile, setIsMobile] = useState<boolean>(false);
 
     // disabled for now due to es-lint warnings
     // const {
@@ -152,6 +158,10 @@ export default function MessageInput(props: MessageInputProps) {
             return 'Please connect wallet to chat.';
         }
     }
+
+    useEffect(() => {
+        setIsMobile(isMobileDevice());
+    }, []);
 
     useEffect(() => {
         messageInputText();
@@ -428,6 +438,9 @@ export default function MessageInput(props: MessageInputProps) {
             props.setSelectedMessageForReply(undefined);
         }
         setInputLength(0);
+        if (props.sendMessageListener) {
+            props.sendMessageListener();
+        }
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -536,7 +549,8 @@ export default function MessageInput(props: MessageInputProps) {
                             autoComplete={'off'}
                             tabIndex={-1}
                             autoFocus={
-                                props.appPage || props.isReplyButtonPressed
+                                (props.appPage && !isMobile) ||
+                                props.isReplyButtonPressed
                             }
                             maxLength={140}
                             ref={inputRef}
