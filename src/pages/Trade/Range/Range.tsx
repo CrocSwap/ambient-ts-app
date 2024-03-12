@@ -467,9 +467,6 @@ function Range() {
         );
 
     useEffect(() => {
-        console.log({ isTokenAInputDisabled, isTokenBInputDisabled });
-    }, [isTokenAInputDisabled, isTokenBInputDisabled]);
-    useEffect(() => {
         if (rangeWidthPercentage === 100 && !advancedMode) {
             setIsAmbient(true);
             setRangeLowBoundNonDisplayPrice(0);

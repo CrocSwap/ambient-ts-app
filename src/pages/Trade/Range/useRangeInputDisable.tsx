@@ -15,14 +15,6 @@ export function useRangeInputDisable(
     // TODO: this logic can likely be simplified
     // Or at least made more readable
     useEffect(() => {
-        console.log({
-            currentPoolPriceTick,
-            isMintLiqEnabled,
-            isAmbient,
-            isTokenABase,
-            defaultLowTick,
-            defaultHighTick,
-        });
         if (
             currentPoolPriceTick === Infinity ||
             currentPoolPriceTick === -Infinity ||
