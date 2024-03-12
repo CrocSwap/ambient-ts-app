@@ -12,27 +12,35 @@ import {
 import { FlexContainer } from '../../../styled/Common';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { dexTokenData } from '../../../pages/Explore/useTokenStats';
-import { PoolIF } from '../../../ambient-utils/types';
+import { GCServerPoolIF, PoolIF } from '../../../ambient-utils/types';
 
 interface propsIF {
     token: dexTokenData;
     samplePool: PoolIF | undefined;
+    backupPool: GCServerPoolIF | undefined;
     goToMarket: (tknA: string, tknB: string) => void;
     smallScreen: boolean;
 }
 
 export default function TokenRow(props: propsIF) {
-    const { token, samplePool, goToMarket, smallScreen } = props;
+    const { token, samplePool, goToMarket, smallScreen, backupPool } = props;
     if (!token.tokenMeta) return null;
 
     const mobileScrenView = useMediaQuery('(max-width: 500px)');
 
     return (
         <TableRow
-            onClick={() =>
-                samplePool &&
-                goToMarket(samplePool.base.address, samplePool.quote.address)
-            }
+            onClick={() => {
+                console.log(backupPool);
+                if (samplePool) {
+                    goToMarket(
+                        samplePool.base.address,
+                        samplePool.quote.address,
+                    );
+                } else if (backupPool) {
+                    goToMarket(backupPool.base, backupPool.quote);
+                }
+            }}
         >
             <TableCell>
                 <FlexContainer

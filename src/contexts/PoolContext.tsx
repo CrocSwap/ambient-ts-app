@@ -24,7 +24,7 @@ interface PoolContextIF {
     poolList: PoolIF[];
     findPool: (
         tkn1: TokenIF | string,
-        tkn2: TokenIF | string,
+        tkn2?: TokenIF | string,
     ) => PoolIF | undefined;
     pool: CrocPoolView | undefined;
     isPoolInitialized: boolean | undefined;
@@ -65,25 +65,42 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
     // fn to determine if a given token pair exists in `poolList`
     function findPool(
         tkn1: TokenIF | string,
-        tkn2: TokenIF | string,
+        tkn2?: TokenIF | string,
     ): PoolIF | undefined {
         // handle multiple input types
         function fixAddress(t: TokenIF | string): string {
             const addr: string = typeof t === 'string' ? t : t.address;
             return addr.toLowerCase();
         }
-        // fix capitalization on input addresses
         const tkn1Addr: string = fixAddress(tkn1);
-        const tkn2Addr: string = fixAddress(tkn2);
-        // search `poolList` for a pool with the both tokens from params
-        return poolList.find((p: PoolIF) => {
-            const baseAddr: string = p.base.address.toLowerCase();
-            const quoteAddr: string = p.quote.address.toLowerCase();
-            const isMatch: boolean =
-                (baseAddr === tkn1Addr && quoteAddr === tkn2Addr) ||
-                (baseAddr === tkn2Addr && quoteAddr === tkn1Addr);
-            return isMatch;
-        });
+        // output variable
+        let pool: PoolIF | undefined;
+        // if called on two tokens, find first pool with both addresses
+        // if called on one token, find first pool including that token
+        if (tkn2) {
+            // fix capitalization on input addresses
+            const tkn2Addr: string = fixAddress(tkn2);
+            // search `poolList` for a pool with the both tokens from params
+            pool = poolList.find((p: PoolIF) => {
+                const baseAddr: string = p.base.address.toLowerCase();
+                const quoteAddr: string = p.quote.address.toLowerCase();
+                const isMatch: boolean =
+                    (baseAddr === tkn1Addr && quoteAddr === tkn2Addr) ||
+                    (baseAddr === tkn2Addr && quoteAddr === tkn1Addr);
+                return isMatch;
+            });
+        } else {
+            // search `poolList` for a pool with the token from params
+            pool = poolList.find((p: PoolIF) => {
+                const baseAddr: string = p.base.address.toLowerCase();
+                const quoteAddr: string = p.quote.address.toLowerCase();
+                const isMatch: boolean =
+                    baseAddr === tkn1Addr || quoteAddr === tkn1Addr;
+                return isMatch;
+            });
+        }
+        // return output variable
+        return pool;
     }
 
     const pool = useMemo(

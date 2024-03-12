@@ -13,9 +13,11 @@ import { useSortedDexTokens, sortedDexTokensIF } from './useSortedDexTokens';
 import { dexTokenData } from '../../../pages/Explore/useTokenStats';
 import TableHeadTokens from './TableHeadTokens';
 import { getDefaultPairForChain } from '../../../ambient-utils/constants';
-import { TokenIF } from '../../../ambient-utils/types';
+import { GCServerPoolIF, TokenIF } from '../../../ambient-utils/types';
 import { PoolContext } from '../../../contexts/PoolContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { usePoolList2 } from '../../../App/hooks/usePoolList2';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 export interface HeaderItem {
     label: string;
@@ -44,6 +46,15 @@ function DexTokens(props: propsIF) {
     const sortedTokens: sortedDexTokensIF = useSortedDexTokens(dexTokens);
 
     const smallScreen: boolean = useMediaQuery('(max-width: 800px)');
+
+    // this logic is here to patch cases where existing logic to identify a token pool fails,
+    // ... this is not an optimal location but works as a stopgap that minimizes needing to
+    // ... alter existing logic or type annotation in the component tree
+    const { crocEnv, activeNetwork } = useContext(CrocEnvContext);
+    const unfilteredPools: GCServerPoolIF[] = usePoolList2(
+        activeNetwork.graphCacheUrl,
+        crocEnv,
+    );
 
     const dexTokensHeaderItems: HeaderItem[] = [
         {
@@ -113,8 +124,16 @@ function DexTokens(props: propsIF) {
                                             findPool(
                                                 token.tokenAddr,
                                                 defaultTokensForChain[1],
-                                            )
+                                            ) ??
+                                            findPool(token.tokenAddr)
                                         }
+                                        backupPool={unfilteredPools.find(
+                                            (p: GCServerPoolIF) =>
+                                                p.base.toLowerCase() ===
+                                                    token.tokenAddr.toLowerCase() ||
+                                                p.quote.toLowerCase() ===
+                                                    token.tokenAddr.toLowerCase(),
+                                        )}
                                         goToMarket={goToMarket}
                                         smallScreen={smallScreen}
                                     />

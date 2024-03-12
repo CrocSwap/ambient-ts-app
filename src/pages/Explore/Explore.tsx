@@ -13,11 +13,13 @@ import { ChainDataContext } from '../../contexts/ChainDataContext';
 import Toggle from '../../components/Form/Toggle';
 import { FlexContainer, Text } from '../../styled/Common';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
+import { usePoolList2 } from '../../App/hooks/usePoolList2';
+import { GCServerPoolIF } from '../../ambient-utils/types';
 
 export default function Explore() {
     // full expanded data set
     const exploreData: ExploreContextIF = useContext(ExploreContext);
-    const { crocEnv, chainData } = useContext(CrocEnvContext);
+    const { crocEnv, chainData, activeNetwork } = useContext(CrocEnvContext);
     const { poolList } = useContext(PoolContext);
     const {
         isActiveNetworkBlast,
