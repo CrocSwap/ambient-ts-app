@@ -98,7 +98,7 @@ export const ChainDataContextProvider = (props: {
         }
     }
 
-    const BLOCK_NUM_POLL_MS = 2000;
+    const BLOCK_NUM_POLL_MS = 3000;
     useEffect(() => {
         (async () => {
             await pollBlockNum();
@@ -196,6 +196,7 @@ export const ChainDataContextProvider = (props: {
                                     crocEnv,
                                     activeNetwork.graphCacheUrl,
                                     client,
+                                    tokens.tokenUniv,
                                 );
                             const tokensWithLogos = tokenBalances.map(
                                 (token) => {

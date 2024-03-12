@@ -48,6 +48,7 @@ export const fetchTokenBalances = async (
     crocEnv: CrocEnv | undefined,
     graphCacheUrl: string,
     client: Client,
+    tokenList: TokenIF[],
 ): Promise<TokenIF[] | undefined> => {
     if (!crocEnv) return;
 
@@ -100,6 +101,7 @@ export const fetchTokenBalances = async (
         crocEnv: crocEnv,
         graphCacheUrl: graphCacheUrl,
         cachedTokenDetails: cachedTokenDetails,
+        tokenList: tokenList,
     });
 
     if (covalentChainString !== undefined) {
@@ -362,6 +364,7 @@ export type TokenBalancesQueryFn = (
     crocEnv: CrocEnv | undefined,
     graphCacheUrl: string,
     client: Client,
+    tokenList: TokenIF[],
 ) => Promise<TokenIF[]>;
 
 export function memoizeFetchTokenBalances(): TokenBalancesQueryFn {

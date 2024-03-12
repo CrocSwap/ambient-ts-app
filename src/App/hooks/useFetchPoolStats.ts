@@ -65,7 +65,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                     pool.base.address,
                     pool.quote.address,
                     chainId,
-                    lastBlockNumber,
+                    Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
                 );
 
                 if (spotPrice) {

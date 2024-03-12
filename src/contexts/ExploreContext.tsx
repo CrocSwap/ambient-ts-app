@@ -54,8 +54,7 @@ export const ExploreContext = createContext<ExploreContextIF>(
 );
 
 export const ExploreContextProvider = (props: { children: ReactNode }) => {
-    const { lastBlockNumber, isActiveNetworkBlast } =
-        useContext(ChainDataContext);
+    const { isActiveNetworkBlast } = useContext(ChainDataContext);
 
     const {
         cachedPoolStatsFetch,
@@ -226,7 +225,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             pool.base.address,
             pool.quote.address,
             chainId,
-            lastBlockNumber,
+            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
         );
         // display price, inverted if necessary
         const displayPrice: number = shouldInvert
