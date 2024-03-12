@@ -18,6 +18,7 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { usePoolList2 } from '../../../App/hooks/usePoolList2';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { isWethToken } from '../../../ambient-utils/dataLayer';
 
 export interface HeaderItem {
     label: string;
@@ -129,10 +130,12 @@ function DexTokens(props: propsIF) {
                                         }
                                         backupPool={unfilteredPools.find(
                                             (p: GCServerPoolIF) =>
-                                                p.base.toLowerCase() ===
-                                                    token.tokenAddr.toLowerCase() ||
-                                                p.quote.toLowerCase() ===
-                                                    token.tokenAddr.toLowerCase(),
+                                                (p.base.toLowerCase() ===
+                                                    token.tokenAddr.toLowerCase() &&
+                                                    !isWethToken(p.quote)) ||
+                                                (p.quote.toLowerCase() ===
+                                                    token.tokenAddr.toLowerCase() &&
+                                                    !isWethToken(p.base)),
                                         )}
                                         goToMarket={goToMarket}
                                         smallScreen={smallScreen}

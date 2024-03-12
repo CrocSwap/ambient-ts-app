@@ -19,6 +19,7 @@ import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
 import { UserDataContext } from './UserDataContext';
 import { TradeDataContext } from './TradeDataContext';
 import { ReceiptContext } from './ReceiptContext';
+import { isWethToken } from '../ambient-utils/dataLayer';
 
 interface PoolContextIF {
     poolList: PoolIF[];
@@ -95,7 +96,8 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
                 const baseAddr: string = p.base.address.toLowerCase();
                 const quoteAddr: string = p.quote.address.toLowerCase();
                 const isMatch: boolean =
-                    baseAddr === tkn1Addr || quoteAddr === tkn1Addr;
+                    (baseAddr === tkn1Addr && !isWethToken(quoteAddr)) ||
+                    (quoteAddr === tkn1Addr && !isWethToken(baseAddr));
                 return isMatch;
             });
         }

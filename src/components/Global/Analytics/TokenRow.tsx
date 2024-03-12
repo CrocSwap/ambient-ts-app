@@ -24,7 +24,7 @@ interface propsIF {
 
 export default function TokenRow(props: propsIF) {
     const { token, samplePool, goToMarket, smallScreen, backupPool } = props;
-    if (!token.tokenMeta) return null;
+    if (!token.tokenMeta || (!samplePool && !backupPool)) return null;
 
     const mobileScrenView = useMediaQuery('(max-width: 500px)');
 
