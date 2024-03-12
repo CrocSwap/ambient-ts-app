@@ -66,9 +66,7 @@ export default function TokenRow(props: propsIF) {
                     </div>
                 </FlexContainer>
             </TableCell>
-            {smallScreen || (
-                <TableCell left>({token.tokenMeta?.name})</TableCell>
-            )}
+            {smallScreen || <TableCell left>{token.tokenMeta?.name}</TableCell>}
             <TableCell>
                 <p style={{ textTransform: 'none' }}>
                     {getFormattedNumber({

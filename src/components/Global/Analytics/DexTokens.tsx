@@ -46,7 +46,7 @@ function DexTokens(props: propsIF) {
 
     const sortedTokens: sortedDexTokensIF = useSortedDexTokens(dexTokens);
 
-    const smallScreen: boolean = useMediaQuery('(max-width: 800px)');
+    const smallScreen: boolean = useMediaQuery('(max-width: 640px)');
 
     // this logic is here to patch cases where existing logic to identify a token pool fails,
     // ... this is not an optimal location but works as a stopgap that minimizes needing to
