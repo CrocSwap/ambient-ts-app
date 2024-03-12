@@ -25,6 +25,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         cachedPoolStatsFetch,
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
+        cachedTokenDetails,
         cachedGet24hChange,
     } = useContext(CachedDataContext);
     const {
@@ -169,6 +170,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                     crocEnv,
                     activeNetwork.graphCacheUrl,
                     cachedFetchTokenPrice,
+                    cachedTokenDetails,
                     tokens.tokenUniv,
                 );
 
@@ -183,6 +185,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                     crocEnv,
                     activeNetwork.graphCacheUrl,
                     cachedFetchTokenPrice,
+                    cachedTokenDetails,
                     tokens.tokenUniv,
                     ydayTime,
                 );

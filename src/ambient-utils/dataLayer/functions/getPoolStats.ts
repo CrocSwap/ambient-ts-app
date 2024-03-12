@@ -1,6 +1,6 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { GCGO_OVERRIDE_URL } from '../../constants';
-import { TokenPriceFn } from '../../api';
+import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 import { TokenIF } from '../../types';
 
@@ -48,6 +48,7 @@ const fetchPoolStats = async (
     crocEnv: CrocEnv,
     graphCacheUrl: string,
     cachedFetchTokenPrice: TokenPriceFn,
+    cachedTokenDetails: FetchContractDetailsFn,
     tokenList: TokenIF[],
     histTime?: number,
 ): Promise<PoolStatsIF | undefined> => {
@@ -81,6 +82,7 @@ const fetchPoolStats = async (
                     chainId,
                     crocEnv,
                     cachedFetchTokenPrice,
+                    cachedTokenDetails,
                     tokenList,
                 );
             });
@@ -109,6 +111,7 @@ const fetchPoolStats = async (
                     chainId,
                     crocEnv,
                     cachedFetchTokenPrice,
+                    cachedTokenDetails,
                     tokenList,
                 );
             });
@@ -123,9 +126,10 @@ async function expandPoolStats(
     chainId: string,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
+    cachedTokenDetails: FetchContractDetailsFn,
     tokenList: TokenIF[],
 ): Promise<PoolStatsIF> {
-    const pool = crocEnv.pool(base, quote);
+    const provider = (await crocEnv.context).provider;
 
     const basePricePromise = cachedFetchTokenPrice(base, chainId, crocEnv);
     const quotePricePromise = cachedFetchTokenPrice(quote, chainId, crocEnv);
@@ -140,10 +144,16 @@ async function expandPoolStats(
         (token) => token.address.toLowerCase() === quote.toLowerCase(),
     )?.decimals;
 
+    const DEFAULT_DECIMALS = 18;
+
     return decoratePoolStats(
         payload,
-        baseTokenListedDecimals || (await pool.baseDecimals),
-        quoteTokenListedDecimals || (await pool.quoteDecimals),
+        (baseTokenListedDecimals ||
+            (await cachedTokenDetails(provider, base, chainId))?.decimals) ??
+            DEFAULT_DECIMALS,
+        (quoteTokenListedDecimals ||
+            (await cachedTokenDetails(provider, quote, chainId))?.decimals) ??
+            DEFAULT_DECIMALS,
         basePrice,
         quotePrice,
     );
@@ -400,6 +410,7 @@ export type PoolStatsFn = (
     crocEnv: CrocEnv,
     graphCacheUrl: string,
     cachedFetchTokenPrice: TokenPriceFn,
+    cachedTokenDetails: FetchContractDetailsFn,
     tokenList: TokenIF[],
     histTime?: number,
 ) => Promise<PoolStatsIF>;

@@ -61,6 +61,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         cachedPoolStatsFetch,
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
+        cachedTokenDetails,
         cachedGet24hChange,
     } = useContext(CachedDataContext);
 
@@ -131,6 +132,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             crocEnv,
             activeNetwork.graphCacheUrl,
             cachedFetchTokenPrice,
+            cachedTokenDetails,
             tokens.tokenUniv,
         );
         const ydayTime = Math.floor(Date.now() / 1000 - 24 * 3600);
@@ -144,6 +146,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             crocEnv,
             activeNetwork.graphCacheUrl,
             cachedFetchTokenPrice,
+            cachedTokenDetails,
             tokens.tokenUniv,
             ydayTime,
         );
