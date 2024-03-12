@@ -15,6 +15,7 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { PoolIF, PoolStatIF } from '../../ambient-utils/types';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../ambient-utils/constants';
+import { TokenContext } from '../../contexts/TokenContext';
 
 const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
     const {
@@ -24,6 +25,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         cachedPoolStatsFetch,
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
+        cachedTokenDetails,
         cachedGet24hChange,
     } = useContext(CachedDataContext);
     const {
@@ -33,6 +35,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
+    const { tokens } = useContext(TokenContext);
 
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<
         string | undefined
@@ -65,7 +68,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                     pool.base.address,
                     pool.quote.address,
                     chainId,
-                    lastBlockNumber,
+                    Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
                 );
 
                 if (spotPrice) {
@@ -167,6 +170,8 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                     crocEnv,
                     activeNetwork.graphCacheUrl,
                     cachedFetchTokenPrice,
+                    cachedTokenDetails,
+                    tokens.tokenUniv,
                 );
 
                 const ydayTime = Math.floor(Date.now() / 1000 - 24 * 3600);
@@ -180,6 +185,8 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                     crocEnv,
                     activeNetwork.graphCacheUrl,
                     cachedFetchTokenPrice,
+                    cachedTokenDetails,
+                    tokens.tokenUniv,
                     ydayTime,
                 );
 
