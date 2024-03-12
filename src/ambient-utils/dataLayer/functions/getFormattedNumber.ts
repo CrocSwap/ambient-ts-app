@@ -109,7 +109,7 @@ export function getFormattedNumber({
     }
     // remove more than two trailing zeros and decimal point at the end
     valueString =
-        valueString !== zeroDisplay
+        valueString !== zeroDisplay && !isUSD
             ? valueString.replace(/00+$/, '0').replace(/\.$/, '')
             : valueString;
     if (removeCommas) valueString = valueString.replaceAll(',', '');
