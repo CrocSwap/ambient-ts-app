@@ -465,6 +465,7 @@ function Range() {
             defaultHighTick,
             isDenomBase,
         );
+
     useEffect(() => {
         if (rangeWidthPercentage === 100 && !advancedMode) {
             setIsAmbient(true);
