@@ -98,7 +98,7 @@ export const ChainDataContextProvider = (props: {
         }
     }
 
-    const BLOCK_NUM_POLL_MS = 2000;
+    const BLOCK_NUM_POLL_MS = 3000;
     useEffect(() => {
         (async () => {
             await pollBlockNum();
@@ -184,36 +184,63 @@ export const ChainDataContextProvider = (props: {
                 client
             ) {
                 try {
-                    // wait for 7 seconds before fetching token balances
-                    setTimeout(() => {
-                        (async () => {
-                            const tokenBalances: TokenIF[] =
-                                await cachedFetchTokenBalances(
-                                    userAddress,
-                                    chainData.chainId,
-                                    everyFiveMinutes,
-                                    cachedTokenDetails,
-                                    crocEnv,
-                                    activeNetwork.graphCacheUrl,
-                                    client,
+                    const tokenBalances: TokenIF[] =
+                        await cachedFetchTokenBalances(
+                            userAddress,
+                            chainData.chainId,
+                            everyFiveMinutes,
+                            cachedTokenDetails,
+                            crocEnv,
+                            activeNetwork.graphCacheUrl,
+                            client,
+                            tokens.tokenUniv,
+                        );
+                    const tokensWithLogos = tokenBalances.map((token) => {
+                        const oldToken: TokenIF | undefined =
+                            tokens.getTokenByAddress(token.address);
+                        const newToken = { ...token };
+                        newToken.name = oldToken ? oldToken.name : '';
+                        newToken.logoURI = oldToken ? oldToken.logoURI : '';
+                        return newToken;
+                    });
+                    setTokenBalances(tokensWithLogos);
+
+                    if (isActiveNetworkBlast) {
+                        // wait for 7 seconds before fetching alt token balances
+                        setTimeout(() => {
+                            (async () => {
+                                const tokenBalances: TokenIF[] =
+                                    await cachedFetchTokenBalances(
+                                        userAddress,
+                                        chainData.chainId,
+                                        everyFiveMinutes,
+                                        cachedTokenDetails,
+                                        crocEnv,
+                                        activeNetwork.graphCacheUrl,
+                                        client,
+                                        tokens.tokenUniv,
+                                        true,
+                                    );
+                                const tokensWithLogos = tokenBalances.map(
+                                    (token) => {
+                                        const oldToken: TokenIF | undefined =
+                                            tokens.getTokenByAddress(
+                                                token.address,
+                                            );
+                                        const newToken = { ...token };
+                                        newToken.name = oldToken
+                                            ? oldToken.name
+                                            : '';
+                                        newToken.logoURI = oldToken
+                                            ? oldToken.logoURI
+                                            : '';
+                                        return newToken;
+                                    },
                                 );
-                            const tokensWithLogos = tokenBalances.map(
-                                (token) => {
-                                    const oldToken: TokenIF | undefined =
-                                        tokens.getTokenByAddress(token.address);
-                                    const newToken = { ...token };
-                                    newToken.name = oldToken
-                                        ? oldToken.name
-                                        : '';
-                                    newToken.logoURI = oldToken
-                                        ? oldToken.logoURI
-                                        : '';
-                                    return newToken;
-                                },
-                            );
-                            setTokenBalances(tokensWithLogos);
-                        })();
-                    }, 7000);
+                                setTokenBalances(tokensWithLogos);
+                            })();
+                        }, 7000);
+                    }
                 } catch (error) {
                     // setTokenBalances(undefined);
                     console.error({ error });

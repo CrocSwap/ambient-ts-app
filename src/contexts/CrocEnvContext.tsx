@@ -4,6 +4,7 @@ import {
     createContext,
     useContext,
     useEffect,
+    useMemo,
     useState,
 } from 'react';
 import { useSigner } from 'wagmi';
@@ -122,14 +123,17 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const [defaultUrlParams, setDefaultUrlParams] =
         useState<UrlRoutesTemplate>(initUrl);
 
-    const provider =
-        chainData.chainId === '0x1'
-            ? mainnetProvider
-            : chainData.chainId === '0x82750'
-            ? scrollProvider
-            : chainData.chainId === '0x13e31'
-            ? blastProvider
-            : new ethers.providers.JsonRpcProvider(chainData.nodeUrl);
+    const provider = useMemo(
+        () =>
+            chainData.chainId === '0x1'
+                ? mainnetProvider
+                : chainData.chainId === '0x82750'
+                ? scrollProvider
+                : chainData.chainId === '0x13e31'
+                ? blastProvider
+                : new ethers.providers.JsonRpcProvider(chainData.nodeUrl),
+        [chainData.chainId],
+    );
 
     useBlacklist(userAddress);
 

@@ -1,4 +1,4 @@
-import { CrocImpact } from '@crocswap-libs/sdk';
+import { CrocImpact, bigNumToFloat } from '@crocswap-libs/sdk';
 import { useContext, useState, useEffect, memo, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
@@ -404,14 +404,15 @@ function Swap(props: propsIF) {
                 Math.floor((ethMainnetUsdPrice || 0) * 100),
             );
             const l1GasInGwei = l1Gas ? l1Gas.div(NUM_WEI_IN_GWEI) : undefined;
-            setL1GasFeeSwapInGwei(l1GasInGwei?.toNumber() || 0);
+            l1GasInGwei &&
+                setL1GasFeeSwapInGwei(bigNumToFloat(l1GasInGwei) || 0);
 
             const l1GasCents = l1GasInGwei
                 ? l1GasInGwei.mul(costOfEthInCents).div(NUM_GWEI_IN_ETH)
                 : undefined;
 
             const l1GasDollarsNum = l1GasCents
-                ? l1GasCents?.toNumber() / 100
+                ? bigNumToFloat(l1GasCents) / 100
                 : undefined;
 
             if (l1GasDollarsNum) setExtraL1GasFeeSwap(l1GasDollarsNum);
