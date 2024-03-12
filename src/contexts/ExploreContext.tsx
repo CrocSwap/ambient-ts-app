@@ -19,6 +19,7 @@ import { CrocEnvContext } from './CrocEnvContext';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../ambient-utils/constants';
 import ambientTokenList from '../ambient-utils/constants/ambient-token-list.json';
 import { PoolContext } from './PoolContext';
+import { TokenContext } from './TokenContext';
 
 export interface ExploreContextIF {
     pools: {
@@ -64,6 +65,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     } = useContext(CachedDataContext);
 
     const { crocEnv, chainData, activeNetwork } = useContext(CrocEnvContext);
+    const { tokens } = useContext(TokenContext);
 
     const [limitedPools, setLimitedPools] = useState<Array<PoolDataIF>>([]);
     const [extraPools, setExtraPools] = useState<Array<PoolDataIF>>([]);
@@ -129,6 +131,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             crocEnv,
             activeNetwork.graphCacheUrl,
             cachedFetchTokenPrice,
+            tokens.tokenUniv,
         );
         const ydayTime = Math.floor(Date.now() / 1000 - 24 * 3600);
 
@@ -141,6 +144,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             crocEnv,
             activeNetwork.graphCacheUrl,
             cachedFetchTokenPrice,
+            tokens.tokenUniv,
             ydayTime,
         );
 

@@ -48,6 +48,7 @@ const fetchPoolStats = async (
     crocEnv: CrocEnv,
     graphCacheUrl: string,
     cachedFetchTokenPrice: TokenPriceFn,
+    tokenList: TokenIF[],
     histTime?: number,
 ): Promise<PoolStatsIF | undefined> => {
     const poolStatsFreshEndpoint = GCGO_OVERRIDE_URL
@@ -80,6 +81,7 @@ const fetchPoolStats = async (
                     chainId,
                     crocEnv,
                     cachedFetchTokenPrice,
+                    tokenList,
                 );
             });
     } else {
@@ -107,6 +109,7 @@ const fetchPoolStats = async (
                     chainId,
                     crocEnv,
                     cachedFetchTokenPrice,
+                    tokenList,
                 );
             });
     }
@@ -120,6 +123,7 @@ async function expandPoolStats(
     chainId: string,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
+    tokenList: TokenIF[],
 ): Promise<PoolStatsIF> {
     const pool = crocEnv.pool(base, quote);
 
@@ -129,10 +133,17 @@ async function expandPoolStats(
     const basePrice = (await basePricePromise)?.usdPrice || 0.0;
     const quotePrice = (await quotePricePromise)?.usdPrice || 0.0;
 
+    const baseTokenListedDecimals = tokenList.find(
+        (token) => token.address.toLowerCase() === base.toLowerCase(),
+    )?.decimals;
+    const quoteTokenListedDecimals = tokenList.find(
+        (token) => token.address.toLowerCase() === quote.toLowerCase(),
+    )?.decimals;
+
     return decoratePoolStats(
         payload,
-        await pool.baseDecimals,
-        await pool.quoteDecimals,
+        baseTokenListedDecimals || (await pool.baseDecimals),
+        quoteTokenListedDecimals || (await pool.quoteDecimals),
         basePrice,
         quotePrice,
     );
@@ -389,8 +400,8 @@ export type PoolStatsFn = (
     crocEnv: CrocEnv,
     graphCacheUrl: string,
     cachedFetchTokenPrice: TokenPriceFn,
+    tokenList: TokenIF[],
     histTime?: number,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ) => Promise<PoolStatsIF>;
 
 export type Change24Fn = (
