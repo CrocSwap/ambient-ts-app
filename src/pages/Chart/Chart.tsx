@@ -2687,7 +2687,7 @@ export default function Chart(props: propsIF) {
 
             return () => resizeObserver.unobserve(canvasDiv.node());
         }
-    }, []);
+    }, [handleDocumentEvent]);
 
     useEffect(() => {
         if (d3Container) {
@@ -4206,6 +4206,7 @@ export default function Chart(props: propsIF) {
             ) {
                 setIsShowFloatingToolbar(false);
             }
+            render();
         };
 
         document.addEventListener('click', handleDocumentClick);
