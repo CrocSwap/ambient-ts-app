@@ -105,26 +105,29 @@ export default function Explore() {
         <Section>
             <MainWrapper>
                 <TitleText>{titleTextForDOM}</TitleText>
+            </MainWrapper>
+            <OptionsWrapper>
+                <FlexContainer
+                    flexDirection='row'
+                    alignItems='center'
+                    gap={12}
+                    marginLeft='12px'
+                >
+                    <Text>Pools</Text>
+                    <Toggle
+                        isOn={exploreData.tab.active === 'tokens'}
+                        id={'explore_page_'}
+                        handleToggle={() => exploreData.tab.toggle()}
+                    />
+                    <Text>Tokens</Text>
+                </FlexContainer>
                 <Refresh>
                     <RefreshButton onClick={() => handleRefresh()}>
                         <RefreshIcon />
                     </RefreshButton>
                 </Refresh>
-            </MainWrapper>
-            <FlexContainer
-                flexDirection='row'
-                alignItems='center'
-                gap={12}
-                marginLeft='12px'
-            >
-                <Text>Pools</Text>
-                <Toggle
-                    isOn={exploreData.tab.active === 'tokens'}
-                    id={'explore_page_'}
-                    handleToggle={() => exploreData.tab.toggle()}
-                />
-                <Text>Tokens</Text>
-            </FlexContainer>
+            </OptionsWrapper>
+
             {exploreData.tab.active === 'pools' && (
                 <TopPools
                     allPools={exploreData.pools.all}
@@ -160,6 +163,14 @@ const MainWrapper = styled.div`
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
     color: var(--text1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px;
+    user-select: none;
+`;
+
+const OptionsWrapper = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
