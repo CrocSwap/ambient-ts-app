@@ -66,13 +66,13 @@ export const ExploreContext = createContext<ExploreContextIF>(
 );
 
 export const ExploreContextProvider = (props: { children: ReactNode }) => {
-    const { lastBlockNumber, isActiveNetworkBlast } =
-        useContext(ChainDataContext);
+    const { isActiveNetworkBlast } = useContext(ChainDataContext);
 
     const {
         cachedPoolStatsFetch,
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
+        cachedTokenDetails,
         cachedGet24hChange,
     } = useContext(CachedDataContext);
 
@@ -144,6 +144,8 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             crocEnv,
             activeNetwork.graphCacheUrl,
             cachedFetchTokenPrice,
+            cachedTokenDetails,
+            tokens.tokenUniv,
         );
         const ydayTime = Math.floor(Date.now() / 1000 - 24 * 3600);
 
@@ -156,6 +158,8 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             crocEnv,
             activeNetwork.graphCacheUrl,
             cachedFetchTokenPrice,
+            cachedTokenDetails,
+            tokens.tokenUniv,
             ydayTime,
         );
 
@@ -240,7 +244,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             pool.base.address,
             pool.quote.address,
             chainId,
-            lastBlockNumber,
+            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
         );
         // display price, inverted if necessary
         const displayPrice: number = shouldInvert
@@ -375,6 +379,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         crocEnv,
         activeNetwork.graphCacheUrl,
         cachedFetchTokenPrice,
+        cachedTokenDetails,
         tokens,
         provider,
         shouldDexTokensUpdate,

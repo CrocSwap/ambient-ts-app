@@ -1,6 +1,6 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { TokenPriceFn, fetchContractDetails } from '../../ambient-utils/api';
+import { FetchContractDetailsFn, TokenPriceFn } from '../../ambient-utils/api';
 import {
     DexTokenAggServerIF,
     getChainStats,
@@ -19,6 +19,7 @@ export const useTokenStats = (
     crocEnv: CrocEnv | undefined,
     backupEndpoint: string,
     cachedFetchTokenPrice: TokenPriceFn,
+    cachedTokenDetails: FetchContractDetailsFn,
     tokenMethods: tokenMethodsIF,
     provider: ethers.providers.Provider,
     shouldDexTokensUpdate: boolean,
@@ -82,23 +83,10 @@ export const useTokenStats = (
 
     const decorate = async (t: DexTokenAggServerIF): Promise<dexTokenData> => {
         const tokenLocal = tokenMethods.getTokenByAddress(t.tokenAddr);
-        const getFromChain = async (a: string): Promise<TokenIF> => {
-            try {
-                const tokenPromise = await fetchContractDetails(
-                    provider,
-                    a,
-                    chainId,
-                );
-                return tokenPromise;
-            } catch (error) {
-                console.error(
-                    'Error fetching token details from chain:',
-                    error,
-                );
-                throw error;
-            }
-        };
-        const tokenMeta = tokenLocal ?? (await getFromChain(t.tokenAddr));
+
+        const tokenMeta =
+            tokenLocal ??
+            (await cachedTokenDetails(provider, t.tokenAddr, chainId));
         return {
             ...t,
             tokenMeta,
