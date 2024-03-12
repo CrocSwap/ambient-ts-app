@@ -17,6 +17,7 @@ import { RiExternalLinkLine } from 'react-icons/ri';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useContext, useState } from 'react';
 import HoveredTooltip from '../Draw/Toolbar/HoveredTooltip';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
 
 export default function OrderHistoryTooltip(props: {
     hoveredOrderHistory: TransactionIF;
@@ -50,6 +51,8 @@ export default function OrderHistoryTooltip(props: {
     const {
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
+
+    const { setCurrentTxActiveInTransactions } = useContext(TradeTableContext);
 
     function handleOpenExplorer(txHash: string) {
         const explorerUrl = `${blockExplorer}tx/${txHash}`;
@@ -100,6 +103,9 @@ export default function OrderHistoryTooltip(props: {
                                     },
                                 );
                             }
+
+                            if (!shouldDeselect)
+                                setCurrentTxActiveInTransactions('');
 
                             return shouldDeselect;
                         });
