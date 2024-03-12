@@ -1,9 +1,14 @@
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { scrollSepoliaETH, scrollSepoliaUSDC } from '../defaultTokens';
+import {
+    scrollSepoliaETH,
+    scrollSepoliaUSDC,
+    scrollSepoliaWBTC,
+} from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 import { Provider } from '@ethersproject/providers';
 import { GCGO_TESTNET_URL } from '../gcgo';
+import { bigNumToFloat } from '@crocswap-libs/sdk';
 
 const wagmiChain = {
     id: 534351,
@@ -45,9 +50,19 @@ export const scrollSepolia: NetworkIF = {
             scrollSepoliaUSDC,
             lookupChain('0x8274f').poolIndex,
         ),
+        new TopPool(
+            scrollSepoliaETH,
+            scrollSepoliaWBTC,
+            lookupChain('0xaa36a7').poolIndex,
+        ),
+        new TopPool(
+            scrollSepoliaUSDC,
+            scrollSepoliaWBTC,
+            lookupChain('0xaa36a7').poolIndex,
+        ),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
-        return (await provider.getGasPrice()).toNumber() * 1e-9;
+        return bigNumToFloat(await provider.getGasPrice()) * 1e-9;
     },
 };

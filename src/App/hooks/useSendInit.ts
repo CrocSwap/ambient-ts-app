@@ -5,10 +5,12 @@ import {
     isTransactionFailedError,
     isTransactionReplacedError,
     TransactionError,
+    parseErrorMessage,
 } from '../../utils/TransactionError';
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../contexts/ReceiptContext';
+import { UserDataContext } from '../../contexts/UserDataContext';
 export function useSendInit(
     setNewInitTransactionHash: React.Dispatch<
         React.SetStateAction<string | undefined>
@@ -28,6 +30,7 @@ export function useSendInit(
         removePendingTx,
         updateTransactionHash,
     } = useContext(ReceiptContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const sendInit = async (
         initialPriceInBaseDenom: number | undefined,
@@ -47,6 +50,7 @@ export function useSendInit(
                 if (tx) addPendingTx(tx?.hash);
                 if (tx?.hash)
                     addTransactionByType({
+                        userAddress: userAddress || '',
                         txHash: tx.hash,
                         txType: 'Init',
                         txDescription: `Pool Initialization of ${quoteToken.symbol} / ${baseToken.symbol}`,
@@ -90,7 +94,7 @@ export function useSendInit(
                 }
                 console.error({ error });
                 setTxErrorCode(error?.code);
-                setTxErrorMessage(error?.data?.message);
+                setTxErrorMessage(parseErrorMessage(error));
             } finally {
                 setIsInitPending(false);
             }

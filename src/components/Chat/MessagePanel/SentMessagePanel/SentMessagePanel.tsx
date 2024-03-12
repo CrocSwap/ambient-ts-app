@@ -154,6 +154,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
         if (
             props.message.ensName === 'defaultValue' ||
             props.message.ensName === null ||
+            props.message.ensName === '' ||
             props.message.ensName === undefined
         ) {
             return props.message.walletID.slice(0, 6) + '...';
@@ -353,7 +354,9 @@ export default function SentMessagePanel(props: SentMessageProps) {
                                 if (
                                     location.pathname !==
                                     `/${
-                                        props.message.ensName === 'defaultValue'
+                                        props.message.ensName ===
+                                            'defaultValue' ||
+                                        props.message.ensName === ''
                                             ? props.message.walletID
                                             : props.message.ensName
                                     }`
@@ -361,7 +364,8 @@ export default function SentMessagePanel(props: SentMessageProps) {
                                     navigate(
                                         `/${
                                             props.message.ensName ===
-                                            'defaultValue'
+                                                'defaultValue' ||
+                                            props.message.ensName === ''
                                                 ? props.message.walletID
                                                 : props.message.ensName
                                         }`,

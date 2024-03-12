@@ -40,6 +40,7 @@ import {
     GAS_DROPS_ESTIMATE_TRANSFER_ERC20,
 } from '../../../../ambient-utils/constants/';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -63,9 +64,12 @@ export default function Transfer(props: propsIF) {
         secondaryEnsName,
         setTokenModalOpen,
     } = props;
-    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { crocEnv, ethMainnetUsdPrice, provider } =
+        useContext(CrocEnvContext);
+    const { userAddress } = useContext(UserDataContext);
 
-    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { gasPriceInGwei, isActiveNetworkScroll, isActiveNetworkBlast } =
+        useContext(ChainDataContext);
     const {
         addPendingTx,
         addReceipt,
@@ -101,6 +105,19 @@ export default function Transfer(props: propsIF) {
     const [isAddressFieldDisabled, setIsAddressFieldDisabled] =
         useState<boolean>(true);
 
+    const [isAddressContract, setIsAddressContract] = useState<
+        boolean | undefined
+    >();
+
+    useEffect(() => {
+        if (!resolvedAddress) return;
+        checkIfContract(resolvedAddress);
+        async function checkIfContract(address: string) {
+            const code = await provider?.getCode(address);
+            setIsAddressContract(code !== '0x');
+        }
+    }, [resolvedAddress]);
+
     const isResolvedAddressValid = useMemo(() => {
         if (!resolvedAddress) return false;
 
@@ -108,10 +125,12 @@ export default function Transfer(props: propsIF) {
 
         return (
             !isResolvedAddressBlacklisted &&
+            !isAddressContract &&
             resolvedAddress?.length === 42 &&
-            resolvedAddress.startsWith('0x')
+            resolvedAddress.startsWith('0x') &&
+            resolvedAddress !== ZERO_ADDRESS
         );
-    }, [resolvedAddress]);
+    }, [resolvedAddress, isAddressContract]);
 
     const isDexBalanceSufficient = useMemo(
         () =>
@@ -198,6 +217,7 @@ export default function Transfer(props: propsIF) {
                 addPendingTx(tx?.hash);
                 if (tx?.hash)
                     addTransactionByType({
+                        userAddress: userAddress || '',
                         txHash: tx.hash,
                         txType: 'Transfer',
                         txDescription: `Transfer ${selectedToken.symbol}`,
@@ -289,6 +309,10 @@ export default function Transfer(props: propsIF) {
         }
     };
 
+    const [extraL1GasFeeTransfer] = useState(
+        isActiveNetworkScroll ? 1.25 : isActiveNetworkBlast ? 0.35 : 0,
+    );
+
     const [transferGasPriceinDollars, setTransferGasPriceinDollars] = useState<
         string | undefined
     >();
@@ -308,12 +332,12 @@ export default function Transfer(props: propsIF) {
 
             setTransferGasPriceinDollars(
                 getFormattedNumber({
-                    value: gasPriceInDollarsNum,
+                    value: gasPriceInDollarsNum + extraL1GasFeeTransfer,
                     isUSD: true,
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth]);
+    }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth, extraL1GasFeeTransfer]);
 
     return (
         <FlexContainer flexDirection='column' gap={16} padding={'16px'}>

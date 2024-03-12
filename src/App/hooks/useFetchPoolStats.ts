@@ -9,7 +9,7 @@ import {
     getMoneynessRank,
     getFormattedNumber,
 } from '../../ambient-utils/dataLayer';
-import { estimateFrom24HrRangeApr } from '../../ambient-utils/api';
+// import { estimateFrom24HrRangeApr } from '../../ambient-utils/api';
 import { sortBaseQuoteTokens, toDisplayPrice } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
@@ -39,7 +39,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
     >();
     const [shouldInvertDisplay, setShouldInvertDisplay] = useState<
         boolean | undefined
-    >();
+    >(!pool.isBaseTokenMoneynessGreaterOrEqual);
 
     const baseTokenCharacter = poolPriceDisplay
         ? getUnicodeCharacter(pool.base.symbol)
@@ -103,22 +103,17 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         }
     }, [isServerEnabled, chainId, crocEnv, lastBlockNumber]);
 
-    const [poolVolume, setPoolVolume] = useState<string | undefined>(undefined);
-    const [poolTvl, setPoolTvl] = useState<string | undefined>(undefined);
-    const [poolFeesTotal, setPoolFeesTotal] = useState<string | undefined>(
-        undefined,
-    );
-    const [poolApy, setPoolApy] = useState<string | undefined>(undefined);
-    const [quoteTvlDecimal, setQuoteTvlDecimal] = useState<number | undefined>(
-        undefined,
-    );
-    const [baseTvlDecimal, setBaseTvlDecimal] = useState<number | undefined>(
-        undefined,
-    );
-    const [quoteTvlUsd, setQuoteTvlUsd] = useState<number | undefined>(
-        undefined,
-    );
-    const [baseTvlUsd, setBaseTvlUsd] = useState<number | undefined>(undefined);
+    const [poolVolume, setPoolVolume] = useState<string | undefined>();
+    const [poolVolume24h, setPoolVolume24h] = useState<string | undefined>();
+    const [poolTvl, setPoolTvl] = useState<string | undefined>();
+    const [poolFeesTotal, setPoolFeesTotal] = useState<string | undefined>();
+    // const [poolApy, setPoolApy] = useState<string | undefined>();
+    const [quoteTvlDecimal, setQuoteTvlDecimal] = useState<
+        number | undefined
+    >();
+    const [baseTvlDecimal, setBaseTvlDecimal] = useState<number | undefined>();
+    const [quoteTvlUsd, setQuoteTvlUsd] = useState<number | undefined>();
+    const [baseTvlUsd, setBaseTvlUsd] = useState<number | undefined>();
 
     const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<
         string | undefined
@@ -137,9 +132,10 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
     // Reset pool metric states that require asynchronous updates when pool changes
     const resetPoolStats = () => {
         setPoolVolume(undefined);
+        setPoolVolume24h(undefined);
         setPoolTvl(undefined);
         setPoolFeesTotal(undefined);
-        setPoolApy(undefined);
+        // setPoolApy(undefined);
         setQuoteTvlDecimal(undefined);
         setBaseTvlDecimal(undefined);
         setQuoteTvlUsd(undefined);
@@ -150,7 +146,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
 
     useEffect(() => {
         resetPoolStats();
-    }, [JSON.stringify(pool)]);
+    }, [baseAddr + quoteAddr]);
 
     const fetchPoolStats = () => {
         (async () => {
@@ -162,18 +158,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                 crocEnv &&
                 provider
             ) {
-                const RANGE_WIDTH = 0.1;
-
-                const apyEst = estimateFrom24HrRangeApr(
-                    RANGE_WIDTH,
-                    pool.base.address,
-                    pool.quote.address,
-                    crocEnv,
-                    provider,
-                    lastBlockNumber,
-                );
-
-                const poolStats = await cachedPoolStatsFetch(
+                const poolStatsNow = await cachedPoolStatsFetch(
                     chainId,
                     pool.base.address,
                     pool.quote.address,
@@ -184,15 +169,33 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                     cachedFetchTokenPrice,
                 );
 
-                const tvlResult = poolStats?.tvlTotalUsd;
-                const feesTotalResult = poolStats?.feesTotalUsd;
-                const volumeResult = poolStats?.volumeTotalUsd; // display the 24 hour volume
-                const apyResult = await apyEst;
+                const ydayTime = Math.floor(Date.now() / 1000 - 24 * 3600);
 
-                setQuoteTvlDecimal(poolStats.quoteTvlDecimal);
-                setBaseTvlDecimal(poolStats.baseTvlDecimal);
-                setQuoteTvlUsd(poolStats.quoteTvlUsd);
-                setBaseTvlUsd(poolStats.baseTvlUsd);
+                const poolStats24hAgo = await cachedPoolStatsFetch(
+                    chainId,
+                    pool.base.address,
+                    pool.quote.address,
+                    poolIndex,
+                    Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+                    crocEnv,
+                    activeNetwork.graphCacheUrl,
+                    cachedFetchTokenPrice,
+                    ydayTime,
+                );
+
+                const volumeTotalNow = poolStatsNow?.volumeTotalUsd;
+                const volumeTotal24hAgo = poolStats24hAgo?.volumeTotalUsd;
+
+                const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
+
+                const tvlResult = poolStatsNow?.tvlTotalUsd;
+                const feesTotalResult = poolStatsNow?.feesTotalUsd;
+                const volumeResult = poolStatsNow?.volumeTotalUsd;
+
+                setQuoteTvlDecimal(poolStatsNow.quoteTvlDecimal);
+                setBaseTvlDecimal(poolStatsNow.baseTvlDecimal);
+                setQuoteTvlUsd(poolStatsNow.quoteTvlUsd);
+                setBaseTvlUsd(poolStatsNow.baseTvlUsd);
 
                 if (tvlResult) {
                     const tvlString = getFormattedNumber({
@@ -214,13 +217,36 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                     });
                     setPoolVolume(volumeString);
                 }
-                if (apyResult) {
-                    const apyString = apyResult.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
+                if (volumeChange24h) {
+                    const volumeChange24hString = getFormattedNumber({
+                        value: volumeChange24h,
                     });
-                    setPoolApy(apyString);
+                    setPoolVolume24h(volumeChange24hString);
                 }
+
+                // try {
+                //     const RANGE_WIDTH = 0.1;
+
+                //     const apyEst = estimateFrom24HrRangeApr(
+                //         RANGE_WIDTH,
+                //         pool.base.address,
+                //         pool.quote.address,
+                //         crocEnv,
+                //         provider,
+                //         lastBlockNumber,
+                //     );
+                //     const apyResult = await apyEst;
+
+                //     if (apyResult) {
+                //         const apyString = apyResult.toLocaleString(undefined, {
+                //             minimumFractionDigits: 2,
+                //             maximumFractionDigits: 2,
+                //         });
+                //         setPoolApy(apyString);
+                //     }
+                // } catch (error) {
+                //     // IS_LOCAL_ENV && console.log({ error });
+                // }
 
                 try {
                     const priceChangeResult = await cachedGet24hChange(
@@ -288,24 +314,30 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         tokenB: quoteAddr,
     });
 
+    const minuteInterval = Math.floor(Date.now() / 1000 / 60);
+
     useEffect(() => {
         if (isServerEnabled) fetchPoolStats();
     }, [
+        poolVolume === undefined,
         isServerEnabled,
         shouldInvertDisplay,
-        lastBlockNumber,
+        minuteInterval,
+        lastBlockNumber === 0,
         !!crocEnv,
         !!provider,
         poolIndex,
+        pool.base.address + pool.quote.address,
     ]);
 
     return {
         baseLogoUri,
         quoteLogoUri,
         poolVolume,
+        poolVolume24h,
         poolTvl,
         poolFeesTotal,
-        poolApy,
+        // poolApy,
         poolPriceChangePercent,
         isPoolPriceChangePositive,
         baseTokenCharacter,

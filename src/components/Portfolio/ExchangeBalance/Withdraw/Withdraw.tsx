@@ -65,8 +65,10 @@ export default function Withdraw(props: propsIF) {
         secondaryEnsName,
         setTokenModalOpen,
     } = props;
-    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
-    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { crocEnv, ethMainnetUsdPrice, provider } =
+        useContext(CrocEnvContext);
+    const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
+        useContext(ChainDataContext);
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -108,6 +110,19 @@ export default function Withdraw(props: propsIF) {
     const [isSendToAddressChecked, setIsSendToAddressChecked] =
         useState<boolean>(false);
 
+    const [isAddressContract, setIsAddressContract] = useState<
+        boolean | undefined
+    >();
+
+    useEffect(() => {
+        if (!resolvedAddress) return;
+        checkIfContract(resolvedAddress);
+        async function checkIfContract(address: string) {
+            const code = await provider?.getCode(address);
+            setIsAddressContract(code !== '0x');
+        }
+    }, [resolvedAddress]);
+
     const isResolvedAddressValid = useMemo(() => {
         if (!resolvedAddress) return false;
 
@@ -115,10 +130,12 @@ export default function Withdraw(props: propsIF) {
 
         return (
             !isResolvedAddressBlacklisted &&
+            !isAddressContract &&
             resolvedAddress?.length === 42 &&
-            resolvedAddress.startsWith('0x')
+            resolvedAddress.startsWith('0x') &&
+            resolvedAddress !== ZERO_ADDRESS
         );
-    }, [resolvedAddress]);
+    }, [resolvedAddress, isAddressContract]);
 
     const isDexBalanceSufficient = useMemo(
         () =>
@@ -207,6 +224,7 @@ export default function Withdraw(props: propsIF) {
                 addPendingTx(tx?.hash);
                 if (tx?.hash)
                     addTransactionByType({
+                        userAddress: userAddress || '',
                         txHash: tx.hash,
                         txType: 'Withdraw',
                         txDescription: `Withdrawal of ${selectedToken.symbol}`,
@@ -330,6 +348,9 @@ export default function Withdraw(props: propsIF) {
                 setInputValue(tokenExchangeDepositsDisplay);
         }
     };
+    const [extraL1GasFeeWithdraw] = useState(
+        isActiveNetworkScroll ? 1.2 : isActiveNetworkBlast ? 0.25 : 0,
+    );
 
     const [withdrawGasPriceinDollars, setWithdrawGasPriceinDollars] = useState<
         string | undefined
@@ -350,17 +371,17 @@ export default function Withdraw(props: propsIF) {
 
             setWithdrawGasPriceinDollars(
                 getFormattedNumber({
-                    value: gasPriceInDollarsNum,
+                    value: gasPriceInDollarsNum + extraL1GasFeeWithdraw,
                     isUSD: true,
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth]);
+    }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth, extraL1GasFeeWithdraw]);
 
     return (
         <FlexContainer flexDirection='column' gap={16} padding={'16px'}>
             <Text fontSize='body' color='text2'>
-                Withdraw tokens from the exchange to your wallet
+                Withdraw tokens from the exchange to your wallet:
             </Text>
             {toggleContent}
             {transferAddressOrNull}

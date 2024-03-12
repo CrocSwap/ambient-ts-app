@@ -6,7 +6,6 @@ import {
     TextOnlyTooltip,
 } from '../../../Global/StyledTooltip/StyledTooltip';
 import { TokenIF, TransactionIF } from '../../../../ambient-utils/types';
-import { NavLink } from 'react-router-dom';
 import moment from 'moment';
 import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
@@ -15,6 +14,7 @@ import React, { useContext } from 'react';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { RowItem } from '../../../../styled/Components/TransactionTable';
+import { Link } from 'react-router-dom';
 
 interface propsIF {
     txHashTruncated: string;
@@ -291,9 +291,35 @@ export const txRowConstants = (props: propsIF) => {
             className='base_color'
             onClick={(event) => event.stopPropagation()}
         >
-            <NavLink to={tradeLinkPath}>
-                {tx.baseSymbol} / {tx.quoteSymbol}
-            </NavLink>
+            {isOwnerActiveAccount ? (
+                <RowItem hover>
+                    <Link to={tradeLinkPath}>
+                        <span>
+                            {tx.baseSymbol} / {tx.quoteSymbol}
+                        </span>
+                        <FiExternalLink
+                            size={10}
+                            color='white'
+                            style={{ marginLeft: '.5rem' }}
+                        />
+                    </Link>
+                </RowItem>
+            ) : (
+                <RowItem hover>
+                    <a href={tradeLinkPath} target='_blank' rel='noreferrer'>
+                        <div>
+                            <span>
+                                {tx.baseSymbol} / {tx.quoteSymbol}
+                            </span>
+                            <FiExternalLink
+                                size={10}
+                                color='white'
+                                style={{ marginLeft: '.5rem' }}
+                            />
+                        </div>
+                    </a>
+                </RowItem>
+            )}
         </div>
     );
 

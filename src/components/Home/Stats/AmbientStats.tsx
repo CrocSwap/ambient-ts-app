@@ -3,7 +3,6 @@ import {
     getChainStats,
     getFormattedNumber,
 } from '../../../ambient-utils/dataLayer';
-import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
@@ -16,11 +15,12 @@ import {
     StatValue,
 } from '../../../styled/Components/Home';
 import {
+    GCGO_BLAST_URL,
     GCGO_ETHEREUM_URL,
     GCGO_SCROLL_URL,
 } from '../../../ambient-utils/constants';
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { useProvider } from 'wagmi';
+import { TokenContext } from '../../../contexts/TokenContext';
 
 interface StatCardProps {
     title: string;
@@ -54,11 +54,19 @@ function StatCard(props: StatCardProps) {
 }
 
 export default function Stats() {
-    const {
-        server: { isEnabled: isServerEnabled },
-    } = useContext(AppStateContext);
-    const { mainnetProvider } = useContext(CrocEnvContext);
-    const scrollProvider = useProvider({ chainId: +'0x82750' });
+    const { mainnetProvider, scrollProvider, blastProvider } =
+        useContext(CrocEnvContext);
+    const { tokens } = useContext(TokenContext);
+    const allDefaultTokens = tokens.allDefaultTokens;
+    const mainnetCrocEnv = mainnetProvider
+        ? new CrocEnv(mainnetProvider, undefined)
+        : undefined;
+    const scrollCrocEnv = scrollProvider
+        ? new CrocEnv(scrollProvider, undefined)
+        : undefined;
+    const blastCrocEnv = blastProvider
+        ? new CrocEnv(blastProvider, undefined)
+        : undefined;
 
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
@@ -71,28 +79,25 @@ export default function Stats() {
     >();
 
     useEffect(() => {
-        if (isServerEnabled) {
-            const mainnetCrocEnv = mainnetProvider
-                ? new CrocEnv(mainnetProvider, undefined)
-                : undefined;
-
-            const scrollCrocEnv = scrollProvider
-                ? new CrocEnv(scrollProvider, undefined)
-                : undefined;
-
+        if (
+            mainnetCrocEnv !== undefined &&
+            scrollCrocEnv !== undefined &&
+            blastCrocEnv !== undefined &&
+            allDefaultTokens.length > 0
+        ) {
             let tvlTotalUsd = 0,
                 volumeTotalUsd = 0,
                 feesTotalUsd = 0;
 
-            const numChainsToAggregate = 2; // currently only Mainnet and Scroll
+            const numChainsToAggregate = 3;
             let resultsReceived = 0;
 
-            if (!mainnetCrocEnv || !scrollCrocEnv) return;
             getChainStats(
                 '0x1',
                 mainnetCrocEnv,
                 GCGO_ETHEREUM_URL,
                 cachedFetchTokenPrice,
+                allDefaultTokens,
             ).then((dexStats) => {
                 if (!dexStats) {
                     return;
@@ -131,6 +136,44 @@ export default function Stats() {
                 scrollCrocEnv,
                 GCGO_SCROLL_URL,
                 cachedFetchTokenPrice,
+                allDefaultTokens,
+            ).then((dexStats) => {
+                if (!dexStats) {
+                    return;
+                }
+                tvlTotalUsd += dexStats.tvlTotalUsd;
+                volumeTotalUsd += dexStats.volumeTotalUsd;
+                feesTotalUsd += dexStats.feesTotalUsd;
+                resultsReceived += 1;
+                if (resultsReceived === numChainsToAggregate) {
+                    setTotalTvlString(
+                        getFormattedNumber({
+                            value: tvlTotalUsd,
+                            prefix: '$',
+                            isTvl: true,
+                        }),
+                    );
+                    setTotalVolumeString(
+                        getFormattedNumber({
+                            value: volumeTotalUsd,
+                            prefix: '$',
+                        }),
+                    );
+                    setTotalFeesString(
+                        getFormattedNumber({
+                            value: feesTotalUsd,
+                            prefix: '$',
+                        }),
+                    );
+                }
+            });
+
+            getChainStats(
+                '0x13e31',
+                blastCrocEnv,
+                GCGO_BLAST_URL,
+                cachedFetchTokenPrice,
+                allDefaultTokens,
             ).then((dexStats) => {
                 if (!dexStats) {
                     return;
@@ -162,7 +205,12 @@ export default function Stats() {
                 }
             });
         }
-    }, [mainnetProvider !== undefined && scrollProvider !== undefined]);
+    }, [
+        mainnetCrocEnv !== undefined &&
+            scrollCrocEnv !== undefined &&
+            blastCrocEnv !== undefined &&
+            allDefaultTokens.length > 0,
+    ]);
 
     const statCardData = [
         {
@@ -180,10 +228,12 @@ export default function Stats() {
     ];
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
+    const statsTitle = 'Ambient Finance Stats';
+
     const mobileWrapper = (
         <Fade up>
-            <HomeTitle aria-label='Ambient Finance Stats' tabIndex={0}>
-                Ambient Finance Stats
+            <HomeTitle aria-label={statsTitle} tabIndex={0}>
+                {statsTitle}
             </HomeTitle>
             <HomeContent>
                 {statCardData.map((card, idx) => (
@@ -199,8 +249,8 @@ export default function Stats() {
                 mobileWrapper
             ) : (
                 <>
-                    <HomeTitle aria-label='Ambient Finance Stats' tabIndex={0}>
-                        Ambient Finance Stats
+                    <HomeTitle aria-label={statsTitle} tabIndex={0}>
+                        {statsTitle}
                     </HomeTitle>
                     <HomeContent>
                         {statCardData.map((card, idx) => (

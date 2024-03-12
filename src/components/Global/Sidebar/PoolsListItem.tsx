@@ -1,10 +1,11 @@
 import { PoolIF } from '../../../ambient-utils/types';
-import { PoolStatsFn } from '../../../ambient-utils/dataLayer';
+import {
+    PoolStatsFn,
+    getMoneynessRank,
+} from '../../../ambient-utils/dataLayer';
 import { Link, useLocation } from 'react-router-dom';
-import { usePoolStats } from '../../../App/hooks/usePoolStats';
 import { useContext, useMemo } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import {
     useLinkGen,
     linkGenMethodsIF,
@@ -14,6 +15,7 @@ import { TokenPriceFn } from '../../../ambient-utils/api';
 import { ItemContainer } from '../../../styled/Components/Sidebar';
 import { FlexContainer } from '../../../styled/Common';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
 
 interface propsIF {
     pool: PoolIF;
@@ -22,22 +24,21 @@ interface propsIF {
 }
 
 export default function PoolsListItem(props: propsIF) {
-    const { pool, cachedPoolStatsFetch, cachedFetchTokenPrice } = props;
+    const { pool } = props;
 
     const {
-        crocEnv,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
 
     // hook to get human-readable values for pool volume and TVL
-    const [volume, tvl] = usePoolStats(
-        pool,
-        lastBlockNumber,
-        cachedPoolStatsFetch,
-        cachedFetchTokenPrice,
-        crocEnv,
-    );
+    const poolData = useFetchPoolStats(pool);
+
+    const isBaseTokenMoneynessGreaterOrEqual =
+        pool.base.address && pool.quote.address
+            ? getMoneynessRank(pool.base.symbol) -
+                  getMoneynessRank(pool.quote.symbol) >=
+              0
+            : false;
 
     const { pathname } = useLocation();
 
@@ -87,18 +88,32 @@ export default function PoolsListItem(props: propsIF) {
             numCols={3}
             color='text2'
         >
-            {[`${pool.base.symbol} / ${pool.quote.symbol}`, volume, tvl].map(
-                (item, idx) => (
-                    <FlexContainer
-                        key={idx}
-                        justifyContent='center'
-                        alignItems='center'
-                        padding='4px'
-                    >
-                        {item}
-                    </FlexContainer>
-                ),
-            )}
+            {[
+                `${
+                    isBaseTokenMoneynessGreaterOrEqual
+                        ? pool.quote.symbol
+                        : pool.base.symbol
+                } / ${
+                    isBaseTokenMoneynessGreaterOrEqual
+                        ? pool.base.symbol
+                        : pool.quote.symbol
+                }`,
+                `${
+                    poolData.poolVolume24h
+                        ? '$' + poolData.poolVolume24h
+                        : '...'
+                }`,
+                `${poolData.poolTvl ? '$' + poolData.poolTvl : '...'}`,
+            ].map((item, idx) => (
+                <FlexContainer
+                    key={idx}
+                    justifyContent='center'
+                    alignItems='center'
+                    padding='4px'
+                >
+                    {item}
+                </FlexContainer>
+            ))}
         </ItemContainer>
     );
 }

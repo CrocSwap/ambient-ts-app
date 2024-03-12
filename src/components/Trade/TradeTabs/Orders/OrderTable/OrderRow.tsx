@@ -122,7 +122,7 @@ function OrderRow(props: propsIF) {
         const element = document.getElementById(orderDomId);
         element?.scrollIntoView({
             behavior: 'smooth',
-            block: 'end',
+            block: 'nearest',
             inline: 'nearest',
         });
     }
