@@ -148,15 +148,21 @@ export default function OrderHistoryTooltip(props: {
                                     : hoveredOrderHistory.quoteSymbol}
                             </StyledHeader>
                         )}
-                        <img
-                            src={uriToHttp(
-                                denomInBase
-                                    ? hoveredOrderHistory.baseTokenLogoURI
-                                    : hoveredOrderHistory.quoteTokenLogoURI,
-                            )}
-                            alt='base token'
-                            style={{ width: '18px' }}
-                        />
+                        {(
+                            denomInBase
+                                ? hoveredOrderHistory.baseTokenLogoURI
+                                : hoveredOrderHistory.quoteTokenLogoURI
+                        ) ? (
+                            <img
+                                src={uriToHttp(
+                                    denomInBase
+                                        ? hoveredOrderHistory.baseTokenLogoURI
+                                        : hoveredOrderHistory.quoteTokenLogoURI,
+                                )}
+                                alt='base token'
+                                style={{ width: '18px' }}
+                            />
+                        ) : undefined}
                     </OrderHistoryHeader>
                     <OrderHistoryBody>
                         <StyledHeader color={'#8b98a5'} size={'13px'}>

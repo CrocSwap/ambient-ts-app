@@ -1,4 +1,11 @@
-import { ReactNode, createContext, useContext, useMemo, useState } from 'react';
+import {
+    ReactNode,
+    createContext,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
@@ -11,6 +18,7 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { CrocEnvContext } from './CrocEnvContext';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../ambient-utils/constants';
 import ambientTokenList from '../ambient-utils/constants/ambient-token-list.json';
+import { PoolContext } from './PoolContext';
 
 export interface ExploreContextIF {
     pools: {
@@ -56,7 +64,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         cachedGet24hChange,
     } = useContext(CachedDataContext);
 
-    const { activeNetwork } = useContext(CrocEnvContext);
+    const { crocEnv, chainData, activeNetwork } = useContext(CrocEnvContext);
 
     const [limitedPools, setLimitedPools] = useState<Array<PoolDataIF>>([]);
     const [extraPools, setExtraPools] = useState<Array<PoolDataIF>>([]);
@@ -65,6 +73,37 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         () => limitedPools.concat(extraPools),
         [limitedPools, extraPools],
     );
+    // metadata only
+    const { poolList } = useContext(PoolContext);
+
+    const getLimitedPools = async (): Promise<void> => {
+        if (crocEnv && poolList.length) {
+            getLimitedPoolData(poolList, crocEnv, chainData.chainId);
+        }
+    };
+
+    const getAllPools = async (): Promise<void> => {
+        // make sure crocEnv exists and pool metadata is present
+        if (crocEnv && poolList.length) {
+            // clear text in DOM for time since last update
+            setLimitedPools([]);
+            setExtraPools([]);
+            // use metadata to get expanded pool data
+            getLimitedPools().then(() => {
+                getExtraPoolData(poolList, crocEnv, chainData.chainId);
+            });
+        }
+    };
+
+    // get expanded pool metadata
+    useEffect(() => {
+        // wait 5 seconds to get data
+        setTimeout(() => {
+            if (crocEnv !== undefined && poolList.length > 0) {
+                getAllPools();
+            }
+        }, 5000);
+    }, [crocEnv, poolList.length]);
 
     // fn to get data on a single pool
     async function getPoolData(
@@ -82,7 +121,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         // pool index
         const poolIdx: number = lookupChain(chainId).poolIndex;
 
-        const poolStats = await cachedPoolStatsFetch(
+        const poolStatsNow = await cachedPoolStatsFetch(
             chainId,
             pool.base.address,
             pool.quote.address,
@@ -92,10 +131,28 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             activeNetwork.graphCacheUrl,
             cachedFetchTokenPrice,
         );
+        const ydayTime = Math.floor(Date.now() / 1000 - 24 * 3600);
+
+        const poolStats24hAgo = await cachedPoolStatsFetch(
+            chainId,
+            pool.base.address,
+            pool.quote.address,
+            poolIdx,
+            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+            crocEnv,
+            activeNetwork.graphCacheUrl,
+            cachedFetchTokenPrice,
+            ydayTime,
+        );
+
+        const volumeTotalNow = poolStatsNow?.volumeTotalUsd;
+        const volumeTotal24hAgo = poolStats24hAgo?.volumeTotalUsd;
+
+        const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
 
         if (
-            !poolStats ||
-            (!isActiveNetworkBlast && poolStats.tvlTotalUsd < 100)
+            !poolStatsNow ||
+            (!isActiveNetworkBlast && poolStatsNow.tvlTotalUsd < 100)
         ) {
             // return early
             const poolData: PoolDataIF = {
@@ -118,17 +175,17 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         }
 
         // format TVL, use empty string as backup value
-        const tvlDisplay: string = poolStats.tvlTotalUsd
+        const tvlDisplay: string = poolStatsNow.tvlTotalUsd
             ? getFormattedNumber({
-                  value: poolStats.tvlTotalUsd,
+                  value: poolStatsNow.tvlTotalUsd,
                   isTvl: true,
                   prefix: '$',
               })
             : '';
         // format volume, use empty string as backup value
-        const volumeDisplay: string = poolStats.volumeTotalUsd
+        const volumeDisplay: string = volumeChange24h
             ? getFormattedNumber({
-                  value: poolStats.volumeTotalUsd,
+                  value: volumeChange24h,
                   prefix: '$',
               })
             : '';
@@ -190,9 +247,9 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
             }),
             poolIdx,
-            tvl: poolStats.tvlTotalUsd,
+            tvl: poolStatsNow.tvlTotalUsd,
             tvlStr: tvlDisplay,
-            volume: poolStats.volumeTotalUsd,
+            volume: volumeChange24h,
             volumeStr: volumeDisplay,
             priceChange: priceChangeRaw ?? 0,
             priceChangeStr: priceChangePercent,

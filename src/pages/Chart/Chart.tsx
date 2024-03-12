@@ -154,7 +154,7 @@ interface propsIF {
     candleTime: candleTimeIF;
     unparsedData: CandlesByPoolAndDurationIF;
     prevPeriod: number;
-    candleTimeInSeconds: number;
+    candleTimeInSeconds: number | undefined;
     updateURL: (changes: updatesIF) => void;
     userTransactionData: Array<TransactionIF> | undefined;
 }
@@ -269,6 +269,7 @@ export default function Chart(props: propsIF) {
     const [minTickForLimit, setMinTickForLimit] = useState<number>(0);
     const [maxTickForLimit, setMaxTickForLimit] = useState<number>(0);
     const [isShowFloatingToolbar, setIsShowFloatingToolbar] = useState(false);
+    const [handleDocumentEvent, setHandleDocumentEvent] = useState();
     const period = unparsedData.duration;
 
     const side =
@@ -2700,7 +2701,7 @@ export default function Chart(props: propsIF) {
 
             return () => resizeObserver.unobserve(canvasDiv.node());
         }
-    }, []);
+    }, [handleDocumentEvent]);
 
     useEffect(() => {
         const canvas = d3
@@ -4197,6 +4198,7 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const handleDocumentClick = (event: any) => {
+            setHandleDocumentEvent(event);
             if (
                 d3Container.current &&
                 !d3Container.current.contains(event.target)
@@ -4781,10 +4783,6 @@ export default function Chart(props: propsIF) {
     };
 
     useEffect(() => {
-        setCurrentTxActiveInTransactions('');
-    }, [denomInBase]);
-
-    useEffect(() => {
         if (!hoverOHTooltip) {
             setHoveredOrderHistory(undefined);
             setIsHoveredOrderHistory(false);
@@ -5002,6 +5000,7 @@ export default function Chart(props: propsIF) {
         });
 
         if (selectedDate === undefined) {
+            props.setShowTooltip(true);
             props.setCurrentData(nearest);
             props.setCurrentVolumeData(nearest?.volumeUSD);
         } else if (selectedDate) {

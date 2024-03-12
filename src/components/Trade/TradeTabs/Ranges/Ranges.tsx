@@ -90,10 +90,10 @@ function Ranges(props: propsIF) {
             isAccountView
                 ? activeAccountPositionData || []
                 : !showAllData
-                ? userPositionsByPool?.positions.filter(
+                ? userPositionsByPool?.positions
+                : positionsByPool.positions.filter(
                       (position) => position.positionLiq != 0,
-                  )
-                : positionsByPool.positions,
+                  ),
         [
             showAllData,
             isAccountView,

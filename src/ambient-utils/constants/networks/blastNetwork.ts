@@ -3,14 +3,15 @@ import {
     blastETH,
     blastUSDB,
     blastORBIT,
-    blastBAG,
     blastMIA,
+    blastYES,
 } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 import { Provider } from '@ethersproject/providers';
 import { GCGO_BLAST_URL } from '../gcgo';
 import { Chain } from 'wagmi';
+import { bigNumToFloat } from '@crocswap-libs/sdk';
 
 export const BLAST_RPC_URL =
     process.env.REACT_APP_BLAST_RPC_URL !== undefined
@@ -53,12 +54,12 @@ export const blast: NetworkIF = {
     defaultPair: [blastETH, blastUSDB],
     topPools: [
         new TopPool(blastETH, blastUSDB, lookupChain('0x13e31').poolIndex),
+        new TopPool(blastYES, blastETH, lookupChain('0x13e31').poolIndex),
         new TopPool(blastORBIT, blastETH, lookupChain('0x13e31').poolIndex),
         new TopPool(blastMIA, blastETH, lookupChain('0x13e31').poolIndex),
-        new TopPool(blastBAG, blastETH, lookupChain('0x13e31').poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
-        return (await provider.getGasPrice()).toNumber() * 1e-9;
+        return bigNumToFloat(await provider.getGasPrice()) * 1e-9;
     },
 };
