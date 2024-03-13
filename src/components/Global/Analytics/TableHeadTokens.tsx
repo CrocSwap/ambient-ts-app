@@ -5,13 +5,15 @@ import {
     TableHeadRow,
     TableHeadWrapper,
 } from '../../../styled/Components/Analytics';
+import { columnSlugs } from './DexTokens';
 
 interface propsIF {
     headerItems: HeaderItem[];
+    updateSort: (s: columnSlugs) => void;
 }
 
 const TableHeadTokens = (props: propsIF) => {
-    const { headerItems } = props;
+    const { headerItems, updateSort } = props;
 
     return (
         <TableHeadWrapper>
@@ -25,6 +27,7 @@ const TableHeadTokens = (props: propsIF) => {
                         responsive={item.responsive}
                         label={item.label}
                         hidden={item.hidden}
+                        onClick={() => updateSort(item.slug)}
                     >
                         <LabelWrapper
                             align={item.align}

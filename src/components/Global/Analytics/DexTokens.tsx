@@ -80,7 +80,7 @@ function DexTokens(props: propsIF) {
             hidden: smallScreen,
             align: 'left',
             responsive: 'sm',
-            sortable: false,
+            sortable: true,
         },
         {
             label: 'TVL',
@@ -88,7 +88,7 @@ function DexTokens(props: propsIF) {
             hidden: false,
             align: 'right',
             responsive: 'sm',
-            sortable: false,
+            sortable: true,
         },
         {
             label: 'Fees',
@@ -96,7 +96,7 @@ function DexTokens(props: propsIF) {
             hidden: false,
             align: 'right',
             responsive: 'sm',
-            sortable: false,
+            sortable: true,
         },
         {
             label: 'Volume',
@@ -104,7 +104,7 @@ function DexTokens(props: propsIF) {
             hidden: false,
             align: 'right',
             responsive: 'lg',
-            sortable: false,
+            sortable: true,
         },
         {
             label: '',
@@ -121,7 +121,10 @@ function DexTokens(props: propsIF) {
             <ScrollableContainer>
                 <ShadowBox>
                     <Table>
-                        <TableHeadTokens headerItems={dexTokensHeaderItems} />
+                        <TableHeadTokens
+                            headerItems={dexTokensHeaderItems}
+                            updateSort={sortedTokens.update}
+                        />
                         <TableBody>
                             {/* 
                                 TODO:   change this logic to use React <Suspense />
