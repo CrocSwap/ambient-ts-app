@@ -19,8 +19,17 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { usePoolList2 } from '../../../App/hooks/usePoolList2';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
+export type columnSlugs =
+    | 'token'
+    | 'name'
+    | 'tvl'
+    | 'fees'
+    | 'volume'
+    | 'tradeBtn';
+
 export interface HeaderItem {
     label: string;
+    slug: columnSlugs;
     hidden: boolean;
     align: string;
     responsive?: string;
@@ -59,6 +68,7 @@ function DexTokens(props: propsIF) {
     const dexTokensHeaderItems: HeaderItem[] = [
         {
             label: 'Token',
+            slug: 'token',
             hidden: false,
             align: 'left',
             responsive: 'sm',
@@ -66,6 +76,7 @@ function DexTokens(props: propsIF) {
         },
         {
             label: 'Name',
+            slug: 'name',
             hidden: smallScreen,
             align: 'left',
             responsive: 'sm',
@@ -73,6 +84,7 @@ function DexTokens(props: propsIF) {
         },
         {
             label: 'TVL',
+            slug: 'tvl',
             hidden: false,
             align: 'right',
             responsive: 'sm',
@@ -80,6 +92,7 @@ function DexTokens(props: propsIF) {
         },
         {
             label: 'Fees',
+            slug: 'fees',
             hidden: false,
             align: 'right',
             responsive: 'sm',
@@ -87,6 +100,7 @@ function DexTokens(props: propsIF) {
         },
         {
             label: 'Volume',
+            slug: 'volume',
             hidden: false,
             align: 'right',
             responsive: 'lg',
@@ -94,6 +108,7 @@ function DexTokens(props: propsIF) {
         },
         {
             label: '',
+            slug: 'tradeBtn',
             hidden: false,
             align: 'right',
             responsive: 'sm',
