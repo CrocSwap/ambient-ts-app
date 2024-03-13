@@ -196,7 +196,7 @@ export default function PriceInfo(props: propsIF) {
             });
         }, 10000);
         return () => clearInterval(interval);
-    }, []);
+    }, [positionId]);
 
     const rewardsContent = (
         <section>

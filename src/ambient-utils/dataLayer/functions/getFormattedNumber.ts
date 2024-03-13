@@ -81,12 +81,22 @@ export function getFormattedNumber({
         }
     } else if (Math.abs(value) < 0.9) {
         // show 3 significant digits (after 0s)
-        valueString = value.toPrecision(3);
+        valueString = value
+            .toPrecision(3)
+            // remove trailing 0s
+            .replace(/0+$/, '')
+            .replace(/\.$/, '');
     } else if (Math.abs(value) < 2) {
-        // restrict to 3 places after decimal
+        // restrict to 5 places after decimal
         valueString = value.toLocaleString('en-US', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 5,
+        });
+    } else if (Math.abs(value) < 100) {
+        // restrict to 3 places after decimal
+        valueString = value.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 3,
         });
     } else if (Math.abs(value) >= abbrevThreshold && !isInput) {
         // use abbreviations (k, M, B, T) for big numbers
@@ -97,6 +107,11 @@ export function getFormattedNumber({
             maximumFractionDigits: maxFracDigits,
         });
     }
+    // remove more than two trailing zeros and decimal point at the end
+    valueString =
+        valueString !== zeroDisplay && !isUSD
+            ? valueString.replace(/00+$/, '0').replace(/\.$/, '')
+            : valueString;
     if (removeCommas) valueString = valueString.replaceAll(',', '');
     return `${prefix}${valueString}${suffix}`;
 }
