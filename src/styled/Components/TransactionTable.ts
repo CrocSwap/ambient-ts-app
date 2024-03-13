@@ -31,6 +31,7 @@ export const Row = styled(GridContainer)<{
     active?: boolean;
     user?: boolean;
     placeholder?: boolean;
+    cursor?: string;
 }>`
     position: relative;
     width: 100%;
@@ -39,7 +40,7 @@ export const Row = styled(GridContainer)<{
 
     padding: 0 8px;
     gap: 4px;
-    cursor: pointer;
+    cursor: ${({ cursor }) => cursor || 'pointer'};
 
     & > * {
         font-weight: 300;
