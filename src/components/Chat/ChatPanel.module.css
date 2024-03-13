@@ -223,7 +223,7 @@
 
 
 .purple_flashed{
-    animation: purpleFlash 1s 3 ease-in-out;
+    animation: purpleFlash 1s 3 ease-in-out !important;
 }
 
 @keyframes purpleFlash{

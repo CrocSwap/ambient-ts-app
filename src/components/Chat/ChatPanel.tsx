@@ -398,7 +398,7 @@ function ChatPanel(props: propsIF) {
 
                         setTimeout(() => {
                             msgEl.classList.remove(styles.purple_flashed);
-                        }, 1000);
+                        }, 1500);
                     }, 500);
                 }
             }, 100);
