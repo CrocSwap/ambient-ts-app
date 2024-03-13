@@ -57,4 +57,10 @@ export interface PositionIF {
     rewardLiq: number;
     ambientLiq: number;
     aprEst: number;
+    isBid?: boolean;
+    liqRefreshTime?: number;
+    aprDuration?: number;
+    aprPostLiq?: number;
+    aprContributedLiq?: number;
+    onChainConstructedPosition?: boolean;
 }

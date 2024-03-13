@@ -541,7 +541,7 @@ function TradeCandleStickChart(props: propsIF) {
         if (unparsedCandleData) {
             setScaleForChart(unparsedCandleData);
         }
-    }, [unparsedCandleData === undefined, mobileView, isDenomBase]);
+    }, [unparsedCandleData === undefined, mobileView, isDenomBase, period]);
 
     // Liq Scale
     useEffect(() => {
@@ -787,6 +787,7 @@ function TradeCandleStickChart(props: propsIF) {
     // }, [baseTokenAddress + quoteTokenAddress]);
 
     const resetXScale = (xScale: d3.ScaleLinear<number, number, never>) => {
+        if (!period) return;
         const localInitialDisplayCandleCount =
             getInitialDisplayCandleCount(mobileView);
         const nowDate = Date.now();
@@ -835,6 +836,19 @@ function TradeCandleStickChart(props: propsIF) {
         ],
     );
 
+    useEffect(() => {
+        if (prevPeriod === undefined) {
+            setCandleScale((prev: CandleScaleIF) => {
+                return {
+                    isFetchForTimeframe: !prev.isFetchForTimeframe,
+                    lastCandleDate: prev.lastCandleDate,
+                    nCandles: prev.nCandles,
+                    isShowLatestCandle: false,
+                };
+            });
+        }
+    }, [chartSettings.candleTime.global.defaults.length]);
+
     return (
         <>
             <div style={{ height: '100%', width: '100%' }}>
@@ -842,6 +856,7 @@ function TradeCandleStickChart(props: propsIF) {
                 candleData !== undefined &&
                 isPoolInitialized !== undefined &&
                 prevPeriod === period &&
+                period === candleData?.duration &&
                 !isFetchingCandle ? (
                     <Chart
                         isTokenABase={isTokenABase}

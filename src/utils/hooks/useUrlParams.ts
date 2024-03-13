@@ -2,7 +2,6 @@ import { useContext, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { fetchContractDetails } from '../../ambient-utils/api';
-import { useProvider } from 'wagmi';
 import { tokenMethodsIF } from '../../App/hooks/useTokens';
 import { pageNames, linkGenMethodsIF, useLinkGen } from './useLinkGen';
 import { TokenIF } from '../../ambient-utils/types';
@@ -34,7 +33,7 @@ interface urlParamsMethodsIF {
 export const useUrlParams = (
     tokens: tokenMethodsIF,
     dfltChainId: string,
-    provider?: ethers.providers.Provider,
+    provider: ethers.providers.Provider,
 ): urlParamsMethodsIF => {
     const { params } = useParams();
     const { setTokenA, setTokenB, setLimitTick } = useContext(TradeDataContext);
@@ -183,26 +182,31 @@ export const useUrlParams = (
         if (lookup) {
             return lookup;
         } else {
-            const provider = inflateProvider(chainId);
+            // const provider = inflateProvider(chainId);
             if (provider) {
-                return fetchContractDetails(provider, addr, chainId);
+                return fetchContractDetails(
+                    provider,
+                    addr,
+                    chainId,
+                    'on_chain_by_URL_param',
+                );
             }
         }
     }
 
-    function inflateProvider(chainId: string) {
-        if (!provider) {
-            provider = useProvider({ chainId: parseInt(chainId) });
-            if (!provider) {
-                console.warn(
-                    'Cannot set provider to lookup token address on chain',
-                    chainId,
-                );
-                return undefined;
-            }
-        }
-        return provider;
-    }
+    // function inflateProvider(chainId: string) {
+    //     if (!provider) {
+    //         provider = useProvider({ chainId: parseInt(chainId) });
+    //         if (!provider) {
+    //             console.warn(
+    //                 'Cannot set provider to lookup token address on chain',
+    //                 chainId,
+    //             );
+    //             return undefined;
+    //         }
+    //     }
+    //     return provider;
+    // }
 
     function processOptParam(
         paramName: validParamsType,
