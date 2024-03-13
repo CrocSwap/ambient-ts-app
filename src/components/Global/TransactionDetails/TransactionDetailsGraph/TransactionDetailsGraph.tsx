@@ -143,7 +143,7 @@ export default function TransactionDetailsGraph(
                 }
             };
 
-            const minTime = time() * 1000;
+            const minTime = time() * 1000 - oneWeekMiliseconds;
 
             const nowTime = Date.now();
             let diff = (nowTime - minTime) / 200;
@@ -307,7 +307,7 @@ export default function TransactionDetailsGraph(
                 topHandles.forEach((element: any, i: number) => {
                     d3.select(element).attr(
                         'transform',
-                        `translate(${35 + -i * 14}, ${-18})`,
+                        `translate(${35 + -i * 14}, ${-19})`,
                     );
 
                     d3.select(element).style('font', '10px Lexend Deca');
@@ -565,7 +565,7 @@ export default function TransactionDetailsGraph(
                         tx.changeType === 'mint' ||
                         tx.positionType === 'ambient';
 
-                    const minimumDifferenceMinMax = hasVerticalLines ? 75 : 20;
+                    const minimumDifferenceMinMax = hasVerticalLines ? 80 : 20;
 
                     if (result) {
                         const minTime = result.min * 1000;
@@ -590,7 +590,10 @@ export default function TransactionDetailsGraph(
                         }
 
                         if (xScale(minTime) < 0) {
-                            xScale.domain([minTime, xScale.domain()[1]]);
+                            xScale.domain([
+                                minTime - 2 * bufferOneCandle,
+                                xScale.domain()[1],
+                            ]);
                         }
 
                         minTimePixel = xScale(minTime);
@@ -599,43 +602,27 @@ export default function TransactionDetailsGraph(
 
                         if (
                             minTime !== maxTime &&
-                            diffMinMaxPixel < 40 &&
-                            diffMinMaxPixel > 30
+                            diffMinMaxPixel < minimumDifferenceMinMax &&
+                            diffMinMaxPixel > 25
                         ) {
                             const checkDiffMinMax =
                                 maxTimePixel - minTimePixel <
                                     minimumDifferenceMinMax &&
                                 maxTimePixel !== minTimePixel;
 
-                            if (
-                                diffMinMaxPixel < minimumDifferenceMinMax &&
-                                checkDiffMinMax
-                            ) {
+                            if (checkDiffMinMax) {
                                 const candleCountMax =
                                     (xScale.domain()[1].getTime() - maxTime) /
                                     (1000 * period);
+
                                 xScale.domain([
-                                    xScale.invert(30),
+                                    Math.min(
+                                        minTime - bufferOneCandle,
+                                        xScale.invert(30).getTime(),
+                                    ),
                                     minTime +
-                                        (candleCountMax / 2) * bufferOneCandle,
+                                        (candleCountMax / 3) * bufferOneCandle,
                                 ]);
-
-                                // if (
-                                //     Math.abs(tx.txTime - Date.now()) >
-                                //     oneHourMiliseconds * 24 * 10
-                                // ) {
-
-                                //     const candleCountMin = (minTime-xScale.domain()[0].getTime()) / (1000*period);
-                                //     const candleCountMax = (xScale.domain()[1].getTime()-maxTime) / (1000*period);
-
-                                //     const allCandleCount = candleCountMax+candleCountMin;
-
-                                //     xScale.domain([
-                                //         xScale.domain()[0].getTime(),
-                                //         xScale.domain()[1].getTime(),
-
-                                //     ]);
-                                // }
                             }
                         }
                     }
