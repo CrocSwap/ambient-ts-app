@@ -98,7 +98,7 @@ export const ChainDataContextProvider = (props: {
         }
     }
 
-    const BLOCK_NUM_POLL_MS = 3000;
+    const BLOCK_NUM_POLL_MS = 5000;
     useEffect(() => {
         (async () => {
             await pollBlockNum();

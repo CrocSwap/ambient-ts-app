@@ -12,6 +12,7 @@ import { FetchAddrFn, FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { SpotPriceFn } from './querySpotPrice';
 import { getFormattedNumber } from './getFormattedNumber';
 import { Provider } from '@ethersproject/providers';
+import { getPositionHash } from './getPositionHash';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../constants';
 
 export const getPositionData = async (
@@ -27,7 +28,10 @@ export const getPositionData = async (
     cachedEnsResolve: FetchAddrFn,
     skipENSFetch?: boolean,
 ): Promise<PositionIF> => {
-    const newPosition = { ...position } as PositionIF;
+    const newPosition = {
+        serverPositionId: position.positionId,
+        ...position,
+    } as PositionIF;
 
     const baseTokenAddress =
         position.base.length === 40 ? '0x' + position.base : position.base;
@@ -138,6 +142,16 @@ export const getPositionData = async (
 
     const lowerPriceNonDisplay = tickToPrice(position.bidTick);
     const upperPriceNonDisplay = tickToPrice(position.askTick);
+
+    const posHash = getPositionHash(undefined, {
+        isPositionTypeAmbient: position.positionType === 'ambient',
+        user: position.user,
+        baseAddress: position.base,
+        quoteAddress: position.quote,
+        poolIdx: position.poolIdx,
+        bidTick: position.bidTick,
+        askTick: position.askTick,
+    });
 
     const lowerPriceDisplayInBase =
         1 /
@@ -308,6 +322,8 @@ export const getPositionData = async (
     newPosition.apy = position.aprEst * 100;
 
     newPosition.serverPositionId = position.positionId;
+
+    newPosition.positionId = posHash;
 
     return newPosition;
 };
