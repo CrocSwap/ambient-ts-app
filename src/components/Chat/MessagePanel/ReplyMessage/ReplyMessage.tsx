@@ -12,6 +12,7 @@ interface propsIF {
     isReplyButtonPressed: boolean;
     currentUserId?: string;
     messageObj?: Message;
+    repliedMessageBoxClickListener?: () => void;
 }
 
 export default function ReplyMessage(props: propsIF) {
@@ -155,7 +156,13 @@ export default function ReplyMessage(props: propsIF) {
                 enterDelay={10}
                 placement='top'
             >
-                <div className={styles.replied_message_box}>
+                <div
+                    className={styles.replied_message_box}
+                    onClick={() => {
+                        if (props.repliedMessageBoxClickListener)
+                            props.repliedMessageBoxClickListener();
+                    }}
+                >
                     <div className={styles.tooltip_top_info}>
                         <div className={styles.avatar_jazzicons}>
                             {replyJazzIcon}

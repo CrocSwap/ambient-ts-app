@@ -95,6 +95,7 @@
 
 .replied_message_box{
     min-width: 10rem;
+    cursor: pointer;
 }
 
 .replied_message_box .time_text{

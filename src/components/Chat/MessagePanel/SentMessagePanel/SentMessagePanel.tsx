@@ -92,6 +92,7 @@ interface SentMessageProps {
     selectedMessageIdForDeletion: string;
     setShowVerifyWalletConfirmationInDelete: Dispatch<SetStateAction<boolean>>;
     showVerifyWalletConfirmationInDelete: boolean;
+    scrollToMessage: (messageId: string) => void;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
@@ -926,6 +927,12 @@ function SentMessagePanel(props: SentMessageProps) {
                                         isReplyButtonPressed={false}
                                         currentUserId={props.currentUser}
                                         messageObj={repliedMesssage}
+                                        repliedMessageBoxClickListener={() => {
+                                            props.scrollToMessage(
+                                                props.message
+                                                    .repliedMessage as string,
+                                            );
+                                        }}
                                     />
                                 </div>
                             ) : (
