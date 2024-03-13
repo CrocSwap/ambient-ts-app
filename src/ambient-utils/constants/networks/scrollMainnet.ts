@@ -11,6 +11,7 @@ import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 import { Provider } from '@ethersproject/providers';
 import { GCGO_SCROLL_URL } from '../gcgo';
+import { bigNumToFloat } from '@crocswap-libs/sdk';
 
 export const SCROLL_RPC_URL =
     process.env.REACT_APP_SCROLL_RPC_URL !== undefined
@@ -60,6 +61,6 @@ export const scrollMainnet: NetworkIF = {
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
-        return (await provider.getGasPrice()).toNumber() * 1e-9;
+        return bigNumToFloat(await provider.getGasPrice()) * 1e-9;
     },
 };

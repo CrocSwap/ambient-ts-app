@@ -258,6 +258,11 @@ function Reposition() {
     }, [position]);
 
     useEffect(() => {
+        if (rangeWidthPercentage !== undefined)
+            setSimpleRangeWidth(rangeWidthPercentage);
+    }, [rangeWidthPercentage]);
+
+    useEffect(() => {
         if (simpleRangeWidth !== rangeWidthPercentage) {
             setRangeWidthPercentage(simpleRangeWidth);
             const sliderInput = document.getElementById(

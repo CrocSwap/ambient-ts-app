@@ -1,6 +1,6 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { GCGO_OVERRIDE_URL } from '../../constants';
-import { TokenPriceFn } from '../../api';
+import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 import { TokenIF } from '../../types';
 
@@ -48,6 +48,8 @@ const fetchPoolStats = async (
     crocEnv: CrocEnv,
     graphCacheUrl: string,
     cachedFetchTokenPrice: TokenPriceFn,
+    cachedTokenDetails: FetchContractDetailsFn,
+    tokenList: TokenIF[],
     histTime?: number,
 ): Promise<PoolStatsIF | undefined> => {
     const poolStatsFreshEndpoint = GCGO_OVERRIDE_URL
@@ -80,6 +82,8 @@ const fetchPoolStats = async (
                     chainId,
                     crocEnv,
                     cachedFetchTokenPrice,
+                    cachedTokenDetails,
+                    tokenList,
                 );
             });
     } else {
@@ -107,6 +111,8 @@ const fetchPoolStats = async (
                     chainId,
                     crocEnv,
                     cachedFetchTokenPrice,
+                    cachedTokenDetails,
+                    tokenList,
                 );
             });
     }
@@ -120,8 +126,10 @@ async function expandPoolStats(
     chainId: string,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
+    cachedTokenDetails: FetchContractDetailsFn,
+    tokenList: TokenIF[],
 ): Promise<PoolStatsIF> {
-    const pool = crocEnv.pool(base, quote);
+    const provider = (await crocEnv.context).provider;
 
     const basePricePromise = cachedFetchTokenPrice(base, chainId, crocEnv);
     const quotePricePromise = cachedFetchTokenPrice(quote, chainId, crocEnv);
@@ -129,10 +137,23 @@ async function expandPoolStats(
     const basePrice = (await basePricePromise)?.usdPrice || 0.0;
     const quotePrice = (await quotePricePromise)?.usdPrice || 0.0;
 
+    const baseTokenListedDecimals = tokenList.find(
+        (token) => token.address.toLowerCase() === base.toLowerCase(),
+    )?.decimals;
+    const quoteTokenListedDecimals = tokenList.find(
+        (token) => token.address.toLowerCase() === quote.toLowerCase(),
+    )?.decimals;
+
+    const DEFAULT_DECIMALS = 18;
+
     return decoratePoolStats(
         payload,
-        await pool.baseDecimals,
-        await pool.quoteDecimals,
+        (baseTokenListedDecimals ||
+            (await cachedTokenDetails(provider, base, chainId))?.decimals) ??
+            DEFAULT_DECIMALS,
+        (quoteTokenListedDecimals ||
+            (await cachedTokenDetails(provider, quote, chainId))?.decimals) ??
+            DEFAULT_DECIMALS,
         basePrice,
         quotePrice,
     );
@@ -271,22 +292,46 @@ interface DexAggStatsIF {
     feesTotalUsd: number;
 }
 
-interface DexTokenAggServerIF {
+export interface DexTokenAggServerIF {
     tokenAddr: string;
     dexVolume: number;
     dexTvl: number;
     dexFees: number;
+    latestTime: number;
 }
 
+// fn signature to return chain stats in cumulative form
 export async function getChainStats(
+    returnAs: 'cumulative',
     chainId: string,
     crocEnv: CrocEnv,
     graphCacheUrl: string,
     cachedFetchTokenPrice: TokenPriceFn,
+    tokenCount: number,
     allDefaultTokens?: TokenIF[],
-): Promise<DexAggStatsIF | undefined> {
-    const N_TOKEN_CHAIN_SUMM = 10;
+): Promise<DexAggStatsIF | undefined>;
 
+// fn signature to return chain stats as individual data points
+export async function getChainStats(
+    returnAs: 'expanded',
+    chainId: string,
+    crocEnv: CrocEnv,
+    graphCacheUrl: string,
+    cachedFetchTokenPrice: TokenPriceFn,
+    tokenCount: number,
+    allDefaultTokens?: TokenIF[],
+): Promise<DexTokenAggServerIF[] | undefined>;
+
+// overloaded fn to return chain stats in expanded or cumulative form
+export async function getChainStats(
+    returnAs: 'cumulative' | 'expanded',
+    chainId: string,
+    crocEnv: CrocEnv,
+    graphCacheUrl: string,
+    cachedFetchTokenPrice: TokenPriceFn,
+    tokenCount: number,
+    allDefaultTokens?: TokenIF[],
+): Promise<DexAggStatsIF | DexTokenAggServerIF[] | undefined> {
     const chainStatsFreshEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/chain_stats?'
         : graphCacheUrl + '/chain_stats?';
@@ -294,7 +339,7 @@ export async function getChainStats(
         chainStatsFreshEndpoint +
             new URLSearchParams({
                 chainId: chainId,
-                n: N_TOKEN_CHAIN_SUMM.toString(),
+                n: tokenCount.toString(),
             }),
     )
         .then((response) => response?.json())
@@ -302,14 +347,18 @@ export async function getChainStats(
             if (!json?.data) {
                 return undefined;
             }
-            const payload = json.data as DexTokenAggServerIF[];
-            return expandChainStats(
-                payload,
-                chainId,
-                crocEnv,
-                cachedFetchTokenPrice,
-                allDefaultTokens,
-            );
+            if (returnAs === 'expanded') {
+                return json.data;
+            } else if (returnAs === 'cumulative') {
+                const payload = json.data as DexTokenAggServerIF[];
+                return expandChainStats(
+                    payload,
+                    chainId,
+                    crocEnv,
+                    cachedFetchTokenPrice,
+                    allDefaultTokens,
+                );
+            }
         })
         .catch((e) => {
             console.warn(e);
@@ -345,7 +394,6 @@ async function expandChainStats(
     subAggs.forEach((s) => {
         accum.tvlTotalUsd += s.tvlTotalUsd;
         accum.feesTotalUsd += s.feesTotalUsd;
-
         /* Because each trade has two sides and we're summing each token's
          * volume divide by two. This may undercount volume from long tail pairs,
          * because we're only 10 most recent tokens. */
@@ -389,8 +437,9 @@ export type PoolStatsFn = (
     crocEnv: CrocEnv,
     graphCacheUrl: string,
     cachedFetchTokenPrice: TokenPriceFn,
+    cachedTokenDetails: FetchContractDetailsFn,
+    tokenList: TokenIF[],
     histTime?: number,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ) => Promise<PoolStatsIF>;
 
 export type Change24Fn = (

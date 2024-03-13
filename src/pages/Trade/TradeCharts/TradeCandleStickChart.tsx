@@ -836,6 +836,19 @@ function TradeCandleStickChart(props: propsIF) {
         ],
     );
 
+    useEffect(() => {
+        if (prevPeriod === undefined) {
+            setCandleScale((prev: CandleScaleIF) => {
+                return {
+                    isFetchForTimeframe: !prev.isFetchForTimeframe,
+                    lastCandleDate: prev.lastCandleDate,
+                    nCandles: prev.nCandles,
+                    isShowLatestCandle: false,
+                };
+            });
+        }
+    }, [chartSettings.candleTime.global.defaults.length]);
+
     return (
         <>
             <div style={{ height: '100%', width: '100%' }}>

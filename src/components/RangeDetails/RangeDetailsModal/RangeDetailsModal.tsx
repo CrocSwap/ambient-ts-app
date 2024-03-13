@@ -22,6 +22,13 @@ import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import Modal from '../../Global/Modal/Modal';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import {
+    baseTokenForConcLiq,
+    bigNumToFloat,
+    quoteTokenForConcLiq,
+    tickToPrice,
+    toDisplayPrice,
+} from '@crocswap-libs/sdk';
 
 interface propsIF {
     position: PositionIF;
@@ -52,7 +59,7 @@ function RangeDetailsModal(props: propsIF) {
 
     const {
         posHash,
-        serverPositionId,
+        // serverPositionId,
         isAmbient,
         isBaseTokenMoneynessGreaterOrEqual,
         minRangeDenomByMoneyness,
@@ -60,6 +67,10 @@ function RangeDetailsModal(props: propsIF) {
         ambientOrMin: lowRangeDisplay,
         ambientOrMax: highRangeDisplay,
     } = useProcessRange(position, userAddress);
+
+    const [serverPositionId, setServerPositionId] = useState<
+        string | undefined
+    >();
 
     const {
         snackbar: { open: openSnackbar },
@@ -122,7 +133,7 @@ function RangeDetailsModal(props: propsIF) {
         openSnackbar(`${posHash.toString()} copied`, 'info');
     }
 
-    const updateRewards = async () => {
+    const updateLiq = async () => {
         try {
             if (!crocEnv || !position) return;
             const pos = crocEnv.positions(
@@ -131,17 +142,108 @@ function RangeDetailsModal(props: propsIF) {
                 position.user,
             );
 
+            const basePricePromise = cachedFetchTokenPrice(
+                baseTokenAddress,
+                chainId,
+                crocEnv,
+            );
+            const quotePricePromise = cachedFetchTokenPrice(
+                quoteTokenAddress,
+                chainId,
+                crocEnv,
+            );
+
+            const poolPriceNonDisplay = await cachedQuerySpotPrice(
+                crocEnv,
+                baseTokenAddress,
+                quoteTokenAddress,
+                chainId,
+                lastBlockNumber,
+            );
+
+            const basePrice = await basePricePromise;
+            const quotePrice = await quotePricePromise;
+            const poolPrice = toDisplayPrice(
+                poolPriceNonDisplay,
+                position.baseDecimals,
+                position.quoteDecimals,
+            );
+
             if (isAmbient) {
                 setBaseFeesDisplay('...');
                 setQuoteFeesDisplay('...');
+
+                const ambientLiqBigNum = (await pos.queryAmbient()).seeds;
+                const liqNum = bigNumToFloat(ambientLiqBigNum);
+                const liqBaseNum = liqNum * Math.sqrt(poolPriceNonDisplay);
+                const liqQuoteNum = liqNum / Math.sqrt(poolPriceNonDisplay);
+
+                const positionLiqBaseDecimalCorrected =
+                    liqBaseNum / Math.pow(10, position.baseDecimals);
+                const positionLiqQuoteDecimalCorrected =
+                    liqQuoteNum / Math.pow(10, position.quoteDecimals);
+
+                setBaseCollateralDisplay(
+                    getFormattedNumber({
+                        value: positionLiqBaseDecimalCorrected,
+                        zeroDisplay: '0',
+                    }),
+                );
+
+                setQuoteCollateralDisplay(
+                    getFormattedNumber({
+                        value: positionLiqQuoteDecimalCorrected,
+                        zeroDisplay: '0',
+                    }),
+                );
+
+                if (basePrice?.usdPrice && quotePrice?.usdPrice) {
+                    setUsdValue(
+                        getFormattedNumber({
+                            value:
+                                basePrice.usdPrice *
+                                    positionLiqBaseDecimalCorrected +
+                                quotePrice.usdPrice *
+                                    positionLiqQuoteDecimalCorrected,
+                            zeroDisplay: '0',
+                            prefix: '$',
+                        }),
+                    );
+                } else if (basePrice?.usdPrice) {
+                    const quotePrice = basePrice.usdPrice * poolPrice;
+                    setUsdValue(
+                        getFormattedNumber({
+                            value:
+                                basePrice.usdPrice *
+                                    positionLiqBaseDecimalCorrected +
+                                quotePrice * positionLiqQuoteDecimalCorrected,
+                            zeroDisplay: '0',
+                            prefix: '$',
+                        }),
+                    );
+                } else if (quotePrice?.usdPrice) {
+                    const basePrice = quotePrice.usdPrice / poolPrice;
+                    setUsdValue(
+                        getFormattedNumber({
+                            value:
+                                quotePrice.usdPrice *
+                                    positionLiqQuoteDecimalCorrected +
+                                basePrice * positionLiqBaseDecimalCorrected,
+                            zeroDisplay: '0',
+                            prefix: '$',
+                        }),
+                    );
+                }
             } else {
                 const positionRewards = await pos.queryRewards(
                     position.bidTick,
                     position.askTick,
                 );
 
-                const baseRewards = positionRewards.baseRewards.toNumber();
-                const quoteRewards = positionRewards.quoteRewards.toNumber();
+                const baseRewards = bigNumToFloat(positionRewards.baseRewards);
+                const quoteRewards = bigNumToFloat(
+                    positionRewards.quoteRewards,
+                );
 
                 const feesLiqBaseDecimalCorrected =
                     baseRewards / Math.pow(10, position.baseDecimals);
@@ -159,6 +261,84 @@ function RangeDetailsModal(props: propsIF) {
                     zeroDisplay: '0',
                 });
                 setQuoteFeesDisplay(quoteFeesDisplayTruncated);
+
+                const concLiqBigNum = (
+                    await pos.queryRangePos(position.bidTick, position.askTick)
+                ).liq;
+
+                const positionLiqBaseNum = bigNumToFloat(
+                    baseTokenForConcLiq(
+                        poolPriceNonDisplay,
+                        concLiqBigNum,
+                        tickToPrice(position.bidTick),
+                        tickToPrice(position.askTick),
+                    ),
+                );
+
+                const positionLiqQuoteNum = bigNumToFloat(
+                    quoteTokenForConcLiq(
+                        poolPriceNonDisplay,
+                        concLiqBigNum,
+                        tickToPrice(position.bidTick),
+                        tickToPrice(position.askTick),
+                    ),
+                );
+
+                const positionLiqBaseDecimalCorrected =
+                    positionLiqBaseNum / Math.pow(10, position.baseDecimals);
+                const positionLiqQuoteDecimalCorrected =
+                    positionLiqQuoteNum / Math.pow(10, position.quoteDecimals);
+
+                setBaseCollateralDisplay(
+                    getFormattedNumber({
+                        value: positionLiqBaseDecimalCorrected,
+                        zeroDisplay: '0',
+                    }),
+                );
+
+                setQuoteCollateralDisplay(
+                    getFormattedNumber({
+                        value: positionLiqQuoteDecimalCorrected,
+                        zeroDisplay: '0',
+                    }),
+                );
+                if (basePrice?.usdPrice && quotePrice?.usdPrice) {
+                    setUsdValue(
+                        getFormattedNumber({
+                            value:
+                                basePrice.usdPrice *
+                                    positionLiqBaseDecimalCorrected +
+                                quotePrice.usdPrice *
+                                    positionLiqQuoteDecimalCorrected,
+                            zeroDisplay: '0',
+                            prefix: '$',
+                        }),
+                    );
+                } else if (basePrice?.usdPrice) {
+                    const quotePrice = basePrice.usdPrice * poolPrice;
+                    setUsdValue(
+                        getFormattedNumber({
+                            value:
+                                basePrice.usdPrice *
+                                    positionLiqBaseDecimalCorrected +
+                                quotePrice * positionLiqQuoteDecimalCorrected,
+                            zeroDisplay: '0',
+                            prefix: '$',
+                        }),
+                    );
+                } else if (quotePrice?.usdPrice) {
+                    const basePrice = quotePrice.usdPrice / poolPrice;
+                    setUsdValue(
+                        getFormattedNumber({
+                            value:
+                                quotePrice.usdPrice *
+                                    positionLiqQuoteDecimalCorrected +
+                                basePrice * positionLiqBaseDecimalCorrected,
+                            zeroDisplay: '0',
+                            prefix: '$',
+                        }),
+                    );
+                }
             }
         } catch (error) {
             console.error(error);
@@ -169,6 +349,8 @@ function RangeDetailsModal(props: propsIF) {
         const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
             ? GCGO_OVERRIDE_URL + '/position_stats?'
             : activeNetwork.graphCacheUrl + '/position_stats?';
+
+        updateLiq();
 
         if (position.positionType) {
             fetch(
@@ -187,17 +369,12 @@ function RangeDetailsModal(props: propsIF) {
                 .then((response) => response?.json())
                 .then(async (json) => {
                     if (!crocEnv || !provider || !json?.data) {
-                        setBaseCollateralDisplay(undefined);
-                        setQuoteCollateralDisplay(undefined);
-                        setUsdValue(undefined);
-                        setBaseFeesDisplay(undefined);
-                        setQuoteFeesDisplay(undefined);
                         return;
                     }
+                    setServerPositionId(json?.data?.positionId);
                     // temporarily skip ENS fetch
                     const skipENSFetch = true;
                     const positionPayload = json?.data as PositionServerIF;
-                    await updateRewards();
                     const positionStats = await getPositionData(
                         positionPayload,
                         tokens.tokenUniv,
@@ -210,27 +387,6 @@ function RangeDetailsModal(props: propsIF) {
                         cachedTokenDetails,
                         cachedEnsResolve,
                         skipENSFetch,
-                    );
-                    const liqBaseNum =
-                        positionStats.positionLiqBaseDecimalCorrected;
-                    const liqQuoteNum =
-                        positionStats.positionLiqQuoteDecimalCorrected;
-
-                    const liqBaseDisplay = getFormattedNumber({
-                        value: liqBaseNum,
-                    });
-                    setBaseCollateralDisplay(liqBaseDisplay);
-
-                    const liqQuoteDisplay = getFormattedNumber({
-                        value: liqQuoteNum,
-                    });
-                    setQuoteCollateralDisplay(liqQuoteDisplay);
-
-                    setUsdValue(
-                        getFormattedNumber({
-                            value: position.totalValueUSD,
-                            prefix: '$',
-                        }),
                     );
 
                     setUpdatedPositionApy(positionStats.aprEst * 100);
@@ -266,7 +422,7 @@ function RangeDetailsModal(props: propsIF) {
                         maxRangeDenomByMoneyness={maxRangeDenomByMoneyness}
                         baseTokenAddress={baseTokenAddress}
                         quoteTokenAddress={quoteTokenAddress}
-                        positionId={serverPositionId}
+                        positionId={serverPositionId || ''}
                     />
                 </div>
                 <div className={styles.right_container}>

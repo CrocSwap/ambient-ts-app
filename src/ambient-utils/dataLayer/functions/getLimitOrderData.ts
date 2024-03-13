@@ -11,6 +11,7 @@ import { LimitOrderIF, TokenIF, LimitOrderServerIF } from '../../types';
 import { FetchAddrFn, FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { SpotPriceFn } from './querySpotPrice';
 import { Provider } from '@ethersproject/providers';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../../constants';
 
 export const getLimitOrderData = async (
     order: LimitOrderServerIF,
@@ -37,11 +38,8 @@ export const getLimitOrderData = async (
         baseTokenAddress,
         quoteTokenAddress,
         chainId,
-        lastBlockNumber,
+        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
     );
-
-    const baseMetadata = cachedTokenDetails(provider, order.base, chainId);
-    const quoteMetadata = cachedTokenDetails(provider, order.quote, chainId);
 
     newOrder.ensResolution = skipENSFetch
         ? ''
@@ -58,22 +56,6 @@ export const getLimitOrderData = async (
         crocEnv,
     );
 
-    const DEFAULT_DECIMALS = 18;
-    const baseTokenDecimals =
-        (await baseMetadata)?.decimals ?? DEFAULT_DECIMALS;
-    const quoteTokenDecimals =
-        (await quoteMetadata)?.decimals ?? DEFAULT_DECIMALS;
-
-    newOrder.baseDecimals = baseTokenDecimals;
-    newOrder.quoteDecimals = quoteTokenDecimals;
-
-    newOrder.baseSymbol = (await baseMetadata)?.symbol ?? '';
-
-    newOrder.quoteSymbol = (await quoteMetadata)?.symbol ?? '';
-
-    newOrder.baseName = (await baseMetadata)?.name ?? '';
-    newOrder.quoteName = (await quoteMetadata)?.name ?? '';
-
     const baseTokenLogoURI = tokensOnChain.find(
         (token) =>
             token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
@@ -82,6 +64,63 @@ export const getLimitOrderData = async (
         (token) =>
             token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
     )?.logoURI;
+
+    const baseTokenListedDecimals = tokensOnChain.find(
+        (token) =>
+            token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
+    )?.decimals;
+    const quoteTokenListedDecimals = tokensOnChain.find(
+        (token) =>
+            token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
+    )?.decimals;
+
+    const baseTokenListedSymbol = tokensOnChain.find(
+        (token) =>
+            token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
+    )?.symbol;
+    const quoteTokenListedSymbol = tokensOnChain.find(
+        (token) =>
+            token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
+    )?.symbol;
+
+    const baseTokenName = tokensOnChain.find(
+        (token) =>
+            token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
+    )?.name;
+    const quoteTokenName = tokensOnChain.find(
+        (token) =>
+            token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
+    )?.name;
+
+    const DEFAULT_DECIMALS = 18;
+    const baseTokenDecimals = baseTokenListedDecimals
+        ? baseTokenListedDecimals
+        : (await cachedTokenDetails(provider, order.base, chainId))?.decimals ??
+          DEFAULT_DECIMALS;
+    const quoteTokenDecimals = quoteTokenListedDecimals
+        ? quoteTokenListedDecimals
+        : (await cachedTokenDetails(provider, order.quote, chainId))
+              ?.decimals ?? DEFAULT_DECIMALS;
+
+    newOrder.baseDecimals = baseTokenDecimals;
+    newOrder.quoteDecimals = quoteTokenDecimals;
+
+    newOrder.baseSymbol = baseTokenListedSymbol
+        ? baseTokenListedSymbol
+        : (await cachedTokenDetails(provider, order.base, chainId))?.symbol ??
+          '';
+    newOrder.quoteSymbol = quoteTokenListedSymbol
+        ? quoteTokenListedSymbol
+        : (await cachedTokenDetails(provider, order.quote, chainId))?.symbol ??
+          '';
+
+    newOrder.baseName = baseTokenName
+        ? baseTokenName
+        : (await cachedTokenDetails(provider, order.base, chainId))?.name ?? '';
+    newOrder.quoteName = quoteTokenName
+        ? quoteTokenName
+        : (await cachedTokenDetails(provider, order.quote, chainId))?.name ??
+          '';
 
     newOrder.baseTokenLogoURI = baseTokenLogoURI ?? '';
     newOrder.quoteTokenLogoURI = quoteTokenLogoURI ?? '';
