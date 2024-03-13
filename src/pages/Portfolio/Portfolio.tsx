@@ -199,6 +199,7 @@ function Portfolio(props: PortfolioPropsIF) {
                         crocEnv,
                         activeNetwork.graphCacheUrl,
                         client,
+                        tokens.tokenUniv,
                     );
 
                     const tokensWithLogos = tokenBalanceResults.map((token) => {

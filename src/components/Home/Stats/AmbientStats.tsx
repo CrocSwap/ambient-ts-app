@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import {
     getChainStats,
     getFormattedNumber,
@@ -58,15 +58,26 @@ export default function Stats() {
         useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const allDefaultTokens = tokens.allDefaultTokens;
-    const mainnetCrocEnv = mainnetProvider
-        ? new CrocEnv(mainnetProvider, undefined)
-        : undefined;
-    const scrollCrocEnv = scrollProvider
-        ? new CrocEnv(scrollProvider, undefined)
-        : undefined;
-    const blastCrocEnv = blastProvider
-        ? new CrocEnv(blastProvider, undefined)
-        : undefined;
+
+    const mainnetCrocEnv = useMemo(
+        () =>
+            mainnetProvider
+                ? new CrocEnv(mainnetProvider, undefined)
+                : undefined,
+        [mainnetProvider !== undefined],
+    );
+
+    const scrollCrocEnv = useMemo(
+        () =>
+            scrollProvider ? new CrocEnv(scrollProvider, undefined) : undefined,
+        [scrollProvider !== undefined],
+    );
+
+    const blastCrocEnv = useMemo(
+        () =>
+            blastProvider ? new CrocEnv(blastProvider, undefined) : undefined,
+        [blastProvider !== undefined],
+    );
 
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
@@ -93,10 +104,12 @@ export default function Stats() {
             let resultsReceived = 0;
 
             getChainStats(
+                'cumulative',
                 '0x1',
                 mainnetCrocEnv,
                 GCGO_ETHEREUM_URL,
                 cachedFetchTokenPrice,
+                10,
                 allDefaultTokens,
             ).then((dexStats) => {
                 if (!dexStats) {
@@ -132,10 +145,12 @@ export default function Stats() {
             });
 
             getChainStats(
+                'cumulative',
                 '0x82750',
                 scrollCrocEnv,
                 GCGO_SCROLL_URL,
                 cachedFetchTokenPrice,
+                10,
                 allDefaultTokens,
             ).then((dexStats) => {
                 if (!dexStats) {
@@ -169,10 +184,12 @@ export default function Stats() {
             });
 
             getChainStats(
+                'cumulative',
                 '0x13e31',
                 blastCrocEnv,
                 GCGO_BLAST_URL,
                 cachedFetchTokenPrice,
+                10,
                 allDefaultTokens,
             ).then((dexStats) => {
                 if (!dexStats) {

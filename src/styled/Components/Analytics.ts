@@ -203,6 +203,10 @@ export const TableRow = styled.tr`
 `;
 
 interface TableCellProps {
+    display?: string;
+    flexDirection?: string;
+    alignItems?: string;
+    justifyContent?: string;
     hidden?: boolean;
     sm?: boolean;
     lg?: boolean;
@@ -234,9 +238,9 @@ const mediaStyles = {
     `,
 };
 export const TableCell = styled.td<TableCellProps>`
+    flex-direction: 
     white-space: nowrap;
     color: var(--text1);
-
     text-align: ${({ left }) => (left ? 'left' : 'right')};
 
     ${({ hidden }) =>
