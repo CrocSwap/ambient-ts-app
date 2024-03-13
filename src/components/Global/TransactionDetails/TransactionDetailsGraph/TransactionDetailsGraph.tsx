@@ -41,7 +41,8 @@ export default function TransactionDetailsGraph(
     } = props;
     const { chainData, crocEnv, activeNetwork } = useContext(CrocEnvContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
-
+    const oneHourMiliseconds = 60 * 60 * 1000;
+    const oneWeekMiliseconds = oneHourMiliseconds * 24 * 7;
     const isServerEnabled =
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
             ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
@@ -78,8 +79,10 @@ export default function TransactionDetailsGraph(
             return 900;
         } else if (diff <= 14400) {
             return 3600;
-        } else {
+        } else if (diff <= 40000) {
             return 14400;
+        } else {
+            return 86400;
         }
     };
 
@@ -115,12 +118,6 @@ export default function TransactionDetailsGraph(
 
     useEffect(() => {
         (async () => {
-            // console.log(
-            //     'tx.timeFirstMint :',
-            //     tx.timeFirstMint,
-            //     new Date(tx.timeFirstMint * 1000),
-            // );
-
             const isTimeFirstMintInRemovalRange =
                 transactionType === 'liqchange' &&
                 tx.changeType !== 'mint' &&
@@ -149,43 +146,32 @@ export default function TransactionDetailsGraph(
             const minTime = time() * 1000;
 
             const nowTime = Date.now();
-            let maxTime = nowTime;
+            let diff = (nowTime - minTime) / 200;
 
-            const diff = nowTime - minTime;
-
+            if (
+                tx.timeFirstMint &&
+                tx.txTime &&
+                tx.timeFirstMint !== tx.txTime &&
+                Math.abs(tx.txTime - nowTime) < oneWeekMiliseconds
+            ) {
+                diff = (Math.abs(tx.txTime - tx.timeFirstMint) * 1000) / 200;
+            }
             let tempPeriod = takeSmallerPeriodForRemoveRange(
-                Math.floor(diff / 1000 / 200),
+                Math.floor(diff / 1000),
             );
 
-            const isLiqChangeAndHasTxTime =
-                transactionType === 'liqchange' &&
-                tx.txTime &&
-                tx.timeFirstMint;
-            if (isLiqChangeAndHasTxTime) {
-                const diffTime = Math.abs(tx.txTime - tx.timeFirstMint) / 2;
-                if (diffTime < tempPeriod) {
-                    tempPeriod = takeSmallerPeriodForRemoveRange(diffTime);
-                    maxTime = tx.txTime * 1000 + 100 * tempPeriod * 1000;
-                }
+            if (nowTime - time() * 1000 < oneWeekMiliseconds) {
+                tempPeriod = 3600;
             }
 
             setPeriod(tempPeriod);
             if (tempPeriod !== undefined) {
-                if (maxTime / (tempPeriod * 1000) < 5) {
-                    maxTime = maxTime + 15 * 1000 * tempPeriod;
-                }
-
                 const maxNumCandlesNeeded = 2999;
-                const minNumCandlesNeeded = 2020;
 
-                const localMinTime = minTime - 50 * 1000 * tempPeriod;
-                const localMaxTime = maxTime + 15 * 1000 * tempPeriod;
-
-                const calcNumberCandlesNeeded = Math.max(
-                    Math.floor(
-                        (localMaxTime - localMinTime) / (tempPeriod * 1000),
-                    ),
-                    minNumCandlesNeeded,
+                const localMaxTime = nowTime + 2 * 1000 * tempPeriod;
+                const localMinTime = minTime - 5 * 1000 * tempPeriod;
+                const calcNumberCandlesNeeded = Math.floor(
+                    (localMaxTime - localMinTime) / (tempPeriod * 1000),
                 );
 
                 const numCandlesNeeded = Math.min(
@@ -317,24 +303,27 @@ export default function TransactionDetailsGraph(
             verticalDashLine.decorate((selection: any) => {
                 selection.enter().select('line').attr('class', 'verticalLine');
 
-                // const topHandles = selection.selectAll('g-.top-handle');
-                // topHandles.attr('transform',  `translate(${60}, ${-25})`);
                 const topHandles = selection.select('g.top-handle').nodes();
                 topHandles.forEach((element: any, i: number) => {
                     d3.select(element).attr(
                         'transform',
-                        `translate(${53 + -i * 23}, ${-24})`,
+                        `translate(${35 + -i * 14}, ${-18})`,
                     );
 
+                    d3.select(element).style('font', '10px Lexend Deca');
+                    d3.select(element).selectAll('text').style('fill', 'black');
+
+                    d3.select(element).selectAll('rect').remove();
                     const textNode = d3.select(element) as any;
                     const bbox = textNode.node().getBBox();
                     textNode
                         .insert('rect', ':first-child')
-                        .attr('x', bbox.x)
+                        .attr('x', bbox.x - 3)
                         .attr('y', bbox.y)
-                        .attr('width', bbox.width)
+                        .attr('width', bbox.width + 6)
                         .attr('height', bbox.height)
-                        .style('fill', '#61646F');
+                        .style('fill', '#61646F')
+                        .attr('rx', 3);
                 });
             });
 
@@ -448,6 +437,27 @@ export default function TransactionDetailsGraph(
         !isBaseTokenMoneynessGreaterOrEqual,
     ]);
 
+    function findMinMaxTime(data: any[]) {
+        if (!data || data.length === 0) {
+            return null;
+        }
+
+        const filteredData = data.filter(
+            (item: any) => typeof item === 'number' && !isNaN(item),
+        );
+        if (filteredData.length === 0 || filteredData.length === 1) {
+            return null;
+        }
+
+        const minValue = Math.min(...filteredData);
+        const maxValue = Math.max(...filteredData);
+
+        return {
+            min: minValue,
+            max: maxValue,
+        };
+    }
+
     useEffect(() => {
         if (graphData !== undefined && period !== undefined) {
             const yExtent = d3fc
@@ -480,275 +490,301 @@ export default function TransactionDetailsGraph(
 
             const svg = svgDiv.select('svg').node() as HTMLCanvasElement;
 
-            const svgHeight = svg.getBoundingClientRect().height;
-            const svgWidth = svg.getBoundingClientRect().width;
+            if (svg) {
+                const svgHeight = svg.getBoundingClientRect().height;
+                const svgWidth = svg.getBoundingClientRect().width;
 
-            xScale.range([0, svgWidth]);
-            yScale.range([svgHeight, 0]);
+                xScale.range([0, svgWidth]);
+                yScale.range([svgHeight, 0]);
 
-            xScale.domain([minDomain, maxDomain]);
+                xScale.domain([minDomain, maxDomain]);
 
-            const minDomainPixel = xScale(minDomain);
-            const maxDomainPixel = xScale(maxDomain);
+                const minDomainPixel = xScale(minDomain);
+                const maxDomainPixel = xScale(maxDomain);
 
-            const bufferOneCandle = period * 1000;
-            const bufferPixel = 30;
-            const oneCandlePixel =
-                xScale(maxDomain) - xScale(maxDomain - period * 1000);
+                const bufferOneCandle = period * 1000;
+                const bufferPixel = 30;
+                const oneCandlePixel =
+                    xScale(maxDomain) - xScale(maxDomain - period * 1000);
 
-            if (
-                transactionType === 'limitOrder' &&
-                tx !== undefined &&
-                period
-            ) {
-                const time = tx.timeFirstMint
-                    ? tx.timeFirstMint * 1000
-                    : tx.txTime * 1000;
-
-                const maxDiffPixel = maxDomainPixel - xScale(time);
-                const minDiffPixel = xScale(time) - minDomainPixel;
-                const candleCountForBuffer = bufferPixel / oneCandlePixel;
-
-                if (maxDiffPixel < 30) {
-                    xScale.domain([
-                        minDomain,
-                        maxDomain + bufferOneCandle * candleCountForBuffer,
-                    ]);
-                }
-
-                if (minDiffPixel < 30) {
-                    xScale.domain([
-                        time - bufferOneCandle * candleCountForBuffer,
-                        maxDomain,
-                    ]);
-                }
-            }
-
-            if (transactionType === 'swap') {
-                const bufferPixel = maxDomainPixel - xScale(tx.txTime * 1000);
-                const tempBuffer = 30 / oneCandlePixel;
-
-                if (bufferPixel < 10) {
-                    xScale.domain([
-                        minDomain,
-                        maxDomain + bufferOneCandle * tempBuffer,
-                    ]);
-                }
-
-                if (xScale(tx.txTime * 1000) - minDomainPixel < 10) {
-                    xScale.domain([
-                        tx.txTime * 1000 - bufferOneCandle * tempBuffer,
-                        maxDomain,
-                    ]);
-                }
-            }
-
-            if (transactionType === 'liqchange') {
-                const firstTime = tx.timeFirstMint
-                    ? tx.timeFirstMint * 1000
-                    : tx.txTime * 1000;
-
-                const lastTime = tx.txTime
-                    ? tx.txTime * 1000
-                    : xScale.domain()[1].getTime();
-
-                let openPositionPixel = xScale(firstTime);
-                let addLiqPixel = xScale(lastTime);
-                let diffBandPixel = addLiqPixel - openPositionPixel;
-                console.log({ diffBandPixel });
-
-                if (diffBandPixel < 30 && tx.txTime !== tx.timeFirstMint) {
-                    const newMaxDomain = xScale.invert(maxDomainPixel - 30);
-                    const newMinDomain = xScale.invert(30);
-                    xScale.domain([newMinDomain, newMaxDomain]);
-                }
-
-                // if (xScale(firstTime) - minDomainPixel < 10) {
-                //     const tempBuffer = 30 / oneCandlePixel;
-
-                //     xScale.domain([
-                //         firstTime - bufferOneCandle * tempBuffer,
-                //         maxDomain,
-                //     ]);
-                // }
-
-                // if (diffPixel < 50) {
-                //     xScale.domain([
-                //         minDomain,
-                //         maxDomain + tempBuffer * bufferOneCandle,
-                //     ]);
-                // }
-
-                const hasVerticalLines =
-                    tx.changeType === 'mint' || tx.positionType === 'ambient';
                 if (
-                    tx.txTime &&
-                    tx.timeFirstMint &&
-                    tx.txTime !== tx.timeFirstMint &&
-                    hasVerticalLines
+                    transactionType === 'limitOrder' &&
+                    tx !== undefined &&
+                    period
                 ) {
-                    addLiqPixel = xScale(lastTime);
+                    const time = tx.timeFirstMint
+                        ? tx.timeFirstMint * 1000
+                        : tx.txTime * 1000;
 
-                    const diffMaxDomainPixel = maxDomainPixel - addLiqPixel;
-                    const newMaxDomain = xScale.invert(maxDomainPixel + 60);
+                    const maxDiffPixel = maxDomainPixel - xScale(time);
+                    const minDiffPixel = xScale(time) - minDomainPixel;
+                    const candleCountForBuffer = bufferPixel / oneCandlePixel;
 
-                    if (diffMaxDomainPixel < 60) {
-                        xScale.domain([xScale.domain()[0], newMaxDomain]);
+                    if (maxDiffPixel < 30) {
+                        xScale.domain([
+                            minDomain,
+                            maxDomain + bufferOneCandle * candleCountForBuffer,
+                        ]);
                     }
 
-                    // need the same code because the scale may have changed
-                    addLiqPixel = xScale(lastTime);
-                    openPositionPixel = xScale(firstTime);
-                    diffBandPixel = addLiqPixel - openPositionPixel;
-
-                    const newMinDomain = xScale.invert(80);
-                    console.log(diffBandPixel);
-
-                    if (diffBandPixel < 120) {
-                        xScale.domain([newMinDomain, xScale.domain()[1]]);
+                    if (minDiffPixel < 30) {
+                        xScale.domain([
+                            time - bufferOneCandle * candleCountForBuffer,
+                            maxDomain,
+                        ]);
                     }
-
-                    // if (diffBandPixel < oneCandlePixel) {
-
-                    //     xScale.domain([
-                    //         firstTime- bufferOneCandle,
-                    //         lastTime +bufferOneCandle
-                    //     ]);
-
-                    // }
                 }
-            }
 
-            if (transactionType === 'swap') {
-                if (tx !== undefined) {
-                    addExtraCandle(
+                if (transactionType === 'swap') {
+                    const bufferPixel =
+                        maxDomainPixel - xScale(tx.txTime * 1000);
+                    const tempBuffer = 30 / oneCandlePixel;
+
+                    if (bufferPixel < 10) {
+                        xScale.domain([
+                            minDomain,
+                            maxDomain + bufferOneCandle * tempBuffer,
+                        ]);
+                    }
+
+                    if (xScale(tx.txTime * 1000) - minDomainPixel < 10) {
+                        xScale.domain([
+                            tx.txTime * 1000 - bufferOneCandle * tempBuffer,
+                            maxDomain,
+                        ]);
+                    }
+                }
+
+                if (transactionType === 'liqchange') {
+                    const result = findMinMaxTime([
+                        tx.timeFirstMint,
                         tx.txTime,
-                        tx.swapInvPriceDecimalCorrected,
-                        tx.swapPriceDecimalCorrected,
-                    );
+                        tx.latestUpdateTime,
+                    ]);
+                    const hasVerticalLines =
+                        tx.changeType === 'mint' ||
+                        tx.positionType === 'ambient';
+
+                    const minimumDifferenceMinMax = hasVerticalLines ? 75 : 20;
+
+                    if (result) {
+                        const minTime = result.min * 1000;
+                        const maxTime = result.max * 1000;
+                        let minTimePixel = xScale(minTime);
+                        let maxTimePixel = xScale(maxTime);
+
+                        const maxDomainPixel = svgWidth;
+                        const diffDomainBetweenLastTime =
+                            maxDomainPixel - maxTimePixel;
+
+                        if (
+                            diffDomainBetweenLastTime < minimumDifferenceMinMax
+                        ) {
+                            const newMaxDomain = xScale.invert(
+                                maxDomainPixel +
+                                    (minimumDifferenceMinMax -
+                                        diffDomainBetweenLastTime),
+                            );
+
+                            xScale.domain([xScale.domain()[0], newMaxDomain]);
+                        }
+
+                        if (xScale(minTime) < 0) {
+                            xScale.domain([minTime, xScale.domain()[1]]);
+                        }
+
+                        minTimePixel = xScale(minTime);
+                        maxTimePixel = xScale(maxTime);
+                        const diffMinMaxPixel = maxTimePixel - minTimePixel;
+
+                        if (
+                            minTime !== maxTime &&
+                            diffMinMaxPixel < 40 &&
+                            diffMinMaxPixel > 30
+                        ) {
+                            const checkDiffMinMax =
+                                maxTimePixel - minTimePixel <
+                                    minimumDifferenceMinMax &&
+                                maxTimePixel !== minTimePixel;
+
+                            if (
+                                diffMinMaxPixel < minimumDifferenceMinMax &&
+                                checkDiffMinMax
+                            ) {
+                                const candleCountMax =
+                                    (xScale.domain()[1].getTime() - maxTime) /
+                                    (1000 * period);
+                                xScale.domain([
+                                    xScale.invert(30),
+                                    minTime +
+                                        (candleCountMax / 2) * bufferOneCandle,
+                                ]);
+
+                                // if (
+                                //     Math.abs(tx.txTime - Date.now()) >
+                                //     oneHourMiliseconds * 24 * 10
+                                // ) {
+
+                                //     const candleCountMin = (minTime-xScale.domain()[0].getTime()) / (1000*period);
+                                //     const candleCountMax = (xScale.domain()[1].getTime()-maxTime) / (1000*period);
+
+                                //     const allCandleCount = candleCountMax+candleCountMin;
+
+                                //     xScale.domain([
+                                //         xScale.domain()[0].getTime(),
+                                //         xScale.domain()[1].getTime(),
+
+                                //     ]);
+                                // }
+                            }
+                        }
+                    }
                 }
 
-                yScale.domain(yExtent(graphData));
+                if (transactionType === 'swap') {
+                    if (tx !== undefined) {
+                        addExtraCandle(
+                            tx.txTime,
+                            tx.swapInvPriceDecimalCorrected,
+                            tx.swapPriceDecimalCorrected,
+                        );
+                    }
 
-                const yDomainMin = yScale.domain()[0];
-                const yDomainMax = yScale.domain()[1];
-
-                if (yDomainMin === yDomainMax) {
-                    const buffer = (5 * yDomainMax) / svgHeight;
-
-                    yScale.domain([yDomainMin - buffer, yDomainMax + buffer]);
-                }
-            } else if (transactionType === 'limitOrder') {
-                if (tx !== undefined) {
-                    const lowBoundary = Math.min(
-                        (
-                            !isAccountView
-                                ? isDenomBase
-                                : !isBaseTokenMoneynessGreaterOrEqual
-                        )
-                            ? tx.askTickInvPriceDecimalCorrected
-                            : tx.askTickPriceDecimalCorrected,
-                        (
-                            !isAccountView
-                                ? isDenomBase
-                                : !isBaseTokenMoneynessGreaterOrEqual
-                        )
-                            ? tx.bidTickInvPriceDecimalCorrected
-                            : tx.bidTickPriceDecimalCorrected,
-                    );
-                    const topBoundary = Math.max(
-                        (
-                            !isAccountView
-                                ? isDenomBase
-                                : !isBaseTokenMoneynessGreaterOrEqual
-                        )
-                            ? tx.askTickInvPriceDecimalCorrected
-                            : tx.askTickPriceDecimalCorrected,
-                        (
-                            !isAccountView
-                                ? isDenomBase
-                                : !isBaseTokenMoneynessGreaterOrEqual
-                        )
-                            ? tx.bidTickInvPriceDecimalCorrected
-                            : tx.bidTickPriceDecimalCorrected,
-                    );
-
-                    const buffer =
-                        Math.abs(
-                            Math.min(yExtent(graphData)[0], lowBoundary) -
-                                Math.max(yExtent(graphData)[1], topBoundary),
-                        ) / 8;
-
-                    const boundaries = [
-                        Math.min(yExtent(graphData)[0], lowBoundary) - buffer,
-                        Math.max(yExtent(graphData)[1], topBoundary) + buffer,
-                    ];
-
-                    yScale.domain(boundaries);
-                } else {
                     yScale.domain(yExtent(graphData));
-                }
-            } else if (transactionType === 'liqchange') {
-                if (tx !== undefined && tx.positionType !== 'ambient') {
-                    const lowBoundary = Math.min(
-                        (
-                            !isAccountView
-                                ? isDenomBase
-                                : !isBaseTokenMoneynessGreaterOrEqual
-                        )
-                            ? tx.askTickInvPriceDecimalCorrected
-                            : tx.askTickPriceDecimalCorrected,
-                        (
-                            !isAccountView
-                                ? isDenomBase
-                                : !isBaseTokenMoneynessGreaterOrEqual
-                        )
-                            ? tx.bidTickInvPriceDecimalCorrected
-                            : tx.bidTickPriceDecimalCorrected,
-                    );
-                    const topBoundary = Math.max(
-                        (
-                            !isAccountView
-                                ? isDenomBase
-                                : !isBaseTokenMoneynessGreaterOrEqual
-                        )
-                            ? tx.askTickInvPriceDecimalCorrected
-                            : tx.askTickPriceDecimalCorrected,
-                        (
-                            !isAccountView
-                                ? isDenomBase
-                                : !isBaseTokenMoneynessGreaterOrEqual
-                        )
-                            ? tx.bidTickInvPriceDecimalCorrected
-                            : tx.bidTickPriceDecimalCorrected,
-                    );
 
-                    const buffer =
-                        Math.abs(
+                    const yDomainMin = yScale.domain()[0];
+                    const yDomainMax = yScale.domain()[1];
+
+                    if (yDomainMin === yDomainMax) {
+                        const buffer = (5 * yDomainMax) / svgHeight;
+
+                        yScale.domain([
+                            yDomainMin - buffer,
+                            yDomainMax + buffer,
+                        ]);
+                    }
+                } else if (transactionType === 'limitOrder') {
+                    if (tx !== undefined) {
+                        const lowBoundary = Math.min(
+                            (
+                                !isAccountView
+                                    ? isDenomBase
+                                    : !isBaseTokenMoneynessGreaterOrEqual
+                            )
+                                ? tx.askTickInvPriceDecimalCorrected
+                                : tx.askTickPriceDecimalCorrected,
+                            (
+                                !isAccountView
+                                    ? isDenomBase
+                                    : !isBaseTokenMoneynessGreaterOrEqual
+                            )
+                                ? tx.bidTickInvPriceDecimalCorrected
+                                : tx.bidTickPriceDecimalCorrected,
+                        );
+                        const topBoundary = Math.max(
+                            (
+                                !isAccountView
+                                    ? isDenomBase
+                                    : !isBaseTokenMoneynessGreaterOrEqual
+                            )
+                                ? tx.askTickInvPriceDecimalCorrected
+                                : tx.askTickPriceDecimalCorrected,
+                            (
+                                !isAccountView
+                                    ? isDenomBase
+                                    : !isBaseTokenMoneynessGreaterOrEqual
+                            )
+                                ? tx.bidTickInvPriceDecimalCorrected
+                                : tx.bidTickPriceDecimalCorrected,
+                        );
+
+                        const buffer =
+                            Math.abs(
+                                Math.min(yExtent(graphData)[0], lowBoundary) -
+                                    Math.max(
+                                        yExtent(graphData)[1],
+                                        topBoundary,
+                                    ),
+                            ) / 8;
+
+                        const boundaries = [
                             Math.min(yExtent(graphData)[0], lowBoundary) -
-                                Math.max(yExtent(graphData)[1], topBoundary),
-                        ) / 8;
+                                buffer,
+                            Math.max(yExtent(graphData)[1], topBoundary) +
+                                buffer,
+                        ];
 
-                    const boundaries = [
-                        Math.min(yExtent(graphData)[0], lowBoundary) - buffer,
-                        Math.max(yExtent(graphData)[1], topBoundary) + buffer,
-                    ];
+                        yScale.domain(boundaries);
+                    } else {
+                        yScale.domain(yExtent(graphData));
+                    }
+                } else if (transactionType === 'liqchange') {
+                    if (tx !== undefined && tx.positionType !== 'ambient') {
+                        const lowBoundary = Math.min(
+                            (
+                                !isAccountView
+                                    ? isDenomBase
+                                    : !isBaseTokenMoneynessGreaterOrEqual
+                            )
+                                ? tx.askTickInvPriceDecimalCorrected
+                                : tx.askTickPriceDecimalCorrected,
+                            (
+                                !isAccountView
+                                    ? isDenomBase
+                                    : !isBaseTokenMoneynessGreaterOrEqual
+                            )
+                                ? tx.bidTickInvPriceDecimalCorrected
+                                : tx.bidTickPriceDecimalCorrected,
+                        );
+                        const topBoundary = Math.max(
+                            (
+                                !isAccountView
+                                    ? isDenomBase
+                                    : !isBaseTokenMoneynessGreaterOrEqual
+                            )
+                                ? tx.askTickInvPriceDecimalCorrected
+                                : tx.askTickPriceDecimalCorrected,
+                            (
+                                !isAccountView
+                                    ? isDenomBase
+                                    : !isBaseTokenMoneynessGreaterOrEqual
+                            )
+                                ? tx.bidTickInvPriceDecimalCorrected
+                                : tx.bidTickPriceDecimalCorrected,
+                        );
 
-                    yScale.domain(boundaries);
-                } else {
-                    yScale.domain(yExtent(graphData));
+                        const buffer =
+                            Math.abs(
+                                Math.min(yExtent(graphData)[0], lowBoundary) -
+                                    Math.max(
+                                        yExtent(graphData)[1],
+                                        topBoundary,
+                                    ),
+                            ) / 8;
+
+                        const boundaries = [
+                            Math.min(yExtent(graphData)[0], lowBoundary) -
+                                buffer,
+                            Math.max(yExtent(graphData)[1], topBoundary) +
+                                buffer,
+                        ];
+
+                        yScale.domain(boundaries);
+                    } else {
+                        yScale.domain(yExtent(graphData));
+                    }
                 }
+
+                const scaleData = {
+                    xScale: xScale,
+                    yScale: yScale,
+                    xScaleCopy: xScale.copy(),
+                };
+
+                setScaleData(() => {
+                    return scaleData;
+                });
             }
-
-            const scaleData = {
-                xScale: xScale,
-                yScale: yScale,
-                xScaleCopy: xScale.copy(),
-            };
-
-            setScaleData(() => {
-                return scaleData;
-            });
         }
     }, [
         tx.askTickInvPriceDecimalCorrected,
@@ -1211,17 +1247,54 @@ export default function TransactionDetailsGraph(
                             if (
                                 (tx.changeType === 'mint' ||
                                     tx.positionType === 'ambient') &&
-                                tx.txTime &&
-                                tx.timeFirstMint &&
-                                tx.txTime !== tx.timeFirstMint
+                                period
                             ) {
+                                const checkDiffMinUpdate =
+                                    Math.abs(
+                                        scaleData.xScale(timeStart) -
+                                            scaleData.xScale(
+                                                tx.latestUpdateTime * 1000,
+                                            ),
+                                    ) > 30;
+
                                 const mintData = [
                                     { label: 'Open Position', time: timeStart },
-                                    {
-                                        label: 'Add Liq.',
-                                        time: tx.txTime * 1000,
-                                    },
                                 ];
+
+                                if (
+                                    tx.txTime &&
+                                    tx.timeFirstMint &&
+                                    tx.txTime !== tx.timeFirstMint
+                                ) {
+                                    const checkDiffMinMax =
+                                        Math.abs(
+                                            scaleData.xScale(tx.txTime * 1000) -
+                                                scaleData.xScale(
+                                                    tx.timeFirstMint * 1000,
+                                                ),
+                                        ) > 30;
+
+                                    checkDiffMinMax &&
+                                        mintData.push({
+                                            label: 'Add Liq.',
+                                            time: tx.txTime * 1000,
+                                        });
+                                }
+
+                                if (
+                                    tx.latestUpdateTime &&
+                                    checkDiffMinUpdate &&
+                                    ((tx.txTime &&
+                                        tx.latestUpdateTime !== tx.txTime) ||
+                                        (tx.timeFirstMint &&
+                                            tx.latestUpdateTime !==
+                                                tx.timeFirstMint))
+                                ) {
+                                    mintData.push({
+                                        label: ' Updated',
+                                        time: tx.latestUpdateTime * 1000,
+                                    });
+                                }
 
                                 verticalLinesJoin(svg, [mintData]).call(
                                     verticalDashLine,
