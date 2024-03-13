@@ -11,6 +11,7 @@ import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 import { GCGO_ETHEREUM_URL } from '../gcgo';
 import { Provider } from '@ethersproject/providers';
+import { bigNumToFloat } from '@crocswap-libs/sdk';
 
 const PROVIDER_KEY =
     process.env.NODE_ENV === 'test'
@@ -34,6 +35,6 @@ export const ethereumMainnet: NetworkIF = {
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
-        return (await provider.getGasPrice()).toNumber() * 1e-9;
+        return bigNumToFloat(await provider.getGasPrice()) * 1e-9;
     },
 };
