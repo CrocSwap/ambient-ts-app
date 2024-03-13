@@ -10,6 +10,7 @@ import { WagmiConfig, createClient, configureChains, Chain } from 'wagmi';
 
 import { infuraProvider } from 'wagmi/providers/infura';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
+import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 
 import { InjectedConnector } from 'wagmi/connectors/injected';
 import { GlobalContexts } from './contexts/GlobalContexts';
@@ -72,6 +73,13 @@ if (!doReload) {
                 options: {
                     name: 'MetaMask',
                     shimDisconnect: true,
+                },
+            }),
+            new WalletConnectConnector({
+                chains,
+                options: {
+                    projectId: '37e833557d495d07825c0c6815ac9d93',
+                    isNewChainsStale: false,
                 },
             }),
             new InjectedConnector({
