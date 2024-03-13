@@ -19,6 +19,7 @@ import {
     SCROLL_RPC_URL,
     GLOBAL_MODAL_PORTAL_ID,
     supportedNetworks,
+    WALLETCONNECT_PROJECT_ID,
 } from './ambient-utils/constants';
 
 /* Perform a single forcible reload when the page first loads. Without this, there
@@ -78,7 +79,7 @@ if (!doReload) {
             new WalletConnectConnector({
                 chains,
                 options: {
-                    projectId: '37e833557d495d07825c0c6815ac9d93',
+                    projectId: WALLETCONNECT_PROJECT_ID || '',
                     isNewChainsStale: false,
                 },
             }),
