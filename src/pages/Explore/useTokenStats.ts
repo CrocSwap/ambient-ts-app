@@ -12,6 +12,9 @@ import { ethers } from 'ethers';
 
 export interface dexTokenData extends DexTokenAggServerIF {
     tokenMeta: TokenIF | undefined;
+    dexTvlNorm: number;
+    dexVolNorm: number;
+    dexFeesNorm: number;
 }
 
 export const useTokenStats = (
@@ -93,10 +96,17 @@ export const useTokenStats = (
                 throw error;
             }
         };
-        const tokenMeta = tokenLocal ?? (await getFromChain(t.tokenAddr));
+        const tokenMeta: TokenIF =
+            tokenLocal ?? (await getFromChain(t.tokenAddr));
+        function normalize(num: number, decimals: number): number {
+            return num / Math.pow(10, decimals);
+        }
         return {
             ...t,
             tokenMeta,
+            dexTvlNorm: normalize(t.dexTvl, tokenMeta.decimals),
+            dexFeesNorm: normalize(t.dexFees, tokenMeta.decimals),
+            dexVolNorm: normalize(t.dexVolume, tokenMeta.decimals),
         };
     };
 

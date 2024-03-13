@@ -72,9 +72,7 @@ export default function TokenRow(props: propsIF) {
             <TableCell>
                 <p style={{ textTransform: 'none' }}>
                     {getFormattedNumber({
-                        value:
-                            token.dexTvl /
-                            Math.pow(10, token.tokenMeta.decimals),
+                        value: token.dexTvlNorm,
                         prefix: '$',
                         isTvl: true,
                     })}
@@ -83,9 +81,7 @@ export default function TokenRow(props: propsIF) {
             <TableCell>
                 <p>
                     {getFormattedNumber({
-                        value:
-                            token.dexFees /
-                            Math.pow(10, token.tokenMeta.decimals),
+                        value: token.dexFeesNorm,
                         prefix: '$',
                     })}
                 </p>
@@ -93,9 +89,7 @@ export default function TokenRow(props: propsIF) {
             <TableCell>
                 <p>
                     {getFormattedNumber({
-                        value:
-                            token.dexVolume /
-                            Math.pow(10, token.tokenMeta.decimals),
+                        value: token.dexVolNorm,
                         prefix: '$',
                     })}
                 </p>
