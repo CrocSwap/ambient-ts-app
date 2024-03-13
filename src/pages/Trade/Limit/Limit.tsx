@@ -506,15 +506,10 @@ export default function Limit() {
                 ethMainnetUsdPrice;
 
             setOrderGasPriceInDollars(
-                isActiveNetworkBlast
-                    ? getFormattedNumber({
-                          value: gasPriceInDollarsNum + extraL1GasFeeLimit,
-                          prefix: '$',
-                      })
-                    : getFormattedNumber({
-                          value: gasPriceInDollarsNum + extraL1GasFeeLimit,
-                          isUSD: true,
-                      }),
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum + extraL1GasFeeLimit,
+                    isUSD: true,
+                }),
             );
         }
     }, [

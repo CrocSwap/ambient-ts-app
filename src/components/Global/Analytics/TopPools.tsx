@@ -1,7 +1,6 @@
 import { memo } from 'react';
 import PoolRow from './PoolRow';
 import { PoolDataIF } from '../../../contexts/ExploreContext';
-import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { SortedPoolMethodsIF, useSortedPools } from './useSortedPools';
 import TableHead from './TableHead';
 import checkPoolForWETH from '../../../App/functions/checkPoolForWETH';
@@ -27,21 +26,11 @@ export interface HeaderItem {
 
 interface propsIF {
     allPools: Array<PoolDataIF>;
-    chainId: string;
+    goToMarket: (tknA: string, tknB: string) => void;
 }
 
 function TopPools(props: propsIF) {
-    const { allPools, chainId } = props;
-
-    // logic to handle onClick navigation action
-    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
-    function goToMarket(tknA: string, tknB: string): void {
-        linkGenMarket.navigate({
-            chain: chainId,
-            tokenA: tknA,
-            tokenB: tknB,
-        });
-    }
+    const { allPools, goToMarket } = props;
 
     // logic to take raw pool list and sort them based on user input
     const sortedPools: SortedPoolMethodsIF = useSortedPools(allPools);
