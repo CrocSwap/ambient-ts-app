@@ -80,7 +80,7 @@ export default function WalletSearchResults(props: propsIF) {
                                 textAlign: 'left',
                             }}
                         >
-                            {wallet.message}
+                            {/* {wallet.message} */}
                         </div>
                     )}
                 </Results>

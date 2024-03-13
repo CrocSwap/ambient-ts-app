@@ -292,22 +292,46 @@ interface DexAggStatsIF {
     feesTotalUsd: number;
 }
 
-interface DexTokenAggServerIF {
+export interface DexTokenAggServerIF {
     tokenAddr: string;
     dexVolume: number;
     dexTvl: number;
     dexFees: number;
+    latestTime: number;
 }
 
+// fn signature to return chain stats in cumulative form
 export async function getChainStats(
+    returnAs: 'cumulative',
     chainId: string,
     crocEnv: CrocEnv,
     graphCacheUrl: string,
     cachedFetchTokenPrice: TokenPriceFn,
+    tokenCount: number,
     allDefaultTokens?: TokenIF[],
-): Promise<DexAggStatsIF | undefined> {
-    const N_TOKEN_CHAIN_SUMM = 10;
+): Promise<DexAggStatsIF | undefined>;
 
+// fn signature to return chain stats as individual data points
+export async function getChainStats(
+    returnAs: 'expanded',
+    chainId: string,
+    crocEnv: CrocEnv,
+    graphCacheUrl: string,
+    cachedFetchTokenPrice: TokenPriceFn,
+    tokenCount: number,
+    allDefaultTokens?: TokenIF[],
+): Promise<DexTokenAggServerIF[] | undefined>;
+
+// overloaded fn to return chain stats in expanded or cumulative form
+export async function getChainStats(
+    returnAs: 'cumulative' | 'expanded',
+    chainId: string,
+    crocEnv: CrocEnv,
+    graphCacheUrl: string,
+    cachedFetchTokenPrice: TokenPriceFn,
+    tokenCount: number,
+    allDefaultTokens?: TokenIF[],
+): Promise<DexAggStatsIF | DexTokenAggServerIF[] | undefined> {
     const chainStatsFreshEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/chain_stats?'
         : graphCacheUrl + '/chain_stats?';
@@ -315,7 +339,7 @@ export async function getChainStats(
         chainStatsFreshEndpoint +
             new URLSearchParams({
                 chainId: chainId,
-                n: N_TOKEN_CHAIN_SUMM.toString(),
+                n: tokenCount.toString(),
             }),
     )
         .then((response) => response?.json())
@@ -323,14 +347,18 @@ export async function getChainStats(
             if (!json?.data) {
                 return undefined;
             }
-            const payload = json.data as DexTokenAggServerIF[];
-            return expandChainStats(
-                payload,
-                chainId,
-                crocEnv,
-                cachedFetchTokenPrice,
-                allDefaultTokens,
-            );
+            if (returnAs === 'expanded') {
+                return json.data;
+            } else if (returnAs === 'cumulative') {
+                const payload = json.data as DexTokenAggServerIF[];
+                return expandChainStats(
+                    payload,
+                    chainId,
+                    crocEnv,
+                    cachedFetchTokenPrice,
+                    allDefaultTokens,
+                );
+            }
         })
         .catch((e) => {
             console.warn(e);
@@ -366,7 +394,6 @@ async function expandChainStats(
     subAggs.forEach((s) => {
         accum.tvlTotalUsd += s.tvlTotalUsd;
         accum.feesTotalUsd += s.feesTotalUsd;
-
         /* Because each trade has two sides and we're summing each token's
          * volume divide by two. This may undercount volume from long tail pairs,
          * because we're only 10 most recent tokens. */

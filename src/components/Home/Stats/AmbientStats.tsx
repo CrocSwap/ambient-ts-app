@@ -104,10 +104,12 @@ export default function Stats() {
             let resultsReceived = 0;
 
             getChainStats(
+                'cumulative',
                 '0x1',
                 mainnetCrocEnv,
                 GCGO_ETHEREUM_URL,
                 cachedFetchTokenPrice,
+                10,
                 allDefaultTokens,
             ).then((dexStats) => {
                 if (!dexStats) {
@@ -143,10 +145,12 @@ export default function Stats() {
             });
 
             getChainStats(
+                'cumulative',
                 '0x82750',
                 scrollCrocEnv,
                 GCGO_SCROLL_URL,
                 cachedFetchTokenPrice,
+                10,
                 allDefaultTokens,
             ).then((dexStats) => {
                 if (!dexStats) {
@@ -180,10 +184,12 @@ export default function Stats() {
             });
 
             getChainStats(
+                'cumulative',
                 '0x13e31',
                 blastCrocEnv,
                 GCGO_BLAST_URL,
                 cachedFetchTokenPrice,
+                10,
                 allDefaultTokens,
             ).then((dexStats) => {
                 if (!dexStats) {
