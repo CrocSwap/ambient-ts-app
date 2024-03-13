@@ -11,6 +11,7 @@ import { TopPool } from './TopPool';
 import { Provider } from '@ethersproject/providers';
 import { GCGO_BLAST_URL } from '../gcgo';
 import { Chain } from 'wagmi';
+import { bigNumToFloat } from '@crocswap-libs/sdk';
 
 export const BLAST_RPC_URL =
     process.env.REACT_APP_BLAST_RPC_URL !== undefined
@@ -59,6 +60,6 @@ export const blast: NetworkIF = {
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
-        return (await provider.getGasPrice()).toNumber() * 1e-9;
+        return bigNumToFloat(await provider.getGasPrice()) * 1e-9;
     },
 };
