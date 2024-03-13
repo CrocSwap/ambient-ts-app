@@ -19,6 +19,7 @@ import {
 } from '../../../../pages/Chart/ChartUtils/chartUtils';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { useMediaQuery } from '@material-ui/core';
+import TransactionDetailsLiquidityGraph from './TransactionDetailsLiquidityGraph';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -1374,6 +1375,8 @@ export default function TransactionDetailsGraph(
                     ref={d3PlotGraph}
                     style={{ width: '90%' }}
                 ></d3fc-svg>
+
+                <TransactionDetailsLiquidityGraph tx={tx} />
 
                 <d3fc-canvas
                     className='y-axis'
