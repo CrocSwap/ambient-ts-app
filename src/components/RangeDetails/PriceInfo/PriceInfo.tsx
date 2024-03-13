@@ -3,7 +3,7 @@ import styles from './PriceInfo.module.css';
 import Apy from '../../Global/Tabs/Apy/Apy';
 import { useLocation } from 'react-router-dom';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
-import { TokenIF } from '../../../ambient-utils/types';
+import { PositionIF, TokenIF } from '../../../ambient-utils/types';
 import { useContext, useEffect, useState } from 'react';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { PositionRewardsDataIF } from '../../../ambient-utils/types/xp';
@@ -11,6 +11,7 @@ import { fetchPositionRewardsData } from '../../../ambient-utils/api/fetchPositi
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface propsIF {
+    position: PositionIF;
     usdValue: string;
     lowRangeDisplay: string;
     highRangeDisplay: string;
@@ -34,6 +35,7 @@ interface propsIF {
 
 export default function PriceInfo(props: propsIF) {
     const {
+        position,
         usdValue,
         lowRangeDisplay,
         highRangeDisplay,
@@ -186,12 +188,12 @@ export default function PriceInfo(props: propsIF) {
     // }, [lastBlockNumber]);
 
     useEffect(() => {
-        fetchPositionRewardsData({ positionId }).then((rewards) => {
+        fetchPositionRewardsData({ position }).then((rewards) => {
             rewards && setPositionRewards(rewards);
         });
         // update every 10 seconds
         const interval = setInterval(() => {
-            fetchPositionRewardsData({ positionId }).then((rewards) => {
+            fetchPositionRewardsData({ position }).then((rewards) => {
                 rewards && setPositionRewards(rewards);
             });
         }, 10000);
