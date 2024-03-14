@@ -155,7 +155,7 @@ export const fetchTokenBalances = async (
                 getTokenInfoFromCovalentBalance(tokenBalance);
             combinedBalances.push(newToken);
         });
-        fetchDexBalances();
+        await fetchDexBalances();
     } else {
         const usdbAddress =
             chain === '0xa0c71fd'
@@ -367,7 +367,7 @@ export const fetchTokenBalances = async (
             combinedBalances.push(finger);
 
             // after delay, add dex balances
-            fetchDexBalances();
+            await fetchDexBalances();
         }
     }
 
