@@ -33,6 +33,7 @@ export interface IDepositedTokenBalance {
 
 const COVALENT_CHAIN_IDS = {
     '0x1': 'eth-mainnet',
+    '0xaa36a7': 'eth-sepolia',
     '0x5': 'eth-goerli',
     '066eed': 'arbitrum-goerli',
     '0x8274f': 'scroll-sepolia-testnet',
