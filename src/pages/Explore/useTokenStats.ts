@@ -44,53 +44,50 @@ export const useTokenStats = (
 ): dexTokenData[] => {
     const [dexTokens, setDexTokens] = useState<dexTokenData[]>([]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            if (crocEnv) {
-                try {
-                    const tokenStats = await getChainStats(
-                        'expanded',
-                        chainId,
-                        crocEnv,
-                        backupEndpoint,
-                        cachedFetchTokenPrice,
-                        20,
-                        tokenMethods.allDefaultTokens,
+    async function fetchData(): Promise<void> {
+        if (crocEnv) {
+            try {
+                const tokenStats = await getChainStats(
+                    'expanded',
+                    chainId,
+                    crocEnv,
+                    backupEndpoint,
+                    cachedFetchTokenPrice,
+                    20,
+                    tokenMethods.allDefaultTokens,
+                );
+
+                if (tokenStats) {
+                    const promises = tokenStats.map(
+                        async (ts: DexTokenAggServerIF) => {
+                            try {
+                                const decoratedToken = await decorate(ts);
+                                return decoratedToken;
+                            } catch (error) {
+                                console.error('Error decorating token:', error);
+                                return null;
+                            }
+                        },
                     );
 
-                    if (tokenStats) {
-                        const promises = tokenStats.map(
-                            async (ts: DexTokenAggServerIF) => {
-                                try {
-                                    const decoratedToken = await decorate(ts);
-                                    return decoratedToken;
-                                } catch (error) {
-                                    console.error(
-                                        'Error decorating token:',
-                                        error,
-                                    );
-                                    return null;
-                                }
-                            },
-                        );
-
-                        const settledPromises = await Promise.allSettled(
-                            promises,
-                        );
-                        const fulfilledResults = settledPromises
-                            .filter((result) => result.status === 'fulfilled')
-                            .map(
-                                (result) =>
-                                    (result as { value: dexTokenData }).value,
-                            )
-                            .filter((t) => !isWethToken(t.tokenAddr));
-                        setDexTokens(fulfilledResults);
-                    }
-                } catch (error) {
-                    console.error('Error fetching data:', error);
+                    const settledPromises = await Promise.allSettled(promises);
+                    const fulfilledResults = settledPromises
+                        .filter((result) => result.status === 'fulfilled')
+                        .map(
+                            (result) =>
+                                (result as { value: dexTokenData }).value,
+                        )
+                        .filter((t) => !isWethToken(t.tokenAddr));
+                    setDexTokens(fulfilledResults);
                 }
+            } catch (error) {
+                console.error('Error fetching data:', error);
             }
-        };
+        }
+    }
+
+    useEffect(() => {
+        fetchData();
         if (shouldDexTokensUpdate) {
             setDexTokens([]);
             fetchData();
