@@ -2,14 +2,15 @@ import { useMemo, useState } from 'react';
 import { dexTokenData } from '../../../pages/Explore/useTokenStats';
 import { columnSlugs } from './DexTokens';
 
-export interface sortedDexTokensIF {
-    data: dexTokenData[];
-    update: (s: columnSlugs) => void;
-}
-
 interface sortIF {
     slug: columnSlugs | null;
     reverse: boolean;
+}
+
+export interface sortedDexTokensIF {
+    data: dexTokenData[];
+    sortBy: sortIF;
+    update: (s: columnSlugs) => void;
 }
 
 export const useSortedDexTokens = (
@@ -95,6 +96,7 @@ export const useSortedDexTokens = (
 
     return {
         data: sortedData,
+        sortBy: sort,
         update: updateSort,
     };
 };

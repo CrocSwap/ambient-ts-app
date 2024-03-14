@@ -1,42 +1,57 @@
-import { columnSlugs, HeaderItem } from './DexTokens';
+import { HeaderItem } from './DexTokens';
 import {
     LabelWrapper,
     TableHeaderCell,
     TableHeadRow,
     TableHeadWrapper,
 } from '../../../styled/Components/Analytics';
+import { sortedDexTokensIF } from './useSortedDexTokens';
+import AssignSort from './AssignSort';
 
 interface propsIF {
     headerItems: HeaderItem[];
-    updateSort: (s: columnSlugs) => void;
+    sortedTokens: sortedDexTokensIF;
 }
 
 const TableHeadTokens = (props: propsIF) => {
-    const { headerItems, updateSort } = props;
+    const { headerItems, sortedTokens } = props;
 
     return (
         <TableHeadWrapper>
             <TableHeadRow>
-                {headerItems.map((item: HeaderItem) => (
-                    <TableHeaderCell
-                        key={JSON.stringify(item)}
-                        align={item.align}
-                        sortable={item.sortable}
-                        pxValue={item.pxValue}
-                        responsive={item.responsive}
-                        label={item.label}
-                        hidden={item.hidden}
-                        onClick={() => updateSort(item.slug)}
-                    >
-                        <LabelWrapper
+                {headerItems.map((item: HeaderItem) => {
+                    const isActiveSort: boolean =
+                        sortedTokens.sortBy.slug === item.slug;
+                    return (
+                        <TableHeaderCell
+                            key={JSON.stringify(item)}
                             align={item.align}
-                            label={item.label}
                             sortable={item.sortable}
+                            pxValue={item.pxValue}
+                            responsive={item.responsive}
+                            label={item.label}
+                            hidden={item.hidden}
+                            onClick={() => sortedTokens.update(item.slug)}
                         >
-                            {item.label}
-                        </LabelWrapper>
-                    </TableHeaderCell>
-                ))}
+                            <LabelWrapper
+                                align={item.align}
+                                label={item.label}
+                                sortable={item.sortable}
+                            >
+                                {item.label}
+                                {isActiveSort && (
+                                    <AssignSort
+                                        direction={
+                                            sortedTokens.sortBy.reverse
+                                                ? 'descending'
+                                                : 'ascending'
+                                        }
+                                    />
+                                )}
+                            </LabelWrapper>
+                        </TableHeaderCell>
+                    );
+                })}
             </TableHeadRow>
         </TableHeadWrapper>
     );

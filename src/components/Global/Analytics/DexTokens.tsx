@@ -124,7 +124,7 @@ function DexTokens(props: propsIF) {
                     <Table>
                         <TableHeadTokens
                             headerItems={dexTokensHeaderItems}
-                            updateSort={sortedTokens.update}
+                            sortedTokens={sortedTokens}
                         />
                         <TableBody>
                             {/* 
