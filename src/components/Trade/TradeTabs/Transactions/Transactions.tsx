@@ -95,9 +95,6 @@ function Transactions(props: propsIF) {
     const isTradeTableExpanded =
         !isAccountView && tradeTableState === 'Expanded';
 
-    const NUM_TRANSACTIONS_WHEN_COLLAPSED = isAccountView ? 13 : 10; // Number of transactions we show when the table is collapsed (i.e. half page)
-    // NOTE: this is done to improve rendering speed for this page.
-
     const dataLoadingStatus = useContext(DataLoadingContext);
     const {
         userTransactionsByPool,
@@ -531,7 +528,7 @@ function Transactions(props: propsIF) {
     const showViewMoreButton =
         !isTradeTableExpanded &&
         !isAccountView &&
-        sortedTransactions.length > NUM_TRANSACTIONS_WHEN_COLLAPSED;
+        sortedTransactions.length > rowsPerPage;
 
     const shouldDisplayNoTableData =
         !isLoading &&

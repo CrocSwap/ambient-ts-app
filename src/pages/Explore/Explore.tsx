@@ -49,14 +49,10 @@ export default function Explore() {
 
     // get expanded pool metadata, if not already fetched
     useEffect(() => {
-        if (
-            crocEnv !== undefined &&
-            poolList.length > 0 &&
-            exploreData.pools.all.length === 0
-        ) {
+        if (crocEnv !== undefined && poolList.length === 0) {
             getAllPools();
         }
-    }, [crocEnv, poolList.length, exploreData.pools.all.length]);
+    }, [crocEnv, poolList.length]);
 
     // logic to handle onClick navigation action
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
@@ -79,9 +75,9 @@ export default function Explore() {
     const titleTextTokens: string = isActiveNetworkMainnet
         ? 'Active Tokens on Ethereum'
         : isActiveNetworkBlast
-        ? 'Active on Blast'
+        ? 'Active Tokens on Blast'
         : isActiveNetworkScroll
-        ? 'Active on Scroll'
+        ? 'Active Tokens on Scroll'
         : 'Top Pools on Ambient';
 
     const titleTextForDOM: string =
@@ -94,7 +90,7 @@ export default function Explore() {
                 getAllPools();
                 break;
             case 'tokens':
-                exploreData.tokens.reset();
+                exploreData.tokens.fetch();
                 break;
         }
     }
@@ -103,26 +99,29 @@ export default function Explore() {
         <Section>
             <MainWrapper>
                 <TitleText>{titleTextForDOM}</TitleText>
+            </MainWrapper>
+            <OptionsWrapper>
+                <FlexContainer
+                    flexDirection='row'
+                    alignItems='center'
+                    gap={12}
+                    marginLeft='12px'
+                >
+                    <Text>Pools</Text>
+                    <Toggle
+                        isOn={exploreData.tab.active === 'tokens'}
+                        id={'explore_page_'}
+                        handleToggle={() => exploreData.tab.toggle()}
+                    />
+                    <Text>Tokens</Text>
+                </FlexContainer>
                 <Refresh>
                     <RefreshButton onClick={() => handleRefresh()}>
                         <RefreshIcon />
                     </RefreshButton>
                 </Refresh>
-            </MainWrapper>
-            <FlexContainer
-                flexDirection='row'
-                alignItems='center'
-                gap={12}
-                marginLeft='12px'
-            >
-                <Text>Pools</Text>
-                <Toggle
-                    isOn={exploreData.tab.active === 'tokens'}
-                    id={'explore_page_'}
-                    handleToggle={() => exploreData.tab.toggle()}
-                />
-                <Text>Tokens</Text>
-            </FlexContainer>
+            </OptionsWrapper>
+
             {exploreData.tab.active === 'pools' && (
                 <TopPools
                     allPools={exploreData.pools.all}
@@ -132,6 +131,7 @@ export default function Explore() {
             {exploreData.tab.active === 'tokens' && (
                 <DexTokens
                     dexTokens={exploreData.tokens.data}
+                    fetch={exploreData.tokens.fetch}
                     chainId={chainData.chainId}
                     goToMarket={goToMarket}
                 />
@@ -157,6 +157,14 @@ const MainWrapper = styled.div`
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
     color: var(--text1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px;
+    user-select: none;
+`;
+
+const OptionsWrapper = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;

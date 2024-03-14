@@ -1,4 +1,4 @@
-import { memo, useContext } from 'react';
+import { memo, useContext, useEffect } from 'react';
 import Spinner from '../Spinner/Spinner';
 import {
     ScrollableContainer,
@@ -18,6 +18,7 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { usePoolList2 } from '../../../App/hooks/usePoolList2';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { isWethToken } from '../../../ambient-utils/dataLayer';
 
 export type columnSlugs =
     | 'token'
@@ -42,10 +43,11 @@ interface propsIF {
     dexTokens: dexTokenData[];
     chainId: string;
     goToMarket: (tknA: string, tknB: string) => void;
+    fetch: () => void;
 }
 
 function DexTokens(props: propsIF) {
-    const { dexTokens, chainId, goToMarket } = props;
+    const { dexTokens, chainId, goToMarket, fetch } = props;
 
     const { findPool } = useContext(PoolContext);
 
@@ -54,7 +56,7 @@ function DexTokens(props: propsIF) {
 
     const sortedTokens: sortedDexTokensIF = useSortedDexTokens(dexTokens);
 
-    const smallScreen: boolean = useMediaQuery('(max-width: 800px)');
+    const smallScreen: boolean = useMediaQuery('(max-width: 640px)');
 
     // this logic is here to patch cases where existing logic to identify a token pool fails,
     // ... this is not an optimal location but works as a stopgap that minimizes needing to
@@ -64,6 +66,10 @@ function DexTokens(props: propsIF) {
         activeNetwork.graphCacheUrl,
         crocEnv,
     );
+
+    useEffect(() => {
+        if (!dexTokens.length) fetch();
+    }, [dexTokens.length]);
 
     const dexTokensHeaderItems: HeaderItem[] = [
         {
@@ -147,10 +153,12 @@ function DexTokens(props: propsIF) {
                                         }
                                         backupPool={unfilteredPools.find(
                                             (p: GCServerPoolIF) =>
-                                                p.base.toLowerCase() ===
-                                                    token.tokenAddr.toLowerCase() ||
-                                                p.quote.toLowerCase() ===
-                                                    token.tokenAddr.toLowerCase(),
+                                                (p.base.toLowerCase() ===
+                                                    token.tokenAddr.toLowerCase() &&
+                                                    !isWethToken(p.quote)) ||
+                                                (p.quote.toLowerCase() ===
+                                                    token.tokenAddr.toLowerCase() &&
+                                                    !isWethToken(p.base)),
                                         )}
                                         goToMarket={goToMarket}
                                         smallScreen={smallScreen}

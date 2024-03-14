@@ -3,4 +3,5 @@ export interface CandleScaleIF {
     nCandles: number;
     isFetchForTimeframe: boolean;
     isShowLatestCandle: boolean;
+    isFetchFirst200Candle: boolean;
 }

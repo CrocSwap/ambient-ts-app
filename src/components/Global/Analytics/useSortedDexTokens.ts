@@ -37,13 +37,13 @@ export const useSortedDexTokens = (
                 break;
         }
         return sort.reverse ? [...output].reverse() : output;
-    }, [sort]);
+    }, [sort, JSON.stringify(unsorted)]);
 
     function sortByName(tkns: dexTokenData[]): dexTokenData[] {
         const data = tkns.sort((a: dexTokenData, b: dexTokenData) => {
-            const nameTokenA: string = a.tokenMeta?.name ?? '';
-            const nameTokenB: string = b.tokenMeta?.name ?? '';
-            return nameTokenA.localeCompare(nameTokenB);
+            const comparatorA: string = a.tokenMeta?.name ?? '';
+            const comparatorB: string = b.tokenMeta?.name ?? '';
+            return comparatorA.localeCompare(comparatorB);
         });
         return data;
     }
@@ -57,21 +57,27 @@ export const useSortedDexTokens = (
 
     function sortByTvl(tkns: dexTokenData[]): dexTokenData[] {
         const data = tkns.sort((a: dexTokenData, b: dexTokenData) => {
-            return b.dexTvlNorm - a.dexTvlNorm;
+            const comparatorA: number = a.normalized?.dexTvlNorm.raw ?? 0;
+            const comparatorB: number = b.normalized?.dexTvlNorm.raw ?? 0;
+            return comparatorB - comparatorA;
         });
         return data;
     }
 
     function sortByVolume(tkns: dexTokenData[]): dexTokenData[] {
         const data = tkns.sort((a: dexTokenData, b: dexTokenData) => {
-            return b.dexVolNorm - a.dexVolNorm;
+            const comparatorA: number = a.normalized?.dexVolNorm.raw ?? 0;
+            const comparatorB: number = b.normalized?.dexVolNorm.raw ?? 0;
+            return comparatorB - comparatorA;
         });
         return data;
     }
 
     function sortByFees(tkns: dexTokenData[]): dexTokenData[] {
         const data = tkns.sort((a: dexTokenData, b: dexTokenData) => {
-            return b.dexFeesNorm - a.dexFeesNorm;
+            const comparatorA: number = a.normalized?.dexFeesNorm.raw ?? 0;
+            const comparatorB: number = b.normalized?.dexFeesNorm.raw ?? 0;
+            return comparatorB - comparatorA;
         });
         return data;
     }

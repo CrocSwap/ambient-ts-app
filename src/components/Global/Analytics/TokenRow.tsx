@@ -1,9 +1,6 @@
 // import styles from './TokenRow.module.css';
 import TokenIcon from '../TokenIcon/TokenIcon';
-import {
-    getFormattedNumber,
-    uriToHttp,
-} from '../../../ambient-utils/dataLayer';
+import { uriToHttp } from '../../../ambient-utils/dataLayer';
 import {
     TableRow,
     TableCell,
@@ -24,9 +21,9 @@ interface propsIF {
 
 export default function TokenRow(props: propsIF) {
     const { token, samplePool, goToMarket, smallScreen, backupPool } = props;
-    if (!token.tokenMeta) return null;
+    if (!token.tokenMeta || (!samplePool && !backupPool)) return null;
 
-    const mobileScrenView = useMediaQuery('(max-width: 500px)');
+    const mobileScrenView: boolean = useMediaQuery('(max-width: 500px)');
 
     return (
         <TableRow
@@ -66,33 +63,17 @@ export default function TokenRow(props: propsIF) {
                     </div>
                 </FlexContainer>
             </TableCell>
-            {smallScreen || (
-                <TableCell left>({token.tokenMeta?.name})</TableCell>
-            )}
+            {smallScreen || <TableCell left>{token.tokenMeta?.name}</TableCell>}
             <TableCell>
                 <p style={{ textTransform: 'none' }}>
-                    {getFormattedNumber({
-                        value: token.dexTvlNorm,
-                        prefix: '$',
-                        isTvl: true,
-                    })}
+                    {token.normalized?.dexTvlNorm.display}
                 </p>
             </TableCell>
             <TableCell>
-                <p>
-                    {getFormattedNumber({
-                        value: token.dexFeesNorm,
-                        prefix: '$',
-                    })}
-                </p>
+                <p>{token.normalized?.dexFeesNorm.display}</p>
             </TableCell>
             <TableCell>
-                <p>
-                    {getFormattedNumber({
-                        value: token.dexVolNorm,
-                        prefix: '$',
-                    })}
-                </p>
+                <p>{token.normalized?.dexVolNorm.display}</p>
             </TableCell>
             <TableCell>
                 <FlexContainer

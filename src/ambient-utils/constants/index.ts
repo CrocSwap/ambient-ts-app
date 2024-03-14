@@ -125,3 +125,8 @@ export const DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES = process.env
           process.env.REACT_APP_DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES,
       )
     : undefined;
+
+export const WALLETCONNECT_PROJECT_ID = process.env
+    .REACT_APP_WALLETCONNECT_PROJECT_ID
+    ? process.env.REACT_APP_WALLETCONNECT_PROJECT_ID
+    : undefined;
