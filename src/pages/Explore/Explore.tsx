@@ -131,7 +131,6 @@ export default function Explore() {
             {exploreData.tab.active === 'tokens' && (
                 <DexTokens
                     dexTokens={exploreData.tokens.data}
-                    fetch={exploreData.tokens.update}
                     chainId={chainData.chainId}
                     goToMarket={goToMarket}
                 />
