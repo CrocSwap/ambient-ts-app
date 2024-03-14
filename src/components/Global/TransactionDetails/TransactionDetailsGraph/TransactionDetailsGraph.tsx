@@ -792,7 +792,7 @@ export default function TransactionDetailsGraph(
         tx?.timeFirstMint,
         tx.swapInvPriceDecimalCorrected,
         tx.swapPriceDecimalCorrected,
-        JSON.stringify(graphData),
+        graphData,
     ]);
 
     useEffect(() => {
