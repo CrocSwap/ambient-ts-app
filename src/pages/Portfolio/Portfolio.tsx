@@ -28,11 +28,13 @@ import {
 import { FlexContainer, Text } from '../../styled/Common';
 import { UserDataContext, UserXpDataIF } from '../../contexts/UserDataContext';
 import Level from '../Level/Level';
+import { TradeTableContext } from '../../contexts/TradeTableContext';
 
 interface PortfolioPropsIF {
     isLevelsPage?: boolean;
     isRanksPage?: boolean;
     isViewMoreActive?: boolean;
+    isPointsTab?: boolean;
 }
 
 function Portfolio(props: PortfolioPropsIF) {
@@ -42,7 +44,7 @@ function Portfolio(props: PortfolioPropsIF) {
         ensName,
         setSecondaryEnsInContext,
     } = useContext(UserDataContext);
-    const { isLevelsPage, isRanksPage, isViewMoreActive } = props;
+    const { isLevelsPage, isRanksPage, isViewMoreActive, isPointsTab } = props;
 
     const isUserConnected = useSimulatedIsUserConnected();
 
@@ -58,6 +60,8 @@ function Portfolio(props: PortfolioPropsIF) {
     } = useContext(CrocEnvContext);
     const { client } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
+    const { setOutsideControl, setSelectedOutsideTab } =
+        useContext(TradeTableContext);
 
     const { mainnetProvider } = useContext(CrocEnvContext);
 
@@ -344,6 +348,21 @@ function Portfolio(props: PortfolioPropsIF) {
                 return notConnectedContent;
         }
     })();
+
+    // tab control on account from pageheader
+    const onTradeRoute = location.pathname.includes('trade');
+    const onAccountRoute = location.pathname.includes('account');
+
+    const tabToSwitchToBasedOnRoute = onTradeRoute ? 0 : onAccountRoute ? 3 : 0;
+
+    useEffect(() => {
+        if (isPointsTab) {
+            setOutsideControl(true);
+            setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
+        }
+    }, [isPointsTab]);
+
+    // end of tab control on account from page header
 
     const mobilePortfolio = (
         <FlexContainer

@@ -275,6 +275,10 @@ export default function App() {
                             element={<Portfolio isLevelsPage />}
                         />
                         <Route
+                            path='account/points'
+                            element={<Portfolio isPointsTab />}
+                        />
+                        <Route
                             path='account/:address/xp/history'
                             element={
                                 <Portfolio isLevelsPage isViewMoreActive />
