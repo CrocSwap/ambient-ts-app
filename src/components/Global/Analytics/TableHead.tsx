@@ -8,13 +8,14 @@ import {
 } from '../../../styled/Components/Analytics';
 import AssignSort from './AssignSort';
 
-const TableHead = ({
-    headerItems,
-    sortedPools,
-}: {
+interface propsIF {
     headerItems: HeaderItem[];
     sortedPools: SortedPoolMethodsIF;
-}) => {
+}
+
+const TableHead = (props: propsIF) => {
+    const { headerItems, sortedPools } = props;
+
     return (
         <TableHeadWrapper>
             <TableHeadRow>
