@@ -1,5 +1,5 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
     FetchContractDetailsFn,
     TokenPriceFn,
@@ -89,10 +89,6 @@ export const useTokenStats = (
             }
         }
     }
-
-    // useEffect(() => {
-    //     fetchData();
-    // }, [crocEnv]);
 
     const decorate = async (t: DexTokenAggServerIF): Promise<dexTokenData> => {
         const tokenMeta: TokenIF | undefined =
