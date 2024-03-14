@@ -382,7 +382,7 @@ function ChatPanel(props: propsIF) {
     //     }
     // }, [isMessageDeleted]);
 
-    const scrollToMessage = (messageId: string) => {
+    const scrollToMessage = (messageId: string, flashAnimation?: boolean) => {
         const msgEl = document.querySelector(
             '.messageBubble[data-message-id="' + messageId + '"]',
         );
@@ -393,13 +393,15 @@ function ChatPanel(props: propsIF) {
                 domDebug('target', new Date().getTime());
                 if (messageEnd && messageEnd.current) {
                     messageEnd.current.scrollTop = target;
-                    setTimeout(() => {
-                        msgEl.classList.add(styles.purple_flashed);
-
+                    if (flashAnimation) {
                         setTimeout(() => {
-                            msgEl.classList.remove(styles.purple_flashed);
-                        }, 1500);
-                    }, 500);
+                            msgEl.classList.add(styles.purple_flashed);
+
+                            setTimeout(() => {
+                                msgEl.classList.remove(styles.purple_flashed);
+                            }, 1500);
+                        }, 500);
+                    }
                 }
             }, 100);
         }

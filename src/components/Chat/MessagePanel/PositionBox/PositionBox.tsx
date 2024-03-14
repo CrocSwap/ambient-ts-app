@@ -183,6 +183,7 @@ that will merged manually
     }, [sPositions]);
 
     useEffect(() => {
+        console.log(position);
         if (position !== undefined) {
             if (position.entityType === 'limitOrder') {
                 if (
