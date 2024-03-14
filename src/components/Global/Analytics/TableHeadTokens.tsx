@@ -39,6 +39,9 @@ const TableHeadTokens = (props: propsIF) => {
                                 align={item.align}
                                 label={item.label}
                                 sortable={item.sortable}
+                                currentSortedLabel={
+                                    sortedTokens.sortBy.slug ?? undefined
+                                }
                             >
                                 {item.label}
                                 {isActiveSort && (
