@@ -1,11 +1,10 @@
-import { HeaderItem } from './TopPools';
+import { columnSlugs, HeaderItem } from './DexTokens';
 import {
     LabelWrapper,
     TableHeaderCell,
     TableHeadRow,
     TableHeadWrapper,
 } from '../../../styled/Components/Analytics';
-import { columnSlugs } from './DexTokens';
 
 interface propsIF {
     headerItems: HeaderItem[];

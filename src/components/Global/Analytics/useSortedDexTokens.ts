@@ -14,6 +14,7 @@ export const useSortedDexTokens = (
     const [reverse, setReverse] = useState<boolean>(false);
 
     const sortedData = useMemo<dexTokenData[]>(() => {
+        // console.log(sortBy, reverse);
         let output: dexTokenData[];
         switch (sortBy) {
             case 'tvl':
@@ -25,12 +26,24 @@ export const useSortedDexTokens = (
             case 'volume':
                 output = sortByVolume(unsorted);
                 break;
+            case 'name':
+                output = sortByName(unsorted);
+                break;
             default:
                 output = sortByTime(unsorted);
                 break;
         }
         return reverse ? [...output].reverse() : output;
-    }, [sortBy]);
+    }, [sortBy, reverse]);
+
+    function sortByName(tkns: dexTokenData[]): dexTokenData[] {
+        const data = tkns.sort((a: dexTokenData, b: dexTokenData) => {
+            const nameTokenA: string = a.tokenMeta?.name ?? '';
+            const nameTokenB: string = b.tokenMeta?.name ?? '';
+            return nameTokenB.localeCompare(nameTokenA);
+        });
+        return data;
+    }
 
     function sortByTime(tkns: dexTokenData[]): dexTokenData[] {
         const data = tkns.sort((a: dexTokenData, b: dexTokenData) => {
@@ -60,8 +73,8 @@ export const useSortedDexTokens = (
         return data;
     }
 
-    function updateSort(s: columnSlugs) {
-        const isNewSort: boolean = sortBy === s;
+    function updateSort(s: columnSlugs): void {
+        const isNewSort: boolean = sortBy !== s;
         if (isNewSort) {
             setSortBy(s);
             setReverse(false);
