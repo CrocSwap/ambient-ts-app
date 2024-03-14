@@ -1370,14 +1370,29 @@ export default function TransactionDetailsGraph(
                     width: '100%',
                 }}
             >
-                <d3fc-svg
-                    id='d3PlotGraph'
-                    ref={d3PlotGraph}
-                    style={{ width: '90%' }}
-                ></d3fc-svg>
+                <div
+                    style={{
+                        display: 'grid',
+                        width: '100%',
+                        height: '100%',
+                        overflow: 'hidden',
+                        gridTemplateColumns: '1px auto 1fr auto',
+                        gridTemplateRows:
+                            'minmax(0em, max-content) auto 1fr auto',
+                    }}
+                >
+                    <d3fc-svg
+                        id='d3PlotGraph'
+                        ref={d3PlotGraph}
+                        style={{ width: '100%' }}
+                    ></d3fc-svg>
 
-                <TransactionDetailsLiquidityGraph tx={tx} />
-
+                    <TransactionDetailsLiquidityGraph
+                        tx={tx}
+                        isDenomBase={isBaseTokenMoneynessGreaterOrEqual}
+                        yScale={scaleData?.yScale}
+                    />
+                </div>
                 <d3fc-canvas
                     className='y-axis'
                     ref={d3Yaxis}
