@@ -98,6 +98,7 @@ export default function TransactionDetailsGraph(
     const [isDataTakingTooLongToFetch, setIsDataTakingTooLongToFetch] =
         useState(false);
     const mobileView = useMediaQuery('(min-width: 800px)');
+    const [svgWidth, setSvgWidth] = useState(0);
 
     useEffect(() => {
         let timeoutId: NodeJS.Timeout;
@@ -202,7 +203,6 @@ export default function TransactionDetailsGraph(
                     );
 
                     if (graphData) {
-                        setIsDataLoading(false);
                         setIsDataEmpty(false);
                         setGraphData(() => {
                             return graphData.candles;
@@ -211,7 +211,6 @@ export default function TransactionDetailsGraph(
                         setGraphData(() => {
                             return undefined;
                         });
-                        setIsDataLoading(false);
                         setIsDataEmpty(true);
                     }
                 } catch (error) {
@@ -459,7 +458,29 @@ export default function TransactionDetailsGraph(
     }
 
     useEffect(() => {
-        if (graphData !== undefined && period !== undefined) {
+        if (d3PlotGraph) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const svgDiv = d3.select(d3PlotGraph.current) as any;
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const resizeObserver = new ResizeObserver((result: any) => {
+                const width = result[0].contentRect.width;
+
+                if (svgWidth !== width) {
+                    setSvgWidth(width);
+                } else {
+                    graphData && setIsDataLoading(false);
+                }
+            });
+
+            resizeObserver.observe(svgDiv.node());
+
+            return () => resizeObserver.unobserve(svgDiv.node());
+        }
+    }, [graphData, svgWidth]);
+
+    useEffect(() => {
+        if (graphData !== undefined && period !== undefined && isDataLoading) {
             const yExtent = d3fc
                 .extentLinear()
                 .accessors([
@@ -492,8 +513,6 @@ export default function TransactionDetailsGraph(
 
             if (svg) {
                 const svgHeight = svg.getBoundingClientRect().height;
-                const svgWidth = svg.getBoundingClientRect().width;
-
                 xScale.range([0, svgWidth]);
                 yScale.range([svgHeight, 0]);
 
@@ -793,6 +812,7 @@ export default function TransactionDetailsGraph(
         tx.swapInvPriceDecimalCorrected,
         tx.swapPriceDecimalCorrected,
         graphData,
+        svgWidth,
     ]);
 
     useEffect(() => {
@@ -1360,51 +1380,54 @@ export default function TransactionDetailsGraph(
     );
 
     const chartRender = (
-        <div
-            className='transaction_details_graph'
-            ref={graphMainDiv}
-            data-testid={'chart'}
-            style={{
-                height: '100%',
-                width: '100%',
-                padding: '3px',
-            }}
-        >
+        <>
+            {
+                // access the width information of the chart before creating the chart
+                isDataLoading && loadingSpinner
+            }
             <div
+                className='transaction_details_graph'
+                ref={graphMainDiv}
+                data-testid={'chart'}
                 style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    height: '90%',
+                    height: '100%',
                     width: '100%',
+                    padding: '3px',
                 }}
             >
-                <d3fc-svg
-                    id='d3PlotGraph'
-                    ref={d3PlotGraph}
-                    style={{ width: '90%' }}
-                ></d3fc-svg>
+                <div
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        height: '90%',
+                        width: '100%',
+                    }}
+                >
+                    <d3fc-svg
+                        id='d3PlotGraph'
+                        ref={d3PlotGraph}
+                        style={{ width: '90%' }}
+                    ></d3fc-svg>
 
+                    <d3fc-canvas
+                        className='y-axis'
+                        ref={d3Yaxis}
+                        style={{ width: mobileView ? '10%' : '15%' }}
+                    ></d3fc-canvas>
+                </div>
                 <d3fc-canvas
-                    className='y-axis'
-                    ref={d3Yaxis}
-                    style={{ width: mobileView ? '10%' : '15%' }}
+                    className='x-axis'
+                    ref={d3Xaxis}
+                    style={{ height: '20px', width: '100%' }}
                 ></d3fc-canvas>
             </div>
-            <d3fc-canvas
-                className='x-axis'
-                ref={d3Xaxis}
-                style={{ height: '20px', width: '100%' }}
-            ></d3fc-canvas>
-        </div>
+        </>
     );
     let dataToRender;
 
     switch (true) {
         case isDataTakingTooLongToFetch || isDataEmpty:
             dataToRender = placeholderImage;
-            break;
-        case isDataLoading:
-            dataToRender = loadingSpinner;
             break;
         default:
             dataToRender = chartRender;
