@@ -7,16 +7,19 @@ export interface sortedDexTokensIF {
     update: (s: columnSlugs) => void;
 }
 
+interface sortIF {
+    slug: columnSlugs | null;
+    reverse: boolean;
+}
+
 export const useSortedDexTokens = (
     unsorted: dexTokenData[],
 ): sortedDexTokensIF => {
-    const [sortBy, setSortBy] = useState<columnSlugs | null>(null);
-    const [reverse, setReverse] = useState<boolean>(false);
+    const [sort, setSort] = useState<sortIF>({ slug: null, reverse: false });
 
     const sortedData = useMemo<dexTokenData[]>(() => {
-        // console.log(sortBy, reverse);
         let output: dexTokenData[];
-        switch (sortBy) {
+        switch (sort.slug) {
             case 'tvl':
                 output = sortByTvl(unsorted);
                 break;
@@ -33,14 +36,14 @@ export const useSortedDexTokens = (
                 output = sortByTime(unsorted);
                 break;
         }
-        return reverse ? [...output].reverse() : output;
-    }, [sortBy, reverse]);
+        return sort.reverse ? [...output].reverse() : output;
+    }, [sort]);
 
     function sortByName(tkns: dexTokenData[]): dexTokenData[] {
         const data = tkns.sort((a: dexTokenData, b: dexTokenData) => {
             const nameTokenA: string = a.tokenMeta?.name ?? '';
             const nameTokenB: string = b.tokenMeta?.name ?? '';
-            return nameTokenB.localeCompare(nameTokenA);
+            return nameTokenA.localeCompare(nameTokenB);
         });
         return data;
     }
@@ -74,15 +77,13 @@ export const useSortedDexTokens = (
     }
 
     function updateSort(s: columnSlugs): void {
-        const isNewSort: boolean = sortBy !== s;
+        const isNewSort: boolean = sort.slug !== s;
         if (isNewSort) {
-            setSortBy(s);
-            setReverse(false);
-        } else if (reverse === false) {
-            setReverse(true);
+            setSort({ slug: s, reverse: false });
+        } else if (sort.reverse === false) {
+            setSort({ slug: sort.slug, reverse: true });
         } else {
-            setSortBy(s);
-            setReverse(false);
+            setSort({ slug: null, reverse: false });
         }
     }
 
