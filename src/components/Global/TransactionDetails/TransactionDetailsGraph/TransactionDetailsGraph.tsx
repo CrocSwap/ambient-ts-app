@@ -620,8 +620,17 @@ export default function TransactionDetailsGraph(
                                         minTime - bufferOneCandle,
                                         xScale.invert(30).getTime(),
                                     ),
-                                    minTime +
-                                        (candleCountMax / 3) * bufferOneCandle,
+                                    Math.max(
+                                        xScale
+                                            .invert(
+                                                xScale(maxTime) +
+                                                    minimumDifferenceMinMax,
+                                            )
+                                            .getTime(),
+                                        minTime +
+                                            (candleCountMax / 3) *
+                                                bufferOneCandle,
+                                    ),
                                 ]);
                             }
                         }
@@ -783,7 +792,7 @@ export default function TransactionDetailsGraph(
         tx?.timeFirstMint,
         tx.swapInvPriceDecimalCorrected,
         tx.swapPriceDecimalCorrected,
-        graphData,
+        JSON.stringify(graphData),
     ]);
 
     useEffect(() => {
