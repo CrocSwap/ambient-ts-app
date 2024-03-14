@@ -185,7 +185,7 @@ export default function TransactionDetailsGraph(
             let startTime = undefined;
 
             let period = isActiveNetworkBlast
-                ? 300
+                ? 900
                 : decidePeriod(Math.floor(diff / 1000 / 200));
 
             const isTxLiqRemove =

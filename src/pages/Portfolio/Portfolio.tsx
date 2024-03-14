@@ -10,7 +10,11 @@ import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileS
 
 // START: Import Other Local Files
 import { TokenIF } from '../../ambient-utils/types';
-import { fetchEnsAddress, fetchUserXpData } from '../../ambient-utils/api';
+import {
+    fetchBlastUserXpData,
+    fetchEnsAddress,
+    fetchUserXpData,
+} from '../../ambient-utils/api';
 import { Navigate, useParams } from 'react-router-dom';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
@@ -26,7 +30,11 @@ import {
     PortfolioTabsContainer,
 } from '../../styled/Components/Portfolio';
 import { FlexContainer, Text } from '../../styled/Common';
-import { UserDataContext, UserXpDataIF } from '../../contexts/UserDataContext';
+import {
+    BlastUserXpDataIF,
+    UserDataContext,
+    UserXpDataIF,
+} from '../../contexts/UserDataContext';
 import Level from '../Level/Level';
 
 interface PortfolioPropsIF {
@@ -56,7 +64,7 @@ function Portfolio(props: PortfolioPropsIF) {
         activeNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { client } = useContext(ChainDataContext);
+    const { client, isActiveNetworkBlast } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
     const { mainnetProvider } = useContext(CrocEnvContext);
@@ -74,7 +82,7 @@ function Portfolio(props: PortfolioPropsIF) {
         undefined,
     );
 
-    const connectedAccountActive = useMemo(
+    const connectedAccountActive: boolean = useMemo(
         () =>
             userAddress
                 ? addressFromParams
@@ -143,19 +151,51 @@ function Portfolio(props: PortfolioPropsIF) {
         data: undefined,
     });
 
+    const [resolvedUserBlastXp, setResolvedUserBlastXp] =
+        useState<BlastUserXpDataIF>({
+            dataReceived: false,
+            data: undefined,
+        });
+
     // fetch xp data for resolved address if not connected user account
     useEffect(() => {
         if (!connectedAccountActive && resolvedAddress) {
-            fetchUserXpData({ user: resolvedAddress, chainId: chainId }).then(
-                (resolvedUserXp) => {
+            fetchUserXpData({ user: resolvedAddress, chainId: chainId })
+                .then((resolvedUserXp) => {
                     setResolvedUserXp({
                         dataReceived: true,
-                        data: resolvedUserXp ? resolvedUserXp : undefined,
+                        data: resolvedUserXp,
                     });
-                },
-            );
+                })
+                .catch((error) => {
+                    console.error({ error });
+                    setResolvedUserXp({
+                        dataReceived: false,
+                        data: undefined,
+                    });
+                });
+            if (isActiveNetworkBlast) {
+                fetchBlastUserXpData({
+                    user: resolvedAddress,
+                    chainId: chainId,
+                })
+                    .then((resolvedUserBlastXp) => {
+                        console.log({ resolvedUserBlastXp });
+                        setResolvedUserBlastXp({
+                            dataReceived: true,
+                            data: resolvedUserBlastXp,
+                        });
+                    })
+                    .catch((error) => {
+                        console.error({ error });
+                        setResolvedUserBlastXp({
+                            dataReceived: false,
+                            data: undefined,
+                        });
+                    });
+            }
         }
-    }, [connectedAccountActive, resolvedAddress]);
+    }, [connectedAccountActive, resolvedAddress, isActiveNetworkBlast]);
 
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
     const exchangeBalanceComponent = (
@@ -294,6 +334,7 @@ function Portfolio(props: PortfolioPropsIF) {
         connectedAccountActive: connectedAccountActive,
         fullLayoutActive: fullLayoutActive,
         resolvedUserXp: resolvedUserXp,
+        resolvedUserBlastXp: resolvedUserBlastXp,
     };
 
     const portfolioBannerProps = {
