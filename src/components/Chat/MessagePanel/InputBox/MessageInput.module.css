@@ -103,6 +103,7 @@
     cursor: not-allowed;
 }
 
+
 .emojiPicker {
     width: 97%;
     padding: 0px 8px;
@@ -226,7 +227,7 @@
     flex: none;
     order: 0;
     flex-grow: 1;
-    cursor: not-allowed;
+    cursor: not-allowed !important;
 }
 
 .input_text_position {
@@ -265,6 +266,10 @@
 
 }
 
+.not_LoggedIn_send_message_button svg, .not_LoggedIn_svgButton, .not_LoggedIn_send_message_button svg path, .not_LoggedIn_svgButton path{
+    cursor: not-allowed !important;
+}
+
 @keyframes opaToggle{
     from {
         opacity: 1;
@@ -297,6 +302,7 @@
     .not_LoggedIn_send_message_button{
         box-shadow: none;
         background: #4a6081;
+        cursor: not-allowed !important;
     }
 
     .send_message_button svg, .not_LoggedIn_send_message_button svg{
@@ -309,6 +315,7 @@
     .send_message_button svg path, .not_LoggedIn_send_message_button svg path{
         stroke: white;
         stroke-opacity: 1;
+        cursor: not-allowed !important;
     }
     .send_message_button .svgButton {
         color: white !important;
