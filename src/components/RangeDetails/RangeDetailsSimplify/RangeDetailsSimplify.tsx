@@ -353,16 +353,16 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
             isAmbient
                 ? isActiveNetworkBlast
                     ? 13
-                    : 12
+                    : 11
                 : isActiveNetworkBlast
                 ? 15
-                : 14,
+                : 13,
             0,
             {
-                title: 'Update Time ',
+                title: 'Time Last Updated ',
                 content: updateTime,
                 explanation:
-                    'Time the owner last updated the limit at this price',
+                    'Time the owner last updated the position at these prices',
             },
         );
     }
