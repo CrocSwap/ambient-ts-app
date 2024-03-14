@@ -181,24 +181,19 @@ export default function PriceInfo(props: propsIF) {
             'BLAST gold': '…',
         });
 
-    // useEffect(() => {
-    //     fetchPositionRewardsData({ positionId }).then((rewards) => {
-    //         rewards && setPositionRewards(rewards);
-    //     });
-    // }, [lastBlockNumber]);
-
     useEffect(() => {
+        if (!isActiveNetworkBlast) return;
         fetchPositionRewardsData({ position }).then((rewards) => {
             rewards && setPositionRewards(rewards);
         });
-        // update every 10 seconds
+        // update every 30 seconds
         const interval = setInterval(() => {
             fetchPositionRewardsData({ position }).then((rewards) => {
                 rewards && setPositionRewards(rewards);
             });
-        }, 10000);
+        }, 30000);
         return () => clearInterval(interval);
-    }, [positionId]);
+    }, [positionId, isActiveNetworkBlast]);
 
     const rewardsContent = (
         <section>

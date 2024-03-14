@@ -16,7 +16,7 @@ function mapPositionRewardsResponseToPositionRewards(
     positionRewards: PositionRewardsServerIF,
 ): PositionRewardsDataIF {
     const res = {
-        'BLAST points': positionRewards.points.toString(),
+        'BLAST points': Math.floor(positionRewards.points).toLocaleString(),
         'BLAST gold': '...',
     };
     return res as PositionRewardsDataIF;
@@ -55,7 +55,6 @@ export const fetchPositionRewardsData = async (args: argsIF) => {
         .then((response) => response?.json())
         .then((parsedResponse) => {
             return mapPositionRewardsResponseToPositionRewards(parsedResponse);
-            console.log(parsedResponse);
         });
     // .catch(console.error);
     return positionRewardsFetchData;

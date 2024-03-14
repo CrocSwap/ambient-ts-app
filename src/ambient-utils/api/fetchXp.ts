@@ -64,7 +64,7 @@ function mapUserXpResponseToUserXp(userXp: UserXpServerIF): UserXpIF {
 function mapBlastUserXpResponseToBlastUserXp(
     blastUserXp: BlastUserXpServerIF,
 ): BlastUserXpIF {
-    const points = blastUserXp.points;
+    const points = Math.floor(blastUserXp.points);
     return {
         points,
     };
@@ -72,7 +72,6 @@ function mapBlastUserXpResponseToBlastUserXp(
 
 export const fetchUserXpData = async (args: argsIF) => {
     const { user, chainId } = args;
-    console.log(`Fetching Xp for ${user} on chain ${chainId}...`);
 
     const userXpEndpoint = 'https://ambindexer.net/xp/user?';
 
@@ -92,8 +91,7 @@ export const fetchUserXpData = async (args: argsIF) => {
 };
 
 export const fetchBlastUserXpData = async (args: argsIF) => {
-    const { user, chainId } = args;
-    console.log(`Fetching Blast Xp for ${user} on chain ${chainId}...`);
+    const { user } = args;
 
     const blastUserXpEndpoint =
         'https://ambindexer.net/blastPoints/v1/byUser/bridge/' + user + '/';
@@ -103,7 +101,7 @@ export const fetchBlastUserXpData = async (args: argsIF) => {
             return response?.json();
         })
         .then((parsedResponse) => {
-            return mapBlastUserXpResponseToBlastUserXp(parsedResponse.data);
+            return mapBlastUserXpResponseToBlastUserXp(parsedResponse);
         });
     return blastUserXpFetchData;
 };
