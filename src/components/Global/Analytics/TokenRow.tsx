@@ -65,15 +65,15 @@ export default function TokenRow(props: propsIF) {
             </TableCell>
             {smallScreen || <TableCell left>{token.tokenMeta?.name}</TableCell>}
             <TableCell>
+                <p>{token.normalized?.dexVolNorm.display}</p>
+            </TableCell>
+            <TableCell>
                 <p style={{ textTransform: 'none' }}>
                     {token.normalized?.dexTvlNorm.display}
                 </p>
             </TableCell>
             <TableCell>
                 <p>{token.normalized?.dexFeesNorm.display}</p>
-            </TableCell>
-            <TableCell>
-                <p>{token.normalized?.dexVolNorm.display}</p>
             </TableCell>
             <TableCell>
                 <FlexContainer

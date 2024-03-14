@@ -31,6 +31,12 @@ export default function Explore() {
         }
     };
 
+    // trigger process to fetch and format token data when page loads with
+    // ... gatekeeping to prevent re-fetch if data is already loaded
+    useEffect(() => {
+        exploreData.tokens.data.length || exploreData.tokens.update();
+    }, [crocEnv]);
+
     const getAllPools = async (): Promise<void> => {
         // make sure crocEnv exists and pool metadata is present
         if (crocEnv && poolList.length) {

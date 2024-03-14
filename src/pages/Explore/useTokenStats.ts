@@ -90,9 +90,9 @@ export const useTokenStats = (
         }
     }
 
-    useEffect(() => {
-        fetchData();
-    }, [crocEnv]);
+    // useEffect(() => {
+    //     fetchData();
+    // }, [crocEnv]);
 
     const decorate = async (t: DexTokenAggServerIF): Promise<dexTokenData> => {
         const tokenMeta: TokenIF | undefined =

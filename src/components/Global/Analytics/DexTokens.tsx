@@ -84,6 +84,14 @@ function DexTokens(props: propsIF) {
             sortable: true,
         },
         {
+            label: 'Volume',
+            slug: 'volume',
+            hidden: false,
+            align: 'right',
+            responsive: 'lg',
+            sortable: true,
+        },
+        {
             label: 'TVL',
             slug: 'tvl',
             hidden: false,
@@ -97,14 +105,6 @@ function DexTokens(props: propsIF) {
             hidden: false,
             align: 'right',
             responsive: 'sm',
-            sortable: true,
-        },
-        {
-            label: 'Volume',
-            slug: 'volume',
-            hidden: false,
-            align: 'right',
-            responsive: 'lg',
             sortable: true,
         },
         {
