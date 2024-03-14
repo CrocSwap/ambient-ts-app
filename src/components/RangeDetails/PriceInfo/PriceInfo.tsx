@@ -182,17 +182,11 @@ export default function PriceInfo(props: propsIF) {
         });
 
     useEffect(() => {
-        if (!isActiveNetworkBlast) return;
-        fetchPositionRewardsData({ position }).then((rewards) => {
-            rewards && setPositionRewards(rewards);
-        });
-        // update every 30 seconds
-        const interval = setInterval(() => {
+        if (isActiveNetworkBlast) {
             fetchPositionRewardsData({ position }).then((rewards) => {
                 rewards && setPositionRewards(rewards);
             });
-        }, 30000);
-        return () => clearInterval(interval);
+        }
     }, [positionId, isActiveNetworkBlast]);
 
     const rewardsContent = (
