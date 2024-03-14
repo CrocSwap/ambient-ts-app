@@ -48,6 +48,7 @@ import {
     BlastUserXpDataIF,
     UserXpDataIF,
 } from '../../../contexts/UserDataContext';
+import { FaMedal } from 'react-icons/fa';
 
 // interface for React functional component props
 interface propsIF {
@@ -365,7 +366,7 @@ export default function PortfolioTabs(props: propsIF) {
         {
             label: 'Points',
             content: <Points {...pointsProps} />,
-            icon: rangePositionsImage,
+            icon: <FaMedal color='baacff' />,
         },
         {
             label: 'Exchange Balances',
@@ -398,7 +399,7 @@ export default function PortfolioTabs(props: propsIF) {
         {
             label: 'Points',
             content: <Points {...pointsProps} />,
-            icon: rangePositionsImage,
+            icon: <FaMedal color='baacff' />,
         },
         {
             label: 'Exchange Balances',

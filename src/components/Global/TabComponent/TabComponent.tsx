@@ -24,7 +24,7 @@ import { FlexContainer } from '../../../styled/Common';
 type tabData = {
     label: string;
     content: ReactNode;
-    icon?: string;
+    icon?: string | JSX.Element;
     showRightSideOption?: boolean;
     onClick?: () => void;
 };
@@ -108,7 +108,7 @@ export default function TabComponent(props: TabPropsIF) {
         shouldSyncWithTradeModules,
     ]);
 
-    function handleMobileMenuIcon(icon: string, label: string) {
+    function handleMobileMenuIcon(icon: string | JSX.Element, label: string) {
         return (
             <div className={styles.tab_icon_container}>
                 <DefaultTooltip
@@ -118,12 +118,16 @@ export default function TabComponent(props: TabPropsIF) {
                     enterDelay={400}
                     leaveDelay={200}
                 >
-                    <img
-                        className={styles.tab_icon}
-                        src={icon}
-                        alt={label}
-                        width='15px'
-                    />
+                    {typeof icon === 'string' ? (
+                        <img
+                            className={styles.tab_icon}
+                            src={icon}
+                            alt={label}
+                            width='15px'
+                        />
+                    ) : (
+                        icon
+                    )}
                 </DefaultTooltip>
             </div>
         );
