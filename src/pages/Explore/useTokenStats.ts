@@ -1,5 +1,5 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     FetchContractDetailsFn,
     TokenPriceFn,
@@ -31,6 +31,11 @@ export interface dexTokenData extends DexTokenAggServerIF {
         | undefined;
 }
 
+export interface useTokenStatsIF {
+    data: dexTokenData[];
+    update: () => Promise<void>;
+}
+
 export const useTokenStats = (
     chainId: string,
     crocEnv: CrocEnv | undefined,
@@ -39,12 +44,11 @@ export const useTokenStats = (
     cachedTokenDetails: FetchContractDetailsFn,
     tokenMethods: tokenMethodsIF,
     provider: ethers.providers.Provider,
-    shouldDexTokensUpdate: boolean,
-    setShouldDexTokensUpdate: Dispatch<SetStateAction<boolean>>,
-): dexTokenData[] => {
+): useTokenStatsIF => {
     const [dexTokens, setDexTokens] = useState<dexTokenData[]>([]);
 
     async function fetchData(): Promise<void> {
+        dexTokens.length && setDexTokens([]);
         if (crocEnv) {
             try {
                 const tokenStats = await getChainStats(
@@ -88,12 +92,7 @@ export const useTokenStats = (
 
     useEffect(() => {
         fetchData();
-        if (shouldDexTokensUpdate) {
-            setDexTokens([]);
-            fetchData();
-            setShouldDexTokensUpdate(false);
-        }
-    }, [crocEnv, shouldDexTokensUpdate]);
+    }, [crocEnv]);
 
     const decorate = async (t: DexTokenAggServerIF): Promise<dexTokenData> => {
         const tokenMeta: TokenIF | undefined =
@@ -170,5 +169,8 @@ export const useTokenStats = (
         };
     };
 
-    return dexTokens;
+    return {
+        data: dexTokens,
+        update: () => fetchData(),
+    };
 };

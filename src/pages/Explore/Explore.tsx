@@ -90,7 +90,7 @@ export default function Explore() {
                 getAllPools();
                 break;
             case 'tokens':
-                exploreData.tokens.fetch();
+                exploreData.tokens.update();
                 break;
         }
     }
@@ -131,7 +131,7 @@ export default function Explore() {
             {exploreData.tab.active === 'tokens' && (
                 <DexTokens
                     dexTokens={exploreData.tokens.data}
-                    fetch={exploreData.tokens.fetch}
+                    fetch={exploreData.tokens.update}
                     chainId={chainData.chainId}
                     goToMarket={goToMarket}
                 />
