@@ -86,8 +86,26 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     >();
 
     useEffect(() => {
-        if (candleData?.candles)
-            setNumCandlesFetched(candleData?.candles.length || 0);
+        // If there is no data in the range in which the data is received, it will send a pull request for the first 200 candles
+        if (
+            candleData?.candles.length === 0 &&
+            candleScale?.isFetchFirst200Candle !== true
+        ) {
+            setCandleData(undefined);
+            setCandleScale((prev) => {
+                return {
+                    lastCandleDate: undefined,
+                    nCandles: 200,
+                    isFetchForTimeframe: !prev.isFetchForTimeframe,
+                    isShowLatestCandle: true,
+                    isFetchFirst200Candle: true,
+                };
+            });
+        } else {
+            // If there are no candles in the first 200 candles, it changes timeframe
+            if (candleData?.candles)
+                setNumCandlesFetched(candleData?.candles.length || 0);
+        }
     }, [candleData?.candles.length]);
 
     const [isFetchingCandle, setIsFetchingCandle] = useState(false);
@@ -101,6 +119,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         nCandles: 200,
         isFetchForTimeframe: false,
         isShowLatestCandle: true,
+        isFetchFirst200Candle: true,
     });
 
     const [isFirstFetch, setIsFirstFetch] = useState(true);
@@ -132,6 +151,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     useEffect(() => {
         setCandleData(undefined);
+        setTimeOfEndCandle(undefined);
     }, [baseTokenAddress + quoteTokenAddress]);
 
     useEffect(() => {
@@ -222,10 +242,12 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                     }
                     setIsCandleDataNull(false);
                 } else {
-                    setIsCandleDataNull(true);
+                    if (candleScale?.isFetchFirst200Candle) {
+                        setIsCandleDataNull(true);
+                    }
                 }
 
-                if (candleSeries && candles?.candles.length > 7) {
+                if (candleSeries && candles?.candles.length >= 7) {
                     setIsFetchingCandle(false);
                 }
                 setIsFirstFetch(false);

@@ -19,9 +19,17 @@ import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
 import { Client } from '@covalenthq/client-sdk';
-import { UserDataContext, UserXpDataIF } from './UserDataContext';
+import {
+    BlastUserXpDataIF,
+    UserDataContext,
+    UserXpDataIF,
+} from './UserDataContext';
 import { TokenBalanceContext } from './TokenBalanceContext';
-import { fetchBlockNumber, fetchUserXpData } from '../ambient-utils/api';
+import {
+    fetchBlastUserXpData,
+    fetchBlockNumber,
+    fetchUserXpData,
+} from '../ambient-utils/api';
 
 interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
@@ -30,6 +38,7 @@ interface ChainDataContextIF {
     setLastBlockNumber: Dispatch<SetStateAction<number>>;
     client: Client;
     connectedUserXp: UserXpDataIF;
+    connectedUserBlastXp: BlastUserXpDataIF;
     isActiveNetworkBlast: boolean;
     isActiveNetworkScroll: boolean;
     isActiveNetworkMainnet: boolean;
@@ -199,8 +208,14 @@ export const ChainDataContextProvider = (props: {
                         const oldToken: TokenIF | undefined =
                             tokens.getTokenByAddress(token.address);
                         const newToken = { ...token };
-                        newToken.name = oldToken ? oldToken.name : '';
-                        newToken.logoURI = oldToken ? oldToken.logoURI : '';
+
+                        newToken.decimals =
+                            oldToken?.decimals || newToken?.decimals || 18;
+                        newToken.name = oldToken?.name || newToken.name || '';
+                        newToken.logoURI =
+                            oldToken?.logoURI || newToken.logoURI || '';
+                        newToken.symbol =
+                            oldToken?.symbol || newToken.symbol || '';
                         return newToken;
                     });
                     setTokenBalances(tokensWithLogos);
@@ -262,30 +277,69 @@ export const ChainDataContextProvider = (props: {
         data: undefined,
     });
 
+    const [connectedUserBlastXp, setConnectedUserBlastXp] =
+        React.useState<BlastUserXpDataIF>({
+            dataReceived: false,
+            data: undefined,
+        });
+
     React.useEffect(() => {
         if (userAddress) {
             fetchUserXpData({
                 user: userAddress,
                 chainId: chainData.chainId,
-            }).then((data) => {
-                setConnectedUserXp({
-                    dataReceived: true,
-                    data: data ? data : undefined,
+            })
+                .then((data) => {
+                    setConnectedUserXp({
+                        dataReceived: true,
+                        data: data,
+                    });
+                })
+                .catch((error) => {
+                    console.error(error);
+                    setConnectedUserXp({
+                        dataReceived: false,
+                        data: undefined,
+                    });
                 });
-            });
+
+            if (isActiveNetworkBlast) {
+                fetchBlastUserXpData({
+                    user: userAddress,
+                    chainId: chainData.chainId,
+                })
+                    .then((data) => {
+                        setConnectedUserBlastXp({
+                            dataReceived: true,
+                            data: data,
+                        });
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        setConnectedUserBlastXp({
+                            dataReceived: false,
+                            data: undefined,
+                        });
+                    });
+            }
         } else {
             setConnectedUserXp({
                 dataReceived: false,
                 data: undefined,
             });
+            setConnectedUserBlastXp({
+                dataReceived: false,
+                data: undefined,
+            });
         }
-    }, [userAddress]);
+    }, [userAddress, isActiveNetworkBlast]);
 
     const chainDataContext = {
         lastBlockNumber,
         setLastBlockNumber,
         gasPriceInGwei,
         connectedUserXp,
+        connectedUserBlastXp,
         setGasPriceinGwei,
         isActiveNetworkBlast,
         isActiveNetworkScroll,
