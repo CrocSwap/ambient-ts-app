@@ -8,7 +8,7 @@ import React, {
 import { useAccount, useConnect, useDisconnect, useEnsName } from 'wagmi';
 import { ConnectArgs, Connector } from '@wagmi/core';
 import { checkBlacklist } from '../ambient-utils/constants';
-import { UserXpIF } from '../ambient-utils/types';
+import { BlastUserXpIF, UserXpIF } from '../ambient-utils/types';
 import { fetchEnsAddress } from '../ambient-utils/api';
 
 interface UserDataContextIF {
@@ -33,6 +33,11 @@ interface UserDataContextIF {
 export interface UserXpDataIF {
     dataReceived: boolean;
     data: UserXpIF | undefined;
+}
+
+export interface BlastUserXpDataIF {
+    dataReceived: boolean;
+    data: BlastUserXpIF | undefined;
 }
 
 export const UserDataContext = createContext<UserDataContextIF>(
