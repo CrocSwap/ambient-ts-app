@@ -1,8 +1,8 @@
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
-import { directionType } from './useSortedPools';
+import { sortDirections } from '../../../ambient-utils/types';
 
 interface propsIF {
-    direction: directionType;
+    direction: sortDirections;
 }
 
 export default function AssignSort(props: propsIF) {
