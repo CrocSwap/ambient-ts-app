@@ -74,7 +74,7 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
             baseTokenAddress,
             quoteTokenAddress,
             props.chainData.chainId,
-            props.lastBlockNumber,
+            Math.floor(Date.now() / 5000), // check for new pool price every 5 seconds
         );
     };
 
