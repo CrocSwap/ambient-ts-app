@@ -31,7 +31,9 @@ const TableHeadTokens = (props: propsIF) => {
                             responsive={item.responsive}
                             label={item.label}
                             hidden={item.hidden}
-                            onClick={() => sortedTokens.update(item.slug)}
+                            onClick={() =>
+                                item.sortable && sortedTokens.update(item.slug)
+                            }
                         >
                             <LabelWrapper
                                 align={item.align}
