@@ -55,7 +55,7 @@ export default function Explore() {
 
     // get expanded pool metadata, if not already fetched
     useEffect(() => {
-        if (crocEnv !== undefined && poolList.length > 0) {
+        if (crocEnv !== undefined && poolList.length === 0) {
             getAllPools();
         }
     }, [crocEnv, poolList.length]);

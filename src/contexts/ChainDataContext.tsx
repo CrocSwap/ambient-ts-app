@@ -208,8 +208,14 @@ export const ChainDataContextProvider = (props: {
                         const oldToken: TokenIF | undefined =
                             tokens.getTokenByAddress(token.address);
                         const newToken = { ...token };
-                        newToken.name = oldToken ? oldToken.name : '';
-                        newToken.logoURI = oldToken ? oldToken.logoURI : '';
+
+                        newToken.decimals =
+                            oldToken?.decimals || newToken?.decimals || 18;
+                        newToken.name = oldToken?.name || newToken.name || '';
+                        newToken.logoURI =
+                            oldToken?.logoURI || newToken.logoURI || '';
+                        newToken.symbol =
+                            oldToken?.symbol || newToken.symbol || '';
                         return newToken;
                     });
                     setTokenBalances(tokensWithLogos);
