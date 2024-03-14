@@ -1,7 +1,11 @@
 import PriceInfo from '.././PriceInfo/PriceInfo';
 import styles from '../../../components/Global/TransactionDetails/TransactionDetailsModal.module.css';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
-import { PositionIF, PositionServerIF } from '../../../ambient-utils/types';
+import {
+    PositionIF,
+    BlastPointsDataIF,
+    PositionServerIF,
+} from '../../../ambient-utils/types';
 import RangeDetailsHeader from '.././RangeDetailsHeader/RangeDetailsHeader';
 import RangeDetailsSimplify from '.././RangeDetailsSimplify/RangeDetailsSimplify';
 import TransactionDetailsGraph from '../../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
@@ -29,6 +33,7 @@ import {
     tickToPrice,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
+import { fetchPositionRewardsData } from '../../../ambient-utils/api/fetchPositionRewards';
 
 interface propsIF {
     position: PositionIF;
@@ -85,7 +90,8 @@ function RangeDetailsModal(props: propsIF) {
         chainData: { chainId, poolIndex },
         provider,
     } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { lastBlockNumber, isActiveNetworkBlast } =
+        useContext(ChainDataContext);
 
     const detailsRef = useRef(null);
 
@@ -395,6 +401,18 @@ function RangeDetailsModal(props: propsIF) {
         }
     }, [lastBlockNumber, !!crocEnv, !!provider, chainId]);
 
+    const [blastPointsData, setBlastPointsData] = useState<BlastPointsDataIF>({
+        points: '...',
+    });
+
+    useEffect(() => {
+        if (isActiveNetworkBlast) {
+            fetchPositionRewardsData({ position }).then((rewards) => {
+                rewards && setBlastPointsData(rewards);
+            });
+        }
+    }, [serverPositionId, isActiveNetworkBlast]);
+
     const shareComponent = (
         <div
             ref={detailsRef}
@@ -404,6 +422,7 @@ function RangeDetailsModal(props: propsIF) {
             <div className={styles.main_content}>
                 <div className={styles.left_container}>
                     <PriceInfo
+                        position={position}
                         usdValue={usdValue !== undefined ? usdValue : '…'}
                         lowRangeDisplay={lowRangeDisplay}
                         highRangeDisplay={highRangeDisplay}
@@ -422,7 +441,7 @@ function RangeDetailsModal(props: propsIF) {
                         maxRangeDenomByMoneyness={maxRangeDenomByMoneyness}
                         baseTokenAddress={baseTokenAddress}
                         quoteTokenAddress={quoteTokenAddress}
-                        positionId={serverPositionId || ''}
+                        blastPointsData={blastPointsData}
                     />
                 </div>
                 <div className={styles.right_container}>
@@ -459,6 +478,7 @@ function RangeDetailsModal(props: propsIF) {
                         quoteFeesDisplay={quoteFeesDisplay}
                         isAccountView={isAccountView}
                         updatedPositionApy={updatedPositionApy}
+                        blastPointsData={blastPointsData}
                     />
                 )}
             </div>

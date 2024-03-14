@@ -3,14 +3,17 @@ import styles from './PriceInfo.module.css';
 import Apy from '../../Global/Tabs/Apy/Apy';
 import { useLocation } from 'react-router-dom';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
-import { TokenIF } from '../../../ambient-utils/types';
-import { useContext, useEffect, useState } from 'react';
+import {
+    PositionIF,
+    BlastPointsDataIF,
+    TokenIF,
+} from '../../../ambient-utils/types';
+import { useContext } from 'react';
 import { TokenContext } from '../../../contexts/TokenContext';
-import { PositionRewardsDataIF } from '../../../ambient-utils/types/xp';
-import { fetchPositionRewardsData } from '../../../ambient-utils/api/fetchPositionRewards';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface propsIF {
+    position: PositionIF;
     usdValue: string;
     lowRangeDisplay: string;
     highRangeDisplay: string;
@@ -29,7 +32,7 @@ interface propsIF {
     maxRangeDenomByMoneyness: string;
     baseTokenAddress: string;
     quoteTokenAddress: string;
-    positionId: string;
+    blastPointsData: BlastPointsDataIF;
 }
 
 export default function PriceInfo(props: propsIF) {
@@ -52,7 +55,7 @@ export default function PriceInfo(props: propsIF) {
         maxRangeDenomByMoneyness,
         baseTokenAddress,
         quoteTokenAddress,
-        positionId,
+        blastPointsData,
     } = props;
 
     const { pathname } = useLocation();
@@ -81,14 +84,14 @@ export default function PriceInfo(props: propsIF) {
             size='s'
         />
     );
-    const unknownTokenLogoDisplay = (
-        <TokenIcon
-            token={undefined}
-            src={undefined}
-            alt={undefined}
-            size='xs'
-        />
-    );
+    // const unknownTokenLogoDisplay = (
+    //     <TokenIcon
+    //         token={undefined}
+    //         src={undefined}
+    //         alt={undefined}
+    //         size='xs'
+    //     />
+    // );
 
     const totalValue = (
         <div className={styles.value_content}>
@@ -173,36 +176,23 @@ export default function PriceInfo(props: propsIF) {
 
     const showEarnedRewards = isActiveNetworkBlast;
 
-    const [positionRewards, setPositionRewards] =
-        useState<PositionRewardsDataIF>({
-            'BLAST points': '…',
-            'BLAST gold': '…',
-        });
-
-    // useEffect(() => {
-    //     fetchPositionRewardsData({ positionId }).then((rewards) => {
-    //         rewards && setPositionRewards(rewards);
-    //     });
-    // }, [lastBlockNumber]);
-
-    useEffect(() => {
-        fetchPositionRewardsData({ positionId }).then((rewards) => {
-            rewards && setPositionRewards(rewards);
-        });
-        // update every 10 seconds
-        const interval = setInterval(() => {
-            fetchPositionRewardsData({ positionId }).then((rewards) => {
-                rewards && setPositionRewards(rewards);
-            });
-        }, 10000);
-        return () => clearInterval(interval);
-    }, [positionId]);
-
     const rewardsContent = (
         <section>
             <span className={styles.divider} />
             <div>Rewards:</div>
-            {Object.entries(positionRewards).map(([rewardType, reward]) => {
+            <BlastRewardRow
+                key={'BLAST points'}
+                rewardType={'BLAST points'}
+                reward={blastPointsData.points}
+                logo={blastLogo}
+            />
+            <BlastRewardRow
+                key={'BLAST gold'}
+                rewardType={'BLAST gold'}
+                reward={'...'}
+                logo={blastLogo}
+            />
+            {/* {Object.entries(blastPointsData).map(([rewardType, reward]) => {
                 const logo =
                     rewardType === 'BLAST points' ||
                     rewardType === 'BLAST' ||
@@ -225,7 +215,7 @@ export default function PriceInfo(props: propsIF) {
                         logo={logo}
                     />
                 );
-            })}
+            })} */}
         </section>
     );
 

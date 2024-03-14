@@ -10,6 +10,7 @@ import { WagmiConfig, createClient, configureChains, Chain } from 'wagmi';
 
 import { infuraProvider } from 'wagmi/providers/infura';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
+import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 
 import { InjectedConnector } from 'wagmi/connectors/injected';
 import { GlobalContexts } from './contexts/GlobalContexts';
@@ -18,6 +19,7 @@ import {
     SCROLL_RPC_URL,
     GLOBAL_MODAL_PORTAL_ID,
     supportedNetworks,
+    WALLETCONNECT_PROJECT_ID,
 } from './ambient-utils/constants';
 
 /* Perform a single forcible reload when the page first loads. Without this, there
@@ -72,6 +74,13 @@ if (!doReload) {
                 options: {
                     name: 'MetaMask',
                     shimDisconnect: true,
+                },
+            }),
+            new WalletConnectConnector({
+                chains,
+                options: {
+                    projectId: WALLETCONNECT_PROJECT_ID || '',
+                    isNewChainsStale: false,
                 },
             }),
             new InjectedConnector({

@@ -73,7 +73,7 @@ export default function TokenRow(props: propsIF) {
             const volumeUsd = volume * tokenPrice;
             setVolumeDisplay(
                 getFormattedNumber({
-                    value: volumeUsd,
+                    value: volumeUsd / 2.0,
                     prefix: '$',
                     isTvl: true,
                 }),

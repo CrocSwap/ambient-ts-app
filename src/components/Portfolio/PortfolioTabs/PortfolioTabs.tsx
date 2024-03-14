@@ -44,7 +44,11 @@ import { PortfolioTabsPortfolioTabsContainer } from '../../../styled/Components/
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { DataLoadingContext } from '../../../contexts/DataLoadingContext';
 import Points from '../../Global/Account/AccountTabs/Points/Points';
-import { UserXpDataIF } from '../../../contexts/UserDataContext';
+import {
+    BlastUserXpDataIF,
+    UserXpDataIF,
+} from '../../../contexts/UserDataContext';
+import medal from '../../../assets/images/icons/medal.svg';
 
 // interface for React functional component props
 interface propsIF {
@@ -53,6 +57,7 @@ interface propsIF {
     connectedAccountActive: boolean;
     fullLayoutActive: boolean;
     resolvedUserXp: UserXpDataIF;
+    resolvedUserBlastXp: BlastUserXpDataIF;
 }
 
 // React functional component
@@ -63,6 +68,7 @@ export default function PortfolioTabs(props: propsIF) {
         connectedAccountActive,
         fullLayoutActive,
         resolvedUserXp,
+        resolvedUserBlastXp,
     } = props;
 
     const {
@@ -321,6 +327,7 @@ export default function PortfolioTabs(props: propsIF) {
     // props for <Points/> React Element
     const pointsProps = {
         resolvedUserXp: resolvedUserXp,
+        resolvedUserBlastXp: resolvedUserBlastXp,
         connectedAccountActive: connectedAccountActive,
     };
 
@@ -359,7 +366,7 @@ export default function PortfolioTabs(props: propsIF) {
         {
             label: 'Points',
             content: <Points {...pointsProps} />,
-            icon: rangePositionsImage,
+            icon: medal,
         },
         {
             label: 'Exchange Balances',
@@ -392,7 +399,7 @@ export default function PortfolioTabs(props: propsIF) {
         {
             label: 'Points',
             content: <Points {...pointsProps} />,
-            icon: rangePositionsImage,
+            icon: medal,
         },
         {
             label: 'Exchange Balances',
