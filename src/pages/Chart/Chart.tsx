@@ -516,7 +516,7 @@ export default function Chart(props: propsIF) {
     });
 
     const toolbarWidth = isToolbarOpen
-        ? 40 - (mobileView ? (smallScreen ? 0 : 25) : 5)
+        ? 38 - (mobileView ? (smallScreen ? 0 : 25) : 13)
         : 9 - (mobileView ? 0 : 4);
 
     const [prevlastCandleTime, setPrevLastCandleTime] = useState<number>(
@@ -869,6 +869,7 @@ export default function Chart(props: propsIF) {
                     lastCandleDate: Math.floor(domainMax / 1000),
                     nCandles: nCandles,
                     isShowLatestCandle: isShowLatestCandle,
+                    isFetchFirst200Candle: false,
                 };
             });
         }
@@ -1071,7 +1072,6 @@ export default function Chart(props: propsIF) {
 
                                 clickedForLine = true;
                                 setPrevLastCandleTime(lastCandleData.time);
-                                calculateOrderHistoryTooltipPlacements();
 
                                 render();
                             }
@@ -5478,7 +5478,7 @@ export default function Chart(props: propsIF) {
         isUpdatingShape,
     };
 
-    const calculateOrderHistoryTooltipPlacements = () => {
+    const calculateOrderHistoryTooltipPlacements = (scaleData: scaleData) => {
         if (scaleData && circleScale) {
             const scale = d3.scaleLinear().range([60, 75]).domain([1000, 3000]);
 
@@ -5561,7 +5561,7 @@ export default function Chart(props: propsIF) {
     };
 
     useEffect(() => {
-        calculateOrderHistoryTooltipPlacements();
+        if (scaleData) calculateOrderHistoryTooltipPlacements(scaleData);
     }, [
         isSelectedOrderHistory,
         isHoveredOrderHistory,

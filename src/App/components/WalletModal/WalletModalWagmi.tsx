@@ -9,6 +9,7 @@ import WalletButton from './WalletButton/WalletButton';
 import metamaskLogo from '../../../assets/images/logos/MetaMask_Fox.svg';
 import braveLogo from '../../../assets/images/logos/brave_lion.svg';
 import rabbyLogo from '../../../assets/images/logos/rabby_logo.svg';
+import walletConnectLogo from '../../../assets/images/logos/wallet_connect_icon.svg';
 
 import { CircleLoaderFailed } from '../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
 import WaitingConfirmation from '../../../components/Global/WaitingConfirmation/WaitingConfirmation';
@@ -115,11 +116,15 @@ export default function WalletModalWagmi() {
                               })()
                             : connector.name === 'Coinbase Wallet'
                             ? setPage('coinbaseWalletPending')
+                            : connector.name === 'WalletConnect'
+                            ? closeModal()
                             : setPage('metamaskPending');
                     }}
                     logo={
                         connector.name.toLowerCase() === 'metamask'
                             ? metamaskLogo
+                            : connector.name === 'WalletConnect'
+                            ? walletConnectLogo
                             : connector.name === 'Brave'
                             ? braveLogo
                             : connector.name.toLowerCase() === 'rabby'
