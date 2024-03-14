@@ -646,6 +646,11 @@
     color: pink;
     font-size: 10px;
     top: .7rem;
+    width: 2.8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    
   }
   .roomInfo_with_mention{
     position:absolute;
@@ -653,6 +658,10 @@
     color: pink;
     font-size: 10px;
     top: 1.5rem;
+    width: 2.8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .thread_top_msg .roomInfo{

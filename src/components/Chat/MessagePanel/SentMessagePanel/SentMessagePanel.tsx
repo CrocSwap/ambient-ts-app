@@ -444,7 +444,10 @@ function SentMessagePanel(props: SentMessageProps) {
                                 {' ' + detectLinksFromMessage(word)}
                             </span>
                         ))}
-                        <div className={styles.roomInfo_with_mention}>
+                        <div
+                            className={styles.roomInfo_with_mention}
+                            title={props.message.roomInfo}
+                        >
                             {' '}
                             {props.room === 'Admins'
                                 ? props.message.roomInfo
@@ -462,7 +465,10 @@ function SentMessagePanel(props: SentMessageProps) {
                         }
                     >
                         {detectLinksFromMessage(props.message.message)}
-                        <div className={styles.roomInfo}>
+                        <div
+                            className={styles.roomInfo}
+                            title={props.message.roomInfo}
+                        >
                             {' '}
                             {props.room === 'Admins'
                                 ? props.message.roomInfo
