@@ -353,7 +353,11 @@ function Portfolio(props: PortfolioPropsIF) {
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
 
-    const tabToSwitchToBasedOnRoute = onTradeRoute ? 0 : onAccountRoute ? 3 : 0;
+    const tabToSwitchToBasedOnRoute = onTradeRoute
+        ? 0
+        : onAccountRoute || addressFromParams
+        ? 3
+        : 0;
 
     useEffect(() => {
         if (isPointsTab) {
