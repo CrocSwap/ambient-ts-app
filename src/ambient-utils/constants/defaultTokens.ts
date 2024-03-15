@@ -490,7 +490,7 @@ export const scrollETH: TokenIF = {
 };
 
 export const scrollwstETH: TokenIF = {
-    name: 'Wrapped stETH',
+    name: 'Wrapped liquid staked Ether 2.0',
     address: '0xf610A9dfB7C89644979b4A0f27063E9e7d7Cda32',
     symbol: 'wstETH',
     decimals: 18,
