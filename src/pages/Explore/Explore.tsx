@@ -13,17 +13,11 @@ import { ChainDataContext } from '../../contexts/ChainDataContext';
 import Toggle from '../../components/Form/Toggle';
 import { FlexContainer, Text } from '../../styled/Common';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
-// import { usePoolList2 } from '../../App/hooks/usePoolList2';
-// import { GCServerPoolIF } from '../../ambient-utils/types';
 
 export default function Explore() {
     // full expanded data set
     const exploreData: ExploreContextIF = useContext(ExploreContext);
-    const {
-        crocEnv,
-        chainData,
-        // activeNetwork
-    } = useContext(CrocEnvContext);
+    const { crocEnv, chainData } = useContext(CrocEnvContext);
     const { poolList } = useContext(PoolContext);
     const {
         isActiveNetworkBlast,
@@ -36,6 +30,14 @@ export default function Explore() {
             exploreData.pools.getLimited(poolList, crocEnv, chainData.chainId);
         }
     };
+
+    // trigger process to fetch and format token data when page loads with
+    // ... gatekeeping to prevent re-fetch if data is already loaded
+    useEffect(() => {
+        if (crocEnv !== undefined && exploreData.tokens.data.length === 0) {
+            exploreData.tokens.update();
+        }
+    }, [crocEnv !== undefined]);
 
     const getAllPools = async (): Promise<void> => {
         // make sure crocEnv exists and pool metadata is present
@@ -96,7 +98,7 @@ export default function Explore() {
                 getAllPools();
                 break;
             case 'tokens':
-                exploreData.tokens.fetch();
+                exploreData.tokens.update();
                 break;
         }
     }
@@ -137,7 +139,6 @@ export default function Explore() {
             {exploreData.tab.active === 'tokens' && (
                 <DexTokens
                     dexTokens={exploreData.tokens.data}
-                    fetch={exploreData.tokens.fetch}
                     chainId={chainData.chainId}
                     goToMarket={goToMarket}
                 />

@@ -19,7 +19,7 @@ import { CrocEnvContext } from './CrocEnvContext';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../ambient-utils/constants';
 import ambientTokenList from '../ambient-utils/constants/ambient-token-list.json';
 import { PoolContext } from './PoolContext';
-import { dexTokenData, useTokenStats } from '../pages/Explore/useTokenStats';
+import { useTokenStatsIF, useTokenStats } from '../pages/Explore/useTokenStats';
 import { TokenContext } from './TokenContext';
 
 type tabs = 'pools' | 'tokens';
@@ -39,10 +39,7 @@ export interface ExploreContextIF {
         ) => void;
         reset: () => void;
     };
-    tokens: {
-        data: dexTokenData[];
-        fetch: () => void;
-    };
+    tokens: useTokenStatsIF;
 }
 
 export interface PoolDataIF extends PoolIF {
@@ -371,10 +368,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         setActiveTab(newTab);
     }
 
-    const [shouldDexTokensUpdate, setShouldDexTokensUpdate] =
-        useState<boolean>(false);
-
-    const dexTokens: dexTokenData[] = useTokenStats(
+    const dexTokens: useTokenStatsIF = useTokenStats(
         chainData.chainId,
         crocEnv,
         activeNetwork.graphCacheUrl,
@@ -382,8 +376,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         cachedTokenDetails,
         tokens,
         provider,
-        shouldDexTokensUpdate,
-        setShouldDexTokensUpdate,
     );
 
     const exploreContext: ExploreContextIF = {
@@ -400,10 +392,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 setExtraPools([]);
             },
         },
-        tokens: {
-            data: dexTokens,
-            fetch: () => setShouldDexTokensUpdate(true),
-        },
+        tokens: dexTokens,
     };
 
     return (
