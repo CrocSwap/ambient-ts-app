@@ -51,6 +51,7 @@ export default function TokenRow(props: propsIF) {
                             flexDirection: 'row',
                             alignItems: 'center',
                             gap: '12px',
+                            textTransform: 'none',
                         }}
                     >
                         <TokenIcon
