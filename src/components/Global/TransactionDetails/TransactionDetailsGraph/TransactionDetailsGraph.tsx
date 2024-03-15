@@ -42,6 +42,7 @@ export default function TransactionDetailsGraph(
     const { chainData, crocEnv, activeNetwork } = useContext(CrocEnvContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const oneHourMiliseconds = 60 * 60 * 1000;
+    const oneDayMiliseconds = 60 * 60 * 1000 * 24;
     const oneWeekMiliseconds = oneHourMiliseconds * 24 * 7;
     const isServerEnabled =
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
@@ -83,6 +84,19 @@ export default function TransactionDetailsGraph(
             return 14400;
         } else {
             return 86400;
+        }
+    };
+
+    const verticalLineLabels = () => {
+        switch (tx.changeType) {
+            case 'mint':
+                return 'Add Liq.';
+            case 'burn':
+                return 'Remove Liq. ';
+            case 'harvest':
+                return 'Harvest Liq. ';
+            default:
+                return '';
         }
     };
 
@@ -303,23 +317,26 @@ export default function TransactionDetailsGraph(
                 selection.enter().select('line').attr('class', 'verticalLine');
 
                 const topHandles = selection.select('g.top-handle').nodes();
-                topHandles.forEach((element: any, i: number) => {
-                    d3.select(element).attr(
-                        'transform',
-                        `translate(${35 + -i * 14}, ${-19})`,
-                    );
-
+                topHandles.forEach((element: any) => {
                     d3.select(element).style('font', '10px Lexend Deca');
                     d3.select(element).selectAll('text').style('fill', 'black');
+                    const textWidth = (d3.select(element).select('text') as any)
+                        .node()
+                        .getBBox().width;
+
+                    d3.select(element).attr(
+                        'transform',
+                        `translate(${textWidth / 2 - 1}, ${-19})`,
+                    );
 
                     d3.select(element).selectAll('rect').remove();
                     const textNode = d3.select(element) as any;
                     const bbox = textNode.node().getBBox();
                     textNode
                         .insert('rect', ':first-child')
-                        .attr('x', bbox.x - 3)
+                        .attr('x', bbox.x - 1)
                         .attr('y', bbox.y)
-                        .attr('width', bbox.width + 6)
+                        .attr('width', bbox.width + 2)
                         .attr('height', bbox.height)
                         .style('fill', '#61646F')
                         .attr('rx', 3);
@@ -480,7 +497,7 @@ export default function TransactionDetailsGraph(
     }, [graphData, svgWidth]);
 
     useEffect(() => {
-        if (graphData !== undefined && period !== undefined && isDataLoading) {
+        if (graphData !== undefined && period !== undefined) {
             const yExtent = d3fc
                 .extentLinear()
                 .accessors([
@@ -580,11 +597,8 @@ export default function TransactionDetailsGraph(
                         tx.txTime,
                         tx.latestUpdateTime,
                     ]);
-                    const hasVerticalLines =
-                        tx.changeType === 'mint' ||
-                        tx.positionType === 'ambient';
 
-                    const minimumDifferenceMinMax = hasVerticalLines ? 80 : 20;
+                    const minimumDifferenceMinMax = 80;
 
                     if (result) {
                         const minTime = result.min * 1000;
@@ -618,6 +632,9 @@ export default function TransactionDetailsGraph(
                         minTimePixel = xScale(minTime);
                         maxTimePixel = xScale(maxTime);
                         const diffMinMaxPixel = maxTimePixel - minTimePixel;
+                        const candleCountMax =
+                            (xScale.domain()[1].getTime() - maxTime) /
+                            (1000 * period);
 
                         if (
                             minTime !== maxTime &&
@@ -630,14 +647,10 @@ export default function TransactionDetailsGraph(
                                 maxTimePixel !== minTimePixel;
 
                             if (checkDiffMinMax) {
-                                const candleCountMax =
-                                    (xScale.domain()[1].getTime() - maxTime) /
-                                    (1000 * period);
-
                                 xScale.domain([
                                     Math.min(
                                         minTime - bufferOneCandle,
-                                        xScale.invert(30).getTime(),
+                                        xScale.invert(40).getTime(),
                                     ),
                                     Math.max(
                                         xScale
@@ -646,11 +659,41 @@ export default function TransactionDetailsGraph(
                                                     minimumDifferenceMinMax,
                                             )
                                             .getTime(),
-                                        minTime +
+                                        maxTime +
                                             (candleCountMax / 3) *
                                                 bufferOneCandle,
                                     ),
                                 ]);
+                            }
+                        }
+
+                        if (
+                            tx.changeType !== 'mint' &&
+                            tx.positionType !== 'ambient' &&
+                            diffMinMaxPixel > 10 &&
+                            diffMinMaxPixel < 25
+                        ) {
+                            const newMinDomain = Math.min(
+                                minTime - bufferOneCandle,
+                                xScale.invert(30).getTime(),
+                            );
+
+                            const newMaxDomain = Math.max(
+                                xScale
+                                    .invert(
+                                        xScale(maxTime) +
+                                            minimumDifferenceMinMax,
+                                    )
+                                    .getTime(),
+                                minTime +
+                                    (candleCountMax / 8) * bufferOneCandle,
+                            );
+
+                            if (
+                                newMaxDomain - newMinDomain >
+                                oneWeekMiliseconds
+                            ) {
+                                xScale.domain([newMinDomain, newMaxDomain]);
                             }
                         }
                     }
@@ -1260,62 +1303,73 @@ export default function TransactionDetailsGraph(
                                 },
                             ];
 
+                            const verticalLineData = [
+                                { label: 'Open Position', time: timeStart },
+                            ];
+
+                            const checkDiffMinUpdate =
+                                Math.abs(
+                                    scaleData.xScale(timeStart) -
+                                        scaleData.xScale(
+                                            tx.latestUpdateTime * 1000,
+                                        ),
+                                ) > 30;
+
                             if (
-                                (tx.changeType === 'mint' ||
-                                    tx.positionType === 'ambient') &&
-                                period
+                                tx.txTime &&
+                                tx.timeFirstMint &&
+                                tx.txTime !== tx.timeFirstMint
                             ) {
-                                const checkDiffMinUpdate =
-                                    Math.abs(
-                                        scaleData.xScale(timeStart) -
-                                            scaleData.xScale(
-                                                tx.latestUpdateTime * 1000,
-                                            ),
-                                    ) > 30;
-
-                                const mintData = [
-                                    { label: 'Open Position', time: timeStart },
-                                ];
-
-                                if (
-                                    tx.txTime &&
-                                    tx.timeFirstMint &&
-                                    tx.txTime !== tx.timeFirstMint
-                                ) {
-                                    const checkDiffMinMax =
-                                        Math.abs(
-                                            scaleData.xScale(tx.txTime * 1000) -
-                                                scaleData.xScale(
-                                                    tx.timeFirstMint * 1000,
-                                                ),
-                                        ) > 30;
-
-                                    checkDiffMinMax &&
-                                        mintData.push({
-                                            label: 'Add Liq.',
-                                            time: tx.txTime * 1000,
-                                        });
-                                }
-
-                                if (
-                                    tx.latestUpdateTime &&
-                                    checkDiffMinUpdate &&
-                                    ((tx.txTime &&
-                                        tx.latestUpdateTime !== tx.txTime) ||
-                                        (tx.timeFirstMint &&
-                                            tx.latestUpdateTime !==
-                                                tx.timeFirstMint))
-                                ) {
-                                    mintData.push({
-                                        label: ' Updated',
-                                        time: tx.latestUpdateTime * 1000,
-                                    });
-                                }
-
-                                verticalLinesJoin(svg, [mintData]).call(
-                                    verticalDashLine,
+                                const diff = Math.abs(
+                                    scaleData.xScale(tx.txTime * 1000) -
+                                        scaleData.xScale(
+                                            tx.timeFirstMint * 1000,
+                                        ),
                                 );
+
+                                let checkDiffMinMax = diff > 80;
+
+                                if (
+                                    tx.changeType !== 'mint' &&
+                                    tx.positionType !== 'ambient' &&
+                                    !checkDiffMinMax &&
+                                    diff > 10 &&
+                                    (tx.txTime - tx.timeFirstMint) * 1000 >
+                                        oneDayMiliseconds * 3
+                                ) {
+                                    if (
+                                        scaleData.xScale.domain()[1] -
+                                            scaleData.xScale.domain()[0] >
+                                        oneWeekMiliseconds
+                                    ) {
+                                        checkDiffMinMax = true;
+                                    }
+                                }
+                                checkDiffMinMax &&
+                                    verticalLineData.push({
+                                        label: verticalLineLabels(),
+                                        time: tx.txTime * 1000,
+                                    });
                             }
+
+                            if (
+                                tx.latestUpdateTime &&
+                                checkDiffMinUpdate &&
+                                ((tx.txTime &&
+                                    tx.latestUpdateTime !== tx.txTime) ||
+                                    (tx.timeFirstMint &&
+                                        tx.latestUpdateTime !==
+                                            tx.timeFirstMint))
+                            ) {
+                                verticalLineData.push({
+                                    label: ' Updated',
+                                    time: tx.latestUpdateTime * 1000,
+                                });
+                            }
+
+                            verticalLinesJoin(svg, [verticalLineData]).call(
+                                verticalDashLine,
+                            );
 
                             if (tx.positionType !== 'ambient') {
                                 horizontalBandJoin(svg, [
