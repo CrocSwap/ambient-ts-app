@@ -2,24 +2,19 @@
 // import { getFormattedNumber } from '../dataLayer';
 import { IS_LOCAL_ENV } from '../constants';
 
-import {
-    PositionIF,
-    PositionRewardsDataIF,
-    PositionRewardsServerIF,
-} from '../types';
+import { PositionIF, BlastPointsDataIF, BlastPointsServerIF } from '../types';
 
 interface argsIF {
     position: PositionIF;
 }
 
 function mapPositionRewardsResponseToPositionRewards(
-    positionRewards: PositionRewardsServerIF,
-): PositionRewardsDataIF {
+    positionRewards: BlastPointsServerIF,
+): BlastPointsDataIF {
     const res = {
-        'BLAST points': Math.floor(positionRewards.points).toLocaleString(),
-        'BLAST gold': '...',
+        points: Math.floor(positionRewards.points).toLocaleString(),
     };
-    return res as PositionRewardsDataIF;
+    return res as BlastPointsDataIF;
 }
 
 export const fetchPositionRewardsData = async (args: argsIF) => {
