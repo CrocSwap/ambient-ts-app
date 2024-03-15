@@ -6,7 +6,7 @@ import { TokenIF } from '../../../ambient-utils/types';
 export default function processLogoSrc(token?: TokenIF): string {
     if (!token) return '';
     return (
-        localLogos[token.symbol as keyof typeof localLogos] ??
+        localLogos[token.symbol.toUpperCase() as keyof typeof localLogos] ??
         uriToHttp(token.logoURI)
     );
 }

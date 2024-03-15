@@ -259,6 +259,16 @@ export const mainnetLIDO: TokenIF = {
     symbol: 'LDO',
 };
 
+export const mainnetLUSD: TokenIF = {
+    address: '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0',
+    chainId: 1,
+    decimals: 18,
+    fromList: '',
+    logoURI: 'https://etherscan.io/token/images/liquitylusd_32.png',
+    name: 'Liquity USD',
+    symbol: 'LUSD',
+};
+
 export const mainnetMKR: TokenIF = {
     address: '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2',
     chainId: 1,
@@ -490,7 +500,7 @@ export const scrollETH: TokenIF = {
 };
 
 export const scrollwstETH: TokenIF = {
-    name: 'Wrapped stETH',
+    name: 'Wrapped liquid staked Ether 2.0',
     address: '0xf610A9dfB7C89644979b4A0f27063E9e7d7Cda32',
     symbol: 'wstETH',
     decimals: 18,
@@ -502,6 +512,15 @@ export const scrollRocketPoolETH: TokenIF = {
     name: 'Rocket Pool ETH',
     address: '0x53878B874283351D26d206FA512aEcE1Bef6C0dD',
     symbol: 'rETH',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: '',
+};
+
+export const scrollPxETH: TokenIF = {
+    name: 'Pirex Ether OFT',
+    address: '0x9e0d7d79735e1c63333128149c7b616a0dc0bbdb',
+    symbol: 'pxETH',
     decimals: 18,
     chainId: 534352,
     logoURI: '',
@@ -546,13 +565,12 @@ export const scrollUSDC: TokenIF = {
 };
 
 export const scrollAxlUSDC: TokenIF = {
-    name: 'Axelar USDC',
+    name: 'Axelar Wrapped USDC',
     address: '0xEB466342C4d449BC9f53A865D5Cb90586f405215',
     symbol: 'axlUSDC',
     decimals: 6,
     chainId: 534352,
-    logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+    logoURI: '',
 };
 
 export const scrollDAI: TokenIF = {
@@ -626,6 +644,7 @@ export const defaultTokens: TokenIF[] = [
     mainnetSWETH,
     mainnetMKR,
     mainnetLIDO,
+    mainnetLUSD,
     blastETH,
     blastUSDB,
     blastMIA,
