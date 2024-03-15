@@ -25,11 +25,15 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
         WBTC: 60,
         ETH: 50,
         WSTETH: 45,
+        RETH: 45,
         PXETH: 45,
         PEPE: 0,
     };
 
-    const rank = moneynessRank[tokenSymbol as keyof typeof moneynessRank] ?? 0;
+    const rank =
+        moneynessRank[
+            tokenSymbol.toUpperCase() as keyof typeof moneynessRank
+        ] ?? 0;
     return rank;
 };
 
