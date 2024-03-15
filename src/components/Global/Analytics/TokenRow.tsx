@@ -35,7 +35,8 @@ export default function TokenRow(props: propsIF) {
     return (
         <TableRow
             onClick={() => {
-                console.log(backupPool);
+                // due to gatekeeping in parent, at least one of these pools
+                // ... will be a defined value passed through props
                 if (samplePool) {
                     goToMarket(
                         samplePool.base.address,
