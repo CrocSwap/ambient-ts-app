@@ -14,6 +14,7 @@ import BAG from './BAG.png';
 import ALIEN from './ALIEN.png';
 import YES from './YES.png';
 import PXETH from './PXETH.png';
+import AXLUSDC from './AXLUSDC.png';
 
 // export { DAI, ETH, PEPE, USDC, USDT, WBTC, FRAX, BAL };
 export {
@@ -33,4 +34,5 @@ export {
     ALIEN,
     YES,
     PXETH,
+    AXLUSDC,
 };
