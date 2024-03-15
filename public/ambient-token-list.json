@@ -268,6 +268,14 @@
             "logoURI": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png"
         },
         {
+            "name": "Pirex Ether OFT",
+            "address": "0x9e0d7d79735e1c63333128149c7b616a0dc0bbdb",
+            "symbol": "pxETH",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": ""
+        },
+        {
             "name": "Native Ether",
             "address": "0x0000000000000000000000000000000000000000",
             "symbol": "ETH",

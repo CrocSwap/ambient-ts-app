@@ -507,6 +507,15 @@ export const scrollRocketPoolETH: TokenIF = {
     logoURI: '',
 };
 
+export const scrollPxETH: TokenIF = {
+    name: 'Pirex Ether OFT',
+    address: '0x9e0d7d79735e1c63333128149c7b616a0dc0bbdb',
+    symbol: 'pxETH',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: '',
+};
+
 export const scrollWrappedETH: TokenIF = {
     name: 'Wrapped Ether',
     address: '0x5300000000000000000000000000000000000004',
