@@ -30,6 +30,7 @@ import {
     fetchBlockNumber,
     fetchUserXpData,
 } from '../ambient-utils/api';
+import { BLAST_RPC_URL } from '../ambient-utils/constants/networks/blastNetwork';
 
 interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
@@ -98,6 +99,8 @@ export const ChainDataContextProvider = (props: {
             process.env.REACT_APP_INFURA_KEY
                 ? chainData.nodeUrl.slice(0, -32) +
                   process.env.REACT_APP_INFURA_KEY
+                : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
+                ? BLAST_RPC_URL
                 : blockPollingUrl;
         try {
             const lastBlockNumber = await fetchBlockNumber(nodeUrl);
