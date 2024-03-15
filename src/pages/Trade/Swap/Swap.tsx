@@ -382,7 +382,9 @@ function Swap(props: propsIF) {
                 ? sellQtyString.replaceAll(',', '')
                 : buyQtyString.replaceAll(',', '');
 
+            console.log({ qty });
             if (qty === '' || parseFloat(qty) === 0) return;
+            console.log({ qty });
 
             const l1Gas = await calcL1Gas({
                 crocEnv,
@@ -394,6 +396,7 @@ function Swap(props: propsIF) {
                 isWithdrawFromDexChecked,
                 isSaveAsDexSurplusChecked,
             });
+            console.log({ l1Gas });
 
             const costOfEthInCents = BigNumber.from(
                 Math.floor((ethMainnetUsdPrice || 0) * 100),
@@ -442,16 +445,15 @@ function Swap(props: propsIF) {
         setShowConfirmation(true);
         if (!crocEnv) return;
 
-        const qty = isTokenAPrimary
-            ? sellQtyString.replaceAll(',', '')
-            : buyQtyString.replaceAll(',', '');
-
+        const qty = isTokenAPrimary ? sellQtyString : buyQtyString;
         const isQtySell = isTokenAPrimary;
 
         let tx;
         try {
             const sellTokenAddress = tokenA.address;
             const buyTokenAddress = tokenB.address;
+
+            console.log({ qty });
 
             tx = await performSwap({
                 crocEnv,
