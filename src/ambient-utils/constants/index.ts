@@ -28,8 +28,7 @@ export const ANALYTICS_URL =
 export const HISTORICAL_CANDLES_URL =
     process.env.REACT_APP_HISTORICAL_CANDLES_URL || 'https://ambindexer.net';
 
-export const CHAT_BACKEND_URL =
-    process.env.REACT_APP_CHAT_URL || `${HISTORICAL_CANDLES_URL}`;
+export const CHAT_BACKEND_URL = 'http://localhost:5005';
 
 export const CHAT_BACKEND_WSS_URL =
     process.env.REACT_APP_CHAT_WSS_URL ||
