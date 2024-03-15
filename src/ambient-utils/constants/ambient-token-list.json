@@ -276,6 +276,14 @@
             "logoURI": ""
         },
         {
+            "name": "Axelar Wrapped USDC",
+            "address": "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
+            "symbol": "axlUSDC",
+            "decimals": 6,
+            "chainId": 534352,
+            "logoURI": ""
+        },
+        {
             "name": "Native Ether",
             "address": "0x0000000000000000000000000000000000000000",
             "symbol": "ETH",
