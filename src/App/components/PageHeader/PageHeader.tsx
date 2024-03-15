@@ -257,6 +257,11 @@ const PageHeader = function () {
             destination: '/account',
             shouldDisplay: !!isUserConnected,
         },
+        {
+            title: 'Points',
+            destination: '/account/points',
+            shouldDisplay: !!isUserConnected && desktopScreen,
+        },
     ];
 
     // Most of this functionality can be achieved by using the NavLink instead of Link and accessing the isActive prop on the

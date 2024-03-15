@@ -1,14 +1,14 @@
 import { useMemo, useState } from 'react';
 import { PoolDataIF } from '../../../contexts/ExploreContext';
+import { sortDirections } from '../../../ambient-utils/types';
 
 export type sortType = 'price' | 'tvl' | '24h vol.' | 'change' | null;
-export type directionType = 'ascending' | 'descending' | null;
 type sortableKeysType = 'priceChange' | 'tvl' | 'volume';
 
 export interface SortedPoolMethodsIF {
     pools: PoolDataIF[];
     current: sortType;
-    direction: directionType;
+    direction: sortDirections;
     updateSort: (type: sortType) => void;
 }
 
@@ -18,11 +18,11 @@ export const useSortedPools = (
 ): SortedPoolMethodsIF => {
     // default sort values (`null` will sort by TVL)
     const DEFAULT_SORT: sortType = '24h vol.';
-    const DEFAULT_DIRECTION: directionType = 'ascending';
+    const DEFAULT_DIRECTION: sortDirections = 'ascending';
     // hooks to hold current sort values
     const [sortBy, setSortBy] = useState<sortType>(DEFAULT_SORT);
     const [direction, setDirection] =
-        useState<directionType>(DEFAULT_DIRECTION);
+        useState<sortDirections>(DEFAULT_DIRECTION);
 
     // logic to apply the correct sort as specified by the user
     const sortedPools = useMemo<PoolDataIF[]>(() => {
@@ -75,7 +75,7 @@ export const useSortedPools = (
     // fn to respond to user clicks and update sort values correctly
     function updateSort(sort: sortType) {
         if (sort === sortBy) {
-            let updatedDirection: directionType;
+            let updatedDirection: sortDirections;
             switch (direction) {
                 case null:
                     updatedDirection = 'ascending';
