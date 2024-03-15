@@ -10,7 +10,11 @@ import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileS
 
 // START: Import Other Local Files
 import { TokenIF } from '../../ambient-utils/types';
-import { fetchEnsAddress, fetchUserXpData } from '../../ambient-utils/api';
+import {
+    fetchBlastUserXpData,
+    fetchEnsAddress,
+    fetchUserXpData,
+} from '../../ambient-utils/api';
 import { Navigate, useParams } from 'react-router-dom';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
@@ -26,13 +30,19 @@ import {
     PortfolioTabsContainer,
 } from '../../styled/Components/Portfolio';
 import { FlexContainer, Text } from '../../styled/Common';
-import { UserDataContext, UserXpDataIF } from '../../contexts/UserDataContext';
+import {
+    BlastUserXpDataIF,
+    UserDataContext,
+    UserXpDataIF,
+} from '../../contexts/UserDataContext';
 import Level from '../Level/Level';
+import { TradeTableContext } from '../../contexts/TradeTableContext';
 
 interface PortfolioPropsIF {
     isLevelsPage?: boolean;
     isRanksPage?: boolean;
     isViewMoreActive?: boolean;
+    isPointsTab?: boolean;
 }
 
 function Portfolio(props: PortfolioPropsIF) {
@@ -42,7 +52,7 @@ function Portfolio(props: PortfolioPropsIF) {
         ensName,
         setSecondaryEnsInContext,
     } = useContext(UserDataContext);
-    const { isLevelsPage, isRanksPage, isViewMoreActive } = props;
+    const { isLevelsPage, isRanksPage, isViewMoreActive, isPointsTab } = props;
 
     const isUserConnected = useSimulatedIsUserConnected();
 
@@ -56,8 +66,10 @@ function Portfolio(props: PortfolioPropsIF) {
         activeNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { client } = useContext(ChainDataContext);
+    const { client, isActiveNetworkBlast } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
+    const { setOutsideControl, setSelectedOutsideTab } =
+        useContext(TradeTableContext);
 
     const { mainnetProvider } = useContext(CrocEnvContext);
 
@@ -74,7 +86,7 @@ function Portfolio(props: PortfolioPropsIF) {
         undefined,
     );
 
-    const connectedAccountActive = useMemo(
+    const connectedAccountActive: boolean = useMemo(
         () =>
             userAddress
                 ? addressFromParams
@@ -93,6 +105,7 @@ function Portfolio(props: PortfolioPropsIF) {
         (async () => {
             if (addressFromParams && isAddressEns && mainnetProvider) {
                 try {
+                    // @emily
                     const newResolvedAddress =
                         await mainnetProvider.resolveName(addressFromParams);
                     setResolvedAddress(newResolvedAddress ?? '');
@@ -142,19 +155,51 @@ function Portfolio(props: PortfolioPropsIF) {
         data: undefined,
     });
 
+    const [resolvedUserBlastXp, setResolvedUserBlastXp] =
+        useState<BlastUserXpDataIF>({
+            dataReceived: false,
+            data: undefined,
+        });
+
     // fetch xp data for resolved address if not connected user account
     useEffect(() => {
         if (!connectedAccountActive && resolvedAddress) {
-            fetchUserXpData({ user: resolvedAddress, chainId: chainId }).then(
-                (resolvedUserXp) => {
+            fetchUserXpData({ user: resolvedAddress, chainId: chainId })
+                .then((resolvedUserXp) => {
                     setResolvedUserXp({
                         dataReceived: true,
-                        data: resolvedUserXp ? resolvedUserXp : undefined,
+                        data: resolvedUserXp,
                     });
-                },
-            );
+                })
+                .catch((error) => {
+                    console.error({ error });
+                    setResolvedUserXp({
+                        dataReceived: false,
+                        data: undefined,
+                    });
+                });
+            if (isActiveNetworkBlast) {
+                fetchBlastUserXpData({
+                    user: resolvedAddress,
+                    chainId: chainId,
+                })
+                    .then((resolvedUserBlastXp) => {
+                        console.log({ resolvedUserBlastXp });
+                        setResolvedUserBlastXp({
+                            dataReceived: true,
+                            data: resolvedUserBlastXp,
+                        });
+                    })
+                    .catch((error) => {
+                        console.error({ error });
+                        setResolvedUserBlastXp({
+                            dataReceived: false,
+                            data: undefined,
+                        });
+                    });
+            }
         }
-    }, [connectedAccountActive, resolvedAddress]);
+    }, [connectedAccountActive, resolvedAddress, isActiveNetworkBlast]);
 
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
     const exchangeBalanceComponent = (
@@ -198,6 +243,7 @@ function Portfolio(props: PortfolioPropsIF) {
                         crocEnv,
                         activeNetwork.graphCacheUrl,
                         client,
+                        tokens.tokenUniv,
                     );
 
                     const tokensWithLogos = tokenBalanceResults.map((token) => {
@@ -292,6 +338,7 @@ function Portfolio(props: PortfolioPropsIF) {
         connectedAccountActive: connectedAccountActive,
         fullLayoutActive: fullLayoutActive,
         resolvedUserXp: resolvedUserXp,
+        resolvedUserBlastXp: resolvedUserBlastXp,
     };
 
     const portfolioBannerProps = {
@@ -342,6 +389,25 @@ function Portfolio(props: PortfolioPropsIF) {
                 return notConnectedContent;
         }
     })();
+
+    // tab control on account from pageheader
+    const onTradeRoute = location.pathname.includes('trade');
+    const onAccountRoute = location.pathname.includes('account');
+
+    const tabToSwitchToBasedOnRoute = onTradeRoute
+        ? 0
+        : onAccountRoute || addressFromParams
+        ? 3
+        : 0;
+
+    useEffect(() => {
+        if (isPointsTab) {
+            setOutsideControl(true);
+            setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
+        }
+    }, [isPointsTab]);
+
+    // end of tab control on account from page header
 
     const mobilePortfolio = (
         <FlexContainer

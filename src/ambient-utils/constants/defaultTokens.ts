@@ -51,8 +51,7 @@ export const blastORBIT: TokenIF = {
     fromList: '/ambient-token-list.json',
     name: 'Orbit Protocol',
     symbol: 'ORBIT',
-    logoURI:
-        'https://dashboard-assets.dappradar.com/document/47902/orbitprotocol-project-defi-47902-logo-166x166_1e74c8301cbe3d05a57a80147dd2607d.png',
+    logoURI: 'https://blastscan.io/token/images/orbit_32.png',
 };
 
 export const blastMIA: TokenIF = {
@@ -63,6 +62,16 @@ export const blastMIA: TokenIF = {
     name: 'Mia',
     symbol: 'MIA',
     logoURI: 'https://miablastsoff.com/images/logo.png',
+};
+
+export const blastMIM: TokenIF = {
+    address: '0x76DA31D7C9CbEAE102aff34D3398bC450c8374c1',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Magic Internet Money',
+    symbol: 'MIM',
+    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/162.png',
 };
 
 export const blastBAG: TokenIF = {
@@ -150,10 +159,30 @@ export const blastOLE: TokenIF = {
     address: '0x73c369f61c90f03eb0dd172e95c90208a28dc5bc',
     chainId: 81457,
     decimals: 18,
-    fromList: '',
-    name: 'OLE',
+    fromList: '/ambient-token-list.json',
+    name: 'OpenLeverage',
     symbol: 'OLE',
-    logoURI: '',
+    logoURI: 'https://blastscan.io/token/images/openleverageole_32.png',
+};
+
+export const blastFINGER: TokenIF = {
+    address: '0x7217124c626f0b7077be91df939195c9a8184ecc',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Finger Blast',
+    symbol: 'FINGER',
+    logoURI: 'https://blastscan.io/token/images/fingerblast_32.png',
+};
+
+export const blastGLORY: TokenIF = {
+    address: '0xd582879453337bd149ae53ec2092b0af5281d1d7',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Sekai Glory',
+    symbol: 'GLORY',
+    logoURI: 'https://blastscan.io/token/images/sekaiglory_32.png',
 };
 
 export const blastVROOM: TokenIF = {
@@ -208,6 +237,36 @@ export const mainnetPEPE: TokenIF = {
         'https://assets.coingecko.com/coins/images/29850/large/pepe-token.jpeg?1682922725',
     name: 'Pepe',
     symbol: 'PEPE',
+};
+
+export const mainnetSWETH: TokenIF = {
+    address: '0xf951e335afb289353dc249e82926178eac7ded78',
+    chainId: 1,
+    decimals: 18,
+    fromList: '',
+    logoURI: 'https://etherscan.io/token/images/swellnetwork_32.png?=v83',
+    name: 'Swell Ethereum',
+    symbol: 'swETH',
+};
+
+export const mainnetLIDO: TokenIF = {
+    address: '0x5a98fcbea516cf06857215779fd812ca3bef1b32',
+    chainId: 1,
+    decimals: 18,
+    fromList: '',
+    logoURI: 'https://etherscan.io/token/images/lido-dao_32.png',
+    name: 'Lido DAO Token',
+    symbol: 'LDO',
+};
+
+export const mainnetMKR: TokenIF = {
+    address: '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2',
+    chainId: 1,
+    decimals: 18,
+    fromList: '',
+    logoURI: 'https://etherscan.io/token/images/mkr-etherscan-35.png',
+    name: 'Maker',
+    symbol: 'MKR',
 };
 
 export const mainnetSYN: TokenIF = {
@@ -466,6 +525,16 @@ export const scrollBalancer: TokenIF = {
     logoURI: '',
 };
 
+export const scrollDODO: TokenIF = {
+    name: 'DODO bird',
+    address: '0x912aB742e1ab30ffa87038C425F9Bc8ED12B3EF4',
+    symbol: 'DODO',
+    decimals: 18,
+    chainId: 534352,
+    logoURI:
+        'https://assets.coingecko.com/coins/images/12651/standard/dodo_logo.png?1696512458',
+};
+
 export const scrollUSDC: TokenIF = {
     name: 'USDCoin',
     address: '0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4',
@@ -494,6 +563,14 @@ export const scrollDAI: TokenIF = {
     chainId: 534352,
     logoURI:
         'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
+};
+export const scrollKNC: TokenIF = {
+    name: 'Kyber Network Crystal v2',
+    address: '0x608ef9a3bffe206b86c3108218003b3cfbf99c84',
+    symbol: 'KNC',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: 'https://scrollscan.com/token/images/kybernetworkknc_32.png',
 };
 
 export const scrollUSDT: TokenIF = {
@@ -546,15 +623,21 @@ export const defaultTokens: TokenIF[] = [
     mainnetRPL,
     mainnetWstETH,
     mainnetMATIC,
+    mainnetSWETH,
+    mainnetMKR,
+    mainnetLIDO,
     blastETH,
     blastUSDB,
     blastMIA,
+    blastMIM,
     blastORBIT,
     blastBAG,
     blastBAJA,
     blastBEPE,
     blastALIEN,
     blastOLE,
+    blastFINGER,
+    blastGLORY,
     blastWETH,
     blastPUMP,
     blastYES,
@@ -572,9 +655,10 @@ export const defaultTokens: TokenIF[] = [
     arbGoerliWBTC,
     scrollETH,
     scrollUSDC,
+    scrollDODO,
     scrollDAI,
     scrollUSDT,
-    scrollDAI,
+    scrollKNC,
     scrollBalancer,
     scrollAxlUSDC,
     scrollWBTC,

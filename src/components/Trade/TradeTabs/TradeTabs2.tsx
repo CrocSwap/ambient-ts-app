@@ -1,5 +1,4 @@
 import {
-    useState,
     useEffect,
     Dispatch,
     SetStateAction,
@@ -26,11 +25,6 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import useDebounce from '../../../App/hooks/useDebounce';
-import {
-    diffHashSigLimits,
-    diffHashSigPostions,
-    diffHashSigTxs,
-} from '../../../ambient-utils/dataLayer';
 import { CandleContext } from '../../../contexts/CandleContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { ChartContext } from '../../../contexts/ChartContext';
@@ -44,7 +38,6 @@ import Transactions2 from './Transactions2/Transactions2';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { DataLoadingContext } from '../../../contexts/DataLoadingContext';
 interface propsIF {
     filter: CandleDataIF | undefined;
     setTransactionFilter: Dispatch<SetStateAction<CandleDataIF | undefined>>;
@@ -66,7 +59,6 @@ function TradeTabs2(props: propsIF) {
         changeState,
         selectedDate,
         setSelectedDate,
-        hasInitialized,
         setHasInitialized,
         unselectCandle,
     } = props;
@@ -85,7 +77,6 @@ function TradeTabs2(props: propsIF) {
         cachedEnsResolve,
     } = useContext(CachedDataContext);
     const { isCandleSelected } = useContext(CandleContext);
-    const dataLoadingStatus = useContext(DataLoadingContext);
 
     const {
         crocEnv,
@@ -98,53 +89,17 @@ function TradeTabs2(props: propsIF) {
 
     const { tokens } = useContext(TokenContext);
 
-    const { showAllData, setShowAllData, outsideControl, selectedOutsideTab } =
-        useContext(TradeTableContext);
+    const { showAllData } = useContext(TradeTableContext);
 
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     const { isUserConnected, userAddress } = useContext(UserDataContext);
-    const { positionsByUser, limitOrdersByUser, userTransactionsByPool } =
-        useContext(GraphDataContext);
-
-    const userChanges = userTransactionsByPool?.changes;
-    const userLimitOrders = limitOrdersByUser?.limitOrders;
-    const userPositions = positionsByUser?.positions;
-
-    const [selectedInsideTab, setSelectedInsideTab] = useState<number>(0);
-
-    const [hasUserSelectedViewAll, setHasUserSelectedViewAll] =
-        useState<boolean>(false);
 
     const selectedBaseAddress = baseToken.address;
     const selectedQuoteAddress = quoteToken.address;
 
-    const userLimitOrdersMatchingTokenSelection = userLimitOrders.filter(
-        (userLimitOrder) => {
-            return (
-                userLimitOrder.base.toLowerCase() ===
-                    selectedBaseAddress.toLowerCase() &&
-                userLimitOrder.quote.toLowerCase() ===
-                    selectedQuoteAddress.toLowerCase()
-            );
-        },
-    );
-
-    const userPositionsMatchingTokenSelection = userPositions.filter(
-        (userPosition) => {
-            return (
-                userPosition.base.toLowerCase() ===
-                    selectedBaseAddress.toLowerCase() &&
-                userPosition.quote.toLowerCase() ===
-                    selectedQuoteAddress.toLowerCase() &&
-                userPosition.positionLiq !== 0
-            );
-        },
-    );
-
     useEffect(() => {
         setHasInitialized(false);
-        setHasUserSelectedViewAll(false);
     }, [
         userAddress,
         isUserConnected,
@@ -155,90 +110,6 @@ function TradeTabs2(props: propsIF) {
     // Wait 2 seconds before refreshing to give cache server time to sync from
     // last block
     const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
-
-    useEffect(() => {
-        if (!hasInitialized && !hasUserSelectedViewAll) {
-            if (
-                (outsideControl && selectedOutsideTab === 0) ||
-                (!outsideControl && selectedInsideTab === 0)
-            ) {
-                if (!isUserConnected) {
-                    setShowAllData(true);
-                } else if (
-                    !showAllData &&
-                    dataLoadingStatus.isConnectedUserPoolTxDataLoading
-                ) {
-                    return;
-                } else if (
-                    showAllData &&
-                    dataLoadingStatus.isPoolTxDataLoading
-                ) {
-                    return;
-                } else if (!showAllData && userChanges.length < 1) {
-                    setShowAllData(true);
-                } else if (showAllData && userChanges.length >= 1) {
-                    setShowAllData(false);
-                }
-            } else if (
-                (outsideControl && selectedOutsideTab === 1) ||
-                (!outsideControl && selectedInsideTab === 1)
-            ) {
-                if (dataLoadingStatus.isConnectedUserPoolOrderDataLoading)
-                    return;
-
-                if (
-                    !isUserConnected ||
-                    (!isCandleSelected &&
-                        !showAllData &&
-                        userLimitOrdersMatchingTokenSelection.length < 1)
-                ) {
-                    setShowAllData(true);
-                } else if (userLimitOrdersMatchingTokenSelection.length < 1) {
-                    return;
-                } else if (
-                    showAllData &&
-                    userLimitOrdersMatchingTokenSelection.length >= 1
-                ) {
-                    setShowAllData(false);
-                }
-            } else if (
-                (outsideControl && selectedOutsideTab === 2) ||
-                (!outsideControl && selectedInsideTab === 2)
-            ) {
-                if (dataLoadingStatus.isConnectedUserPoolRangeDataLoading)
-                    return;
-                if (
-                    !isUserConnected ||
-                    (!isCandleSelected &&
-                        !showAllData &&
-                        userPositionsMatchingTokenSelection.length < 1)
-                ) {
-                    setShowAllData(true);
-                } else if (userPositionsMatchingTokenSelection.length < 1) {
-                    return;
-                } else if (
-                    showAllData &&
-                    userPositionsMatchingTokenSelection.length >= 1
-                ) {
-                    setShowAllData(false);
-                }
-            }
-            setHasInitialized(true);
-        }
-    }, [
-        dataLoadingStatus,
-        hasUserSelectedViewAll,
-        isUserConnected,
-        hasInitialized,
-        isCandleSelected,
-        outsideControl,
-        selectedInsideTab,
-        selectedOutsideTab,
-        showAllData,
-        diffHashSigTxs(userChanges),
-        diffHashSigLimits(userLimitOrders),
-        diffHashSigPostions(userPositionsMatchingTokenSelection),
-    ]);
 
     useEffect(() => {
         if (
@@ -304,7 +175,6 @@ function TradeTabs2(props: propsIF) {
         changeState,
         setSelectedDate,
         isAccountView: false,
-        setSelectedInsideTab,
     };
 
     // Props for <Orders/> React Element
@@ -317,7 +187,6 @@ function TradeTabs2(props: propsIF) {
         setTransactionFilter,
         changeState,
         setSelectedDate,
-        setHasUserSelectedViewAll,
     };
 
     // data for headings of each of the three tabs
@@ -462,7 +331,6 @@ function TradeTabs2(props: propsIF) {
                     rightTabOptions={
                         <PositionsOnlyToggle {...positionsOnlyToggleProps} />
                     }
-                    setSelectedInsideTab={setSelectedInsideTab}
                 />
             </FlexContainer>
         </FlexContainer>

@@ -3,6 +3,7 @@ export interface PoolStatIF {
     quoteLogoUri?: string;
     poolPrice?: string;
     poolVolume?: string;
+    poolVolume24h?: string;
     poolTvl?: string;
     poolFeesTotal?: string;
     poolApy?: string;

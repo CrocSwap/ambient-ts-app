@@ -107,6 +107,7 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
                 user={showAllData}
                 placeholder
                 tabIndex={0}
+                cursor='default'
             >
                 {tableView === 'large' && (
                     <div>

@@ -37,7 +37,8 @@ export const fetchTokenPrice = async (
 
         return response.value;
     } catch (error) {
-        const defaultPair = supportedNetworks[chain].defaultPair;
+        const defaultPair = supportedNetworks[chain]?.defaultPair;
+        if (!defaultPair) return;
         // if token is Dai on Scroll, return 0.999
         if (
             chain === '0x82750' &&
@@ -87,11 +88,7 @@ export const fetchTokenPrice = async (
     }
 };
 
-export type TokenPriceFn = (
-    address: string,
-    chain: string,
-    crocEnv: CrocEnv,
-) => Promise<
+export type TokenPriceFnReturn =
     | {
           nativePrice?:
               | {
@@ -105,8 +102,13 @@ export type TokenPriceFn = (
           exchangeAddress?: string | undefined;
           exchangeName?: string | undefined;
       }
-    | undefined
->;
+    | undefined;
+
+export type TokenPriceFn = (
+    address: string,
+    chain: string,
+    crocEnv: CrocEnv,
+) => Promise<TokenPriceFnReturn>;
 
 // Refresh USD prices in 15 minute windows
 const PRICE_WINDOW_GRANULARITY = 15 * 60 * 1000;

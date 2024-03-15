@@ -54,7 +54,7 @@ function Trade() {
         chainData: { chainId },
         provider,
     } = useContext(CrocEnvContext);
-    const { setIsCandleSelected, isCandleDataNull } = useContext(CandleContext);
+    const { setIsCandleSelected } = useContext(CandleContext);
 
     const {
         isFullScreen: isChartFullScreen,
@@ -64,6 +64,7 @@ function Trade() {
         canvasRef,
         tradeTableState,
         isChartHeightMinimum,
+        isCandleDataNull,
         setIsChartHeightMinimum,
     } = useContext(ChartContext);
 

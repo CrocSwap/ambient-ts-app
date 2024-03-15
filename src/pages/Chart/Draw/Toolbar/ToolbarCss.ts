@@ -10,7 +10,7 @@ const ToolbarContainer = styled.div<{
         if (isActive) {
             return `
             width: 38px;
-            margin-left:5px;
+            padding-left:5px;
 
             margin-top: ${marginTopValue}px;
             &::-webkit-scrollbar {

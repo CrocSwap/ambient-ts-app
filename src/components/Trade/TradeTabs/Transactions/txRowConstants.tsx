@@ -14,6 +14,7 @@ import React, { useContext } from 'react';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { RowItem } from '../../../../styled/Components/TransactionTable';
+import { Link } from 'react-router-dom';
 
 interface propsIF {
     txHashTruncated: string;
@@ -290,9 +291,9 @@ export const txRowConstants = (props: propsIF) => {
             className='base_color'
             onClick={(event) => event.stopPropagation()}
         >
-            <RowItem hover>
-                <a href={tradeLinkPath} target='_blank' rel='noreferrer'>
-                    <div>
+            {isOwnerActiveAccount ? (
+                <RowItem hover>
+                    <Link to={tradeLinkPath}>
                         <span>
                             {tx.baseSymbol} / {tx.quoteSymbol}
                         </span>
@@ -301,9 +302,24 @@ export const txRowConstants = (props: propsIF) => {
                             color='white'
                             style={{ marginLeft: '.5rem' }}
                         />
-                    </div>
-                </a>
-            </RowItem>
+                    </Link>
+                </RowItem>
+            ) : (
+                <RowItem hover>
+                    <a href={tradeLinkPath} target='_blank' rel='noreferrer'>
+                        <div>
+                            <span>
+                                {tx.baseSymbol} / {tx.quoteSymbol}
+                            </span>
+                            <FiExternalLink
+                                size={10}
+                                color='white'
+                                style={{ marginLeft: '.5rem' }}
+                            />
+                        </div>
+                    </a>
+                </RowItem>
+            )}
         </div>
     );
 

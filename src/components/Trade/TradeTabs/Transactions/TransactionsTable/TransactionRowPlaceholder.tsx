@@ -117,6 +117,7 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                 user={showAllData}
                 placeholder
                 tabIndex={0}
+                cursor='default'
             >
                 {tableView !== 'small' && (
                     <div>
