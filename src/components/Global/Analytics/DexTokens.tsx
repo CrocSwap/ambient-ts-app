@@ -1,4 +1,4 @@
-import { memo, useContext, useEffect } from 'react';
+import { memo, useContext } from 'react';
 import Spinner from '../Spinner/Spinner';
 import {
     ScrollableContainer,
@@ -20,8 +20,17 @@ import { usePoolList2 } from '../../../App/hooks/usePoolList2';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { isWethToken } from '../../../ambient-utils/dataLayer';
 
+export type columnSlugs =
+    | 'token'
+    | 'name'
+    | 'tvl'
+    | 'fees'
+    | 'volume'
+    | 'tradeBtn';
+
 export interface HeaderItem {
     label: string;
+    slug: columnSlugs;
     hidden: boolean;
     align: string;
     responsive?: string;
@@ -34,11 +43,10 @@ interface propsIF {
     dexTokens: dexTokenData[];
     chainId: string;
     goToMarket: (tknA: string, tknB: string) => void;
-    fetch: () => void;
 }
 
 function DexTokens(props: propsIF) {
-    const { dexTokens, chainId, goToMarket, fetch } = props;
+    const { dexTokens, chainId, goToMarket } = props;
 
     const { findPool } = useContext(PoolContext);
 
@@ -58,13 +66,10 @@ function DexTokens(props: propsIF) {
         crocEnv,
     );
 
-    useEffect(() => {
-        if (!dexTokens.length) fetch();
-    }, [dexTokens.length]);
-
     const dexTokensHeaderItems: HeaderItem[] = [
         {
             label: 'Token',
+            slug: 'token',
             hidden: false,
             align: 'left',
             responsive: 'sm',
@@ -72,34 +77,39 @@ function DexTokens(props: propsIF) {
         },
         {
             label: 'Name',
+            slug: 'name',
             hidden: smallScreen,
             align: 'left',
             responsive: 'sm',
-            sortable: false,
-        },
-        {
-            label: 'TVL',
-            hidden: false,
-            align: 'right',
-            responsive: 'sm',
-            sortable: false,
-        },
-        {
-            label: 'Fees',
-            hidden: false,
-            align: 'right',
-            responsive: 'sm',
-            sortable: false,
+            sortable: true,
         },
         {
             label: 'Volume',
+            slug: 'volume',
             hidden: false,
             align: 'right',
             responsive: 'lg',
-            sortable: false,
+            sortable: true,
+        },
+        {
+            label: 'TVL',
+            slug: 'tvl',
+            hidden: false,
+            align: 'right',
+            responsive: 'sm',
+            sortable: true,
+        },
+        {
+            label: 'Fees',
+            slug: 'fees',
+            hidden: false,
+            align: 'right',
+            responsive: 'sm',
+            sortable: true,
         },
         {
             label: '',
+            slug: 'tradeBtn',
             hidden: false,
             align: 'right',
             responsive: 'sm',
@@ -112,7 +122,10 @@ function DexTokens(props: propsIF) {
             <ScrollableContainer>
                 <ShadowBox>
                     <Table>
-                        <TableHeadTokens headerItems={dexTokensHeaderItems} />
+                        <TableHeadTokens
+                            headerItems={dexTokensHeaderItems}
+                            sortedTokens={sortedTokens}
+                        />
                         <TableBody>
                             {/* 
                                 TODO:   change this logic to use React <Suspense />
