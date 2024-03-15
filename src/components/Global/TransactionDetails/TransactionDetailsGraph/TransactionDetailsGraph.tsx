@@ -114,6 +114,16 @@ export default function TransactionDetailsGraph(
     const mobileView = useMediaQuery('(min-width: 800px)');
     const [svgWidth, setSvgWidth] = useState(0);
 
+    const [timeFirstMintMemo, setTimeFirstMintMemo] = useState<
+        number | undefined
+    >();
+
+    useEffect(() => {
+        if (tx.timeFirstMint) {
+            setTimeFirstMintMemo(tx.timeFirstMint);
+        }
+    }, [tx.timeFirstMint]);
+
     useEffect(() => {
         let timeoutId: NodeJS.Timeout;
 
@@ -136,7 +146,7 @@ export default function TransactionDetailsGraph(
             const isTimeFirstMintInRemovalRange =
                 transactionType === 'liqchange' &&
                 tx.changeType !== 'mint' &&
-                tx.timeFirstMint === undefined;
+                timeFirstMintMemo === undefined;
 
             if (isTimeFirstMintInRemovalRange) {
                 return;
@@ -150,9 +160,13 @@ export default function TransactionDetailsGraph(
                     case 'swap':
                         return tx.txTime;
                     case 'limitOrder':
-                        return tx.timeFirstMint ? tx.timeFirstMint : tx.txTime;
+                        return timeFirstMintMemo
+                            ? timeFirstMintMemo
+                            : tx.txTime;
                     case 'liqchange':
-                        return tx.timeFirstMint ? tx.timeFirstMint : tx.txTime;
+                        return timeFirstMintMemo
+                            ? timeFirstMintMemo
+                            : tx.txTime;
                     default:
                         return new Date().getTime();
                 }
@@ -164,12 +178,12 @@ export default function TransactionDetailsGraph(
             let diff = (nowTime - minTime) / 200;
 
             if (
-                tx.timeFirstMint &&
+                timeFirstMintMemo &&
                 tx.txTime &&
-                tx.timeFirstMint !== tx.txTime &&
+                timeFirstMintMemo !== tx.txTime &&
                 Math.abs(tx.txTime - nowTime) < oneWeekMiliseconds
             ) {
-                diff = (Math.abs(tx.txTime - tx.timeFirstMint) * 1000) / 200;
+                diff = (Math.abs(tx.txTime - timeFirstMintMemo) * 1000) / 200;
             }
             let tempPeriod = takeSmallerPeriodForRemoveRange(
                 Math.floor(diff / 1000),
@@ -232,7 +246,7 @@ export default function TransactionDetailsGraph(
                 }
             }
         })();
-    }, [fetchEnabled, tx.timeFirstMint, tx.changeType]);
+    }, [fetchEnabled, timeFirstMintMemo, tx.changeType]);
 
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -430,8 +444,8 @@ export default function TransactionDetailsGraph(
                 .fromValue((d: any) => d[0])
                 .toValue((d: any) => d[1])
                 .decorate((selection: any) => {
-                    const time = tx.timeFirstMint
-                        ? tx.timeFirstMint * 1000
+                    const time = timeFirstMintMemo
+                        ? timeFirstMintMemo * 1000
                         : tx.txTime * 1000;
                     selection
                         .select('path')
@@ -548,8 +562,8 @@ export default function TransactionDetailsGraph(
                     tx !== undefined &&
                     period
                 ) {
-                    const time = tx.timeFirstMint
-                        ? tx.timeFirstMint * 1000
+                    const time = timeFirstMintMemo
+                        ? timeFirstMintMemo * 1000
                         : tx.txTime * 1000;
 
                     const maxDiffPixel = maxDomainPixel - xScale(time);
@@ -593,7 +607,7 @@ export default function TransactionDetailsGraph(
 
                 if (transactionType === 'liqchange') {
                     const result = findMinMaxTime([
-                        tx.timeFirstMint,
+                        timeFirstMintMemo,
                         tx.txTime,
                         tx.latestUpdateTime,
                     ]);
@@ -851,7 +865,7 @@ export default function TransactionDetailsGraph(
         tx.bidTickInvPriceDecimalCorrected,
         tx.positionType,
         tx?.txTime,
-        tx?.timeFirstMint,
+        timeFirstMintMemo,
         tx.swapInvPriceDecimalCorrected,
         tx.swapPriceDecimalCorrected,
         graphData,
@@ -1186,8 +1200,8 @@ export default function TransactionDetailsGraph(
                             transactionType === 'limitOrder' &&
                             tx !== undefined
                         ) {
-                            const time = tx.timeFirstMint
-                                ? tx.timeFirstMint * 1000
+                            const time = timeFirstMintMemo
+                                ? timeFirstMintMemo * 1000
                                 : tx.txTime * 1000;
                             if (tx.claimableLiq > 0) {
                                 addExtraCandle(
@@ -1238,13 +1252,13 @@ export default function TransactionDetailsGraph(
                             transactionType === 'liqchange' &&
                             tx !== undefined
                         ) {
-                            const time = tx.timeFirstMint
-                                ? tx.timeFirstMint * 1000
+                            const time = timeFirstMintMemo
+                                ? timeFirstMintMemo * 1000
                                 : tx.txTime * 1000;
 
                             const timeEnd =
                                 tx.txTime &&
-                                tx.timeFirstMint !== tx.txTime &&
+                                timeFirstMintMemo !== tx.txTime &&
                                 tx.changeType !== 'mint'
                                     ? tx.txTime * 1000
                                     : scaleData.xScale.domain()[1].getTime();
@@ -1276,8 +1290,8 @@ export default function TransactionDetailsGraph(
 
                             horizontalBandData[0] = [bidLine, askLine];
 
-                            const timeStart = tx.timeFirstMint
-                                ? tx.timeFirstMint * 1000
+                            const timeStart = timeFirstMintMemo
+                                ? timeFirstMintMemo * 1000
                                 : tx.txTime * 1000;
 
                             const rangeLinesDataBid = [
@@ -1317,13 +1331,13 @@ export default function TransactionDetailsGraph(
 
                             if (
                                 tx.txTime &&
-                                tx.timeFirstMint &&
-                                tx.txTime !== tx.timeFirstMint
+                                timeFirstMintMemo &&
+                                tx.txTime !== timeFirstMintMemo
                             ) {
                                 const diff = Math.abs(
                                     scaleData.xScale(tx.txTime * 1000) -
                                         scaleData.xScale(
-                                            tx.timeFirstMint * 1000,
+                                            timeFirstMintMemo * 1000,
                                         ),
                                 );
 
@@ -1334,7 +1348,7 @@ export default function TransactionDetailsGraph(
                                     tx.positionType !== 'ambient' &&
                                     !checkDiffMinMax &&
                                     diff > 10 &&
-                                    (tx.txTime - tx.timeFirstMint) * 1000 >
+                                    (tx.txTime - timeFirstMintMemo) * 1000 >
                                         oneDayMiliseconds * 3
                                 ) {
                                     if (
@@ -1357,9 +1371,9 @@ export default function TransactionDetailsGraph(
                                 checkDiffMinUpdate &&
                                 ((tx.txTime &&
                                     tx.latestUpdateTime !== tx.txTime) ||
-                                    (tx.timeFirstMint &&
+                                    (timeFirstMintMemo &&
                                         tx.latestUpdateTime !==
-                                            tx.timeFirstMint))
+                                            timeFirstMintMemo))
                             ) {
                                 verticalLineData.push({
                                     label: ' Updated',
@@ -1416,7 +1430,7 @@ export default function TransactionDetailsGraph(
         },
         [
             tx?.txTime,
-            tx?.timeFirstMint,
+            timeFirstMintMemo,
             tx.swapInvPriceDecimalCorrected,
             tx.swapPriceDecimalCorrected,
             tx.bidTickInvPriceDecimalCorrected,
