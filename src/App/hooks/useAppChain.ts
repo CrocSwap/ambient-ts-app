@@ -121,6 +121,8 @@ export const useAppChain = (): {
                         const isPathUserAddress = isPathENS || isPathHex;
                         const isPathUserXpOrLeaderboard =
                             pathname.includes('/xp');
+                        const isPathPointsTabOnAccount =
+                            pathname.includes('/points');
 
                         if (chainInURLValidated === incomingChainFromWallet) {
                             // generate params chain manually and navigate user
@@ -146,7 +148,8 @@ export const useAppChain = (): {
                                 );
                             } else if (
                                 isPathUserAddress ||
-                                isPathUserXpOrLeaderboard
+                                isPathUserXpOrLeaderboard ||
+                                isPathPointsTabOnAccount
                             ) {
                                 window.location.reload();
                             } else {

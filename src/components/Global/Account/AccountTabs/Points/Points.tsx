@@ -7,8 +7,12 @@ import {
 import PointsRow from './PointsRow';
 import {
     BlastUserXpDataIF,
+    UserDataContext,
     UserXpDataIF,
 } from '../../../../../contexts/UserDataContext';
+import { ViewMoreButton } from '../../../../../styled/Components/TransactionTable';
+import { FlexContainer } from '../../../../../styled/Common';
+import { Link } from 'react-router-dom';
 
 interface propsIF {
     resolvedUserXp: UserXpDataIF;
@@ -20,12 +24,22 @@ export default function Points(props: propsIF) {
     const { resolvedUserXp, resolvedUserBlastXp, connectedAccountActive } =
         props;
     const { isActiveNetworkBlast } = useContext(ChainDataContext);
+    const { ensName } = useContext(UserDataContext);
 
     // since we're only going to do a set number of finite rows, they can be instantiated
     // ... on an individual basis in the return statement of the function
 
     const { connectedUserXp, connectedUserBlastXp } =
         useContext(ChainDataContext);
+    const { userAddress, resolvedAddressFromContext } =
+        useContext(UserDataContext);
+
+    const linkToNavigateTo =
+        connectedAccountActive && ensName
+            ? `/${ensName}/xp`
+            : resolvedAddressFromContext
+            ? `/${resolvedAddressFromContext}/xp`
+            : `/${userAddress}/xp`;
 
     return (
         <div>
@@ -82,6 +96,15 @@ export default function Points(props: propsIF) {
                     </div>
                 </div>
             ) : undefined}
+            <Link to={linkToNavigateTo}>
+                <FlexContainer
+                    justifyContent='center'
+                    alignItems='center'
+                    padding='8px'
+                >
+                    <ViewMoreButton>View Details</ViewMoreButton>
+                </FlexContainer>
+            </Link>
         </div>
     );
 }

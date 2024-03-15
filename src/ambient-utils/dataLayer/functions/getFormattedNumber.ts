@@ -81,12 +81,8 @@ export function getFormattedNumber({
         }
     } else if (Math.abs(value) < 0.9) {
         // show 3 significant digits (after 0s)
-        valueString = value
-            .toPrecision(3)
-            // remove trailing 0s
-            .replace(/0+$/, '')
-            .replace(/\.$/, '');
-    } else if (Math.abs(value) < 2) {
+        valueString = value.toPrecision(3);
+    } else if (Math.abs(value) < 1.2) {
         // restrict to 5 places after decimal
         valueString = value.toLocaleString('en-US', {
             minimumFractionDigits: 2,
