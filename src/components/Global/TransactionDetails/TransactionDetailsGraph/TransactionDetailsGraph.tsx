@@ -23,7 +23,7 @@ import { useMediaQuery } from '@material-ui/core';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
     tx: any;
-    // timeFirstMint?: number | undefined;
+    timeFirstMintMemo: number | undefined;
     transactionType: string;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isAccountView: boolean;
@@ -34,7 +34,7 @@ export default function TransactionDetailsGraph(
 ) {
     const {
         tx,
-        // timeFirstMint,
+        timeFirstMintMemo,
         transactionType,
         isBaseTokenMoneynessGreaterOrEqual,
         isAccountView,
@@ -113,16 +113,6 @@ export default function TransactionDetailsGraph(
         useState(false);
     const mobileView = useMediaQuery('(min-width: 800px)');
     const [svgWidth, setSvgWidth] = useState(0);
-
-    const [timeFirstMintMemo, setTimeFirstMintMemo] = useState<
-        number | undefined
-    >();
-
-    useEffect(() => {
-        if (tx.timeFirstMint) {
-            setTimeFirstMintMemo(tx.timeFirstMint);
-        }
-    }, [tx.timeFirstMint]);
 
     useEffect(() => {
         let timeoutId: NodeJS.Timeout;
