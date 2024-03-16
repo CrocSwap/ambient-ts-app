@@ -294,7 +294,7 @@ export const txRowConstants = (props: propsIF) => {
             {isOwnerActiveAccount ? (
                 <RowItem hover>
                     <Link to={tradeLinkPath}>
-                        <span>
+                        <span style={{ textTransform: 'none' }}>
                             {tx.baseSymbol} / {tx.quoteSymbol}
                         </span>
                         <FiExternalLink
@@ -308,7 +308,7 @@ export const txRowConstants = (props: propsIF) => {
                 <RowItem hover>
                     <a href={tradeLinkPath} target='_blank' rel='noreferrer'>
                         <div>
-                            <span>
+                            <span style={{ textTransform: 'none' }}>
                                 {tx.baseSymbol} / {tx.quoteSymbol}
                             </span>
                             <FiExternalLink
