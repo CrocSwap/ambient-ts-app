@@ -23,7 +23,6 @@ import {
 } from '../../../styled/Components/Home';
 import { FlexContainer, Text } from '../../../styled/Common';
 import { Link } from 'react-router-dom';
-import { APP_ENVIRONMENT } from '../../../ambient-utils/constants';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 export default function MobileLandingSections() {
@@ -131,26 +130,24 @@ export default function MobileLandingSections() {
                     </MobileMainLogo>
                 )}
 
-                {APP_ENVIRONMENT !== 'production' && (
-                    <FlexContainer
-                        justifyContent='center'
-                        alignItems='center'
-                        gap={8}
-                    >
-                        <Text fontSize='body' style={{ marginTop: '2.5px' }}>
-                            Points system now live!{' '}
+                <FlexContainer
+                    justifyContent='center'
+                    alignItems='center'
+                    gap={8}
+                >
+                    <Text fontSize='body' style={{ marginTop: '2.5px' }}>
+                        Points system now live!{' '}
+                    </Text>
+                    <Link to='/xp-leaderboard'>
+                        <Text
+                            fontSize='body'
+                            color='accent1'
+                            style={{ textDecoration: 'underline' }}
+                        >
+                            View Leaderboard
                         </Text>
-                        <Link to='/xp-leaderboard'>
-                            <Text
-                                fontSize='body'
-                                color='accent1'
-                                style={{ textDecoration: 'underline' }}
-                            >
-                                View Leaderboard
-                            </Text>
-                        </Link>
-                    </FlexContainer>
-                )}
+                    </Link>
+                </FlexContainer>
                 <div style={{ padding: '20px' }}>
                     <TopPools noTitle gap='8px' />
                 </div>

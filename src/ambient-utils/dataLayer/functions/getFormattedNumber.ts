@@ -103,11 +103,7 @@ export function getFormattedNumber({
             maximumFractionDigits: maxFracDigits,
         });
     }
-    // remove more than two trailing zeros and decimal point at the end
-    valueString =
-        valueString !== zeroDisplay && !isUSD
-            ? valueString.replace(/00+$/, '0').replace(/\.$/, '')
-            : valueString;
+
     if (removeCommas) valueString = valueString.replaceAll(',', '');
     return `${prefix}${valueString}${suffix}`;
 }
