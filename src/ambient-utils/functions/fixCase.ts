@@ -6,10 +6,14 @@ import { IS_LOCAL_ENV } from '../constants';
 // 'native' ➜ will return input string(s) with no case modification
 export type letterCasings = 'lower' | 'upper' | 'native';
 
-export default function fixCase(input: string, casing: letterCasings): string;
+// TODO:    refactor this file with a third overload which allows a developer to
+// TODO:    ... pass an array of `[string, letterCasings]` tuples such that each
+// TODO:    ... the file can process multiple strings with different casing needs
+
+export default function fixCase(input: string, casing?: letterCasings): string;
 export default function fixCase(
     input: string[],
-    casing: letterCasings,
+    casing?: letterCasings,
 ): string[];
 
 export default function fixCase(
