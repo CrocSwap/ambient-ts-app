@@ -64,6 +64,7 @@ const BASE_URL_PATHS = {
     account: '/account',
     privacy: '/privacy',
     '404': '/404',
+    chat: '/chat',
 } as const;
 
 // string-literal union type of keys in `BASE_URL_PATHS`

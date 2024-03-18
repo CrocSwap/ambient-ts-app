@@ -1,12 +1,6 @@
 /** ***** Import React and Dongles *******/
 import { useContext, useEffect } from 'react';
-import {
-    Routes,
-    Route,
-    useLocation,
-    Navigate,
-    useNavigate,
-} from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
 
 /** ***** Import JSX Files *******/
@@ -52,8 +46,6 @@ import { useLinkGen } from '../utils/hooks/useLinkGen';
 /** ***** React Function *******/
 export default function App() {
     const navigate = useNavigate();
-    const location = useLocation();
-    const currentLocation = location.pathname;
 
     const {
         chat: {
@@ -85,12 +77,7 @@ export default function App() {
     const sidebarRender = smallScreen ? (
         <Sidebar />
     ) : (
-        !isPage('index') &&
-        !isPage('swap') &&
-        !isPage('404') &&
-        !isPage('tos') &&
-        !isPage('privacy') &&
-        !isPage('initpool') &&
+        !isPage(['index', 'swap', '404', 'tos', 'privacy', 'initpool']) &&
         !fullScreenChart && (
             // isChainSupported &&
             <Sidebar />
@@ -103,16 +90,11 @@ export default function App() {
 
     const showSidebarOrNullStyle = smallScreen
         ? sidebarDislayStyle
-        : isPage('index') ||
-          isPage('swap') ||
-          isPage('404') ||
-          isPage('tos') ||
-          isPage('privacy') ||
-          isPage('swap')
+        : isPage(['index', 'swap', '404', 'tos', 'privacy', 'swap'])
         ? 'hide_sidebar'
         : sidebarDislayStyle;
 
-    const containerStyle = currentLocation.includes('trade')
+    const containerStyle = isPage(['limit', 'pool', 'market', 'reposition'])
         ? 'content-container-trade'
         : 'content-container';
 
@@ -343,15 +325,9 @@ export default function App() {
                 </section>
             </FlexContainer>
             <div className='footer_container'>
-                {currentLocation !== '/' &&
-                    currentLocation !== '/404' &&
-                    currentLocation !== '/terms' &&
-                    currentLocation !== '/privacy' &&
-                    !currentLocation.includes('/chat') &&
+                {!isPage(['index', '404', 'tos', 'privacy', 'chat']) &&
                     isChatEnabled && <ChatPanel isFullScreen={false} />}
-                {showMobileVersion && currentLocation !== '/' && (
-                    <SidebarFooter />
-                )}
+                {showMobileVersion && !isPage('index') && <SidebarFooter />}
             </div>
             <GlobalPopup />
             <SnackbarComponent />
