@@ -183,6 +183,14 @@ function Swap(props: propsIF) {
         ? undefined
         : Math.abs(priceImpact.percentChange) * 100;
 
+    const [priceImpactNumMemo, setPriceImpactNumMemo] = useState<
+        number | undefined
+    >();
+
+    useEffect(() => {
+        if (priceImpactNum) setPriceImpactNumMemo(priceImpactNum);
+    }, [priceImpactNum]);
+
     const tokenASurplusMinusTokenARemainderNum =
         parseFloat(tokenADexBalance || '0') - parseFloat(sellQtyString || '0');
     const isTokenADexSurplusSufficient =
@@ -591,7 +599,9 @@ function Swap(props: propsIF) {
     ) : undefined;
 
     const priceImpactWarning =
-        !isLiquidityInsufficient && priceImpactNum && priceImpactNum > 2 ? (
+        !isLiquidityInsufficient &&
+        priceImpactNumMemo &&
+        priceImpactNumMemo > 2 ? (
             <WarningContainer
                 flexDirection='row'
                 justifyContent='space-between'
@@ -613,7 +623,7 @@ function Swap(props: propsIF) {
                         placement='bottom'
                     />
                 </FlexContainer>
-                <div>{getPriceImpactString(priceImpactNum)}%</div>
+                <div>{getPriceImpactString(priceImpactNumMemo)}%</div>
             </WarningContainer>
         ) : undefined;
 
