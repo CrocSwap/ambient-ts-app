@@ -260,6 +260,10 @@ export default function OrderDetailsModal(props: propsIF) {
                         baseTokenAddress={baseTokenAddress}
                         quoteTokenAddress={quoteTokenAddress}
                         fillPercentage={fillPercentage}
+                        isAccountView={isAccountView}
+                        isBaseTokenMoneynessGreaterOrEqual={
+                            isBaseTokenMoneynessGreaterOrEqual
+                        }
                     />
                 </div>
                 <div className={styles.right_container}>

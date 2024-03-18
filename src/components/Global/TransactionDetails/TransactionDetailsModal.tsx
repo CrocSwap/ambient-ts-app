@@ -153,6 +153,7 @@ function TransactionDetailsModal(props: propsIF) {
                         tx={tx}
                         controlItems={controlItems}
                         positionApy={updatedPositionApy}
+                        isAccountView={isAccountView}
                     />
                 </div>
                 <div className={styles.right_container}>

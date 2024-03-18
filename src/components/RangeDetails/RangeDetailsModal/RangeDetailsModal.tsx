@@ -452,6 +452,10 @@ function RangeDetailsModal(props: propsIF) {
                         baseTokenAddress={baseTokenAddress}
                         quoteTokenAddress={quoteTokenAddress}
                         blastPointsData={blastPointsData}
+                        isBaseTokenMoneynessGreaterOrEqual={
+                            isBaseTokenMoneynessGreaterOrEqual
+                        }
+                        isAccountView={isAccountView}
                     />
                 </div>
                 <div className={styles.right_container}>

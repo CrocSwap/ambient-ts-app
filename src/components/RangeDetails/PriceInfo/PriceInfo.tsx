@@ -33,6 +33,8 @@ interface propsIF {
     baseTokenAddress: string;
     quoteTokenAddress: string;
     blastPointsData: BlastPointsDataIF;
+    isBaseTokenMoneynessGreaterOrEqual: boolean;
+    isAccountView: boolean;
 }
 
 export default function PriceInfo(props: propsIF) {
@@ -56,6 +58,8 @@ export default function PriceInfo(props: propsIF) {
         baseTokenAddress,
         quoteTokenAddress,
         blastPointsData,
+        isBaseTokenMoneynessGreaterOrEqual,
+        isAccountView,
     } = props;
 
     const { pathname } = useLocation();
@@ -64,6 +68,11 @@ export default function PriceInfo(props: propsIF) {
     const isOnTradeRoute = pathname.includes('trade');
     const { tokens } = useContext(TokenContext);
     const { isActiveNetworkBlast } = useContext(ChainDataContext);
+
+    const isDenomBaseLocal = isAccountView
+        ? !isBaseTokenMoneynessGreaterOrEqual
+        : isDenomBase;
+
     const baseToken: TokenIF | undefined =
         tokens.getTokenByAddress(baseTokenAddress);
     const quoteToken: TokenIF | undefined =
@@ -151,25 +160,37 @@ export default function PriceInfo(props: propsIF) {
         </div>
     );
 
+    const baseTokenLargeDisplay = (
+        <TokenIcon
+            token={baseToken}
+            src={baseTokenLogoURI}
+            alt={baseTokenSymbol}
+            size='2xl'
+        />
+    );
+
+    const quoteTokenLargeDisplay = (
+        <TokenIcon
+            token={quoteToken}
+            src={quoteTokenLogoURI}
+            alt={quoteTokenSymbol}
+            size='2xl'
+        />
+    );
+
     const tokenPairDetails = (
         <div className={styles.token_pair_details}>
             <div className={styles.token_pair_images}>
-                <TokenIcon
-                    token={baseToken}
-                    src={baseTokenLogoURI}
-                    alt={baseTokenSymbol}
-                    size='2xl'
-                />
-                <TokenIcon
-                    token={quoteToken}
-                    src={quoteTokenLogoURI}
-                    alt={quoteTokenSymbol}
-                    size='2xl'
-                />
+                {isDenomBaseLocal
+                    ? baseTokenLargeDisplay
+                    : quoteTokenLargeDisplay}
+                {isDenomBaseLocal
+                    ? quoteTokenLargeDisplay
+                    : baseTokenLargeDisplay}
             </div>
             <p>
-                {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
-                {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
+                {isDenomBaseLocal ? baseTokenSymbol : quoteTokenSymbol} /{' '}
+                {isDenomBaseLocal ? quoteTokenSymbol : baseTokenSymbol}
             </p>
         </div>
     );
