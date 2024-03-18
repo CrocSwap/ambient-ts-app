@@ -79,6 +79,9 @@ export function getFormattedNumber({
         } else {
             valueString = formatSubscript(value);
         }
+    } else if (Math.abs(value) < 0.1) {
+        // show 4 significant digits (after 0s) -- useful for ETH/WBTC
+        valueString = value.toPrecision(4);
     } else if (Math.abs(value) < 0.9) {
         // show 3 significant digits (after 0s)
         valueString = value.toPrecision(3);

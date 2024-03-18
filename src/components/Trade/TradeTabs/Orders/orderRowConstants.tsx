@@ -77,7 +77,6 @@ export const orderRowConstants = (props: propsIF) => {
         quoteTokenSymbol,
         elapsedTimeString,
         isAccountView,
-        priceCharacter,
         truncatedDisplayPrice,
         truncatedDisplayPriceDenomByMoneyness,
         sideType,
@@ -383,7 +382,7 @@ export const orderRowConstants = (props: propsIF) => {
         >
             {(
                 <p>
-                    <span>{priceCharacter}</span>
+                    {/* <span>{priceCharacter}</span> */}
                     <span>
                         {isAccountView
                             ? truncatedDisplayPriceDenomByMoneyness
