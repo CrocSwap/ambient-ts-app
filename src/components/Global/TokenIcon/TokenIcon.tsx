@@ -147,7 +147,11 @@ function TokenIcon(props: propsIF) {
 
     const noTokenIcon: JSX.Element = (
         <NoTokenIcon
-            tokenInitial={getTokenCharacter(token)}
+            tokenInitial={
+                token
+                    ? getTokenCharacter(token)
+                    : alt?.charAt(0).toUpperCase() || ''
+            }
             width={getIconWidth(size)}
         />
     );
