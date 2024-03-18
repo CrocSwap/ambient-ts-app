@@ -5,7 +5,7 @@ import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 import { TokenIF } from '../../../ambient-utils/types';
 import processLogoSrc from './processLogoSrc';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
-import { useLocation } from 'react-router-dom';
+import { useLinkGen } from '../../../utils/hooks/useLinkGen';
 
 type TokenIconSize = 'xxs' | 'xs' | 's' | 'm' | 'l' | 'xl' | '2xl' | '3xl';
 
@@ -59,11 +59,11 @@ function TokenIcon(props: propsIF) {
                     width: getIconWidth(size),
                     height: getIconWidth(size),
                 }}
-            ></div>
+            />
         );
     }
 
-    const { pathname } = useLocation();
+    const { isPage } = useLinkGen();
 
     // bool to trigger fallback error handling
     const [fetchError, setFetchError] = useState<boolean>(false);
@@ -93,7 +93,7 @@ function TokenIcon(props: propsIF) {
     // logic to create a tooltip text based on pathway
     // if supplied an empty string tooltip will not render
     const makeTooltipText = (): string =>
-        pathname.startsWith('/explore') ? `${token?.name ?? '[unknown]'}` : '';
+        isPage('explore') ? `${token?.name ?? '[unknown]'}` : '';
 
     return (
         <DefaultTooltip title={makeTooltipText()}>

@@ -72,6 +72,7 @@ export type baseURLs = typeof BASE_URL_PATHS[pageNames];
 
 export interface linkGenMethodsIF {
     currentPage: pageNames;
+    isPage: (p: pageNames) => boolean;
     baseURL: baseURLs;
     getFullURL: (paramsObj?: anyParamsIF | string) => string;
     navigate: (paramsObj?: anyParamsIF | string) => void;
@@ -147,12 +148,19 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
         navigate(getFullURL(paramsObj));
     }
 
+    // fn to run `navigateUser` while replacing entry in the history stack
     function redirectUser(paramsObj?: anyParamsIF | string): void {
         navigate(getFullURL(paramsObj), { replace: true });
     }
 
+    // fn to determine if the user is currently on a given page (by name)
+    function isPage(p: pageNames): boolean {
+        return p === getPageFromLocation();
+    }
+
     return {
         currentPage: getPageFromLocation(),
+        isPage,
         baseURL,
         getFullURL,
         navigate: navigateUser,
