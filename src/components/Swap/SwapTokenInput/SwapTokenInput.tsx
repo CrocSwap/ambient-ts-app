@@ -38,6 +38,7 @@ interface propsIF {
         SetStateAction<
             | {
                   input: string;
+                  isInputSell: boolean;
                   impact: CrocImpact | undefined;
               }
             | undefined
@@ -116,7 +117,11 @@ function SwapTokenInput(props: propsIF) {
 
         if (!skipQuantityReverse) {
             setLastImpactQuery(() => {
-                return { input: primaryQuantity, impact: undefined };
+                return {
+                    input: primaryQuantity,
+                    isInputSell: isTokenAPrimary,
+                    impact: undefined,
+                };
             });
             !isTokenAPrimary
                 ? sellQtyString !== '' && parseFloat(sellQtyString) > 0
@@ -170,7 +175,11 @@ function SwapTokenInput(props: propsIF) {
         if (isNaN(parseFloat(input)) || parseFloat(input) === 0 || !crocEnv) {
             setIsLiquidityInsufficient(false);
             setLastImpactQuery((lastQuery) => {
-                return { input: lastQuery?.input || '', impact: undefined };
+                return {
+                    input: lastQuery?.input || '',
+                    isInputSell: isTokenAPrimary,
+                    impact: undefined,
+                };
             });
             return undefined;
         }
@@ -183,10 +192,21 @@ function SwapTokenInput(props: propsIF) {
             input,
         );
         setLastImpactQuery((lastQuery) => {
-            if (lastQuery?.input === input) {
-                return { input: input, impact: impact };
+            if (
+                lastQuery?.input === input &&
+                lastQuery?.isInputSell === isTokenAPrimary
+            ) {
+                return {
+                    input: input,
+                    isInputSell: isTokenAPrimary,
+                    impact: impact,
+                };
             } else {
-                return { input: lastQuery?.input || '', impact: undefined };
+                return {
+                    input: lastQuery?.input || '',
+                    isInputSell: isTokenAPrimary,
+                    impact: undefined,
+                };
             }
         });
 
@@ -239,6 +259,7 @@ function SwapTokenInput(props: propsIF) {
                     const truncatedInputStr = formatTokenInput(value, tokenA);
                     setLastImpactQuery({
                         input: truncatedInputStr,
+                        isInputSell: true,
                         impact: undefined,
                     });
 
@@ -247,6 +268,7 @@ function SwapTokenInput(props: propsIF) {
             } else {
                 setLastImpactQuery({
                     input: primaryQuantity,
+                    isInputSell: true,
                     impact: undefined,
                 });
                 rawTokenBQty = await refreshImpact(primaryQuantity, true);
@@ -285,6 +307,7 @@ function SwapTokenInput(props: propsIF) {
                     const truncatedInputStr = formatTokenInput(value, tokenB);
                     setLastImpactQuery({
                         input: truncatedInputStr,
+                        isInputSell: false,
                         impact: undefined,
                     });
                     rawTokenAQty = await refreshImpact(
@@ -295,6 +318,7 @@ function SwapTokenInput(props: propsIF) {
             } else {
                 setLastImpactQuery({
                     input: primaryQuantity,
+                    isInputSell: false,
                     impact: undefined,
                 });
                 rawTokenAQty = await refreshImpact(primaryQuantity, false);
@@ -338,6 +362,18 @@ function SwapTokenInput(props: propsIF) {
     useEffect(() => {
         refreshTokenData();
     }, []);
+
+    useEffect(() => {
+        if (isTokenAPrimary) {
+            if (sellQtyString !== primaryQuantity) {
+                setSellQtyString && setSellQtyString(primaryQuantity);
+            }
+        } else {
+            if (buyQtyString !== primaryQuantity) {
+                setBuyQtyString && setBuyQtyString(primaryQuantity);
+            }
+        }
+    }, [isTokenAPrimary]);
 
     return (
         <FlexContainer flexDirection='column' gap={8}>

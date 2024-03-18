@@ -146,7 +146,12 @@ function Swap(props: propsIF) {
         useState<string>('');
 
     const [lastImpactQuery, setLastImpactQuery] = useState<
-        { input: string; impact: CrocImpact | undefined } | undefined
+        | {
+              input: string;
+              isInputSell: boolean;
+              impact: CrocImpact | undefined;
+          }
+        | undefined
     >();
 
     const priceImpact = useMemo(
