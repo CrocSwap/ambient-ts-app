@@ -107,7 +107,10 @@ function TokenIcon(props: propsIF) {
                                 width: getIconWidth(size),
                                 height: getIconWidth(size),
                             }}
-                            src={processLogoSrc(token)}
+                            src={processLogoSrc({
+                                token: token,
+                                sourceURI: src,
+                            })}
                             alt={alt}
                             onError={handleFetchError}
                         />
