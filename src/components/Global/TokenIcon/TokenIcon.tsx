@@ -91,18 +91,20 @@ function TokenIcon(props: propsIF) {
         // early return if no token data object is available
         if (!tkn) return DEFAULT_OUTPUT;
         // regex to identify whether a character is alphanumeric (case-insensitive)
-        const alphanumericRegex = /^[0-9a-zA-Z]$/;
+        const alphanumericRegex = /[a-zA-Z0-9]/;
         // array of strings to use to isolate a character in order of preference
         const characterSources: string[] = [tkn.symbol, tkn.name];
         // join sources into a string for easier processing
-        const characterSourcesAsString: string = characterSources.join();
-        // index of the first character passing the regex test (`undefined` if none pass)
-        const characterIndex: number | undefined =
-            characterSourcesAsString.search(alphanumericRegex);
-        // character at the found index, will use the specified default if none is found
-        const output: string = characterIndex
-            ? characterSourcesAsString.charAt(characterIndex)
-            : DEFAULT_OUTPUT;
+        const characterSourcesAsStr: string = characterSources.join('');
+        // iterate over characters in string to find the first alphanumeric
+        let outputCharacter = DEFAULT_OUTPUT;
+        for (let i = 0; i < characterSourcesAsStr.length; i++) {
+            const char: string = characterSourcesAsStr.charAt(i);
+            if (alphanumericRegex.test(char)) {
+                outputCharacter = char;
+                break;
+            }
+        }
 
         // logic to specify overrides for casing rules on certain tokens
         type casingException = [string, string, letterCasings];
@@ -137,7 +139,10 @@ function TokenIcon(props: propsIF) {
         const DEFAULT_CASE: letterCasings = 'upper';
 
         // return the relevant character in the appropriate casing
-        return fixCase(output, checkForCasingException(token) ?? DEFAULT_CASE);
+        return fixCase(
+            outputCharacter,
+            checkForCasingException(token) ?? DEFAULT_CASE,
+        );
     }
 
     const noTokenIcon: JSX.Element = (
