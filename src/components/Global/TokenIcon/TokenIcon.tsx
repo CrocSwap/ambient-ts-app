@@ -82,8 +82,30 @@ function TokenIcon(props: propsIF) {
         setFetchError(false);
     }, [src]);
 
+    function getTokenCharacter(tkn: TokenIF | undefined): string | null {
+        if (!tkn) return '';
+        const alphanumericRegex = /^[0-9a-zA-Z]$/;
+        let character: string | null = null;
+        const characterSources: string[] = [tkn.symbol, tkn.name];
+        let i = 0;
+        do {
+            for (let i = 0; i < tkn.name.length; i++) {
+                const char: string = tkn.name.charAt(i);
+                if (alphanumericRegex.test(char)) {
+                    character = char;
+                    break;
+                }
+            }
+            i++;
+        } while (!character && i < characterSources.length);
+        return character;
+    }
+
     const noTokenIcon: JSX.Element = (
-        <NoTokenIcon tokenInitial={alt?.charAt(0)} width={getIconWidth(size)} />
+        <NoTokenIcon
+            tokenInitial={getTokenCharacter(token)}
+            width={getIconWidth(size)}
+        />
     );
 
     // TODO: not great practice to use the same item for both loader and error fallback
