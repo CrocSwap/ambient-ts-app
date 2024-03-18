@@ -63,6 +63,7 @@ const BASE_URL_PATHS = {
     testpage: '/testpage',
     account: '/account',
     privacy: '/privacy',
+    '404': '/404',
 } as const;
 
 // string-literal union type of keys in `BASE_URL_PATHS`
@@ -120,6 +121,8 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
             pageName = 'account';
         } else if (pathname.startsWith(BASE_URL_PATHS.privacy)) {
             pageName = 'privacy';
+        } else if (pathname.startsWith(BASE_URL_PATHS['404'])) {
+            pageName = '404';
         } else {
             pageName = 'home';
         }

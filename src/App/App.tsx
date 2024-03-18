@@ -47,6 +47,7 @@ import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
 import ExampleForm from '../pages/InitPool/FormExample';
 import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
+import { useLinkGen } from '../utils/hooks/useLinkGen';
 
 /** ***** React Function *******/
 export default function App() {
@@ -75,23 +76,21 @@ export default function App() {
 
     const smallScreen = useMediaQuery('(max-width: 500px)');
 
+    const { isPage } = useLinkGen();
+
     // Take away margin from left if we are on homepage or swap
-    const swapBodyStyle =
-        currentLocation.startsWith('/swap') && !smallScreen
-            ? 'swap-body'
-            : null;
+    const swapBodyStyle = isPage('swap') && !smallScreen ? 'swap-body' : null;
 
     // Show sidebar on all pages except for home, swap, chat, and 404
     const sidebarRender = smallScreen ? (
         <Sidebar />
     ) : (
-        currentLocation !== '/' &&
-        currentLocation !== '/swap' &&
-        currentLocation !== '/404' &&
-        currentLocation !== '/terms' &&
-        currentLocation !== '/privacy' &&
-        !currentLocation.includes('/chat') &&
-        !currentLocation.includes('/initpool') &&
+        !isPage('index') &&
+        !isPage('swap') &&
+        !isPage('404') &&
+        !isPage('tos') &&
+        !isPage('privacy') &&
+        !isPage('initpool') &&
         !fullScreenChart && (
             // isChainSupported &&
             <Sidebar />
@@ -104,13 +103,12 @@ export default function App() {
 
     const showSidebarOrNullStyle = smallScreen
         ? sidebarDislayStyle
-        : currentLocation == '/' ||
-          currentLocation == '/swap' ||
-          currentLocation == '/404' ||
-          currentLocation == '/terms' ||
-          currentLocation == '/privacy' ||
-          currentLocation.includes('/chat') ||
-          currentLocation.startsWith('/swap')
+        : isPage('index') ||
+          isPage('swap') ||
+          isPage('404') ||
+          isPage('tos') ||
+          isPage('privacy') ||
+          isPage('swap')
         ? 'hide_sidebar'
         : sidebarDislayStyle;
 
@@ -184,8 +182,7 @@ export default function App() {
                 <section
                     className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
                 >
-                    {(!currentLocation.startsWith('/swap') || smallScreen) &&
-                        sidebarRender}
+                    {(!isPage('swap') || smallScreen) && sidebarRender}
                     <Routes>
                         <Route index element={<Home />} />
                         <Route
