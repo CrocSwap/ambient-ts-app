@@ -1,6 +1,6 @@
 {
     "name": "ambient-ts-app",
-    "version": "2.3.14",
+    "version": "2.3.22",
     "private": true,
     "dependencies": {
         "@covalenthq/client-sdk": "^0.2.6",

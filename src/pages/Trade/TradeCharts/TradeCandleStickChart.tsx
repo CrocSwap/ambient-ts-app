@@ -548,6 +548,14 @@ function TradeCandleStickChart(props: propsIF) {
         }
     }, [unparsedCandleData === undefined, mobileView, isDenomBase, period]);
 
+    useEffect(() => {
+        if (candleScale.isFetchFirst200Candle === true) {
+            scaleData && setScaleData(undefined);
+        } else {
+            setScaleForChart(unparsedCandleData);
+        }
+    }, [candleScale.isFetchFirst200Candle]);
+
     // Liq Scale
     useEffect(() => {
         if (liquidityData !== undefined) {
@@ -779,6 +787,7 @@ function TradeCandleStickChart(props: propsIF) {
                                 lastCandleDate: firstTime,
                                 nCandles: nCandles,
                                 isShowLatestCandle: false,
+                                isFetchFirst200Candle: false,
                             };
                         });
                     } else {
@@ -820,6 +829,7 @@ function TradeCandleStickChart(props: propsIF) {
                     lastCandleDate: undefined,
                     nCandles: 200,
                     isShowLatestCandle: true,
+                    isFetchFirst200Candle: false,
                 };
             });
         }
@@ -850,6 +860,7 @@ function TradeCandleStickChart(props: propsIF) {
                     lastCandleDate: prev.lastCandleDate,
                     nCandles: prev.nCandles,
                     isShowLatestCandle: true,
+                    isFetchFirst200Candle: prev.isFetchFirst200Candle,
                 };
             });
         }

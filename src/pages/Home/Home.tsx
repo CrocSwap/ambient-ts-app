@@ -6,10 +6,7 @@ import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import MobileLandingSections from '../../components/Home/Landing/MobileLandingSections';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useSwitchNetwork } from 'wagmi';
-import {
-    APP_ENVIRONMENT,
-    supportedNetworks,
-} from '../../ambient-utils/constants';
+import { supportedNetworks } from '../../ambient-utils/constants';
 import { useContext, useEffect } from 'react';
 import { lookupChainId } from '../../ambient-utils/dataLayer';
 import { UserDataContext } from '../../contexts/UserDataContext';
@@ -83,25 +80,21 @@ export default function Home() {
                     <Hero />
                 </div>
             )}
-            {APP_ENVIRONMENT !== 'production' && (
-                <PointSystemContainer>
-                    <Text fontSize='header1'>Points system now live!</Text>
+            <PointSystemContainer>
+                <Text fontSize='header1'>Points system now live!</Text>
 
-                    <Link
-                        to={isUserConnected ? '/account/xp' : '/xp-leaderboard'}
+                <Link to={isUserConnected ? '/account/xp' : '/xp-leaderboard'}>
+                    <Text
+                        fontSize='header2'
+                        color='accent1'
+                        style={{ textDecoration: 'underline' }}
                     >
-                        <Text
-                            fontSize='header2'
-                            color='accent1'
-                            style={{ textDecoration: 'underline' }}
-                        >
-                            {isUserConnected
-                                ? ' View your current XP here'
-                                : 'View XP leaderboard'}
-                        </Text>
-                    </Link>
-                </PointSystemContainer>
-            )}
+                        {isUserConnected
+                            ? ' View your current XP here'
+                            : 'View XP leaderboard'}
+                    </Text>
+                </Link>
+            </PointSystemContainer>
             <div>
                 <TopPools />
                 <Stats />

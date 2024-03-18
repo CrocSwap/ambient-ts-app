@@ -19,8 +19,16 @@ import { CrocEnvContext } from './CrocEnvContext';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../ambient-utils/constants';
 import ambientTokenList from '../ambient-utils/constants/ambient-token-list.json';
 import { PoolContext } from './PoolContext';
+import { useTokenStatsIF, useTokenStats } from '../pages/Explore/useTokenStats';
+import { TokenContext } from './TokenContext';
+
+type tabs = 'pools' | 'tokens';
 
 export interface ExploreContextIF {
+    tab: {
+        active: tabs;
+        toggle: () => void;
+    };
     pools: {
         all: Array<PoolDataIF>;
         getLimited(poolList: PoolIF[], crocEnv: CrocEnv, chainId: string): void;
@@ -29,8 +37,9 @@ export interface ExploreContextIF {
             crocEnv: CrocEnv,
             chainId: string,
         ) => void;
-        resetPoolData: () => void;
+        reset: () => void;
     };
+    tokens: useTokenStatsIF;
 }
 
 export interface PoolDataIF extends PoolIF {
@@ -54,17 +63,19 @@ export const ExploreContext = createContext<ExploreContextIF>(
 );
 
 export const ExploreContextProvider = (props: { children: ReactNode }) => {
-    const { lastBlockNumber, isActiveNetworkBlast } =
-        useContext(ChainDataContext);
+    const { isActiveNetworkBlast } = useContext(ChainDataContext);
 
     const {
         cachedPoolStatsFetch,
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
+        cachedTokenDetails,
         cachedGet24hChange,
     } = useContext(CachedDataContext);
 
-    const { crocEnv, chainData, activeNetwork } = useContext(CrocEnvContext);
+    const { crocEnv, chainData, activeNetwork, provider } =
+        useContext(CrocEnvContext);
+    const { tokens } = useContext(TokenContext);
 
     const [limitedPools, setLimitedPools] = useState<Array<PoolDataIF>>([]);
     const [extraPools, setExtraPools] = useState<Array<PoolDataIF>>([]);
@@ -130,6 +141,8 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             crocEnv,
             activeNetwork.graphCacheUrl,
             cachedFetchTokenPrice,
+            cachedTokenDetails,
+            tokens.tokenUniv,
         );
         const ydayTime = Math.floor(Date.now() / 1000 - 24 * 3600);
 
@@ -142,6 +155,8 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             crocEnv,
             activeNetwork.graphCacheUrl,
             cachedFetchTokenPrice,
+            cachedTokenDetails,
+            tokens.tokenUniv,
             ydayTime,
         );
 
@@ -226,7 +241,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             pool.base.address,
             pool.quote.address,
             chainId,
-            lastBlockNumber,
+            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
         );
         // display price, inverted if necessary
         const displayPrice: number = shouldInvert
@@ -339,16 +354,45 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             });
     }
 
+    const [activeTab, setActiveTab] = useState<tabs>('pools');
+    function toggleTab(): void {
+        let newTab: tabs;
+        switch (activeTab) {
+            case 'pools':
+                newTab = 'tokens';
+                break;
+            case 'tokens':
+                newTab = 'pools';
+                break;
+        }
+        setActiveTab(newTab);
+    }
+
+    const dexTokens: useTokenStatsIF = useTokenStats(
+        chainData.chainId,
+        crocEnv,
+        activeNetwork.graphCacheUrl,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        tokens,
+        provider,
+    );
+
     const exploreContext: ExploreContextIF = {
+        tab: {
+            active: activeTab,
+            toggle: toggleTab,
+        },
         pools: {
             all: allPools,
             getLimited: getLimitedPoolData,
             getExtra: getExtraPoolData,
-            resetPoolData: () => {
+            reset: () => {
                 setLimitedPools([]);
                 setExtraPools([]);
             },
         },
+        tokens: dexTokens,
     };
 
     return (

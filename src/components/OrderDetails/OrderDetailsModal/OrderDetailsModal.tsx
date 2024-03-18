@@ -221,6 +221,16 @@ export default function OrderDetailsModal(props: propsIF) {
         { slug: 'value', name: 'Show value', checked: true },
     ];
 
+    const [timeFirstMintMemo, setTimeFirstMintMemo] = useState<number>(
+        limitOrder.timeFirstMint,
+    );
+
+    useEffect(() => {
+        if (limitOrder.timeFirstMint) {
+            setTimeFirstMintMemo(limitOrder.timeFirstMint);
+        }
+    }, [limitOrder.timeFirstMint]);
+
     const shareComponent = (
         <div ref={detailsRef} className={styles.main_outer_container}>
             <div className={styles.main_content}>
@@ -255,6 +265,7 @@ export default function OrderDetailsModal(props: propsIF) {
                 <div className={styles.right_container}>
                     <TransactionDetailsGraph
                         tx={limitOrder}
+                        timeFirstMintMemo={timeFirstMintMemo}
                         transactionType={'limitOrder'}
                         isBaseTokenMoneynessGreaterOrEqual={
                             isBaseTokenMoneynessGreaterOrEqual
@@ -282,6 +293,7 @@ export default function OrderDetailsModal(props: propsIF) {
                 ) : (
                     <OrderDetailsSimplify
                         limitOrder={limitOrder}
+                        timeFirstMintMemo={timeFirstMintMemo}
                         usdValue={usdValue}
                         isBid={isBid}
                         isDenomBase={isDenomBase}

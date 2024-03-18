@@ -869,6 +869,7 @@ export default function Chart(props: propsIF) {
                     lastCandleDate: Math.floor(domainMax / 1000),
                     nCandles: nCandles,
                     isShowLatestCandle: isShowLatestCandle,
+                    isFetchFirst200Candle: false,
                 };
             });
         }
@@ -2686,7 +2687,7 @@ export default function Chart(props: propsIF) {
 
             return () => resizeObserver.unobserve(canvasDiv.node());
         }
-    }, []);
+    }, [handleDocumentEvent]);
 
     useEffect(() => {
         if (d3Container) {
@@ -4209,6 +4210,7 @@ export default function Chart(props: propsIF) {
             ) {
                 setIsShowFloatingToolbar(false);
             }
+            render();
         };
 
         document.addEventListener('click', handleDocumentClick);

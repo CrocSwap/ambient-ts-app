@@ -19,9 +19,18 @@ import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
 import { Client } from '@covalenthq/client-sdk';
-import { UserDataContext, UserXpDataIF } from './UserDataContext';
+import {
+    BlastUserXpDataIF,
+    UserDataContext,
+    UserXpDataIF,
+} from './UserDataContext';
 import { TokenBalanceContext } from './TokenBalanceContext';
-import { fetchBlockNumber, fetchUserXpData } from '../ambient-utils/api';
+import {
+    fetchBlastUserXpData,
+    fetchBlockNumber,
+    fetchUserXpData,
+} from '../ambient-utils/api';
+import { BLAST_RPC_URL } from '../ambient-utils/constants/networks/blastNetwork';
 
 interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
@@ -30,6 +39,7 @@ interface ChainDataContextIF {
     setLastBlockNumber: Dispatch<SetStateAction<number>>;
     client: Client;
     connectedUserXp: UserXpDataIF;
+    connectedUserBlastXp: BlastUserXpDataIF;
     isActiveNetworkBlast: boolean;
     isActiveNetworkScroll: boolean;
     isActiveNetworkMainnet: boolean;
@@ -89,6 +99,8 @@ export const ChainDataContextProvider = (props: {
             process.env.REACT_APP_INFURA_KEY
                 ? chainData.nodeUrl.slice(0, -32) +
                   process.env.REACT_APP_INFURA_KEY
+                : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
+                ? BLAST_RPC_URL
                 : blockPollingUrl;
         try {
             const lastBlockNumber = await fetchBlockNumber(nodeUrl);
@@ -98,7 +110,7 @@ export const ChainDataContextProvider = (props: {
         }
     }
 
-    const BLOCK_NUM_POLL_MS = 2000;
+    const BLOCK_NUM_POLL_MS = 5000;
     useEffect(() => {
         (async () => {
             await pollBlockNum();
@@ -184,36 +196,69 @@ export const ChainDataContextProvider = (props: {
                 client
             ) {
                 try {
-                    // wait for 7 seconds before fetching token balances
-                    setTimeout(() => {
-                        (async () => {
-                            const tokenBalances: TokenIF[] =
-                                await cachedFetchTokenBalances(
-                                    userAddress,
-                                    chainData.chainId,
-                                    everyFiveMinutes,
-                                    cachedTokenDetails,
-                                    crocEnv,
-                                    activeNetwork.graphCacheUrl,
-                                    client,
+                    const tokenBalances: TokenIF[] =
+                        await cachedFetchTokenBalances(
+                            userAddress,
+                            chainData.chainId,
+                            everyFiveMinutes,
+                            cachedTokenDetails,
+                            crocEnv,
+                            activeNetwork.graphCacheUrl,
+                            client,
+                            tokens.tokenUniv,
+                        );
+                    const tokensWithLogos = tokenBalances.map((token) => {
+                        const oldToken: TokenIF | undefined =
+                            tokens.getTokenByAddress(token.address);
+                        const newToken = { ...token };
+
+                        newToken.decimals =
+                            oldToken?.decimals || newToken?.decimals || 18;
+                        newToken.name = oldToken?.name || newToken.name || '';
+                        newToken.logoURI =
+                            oldToken?.logoURI || newToken.logoURI || '';
+                        newToken.symbol =
+                            oldToken?.symbol || newToken.symbol || '';
+                        return newToken;
+                    });
+                    setTokenBalances(tokensWithLogos);
+
+                    if (isActiveNetworkBlast) {
+                        // wait for 7 seconds before fetching alt token balances
+                        setTimeout(() => {
+                            (async () => {
+                                const tokenBalances: TokenIF[] =
+                                    await cachedFetchTokenBalances(
+                                        userAddress,
+                                        chainData.chainId,
+                                        everyFiveMinutes,
+                                        cachedTokenDetails,
+                                        crocEnv,
+                                        activeNetwork.graphCacheUrl,
+                                        client,
+                                        tokens.tokenUniv,
+                                        true,
+                                    );
+                                const tokensWithLogos = tokenBalances.map(
+                                    (token) => {
+                                        const oldToken: TokenIF | undefined =
+                                            tokens.getTokenByAddress(
+                                                token.address,
+                                            );
+                                        const newToken = { ...token };
+                                        newToken.name = oldToken
+                                            ? oldToken.name
+                                            : '';
+                                        newToken.logoURI = oldToken
+                                            ? oldToken.logoURI
+                                            : '';
+                                        return newToken;
+                                    },
                                 );
-                            const tokensWithLogos = tokenBalances.map(
-                                (token) => {
-                                    const oldToken: TokenIF | undefined =
-                                        tokens.getTokenByAddress(token.address);
-                                    const newToken = { ...token };
-                                    newToken.name = oldToken
-                                        ? oldToken.name
-                                        : '';
-                                    newToken.logoURI = oldToken
-                                        ? oldToken.logoURI
-                                        : '';
-                                    return newToken;
-                                },
-                            );
-                            setTokenBalances(tokensWithLogos);
-                        })();
-                    }, 7000);
+                                setTokenBalances(tokensWithLogos);
+                            })();
+                        }, 7000);
+                    }
                 } catch (error) {
                     // setTokenBalances(undefined);
                     console.error({ error });
@@ -235,30 +280,69 @@ export const ChainDataContextProvider = (props: {
         data: undefined,
     });
 
+    const [connectedUserBlastXp, setConnectedUserBlastXp] =
+        React.useState<BlastUserXpDataIF>({
+            dataReceived: false,
+            data: undefined,
+        });
+
     React.useEffect(() => {
         if (userAddress) {
             fetchUserXpData({
                 user: userAddress,
                 chainId: chainData.chainId,
-            }).then((data) => {
-                setConnectedUserXp({
-                    dataReceived: true,
-                    data: data ? data : undefined,
+            })
+                .then((data) => {
+                    setConnectedUserXp({
+                        dataReceived: true,
+                        data: data,
+                    });
+                })
+                .catch((error) => {
+                    console.error(error);
+                    setConnectedUserXp({
+                        dataReceived: false,
+                        data: undefined,
+                    });
                 });
-            });
+
+            if (isActiveNetworkBlast) {
+                fetchBlastUserXpData({
+                    user: userAddress,
+                    chainId: chainData.chainId,
+                })
+                    .then((data) => {
+                        setConnectedUserBlastXp({
+                            dataReceived: true,
+                            data: data,
+                        });
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        setConnectedUserBlastXp({
+                            dataReceived: false,
+                            data: undefined,
+                        });
+                    });
+            }
         } else {
             setConnectedUserXp({
                 dataReceived: false,
                 data: undefined,
             });
+            setConnectedUserBlastXp({
+                dataReceived: false,
+                data: undefined,
+            });
         }
-    }, [userAddress]);
+    }, [userAddress, isActiveNetworkBlast]);
 
     const chainDataContext = {
         lastBlockNumber,
         setLastBlockNumber,
         gasPriceInGwei,
         connectedUserXp,
+        connectedUserBlastXp,
         setGasPriceinGwei,
         isActiveNetworkBlast,
         isActiveNetworkScroll,

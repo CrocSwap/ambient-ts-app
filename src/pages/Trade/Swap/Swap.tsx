@@ -357,15 +357,10 @@ function Swap(props: propsIF) {
                 ethMainnetUsdPrice;
 
             setSwapGasPriceinDollars(
-                isActiveNetworkBlast
-                    ? getFormattedNumber({
-                          value: gasPriceInDollarsNum + extraL1GasFeeSwap,
-                          prefix: '$',
-                      })
-                    : getFormattedNumber({
-                          value: gasPriceInDollarsNum + extraL1GasFeeSwap,
-                          isUSD: true,
-                      }),
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum + extraL1GasFeeSwap,
+                    isUSD: true,
+                }),
             );
         }
     }, [
