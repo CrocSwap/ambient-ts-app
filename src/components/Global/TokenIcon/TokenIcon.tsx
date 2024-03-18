@@ -87,26 +87,22 @@ function TokenIcon(props: propsIF) {
 
     // fn to get a character to use in the `<NoTokenIcon />` element
     function getTokenCharacter(tkn: TokenIF | undefined): string {
+        const DEFAULT_OUTPUT = '';
         // early return if no token data object is available
-        if (!tkn) return '';
+        if (!tkn) return DEFAULT_OUTPUT;
         // regex to identify whether a character is alphanumeric (case-insensitive)
         const alphanumericRegex = /^[0-9a-zA-Z]$/;
-        // output variable
-        let character = '';
         // array of strings to use to isolate a character in order of preference
         const characterSources: string[] = [tkn.symbol, tkn.name];
-        // logic to find the first alphanumeric character to use in the DOM
-        let i = 0;
-        do {
-            for (let i = 0; i < tkn.name.length; i++) {
-                const char: string = tkn.name.charAt(i);
-                if (alphanumericRegex.test(char)) {
-                    character = char;
-                    break;
-                }
-            }
-            i++;
-        } while (!character && i < characterSources.length);
+        // join sources into a string for easier processing
+        const characterSourcesAsString: string = characterSources.join();
+        // index of the first character passing the regex test (`undefined` if none pass)
+        const characterIndex: number | undefined =
+            characterSourcesAsString.search(alphanumericRegex);
+        // character at the found index, will use the specified default if none is found
+        const output: string = characterIndex
+            ? characterSourcesAsString.charAt(characterIndex)
+            : DEFAULT_OUTPUT;
 
         // logic to specify overrides for casing rules on certain tokens
         type casingException = [string, string, letterCasings];
@@ -137,8 +133,11 @@ function TokenIcon(props: propsIF) {
             return casingOverride;
         }
 
+        // default case to use if no override is found
+        const DEFAULT_CASE: letterCasings = 'upper';
+
         // return the relevant character in the appropriate casing
-        return fixCase(character, checkForCasingException(token) ?? 'upper');
+        return fixCase(output, checkForCasingException(token) ?? DEFAULT_CASE);
     }
 
     const noTokenIcon: JSX.Element = (
