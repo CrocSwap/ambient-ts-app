@@ -259,6 +259,16 @@ export const mainnetLIDO: TokenIF = {
     symbol: 'LDO',
 };
 
+export const mainnetLUSD: TokenIF = {
+    address: '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0',
+    chainId: 1,
+    decimals: 18,
+    fromList: '',
+    logoURI: 'https://etherscan.io/token/images/liquitylusd_32.png',
+    name: 'Liquity USD',
+    symbol: 'LUSD',
+};
+
 export const mainnetMKR: TokenIF = {
     address: '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2',
     chainId: 1,
@@ -634,6 +644,7 @@ export const defaultTokens: TokenIF[] = [
     mainnetSWETH,
     mainnetMKR,
     mainnetLIDO,
+    mainnetLUSD,
     blastETH,
     blastUSDB,
     blastMIA,

@@ -413,6 +413,16 @@ function RangeDetailsModal(props: propsIF) {
         }
     }, [serverPositionId, isActiveNetworkBlast]);
 
+    const [timeFirstMintMemo, setTimeFirstMintMemo] = useState<number>(
+        position.timeFirstMint,
+    );
+
+    useEffect(() => {
+        if (position.timeFirstMint) {
+            setTimeFirstMintMemo(position.timeFirstMint);
+        }
+    }, [position.timeFirstMint]);
+
     const shareComponent = (
         <div
             ref={detailsRef}
@@ -447,6 +457,7 @@ function RangeDetailsModal(props: propsIF) {
                 <div className={styles.right_container}>
                     <TransactionDetailsGraph
                         tx={position}
+                        timeFirstMintMemo={timeFirstMintMemo}
                         transactionType={'liqchange'}
                         isBaseTokenMoneynessGreaterOrEqual={
                             isBaseTokenMoneynessGreaterOrEqual
@@ -474,6 +485,7 @@ function RangeDetailsModal(props: propsIF) {
                 ) : (
                     <RangeDetailsSimplify
                         position={position}
+                        timeFirstMintMemo={timeFirstMintMemo}
                         baseFeesDisplay={baseFeesDisplay}
                         quoteFeesDisplay={quoteFeesDisplay}
                         isAccountView={isAccountView}

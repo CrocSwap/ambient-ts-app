@@ -53,8 +53,9 @@ export const PoolDisplayContainer = styled.section`
 export const PoolNameWrapper = styled.p`
     margin-left: 1rem;
     display: none;
+    text-transform: none;
 
-    @media (min-width: 400px) and (max-width: 640px) {
+    @media (min-width: 450px) and (max-width: 640px) {
         display: flex;
     }
 `;

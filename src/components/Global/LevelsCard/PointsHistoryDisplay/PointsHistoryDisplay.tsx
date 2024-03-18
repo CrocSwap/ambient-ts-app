@@ -113,7 +113,7 @@ export default function PointsHistoryDisplay(props: PropsIF) {
                 color='text1'
                 style={{ textAlign: 'center' }}
             >
-                Points History
+                Ambient Points History
             </Text>
             {pointsHistoryDisplay}
         </FlexContainer>

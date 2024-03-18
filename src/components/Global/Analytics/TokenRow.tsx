@@ -9,10 +9,11 @@ import {
 import { FlexContainer } from '../../../styled/Common';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { dexTokenData } from '../../../pages/Explore/useTokenStats';
-import { GCServerPoolIF, PoolIF } from '../../../ambient-utils/types';
+import { GCServerPoolIF, PoolIF, TokenIF } from '../../../ambient-utils/types';
 
 interface propsIF {
     token: dexTokenData;
+    tokenMeta: TokenIF;
     samplePool: PoolIF | undefined;
     backupPool: GCServerPoolIF | undefined;
     goToMarket: (tknA: string, tknB: string) => void;
@@ -20,15 +21,22 @@ interface propsIF {
 }
 
 export default function TokenRow(props: propsIF) {
-    const { token, samplePool, goToMarket, smallScreen, backupPool } = props;
-    if (!token.tokenMeta || (!samplePool && !backupPool)) return null;
+    const {
+        token,
+        tokenMeta,
+        samplePool,
+        goToMarket,
+        smallScreen,
+        backupPool,
+    } = props;
 
-    const mobileScrenView: boolean = useMediaQuery('(max-width: 500px)');
+    const mobileScrenView: boolean = useMediaQuery('(max-width: 640px)');
 
     return (
         <TableRow
             onClick={() => {
-                console.log(backupPool);
+                // due to gatekeeping in parent, at least one of these pools
+                // ... will be a defined value passed through props
                 if (samplePool) {
                     goToMarket(
                         samplePool.base.address,
@@ -55,20 +63,18 @@ export default function TokenRow(props: propsIF) {
                         }}
                     >
                         <TokenIcon
-                            token={token.tokenMeta}
-                            src={uriToHttp(token.tokenMeta?.logoURI ?? '')}
-                            alt={token.tokenMeta?.symbol ?? ''}
+                            token={tokenMeta}
+                            src={uriToHttp(tokenMeta.logoURI ?? '')}
+                            alt={tokenMeta.symbol ?? ''}
                             size={mobileScrenView ? 's' : '2xl'}
                         />
-                        <p>{token.tokenMeta?.symbol}</p>
+                        <p>{tokenMeta.symbol}</p>
                     </div>
                 </FlexContainer>
             </TableCell>
             {smallScreen || (
                 <TableCell left>
-                    <p style={{ textTransform: 'none' }}>
-                        {token.tokenMeta?.name}{' '}
-                    </p>
+                    <p style={{ textTransform: 'none' }}>{tokenMeta.name}</p>
                 </TableCell>
             )}
             <TableCell>
@@ -79,9 +85,11 @@ export default function TokenRow(props: propsIF) {
                     {token.normalized?.dexTvlNorm.display}
                 </p>
             </TableCell>
-            <TableCell>
-                <p>{token.normalized?.dexFeesNorm.display}</p>
-            </TableCell>
+            {smallScreen || (
+                <TableCell>
+                    <p>{token.normalized?.dexFeesNorm.display}</p>
+                </TableCell>
+            )}
             <TableCell>
                 <FlexContainer
                     fullHeight
