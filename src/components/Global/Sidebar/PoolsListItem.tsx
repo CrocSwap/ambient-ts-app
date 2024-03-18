@@ -71,7 +71,7 @@ export default function PoolsListItem(props: propsIF) {
     const { tokenA, tokenB } = useContext(TradeDataContext);
 
     // hook to generate navigation actions with pre-loaded path
-    const linkGenMarket: linkGenMethodsIF = useLinkGen(navTarget);
+    const linkGenVariable: linkGenMethodsIF = useLinkGen(navTarget);
 
     const [addrTokenA, addrTokenB] =
         tokenA.address.toLowerCase() === pool.base.address.toLowerCase()
@@ -85,7 +85,7 @@ export default function PoolsListItem(props: propsIF) {
     return (
         <ItemContainer
             as={Link}
-            to={linkGenMarket.getFullURL({
+            to={linkGenVariable.getFullURL({
                 chain: chainId,
                 tokenA: addrTokenA,
                 tokenB: addrTokenB,
