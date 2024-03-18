@@ -23,7 +23,6 @@ import TokenInputWithWalletBalance from '../../Form/TokenInputWithWalletBalance'
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { RangeContext } from '../../../contexts/RangeContext';
 
 interface propsIF {
     sellQtyString: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -84,8 +83,6 @@ function SwapTokenInput(props: propsIF) {
     } = useContext(TradeTokenContext);
 
     const { showSwapPulseAnimation } = useContext(TradeTableContext);
-    const { setIsTokenAPrimaryRange, isTokenAPrimaryRange } =
-        useContext(RangeContext);
     const { isUserConnected } = useContext(UserDataContext);
     const {
         tokenA,
@@ -136,7 +133,6 @@ function SwapTokenInput(props: propsIF) {
                 setBuyQtyString(primaryQuantity);
             }
         }
-        setIsTokenAPrimaryRange(!isTokenAPrimaryRange);
 
         setLimitTick(undefined);
     };
