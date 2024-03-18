@@ -383,7 +383,7 @@
 }
 
 .msg_bubble_container{
-    animation: msgBubbleAnim 0.1s 1 ease-in-out forwards;
+    /* animation: msgBubbleAnim 0.1s 1 ease-in-out forwards; */
     transition: background .1s ease-in-out, padding-bottom .2s ease-in-out;
     width: 100%;
     position: relative;

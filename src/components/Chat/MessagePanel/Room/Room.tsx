@@ -521,29 +521,35 @@ export default function Room(props: propsIF) {
                     </div>
 
                     {/* // CHAT_FEATURES_WBO -  Feature : Mentions */}
-                    <div className={styles.only_mentions_wrapper}>
-                        <span
-                            className={`${styles.only_mentions_text} ${
-                                props.isFocusMentions
-                                    ? styles.only_mentions_text_active
-                                    : ''
-                            }`}
-                        >
-                            Focus Mentions{' '}
-                        </span>
-                        <span
-                            className={styles.only_mentions_toggle_wrapper}
-                        ></span>
-                        {props.mentCount > 0 && (
-                            <div
-                                className={`${styles.ment_text_info_wrapper} ${
-                                    props.isFocusMentions ? styles.opa_full : ''
+                    {props.mentCount > 0 && (
+                        <div className={styles.only_mentions_wrapper}>
+                            <span
+                                className={`${styles.only_mentions_text} ${
+                                    props.isFocusMentions
+                                        ? styles.only_mentions_text_active
+                                        : ''
                                 }`}
                             >
-                                {props.mentionIndex + 1}/ {props.mentCount}
-                            </div>
-                        )}
-                    </div>
+                                Focus Mentions{' '}
+                            </span>
+                            <span
+                                className={styles.only_mentions_toggle_wrapper}
+                            ></span>
+                            {props.mentCount > 0 && (
+                                <div
+                                    className={`${
+                                        styles.ment_text_info_wrapper
+                                    } ${
+                                        props.isFocusMentions
+                                            ? styles.opa_full
+                                            : ''
+                                    }`}
+                                >
+                                    {props.mentionIndex + 1}/ {props.mentCount}
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             )}
         </div>
