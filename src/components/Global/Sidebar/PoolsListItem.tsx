@@ -65,7 +65,7 @@ export default function PoolsListItem(props: propsIF) {
                 output = 'market';
                 break;
         }
-        return output as pageNames;
+        return output;
     }, [currentPage]);
 
     const { tokenA, tokenB } = useContext(TradeDataContext);
