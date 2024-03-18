@@ -38,7 +38,6 @@ export default function TransactionsMenu(props: propsIF) {
     } = useContext(CrocEnvContext);
     const {
         setSimpleRangeWidth,
-        setPrimaryQuantityRange,
         setRangeTicksCopied,
         setAdvancedHighTick,
         setAdvancedLowTick,
@@ -86,22 +85,12 @@ export default function TransactionsMenu(props: propsIF) {
             setRangeTicksCopied(true);
             setSimpleRangeWidth(100);
             setAdvancedMode(false);
-            const shouldReverse =
-                tokenA.address.toLowerCase() !== tx.base.toLowerCase();
-            if (shouldReverse) {
-                setPrimaryQuantityRange('');
-            }
         } else if (tx.positionType === 'concentrated') {
             setTimeout(() => {
                 setRangeTicksCopied(true);
                 setAdvancedLowTick(tx.bidTick);
                 setAdvancedHighTick(tx.askTick);
                 setAdvancedMode(true);
-                const shouldReverse =
-                    tokenA.address.toLowerCase() !== tx.base.toLowerCase();
-                if (shouldReverse) {
-                    setPrimaryQuantityRange('');
-                }
             }, 1000);
         } else if (tx.entityType === 'swap') {
             const shouldReverse =
@@ -151,11 +140,19 @@ export default function TransactionsMenu(props: propsIF) {
     const copyButtonFunction = (entityType: string) => {
         switch (entityType) {
             case 'liqchange':
-                linkGenPool.navigate({
-                    chain: chainId,
-                    tokenA: tx.isBid ? tx.base : tx.quote,
-                    tokenB: tx.isBid ? tx.quote : tx.base,
-                });
+                if (tokenA.address.toLowerCase() === tx.base.toLowerCase()) {
+                    linkGenPool.navigate({
+                        chain: chainId,
+                        tokenA: tx.base,
+                        tokenB: tx.quote,
+                    });
+                } else {
+                    linkGenPool.navigate({
+                        chain: chainId,
+                        tokenA: tx.quote,
+                        tokenB: tx.base,
+                    });
+                }
                 break;
             case 'limitOrder':
                 linkGenLimit.navigate(
