@@ -312,12 +312,12 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
                             : isDenomBase
                             ? `1 ${baseTokenSymbol} = ${truncatedDisplayPrice} ${quoteTokenSymbol}`
                             : `1 ${quoteTokenSymbol} = ${truncatedDisplayPrice} ${baseTokenSymbol}`
+                        : isAmbient
+                        ? '0.00'
                         : isAccountView
                         ? isBaseTokenMoneynessGreaterOrEqual
                             ? `1 ${quoteTokenSymbol} = ${truncatedLowDisplayPriceDenomByMoneyness} ${baseTokenSymbol}`
                             : `1 ${baseTokenSymbol} = ${truncatedLowDisplayPriceDenomByMoneyness} ${quoteTokenSymbol}`
-                        : isAmbient
-                        ? '0.00'
                         : isDenomBase
                         ? `1 ${baseTokenSymbol} = ${truncatedLowDisplayPrice} ${quoteTokenSymbol}`
                         : `1 ${quoteTokenSymbol} = ${truncatedLowDisplayPrice} ${baseTokenSymbol}`}
@@ -344,12 +344,12 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
             : [
                   {
                       title: 'High Price Boundary',
-                      content: isAccountView
+                      content: isAmbient
+                          ? '∞'
+                          : isAccountView
                           ? isBaseTokenMoneynessGreaterOrEqual
                               ? `1 ${quoteTokenSymbol} = ${truncatedHighDisplayPriceDenomByMoneyness} ${baseTokenSymbol}`
                               : `1 ${baseTokenSymbol} = ${truncatedHighDisplayPriceDenomByMoneyness} ${quoteTokenSymbol}`
-                          : isAmbient
-                          ? '∞'
                           : isDenomBase
                           ? `1 ${baseTokenSymbol} = ${truncatedHighDisplayPrice} ${quoteTokenSymbol}`
                           : `1 ${quoteTokenSymbol} = ${truncatedHighDisplayPrice} ${baseTokenSymbol}`,
