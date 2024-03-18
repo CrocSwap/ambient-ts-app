@@ -35,6 +35,8 @@ interface propsIF {
     blastPointsData: BlastPointsDataIF;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isAccountView: boolean;
+    baseTokenCharacter: string;
+    quoteTokenCharacter: string;
 }
 
 export default function PriceInfo(props: propsIF) {
@@ -60,6 +62,8 @@ export default function PriceInfo(props: propsIF) {
         blastPointsData,
         isBaseTokenMoneynessGreaterOrEqual,
         isAccountView,
+        baseTokenCharacter,
+        quoteTokenCharacter,
     } = props;
 
     const { pathname } = useLocation();
@@ -142,8 +146,12 @@ export default function PriceInfo(props: propsIF) {
                     {isAmbient
                         ? '0'
                         : isOnTradeRoute
-                        ? lowRangeDisplay
-                        : minRangeDenomByMoneyness}
+                        ? (isDenomBaseLocal
+                              ? quoteTokenCharacter
+                              : baseTokenCharacter) + lowRangeDisplay
+                        : (isDenomBaseLocal
+                              ? quoteTokenCharacter
+                              : baseTokenCharacter) + minRangeDenomByMoneyness}
                 </h2>
             </section>
 
@@ -153,8 +161,12 @@ export default function PriceInfo(props: propsIF) {
                     {isAmbient
                         ? '∞'
                         : isOnTradeRoute
-                        ? highRangeDisplay
-                        : maxRangeDenomByMoneyness}
+                        ? (isDenomBaseLocal
+                              ? quoteTokenCharacter
+                              : baseTokenCharacter) + highRangeDisplay
+                        : (isDenomBaseLocal
+                              ? quoteTokenCharacter
+                              : baseTokenCharacter) + maxRangeDenomByMoneyness}
                 </h2>
             </section>
         </div>
