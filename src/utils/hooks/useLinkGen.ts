@@ -124,6 +124,8 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
             pageName = 'privacy';
         } else if (pathname.startsWith(BASE_URL_PATHS['404'])) {
             pageName = '404';
+        } else if (pathname.startsWith(BASE_URL_PATHS.chat)) {
+            pageName = 'chat';
         } else {
             pageName = 'home';
         }
