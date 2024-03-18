@@ -16,7 +16,7 @@ import InfoRow from '../../Global/InfoRow';
 
 interface OrderDetailsSimplifyPropsIF {
     limitOrder: LimitOrderIF;
-
+    timeFirstMintMemo: number;
     baseCollateralDisplay: string | undefined;
     quoteCollateralDisplay: string | undefined;
 
@@ -50,6 +50,7 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
         usdValue,
         limitOrder,
         isAccountView,
+        timeFirstMintMemo,
     } = props;
 
     const { chainData } = useContext(CrocEnvContext);
@@ -164,7 +165,7 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
     );
 
     const submissionTime =
-        moment(limitOrder.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm') +
+        moment(timeFirstMintMemo * 1000).format('MM/DD/YYYY HH:mm') +
         ' ' +
         '(' +
         elapsedTimeSinceFirstMintString +

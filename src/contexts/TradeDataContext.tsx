@@ -148,7 +148,8 @@ export const TradeDataContextProvider = (props: {
             chainId === '0x13e31' &&
             baseAddress.toLowerCase() === blastETH.address.toLowerCase() &&
             quoteAddress.toLowerCase() === blastUSDB.address.toLowerCase();
-        const defaultWidth = isPoolBlastEthUSDB ? 5 : 10;
+        // temporarily reset to 10 for ETH/USDB until volatility reduces
+        const defaultWidth = isPoolBlastEthUSDB ? 10 : 10;
         return defaultWidth;
     };
 

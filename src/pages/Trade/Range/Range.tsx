@@ -465,6 +465,7 @@ function Range() {
             defaultHighTick,
             isDenomBase,
         );
+
     useEffect(() => {
         if (rangeWidthPercentage === 100 && !advancedMode) {
             setIsAmbient(true);
@@ -864,15 +865,10 @@ function Range() {
                 ethMainnetUsdPrice;
 
             setRangeGasPriceinDollars(
-                isActiveNetworkBlast
-                    ? getFormattedNumber({
-                          value: gasPriceInDollarsNum + extraL1GasFeePool,
-                          prefix: '$',
-                      })
-                    : getFormattedNumber({
-                          value: gasPriceInDollarsNum + extraL1GasFeePool,
-                          isUSD: true,
-                      }),
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum + extraL1GasFeePool,
+                    isUSD: true,
+                }),
             );
         }
     }, [
