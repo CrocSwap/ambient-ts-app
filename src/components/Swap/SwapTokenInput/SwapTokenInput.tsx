@@ -373,7 +373,7 @@ function SwapTokenInput(props: propsIF) {
                 setBuyQtyString && setBuyQtyString(primaryQuantity);
             }
         }
-    }, [isTokenAPrimary]);
+    }, [isTokenAPrimary, sellQtyString, buyQtyString, primaryQuantity]);
 
     return (
         <FlexContainer flexDirection='column' gap={8}>
