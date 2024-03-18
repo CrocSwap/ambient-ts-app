@@ -20,12 +20,11 @@ export default function processLogoSrc(args: argsIF): string {
                 `Fn <<${processLogoSrc.name}>> was called without a valid URI. Refer to file processLogoSrc.ts for troubleshooting. Fn will return an empty string (''). Args received in fn call are: `,
                 args,
             );
-        return '';
     }
     // return a filepath (if local) or a URI string (if remote)
     return (
         localLogos[
             args.token?.symbol.toUpperCase() as keyof typeof localLogos
-        ] ?? uriToHttp(uri)
+        ] ?? uriToHttp(uri || '')
     );
 }
