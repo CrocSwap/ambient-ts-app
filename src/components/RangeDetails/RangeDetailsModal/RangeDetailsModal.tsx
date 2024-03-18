@@ -71,6 +71,8 @@ function RangeDetailsModal(props: propsIF) {
         maxRangeDenomByMoneyness,
         ambientOrMin: lowRangeDisplay,
         ambientOrMax: highRangeDisplay,
+        baseTokenCharacter,
+        quoteTokenCharacter,
     } = useProcessRange(position, userAddress);
 
     const [serverPositionId, setServerPositionId] = useState<
@@ -452,6 +454,12 @@ function RangeDetailsModal(props: propsIF) {
                         baseTokenAddress={baseTokenAddress}
                         quoteTokenAddress={quoteTokenAddress}
                         blastPointsData={blastPointsData}
+                        isBaseTokenMoneynessGreaterOrEqual={
+                            isBaseTokenMoneynessGreaterOrEqual
+                        }
+                        isAccountView={isAccountView}
+                        baseTokenCharacter={baseTokenCharacter}
+                        quoteTokenCharacter={quoteTokenCharacter}
                     />
                 </div>
                 <div className={styles.right_container}>

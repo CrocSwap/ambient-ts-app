@@ -121,6 +121,10 @@ export const useProcessOrder = (
     const [finishPriceDisplay, setFinishPriceDisplay] = useState<
         string | undefined
     >();
+    const [
+        finishPriceDisplayDenomByMoneyness,
+        setFinishPriceDisplayDenomByMoneyness,
+    ] = useState<string | undefined>();
     const [initialTokenQty, setInitialTokenQty] = useState<string | undefined>(
         undefined,
     );
@@ -288,12 +292,12 @@ export const useProcessOrder = (
 
             const truncatedDisplayPriceDenomByMoneyness =
                 isBaseTokenMoneynessGreaterOrEqual
-                    ? nonInvertedPriceTruncated
-                    : invertedPriceTruncated;
+                    ? baseTokenCharacter + nonInvertedPriceTruncated
+                    : quoteTokenCharacter + invertedPriceTruncated;
 
             const truncatedDisplayPrice = isDenomBase
-                ? `${invertedPriceTruncated}`
-                : `${nonInvertedPriceTruncated}`;
+                ? `${quoteTokenCharacter}${invertedPriceTruncated}`
+                : `${baseTokenCharacter}${nonInvertedPriceTruncated}`;
 
             setTruncatedDisplayPrice(truncatedDisplayPrice);
             setTruncatedDisplayPriceDenomByMoneyness(
@@ -388,6 +392,19 @@ export const useProcessOrder = (
                 ? bidTickPrice
                 : askTickPrice;
 
+            const finishPriceDenomByMoneyness =
+                isBaseTokenMoneynessGreaterOrEqual
+                    ? isBid
+                        ? bidTickInvPrice
+                        : askTickInvPrice
+                    : isBid
+                    ? bidTickPrice
+                    : askTickPrice;
+
+            const finishPriceDisplayDenomByMoneyness = getFormattedNumber({
+                value: finishPriceDenomByMoneyness,
+            });
+
             const finishPriceDisplay = getFormattedNumber({
                 value: finishPriceDisplayNum,
             });
@@ -401,6 +418,9 @@ export const useProcessOrder = (
             );
             setMiddlePriceDisplay(middlePriceDisplay);
             setFinishPriceDisplay(finishPriceDisplay);
+            setFinishPriceDisplayDenomByMoneyness(
+                finishPriceDisplayDenomByMoneyness,
+            );
 
             const finalTokenQty = !isBid
                 ? limitOrder.claimableLiqBaseDecimalCorrected
@@ -484,6 +504,7 @@ export const useProcessOrder = (
         middlePriceDisplay,
         middlePriceDisplayDenomByMoneyness,
         finishPriceDisplay,
+        finishPriceDisplayDenomByMoneyness,
 
         // transaction matches selected token
         orderMatchesSelectedTokens,
