@@ -10,12 +10,15 @@ export type letterCasings = 'lower' | 'upper' | 'native';
 // TODO:    ... pass an array of `[string, letterCasings]` tuples such that each
 // TODO:    ... the file can process multiple strings with different casing needs
 
+// single input string => single output string
 export default function fixCase(input: string, casing?: letterCasings): string;
+// array of input strings => array of output strings
 export default function fixCase(
     input: string[],
     casing?: letterCasings,
 ): string[];
 
+// fn definition
 export default function fixCase(
     input: string | string[],
     casing: letterCasings = 'native',
