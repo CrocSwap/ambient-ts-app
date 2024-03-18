@@ -3,7 +3,7 @@ import {
     PoolStatsFn,
     getMoneynessRank,
 } from '../../../ambient-utils/dataLayer';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useContext, useMemo } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import {
@@ -16,6 +16,7 @@ import { ItemContainer } from '../../../styled/Components/Sidebar';
 import { FlexContainer } from '../../../styled/Common';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
+import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 
 interface propsIF {
     pool: PoolIF;
@@ -40,28 +41,32 @@ export default function PoolsListItem(props: propsIF) {
               0
             : false;
 
-    const { pathname } = useLocation();
+    const { currentPage } = useLinkGen();
 
     const navTarget = useMemo<pageNames>(() => {
         let output: pageNames;
-        if (
-            pathname.startsWith('/trade/market') ||
-            pathname.startsWith('/account') ||
-            pathname === '/'
-        ) {
-            output = 'market';
-        } else if (pathname.startsWith('/trade/limit')) {
-            output = 'limit';
-        } else if (pathname.startsWith('/trade/pool')) {
-            output = 'pool';
-        } else {
-            console.warn(
-                'Could not identify the correct URL path for redirect. Using /trade/market as a fallback value. Refer to TopPoolsCard.tsx for troubleshooting.',
-            );
-            output = 'market';
+        switch (currentPage) {
+            case 'market':
+            case 'account':
+            case 'index':
+                output = 'market';
+                break;
+            case 'limit':
+                output = 'limit';
+                break;
+            case 'pool':
+                output = 'pool';
+                break;
+            default:
+                IS_LOCAL_ENV &&
+                    console.warn(
+                        'Could not identify the correct URL path for redirect. Using /trade/market as a fallback value. Refer to PoolsListItem.tsx for troubleshooting.',
+                    );
+                output = 'market';
+                break;
         }
         return output as pageNames;
-    }, [pathname]);
+    }, [currentPage]);
 
     const { tokenA, tokenB } = useContext(TradeDataContext);
 
