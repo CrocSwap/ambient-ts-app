@@ -1,5 +1,9 @@
 import { IS_LOCAL_ENV } from '../constants';
 
+// type to allow devs to specify how input will be re-cased
+// 'lower' ➜ will apply `.toLowerCase()` to input string(s)
+// 'upper' ➜ will apply `.toUpperCase()` to input string(s)
+// 'native' ➜ will return input string(s) with no case modification
 export type letterCasings = 'lower' | 'upper' | 'native';
 
 export default function fixCase(input: string, casing: letterCasings): string;
@@ -12,8 +16,10 @@ export default function fixCase(
     input: string | string[],
     casing: letterCasings = 'native',
 ): string | string[] {
+    // change format of input to `string[]` for unified data handling
     const inputAsArray: string[] = typeof input === 'string' ? [input] : input;
 
+    // fn to apply the proper letter casing to a string
     function setCaseSingular(text: string, casing: letterCasings) {
         let output: string;
         const allWhitespace = /^\s*$/;
@@ -34,9 +40,11 @@ export default function fixCase(
         return output;
     }
 
+    // map over array of input data applying specified casing to each string
     const fixedInputArray: string[] = inputAsArray.map((inp: string) =>
         setCaseSingular(inp, casing),
     );
 
+    // return single string or array of strings as implied by shape of args
     return Array.isArray(input) ? fixedInputArray : fixedInputArray[0];
 }
