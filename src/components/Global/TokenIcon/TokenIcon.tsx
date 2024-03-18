@@ -1,11 +1,14 @@
 import { Suspense, memo, useEffect, useState } from 'react';
 import styles from './TokenIcon.module.css';
 import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
-import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../ambient-utils/constants';
 import { TokenIF } from '../../../ambient-utils/types';
 import processLogoSrc from './processLogoSrc';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 import { useLocation } from 'react-router-dom';
+import fixCase, {
+    letterCasings,
+} from '../../../ambient-utils/functions/fixCase';
 
 type TokenIconSize = 'xxs' | 'xs' | 's' | 'm' | 'l' | 'xl' | '2xl' | '3xl';
 
@@ -82,10 +85,10 @@ function TokenIcon(props: propsIF) {
         setFetchError(false);
     }, [src]);
 
-    function getTokenCharacter(tkn: TokenIF | undefined): string | null {
+    function getTokenCharacter(tkn: TokenIF | undefined): string {
         if (!tkn) return '';
         const alphanumericRegex = /^[0-9a-zA-Z]$/;
-        let character: string | null = null;
+        let character = '';
         const characterSources: string[] = [tkn.symbol, tkn.name];
         let i = 0;
         do {
@@ -98,7 +101,33 @@ function TokenIcon(props: propsIF) {
             }
             i++;
         } while (!character && i < characterSources.length);
-        return character;
+
+        type casingException = [string, string, letterCasings];
+        const casingExceptionsMap = new Map();
+        const casingExceptions: casingException[] = [
+            ['0x1', ZERO_ADDRESS, 'upper'],
+        ];
+        function makeMapKey(c: string, a: string): string {
+            const key: string = c + '_' + a;
+            return key.toLowerCase();
+        }
+        casingExceptions.forEach((ex: casingException) => {
+            const [chn, addr, casing]: casingException = ex;
+            casingExceptionsMap.set(makeMapKey(chn, addr), casing);
+        });
+        function chooseCasing(t: TokenIF | undefined) {
+            const DEFAULT_CASING = 'upper';
+            if (!t) return DEFAULT_CASING;
+            const lookupKey: string = makeMapKey(
+                '0x' + t.chainId.toString(16),
+                t.address,
+            );
+            const casingOverride: letterCasings | undefined =
+                casingExceptionsMap.get(lookupKey);
+            return casingOverride ?? DEFAULT_CASING;
+        }
+
+        return fixCase(character, chooseCasing(token) ?? 'upper');
     }
 
     const noTokenIcon: JSX.Element = (
