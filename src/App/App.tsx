@@ -1,12 +1,6 @@
 /** ***** Import React and Dongles *******/
 import { useContext, useEffect } from 'react';
-import {
-    Routes,
-    Route,
-    useLocation,
-    Navigate,
-    useNavigate,
-} from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
 
 /** ***** Import JSX Files *******/
@@ -47,12 +41,11 @@ import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
 import ExampleForm from '../pages/InitPool/FormExample';
 import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
+import { useLinkGen } from '../utils/hooks/useLinkGen';
 
 /** ***** React Function *******/
 export default function App() {
     const navigate = useNavigate();
-    const location = useLocation();
-    const currentLocation = location.pathname;
 
     const {
         chat: {
@@ -75,23 +68,16 @@ export default function App() {
 
     const smallScreen = useMediaQuery('(max-width: 500px)');
 
+    const { isPage } = useLinkGen();
+
     // Take away margin from left if we are on homepage or swap
-    const swapBodyStyle =
-        currentLocation.startsWith('/swap') && !smallScreen
-            ? 'swap-body'
-            : null;
+    const swapBodyStyle = isPage('swap') && !smallScreen ? 'swap-body' : null;
 
     // Show sidebar on all pages except for home, swap, chat, and 404
     const sidebarRender = smallScreen ? (
         <Sidebar />
     ) : (
-        currentLocation !== '/' &&
-        currentLocation !== '/swap' &&
-        currentLocation !== '/404' &&
-        currentLocation !== '/terms' &&
-        currentLocation !== '/privacy' &&
-        !currentLocation.includes('/chat') &&
-        !currentLocation.includes('/initpool') &&
+        !isPage(['index', 'swap', '404', 'tos', 'privacy', 'initpool']) &&
         !fullScreenChart && (
             // isChainSupported &&
             <Sidebar />
@@ -104,17 +90,11 @@ export default function App() {
 
     const showSidebarOrNullStyle = smallScreen
         ? sidebarDislayStyle
-        : currentLocation == '/' ||
-          currentLocation == '/swap' ||
-          currentLocation == '/404' ||
-          currentLocation == '/terms' ||
-          currentLocation == '/privacy' ||
-          currentLocation.includes('/chat') ||
-          currentLocation.startsWith('/swap')
+        : isPage(['index', 'swap', '404', 'tos', 'privacy', 'swap'])
         ? 'hide_sidebar'
         : sidebarDislayStyle;
 
-    const containerStyle = currentLocation.includes('trade')
+    const containerStyle = isPage(['limit', 'pool', 'market', 'reposition'])
         ? 'content-container-trade'
         : 'content-container';
 
@@ -184,8 +164,7 @@ export default function App() {
                 <section
                     className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
                 >
-                    {(!currentLocation.startsWith('/swap') || smallScreen) &&
-                        sidebarRender}
+                    {(!isPage('swap') || smallScreen) && sidebarRender}
                     <Routes>
                         <Route index element={<Home />} />
                         <Route
@@ -346,15 +325,9 @@ export default function App() {
                 </section>
             </FlexContainer>
             <div className='footer_container'>
-                {currentLocation !== '/' &&
-                    currentLocation !== '/404' &&
-                    currentLocation !== '/terms' &&
-                    currentLocation !== '/privacy' &&
-                    !currentLocation.includes('/chat') &&
+                {!isPage(['index', '404', 'tos', 'privacy', 'chat']) &&
                     isChatEnabled && <ChatPanel isFullScreen={false} />}
-                {showMobileVersion && currentLocation !== '/' && (
-                    <SidebarFooter />
-                )}
+                {showMobileVersion && !isPage('index') && <SidebarFooter />}
             </div>
             <GlobalPopup />
             <SnackbarComponent />

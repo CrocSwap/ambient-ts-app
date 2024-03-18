@@ -63,6 +63,8 @@ const BASE_URL_PATHS = {
     testpage: '/testpage',
     account: '/account',
     privacy: '/privacy',
+    '404': '/404',
+    chat: '/chat',
 } as const;
 
 // string-literal union type of keys in `BASE_URL_PATHS`
@@ -72,6 +74,7 @@ export type baseURLs = typeof BASE_URL_PATHS[pageNames];
 
 export interface linkGenMethodsIF {
     currentPage: pageNames;
+    isPage: (p: pageNames | pageNames[]) => boolean;
     baseURL: baseURLs;
     getFullURL: (paramsObj?: anyParamsIF | string) => string;
     navigate: (paramsObj?: anyParamsIF | string) => void;
@@ -119,6 +122,10 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
             pageName = 'account';
         } else if (pathname.startsWith(BASE_URL_PATHS.privacy)) {
             pageName = 'privacy';
+        } else if (pathname.startsWith(BASE_URL_PATHS['404'])) {
+            pageName = '404';
+        } else if (pathname.startsWith(BASE_URL_PATHS.chat)) {
+            pageName = 'chat';
         } else {
             pageName = 'home';
         }
@@ -147,12 +154,19 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
         navigate(getFullURL(paramsObj));
     }
 
+    // fn to run `navigateUser` while replacing entry in the history stack
     function redirectUser(paramsObj?: anyParamsIF | string): void {
         navigate(getFullURL(paramsObj), { replace: true });
     }
 
+    // fn to determine if the user is currently on a given page (by name)
+    function isPage(p: pageNames | pageNames[]): boolean {
+        return [p].flat(Infinity).includes(getPageFromLocation());
+    }
+
     return {
         currentPage: getPageFromLocation(),
+        isPage,
         baseURL,
         getFullURL,
         navigate: navigateUser,
