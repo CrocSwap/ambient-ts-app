@@ -14,6 +14,7 @@ import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import { fetchCandleSeriesCroc } from '../../../../ambient-utils/api';
 import moment from 'moment';
 import {
+    lineValue,
     renderCanvasArray,
     setCanvasResolution,
 } from '../../../../pages/Chart/ChartUtils/chartUtils';
@@ -42,7 +43,6 @@ export default function TransactionDetailsGraph(
     const { chainData, crocEnv, activeNetwork } = useContext(CrocEnvContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const oneHourMiliseconds = 60 * 60 * 1000;
-    const oneDayMiliseconds = 60 * 60 * 1000 * 24;
     const oneWeekMiliseconds = oneHourMiliseconds * 24 * 7;
     const isServerEnabled =
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
@@ -87,14 +87,14 @@ export default function TransactionDetailsGraph(
         }
     };
 
-    const verticalLineLabels = () => {
+    const verticalLineLabels = (isSmallRange: boolean) => {
         switch (tx.changeType) {
             case 'mint':
-                return 'Add Liq.';
+                return isSmallRange ? 'Add' : 'Add Liq.';
             case 'burn':
-                return 'Remove Liq. ';
+                return isSmallRange ? 'Remove' : 'Remove Liq. ';
             case 'harvest':
-                return 'Harvest Liq. ';
+                return isSmallRange ? 'Harvest' : 'Harvest Liq. ';
             default:
                 return '';
         }
@@ -312,8 +312,8 @@ export default function TransactionDetailsGraph(
             const verticalDashLine = d3fc
                 .annotationSvgLine()
                 .orient('vertical')
-                .label((d: any) => d.label)
-                .value((d: any) => d.time)
+                .label((d: any) => d.name)
+                .value((d: any) => d.value)
                 .xScale(scaleData?.xScale)
                 .yScale(scaleData?.yScale);
 
@@ -327,23 +327,25 @@ export default function TransactionDetailsGraph(
                     const textWidth = (d3.select(element).select('text') as any)
                         .node()
                         .getBBox().width;
-
-                    d3.select(element).attr(
-                        'transform',
-                        `translate(${textWidth / 2 - 1}, ${-19})`,
-                    );
-
                     d3.select(element).selectAll('rect').remove();
-                    const textNode = d3.select(element) as any;
-                    const bbox = textNode.node().getBBox();
-                    textNode
-                        .insert('rect', ':first-child')
-                        .attr('x', bbox.x - 1)
-                        .attr('y', bbox.y)
-                        .attr('width', bbox.width + 2)
-                        .attr('height', bbox.height)
-                        .style('fill', '#61646F')
-                        .attr('rx', 3);
+
+                    if (textWidth) {
+                        d3.select(element).attr(
+                            'transform',
+                            `translate(${textWidth / 2 - 1}, ${-19})`,
+                        );
+
+                        const textNode = d3.select(element) as any;
+                        const bbox = textNode.node().getBBox();
+                        textNode
+                            .insert('rect', ':first-child')
+                            .attr('x', bbox.x - 1)
+                            .attr('y', bbox.y)
+                            .attr('width', bbox.width + 2)
+                            .attr('height', bbox.height)
+                            .style('fill', '#61646F')
+                            .attr('rx', 3);
+                    }
                 });
             });
 
@@ -1307,17 +1309,9 @@ export default function TransactionDetailsGraph(
                                 },
                             ];
 
-                            const verticalLineData = [
-                                { label: 'Open Position', time: timeStart },
-                            ];
+                            const verticalLineData: lineValue[] = [];
 
-                            const checkDiffMinUpdate =
-                                Math.abs(
-                                    scaleData.xScale(timeStart) -
-                                        scaleData.xScale(
-                                            tx.latestUpdateTime * 1000,
-                                        ),
-                                ) > 30;
+                            let isSmallRange = false;
 
                             if (
                                 tx.txTime &&
@@ -1331,45 +1325,55 @@ export default function TransactionDetailsGraph(
                                         ),
                                 );
 
-                                let checkDiffMinMax = diff > 80;
+                                const checkDiffMinMax = diff > 30;
+
+                                isSmallRange = diff < 70 && diff > 30;
 
                                 if (
-                                    tx.changeType !== 'mint' &&
-                                    tx.positionType !== 'ambient' &&
-                                    !checkDiffMinMax &&
-                                    diff > 10 &&
-                                    (tx.txTime - timeFirstMintMemo) * 1000 >
-                                        oneDayMiliseconds * 3
+                                    !(
+                                        (tx.changeType === 'mint' ||
+                                            tx.positionType === 'ambient') &&
+                                        diff < 10
+                                    )
                                 ) {
-                                    if (
-                                        scaleData.xScale.domain()[1] -
-                                            scaleData.xScale.domain()[0] >
-                                        oneWeekMiliseconds
-                                    ) {
-                                        checkDiffMinMax = true;
-                                    }
+                                    const verticalLineDatum = {
+                                        name: checkDiffMinMax
+                                            ? verticalLineLabels(isSmallRange)
+                                            : '',
+                                        value: tx.txTime * 1000,
+                                    };
+
+                                    verticalLineData.push(verticalLineDatum);
                                 }
-                                checkDiffMinMax &&
-                                    verticalLineData.push({
-                                        label: verticalLineLabels(),
-                                        time: tx.txTime * 1000,
-                                    });
                             }
 
                             if (
                                 tx.latestUpdateTime &&
-                                checkDiffMinUpdate &&
                                 ((tx.txTime &&
                                     tx.latestUpdateTime !== tx.txTime) ||
                                     (timeFirstMintMemo &&
                                         tx.latestUpdateTime !==
                                             timeFirstMintMemo))
                             ) {
-                                verticalLineData.push({
-                                    label: ' Updated',
-                                    time: tx.latestUpdateTime * 1000,
-                                });
+                                const diff = Math.abs(
+                                    scaleData.xScale(timeStart) -
+                                        scaleData.xScale(
+                                            tx.latestUpdateTime * 1000,
+                                        ),
+                                );
+
+                                isSmallRange = diff < 70 && diff > 30;
+                                if (diff > 3) {
+                                    verticalLineData.push({
+                                        name: ' Updated',
+                                        value: tx.latestUpdateTime * 1000,
+                                    });
+                                }
                             }
+                            verticalLineData.push({
+                                name: isSmallRange ? 'Open' : 'Open Position',
+                                value: timeStart,
+                            });
 
                             verticalLinesJoin(svg, [verticalLineData]).call(
                                 verticalDashLine,
