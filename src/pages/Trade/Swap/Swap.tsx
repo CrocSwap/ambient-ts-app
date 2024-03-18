@@ -1,5 +1,5 @@
 import { CrocImpact, bigNumToFloat } from '@crocswap-libs/sdk';
-import { useContext, useState, useEffect, memo, useRef } from 'react';
+import { useContext, useState, useEffect, memo, useRef, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
     getFormattedNumber,
@@ -145,7 +145,14 @@ function Swap(props: propsIF) {
     const [swapButtonErrorMessage, setSwapButtonErrorMessage] =
         useState<string>('');
 
-    const [priceImpact, setPriceImpact] = useState<CrocImpact | undefined>();
+    const [lastImpactQuery, setLastImpactQuery] = useState<
+        { input: string; impact: CrocImpact | undefined } | undefined
+    >();
+
+    const priceImpact = useMemo(
+        () => lastImpactQuery?.impact,
+        [JSON.stringify(lastImpactQuery)],
+    );
     const [swapGasPriceinDollars, setSwapGasPriceinDollars] = useState<
         string | undefined
     >();
@@ -620,7 +627,7 @@ function Swap(props: propsIF) {
                     isLiquidityInsufficient={isLiquidityInsufficient}
                     setIsLiquidityInsufficient={setIsLiquidityInsufficient}
                     slippageTolerancePercentage={slippageTolerancePercentage}
-                    setPriceImpact={setPriceImpact}
+                    setLastImpactQuery={setLastImpactQuery}
                     sellQtyString={{
                         value: sellQtyString,
                         set: setSellQtyString,

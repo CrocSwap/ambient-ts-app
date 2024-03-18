@@ -63,7 +63,6 @@ export default function TransactionsMenu(props: propsIF) {
         tokenA,
         isTokenAPrimary,
         setIsTokenAPrimary,
-        disableReverseTokens,
         setShouldSwapDirectionReverse,
     } = useContext(TradeDataContext);
     const menuItemRef = useRef<HTMLDivElement>(null);
@@ -74,7 +73,6 @@ export default function TransactionsMenu(props: propsIF) {
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const handleCopyClick = () => {
-        if (disableReverseTokens) return;
         setActiveMobileComponent('trade');
         if (tx.entityType === 'swap') {
             handlePulseAnimation('swap');
@@ -151,7 +149,6 @@ export default function TransactionsMenu(props: propsIF) {
     );
 
     const copyButtonFunction = (entityType: string) => {
-        if (disableReverseTokens) return;
         switch (entityType) {
             case 'liqchange':
                 linkGenPool.navigate({
@@ -198,10 +195,7 @@ export default function TransactionsMenu(props: propsIF) {
     };
 
     const copyButton = (
-        <Chip
-            disabled={disableReverseTokens}
-            onClick={() => copyButtonFunction(tx.entityType)}
-        >
+        <Chip onClick={() => copyButtonFunction(tx.entityType)}>
             {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
         </Chip>
     );
