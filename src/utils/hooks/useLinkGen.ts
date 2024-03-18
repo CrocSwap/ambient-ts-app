@@ -73,7 +73,7 @@ export type baseURLs = typeof BASE_URL_PATHS[pageNames];
 
 export interface linkGenMethodsIF {
     currentPage: pageNames;
-    isPage: (p: pageNames) => boolean;
+    isPage: (p: pageNames | pageNames[]) => boolean;
     baseURL: baseURLs;
     getFullURL: (paramsObj?: anyParamsIF | string) => string;
     navigate: (paramsObj?: anyParamsIF | string) => void;
