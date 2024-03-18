@@ -157,8 +157,8 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
     }
 
     // fn to determine if the user is currently on a given page (by name)
-    function isPage(p: pageNames): boolean {
-        return p === getPageFromLocation();
+    function isPage(p: pageNames | pageNames[]): boolean {
+        return [p].flat(Infinity).includes(getPageFromLocation());
     }
 
     return {
