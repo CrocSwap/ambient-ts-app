@@ -85,11 +85,17 @@ function TokenIcon(props: propsIF) {
         setFetchError(false);
     }, [src]);
 
+    // fn to get a character to use in the `<NoTokenIcon />` element
     function getTokenCharacter(tkn: TokenIF | undefined): string {
+        // early return if no token data object is available
         if (!tkn) return '';
+        // regex to identify whether a character is alphanumeric (case-insensitive)
         const alphanumericRegex = /^[0-9a-zA-Z]$/;
+        // output variable
         let character = '';
+        // array of strings to use to isolate a character in order of preference
         const characterSources: string[] = [tkn.symbol, tkn.name];
+        // logic to find the first alphanumeric character to use in the DOM
         let i = 0;
         do {
             for (let i = 0; i < tkn.name.length; i++) {
@@ -102,6 +108,7 @@ function TokenIcon(props: propsIF) {
             i++;
         } while (!character && i < characterSources.length);
 
+        // logic to specify overrides for casing rules on certain tokens
         type casingException = [string, string, letterCasings];
         const casingExceptionsMap = new Map();
         const casingExceptions: casingException[] = [
@@ -115,19 +122,23 @@ function TokenIcon(props: propsIF) {
             const [chn, addr, casing]: casingException = ex;
             casingExceptionsMap.set(makeMapKey(chn, addr), casing);
         });
-        function chooseCasing(t: TokenIF | undefined) {
-            const DEFAULT_CASING = 'upper';
-            if (!t) return DEFAULT_CASING;
+
+        // fn to determine whether the given token has a casing exception
+        function checkForCasingException(
+            t: TokenIF | undefined,
+        ): letterCasings | undefined {
+            if (!t) return;
             const lookupKey: string = makeMapKey(
                 '0x' + t.chainId.toString(16),
                 t.address,
             );
             const casingOverride: letterCasings | undefined =
                 casingExceptionsMap.get(lookupKey);
-            return casingOverride ?? DEFAULT_CASING;
+            return casingOverride;
         }
 
-        return fixCase(character, chooseCasing(token) ?? 'upper');
+        // return the relevant character in the appropriate casing
+        return fixCase(character, checkForCasingException(token) ?? 'upper');
     }
 
     const noTokenIcon: JSX.Element = (
