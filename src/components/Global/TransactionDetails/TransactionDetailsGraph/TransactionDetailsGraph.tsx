@@ -606,13 +606,12 @@ export default function TransactionDetailsGraph(
                         tx.latestUpdateTime,
                     ]);
 
-                    const minimumDifferenceMinMax = 80;
+                    const minimumDifferenceMinMax = 70;
 
                     if (result) {
                         const minTime = result.min * 1000;
                         const maxTime = result.max * 1000;
-                        let minTimePixel = xScale(minTime);
-                        let maxTimePixel = xScale(maxTime);
+                        const maxTimePixel = xScale(maxTime);
 
                         const maxDomainPixel = svgWidth;
                         const diffDomainBetweenLastTime =
@@ -630,49 +629,11 @@ export default function TransactionDetailsGraph(
                             xScale.domain([xScale.domain()[0], newMaxDomain]);
                         }
 
-                        if (xScale(minTime) < 0) {
+                        if (xScale(minTime) <= 0) {
                             xScale.domain([
                                 minTime - 2 * bufferOneCandle,
                                 xScale.domain()[1],
                             ]);
-                        }
-
-                        minTimePixel = xScale(minTime);
-                        maxTimePixel = xScale(maxTime);
-                        const diffMinMaxPixel = maxTimePixel - minTimePixel;
-                        const candleCountMax =
-                            (xScale.domain()[1].getTime() - maxTime) /
-                            (1000 * period);
-
-                        if (
-                            minTime !== maxTime &&
-                            diffMinMaxPixel < minimumDifferenceMinMax &&
-                            diffMinMaxPixel > 25
-                        ) {
-                            const checkDiffMinMax =
-                                maxTimePixel - minTimePixel <
-                                    minimumDifferenceMinMax &&
-                                maxTimePixel !== minTimePixel;
-
-                            if (checkDiffMinMax) {
-                                xScale.domain([
-                                    Math.min(
-                                        minTime - bufferOneCandle,
-                                        xScale.invert(40).getTime(),
-                                    ),
-                                    Math.max(
-                                        xScale
-                                            .invert(
-                                                xScale(maxTime) +
-                                                    minimumDifferenceMinMax,
-                                            )
-                                            .getTime(),
-                                        maxTime +
-                                            (candleCountMax / 3) *
-                                                bufferOneCandle,
-                                    ),
-                                ]);
-                            }
                         }
                     }
                 }
@@ -1335,7 +1296,7 @@ export default function TransactionDetailsGraph(
                                 );
 
                                 isSmallRange = diff < 70 && diff > 30;
-                                if (diff > 3) {
+                                if (diff > 10) {
                                     verticalLineData.push({
                                         name: ' Updated',
                                         value: tx.latestUpdateTime * 1000,
