@@ -20,13 +20,13 @@ import { TokenContext } from '../../contexts/TokenContext';
 const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
     const {
         server: { isEnabled: isServerEnabled },
+        isUserIdle,
     } = useContext(AppStateContext);
     const {
         cachedPoolStatsFetch,
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
         cachedTokenDetails,
-        cachedGet24hChange,
     } = useContext(CachedDataContext);
     const {
         crocEnv,
@@ -68,7 +68,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                     pool.base.address,
                     pool.quote.address,
                     chainId,
-                    Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+                    Math.floor(Date.now() / 10000), // 10 second cache
                 );
 
                 if (spotPrice) {
@@ -159,7 +159,8 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                 lastBlockNumber &&
                 shouldInvertDisplay !== undefined &&
                 crocEnv &&
-                provider
+                provider &&
+                !isUserIdle
             ) {
                 const poolStatsNow = await cachedPoolStatsFetch(
                     chainId,
@@ -194,6 +195,16 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                 const volumeTotal24hAgo = poolStats24hAgo?.volumeTotalUsd;
 
                 const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
+
+                const nowPrice = poolStatsNow?.lastPriceIndic;
+                const ydayPrice = poolStats24hAgo?.lastPriceIndic;
+
+                const priceChangeResult =
+                    ydayPrice && nowPrice && ydayPrice > 0 && nowPrice > 0
+                        ? shouldInvertDisplay
+                            ? ydayPrice / nowPrice - 1.0
+                            : nowPrice / ydayPrice - 1.0
+                        : 0.0;
 
                 const tvlResult = poolStatsNow?.tvlTotalUsd;
                 const feesTotalResult = poolStatsNow?.feesTotalUsd;
@@ -256,16 +267,6 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                 // }
 
                 try {
-                    const priceChangeResult = await cachedGet24hChange(
-                        chainId,
-                        baseAddr,
-                        quoteAddr,
-                        poolIndex,
-                        shouldInvertDisplay,
-                        activeNetwork.graphCacheUrl,
-                        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-                    );
-
                     if (!priceChangeResult) {
                         setPoolPriceChangePercent(undefined);
                         setIsPoolPriceChangePositive(true);
@@ -326,6 +327,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
     useEffect(() => {
         if (isServerEnabled) fetchPoolStats();
     }, [
+        isUserIdle,
         poolVolume === undefined,
         isServerEnabled,
         shouldInvertDisplay,
