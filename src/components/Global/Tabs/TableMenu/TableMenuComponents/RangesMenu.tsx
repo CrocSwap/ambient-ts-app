@@ -102,8 +102,8 @@ function RangesMenu(props: propsIF) {
     // const view1 = useMediaQuery('(max-width: 600px)');
     // const view3 = useMediaQuery('(min-width: 1800px)');
 
-    const showRepositionButton =
-        !isPositionInRange && !isPositionEmpty && userMatchesConnectedAccount;
+    const showRepositionButton = true;
+    // !isPositionInRange && !isPositionEmpty && userMatchesConnectedAccount;
 
     const feesAvailableForHarvest =
         (position.feesLiqBase || 0) + (position.feesLiqQuote || 0) > 0;
@@ -139,6 +139,7 @@ function RangesMenu(props: propsIF) {
     // hooks to generate navigation actions with pre-loaded paths
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
     const linkGenRepo: linkGenMethodsIF = useLinkGen('reposition');
+    const linkGenEdit: linkGenMethodsIF = useLinkGen('edit');
 
     const repositionButton = (
         <Link
@@ -172,6 +173,40 @@ function RangesMenu(props: propsIF) {
             state={{ position: position }}
         >
             Reposition
+        </Link>
+    );
+    const editButton = (
+        <Link
+            id={`edit_button_${position.positionId}`}
+            className={styles.reposition_button}
+            to={linkGenEdit.getFullURL({
+                chain: chainId,
+                tokenA:
+                    tokenAAddress.toLowerCase() === position.quote.toLowerCase()
+                        ? position.quote
+                        : position.base,
+                tokenB:
+                    tokenBAddress.toLowerCase() === position.base.toLowerCase()
+                        ? position.base
+                        : position.quote,
+                lowTick: position.bidTick.toString(),
+                highTick: position.askTick.toString(),
+            })}
+            onClick={() => {
+                setActiveMobileComponent('trade');
+                setSimpleRangeWidth(
+                    getDefaultRangeWidthForTokenPair(
+                        position.chainId,
+                        position.base.toLowerCase(),
+                        position.quote.toLowerCase(),
+                    ),
+                );
+                setCurrentRangeInReposition(position.positionId);
+                setCurrentRangeInAdd('');
+            }}
+            state={{ position: position }}
+        >
+            Edit
         </Link>
     );
 
@@ -272,6 +307,7 @@ function RangesMenu(props: propsIF) {
     const rangesMenu = (
         <div className={styles.actions_menu}>
             {tableView !== 'small' && showRepositionButton && repositionButton}
+            {editButton}
             {tableView !== 'small' &&
                 !showRepositionButton &&
                 userMatchesConnectedAccount &&
