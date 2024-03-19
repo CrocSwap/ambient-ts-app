@@ -396,6 +396,8 @@ export const GraphDataContextProvider = (props: {
                 ),
         );
 
+    const onAccountRoute = location.pathname.includes('account');
+
     useEffect(() => {
         const fetchData = async () => {
             // This useEffect controls a series of other dispatches that fetch data on update of the user object
@@ -553,7 +555,7 @@ export const GraphDataContextProvider = (props: {
         isUserConnected,
         userAddress,
         chainData.chainId,
-        Math.floor(Date.now() / 10000), // cache every 10 seconds
+        Math.floor(Date.now() / (onAccountRoute ? 15000 : 60000)), // cache every 15 seconds while viewing portfolio, otherwise 1 minute
         !!crocEnv,
         !!provider,
     ]);
