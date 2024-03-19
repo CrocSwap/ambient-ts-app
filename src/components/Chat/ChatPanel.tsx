@@ -16,6 +16,8 @@ import NotFound from '../../pages/NotFound/NotFound';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { getTxSummary } from '../../ambient-utils/dataLayer/functions/findTransactionData';
+import { GraphDataContext } from '../../contexts/GraphDataContext';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -61,6 +63,21 @@ function ChatPanel(props: propsIF) {
         isSubscriptionsEnabled,
         isChatOpen,
     );
+
+    const { transactionsByUser, userTransactionsByPool, transactionsByPool } =
+        useContext(GraphDataContext);
+
+    useEffect(() => {
+        (async () => {
+            const txSummary = await getTxSummary(
+                '0x7eb891451609e9e86fd441e6578efacadc1dcadaf06c480fd23288d8afea6929',
+                transactionsByUser.changes,
+                userTransactionsByPool.changes,
+                transactionsByPool.changes,
+            );
+            console.log({ txSummary });
+        })();
+    }, []);
 
     const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
 
