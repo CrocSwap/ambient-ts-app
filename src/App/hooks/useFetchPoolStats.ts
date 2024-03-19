@@ -27,7 +27,6 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
         cachedTokenDetails,
-        cachedGet24hChange,
     } = useContext(CachedDataContext);
     const {
         crocEnv,
@@ -197,6 +196,16 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
 
                 const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
 
+                const nowPrice = poolStatsNow?.lastPriceIndic;
+                const ydayPrice = poolStats24hAgo?.lastPriceIndic;
+
+                const priceChangeResult =
+                    ydayPrice && nowPrice && ydayPrice > 0 && nowPrice > 0
+                        ? shouldInvertDisplay
+                            ? ydayPrice / nowPrice - 1.0
+                            : nowPrice / ydayPrice - 1.0
+                        : 0.0;
+
                 const tvlResult = poolStatsNow?.tvlTotalUsd;
                 const feesTotalResult = poolStatsNow?.feesTotalUsd;
                 const volumeResult = poolStatsNow?.volumeTotalUsd;
@@ -258,16 +267,6 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                 // }
 
                 try {
-                    const priceChangeResult = await cachedGet24hChange(
-                        chainId,
-                        baseAddr,
-                        quoteAddr,
-                        poolIndex,
-                        shouldInvertDisplay,
-                        activeNetwork.graphCacheUrl,
-                        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-                    );
-
                     if (!priceChangeResult) {
                         setPoolPriceChangePercent(undefined);
                         setIsPoolPriceChangePositive(true);
