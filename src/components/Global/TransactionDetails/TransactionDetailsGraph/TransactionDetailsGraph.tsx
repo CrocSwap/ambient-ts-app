@@ -485,20 +485,22 @@ export default function TransactionDetailsGraph(
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const svgDiv = d3.select(d3PlotGraph.current) as any;
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const resizeObserver = new ResizeObserver((result: any) => {
-                const width = result[0].contentRect.width;
+            if (svgDiv) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const resizeObserver = new ResizeObserver((result: any) => {
+                    const width = result[0].contentRect.width;
 
-                if (svgWidth !== width) {
-                    setSvgWidth(width);
-                } else {
-                    graphData && setIsDataLoading(false);
-                }
-            });
+                    if (svgWidth !== width) {
+                        setSvgWidth(width);
+                    } else {
+                        graphData && setIsDataLoading(false);
+                    }
+                });
 
-            resizeObserver.observe(svgDiv.node());
+                resizeObserver.observe(svgDiv.node());
 
-            return () => resizeObserver.unobserve(svgDiv.node());
+                return () => resizeObserver.unobserve(svgDiv.node());
+            }
         }
     }, [graphData, svgWidth]);
 
@@ -670,36 +672,6 @@ export default function TransactionDetailsGraph(
                                                 bufferOneCandle,
                                     ),
                                 ]);
-                            }
-                        }
-
-                        if (
-                            tx.changeType !== 'mint' &&
-                            tx.positionType !== 'ambient' &&
-                            diffMinMaxPixel > 10 &&
-                            diffMinMaxPixel < 25
-                        ) {
-                            const newMinDomain = Math.min(
-                                minTime - bufferOneCandle,
-                                xScale.invert(30).getTime(),
-                            );
-
-                            const newMaxDomain = Math.max(
-                                xScale
-                                    .invert(
-                                        xScale(maxTime) +
-                                            minimumDifferenceMinMax,
-                                    )
-                                    .getTime(),
-                                minTime +
-                                    (candleCountMax / 8) * bufferOneCandle,
-                            );
-
-                            if (
-                                newMaxDomain - newMinDomain >
-                                oneWeekMiliseconds
-                            ) {
-                                xScale.domain([newMinDomain, newMaxDomain]);
                             }
                         }
                     }
