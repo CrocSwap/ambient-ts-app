@@ -441,9 +441,17 @@ function Transactions(props: propsIF) {
         count,
         fullData,
     } = _DATA;
+    const listRef = useRef<HTMLUListElement>(null);
+
     const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
         setPage(p);
         _DATA.jump(p);
+        const element = document.getElementById('current_row_scroll');
+        element?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+            inline: 'start',
+        });
     };
 
     const handleChangeRowsPerPage = (
@@ -456,7 +464,6 @@ function Transactions(props: propsIF) {
 
     const tradePageCheck = isTradeTableExpanded && txDataToDisplay.length > 30;
 
-    const listRef = useRef<HTMLUListElement>(null);
     const sPagination = useMediaQuery('(max-width: 800px)');
     const footerDisplay = rowsPerPage > 0 &&
         ((isAccountView && txDataToDisplay.length > 10) ||
@@ -649,7 +656,9 @@ function Transactions(props: propsIF) {
                     })}
                 <TableRows
                     type='Transaction'
-                    data={_DATA.currentData}
+                    data={_DATA.currentData.filter(
+                        (tx) => tx.changeType !== 'cross',
+                    )}
                     fullData={fullData}
                     tableView={tableView}
                     isAccountView={isAccountView}

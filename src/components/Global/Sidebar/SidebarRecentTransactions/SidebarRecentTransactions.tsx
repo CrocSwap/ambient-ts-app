@@ -21,6 +21,7 @@ import {
     ViewMoreFlex,
 } from '../../../../styled/Components/Sidebar';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     mostRecentTransactions: TransactionIF[];
@@ -30,6 +31,8 @@ export default function SidebarRecentTransactions(props: propsIF) {
     const { mostRecentTransactions } = props;
 
     const { isUserConnected } = useContext(UserDataContext);
+
+    const { tokenA } = useContext(TradeDataContext);
 
     const {
         chainData: { chainId },
@@ -67,7 +70,7 @@ export default function SidebarRecentTransactions(props: propsIF) {
         setShowAllData(false);
         setCurrentTxActiveInTransactions(tx.txId);
         linkGenMarket.navigate(
-            tx.isBuy
+            tokenA.address.toLowerCase() === tx.base.toLowerCase()
                 ? {
                       chain: chainId,
                       tokenA: tx.base,
