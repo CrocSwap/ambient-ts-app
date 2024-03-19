@@ -183,15 +183,13 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             !isUserIdle &&
             candleScale.isShowLatestCandle
         ) {
-            const interval = setInterval(() => {
-                fetchCandles(true);
-            }, CACHE_UPDATE_FREQ_IN_MS);
-            return () => clearInterval(interval);
+            fetchCandles(true);
         }
     }, [
         isChartEnabled,
         isUserOnline,
         isUserIdle,
+        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
         baseTokenAddress + quoteTokenAddress,
         candleScale?.isFetchForTimeframe,
         candleScale.nCandles,
