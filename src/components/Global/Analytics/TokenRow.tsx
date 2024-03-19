@@ -1,9 +1,6 @@
 // import styles from './TokenRow.module.css';
 import TokenIcon from '../TokenIcon/TokenIcon';
-import {
-    getFormattedNumber,
-    uriToHttp,
-} from '../../../ambient-utils/dataLayer';
+import { uriToHttp } from '../../../ambient-utils/dataLayer';
 import {
     TableRow,
     TableCell,
@@ -12,13 +9,11 @@ import {
 import { FlexContainer } from '../../../styled/Common';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { dexTokenData } from '../../../pages/Explore/useTokenStats';
-import { GCServerPoolIF, PoolIF } from '../../../ambient-utils/types';
-import { useContext, useEffect, useState } from 'react';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { GCServerPoolIF, PoolIF, TokenIF } from '../../../ambient-utils/types';
 
 interface propsIF {
     token: dexTokenData;
+    tokenMeta: TokenIF;
     samplePool: PoolIF | undefined;
     backupPool: GCServerPoolIF | undefined;
     goToMarket: (tknA: string, tknB: string) => void;
@@ -26,65 +21,22 @@ interface propsIF {
 }
 
 export default function TokenRow(props: propsIF) {
-    const { token, samplePool, goToMarket, smallScreen, backupPool } = props;
-    if (!token.tokenMeta || (!samplePool && !backupPool)) return null;
-    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const {
-        crocEnv,
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+        token,
+        tokenMeta,
+        samplePool,
+        goToMarket,
+        smallScreen,
+        backupPool,
+    } = props;
 
-    const mobileScrenView = useMediaQuery('(max-width: 500px)');
-
-    const [tvlDisplay, setTvlDisplay] = useState<string>('');
-    const [feesDisplay, setFeesDisplay] = useState<string>('');
-    const [volumeDisplay, setVolumeDisplay] = useState<string>('');
-
-    useEffect(() => {
-        expandTokenStats(token);
-        async function expandTokenStats(token: dexTokenData) {
-            if (!crocEnv || !token.tokenMeta) return;
-            const tokenPricePromise = cachedFetchTokenPrice(
-                token.tokenAddr,
-                chainId,
-                crocEnv,
-            );
-            const tokenPrice = (await tokenPricePromise)?.usdPrice || 0.0;
-            const tvl = token.dexTvl / Math.pow(10, token.tokenMeta.decimals);
-            const tvlUsd = tvl * tokenPrice;
-            setTvlDisplay(
-                getFormattedNumber({
-                    value: tvlUsd,
-                    prefix: '$',
-                    isTvl: true,
-                }),
-            );
-            const fees = token.dexFees / Math.pow(10, token.tokenMeta.decimals);
-            const feesUsd = fees * tokenPrice;
-            setFeesDisplay(
-                getFormattedNumber({
-                    value: feesUsd,
-                    prefix: '$',
-                    isTvl: true,
-                }),
-            );
-            const volume =
-                token.dexVolume / Math.pow(10, token.tokenMeta.decimals);
-            const volumeUsd = volume * tokenPrice;
-            setVolumeDisplay(
-                getFormattedNumber({
-                    value: volumeUsd,
-                    prefix: '$',
-                    isTvl: true,
-                }),
-            );
-        }
-    }, [JSON.stringify(token)]);
+    const mobileScrenView: boolean = useMediaQuery('(max-width: 640px)');
 
     return (
         <TableRow
             onClick={() => {
-                console.log(backupPool);
+                // due to gatekeeping in parent, at least one of these pools
+                // ... will be a defined value passed through props
                 if (samplePool) {
                     goToMarket(
                         samplePool.base.address,
@@ -107,28 +59,37 @@ export default function TokenRow(props: propsIF) {
                             flexDirection: 'row',
                             alignItems: 'center',
                             gap: '12px',
+                            textTransform: 'none',
                         }}
                     >
                         <TokenIcon
-                            token={token.tokenMeta}
-                            src={uriToHttp(token.tokenMeta?.logoURI ?? '')}
-                            alt={token.tokenMeta?.symbol ?? ''}
+                            token={tokenMeta}
+                            src={uriToHttp(tokenMeta.logoURI ?? '')}
+                            alt={tokenMeta.symbol ?? ''}
                             size={mobileScrenView ? 's' : '2xl'}
                         />
-                        <p>{token.tokenMeta?.symbol}</p>
+                        <p>{tokenMeta.symbol}</p>
                     </div>
                 </FlexContainer>
             </TableCell>
-            {smallScreen || <TableCell left>{token.tokenMeta?.name}</TableCell>}
+            {smallScreen || (
+                <TableCell left>
+                    <p style={{ textTransform: 'none' }}>{tokenMeta.name}</p>
+                </TableCell>
+            )}
             <TableCell>
-                <p style={{ textTransform: 'none' }}>{tvlDisplay}</p>
+                <p>{token.normalized?.dexVolNorm.display}</p>
             </TableCell>
             <TableCell>
-                <p>{feesDisplay}</p>
+                <p style={{ textTransform: 'none' }}>
+                    {token.normalized?.dexTvlNorm.display}
+                </p>
             </TableCell>
-            <TableCell>
-                <p>{volumeDisplay}</p>
-            </TableCell>
+            {smallScreen || (
+                <TableCell>
+                    <p>{token.normalized?.dexFeesNorm.display}</p>
+                </TableCell>
+            )}
             <TableCell>
                 <FlexContainer
                     fullHeight

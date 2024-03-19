@@ -32,6 +32,9 @@ export * from './ScaleDataIF';
 
 export * from './TradeTableDataRow';
 
+// directions for table sorting (ascending/descending/null)
+export * from './sortDirections';
+
 export enum RecordType {
     Position = 'PositionIF',
     LimitOrder = 'LimitOrderIF',

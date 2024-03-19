@@ -1,5 +1,8 @@
 import TokenIcon from '../TokenIcon/TokenIcon';
-import { uriToHttp } from '../../../ambient-utils/dataLayer';
+import {
+    getUnicodeCharacter,
+    uriToHttp,
+} from '../../../ambient-utils/dataLayer';
 import { PoolDataIF } from '../../../contexts/ExploreContext';
 import { TokenIF } from '../../../ambient-utils/types';
 import {
@@ -10,6 +13,7 @@ import {
 } from '../../../styled/Components/Analytics';
 import { FlexContainer } from '../../../styled/Common';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMemo } from 'react';
 
 interface propsIF {
     pool: PoolDataIF;
@@ -24,7 +28,22 @@ export default function PoolRow(props: propsIF) {
             ? [pool.base, pool.quote]
             : [pool.quote, pool.base];
 
-    const mobileScrenView = useMediaQuery('(max-width: 500px)');
+    const baseTokenCharacter = pool.base.symbol
+        ? getUnicodeCharacter(pool.base.symbol)
+        : '';
+    const quoteTokenCharacter = pool.quote.symbol
+        ? getUnicodeCharacter(pool.quote.symbol)
+        : '';
+
+    const characterToDisplay = useMemo(
+        () =>
+            pool.moneyness.base < pool.moneyness.quote
+                ? quoteTokenCharacter
+                : baseTokenCharacter,
+        [pool],
+    );
+
+    const mobileScrenView = useMediaQuery('(max-width: 640px)');
 
     return (
         <TableRow
@@ -57,7 +76,11 @@ export default function PoolRow(props: propsIF) {
                 <p style={{ textTransform: 'none' }}>{pool.name}</p>
             </TableCell>
             <TableCell hidden sm>
-                <p>{pool.displayPrice ?? '...'}</p>
+                <p>
+                    {pool.displayPrice
+                        ? characterToDisplay + pool.displayPrice
+                        : '...'}
+                </p>
             </TableCell>
             <TableCell>
                 <p>{pool.volumeStr || '...'}</p>

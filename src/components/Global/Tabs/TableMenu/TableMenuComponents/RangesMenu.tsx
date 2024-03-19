@@ -105,6 +105,9 @@ function RangesMenu(props: propsIF) {
     const showRepositionButton =
         !isPositionInRange && !isPositionEmpty && userMatchesConnectedAccount;
 
+    const feesAvailableForHarvest =
+        (position.feesLiqBase || 0) + (position.feesLiqQuote || 0) > 0;
+
     const showAbbreviatedCopyTradeButton = isAccountView
         ? sidebar.isOpen
             ? useMediaQuery('(max-width: 1300px)')
@@ -241,7 +244,10 @@ function RangesMenu(props: propsIF) {
 
     const detailsButton = <Chip onClick={openDetailsModal}>Details</Chip>;
     const harvestButton =
-        !isAmbient && positionMatchesLoggedInUser ? (
+        !isAmbient &&
+        positionMatchesLoggedInUser &&
+        // show harvest button if fees are available for harvest or if on mainnet
+        (feesAvailableForHarvest || chainId === '0x1') ? (
             <Chip
                 id={`harvest_position_${position.positionId}`}
                 onClick={() => openActionModal('Harvest')}

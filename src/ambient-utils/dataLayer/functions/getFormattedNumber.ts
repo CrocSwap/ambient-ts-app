@@ -79,14 +79,13 @@ export function getFormattedNumber({
         } else {
             valueString = formatSubscript(value);
         }
+    } else if (Math.abs(value) < 0.1) {
+        // show 4 significant digits (after 0s) -- useful for ETH/WBTC
+        valueString = value.toPrecision(4);
     } else if (Math.abs(value) < 0.9) {
         // show 3 significant digits (after 0s)
-        valueString = value
-            .toPrecision(3)
-            // remove trailing 0s
-            .replace(/0+$/, '')
-            .replace(/\.$/, '');
-    } else if (Math.abs(value) < 2) {
+        valueString = value.toPrecision(3);
+    } else if (Math.abs(value) < 1.2) {
         // restrict to 5 places after decimal
         valueString = value.toLocaleString('en-US', {
             minimumFractionDigits: 2,
@@ -107,11 +106,7 @@ export function getFormattedNumber({
             maximumFractionDigits: maxFracDigits,
         });
     }
-    // remove more than two trailing zeros and decimal point at the end
-    valueString =
-        valueString !== zeroDisplay && !isUSD
-            ? valueString.replace(/00+$/, '0').replace(/\.$/, '')
-            : valueString;
+
     if (removeCommas) valueString = valueString.replaceAll(',', '');
     return `${prefix}${valueString}${suffix}`;
 }

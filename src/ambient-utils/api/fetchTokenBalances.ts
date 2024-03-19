@@ -33,6 +33,7 @@ export interface IDepositedTokenBalance {
 
 const COVALENT_CHAIN_IDS = {
     '0x1': 'eth-mainnet',
+    '0xaa36a7': 'eth-sepolia',
     '0x5': 'eth-goerli',
     '066eed': 'arbitrum-goerli',
     '0x8274f': 'scroll-sepolia-testnet',
@@ -155,7 +156,7 @@ export const fetchTokenBalances = async (
                 getTokenInfoFromCovalentBalance(tokenBalance);
             combinedBalances.push(newToken);
         });
-        fetchDexBalances();
+        await fetchDexBalances();
     } else {
         const usdbAddress =
             chain === '0xa0c71fd'
@@ -367,7 +368,7 @@ export const fetchTokenBalances = async (
             combinedBalances.push(finger);
 
             // after delay, add dex balances
-            fetchDexBalances();
+            await fetchDexBalances();
         }
     }
 

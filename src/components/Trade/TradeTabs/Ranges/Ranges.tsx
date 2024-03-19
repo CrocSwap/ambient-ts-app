@@ -733,13 +733,18 @@ function Ranges(props: propsIF) {
                 <TableRows
                     type='Range'
                     data={unindexedUpdatedPositions.concat(
-                        _DATA.currentData.filter(
-                            (pos) =>
-                                // remove existing row for adds
-                                !unindexedUpdatedPositionHashes.includes(
-                                    pos.positionId,
-                                ),
-                        ),
+                        _DATA.currentData
+                            .filter(
+                                (pos) =>
+                                    // remove existing row for adds
+                                    !unindexedUpdatedPositionHashes.includes(
+                                        pos.positionId,
+                                    ),
+                            )
+                            // only show empty positions on account view
+                            .filter(
+                                (pos) => isAccountView || pos.positionLiq !== 0,
+                            ),
                     )}
                     fullData={unindexedUpdatedPositions.concat(fullData)}
                     isAccountView={isAccountView}
