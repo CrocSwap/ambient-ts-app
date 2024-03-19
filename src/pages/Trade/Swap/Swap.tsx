@@ -384,16 +384,18 @@ function Swap(props: propsIF) {
 
             if (qty === '' || parseFloat(qty) === 0) return;
 
-            const l1Gas = await calcL1Gas({
-                crocEnv,
-                isQtySell: isTokenAPrimary,
-                qty,
-                buyTokenAddress: tokenB.address,
-                sellTokenAddress: tokenA.address,
-                slippageTolerancePercentage,
-                isWithdrawFromDexChecked,
-                isSaveAsDexSurplusChecked,
-            });
+            const l1Gas = userAddress
+                ? await calcL1Gas({
+                      crocEnv,
+                      isQtySell: isTokenAPrimary,
+                      qty,
+                      buyTokenAddress: tokenB.address,
+                      sellTokenAddress: tokenA.address,
+                      slippageTolerancePercentage,
+                      isWithdrawFromDexChecked,
+                      isSaveAsDexSurplusChecked,
+                  })
+                : undefined;
 
             const costOfEthInCents = BigNumber.from(
                 Math.floor((ethMainnetUsdPrice || 0) * 100),

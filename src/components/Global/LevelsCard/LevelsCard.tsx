@@ -173,7 +173,7 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
 
             <div className={styles.point_display_container}>
                 <Text fontSize='body' color='text2'>
-                    Points this Week
+                    Ambient Points This Week
                 </Text>
                 <Text
                     fontSize={desktopScreen ? 'header1' : 'header2'}
@@ -190,7 +190,7 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
 
             <div className={styles.point_display_container}>
                 <Text fontSize='body' color='text2'>
-                    Total points
+                    Total Ambient Points
                 </Text>
                 <Text
                     fontSize={desktopScreen ? 'header1' : 'header2'}

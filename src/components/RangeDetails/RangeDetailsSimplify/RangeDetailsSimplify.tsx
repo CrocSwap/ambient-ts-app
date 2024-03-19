@@ -16,6 +16,7 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface RangeDetailsSimplifyPropsIF {
     position: PositionIF;
+    timeFirstMintMemo: number;
     baseFeesDisplay: string | undefined;
     quoteFeesDisplay: string | undefined;
     isAccountView: boolean;
@@ -32,6 +33,7 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
         isAccountView,
         updatedPositionApy,
         blastPointsData,
+        timeFirstMintMemo,
     } = props;
     const { userAddress } = useContext(UserDataContext);
 
@@ -175,7 +177,7 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
         : 'Out of Range';
 
     const firstMintTime =
-        moment(position.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm') +
+        moment(timeFirstMintMemo * 1000).format('MM/DD/YYYY HH:mm') +
         ' ' +
         '(' +
         elapsedTimeSinceFirstMintString +

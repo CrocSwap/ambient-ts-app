@@ -13,7 +13,7 @@ import { useSortedDexTokens, sortedDexTokensIF } from './useSortedDexTokens';
 import { dexTokenData } from '../../../pages/Explore/useTokenStats';
 import TableHeadTokens from './TableHeadTokens';
 import { getDefaultPairForChain } from '../../../ambient-utils/constants';
-import { GCServerPoolIF, TokenIF } from '../../../ambient-utils/types';
+import { GCServerPoolIF, PoolIF, TokenIF } from '../../../ambient-utils/types';
 import { PoolContext } from '../../../contexts/PoolContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { usePoolList2 } from '../../../App/hooks/usePoolList2';
@@ -102,7 +102,7 @@ function DexTokens(props: propsIF) {
         {
             label: 'Fees',
             slug: 'fees',
-            hidden: false,
+            hidden: smallScreen,
             align: 'right',
             responsive: 'sm',
             sortable: true,
@@ -131,34 +131,45 @@ function DexTokens(props: propsIF) {
                                 TODO:   change this logic to use React <Suspense />
                             */}
                             {sortedTokens.data.length ? (
-                                sortedTokens.data.map((token: dexTokenData) => (
-                                    <TokenRow
-                                        key={JSON.stringify(token)}
-                                        token={token}
-                                        samplePool={
-                                            findPool(
-                                                token.tokenAddr,
-                                                defaultTokensForChain[0],
-                                            ) ??
-                                            findPool(
-                                                token.tokenAddr,
-                                                defaultTokensForChain[1],
-                                            ) ??
-                                            findPool(token.tokenAddr)
-                                        }
-                                        backupPool={unfilteredPools.find(
-                                            (p: GCServerPoolIF) =>
-                                                (p.base.toLowerCase() ===
-                                                    token.tokenAddr.toLowerCase() &&
-                                                    !isWethToken(p.quote)) ||
-                                                (p.quote.toLowerCase() ===
-                                                    token.tokenAddr.toLowerCase() &&
-                                                    !isWethToken(p.base)),
-                                        )}
-                                        goToMarket={goToMarket}
-                                        smallScreen={smallScreen}
-                                    />
-                                ))
+                                sortedTokens.data.map((token: dexTokenData) => {
+                                    const samplePool: PoolIF | undefined =
+                                        findPool(
+                                            token.tokenAddr,
+                                            defaultTokensForChain[0],
+                                        ) ??
+                                        findPool(
+                                            token.tokenAddr,
+                                            defaultTokensForChain[1],
+                                        ) ??
+                                        findPool(token.tokenAddr);
+                                    const backupPool:
+                                        | GCServerPoolIF
+                                        | undefined = unfilteredPools.find(
+                                        (p: GCServerPoolIF) =>
+                                            (p.base.toLowerCase() ===
+                                                token.tokenAddr.toLowerCase() &&
+                                                !isWethToken(p.quote)) ||
+                                            (p.quote.toLowerCase() ===
+                                                token.tokenAddr.toLowerCase() &&
+                                                !isWethToken(p.base)),
+                                    );
+                                    if (
+                                        !token.tokenMeta ||
+                                        (!samplePool && !backupPool)
+                                    )
+                                        return null;
+                                    return (
+                                        <TokenRow
+                                            key={JSON.stringify(token)}
+                                            token={token}
+                                            tokenMeta={token.tokenMeta}
+                                            samplePool={samplePool}
+                                            backupPool={backupPool}
+                                            goToMarket={goToMarket}
+                                            smallScreen={smallScreen}
+                                        />
+                                    );
+                                })
                             ) : (
                                 <SpinnerContainer
                                     fullHeight
