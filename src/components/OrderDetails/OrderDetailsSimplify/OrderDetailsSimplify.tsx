@@ -71,10 +71,10 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
         quoteTokenAddressLowerCase,
         startPriceDisplay,
         middlePriceDisplay,
-        truncatedDisplayPrice,
-        truncatedDisplayPriceDenomByMoneyness,
+        finishPriceDisplay,
         startPriceDisplayDenomByMoneyness,
         middlePriceDisplayDenomByMoneyness,
+        finishPriceDisplayDenomByMoneyness,
         isLimitOrderPartiallyFilled,
         fillPercentage,
         isBaseTokenMoneynessGreaterOrEqual,
@@ -326,11 +326,11 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
             title: 'Fill End ',
             content: isAccountView
                 ? isBaseTokenMoneynessGreaterOrEqual
-                    ? `1  ${quoteTokenSymbol} = ${truncatedDisplayPriceDenomByMoneyness}  ${baseTokenSymbol}`
-                    : `1  ${baseTokenSymbol} = ${truncatedDisplayPriceDenomByMoneyness}  ${quoteTokenSymbol}`
+                    ? `1  ${quoteTokenSymbol} = ${finishPriceDisplayDenomByMoneyness}  ${baseTokenSymbol}`
+                    : `1  ${baseTokenSymbol} = ${finishPriceDisplayDenomByMoneyness}  ${quoteTokenSymbol}`
                 : isDenomBase
-                ? `1  ${baseTokenSymbol} = ${truncatedDisplayPrice}  ${quoteTokenSymbol}`
-                : `1  ${quoteTokenSymbol} = ${truncatedDisplayPrice}  ${baseTokenSymbol}`,
+                ? `1  ${baseTokenSymbol} = ${finishPriceDisplay}  ${quoteTokenSymbol}`
+                : `1  ${quoteTokenSymbol} = ${finishPriceDisplay}  ${baseTokenSymbol}`,
 
             explanation:
                 'Price at which conversion ends and limit order can be claimed',

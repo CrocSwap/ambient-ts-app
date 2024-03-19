@@ -6,6 +6,7 @@ import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { RangeContext } from '../../contexts/RangeContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../ambient-utils/constants';
+import { AppStateContext } from '../../contexts/AppStateContext';
 
 interface PoolPricingPropsIF {
     crocEnv?: CrocEnv;
@@ -18,7 +19,6 @@ interface PoolPricingPropsIF {
     receiptCount: number;
     isUserLoggedIn: boolean;
     lastBlockNumber: number;
-    isServerEnabled: boolean;
     cachedQuerySpotPrice: SpotPriceFn;
 }
 
@@ -33,6 +33,10 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
     } = useContext(TradeDataContext);
     const { setPrimaryQuantityRange } = useContext(RangeContext);
     const { activeNetwork } = useContext(CrocEnvContext);
+    const {
+        server: { isEnabled: isServerEnabled },
+        isUserIdle,
+    } = useContext(AppStateContext);
 
     const { cachedGet24hChange } = useContext(CachedDataContext);
 
@@ -165,7 +169,8 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
     useEffect(() => {
         (async () => {
             if (
-                props.isServerEnabled &&
+                isServerEnabled &&
+                !isUserIdle &&
                 props.baseTokenAddress &&
                 props.quoteTokenAddress
             ) {
@@ -218,7 +223,8 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
             }
         })();
     }, [
-        props.isServerEnabled,
+        isServerEnabled,
+        isUserIdle,
         isDenomBase,
         props.baseTokenAddress,
         props.quoteTokenAddress,
