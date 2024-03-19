@@ -63,7 +63,6 @@ const PageHeader = function () {
 
     const {
         wagmiModal: { open: openWagmiModal },
-        isUserIdle,
     } = useContext(AppStateContext);
     const { resetTokenBalances } = useContext(TokenBalanceContext);
     const { resetUserGraphData } = useContext(GraphDataContext);
@@ -395,7 +394,6 @@ const PageHeader = function () {
                                     ) : null}
                                 </FlexContainer>
                             )} */}
-                            {isUserIdle.toString()}
                             <NetworkSelector switchNetwork={switchNetwork} />
                             {!isUserConnected && connectWagmiButton}
                             <Account {...accountProps} />
