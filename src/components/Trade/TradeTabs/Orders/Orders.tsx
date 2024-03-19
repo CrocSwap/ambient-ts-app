@@ -345,7 +345,6 @@ function Orders(props: propsIF) {
     const tradePageCheck = isTradeTableExpanded && limitOrderData.length > 10;
 
     const listRef = useRef<HTMLUListElement>(null);
-    console.log('listRef', listRef);
     const sPagination = useMediaQuery('(max-width: 800px)');
 
     const footerDisplay = rowsPerPage > 0 &&
