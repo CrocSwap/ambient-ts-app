@@ -861,7 +861,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         props.chainData.chainId,
         props.chainData.poolIndex,
         Math.floor(Date.now() / 10000), // cache for 10 seconds
-        props.lastBlockNumber,
+        props.lastBlockNumber !== 0,
         props.isChartEnabled,
         isUserIdle,
     ]);
