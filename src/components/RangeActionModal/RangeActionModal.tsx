@@ -229,7 +229,6 @@ function RangeActionModal(props: propsIF) {
                                 crocEnv,
                                 provider,
                                 chainId,
-                                lastBlockNumber,
                                 cachedFetchTokenPrice,
                                 cachedQuerySpotPrice,
                                 cachedTokenDetails,
@@ -258,7 +257,7 @@ function RangeActionModal(props: propsIF) {
                     .catch((error) => console.error({ error }));
             })();
         }
-    }, [lastBlockNumber]);
+    }, [Math.floor(Date.now() / 10000)]); // update every 10 seconds
 
     const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
     const [quoteTokenBalance, setQuoteTokenBalance] = useState<string>('');

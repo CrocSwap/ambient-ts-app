@@ -38,7 +38,6 @@ import {
     IS_LOCAL_ENV,
 } from '../../../ambient-utils/constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { PortfolioTabsPortfolioTabsContainer } from '../../../styled/Components/Portfolio';
@@ -92,7 +91,6 @@ export default function PortfolioTabs(props: propsIF) {
         provider,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
     const { positionsByUser, limitOrdersByUser, transactionsByUser } =
         useContext(GraphDataContext);
@@ -147,7 +145,6 @@ export default function PortfolioTabs(props: propsIF) {
                                 crocEnv,
                                 provider,
                                 chainId,
-                                lastBlockNumber,
                                 cachedFetchTokenPrice,
                                 cachedQuerySpotPrice,
                                 cachedTokenDetails,
@@ -196,7 +193,6 @@ export default function PortfolioTabs(props: propsIF) {
                                     crocEnv,
                                     provider,
                                     chainId,
-                                    lastBlockNumber,
                                     cachedFetchTokenPrice,
                                     cachedQuerySpotPrice,
                                     cachedTokenDetails,
@@ -234,7 +230,6 @@ export default function PortfolioTabs(props: propsIF) {
                 crocEnv: crocEnv,
                 graphCacheUrl: activeNetwork.graphCacheUrl,
                 provider,
-                lastBlockNumber: lastBlockNumber,
                 cachedFetchTokenPrice: cachedFetchTokenPrice,
                 cachedQuerySpotPrice: cachedQuerySpotPrice,
                 cachedTokenDetails: cachedTokenDetails,
