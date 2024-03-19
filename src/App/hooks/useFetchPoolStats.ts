@@ -20,6 +20,7 @@ import { TokenContext } from '../../contexts/TokenContext';
 const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
     const {
         server: { isEnabled: isServerEnabled },
+        isUserIdle,
     } = useContext(AppStateContext);
     const {
         cachedPoolStatsFetch,
@@ -61,7 +62,12 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
 
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
-        if (isServerEnabled && crocEnv && lastBlockNumber !== 0) {
+        if (
+            isServerEnabled &&
+            crocEnv &&
+            lastBlockNumber !== 0 &&
+            !isUserIdle
+        ) {
             (async () => {
                 const spotPrice = await cachedQuerySpotPrice(
                     crocEnv,
@@ -104,7 +110,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                 }
             })();
         }
-    }, [isServerEnabled, chainId, crocEnv, lastBlockNumber]);
+    }, [isServerEnabled, chainId, crocEnv, lastBlockNumber, isUserIdle]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
     const [poolVolume24h, setPoolVolume24h] = useState<string | undefined>();
@@ -159,7 +165,8 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                 lastBlockNumber &&
                 shouldInvertDisplay !== undefined &&
                 crocEnv &&
-                provider
+                provider &&
+                !isUserIdle
             ) {
                 const poolStatsNow = await cachedPoolStatsFetch(
                     chainId,
@@ -326,6 +333,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
     useEffect(() => {
         if (isServerEnabled) fetchPoolStats();
     }, [
+        isUserIdle,
         poolVolume === undefined,
         isServerEnabled,
         shouldInvertDisplay,
