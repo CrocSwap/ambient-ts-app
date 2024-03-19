@@ -649,7 +649,9 @@ function Transactions(props: propsIF) {
                     })}
                 <TableRows
                     type='Transaction'
-                    data={_DATA.currentData}
+                    data={_DATA.currentData.filter(
+                        (tx) => tx.changeType !== 'cross',
+                    )}
                     fullData={fullData}
                     tableView={tableView}
                     isAccountView={isAccountView}

@@ -3,7 +3,6 @@ import { useContext, useEffect, useState } from 'react';
 import { SpotPriceFn } from '../../ambient-utils/dataLayer';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
-import { RangeContext } from '../../contexts/RangeContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../ambient-utils/constants';
 import { AppStateContext } from '../../contexts/AppStateContext';
@@ -31,7 +30,6 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
         setPoolPriceNonDisplay,
         setLimitTick,
     } = useContext(TradeDataContext);
-    const { setPrimaryQuantityRange } = useContext(RangeContext);
     const { activeNetwork } = useContext(CrocEnvContext);
     const {
         server: { isEnabled: isServerEnabled },
@@ -86,7 +84,6 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
     useEffect(() => {
         setPoolPriceDisplay(0);
         setIsPoolInitialized(undefined);
-        setPrimaryQuantityRange('');
         setPoolPriceDisplay(undefined);
         setDidUserFlipDenom(false); // reset so a new token pair is re-evaluated for price > 1
         setPoolPriceChangePercent(undefined);
