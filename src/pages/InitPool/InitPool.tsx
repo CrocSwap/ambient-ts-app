@@ -122,11 +122,15 @@ export default function InitPool() {
         advancedLowTick,
         setAdvancedHighTick,
         setAdvancedLowTick,
-        setIsTokenAPrimaryRange,
-        setPrimaryQuantityRange,
     } = useContext(RangeContext);
-    const { tokenA, tokenB, baseToken, quoteToken } =
-        useContext(TradeDataContext);
+    const {
+        tokenA,
+        tokenB,
+        baseToken,
+        quoteToken,
+        setIsTokenAPrimary,
+        setPrimaryQuantity,
+    } = useContext(TradeDataContext);
 
     useEffect(() => {
         setIsWithdrawTokenAFromDexChecked(parseFloat(tokenADexBalance) > 0);
@@ -1022,8 +1026,8 @@ export default function InitPool() {
         );
 
     useEffect(() => {
-        if (isTokenAInputDisabled) setIsTokenAPrimaryRange(false);
-        if (isTokenBInputDisabled) setIsTokenAPrimaryRange(true);
+        if (isTokenAInputDisabled) setIsTokenAPrimary(false);
+        if (isTokenBInputDisabled) setIsTokenAPrimary(true);
     }, [isTokenAInputDisabled, isTokenBInputDisabled]);
 
     const isInitPage = true;
@@ -1031,7 +1035,7 @@ export default function InitPool() {
     const clearTokenInputs = () => {
         setTokenACollateral('');
         setTokenBCollateral('');
-        setPrimaryQuantityRange('');
+        setPrimaryQuantity('');
     };
 
     const {

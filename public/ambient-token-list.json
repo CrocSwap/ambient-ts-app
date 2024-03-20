@@ -284,6 +284,14 @@
             "logoURI": ""
         },
         {
+            "name": "Skydrome",
+            "address": "0x95a52ec1d60e74cd3eb002fe54a2c74b185a4c16",
+            "symbol": "SKY",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": "https://assets.coingecko.com/coins/images/33902/standard/icon_200x200.png?1703237670"
+        },
+        {
             "name": "Native Ether",
             "address": "0x0000000000000000000000000000000000000000",
             "symbol": "ETH",

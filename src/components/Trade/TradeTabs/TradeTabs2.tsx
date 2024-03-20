@@ -18,24 +18,15 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import Ranges from './Ranges/Ranges';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
-import { fetchUserRecentChanges } from '../../../ambient-utils/api';
 import Leaderboard from './Ranges/Leaderboard';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { TradeTableContext } from '../../../contexts/TradeTableContext';
-import useDebounce from '../../../App/hooks/useDebounce';
 import { CandleContext } from '../../../contexts/CandleContext';
-import { TokenContext } from '../../../contexts/TokenContext';
 import { ChartContext } from '../../../contexts/ChartContext';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { CandleDataIF } from '../../../ambient-utils/types';
-import { AppStateContext } from '../../../contexts/AppStateContext';
 import { FlexContainer } from '../../../styled/Common';
 import { ClearButton } from '../../../styled/Components/TransactionTable';
 import TableInfo from '../TableInfo/TableInfo';
 import { UserDataContext } from '../../../contexts/UserDataContext';
-import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 interface propsIF {
     filter: CandleDataIF | undefined;
@@ -62,33 +53,10 @@ function TradeTabs2(props: propsIF) {
         unselectCandle,
     } = props;
 
-    const {
-        server: { isEnabled: isServerEnabled },
-    } = useContext(AppStateContext);
     const { chartSettings, tradeTableState } = useContext(ChartContext);
-    const { setTransactionsByUser } = useContext(GraphDataContext);
     const candleTime = chartSettings.candleTime.global;
 
-    const {
-        cachedQuerySpotPrice,
-        cachedFetchTokenPrice,
-        cachedTokenDetails,
-        cachedEnsResolve,
-    } = useContext(CachedDataContext);
     const { isCandleSelected } = useContext(CandleContext);
-
-    const {
-        crocEnv,
-        activeNetwork,
-        provider,
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
-
-    const { lastBlockNumber } = useContext(ChainDataContext);
-
-    const { tokens } = useContext(TokenContext);
-
-    const { showAllData } = useContext(TradeTableContext);
 
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
@@ -104,60 +72,6 @@ function TradeTabs2(props: propsIF) {
         isUserConnected,
         selectedBaseAddress,
         selectedQuoteAddress,
-    ]);
-
-    // Wait 2 seconds before refreshing to give cache server time to sync from
-    // last block
-    const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
-
-    useEffect(() => {
-        if (
-            userAddress &&
-            isServerEnabled &&
-            !showAllData &&
-            crocEnv &&
-            provider
-        ) {
-            try {
-                fetchUserRecentChanges({
-                    tokenList: tokens.tokenUniv,
-                    user: userAddress,
-                    chainId: chainId,
-                    annotate: true,
-                    addValue: true,
-                    simpleCalc: true,
-                    annotateMEV: false,
-                    ensResolution: true,
-                    n: 100, // fetch last 100 changes,
-                    crocEnv,
-                    graphCacheUrl: activeNetwork.graphCacheUrl,
-                    provider,
-                    lastBlockNumber,
-                    cachedFetchTokenPrice: cachedFetchTokenPrice,
-                    cachedQuerySpotPrice: cachedQuerySpotPrice,
-                    cachedTokenDetails: cachedTokenDetails,
-                    cachedEnsResolve: cachedEnsResolve,
-                })
-                    .then((updatedTransactions) => {
-                        if (updatedTransactions) {
-                            setTransactionsByUser({
-                                dataReceived: true,
-                                changes: updatedTransactions,
-                            });
-                        }
-                    })
-                    .catch(console.error);
-            } catch (error) {
-                console.error;
-            }
-        }
-    }, [
-        isServerEnabled,
-        userAddress,
-        showAllData,
-        lastBlockNumWait,
-        !!crocEnv,
-        !!provider,
     ]);
 
     // -------------------------------DATA-----------------------------------------
