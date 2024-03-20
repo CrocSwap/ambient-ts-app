@@ -167,7 +167,6 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
         (async () => {
             if (
                 isServerEnabled &&
-                !isUserIdle &&
                 props.baseTokenAddress &&
                 props.quoteTokenAddress
             ) {
@@ -221,7 +220,9 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
         })();
     }, [
         isServerEnabled,
-        isUserIdle,
+        isUserIdle
+            ? Math.floor(Date.now() / 120000)
+            : Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
         isDenomBase,
         props.baseTokenAddress,
         props.quoteTokenAddress,
