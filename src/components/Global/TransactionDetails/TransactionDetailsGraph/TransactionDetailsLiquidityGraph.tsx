@@ -108,12 +108,6 @@ export default function TransactionDetailsLiquidityGraph(
         if (transactionType === 'liqchange') {
             if (positionType !== 'ambient') {
                 clipHighlightedLines(canvas);
-                if (liqAskSeries) {
-                    liqAskSeries(liquidityData.liquidityDataAsk);
-                }
-                if (liqBidSeries) {
-                    liqBidSeries(liquidityData.liquidityDataBid);
-                }
             }
 
             lineAskSeries(liquidityData.liquidityDataAsk);

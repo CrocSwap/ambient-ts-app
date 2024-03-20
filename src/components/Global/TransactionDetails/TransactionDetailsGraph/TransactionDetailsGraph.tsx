@@ -607,7 +607,7 @@ export default function TransactionDetailsGraph(
                         tx.latestUpdateTime,
                     ]);
 
-                    const minimumDifferenceMinMax = 70;
+                    const minimumDifferenceMinMax = 75;
 
                     if (result) {
                         const minTime = result.min * 1000;

@@ -70,6 +70,7 @@ export function createLiquidityLineSeries(
         .xScale(xScale)
         .yScale(yScale)
         .decorate((context: CanvasRenderingContext2D) => {
+            context.lineWidth = 1.5;
             if (liqType === 'bid') {
                 context.strokeStyle = lineSellColor;
             }
