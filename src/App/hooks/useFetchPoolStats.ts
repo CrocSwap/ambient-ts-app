@@ -159,8 +159,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                 lastBlockNumber &&
                 shouldInvertDisplay !== undefined &&
                 crocEnv &&
-                provider &&
-                !isUserIdle
+                provider
             ) {
                 const poolStatsNow = await cachedPoolStatsFetch(
                     chainId,
@@ -322,16 +321,15 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         tokenB: quoteAddr,
     });
 
-    const minuteInterval = Math.floor(Date.now() / 1000 / 60);
-
     useEffect(() => {
         if (isServerEnabled) fetchPoolStats();
     }, [
-        isUserIdle,
+        isUserIdle
+            ? Math.floor(Date.now() / 120000)
+            : Math.floor(Date.now() / 60000),
         poolVolume === undefined,
         isServerEnabled,
         shouldInvertDisplay,
-        minuteInterval,
         lastBlockNumber === 0,
         !!crocEnv,
         !!provider,

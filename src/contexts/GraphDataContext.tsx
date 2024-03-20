@@ -403,7 +403,6 @@ export const GraphDataContextProvider = (props: {
             // This useEffect controls a series of other dispatches that fetch data on update of the user object
             // user Postions, limit orders, and recent changes are all governed here
             if (
-                isUserIdle ||
                 !isServerEnabled ||
                 !isUserConnected ||
                 !userAddress ||
@@ -549,13 +548,14 @@ export const GraphDataContextProvider = (props: {
         };
         fetchData();
     }, [
-        isUserIdle,
         isServerEnabled,
         tokens.tokenUniv.length,
         isUserConnected,
         userAddress,
         chainData.chainId,
-        Math.floor(Date.now() / (onAccountRoute ? 15000 : 60000)), // cache every 15 seconds while viewing portfolio, otherwise 1 minute
+        isUserIdle
+            ? Math.floor(Date.now() / (onAccountRoute ? 60000 : 120000))
+            : Math.floor(Date.now() / (onAccountRoute ? 15000 : 60000)), // cache every 15 seconds while viewing portfolio, otherwise 1 minute
         !!crocEnv,
         !!provider,
     ]);
