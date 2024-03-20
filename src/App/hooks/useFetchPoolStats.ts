@@ -182,6 +182,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         setBaseTvlUsd(undefined);
         setPoolPriceChangePercent(undefined);
         setIsPoolPriceChangePositive(true);
+        setPoolPriceDisplayNum(undefined);
     };
 
     useEffect(() => {
