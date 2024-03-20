@@ -70,6 +70,10 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         ? pool?.quote.logoURI
         : pool?.base.logoURI;
 
+    const poolPriceCacheTime = isTradePair
+        ? Math.floor(Date.now() / 5000) // 5 second cache for trade pair
+        : Math.floor(Date.now() / 10000); // 10 second cache otherwise
+
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
         if (isServerEnabled && crocEnv && lastBlockNumber !== 0) {
@@ -79,7 +83,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                     pool.base.address,
                     pool.quote.address,
                     chainId,
-                    Math.floor(Date.now() / 10000), // 10 second cache
+                    poolPriceCacheTime,
                 );
 
                 if (spotPrice) {
@@ -133,7 +137,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         crocEnv !== undefined,
         lastBlockNumber !== 0,
         poolPriceNonDisplay,
-        Math.floor(Date.now() / 10000), // 10 second cache
+        poolPriceCacheTime,
         pool.base.address,
         pool.quote.address,
         isTradePair,
