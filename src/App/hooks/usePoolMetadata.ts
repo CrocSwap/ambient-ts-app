@@ -300,7 +300,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             contextMatchesParams &&
             props.crocEnv &&
             props.provider !== undefined &&
-            !isUserIdle &&
             isServerEnabled
         ) {
             if (baseTokenAddress && quoteTokenAddress) {
@@ -811,10 +810,12 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         baseTokenAddress + quoteTokenAddress,
         props.chainData.chainId,
         props.searchableTokens,
-        Math.floor(Date.now() / 10000), // cache for 10 seconds
+        isUserIdle
+            ? Math.floor(Date.now() / 60000) // cache for 60 seconds if idle
+            : Math.floor(Date.now() / 10000), // cache for 10 seconds if not idle
         !!props.crocEnv,
         !!props.provider,
-        isUserIdle,
+
         isServerEnabled,
     ]);
 
@@ -829,7 +830,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
         const crocEnv = props.crocEnv;
         if (
-            !isUserIdle &&
             props.isChartEnabled &&
             baseTokenAddress &&
             quoteTokenAddress &&
@@ -860,7 +860,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         poolPriceNonDisplay,
         props.lastBlockNumber !== 0,
         props.isChartEnabled,
-        isUserIdle,
     ]);
 
     return {

@@ -252,7 +252,6 @@ export default function PortfolioTabs(props: propsIF) {
     useEffect(() => {
         (async () => {
             if (
-                !isUserIdle &&
                 isServerEnabled &&
                 !connectedAccountActive &&
                 !!tokens.tokenUniv &&
@@ -274,11 +273,13 @@ export default function PortfolioTabs(props: propsIF) {
     }, [
         resolvedAddress,
         connectedAccountActive,
-        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+        isUserIdle
+            ? Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS))
+            : Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
         !!tokens.tokenUniv,
         !!crocEnv,
         !!provider,
-        isUserIdle,
+
         isServerEnabled,
     ]);
 

@@ -72,11 +72,13 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
 
     const poolPriceCacheTime = isTradePair
         ? Math.floor(Date.now() / 5000) // 5 second cache for trade pair
-        : Math.floor(Date.now() / 10000); // 10 second cache otherwise
+        : isUserIdle
+        ? Math.floor(Date.now() / 30000) // 30 second interval if  idle
+        : Math.floor(Date.now() / 10000); // 10 second interval if not idle
 
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
-        if (isServerEnabled && crocEnv && lastBlockNumber !== 0) {
+        if (isServerEnabled && crocEnv) {
             (async () => {
                 const spotPrice = await cachedQuerySpotPrice(
                     crocEnv,
@@ -192,160 +194,154 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         resetPoolStats();
     }, [baseAddr + quoteAddr]);
 
-    const fetchPoolStats = () => {
-        (async () => {
-            if (
-                poolIndex &&
-                chainId &&
-                lastBlockNumber &&
-                shouldInvertDisplay !== undefined &&
-                crocEnv &&
-                provider &&
-                !isUserIdle
-            ) {
-                const poolStatsNow = await cachedPoolStatsFetch(
-                    chainId,
-                    pool.base.address,
-                    pool.quote.address,
-                    poolIndex,
-                    Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-                    crocEnv,
-                    activeNetwork.graphCacheUrl,
-                    cachedFetchTokenPrice,
-                    cachedTokenDetails,
-                    tokens.tokenUniv,
-                );
+    const fetchPoolStats = async () => {
+        if (
+            poolIndex &&
+            chainId &&
+            lastBlockNumber &&
+            shouldInvertDisplay !== undefined &&
+            crocEnv &&
+            provider
+        ) {
+            const poolStatsNow = await cachedPoolStatsFetch(
+                chainId,
+                pool.base.address,
+                pool.quote.address,
+                poolIndex,
+                Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+                crocEnv,
+                activeNetwork.graphCacheUrl,
+                cachedFetchTokenPrice,
+                cachedTokenDetails,
+                tokens.tokenUniv,
+            );
 
-                const ydayTime = Math.floor(Date.now() / 1000 - 24 * 3600);
+            const ydayTime = Math.floor(Date.now() / 1000 - 24 * 3600);
 
-                const poolStats24hAgo = await cachedPoolStatsFetch(
-                    chainId,
-                    pool.base.address,
-                    pool.quote.address,
-                    poolIndex,
-                    Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-                    crocEnv,
-                    activeNetwork.graphCacheUrl,
-                    cachedFetchTokenPrice,
-                    cachedTokenDetails,
-                    tokens.tokenUniv,
-                    ydayTime,
-                );
+            const poolStats24hAgo = await cachedPoolStatsFetch(
+                chainId,
+                pool.base.address,
+                pool.quote.address,
+                poolIndex,
+                Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+                crocEnv,
+                activeNetwork.graphCacheUrl,
+                cachedFetchTokenPrice,
+                cachedTokenDetails,
+                tokens.tokenUniv,
+                ydayTime,
+            );
 
-                const volumeTotalNow = poolStatsNow?.volumeTotalUsd;
-                const volumeTotal24hAgo = poolStats24hAgo?.volumeTotalUsd;
+            const volumeTotalNow = poolStatsNow?.volumeTotalUsd;
+            const volumeTotal24hAgo = poolStats24hAgo?.volumeTotalUsd;
 
-                const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
+            const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
 
-                const nowPrice = poolStatsNow?.lastPriceIndic;
-                const ydayPrice = poolStats24hAgo?.lastPriceIndic;
+            const nowPrice = poolStatsNow?.lastPriceIndic;
+            const ydayPrice = poolStats24hAgo?.lastPriceIndic;
 
-                const priceChangeResult =
-                    ydayPrice && nowPrice && ydayPrice > 0 && nowPrice > 0
-                        ? shouldInvertDisplay
-                            ? ydayPrice / nowPrice - 1.0
-                            : nowPrice / ydayPrice - 1.0
-                        : 0.0;
+            const priceChangeResult =
+                ydayPrice && nowPrice && ydayPrice > 0 && nowPrice > 0
+                    ? shouldInvertDisplay
+                        ? ydayPrice / nowPrice - 1.0
+                        : nowPrice / ydayPrice - 1.0
+                    : 0.0;
 
-                const tvlResult = poolStatsNow?.tvlTotalUsd;
-                const feesTotalResult = poolStatsNow?.feesTotalUsd;
-                const volumeResult = poolStatsNow?.volumeTotalUsd;
+            const tvlResult = poolStatsNow?.tvlTotalUsd;
+            const feesTotalResult = poolStatsNow?.feesTotalUsd;
+            const volumeResult = poolStatsNow?.volumeTotalUsd;
 
-                setQuoteTvlDecimal(poolStatsNow.quoteTvlDecimal);
-                setBaseTvlDecimal(poolStatsNow.baseTvlDecimal);
-                setQuoteTvlUsd(poolStatsNow.quoteTvlUsd);
-                setBaseTvlUsd(poolStatsNow.baseTvlUsd);
+            setQuoteTvlDecimal(poolStatsNow.quoteTvlDecimal);
+            setBaseTvlDecimal(poolStatsNow.baseTvlDecimal);
+            setQuoteTvlUsd(poolStatsNow.quoteTvlUsd);
+            setBaseTvlUsd(poolStatsNow.baseTvlUsd);
 
-                if (tvlResult) {
-                    const tvlString = getFormattedNumber({
-                        value: tvlResult,
-                        isTvl: true,
-                    });
-                    setPoolTvl(tvlString);
-                }
-                if (feesTotalResult) {
-                    const feesTotalString = getFormattedNumber({
-                        value: feesTotalResult,
-                        isTvl: false,
-                    });
-                    setPoolFeesTotal(feesTotalString);
-                }
-                if (volumeResult) {
-                    const volumeString = getFormattedNumber({
-                        value: volumeResult,
-                    });
-                    setPoolVolume(volumeString);
-                }
-                if (volumeChange24h) {
-                    const volumeChange24hString = getFormattedNumber({
-                        value: volumeChange24h,
-                    });
-                    setPoolVolume24h(volumeChange24hString);
-                }
-
-                // try {
-                //     const RANGE_WIDTH = 0.1;
-
-                //     const apyEst = estimateFrom24HrRangeApr(
-                //         RANGE_WIDTH,
-                //         pool.base.address,
-                //         pool.quote.address,
-                //         crocEnv,
-                //         provider,
-                //         lastBlockNumber,
-                //     );
-                //     const apyResult = await apyEst;
-
-                //     if (apyResult) {
-                //         const apyString = apyResult.toLocaleString(undefined, {
-                //             minimumFractionDigits: 2,
-                //             maximumFractionDigits: 2,
-                //         });
-                //         setPoolApy(apyString);
-                //     }
-                // } catch (error) {
-                //     // IS_LOCAL_ENV && console.log({ error });
-                // }
-
-                try {
-                    if (!priceChangeResult) {
-                        setPoolPriceChangePercent(undefined);
-                        setIsPoolPriceChangePositive(true);
-                        return;
-                    }
-
-                    if (
-                        priceChangeResult > -0.0001 &&
-                        priceChangeResult < 0.0001
-                    ) {
-                        setPoolPriceChangePercent('No Change');
-                        setIsPoolPriceChangePositive(true);
-                    } else {
-                        priceChangeResult > 0
-                            ? setIsPoolPriceChangePositive(true)
-                            : setIsPoolPriceChangePositive(false);
-
-                        const priceChangePercent = priceChangeResult * 100;
-
-                        const priceChangeString =
-                            priceChangePercent > 0
-                                ? '+' +
-                                  priceChangePercent.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  }) +
-                                  '%'
-                                : priceChangePercent.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  }) + '%';
-                        setPoolPriceChangePercent(priceChangeString);
-                    }
-                } catch (error) {
-                    setPoolPriceChangePercent(undefined);
-                }
+            if (tvlResult) {
+                const tvlString = getFormattedNumber({
+                    value: tvlResult,
+                    isTvl: true,
+                });
+                setPoolTvl(tvlString);
             }
-        })();
+            if (feesTotalResult) {
+                const feesTotalString = getFormattedNumber({
+                    value: feesTotalResult,
+                    isTvl: false,
+                });
+                setPoolFeesTotal(feesTotalString);
+            }
+            if (volumeResult) {
+                const volumeString = getFormattedNumber({
+                    value: volumeResult,
+                });
+                setPoolVolume(volumeString);
+            }
+            if (volumeChange24h) {
+                const volumeChange24hString = getFormattedNumber({
+                    value: volumeChange24h,
+                });
+                setPoolVolume24h(volumeChange24hString);
+            }
+
+            // try {
+            //     const RANGE_WIDTH = 0.1;
+
+            //     const apyEst = estimateFrom24HrRangeApr(
+            //         RANGE_WIDTH,
+            //         pool.base.address,
+            //         pool.quote.address,
+            //         crocEnv,
+            //         provider,
+            //         lastBlockNumber,
+            //     );
+            //     const apyResult = await apyEst;
+
+            //     if (apyResult) {
+            //         const apyString = apyResult.toLocaleString(undefined, {
+            //             minimumFractionDigits: 2,
+            //             maximumFractionDigits: 2,
+            //         });
+            //         setPoolApy(apyString);
+            //     }
+            // } catch (error) {
+            //     // IS_LOCAL_ENV && console.log({ error });
+            // }
+
+            try {
+                if (!priceChangeResult) {
+                    setPoolPriceChangePercent(undefined);
+                    setIsPoolPriceChangePositive(true);
+                    return;
+                }
+
+                if (priceChangeResult > -0.0001 && priceChangeResult < 0.0001) {
+                    setPoolPriceChangePercent('No Change');
+                    setIsPoolPriceChangePositive(true);
+                } else {
+                    priceChangeResult > 0
+                        ? setIsPoolPriceChangePositive(true)
+                        : setIsPoolPriceChangePositive(false);
+
+                    const priceChangePercent = priceChangeResult * 100;
+
+                    const priceChangeString =
+                        priceChangePercent > 0
+                            ? '+' +
+                              priceChangePercent.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                              }) +
+                              '%'
+                            : priceChangePercent.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                              }) + '%';
+                    setPoolPriceChangePercent(priceChangeString);
+                }
+            } catch (error) {
+                setPoolPriceChangePercent(undefined);
+            }
+        }
     };
 
     const poolPrice =
@@ -366,11 +362,12 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
     useEffect(() => {
         if (isServerEnabled) fetchPoolStats();
     }, [
-        isUserIdle,
+        isUserIdle
+            ? Math.floor(Date.now() / 120000)
+            : Math.floor(Date.now() / 60000),
         poolVolume === undefined,
         isServerEnabled,
         shouldInvertDisplay,
-        Math.floor(Date.now() / 60000), // 1 minute interval
         lastBlockNumber === 0,
         !!crocEnv,
         !!provider,
