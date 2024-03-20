@@ -1473,17 +1473,21 @@ export default function TransactionDetailsGraph(
                                 'minmax(0em, max-content) auto 1fr auto',
                         }}
                     >
+                        <TransactionDetailsLiquidityGraph
+                            tx={tx}
+                            isDenomBase={
+                                !(!isAccountView
+                                    ? isDenomBase
+                                    : !isBaseTokenMoneynessGreaterOrEqual)
+                            }
+                            yScale={scaleData?.yScale}
+                            transactionType={transactionType}
+                        />
                         <d3fc-svg
                             id='d3PlotGraph'
                             ref={d3PlotGraph}
                             style={{ width: '100%' }}
                         ></d3fc-svg>
-
-                        <TransactionDetailsLiquidityGraph
-                            tx={tx}
-                            isDenomBase={isBaseTokenMoneynessGreaterOrEqual}
-                            yScale={scaleData?.yScale}
-                        />
                     </div>
                     <d3fc-canvas
                         className='y-axis'

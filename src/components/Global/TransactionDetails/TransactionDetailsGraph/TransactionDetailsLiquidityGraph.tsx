@@ -5,29 +5,35 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import {
-    TokenPriceFn,
-    fetchPoolLiquidity,
-} from '../../../../ambient-utils/api';
-import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
+import { fetchPoolLiquidity } from '../../../../ambient-utils/api';
+import { toDisplayPrice } from '@crocswap-libs/sdk';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import {
-    LiquidityDataIF,
     LiquidityRangeIF,
+    TransactionIF,
 } from '../../../../ambient-utils/types';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../../../ambient-utils/constants';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { diffHashSig } from '../../../../ambient-utils/dataLayer';
-import { setCanvasResolution } from '../../../../pages/Chart/ChartUtils/chartUtils';
-import { createAreaSeriesLiquidity } from './LiquiditySeries1';
+import {
+    clipCanvas,
+    setCanvasResolution,
+} from '../../../../pages/Chart/ChartUtils/chartUtils';
+import { createAreaSeriesLiquidity } from '../../../../pages/Chart/Liquidity/LiquiditySeries/AreaSeries';
+import { createLiquidityLineSeries } from '../../../../pages/Chart/Liquidity/LiquiditySeries/LineSeries';
 
 interface TransactionDetailsLiquidityGraphIF {
-    tx: any;
+    tx: TransactionIF;
     isDenomBase: boolean;
     yScale: d3.ScaleLinear<number, number> | undefined;
+    transactionType: string;
 }
+
+type liquidityChartData = {
+    liquidityDataAsk: LiquidityRangeIF[];
+    liquidityDataBid: LiquidityRangeIF[];
+};
 
 export default function TransactionDetailsLiquidityGraph(
     props: TransactionDetailsLiquidityGraphIF,
@@ -37,19 +43,83 @@ export default function TransactionDetailsLiquidityGraph(
 
     const { crocEnv, activeNetwork } = useContext(CrocEnvContext);
 
-    const { chainId, base, quote, poolIdx, baseDecimals, quoteDecimals } =
-        props.tx;
+    const {
+        chainId,
+        base,
+        quote,
+        poolIdx,
+        baseDecimals,
+        quoteDecimals,
+        bidTickInvPriceDecimalCorrected,
+        bidTickPriceDecimalCorrected,
+        askTickInvPriceDecimalCorrected,
+        askTickPriceDecimalCorrected,
+        positionType,
+    } = props.tx;
 
-    const { isDenomBase, yScale } = props;
+    const { isDenomBase, yScale, transactionType } = props;
 
-    const [liqSeries, setLiqSeries] = useState<any>();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [liqAskSeries, setLiqAskSeries] = useState<any>();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [liqBidSeries, setLiqBidSeries] = useState<any>();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [liquidityScale, setLiquidityScale] = useState<any>();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [lineAskSeries, setLineAskSeries] = useState<any>();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [lineBidSeries, setLineBidSeries] = useState<any>();
+
     const d3CanvasLiq = useRef<HTMLCanvasElement | null>(null);
 
-    const [liquidityData] = useState<any>({
+    const [liquidityData, setLiquidityData] = useState<liquidityChartData>({
         liquidityDataAsk: [],
         liquidityDataBid: [],
     });
+
+    const clipHighlightedLines = (canvas: HTMLCanvasElement) => {
+        const bidPrice = !isDenomBase
+            ? bidTickInvPriceDecimalCorrected
+            : bidTickPriceDecimalCorrected;
+
+        const askPrice = !isDenomBase
+            ? askTickInvPriceDecimalCorrected
+            : askTickPriceDecimalCorrected;
+
+        const _low = askPrice;
+        const _high = bidPrice;
+        const low = _low > _high ? _high : _low;
+        const high = _low > _high ? _low : _high;
+
+        if (yScale) {
+            clipCanvas(
+                0,
+                yScale(high),
+                canvas.width,
+                yScale(low) - yScale(high),
+                canvas,
+            );
+        }
+    };
+
+    const drawCurveHighlighted = (canvas: HTMLCanvasElement) => {
+        if (transactionType === 'liqchange') {
+            if (positionType !== 'ambient') {
+                clipHighlightedLines(canvas);
+                if (liqAskSeries) {
+                    liqAskSeries(liquidityData.liquidityDataAsk);
+                }
+                if (liqBidSeries) {
+                    liqBidSeries(liquidityData.liquidityDataBid);
+                }
+            }
+
+            lineAskSeries(liquidityData.liquidityDataAsk);
+            lineBidSeries(liquidityData.liquidityDataBid);
+        }
+    };
 
     useEffect(() => {
         (async () => {
@@ -73,8 +143,6 @@ export default function TransactionDetailsLiquidityGraph(
 
             const poolPriceDisplay = isDenomBase ? poolPrice : 1 / poolPrice;
 
-            console.log({ poolPriceDisplay });
-
             await fetchPoolLiquidity(
                 chainId,
                 base,
@@ -85,22 +153,40 @@ export default function TransactionDetailsLiquidityGraph(
                 cachedFetchTokenPrice,
             ).then((liqCurve) => {
                 if (liqCurve) {
+                    const liqAsk: LiquidityRangeIF[] = [];
+                    const liqBid: LiquidityRangeIF[] = [];
                     liqCurve.ranges.forEach((element) => {
                         const liqUpperPrices = isDenomBase
-                            ? element.upperBoundInvPriceDecimalCorrected
-                            : element.lowerBoundPriceDecimalCorrected;
+                            ? element.lowerBoundPriceDecimalCorrected
+                            : element.upperBoundInvPriceDecimalCorrected;
 
                         const liqLowerPrices = isDenomBase
-                            ? element.lowerBoundInvPriceDecimalCorrected
-                            : element.upperBoundPriceDecimalCorrected;
+                            ? element.upperBoundPriceDecimalCorrected
+                            : element.lowerBoundInvPriceDecimalCorrected;
 
-                        // if (liqLowerPrices <= poolPriceDisplay) {
-                        //     liquidityData.liquidityDataAsk.push(element);
-                        // }
+                        if (liqLowerPrices <= poolPriceDisplay) {
+                            liqAsk.push(element);
+                        } else {
+                            if (liqUpperPrices < poolPriceDisplay * 10)
+                                liqBid.push(element);
+                        }
+                    });
 
-                        // if (liqUpperPrices >= poolPriceDisplay) {
-                        liquidityData.liquidityDataBid.push(element);
-                        // }
+                    liqAsk.sort(
+                        (a: LiquidityRangeIF, b: LiquidityRangeIF) =>
+                            b.upperBoundInvPriceDecimalCorrected -
+                            a.upperBoundInvPriceDecimalCorrected,
+                    );
+
+                    liqBid.sort(
+                        (a: LiquidityRangeIF, b: LiquidityRangeIF) =>
+                            b.upperBoundInvPriceDecimalCorrected -
+                            a.upperBoundInvPriceDecimalCorrected,
+                    );
+
+                    setLiquidityData({
+                        liquidityDataAsk: liqAsk,
+                        liquidityDataBid: liqBid,
                     });
                 }
             });
@@ -114,15 +200,15 @@ export default function TransactionDetailsLiquidityGraph(
             );
             const domainLeft = Math.min(
                 ...unparsedLiquidityData
-                    .filter((item: any) => item.activeLiq > 0)
-                    .map((o: any) => {
+                    .filter((item: LiquidityRangeIF) => item.activeLiq > 0)
+                    .map((o: LiquidityRangeIF) => {
                         return o.activeLiq !== undefined
                             ? o.activeLiq
                             : Infinity;
                     }),
             );
             const domainRight = Math.max(
-                ...unparsedLiquidityData.map((o: any) => {
+                ...unparsedLiquidityData.map((o: LiquidityRangeIF) => {
                     return o.activeLiq !== undefined ? o.activeLiq : 0;
                 }),
             );
@@ -137,19 +223,15 @@ export default function TransactionDetailsLiquidityGraph(
             const liquidityExtent = d3fc
                 .extentLinear()
                 .include([0])
-                .accessors([(d: any) => parseFloat(d.activeLiq)]);
+                .accessors([
+                    (d: LiquidityRangeIF) => liquidityScaleTemp(d.activeLiq),
+                ]);
 
-            liquidityScale.domain(
-                liquidityExtent(
-                    liquidityData.liquidityDataBid.concat(
-                        liquidityData.liquidityDataAsk,
-                    ),
-                ),
-            );
+            liquidityScale.domain(liquidityExtent(unparsedLiquidityData));
 
             setLiquidityScale(() => liquidityScale);
 
-            const d3CanvasLiqChart = createAreaSeriesLiquidity(
+            const d3CanvasLiqAskChart = createAreaSeriesLiquidity(
                 liquidityScaleTemp,
                 liquidityScale,
                 yScale,
@@ -158,11 +240,46 @@ export default function TransactionDetailsLiquidityGraph(
                 d3.curveBasis,
                 'curve',
             );
-            setLiqSeries(() => d3CanvasLiqChart);
+
+            setLiqAskSeries(() => d3CanvasLiqAskChart);
+
+            const d3CanvasLiqBidChart = createAreaSeriesLiquidity(
+                liquidityScaleTemp,
+                liquidityScale,
+                yScale,
+                'bid',
+                isDenomBase,
+                d3.curveBasis,
+                'curve',
+            );
+            setLiqBidSeries(() => d3CanvasLiqBidChart);
+
+            const d3CanvasLiqChartAskLine = createLiquidityLineSeries(
+                liquidityScaleTemp,
+                liquidityScale,
+                yScale,
+                'ask',
+                isDenomBase,
+                d3.curveBasis,
+                'curve',
+            );
+            setLineAskSeries(() => d3CanvasLiqChartAskLine);
+
+            const d3CanvasLiqChartBidLine = createLiquidityLineSeries(
+                liquidityScaleTemp,
+                liquidityScale,
+                yScale,
+                'bid',
+                isDenomBase,
+                d3.curveBasis,
+                'curve',
+            );
+            setLineBidSeries(() => d3CanvasLiqChartBidLine);
         }
-    }, [yScale, diffHashSig(liquidityData)]);
+    }, [yScale, liquidityData, isDenomBase]);
 
     const render = useCallback(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const nd = d3.select(d3CanvasLiq.current).node() as any;
         nd?.requestRedraw();
     }, []);
@@ -173,25 +290,19 @@ export default function TransactionDetailsLiquidityGraph(
             .select('canvas')
             .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
-        console.log({ liqSeries, liquidityScale });
-
-        if (liqSeries && liquidityScale) {
+        if (liquidityScale) {
             d3.select(d3CanvasLiq.current)
                 .on('draw', () => {
-                    console.log({ liquidityData });
-
                     setCanvasResolution(canvas);
 
-                    liqSeries(
-                        liquidityData.liquidityDataAsk.concat(
-                            liquidityData.liquidityDataBid,
-                        ),
-                    ).sort(
-                        (a: LiquidityRangeIF, b: LiquidityRangeIF) =>
-                            b.upperBoundInvPriceDecimalCorrected -
-                            a.upperBoundInvPriceDecimalCorrected,
-                    );
-                    // liqSeries(liquidityData.liquidityDataBid);
+                    if (liqAskSeries) {
+                        liqAskSeries(liquidityData.liquidityDataAsk);
+                    }
+                    if (liqBidSeries) {
+                        liqBidSeries(liquidityData.liquidityDataBid);
+                    }
+
+                    drawCurveHighlighted(canvas);
                 })
                 .on('measure', (event: CustomEvent) => {
                     liquidityScale.range([
@@ -199,12 +310,23 @@ export default function TransactionDetailsLiquidityGraph(
                         (event.detail.width / 10) * 6,
                     ]);
 
-                    liqSeries?.context(ctx);
+                    liqAskSeries?.context(ctx);
+                    liqBidSeries?.context(ctx);
+                    lineAskSeries?.context(ctx);
+                    lineBidSeries?.context(ctx);
                 });
         }
 
         render();
-    }, [diffHashSig(liquidityData), liqSeries, liquidityScale, yScale]);
+    }, [
+        liquidityData,
+        liqAskSeries,
+        liqBidSeries,
+        lineBidSeries,
+        lineAskSeries,
+        liquidityScale,
+        yScale,
+    ]);
 
     return (
         <d3fc-canvas
