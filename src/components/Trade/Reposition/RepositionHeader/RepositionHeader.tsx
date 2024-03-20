@@ -20,10 +20,12 @@ interface propsIF {
     positionHash: string;
     setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
     resetTxHash: () => void;
+    editPanel?: boolean;
 }
 
 function RepositionHeader(props: propsIF) {
-    const { setRangeWidthPercentage, positionHash, resetTxHash } = props;
+    const { setRangeWidthPercentage, positionHash, resetTxHash, editPanel } =
+        props;
 
     const {
         setSimpleRangeWidth,
@@ -58,7 +60,10 @@ function RepositionHeader(props: propsIF) {
                     alt='settings'
                     onClick={openModal}
                 />
-                <p className={styles.title}> Reposition: {positionHash}</p>
+                <p className={styles.title}>
+                    {' '}
+                    {editPanel ? 'Edit' : 'Reposition'}: {positionHash}
+                </p>
                 <VscClose
                     className={styles.close_icon}
                     onClick={() => {
