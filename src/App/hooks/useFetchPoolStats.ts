@@ -61,7 +61,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
 
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
-        if (isServerEnabled && crocEnv && lastBlockNumber !== 0) {
+        if (isServerEnabled && crocEnv) {
             (async () => {
                 const spotPrice = await cachedQuerySpotPrice(
                     crocEnv,
