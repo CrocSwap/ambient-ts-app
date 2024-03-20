@@ -16,8 +16,9 @@ import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { PoolIF, PoolStatIF } from '../../ambient-utils/types';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../ambient-utils/constants';
 import { TokenContext } from '../../contexts/TokenContext';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
 
-const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
+const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
     const {
         server: { isEnabled: isServerEnabled },
         isUserIdle,
@@ -28,6 +29,8 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         cachedFetchTokenPrice,
         cachedTokenDetails,
     } = useContext(CachedDataContext);
+    const { poolPriceNonDisplay, setPoolPriceNonDisplay, setLimitTick } =
+        useContext(TradeDataContext);
     const {
         crocEnv,
         activeNetwork,
@@ -37,12 +40,20 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
+    const [poolPriceDisplayNum, setPoolPriceDisplayNum] = useState<
+        number | undefined
+    >();
+
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<
         string | undefined
     >();
     const [shouldInvertDisplay, setShouldInvertDisplay] = useState<
         boolean | undefined
     >(!pool.isBaseTokenMoneynessGreaterOrEqual);
+
+    const [isPoolInitialized, setIsPoolInitialized] = useState<
+        boolean | undefined
+    >();
 
     const baseTokenCharacter = poolPriceDisplay
         ? getUnicodeCharacter(pool.base.symbol)
@@ -59,6 +70,12 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         ? pool?.quote.logoURI
         : pool?.base.logoURI;
 
+    const poolPriceCacheTime = isTradePair
+        ? Math.floor(Date.now() / 5000) // 5 second cache for trade pair
+        : isUserIdle
+        ? Math.floor(Date.now() / 30000) // 30 second interval if  idle
+        : Math.floor(Date.now() / 10000); // 10 second interval if not idle
+
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
         if (isServerEnabled && crocEnv) {
@@ -68,15 +85,26 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                     pool.base.address,
                     pool.quote.address,
                     chainId,
-                    lastBlockNumber,
+                    poolPriceCacheTime,
                 );
 
                 if (spotPrice) {
+                    setIsPoolInitialized(true);
+
+                    if (
+                        isTradePair &&
+                        spotPrice &&
+                        spotPrice !== poolPriceNonDisplay
+                    ) {
+                        setPoolPriceNonDisplay(spotPrice);
+                    }
                     const displayPrice = toDisplayPrice(
                         spotPrice,
                         pool.base.decimals,
                         pool.quote.decimals,
                     );
+
+                    setPoolPriceDisplayNum(displayPrice);
 
                     const isBaseTokenMoneynessGreaterOrEqual =
                         pool.base.address && pool.quote.address
@@ -101,16 +129,20 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                     setPoolPriceDisplay(displayPriceWithFormatting);
                 } else {
                     setPoolPriceDisplay(undefined);
+                    setIsPoolInitialized(false);
                 }
             })();
         }
     }, [
         isServerEnabled,
         chainId,
-        crocEnv,
-        isUserIdle
-            ? Math.floor(Date.now() / 30000) // 30 second interval if  idle
-            : Math.floor(Date.now() / 10000), // 10 second interval if not idle
+        crocEnv !== undefined,
+        lastBlockNumber !== 0,
+        poolPriceNonDisplay,
+        poolPriceCacheTime,
+        pool.base.address,
+        pool.quote.address,
+        isTradePair,
     ]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
@@ -152,6 +184,10 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         setBaseTvlUsd(undefined);
         setPoolPriceChangePercent(undefined);
         setIsPoolPriceChangePositive(true);
+        setPoolPriceDisplayNum(undefined);
+        if (!location.pathname.includes('limitTick')) {
+            setLimitTick(undefined);
+        }
     };
 
     useEffect(() => {
@@ -352,6 +388,8 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         baseTokenCharacter,
         quoteTokenCharacter,
         poolPrice,
+        poolPriceDisplay: poolPriceDisplayNum,
+        isPoolInitialized,
         poolLink,
         shouldInvertDisplay,
         quoteTvlUsd,

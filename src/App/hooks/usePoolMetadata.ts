@@ -62,8 +62,12 @@ interface PoolParamsHookIF {
 
 // Hooks to update metadata and volume/TVL/liquidity curves on a per-pool basis
 export function usePoolMetadata(props: PoolParamsHookIF) {
-    const { tokenA, tokenB, defaultRangeWidthForActivePool } =
-        useContext(TradeDataContext);
+    const {
+        tokenA,
+        tokenB,
+        defaultRangeWidthForActivePool,
+        poolPriceNonDisplay,
+    } = useContext(TradeDataContext);
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const {
         setUserPositionsByPool,
@@ -350,7 +354,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                 crocEnv,
                                                 provider,
                                                 props.chainData.chainId,
-                                                props.lastBlockNumber,
                                                 props.cachedFetchTokenPrice,
                                                 props.cachedQuerySpotPrice,
                                                 props.cachedTokenDetails,
@@ -430,7 +433,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                 crocEnv,
                                                 provider,
                                                 props.chainData.chainId,
-                                                props.lastBlockNumber,
                                                 props.cachedFetchTokenPrice,
                                                 props.cachedQuerySpotPrice,
                                                 props.cachedTokenDetails,
@@ -491,7 +493,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         crocEnv: props.crocEnv,
                         graphCacheUrl: props.graphCacheUrl,
                         provider: props.provider,
-                        lastBlockNumber: props.lastBlockNumber,
                         cachedFetchTokenPrice: props.cachedFetchTokenPrice,
                         cachedQuerySpotPrice: props.cachedQuerySpotPrice,
                         cachedTokenDetails: props.cachedTokenDetails,
@@ -548,7 +549,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                 crocEnv,
                                                 provider,
                                                 props.chainData.chainId,
-                                                props.lastBlockNumber,
                                                 props.cachedFetchTokenPrice,
                                                 props.cachedQuerySpotPrice,
                                                 props.cachedTokenDetails,
@@ -624,7 +624,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                     crocEnv,
                                                     provider,
                                                     props.chainData.chainId,
-                                                    props.lastBlockNumber,
                                                     props.cachedFetchTokenPrice,
                                                     props.cachedQuerySpotPrice,
                                                     props.cachedTokenDetails,
@@ -692,7 +691,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                     crocEnv,
                                                     provider,
                                                     props.chainData.chainId,
-                                                    props.lastBlockNumber,
                                                     props.cachedFetchTokenPrice,
                                                     props.cachedQuerySpotPrice,
                                                     props.cachedTokenDetails,
@@ -767,7 +765,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                     crocEnv,
                                                     provider,
                                                     props.chainData.chainId,
-                                                    props.lastBlockNumber,
                                                     props.cachedFetchTokenPrice,
                                                     props.cachedQuerySpotPrice,
                                                     props.cachedTokenDetails,
@@ -860,9 +857,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         quoteTokenAddress,
         props.chainData.chainId,
         props.chainData.poolIndex,
-        isUserIdle
-            ? Math.floor(Date.now() / 60000) // cache for 60 seconds i3 user is idle
-            : Math.floor(Date.now() / 10000), // cache for 10 seconds i3 user not idle
+        poolPriceNonDisplay,
         props.lastBlockNumber !== 0,
         props.isChartEnabled,
     ]);

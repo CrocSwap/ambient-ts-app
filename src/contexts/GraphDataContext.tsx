@@ -10,7 +10,6 @@ import {
 } from '../ambient-utils/types';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
-import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
 import { UserDataContext } from './UserDataContext';
@@ -178,7 +177,6 @@ export const GraphDataContextProvider = (props: {
     } = useContext(CachedDataContext);
     const { crocEnv, provider, chainData, activeNetwork } =
         useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
     const { userAddress: userDefaultAddress, isUserConnected } =
@@ -422,7 +420,6 @@ export const GraphDataContextProvider = (props: {
                         chainId: chainData.chainId,
                         gcUrl: activeNetwork.graphCacheUrl,
                         provider,
-                        lastBlockNumber,
                         tokenUniv: tokens.tokenUniv,
                         crocEnv,
                         cachedFetchTokenPrice,
@@ -469,7 +466,6 @@ export const GraphDataContextProvider = (props: {
                     crocEnv: crocEnv,
                     graphCacheUrl: activeNetwork.graphCacheUrl,
                     provider,
-                    lastBlockNumber: lastBlockNumber,
                     n: 200, // fetch last 200 changes,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
