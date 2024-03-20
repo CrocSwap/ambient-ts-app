@@ -81,7 +81,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding: 0 10px;
+    padding: 0 8px;
 }
 .price_status_content section {
     display: flex;
