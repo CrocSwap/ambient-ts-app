@@ -134,43 +134,41 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
     // Token and range housekeeping when switching pairs
     useEffect(() => {
-        if (contextMatchesParams && props.crocEnv) {
-            const tokenAAddress = tokenA.address;
-            const tokenBAddress = tokenB.address;
+        if (
+            contextMatchesParams &&
+            props.crocEnv &&
+            tokenA.address &&
+            tokenB.address
+        ) {
+            const sortedTokens = sortBaseQuoteTokens(
+                tokenA.address,
+                tokenB.address,
+            );
+            if (!ticksInParams) {
+                setAdvancedLowTick(0);
+                setAdvancedHighTick(0);
+                setAdvancedMode(false);
+                props.setSimpleRangeWidth(defaultRangeWidthForActivePool);
+            }
 
-            if (tokenAAddress && tokenBAddress) {
-                const sortedTokens = sortBaseQuoteTokens(
-                    tokenAAddress,
-                    tokenBAddress,
-                );
-                if (!ticksInParams) {
-                    setAdvancedLowTick(0);
-                    setAdvancedHighTick(0);
-                    setAdvancedMode(false);
-                    props.setSimpleRangeWidth(defaultRangeWidthForActivePool);
-                }
-
-                setBaseTokenAddress(sortedTokens[0]);
-                setQuoteTokenAddress(sortedTokens[1]);
-                if (tokenA.address === sortedTokens[0]) {
-                    setIsTokenABase(true);
-                    setBaseTokenDecimals(tokenA.decimals);
-                    setQuoteTokenDecimals(tokenB.decimals);
-                } else {
-                    setIsTokenABase(false);
-                    setBaseTokenDecimals(tokenB.decimals);
-                    setQuoteTokenDecimals(tokenA.decimals);
-                }
+            setBaseTokenAddress(sortedTokens[0]);
+            setQuoteTokenAddress(sortedTokens[1]);
+            if (tokenA.address === sortedTokens[0]) {
+                setIsTokenABase(true);
+                setBaseTokenDecimals(tokenA.decimals);
+                setQuoteTokenDecimals(tokenB.decimals);
+            } else {
+                setIsTokenABase(false);
+                setBaseTokenDecimals(tokenB.decimals);
+                setQuoteTokenDecimals(tokenA.decimals);
             }
         }
     }, [
         contextMatchesParams,
-        tokenA.address,
-        tokenB.address,
-        quoteTokenAddress,
+        tokenA.address + tokenB.address,
         props.chainData.chainId,
         props.chainData.poolIndex,
-        props.searchableTokens,
+        // props.searchableTokens,
         props.lastBlockNumber == 0,
         !!props.crocEnv,
     ]);
@@ -828,20 +826,20 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             poolIndex: props.chainData.poolIndex,
         };
 
-        const crocEnv = props.crocEnv;
         if (
             props.isChartEnabled &&
+            poolPriceNonDisplay !== 0 &&
             baseTokenAddress &&
             quoteTokenAddress &&
             props.chainData.poolIndex &&
-            crocEnv
-        )
+            props.crocEnv
+        ) {
             fetchPoolLiquidity(
                 props.chainData.chainId,
                 baseTokenAddress.toLowerCase(),
                 quoteTokenAddress.toLowerCase(),
                 props.chainData.poolIndex,
-                crocEnv,
+                props.crocEnv,
                 props.graphCacheUrl,
                 props.cachedFetchTokenPrice,
             )
@@ -851,6 +849,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     }
                 })
                 .catch(console.error);
+        }
     }, [
         baseTokenAddress +
             quoteTokenAddress +
@@ -858,6 +857,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             props.chainData.poolIndex,
         poolPriceNonDisplay,
         props.isChartEnabled,
+        props.crocEnv !== undefined,
     ]);
 
     return {
