@@ -33,13 +33,13 @@ import {
     getPositionData,
     getTransactionData,
 } from '../../ambient-utils/dataLayer';
-import useDebounce from './useDebounce';
 import { Provider } from '@ethersproject/providers';
 import { DataLoadingContext } from '../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { RangeContext } from '../../contexts/RangeContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { AppStateContext } from '../../contexts/AppStateContext';
 
 interface PoolParamsHookIF {
     crocEnv?: CrocEnv;
@@ -78,6 +78,11 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
     } = useContext(GraphDataContext);
 
     const { cachedGetLiquidityFee } = useContext(CachedDataContext);
+
+    const {
+        server: { isEnabled: isServerEnabled },
+        isUserIdle,
+    } = useContext(AppStateContext);
 
     const { setAdvancedLowTick, setAdvancedHighTick, setAdvancedMode } =
         useContext(RangeContext);
@@ -122,10 +127,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         tokenB.address,
         tokenB.chainId,
     ]);
-
-    // Wait 2 seconds before refreshing to give cache server time to sync from
-    // last block
-    const lastBlockNumWait = useDebounce(props.lastBlockNumber, 2000);
 
     // Token and range housekeeping when switching pairs
     useEffect(() => {
@@ -294,7 +295,9 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         if (
             contextMatchesParams &&
             props.crocEnv &&
-            props.provider !== undefined
+            props.provider !== undefined &&
+            !isUserIdle &&
+            isServerEnabled
         ) {
             if (baseTokenAddress && quoteTokenAddress) {
                 // retrieve pool liquidity provider fee
@@ -587,7 +590,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         })
                         .catch(console.error);
                     if (props.userAddress) {
-                        // retrieve user_pool_positions
                         const userPoolTransactionsCacheEndpoint =
                             GCGO_OVERRIDE_URL
                                 ? GCGO_OVERRIDE_URL + '/user_pool_txs?'
@@ -812,9 +814,11 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         baseTokenAddress + quoteTokenAddress,
         props.chainData.chainId,
         props.searchableTokens,
-        lastBlockNumWait,
+        Math.floor(Date.now() / 10000), // cache for 10 seconds
         !!props.crocEnv,
         !!props.provider,
+        isUserIdle,
+        isServerEnabled,
     ]);
 
     useEffect(() => {
@@ -828,6 +832,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
         const crocEnv = props.crocEnv;
         if (
+            !isUserIdle &&
             props.isChartEnabled &&
             baseTokenAddress &&
             quoteTokenAddress &&
@@ -855,8 +860,10 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         quoteTokenAddress,
         props.chainData.chainId,
         props.chainData.poolIndex,
-        lastBlockNumWait,
+        Math.floor(Date.now() / 10000), // cache for 10 seconds
+        props.lastBlockNumber !== 0,
         props.isChartEnabled,
+        isUserIdle,
     ]);
 
     return {

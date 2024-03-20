@@ -3,11 +3,11 @@ import { useContext } from 'react';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import {
     getFormattedNumber,
-    getLimitPrice,
+    getLimitPriceForSidebar,
+    getMoneynessRankByAddr,
 } from '../../../../ambient-utils/dataLayer';
 import { FlexContainer } from '../../../../styled/Common';
 import { ItemContainer } from '../../../../styled/Components/Sidebar';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     order: LimitOrderIF;
@@ -16,10 +16,14 @@ interface propsIF {
 export default function SidebarLimitOrdersCard(props: propsIF) {
     const { order, handleClick } = props;
     const { tokens } = useContext(TokenContext);
-    const { isDenomBase } = useContext(TradeDataContext);
+
+    const baseTokenMoneyness = getMoneynessRankByAddr(order.base);
+    const quoteTokenMoneyness = getMoneynessRankByAddr(order.quote);
+
+    const isDenomBase = baseTokenMoneyness < quoteTokenMoneyness;
 
     // human-readable limit price to display in the DOM
-    const price = getLimitPrice(order, tokens, isDenomBase);
+    const price = getLimitPriceForSidebar(order, tokens, isDenomBase);
 
     // human-readable limit order value to display in the DOM
     const value = getFormattedNumber({

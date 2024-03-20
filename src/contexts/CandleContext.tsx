@@ -53,6 +53,7 @@ export const CandleContext = createContext<CandleContextIF>(
 export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const {
         server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
+        isUserIdle,
     } = useContext(AppStateContext);
     const {
         chartSettings,
@@ -176,15 +177,19 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     ]);
 
     useEffect(() => {
-        if (isChartEnabled && isUserOnline && candleScale.isShowLatestCandle) {
-            const interval = setInterval(() => {
-                fetchCandles(true);
-            }, CACHE_UPDATE_FREQ_IN_MS);
-            return () => clearInterval(interval);
+        if (
+            isChartEnabled &&
+            isUserOnline &&
+            !isUserIdle &&
+            candleScale.isShowLatestCandle
+        ) {
+            fetchCandles(true);
         }
     }, [
         isChartEnabled,
         isUserOnline,
+        isUserIdle,
+        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
         baseTokenAddress + quoteTokenAddress,
         candleScale?.isFetchForTimeframe,
         candleScale.nCandles,

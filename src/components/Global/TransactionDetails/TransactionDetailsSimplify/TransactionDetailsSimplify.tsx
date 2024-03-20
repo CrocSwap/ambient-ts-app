@@ -15,11 +15,12 @@ import { getElapsedTime } from '../../../../ambient-utils/dataLayer';
 interface TransactionDetailsSimplifyPropsIF {
     tx: TransactionIF;
     isAccountView: boolean;
+    timeFirstMintMemo: number | undefined;
 }
 
 // TODO: refactor to using styled-components
 function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
-    const { tx, isAccountView } = props;
+    const { tx, isAccountView, timeFirstMintMemo } = props;
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -311,12 +312,12 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
                             : isDenomBase
                             ? `1 ${baseTokenSymbol} = ${truncatedDisplayPrice} ${quoteTokenSymbol}`
                             : `1 ${quoteTokenSymbol} = ${truncatedDisplayPrice} ${baseTokenSymbol}`
+                        : isAmbient
+                        ? '0.00'
                         : isAccountView
                         ? isBaseTokenMoneynessGreaterOrEqual
                             ? `1 ${quoteTokenSymbol} = ${truncatedLowDisplayPriceDenomByMoneyness} ${baseTokenSymbol}`
                             : `1 ${baseTokenSymbol} = ${truncatedLowDisplayPriceDenomByMoneyness} ${quoteTokenSymbol}`
-                        : isAmbient
-                        ? '0.00'
                         : isDenomBase
                         ? `1 ${baseTokenSymbol} = ${truncatedLowDisplayPrice} ${quoteTokenSymbol}`
                         : `1 ${quoteTokenSymbol} = ${truncatedLowDisplayPrice} ${baseTokenSymbol}`}
@@ -343,12 +344,12 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
             : [
                   {
                       title: 'High Price Boundary',
-                      content: isAccountView
+                      content: isAmbient
+                          ? '∞'
+                          : isAccountView
                           ? isBaseTokenMoneynessGreaterOrEqual
                               ? `1 ${quoteTokenSymbol} = ${truncatedHighDisplayPriceDenomByMoneyness} ${baseTokenSymbol}`
                               : `1 ${baseTokenSymbol} = ${truncatedHighDisplayPriceDenomByMoneyness} ${quoteTokenSymbol}`
-                          : isAmbient
-                          ? '∞'
                           : isDenomBase
                           ? `1 ${baseTokenSymbol} = ${truncatedHighDisplayPrice} ${quoteTokenSymbol}`
                           : `1 ${quoteTokenSymbol} = ${truncatedHighDisplayPrice} ${baseTokenSymbol}`,
@@ -365,15 +366,18 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
               ]),
     ];
 
-    if (tx.timeFirstMint && tx.timeFirstMint !== tx.txTime) {
+    if (timeFirstMintMemo && timeFirstMintMemo !== tx.txTime) {
         infoContent.splice(2, 0, {
-            title: 'Submit time ',
+            title: 'Time First Minted ',
             content:
-                moment(tx.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm') +
+                moment(timeFirstMintMemo * 1000).format('MM/DD/YYYY HH:mm') +
                 ' ' +
                 '(' +
                 getElapsedTime(
-                    moment(Date.now()).diff(tx.timeFirstMint * 1000, 'seconds'),
+                    moment(Date.now()).diff(
+                        timeFirstMintMemo * 1000,
+                        'seconds',
+                    ),
                 ) +
                 ' ago)',
             explanation:
