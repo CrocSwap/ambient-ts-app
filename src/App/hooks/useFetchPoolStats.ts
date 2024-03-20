@@ -29,7 +29,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         cachedFetchTokenPrice,
         cachedTokenDetails,
     } = useContext(CachedDataContext);
-    const { poolPriceNonDisplay, setPoolPriceNonDisplay } =
+    const { poolPriceNonDisplay, setPoolPriceNonDisplay, setLimitTick } =
         useContext(TradeDataContext);
     const {
         crocEnv,
@@ -184,10 +184,9 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         setIsPoolPriceChangePositive(true);
         setPoolPriceDisplayNum(undefined);
         setIsPoolInitialized(undefined);
-        // not sure if the below line is necessary
-        // if (!location.pathname.includes('limitTick')) {
-        //     setLimitTick(undefined);
-        // }
+        if (!location.pathname.includes('limitTick')) {
+            setLimitTick(undefined);
+        }
     };
 
     useEffect(() => {
