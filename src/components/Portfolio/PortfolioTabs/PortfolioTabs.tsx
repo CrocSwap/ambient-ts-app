@@ -33,6 +33,7 @@ import Orders from '../../Trade/TradeTabs/Orders/Orders';
 import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
 import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
 import {
+    CACHE_UPDATE_FREQ_IN_MS,
     GCGO_OVERRIDE_URL,
     IS_LOCAL_ENV,
 } from '../../../ambient-utils/constants';
@@ -49,6 +50,7 @@ import {
     UserXpDataIF,
 } from '../../../contexts/UserDataContext';
 import medal from '../../../assets/images/icons/medal.svg';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -77,6 +79,12 @@ export default function PortfolioTabs(props: propsIF) {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
+
+    const {
+        server: { isEnabled: isServerEnabled },
+        isUserIdle,
+    } = useContext(AppStateContext);
+
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const {
         crocEnv,
@@ -222,7 +230,7 @@ export default function PortfolioTabs(props: propsIF) {
                 simpleCalc: true,
                 annotateMEV: false,
                 ensResolution: true,
-                n: 100, // fetch last 100 changes,
+                n: 200, // fetch last 200 changes,
                 crocEnv: crocEnv,
                 graphCacheUrl: activeNetwork.graphCacheUrl,
                 provider,
@@ -249,6 +257,8 @@ export default function PortfolioTabs(props: propsIF) {
     useEffect(() => {
         (async () => {
             if (
+                !isUserIdle &&
+                isServerEnabled &&
                 !connectedAccountActive &&
                 !!tokens.tokenUniv &&
                 resolvedAddress &&
@@ -269,10 +279,12 @@ export default function PortfolioTabs(props: propsIF) {
     }, [
         resolvedAddress,
         connectedAccountActive,
-        lastBlockNumber,
+        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
         !!tokens.tokenUniv,
         !!crocEnv,
         !!provider,
+        isUserIdle,
+        isServerEnabled,
     ]);
 
     const activeAccountPositionData = connectedAccountActive

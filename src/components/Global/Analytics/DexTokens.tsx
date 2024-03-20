@@ -102,7 +102,7 @@ function DexTokens(props: propsIF) {
         {
             label: 'Fees',
             slug: 'fees',
-            hidden: false,
+            hidden: smallScreen,
             align: 'right',
             responsive: 'sm',
             sortable: true,

@@ -17,7 +17,6 @@ import TokenInputWithWalletBalance from '../../../Form/TokenInputWithWalletBalan
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { RangeContext } from '../../../../contexts/RangeContext';
 
 interface propsIF {
     tokenAInputQty: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -45,8 +44,6 @@ function LimitTokenInput(props: propsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { setIsTokenAPrimaryRange, isTokenAPrimaryRange } =
-        useContext(RangeContext);
     const { pool } = useContext(PoolContext);
     const {
         baseToken: {
@@ -97,7 +94,6 @@ function LimitTokenInput(props: propsIF) {
         // navigate user to limit page with URL params defined above
         linkGenLimit.navigate(limitLinkParams);
         setIsTokenAPrimary(!isTokenAPrimary);
-        setIsTokenAPrimaryRange(!isTokenAPrimaryRange);
     };
 
     useEffect(() => {
