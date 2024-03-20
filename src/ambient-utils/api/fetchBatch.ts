@@ -93,7 +93,7 @@ class AnalyticsBatchRequestManager {
                     body: JSON.stringify(queryObject),
                 },
                 AnalyticsBatchRequestManager.sendFrequency +
-                    (isPriceQuery ? 1200 : 2700),
+                    (isPriceQuery ? 1500 : 4500),
             );
 
             if (!response.ok) {

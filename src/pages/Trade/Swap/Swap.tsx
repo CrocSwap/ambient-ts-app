@@ -1,5 +1,5 @@
 import { CrocImpact, bigNumToFloat } from '@crocswap-libs/sdk';
-import { useContext, useState, useEffect, memo, useRef } from 'react';
+import { useContext, useState, useEffect, memo, useRef, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
     getFormattedNumber,
@@ -145,7 +145,19 @@ function Swap(props: propsIF) {
     const [swapButtonErrorMessage, setSwapButtonErrorMessage] =
         useState<string>('');
 
-    const [priceImpact, setPriceImpact] = useState<CrocImpact | undefined>();
+    const [lastImpactQuery, setLastImpactQuery] = useState<
+        | {
+              input: string;
+              isInputSell: boolean;
+              impact: CrocImpact | undefined;
+          }
+        | undefined
+    >();
+
+    const priceImpact = useMemo(
+        () => lastImpactQuery?.impact,
+        [JSON.stringify(lastImpactQuery)],
+    );
     const [swapGasPriceinDollars, setSwapGasPriceinDollars] = useState<
         string | undefined
     >();
@@ -170,6 +182,14 @@ function Swap(props: propsIF) {
     const priceImpactNum = !priceImpact?.percentChange
         ? undefined
         : Math.abs(priceImpact.percentChange) * 100;
+
+    const [priceImpactNumMemo, setPriceImpactNumMemo] = useState<
+        number | undefined
+    >();
+
+    useEffect(() => {
+        if (priceImpactNum) setPriceImpactNumMemo(priceImpactNum);
+    }, [priceImpactNum]);
 
     const tokenASurplusMinusTokenARemainderNum =
         parseFloat(tokenADexBalance || '0') - parseFloat(sellQtyString || '0');
@@ -384,16 +404,18 @@ function Swap(props: propsIF) {
 
             if (qty === '' || parseFloat(qty) === 0) return;
 
-            const l1Gas = await calcL1Gas({
-                crocEnv,
-                isQtySell: isTokenAPrimary,
-                qty,
-                buyTokenAddress: tokenB.address,
-                sellTokenAddress: tokenA.address,
-                slippageTolerancePercentage,
-                isWithdrawFromDexChecked,
-                isSaveAsDexSurplusChecked,
-            });
+            const l1Gas = userAddress
+                ? await calcL1Gas({
+                      crocEnv,
+                      isQtySell: isTokenAPrimary,
+                      qty,
+                      buyTokenAddress: tokenB.address,
+                      sellTokenAddress: tokenA.address,
+                      slippageTolerancePercentage,
+                      isWithdrawFromDexChecked,
+                      isSaveAsDexSurplusChecked,
+                  })
+                : undefined;
 
             const costOfEthInCents = BigNumber.from(
                 Math.floor((ethMainnetUsdPrice || 0) * 100),
@@ -577,7 +599,9 @@ function Swap(props: propsIF) {
     ) : undefined;
 
     const priceImpactWarning =
-        !isLiquidityInsufficient && priceImpactNum && priceImpactNum > 2 ? (
+        !isLiquidityInsufficient &&
+        priceImpactNumMemo &&
+        priceImpactNumMemo > 2 ? (
             <WarningContainer
                 flexDirection='row'
                 justifyContent='space-between'
@@ -599,7 +623,7 @@ function Swap(props: propsIF) {
                         placement='bottom'
                     />
                 </FlexContainer>
-                <div>{getPriceImpactString(priceImpactNum)}%</div>
+                <div>{getPriceImpactString(priceImpactNumMemo)}%</div>
             </WarningContainer>
         ) : undefined;
 
@@ -620,7 +644,7 @@ function Swap(props: propsIF) {
                     isLiquidityInsufficient={isLiquidityInsufficient}
                     setIsLiquidityInsufficient={setIsLiquidityInsufficient}
                     slippageTolerancePercentage={slippageTolerancePercentage}
-                    setPriceImpact={setPriceImpact}
+                    setLastImpactQuery={setLastImpactQuery}
                     sellQtyString={{
                         value: sellQtyString,
                         set: setSellQtyString,

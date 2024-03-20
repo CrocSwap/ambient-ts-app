@@ -10,7 +10,6 @@ import {
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
-import { RangeContext } from '../../contexts/RangeContext';
 import { createRangePositionTx } from '../../ambient-utils/dataLayer/transactions/range';
 import { ReceiptContext } from '../../contexts/ReceiptContext';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
@@ -28,7 +27,7 @@ export function useCreateRangePosition() {
         baseToken: { address: baseTokenAddress },
     } = useContext(TradeTokenContext);
 
-    const { tokenA, tokenB, baseToken, quoteToken } =
+    const { tokenA, tokenB, baseToken, quoteToken, isTokenAPrimary } =
         useContext(TradeDataContext);
     const {
         addPendingTx,
@@ -38,7 +37,6 @@ export function useCreateRangePosition() {
         removePendingTx,
         updateTransactionHash,
     } = useContext(ReceiptContext);
-    const { isTokenAPrimaryRange } = useContext(RangeContext);
 
     const isTokenABase = tokenA.address === baseTokenAddress;
     const tokenADecimals = tokenA.decimals;
@@ -109,7 +107,7 @@ export function useCreateRangePosition() {
                     qty: tokenBInputQty,
                     isWithdrawFromDexChecked: isWithdrawTokenBFromDexChecked,
                 },
-                isTokenAPrimaryRange,
+                isTokenAPrimary,
                 tick: { low: defaultLowTick, high: defaultHighTick },
             });
 

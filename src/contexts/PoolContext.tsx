@@ -8,7 +8,6 @@ import React, {
 } from 'react';
 import { estimateFrom24HrAmbientApr } from '../ambient-utils/api';
 import { usePoolPricing } from '../App/hooks/usePoolPricing';
-import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
@@ -40,9 +39,6 @@ interface PoolContextIF {
 export const PoolContext = createContext<PoolContextIF>({} as PoolContextIF);
 
 export const PoolContextProvider = (props: { children: React.ReactNode }) => {
-    const {
-        server: { isEnabled: isServerEnabled },
-    } = useContext(AppStateContext);
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const { crocEnv, provider, chainData, activeNetwork } =
         useContext(CrocEnvContext);
@@ -138,7 +134,6 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         receiptCount: sessionReceipts.length,
         isUserLoggedIn: !!isUserConnected,
         lastBlockNumber,
-        isServerEnabled,
         cachedQuerySpotPrice,
     });
 
