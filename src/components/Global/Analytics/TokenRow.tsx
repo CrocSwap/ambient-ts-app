@@ -30,7 +30,7 @@ export default function TokenRow(props: propsIF) {
         backupPool,
     } = props;
 
-    const mobileScrenView: boolean = useMediaQuery('(max-width: 500px)');
+    const mobileScrenView: boolean = useMediaQuery('(max-width: 640px)');
 
     return (
         <TableRow
@@ -85,9 +85,11 @@ export default function TokenRow(props: propsIF) {
                     {token.normalized?.dexTvlNorm.display}
                 </p>
             </TableCell>
-            <TableCell>
-                <p>{token.normalized?.dexFeesNorm.display}</p>
-            </TableCell>
+            {smallScreen || (
+                <TableCell>
+                    <p>{token.normalized?.dexFeesNorm.display}</p>
+                </TableCell>
+            )}
             <TableCell>
                 <FlexContainer
                     fullHeight

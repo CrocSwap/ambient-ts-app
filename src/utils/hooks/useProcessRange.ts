@@ -144,9 +144,6 @@ export const useProcessRange = (
     const minRange = isDenomBase
         ? position.lowRangeDisplayInBase
         : position.lowRangeDisplayInQuote;
-    // const minRange = isDenomBase
-    //     ? quoteTokenCharacter + position.lowRangeDisplayInBase
-    //     : baseTokenCharacter + position.lowRangeDisplayInQuote;
 
     const minRangeDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
         ? position.lowRangeDisplayInQuote
@@ -159,9 +156,6 @@ export const useProcessRange = (
     const maxRange = isDenomBase
         ? position.highRangeDisplayInBase
         : position.highRangeDisplayInQuote;
-    // const maxRange = isDenomBase
-    //     ? quoteTokenCharacter + position.highRangeDisplayInBase
-    //     : baseTokenCharacter + position.highRangeDisplayInQuote;
 
     const ambientOrMin = position.positionType === 'ambient' ? '0' : minRange;
     const ambientOrMax = position.positionType === 'ambient' ? '∞' : maxRange;
