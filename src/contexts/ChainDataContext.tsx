@@ -222,43 +222,6 @@ export const ChainDataContextProvider = (props: {
                         return newToken;
                     });
                     setTokenBalances(tokensWithLogos);
-
-                    if (isActiveNetworkBlast) {
-                        // wait for 7 seconds before fetching alt token balances
-                        setTimeout(() => {
-                            (async () => {
-                                const tokenBalances: TokenIF[] =
-                                    await cachedFetchTokenBalances(
-                                        userAddress,
-                                        chainData.chainId,
-                                        everyFiveMinutes,
-                                        cachedTokenDetails,
-                                        crocEnv,
-                                        activeNetwork.graphCacheUrl,
-                                        client,
-                                        tokens.tokenUniv,
-                                        true,
-                                    );
-                                const tokensWithLogos = tokenBalances.map(
-                                    (token) => {
-                                        const oldToken: TokenIF | undefined =
-                                            tokens.getTokenByAddress(
-                                                token.address,
-                                            );
-                                        const newToken = { ...token };
-                                        newToken.name = oldToken
-                                            ? oldToken.name
-                                            : '';
-                                        newToken.logoURI = oldToken
-                                            ? oldToken.logoURI
-                                            : '';
-                                        return newToken;
-                                    },
-                                );
-                                setTokenBalances(tokensWithLogos);
-                            })();
-                        }, 7000);
-                    }
                 } catch (error) {
                     // setTokenBalances(undefined);
                     console.error({ error });

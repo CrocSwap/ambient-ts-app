@@ -135,6 +135,16 @@ function TransactionDetailsModal(props: propsIF) {
         openSnackbar(`${txHash} copied`, 'info');
     }
 
+    const [timeFirstMintMemo, setTimeFirstMintMemo] = useState<
+        number | undefined
+    >(tx.timeFirstMint);
+
+    useEffect(() => {
+        if (tx.timeFirstMint) {
+            setTimeFirstMintMemo(tx.timeFirstMint);
+        }
+    }, [tx.timeFirstMint]);
+
     const shareComponent = (
         <div ref={detailsRef} className={styles.main_outer_container}>
             <div className={styles.main_content}>
@@ -143,6 +153,7 @@ function TransactionDetailsModal(props: propsIF) {
                         tx={tx}
                         controlItems={controlItems}
                         positionApy={updatedPositionApy}
+                        isAccountView={isAccountView}
                     />
                 </div>
                 <div className={styles.right_container}>
@@ -154,6 +165,7 @@ function TransactionDetailsModal(props: propsIF) {
                             isBaseTokenMoneynessGreaterOrEqual
                         }
                         isAccountView={isAccountView}
+                        timeFirstMintMemo={timeFirstMintMemo}
                     />
                 </div>
             </div>
@@ -181,6 +193,7 @@ function TransactionDetailsModal(props: propsIF) {
                     <TransactionDetailsSimplify
                         tx={tx}
                         isAccountView={isAccountView}
+                        timeFirstMintMemo={timeFirstMintMemo}
                     />
                 )}
             </div>

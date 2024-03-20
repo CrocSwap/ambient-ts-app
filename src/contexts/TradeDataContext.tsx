@@ -19,7 +19,6 @@ export interface TradeDataContextIF {
     isDenomBase: boolean;
     didUserFlipDenom: boolean;
     isTokenAPrimary: boolean;
-    disableReverseTokens: boolean;
     soloToken: TokenIF;
     shouldSwapDirectionReverse: boolean;
     primaryQuantity: string;
@@ -31,7 +30,6 @@ export interface TradeDataContextIF {
     setTokenB: React.Dispatch<React.SetStateAction<TokenIF>>;
     setDenomInBase: React.Dispatch<React.SetStateAction<boolean>>;
     setIsTokenAPrimary: React.Dispatch<React.SetStateAction<boolean>>;
-    setDisableReverseTokens: React.Dispatch<React.SetStateAction<boolean>>;
     setDidUserFlipDenom: React.Dispatch<React.SetStateAction<boolean>>;
     toggleDidUserFlipDenom: () => void;
     setSoloToken: React.Dispatch<React.SetStateAction<TokenIF>>;
@@ -86,8 +84,6 @@ export const TradeDataContextProvider = (props: {
     //  This probably belongs in a separate context
     // Belongs with the other "primary" values in the tradedata slice
     const [isTokenAPrimary, setIsTokenAPrimary] = React.useState<boolean>(true);
-    const [disableReverseTokens, setDisableReverseTokens] =
-        React.useState<boolean>(false);
 
     const { baseToken, quoteToken, isTokenABase } = useMemo(() => {
         const [baseTokenAddress] = sortBaseQuoteTokens(
@@ -170,7 +166,6 @@ export const TradeDataContextProvider = (props: {
         isTokenABase,
         isDenomBase,
         isTokenAPrimary,
-        disableReverseTokens,
         didUserFlipDenom,
         soloToken,
         shouldSwapDirectionReverse,
@@ -183,7 +178,6 @@ export const TradeDataContextProvider = (props: {
         areDefaultTokensUpdatedForChain,
         setDenomInBase,
         setIsTokenAPrimary,
-        setDisableReverseTokens,
         setDidUserFlipDenom,
         toggleDidUserFlipDenom,
         setSoloToken,
