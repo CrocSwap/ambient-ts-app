@@ -12,12 +12,20 @@ import {
     trimString,
     getFormattedNumber,
     getUnicodeCharacter,
+    getChainExplorer,
 } from '../../../../ambient-utils/dataLayer';
-import { PositionIF, TransactionIF } from '../../../../ambient-utils/types';
+import {
+    PositionIF,
+    TokenIF,
+    TransactionIF,
+} from '../../../../ambient-utils/types';
 import styles from './PositionBox.module.css';
 import { motion } from 'framer-motion';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { LuPanelBottomOpen } from 'react-icons/lu';
+import { getTxSummary } from '../../../../ambient-utils/dataLayer/functions/findTransactionData';
 
 interface propsIF {
     message: string;
@@ -29,7 +37,17 @@ interface propsIF {
     showAvatar?: boolean;
 }
 
+type TransactionData = {
+    txHash: string | undefined;
+    entityType: string;
+    tx: TransactionIF;
+    poolSymbolsDisplay: string;
+};
 export default function PositionBox(props: propsIF) {
+    const {
+        chainData: { blockExplorer, chainId },
+    } = useContext(CrocEnvContext);
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isPoolPriceChangePositive] = useState<boolean>(false);
     const message = props.message;
@@ -40,6 +58,7 @@ export default function PositionBox(props: propsIF) {
     const [sPositions, setSPosition] = useState<PositionIF | undefined>(
         undefined,
     );
+    const [txSummary, setTxSummary] = useState<TransactionData | null>(null);
     const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<
         string | undefined
     >();
@@ -52,19 +71,36 @@ export default function PositionBox(props: propsIF) {
 
     const [minPrice, setMinPrice] = useState<string | undefined>();
     const [maxPrice, setMaxPrice] = useState<string | undefined>();
+    const [hashMsg, setHasMsg] = useState<string | undefined>();
     const [apy, setApy] = useState<any | undefined>();
 
     const posFingerprint = positionData.map((pos) => pos.positionId).join('|');
     const txFingerprint = transactionsData.map((tx) => tx.txHash).join('|');
+    const [topToken, setTopToken] = useState<string | undefined>(undefined);
+    const [bottomToken, setBottomToken] = useState<string | undefined>(
+        undefined,
+    );
 
     const updateIsPosition = () => {
         if (message && message.includes('0x')) {
-            const hashMsg = message
-                .split(' ')
-                .find((item) => item.includes('0x'));
+            console.log('isDenomBase: ', isDenomBase);
+            setHasMsg(message.split(' ').find((item) => item.includes('0x')));
             if (transactionsData.find((item) => item.txHash === hashMsg)) {
                 setPosition(
                     transactionsData.find((item) => item.txHash === hashMsg),
+                );
+                if (isDenomBase) {
+                    setTopToken(position?.baseSymbol); // Assuming these are now TokenIF objects
+                    setBottomToken(position?.quoteSymbol);
+                } else {
+                    setTopToken(position?.quoteSymbol); // Swap if condition is false
+                    setBottomToken(position?.baseSymbol);
+                }
+                console.log(
+                    'topToken: ',
+                    topToken,
+                    ' bottomToken: ',
+                    bottomToken,
                 );
                 props.setIsPosition(true);
             } else if (
@@ -77,6 +113,7 @@ export default function PositionBox(props: propsIF) {
                         (item: PositionIF) => item.firstMintTx === hashMsg,
                     ),
                 );
+                console.log('sposition: ', sPositions);
                 props.setIsPosition(true);
             }
         } else {
@@ -86,14 +123,47 @@ export default function PositionBox(props: propsIF) {
         }
     };
 
+    const { transactionsByUser, userTransactionsByPool } =
+        useContext(GraphDataContext);
+
+    useEffect(() => {
+        (async () => {
+            console.log('txFingerPoint: ', hashMsg);
+            const txSummaryData = await getTxSummary(
+                hashMsg,
+                transactionsByUser.changes,
+                userTransactionsByPool.changes,
+                transactionsByPool.changes,
+            );
+            console.log({ txSummaryData });
+            setTxSummary(txSummaryData ?? null);
+        })();
+    }, [message, posFingerprint, txFingerprint, isDenomBase]);
+
     useEffect(() => {
         updateIsPosition();
-    }, [message, posFingerprint, txFingerprint]);
+    }, [message, posFingerprint, txFingerprint, isDenomBase]);
 
-    function financial(x: any) {
-        return Number.parseFloat(x).toFixed(2);
+    function financial(position: TransactionIF) {
+        if (position?.entityType === 'limitOrder') {
+            return position.bidTickInvPriceDecimalCorrected.toFixed(2);
+        } else {
+            // TODO
+            if (position?.entityType === 'swap') {
+                return position.askTickPriceDecimalCorrected.toFixed(2);
+            } else if (position?.entityType === 'liqchange') {
+                console.log('hey');
+                return (
+                    position.bidTickInvPriceDecimalCorrected.toFixed(2) +
+                    position.askTickInvPriceDecimalCorrected.toFixed(2)
+                );
+            }
+        }
     }
 
+    /*
+
+that will merged manually
     const sideType =
         position &&
         (position.entityType === 'swap' || position.entityType === 'limitOrder'
@@ -105,7 +175,83 @@ export default function PositionBox(props: propsIF) {
             ? 'Sell'
             : 'Buy');
 
+*/
+
+    function returnSideType(position: TransactionIF) {
+        if (position) {
+            if (position.entityType === 'liqchange') {
+                if (position.changeType === 'burn') {
+                    return 'Remove';
+                } else {
+                    return 'Add';
+                }
+            } else {
+                if (position.entityType === 'limitOrder') {
+                    if (position.changeType === 'mint') {
+                        if (position?.isBuy === true) {
+                            return 'Buy';
+                        } else {
+                            return 'Sell';
+                        }
+                    } else {
+                        if (position.changeType === 'recover') {
+                            return 'Claim';
+                        } else {
+                            return 'Remove';
+                        }
+                    }
+                } else if (position.entityType === 'liqchange') {
+                    if (position.changeType === 'burn') {
+                        return 'Remove';
+                    } else {
+                        return 'Add';
+                    }
+                } else if (position.entityType === 'swap') {
+                    if (position?.isBuy) {
+                        return 'Sell';
+                    } else {
+                        return 'Buy';
+                    }
+                }
+            }
+        }
+    }
+    function returnTransactionTypeSide(position: TransactionIF) {
+        if (position?.entityType === 'liqchange') {
+            return 'Range';
+        } else {
+            if (position?.entityType === 'swap') {
+                return 'Market';
+            } else if (position?.entityType === 'limitOrder') {
+                return 'Limit';
+            }
+        }
+    }
+    const sideType = returnSideType(position as TransactionIF);
+
+    const transactionTypeSide = returnTransactionTypeSide(
+        position as TransactionIF,
+    );
+
+    /* 
+     switch (entityType) {
+        case 'swap':
+            output = 'Market';
+            break;
+        case 'limitOrder':
+            output = 'Limit';
+            break;
+        case 'liqchange':
+            output = 'Range';
+            break;
+        default:
+            console.warn(errorMessage);
+            output = 'Unknown';
+    }
+    */
+
     useEffect(() => {
+        console.log('sposition: ', sPositions);
         if (sPositions) {
             setMinPrice(sPositions?.lowRangeDisplayInBase);
             setMaxPrice(sPositions?.highRangeDisplayInBase);
@@ -114,8 +260,10 @@ export default function PositionBox(props: propsIF) {
     }, [sPositions]);
 
     useEffect(() => {
+        console.log(position?.entityType);
         if (position !== undefined) {
-            if (position.entityType === 'limitOrder') {
+            console.log('positon: ', position);
+            if (position.entityType === 'Swap') {
                 if (
                     position.limitPriceDecimalCorrected &&
                     position.invLimitPriceDecimalCorrected
@@ -127,13 +275,10 @@ export default function PositionBox(props: propsIF) {
                     const invPriceDecimalCorrected =
                         position.invLimitPriceDecimalCorrected;
 
-                    setTruncatedDisplayPrice(
-                        financial(
-                            position.askTickPriceDecimalCorrected,
-                        ).toString(),
-                    );
+                    setTruncatedDisplayPrice(financial(position));
                 }
             } else {
+                // In range-remove or range-add here
                 if (
                     position.swapPriceDecimalCorrected &&
                     position.swapInvPriceDecimalCorrected
@@ -151,13 +296,13 @@ export default function PositionBox(props: propsIF) {
                     });
 
                     const truncatedDisplayPrice = isDenomBase
-                        ? (position.quoteSymbol
-                              ? getUnicodeCharacter(position.quoteSymbol)
-                              : '') + invertedPriceTruncated
-                        : (position.baseSymbol
+                        ? (position.baseSymbol
                               ? getUnicodeCharacter(position.baseSymbol)
+                              : '') + invertedPriceTruncated
+                        : (position.quoteSymbol
+                              ? getUnicodeCharacter(position.quoteSymbol)
                               : '') + nonInvertedPriceTruncated;
-
+                    console.log(truncatedDisplayPrice);
                     setTruncatedDisplayPrice(truncatedDisplayPrice);
                 } else {
                     setTruncatedDisplayPrice(undefined);
@@ -192,16 +337,17 @@ export default function PositionBox(props: propsIF) {
     }
 
     function handleOpenExplorer() {
+        // chainData may be changed!!
         if (sPositions === undefined && position !== undefined) {
             const hashMsg = message
                 .split(' ')
                 .find((item) => item.includes('0x'));
-            const explorerUrl = 'https://goerli.etherscan.io/tx/' + hashMsg;
+            const explorerUrl = `${blockExplorer}tx/${hashMsg}`;
             window.open(explorerUrl);
         } else {
             const walletUrl = props.isCurrentUser
                 ? '/account'
-                : `/${props.walletExplorer}`;
+                : `/account/${props.walletExplorer}`;
             window.open(walletUrl);
         }
     }
@@ -218,7 +364,7 @@ export default function PositionBox(props: propsIF) {
                     <div className={styles.position_box}>
                         <div className={styles.position_info}>
                             <div className={styles.tokens_name}>
-                                {position.quoteSymbol} / {position.baseSymbol}
+                                {txSummary?.poolSymbolsDisplay}
                             </div>
                             <div className={styles.address_box}>
                                 <div className={styles.address}>
@@ -236,14 +382,17 @@ export default function PositionBox(props: propsIF) {
                         </div>
                         <div className={styles.position_info}>
                             <div className={styles.tokens_type}>
-                                {sideType} Price
+                                {returnTransactionTypeSide(position)} {sideType}{' '}
+                                Price
                             </div>
 
                             <div
                                 className={
                                     sideType === 'Buy'
                                         ? styles.buy_price
-                                        : styles.sell_price
+                                        : sideType === 'Sell'
+                                        ? styles.sell_price
+                                        : ''
                                 }
                             >
                                 {truncatedDisplayPrice}
@@ -304,7 +453,7 @@ export default function PositionBox(props: propsIF) {
                     <div className={styles.position_box}>
                         <div className={styles.position_info}>
                             <div className={styles.tokens_name}>
-                                {position.quoteSymbol} / {position.baseSymbol}
+                                {topToken} / {bottomToken}
                             </div>
                             <div className={styles.address_box}>
                                 <div className={styles.address}>
@@ -314,7 +463,8 @@ export default function PositionBox(props: propsIF) {
                         </div>
                         <div className={styles.position_info}>
                             <div className={styles.tokens_type}>
-                                {sideType} Price
+                                {returnTransactionTypeSide(position)} {sideType}{' '}
+                                Price
                             </div>
 
                             <div className={styles.price}>
@@ -367,8 +517,8 @@ export default function PositionBox(props: propsIF) {
                     <div className={styles.position_box}>
                         <div className={styles.position_info}>
                             <div className={styles.tokens_name}>
-                                {sPositions.quoteSymbol} /{' '}
-                                {sPositions.baseSymbol}
+                                {sPositions.baseSymbol} /{' '}
+                                {sPositions.quoteSymbol}
                             </div>
                             <div className={styles.address_box}>
                                 <div className={styles.address}>
@@ -421,8 +571,7 @@ export default function PositionBox(props: propsIF) {
                     <div className={styles.position_box}>
                         <div className={styles.position_info}>
                             <div className={styles.tokens_name}>
-                                {sPositions.quoteSymbol} /{' '}
-                                {sPositions.baseSymbol}
+                                {topToken} / {bottomToken}
                             </div>
                             <div className={styles.address_box}>
                                 <div className={styles.address}>
