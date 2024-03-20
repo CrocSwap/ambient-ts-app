@@ -45,6 +45,7 @@ import { ReceiptContext } from '../../contexts/ReceiptContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { useProcessRange } from '../../utils/hooks/useProcessRange';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
+import { AppStateContext } from '../../contexts/AppStateContext';
 
 interface propsIF {
     type: RangeModalAction;
@@ -57,6 +58,7 @@ function RangeActionModal(props: propsIF) {
     const { type, position, onClose, isAccountView } = props;
 
     const { userAddress } = useContext(UserDataContext);
+    const { isUserIdle } = useContext(AppStateContext);
 
     const {
         isAmbient,
@@ -267,66 +269,62 @@ function RangeActionModal(props: propsIF) {
 
     // useEffect to update selected token balances
     useEffect(() => {
-        (async () => {
-            if (crocEnv && position.user && position.base && position.quote) {
-                crocEnv
-                    .token(position.base)
-                    .walletDisplay(position.user)
-                    .then((bal: string) => {
-                        if (bal !== baseTokenBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug(
-                                    'setting base token wallet balance',
-                                );
-                            setBaseTokenBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(position.base)
-                    .balanceDisplay(position.user)
-                    .then((bal: string) => {
-                        if (bal !== baseTokenDexBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug('setting base token dex balance');
-                            setBaseTokenDexBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(position.quote)
-                    .walletDisplay(position.user)
-                    .then((bal: string) => {
-                        if (bal !== quoteTokenBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug('setting quote token balance');
+        if (
+            !isUserIdle &&
+            crocEnv &&
+            position.user &&
+            position.base &&
+            position.quote
+        ) {
+            crocEnv
+                .token(position.base)
+                .walletDisplay(position.user)
+                .then((bal: string) => {
+                    if (bal !== baseTokenBalance) {
+                        setBaseTokenBalance(bal);
+                    }
+                })
+                .catch(console.error);
+            crocEnv
+                .token(position.base)
+                .balanceDisplay(position.user)
+                .then((bal: string) => {
+                    if (bal !== baseTokenDexBalance) {
+                        IS_LOCAL_ENV &&
+                            console.debug('setting base token dex balance');
+                        setBaseTokenDexBalance(bal);
+                    }
+                })
+                .catch(console.error);
+            crocEnv
+                .token(position.quote)
+                .walletDisplay(position.user)
+                .then((bal: string) => {
+                    if (bal !== quoteTokenBalance) {
+                        IS_LOCAL_ENV &&
+                            console.debug('setting quote token balance');
 
-                            setQuoteTokenBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(position.quote)
-                    .balanceDisplay(position.user)
-                    .then((bal: string) => {
-                        if (bal !== quoteTokenDexBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug(
-                                    'setting quote token dex balance',
-                                );
-
-                            setQuoteTokenDexBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-            }
-        })();
+                        setQuoteTokenBalance(bal);
+                    }
+                })
+                .catch(console.error);
+            crocEnv
+                .token(position.quote)
+                .balanceDisplay(position.user)
+                .then((bal: string) => {
+                    if (bal !== quoteTokenDexBalance) {
+                        setQuoteTokenDexBalance(bal);
+                    }
+                })
+                .catch(console.error);
+        }
     }, [
         crocEnv,
         position.user,
         position.base,
         position.quote,
         lastBlockNumber,
+        isUserIdle,
     ]);
 
     const [showSettings, setShowSettings] = useState(false);

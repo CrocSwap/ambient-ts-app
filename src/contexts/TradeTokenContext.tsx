@@ -62,6 +62,7 @@ export const TradeTokenContextProvider = (props: {
 }) => {
     const {
         server: { isEnabled: isServerEnabled },
+        isUserIdle,
     } = useContext(AppStateContext);
 
     const {
@@ -199,101 +200,87 @@ export const TradeTokenContextProvider = (props: {
 
     // useEffect to update selected token balances
     useEffect(() => {
-        (async () => {
-            if (
-                crocEnv &&
-                userAddress &&
-                isUserConnected &&
-                baseToken.address &&
-                quoteToken.address &&
-                baseTokenDecimals &&
-                quoteTokenDecimals
-            ) {
-                crocEnv
-                    .token(baseToken.address)
-                    .wallet(userAddress)
-                    .then((bal: BigNumber) => {
-                        const displayBalance = toDisplayQty(
-                            bal,
-                            baseTokenDecimals,
-                        );
-                        if (displayBalance !== baseTokenBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug(
-                                    'setting base token wallet balance',
-                                );
-                            setBaseTokenBalance(displayBalance);
+        if (
+            !isUserIdle &&
+            crocEnv &&
+            userAddress &&
+            isUserConnected &&
+            baseToken.address &&
+            quoteToken.address &&
+            baseTokenDecimals &&
+            quoteTokenDecimals
+        ) {
+            crocEnv
+                .token(baseToken.address)
+                .wallet(userAddress)
+                .then((bal: BigNumber) => {
+                    const displayBalance = toDisplayQty(bal, baseTokenDecimals);
+                    if (displayBalance !== baseTokenBalance) {
+                        setBaseTokenBalance(displayBalance);
 
-                            setTokenBalance({
-                                tokenAddress: baseToken.address,
-                                walletBalance: bal.toString(),
-                            });
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(baseToken.address)
-                    .balance(userAddress)
-                    .then((bal: BigNumber) => {
-                        const displayBalance = toDisplayQty(
-                            bal,
-                            baseTokenDecimals,
-                        );
-                        if (displayBalance !== baseTokenDexBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug('setting base token dex balance');
-                            setBaseTokenDexBalance(displayBalance);
-                            setTokenBalance({
-                                tokenAddress: baseToken.address,
-                                dexBalance: bal.toString(),
-                            });
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(quoteToken.address)
-                    .wallet(userAddress)
-                    .then((bal: BigNumber) => {
-                        const displayBalance = toDisplayQty(
-                            bal,
-                            quoteTokenDecimals,
-                        );
-                        if (displayBalance !== quoteTokenBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug('setting quote token balance');
-                            setQuoteTokenBalance(displayBalance);
-                            setTokenBalance({
-                                tokenAddress: quoteToken.address,
-                                walletBalance: bal.toString(),
-                            });
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(quoteToken.address)
-                    .balance(userAddress)
-                    .then((bal: BigNumber) => {
-                        const displayBalance = toDisplayQty(
-                            bal,
-                            quoteTokenDecimals,
-                        );
-                        if (displayBalance !== quoteTokenDexBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug(
-                                    'setting quote token dex balance',
-                                );
-                            setQuoteTokenDexBalance(displayBalance);
-                            setTokenBalance({
-                                tokenAddress: quoteToken.address,
-                                dexBalance: bal.toString(),
-                            });
-                        }
-                    })
-                    .catch(console.error);
-            }
-        })();
+                        setTokenBalance({
+                            tokenAddress: baseToken.address,
+                            walletBalance: bal.toString(),
+                        });
+                    }
+                })
+                .catch(console.error);
+            crocEnv
+                .token(baseToken.address)
+                .balance(userAddress)
+                .then((bal: BigNumber) => {
+                    const displayBalance = toDisplayQty(bal, baseTokenDecimals);
+                    if (displayBalance !== baseTokenDexBalance) {
+                        IS_LOCAL_ENV &&
+                            console.debug('setting base token dex balance');
+                        setBaseTokenDexBalance(displayBalance);
+                        setTokenBalance({
+                            tokenAddress: baseToken.address,
+                            dexBalance: bal.toString(),
+                        });
+                    }
+                })
+                .catch(console.error);
+            crocEnv
+                .token(quoteToken.address)
+                .wallet(userAddress)
+                .then((bal: BigNumber) => {
+                    const displayBalance = toDisplayQty(
+                        bal,
+                        quoteTokenDecimals,
+                    );
+                    if (displayBalance !== quoteTokenBalance) {
+                        IS_LOCAL_ENV &&
+                            console.debug('setting quote token balance');
+                        setQuoteTokenBalance(displayBalance);
+                        setTokenBalance({
+                            tokenAddress: quoteToken.address,
+                            walletBalance: bal.toString(),
+                        });
+                    }
+                })
+                .catch(console.error);
+            crocEnv
+                .token(quoteToken.address)
+                .balance(userAddress)
+                .then((bal: BigNumber) => {
+                    const displayBalance = toDisplayQty(
+                        bal,
+                        quoteTokenDecimals,
+                    );
+                    if (displayBalance !== quoteTokenDexBalance) {
+                        setQuoteTokenDexBalance(displayBalance);
+                        setTokenBalance({
+                            tokenAddress: quoteToken.address,
+                            dexBalance: bal.toString(),
+                        });
+                    }
+                })
+                .catch(console.error);
+        }
     }, [
         crocEnv,
+        isUserIdle,
         isUserConnected,
         userAddress,
         baseToken.address,
