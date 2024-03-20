@@ -833,8 +833,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             props.isChartEnabled &&
             baseTokenAddress &&
             quoteTokenAddress &&
-            props.chainData &&
-            props.lastBlockNumber &&
+            props.chainData.poolIndex &&
             crocEnv
         )
             fetchPoolLiquidity(
@@ -853,12 +852,11 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                 })
                 .catch(console.error);
     }, [
-        baseTokenAddress,
-        quoteTokenAddress,
-        props.chainData.chainId,
-        props.chainData.poolIndex,
+        baseTokenAddress +
+            quoteTokenAddress +
+            props.chainData.chainId +
+            props.chainData.poolIndex,
         poolPriceNonDisplay,
-        props.lastBlockNumber !== 0,
         props.isChartEnabled,
     ]);
 
