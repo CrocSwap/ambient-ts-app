@@ -1,4 +1,5 @@
 import React, { createContext, useEffect, useMemo, useState } from 'react';
+import { useIdleTimer } from 'react-idle-timer';
 import {
     globalPopupMethodsIF,
     useGlobalPopup,
@@ -53,6 +54,7 @@ interface AppStateContextIF {
     dismissPointSystemPopup: () => void;
     showTopPtsBanner: boolean;
     dismissTopBannerPopup: () => void;
+    isUserIdle: boolean;
 }
 
 export const AppStateContext = createContext<AppStateContextIF>(
@@ -69,6 +71,7 @@ export const AppStateContextProvider = (props: {
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isChatEnabled, setIsChatEnabled] = useState(CHAT_ENABLED);
     const [isUserOnline, setIsUserOnline] = useState(navigator.onLine);
+    const [isUserIdle, setIsUserIdle] = useState(false);
 
     window.ononline = () => setIsUserOnline(true);
     window.onoffline = () => setIsUserOnline(false);
@@ -166,6 +169,7 @@ export const AppStateContextProvider = (props: {
                 setIsEnabled: setIsChatEnabled,
             },
             server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
+            isUserIdle,
             subscriptions: { isEnabled: areSubscriptionsEnabled },
             wagmiModal: {
                 isOpen: isWagmiModalOpenWallet,
@@ -187,6 +191,7 @@ export const AppStateContextProvider = (props: {
             isChatEnabled,
             isServerEnabled,
             isUserOnline,
+            isUserIdle,
             areSubscriptionsEnabled,
             isAppOverlayActive,
             isTutorialMode,
@@ -202,6 +207,48 @@ export const AppStateContextProvider = (props: {
             dismissTopBannerPopup,
         ],
     );
+
+    const onIdle = () => {
+        setIsUserIdle(true);
+    };
+
+    const onActive = () => {
+        setIsUserIdle(false);
+    };
+
+    useIdleTimer({
+        //    onPrompt,
+        onIdle,
+        onActive,
+        //    onAction,
+        timeout: 1000 * 60 * 1, // set user to idle after 1 minute
+        promptTimeout: 0,
+        events: [
+            'mousemove',
+            'keydown',
+            'wheel',
+            'DOMMouseScroll',
+            'mousewheel',
+            'mousedown',
+            'touchstart',
+            'touchmove',
+            'MSPointerDown',
+            'MSPointerMove',
+            'visibilitychange',
+        ],
+        immediateEvents: [],
+        debounce: 0,
+        throttle: 0,
+        eventsThrottle: 200,
+        element: document,
+        startOnMount: true,
+        startManually: false,
+        stopOnIdle: false,
+        crossTab: false,
+        name: 'idle-timer',
+        syncTimers: 0,
+        leaderElection: false,
+    });
 
     // Heartbeat that checks if the chat server is reachable and has a stable db connection every 60 seconds.
     const { getStatus } = useChatApi();

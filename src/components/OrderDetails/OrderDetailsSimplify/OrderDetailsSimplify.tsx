@@ -16,7 +16,7 @@ import InfoRow from '../../Global/InfoRow';
 
 interface OrderDetailsSimplifyPropsIF {
     limitOrder: LimitOrderIF;
-
+    timeFirstMintMemo: number;
     baseCollateralDisplay: string | undefined;
     quoteCollateralDisplay: string | undefined;
 
@@ -50,6 +50,7 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
         usdValue,
         limitOrder,
         isAccountView,
+        timeFirstMintMemo,
     } = props;
 
     const { chainData } = useContext(CrocEnvContext);
@@ -70,10 +71,10 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
         quoteTokenAddressLowerCase,
         startPriceDisplay,
         middlePriceDisplay,
-        truncatedDisplayPrice,
-        truncatedDisplayPriceDenomByMoneyness,
+        finishPriceDisplay,
         startPriceDisplayDenomByMoneyness,
         middlePriceDisplayDenomByMoneyness,
+        finishPriceDisplayDenomByMoneyness,
         isLimitOrderPartiallyFilled,
         fillPercentage,
         isBaseTokenMoneynessGreaterOrEqual,
@@ -164,7 +165,7 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
     );
 
     const submissionTime =
-        moment(limitOrder.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm') +
+        moment(timeFirstMintMemo * 1000).format('MM/DD/YYYY HH:mm') +
         ' ' +
         '(' +
         elapsedTimeSinceFirstMintString +
@@ -325,11 +326,11 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
             title: 'Fill End ',
             content: isAccountView
                 ? isBaseTokenMoneynessGreaterOrEqual
-                    ? `1  ${quoteTokenSymbol} = ${truncatedDisplayPriceDenomByMoneyness}  ${baseTokenSymbol}`
-                    : `1  ${baseTokenSymbol} = ${truncatedDisplayPriceDenomByMoneyness}  ${quoteTokenSymbol}`
+                    ? `1  ${quoteTokenSymbol} = ${finishPriceDisplayDenomByMoneyness}  ${baseTokenSymbol}`
+                    : `1  ${baseTokenSymbol} = ${finishPriceDisplayDenomByMoneyness}  ${quoteTokenSymbol}`
                 : isDenomBase
-                ? `1  ${baseTokenSymbol} = ${truncatedDisplayPrice}  ${quoteTokenSymbol}`
-                : `1  ${quoteTokenSymbol} = ${truncatedDisplayPrice}  ${baseTokenSymbol}`,
+                ? `1  ${baseTokenSymbol} = ${finishPriceDisplay}  ${quoteTokenSymbol}`
+                : `1  ${quoteTokenSymbol} = ${finishPriceDisplay}  ${baseTokenSymbol}`,
 
             explanation:
                 'Price at which conversion ends and limit order can be claimed',
