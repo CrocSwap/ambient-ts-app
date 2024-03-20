@@ -25,6 +25,7 @@ import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { LuPanelBottomOpen } from 'react-icons/lu';
+import { getTxSummary } from '../../../../ambient-utils/dataLayer/functions/findTransactionData';
 
 interface propsIF {
     message: string;
@@ -36,6 +37,12 @@ interface propsIF {
     showAvatar?: boolean;
 }
 
+type TransactionData = {
+    txHash: string | undefined;
+    entityType: string;
+    tx: TransactionIF;
+    poolSymbolsDisplay: string;
+};
 export default function PositionBox(props: propsIF) {
     const {
         chainData: { blockExplorer, chainId },
@@ -51,6 +58,7 @@ export default function PositionBox(props: propsIF) {
     const [sPositions, setSPosition] = useState<PositionIF | undefined>(
         undefined,
     );
+    const [txSummary, setTxSummary] = useState<TransactionData | null>(null);
     const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<
         string | undefined
     >();
@@ -63,6 +71,7 @@ export default function PositionBox(props: propsIF) {
 
     const [minPrice, setMinPrice] = useState<string | undefined>();
     const [maxPrice, setMaxPrice] = useState<string | undefined>();
+    const [hashMsg, setHasMsg] = useState<string | undefined>();
     const [apy, setApy] = useState<any | undefined>();
 
     const posFingerprint = positionData.map((pos) => pos.positionId).join('|');
@@ -75,9 +84,7 @@ export default function PositionBox(props: propsIF) {
     const updateIsPosition = () => {
         if (message && message.includes('0x')) {
             console.log('isDenomBase: ', isDenomBase);
-            const hashMsg = message
-                .split(' ')
-                .find((item) => item.includes('0x'));
+            setHasMsg(message.split(' ').find((item) => item.includes('0x')));
             if (transactionsData.find((item) => item.txHash === hashMsg)) {
                 setPosition(
                     transactionsData.find((item) => item.txHash === hashMsg),
@@ -115,6 +122,23 @@ export default function PositionBox(props: propsIF) {
             props.setIsPosition(false);
         }
     };
+
+    const { transactionsByUser, userTransactionsByPool } =
+        useContext(GraphDataContext);
+
+    useEffect(() => {
+        (async () => {
+            console.log('txFingerPoint: ', hashMsg);
+            const txSummaryData = await getTxSummary(
+                hashMsg,
+                transactionsByUser.changes,
+                userTransactionsByPool.changes,
+                transactionsByPool.changes,
+            );
+            console.log({ txSummaryData });
+            setTxSummary(txSummaryData ?? null);
+        })();
+    }, [message, posFingerprint, txFingerprint, isDenomBase]);
 
     useEffect(() => {
         updateIsPosition();
@@ -340,7 +364,7 @@ that will merged manually
                     <div className={styles.position_box}>
                         <div className={styles.position_info}>
                             <div className={styles.tokens_name}>
-                                {topToken} / {bottomToken}
+                                {txSummary.poolSymbolsDisplay}
                             </div>
                             <div className={styles.address_box}>
                                 <div className={styles.address}>

@@ -4,14 +4,14 @@ import { TransactionIF } from '../../types';
 import { getMoneynessRankByAddr } from './getMoneynessRank';
 
 type TransactionData = {
-    txHash: string;
+    txHash: string | undefined;
     entityType: string;
     tx: TransactionIF;
     poolSymbolsDisplay: string;
 };
 
 export const getTxSummary = async (
-    txHash: string,
+    txHash: string | undefined,
     transactionsByUser: Array<TransactionIF>,
     userTransactionsByPool: Array<TransactionIF>,
     transactionsByPool: Array<TransactionIF>,
@@ -21,10 +21,13 @@ export const getTxSummary = async (
     // return the transaction data if it exists in any of the arrays
     if (userTransactionsByPool.some((t) => t.txHash === txHash)) {
         txData = userTransactionsByPool.find((t) => t.txHash === txHash);
+        console.log('txData: ', txData);
     } else if (transactionsByUser.some((t) => t.txHash === txHash)) {
         txData = transactionsByUser.find((t) => t.txHash === txHash);
+        console.log('txData: ', txData);
     } else if (transactionsByPool.some((t) => t.txHash === txHash)) {
         txData = transactionsByPool.find((t) => t.txHash === txHash);
+        console.log('txData: ', txData);
     }
 
     const baseTokenMoneyness = getMoneynessRankByAddr(txData?.base || '');
