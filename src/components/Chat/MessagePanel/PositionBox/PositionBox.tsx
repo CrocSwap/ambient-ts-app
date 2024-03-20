@@ -364,7 +364,7 @@ that will merged manually
                     <div className={styles.position_box}>
                         <div className={styles.position_info}>
                             <div className={styles.tokens_name}>
-                                {txSummary.poolSymbolsDisplay}
+                                {txSummary?.poolSymbolsDisplay}
                             </div>
                             <div className={styles.address_box}>
                                 <div className={styles.address}>
