@@ -127,14 +127,14 @@ export const TransactionRow = styled(Row)`
                         minmax(86px, 2.2fr) minmax(80px, 2.2fr) minmax(100px, 20%)`
             : size === 'small'
             ? `grid-template-columns:
-                    minmax(110px, 1.5fr) minmax(30px, 1.3fr)
+                    minmax(110px, 1.2fr) minmax(30px, 1.3fr)
                     minmax(90px, 1fr) minmax(5px, 1fr)`
             : size === 'medium'
             ? `grid-template-columns:
-                        minmax(100px, 1fr) minmax(110px, 1.5fr) minmax(80px, 1.3fr)
+                        minmax(100px, 1fr) minmax(110px, 1.2fr) minmax(80px, 1.3fr)
                         minmax(80px, 1fr) minmax(80px, 1.4fr) minmax(90px, 1.6fr) minmax(78px, 25%)`
             : `grid-template-columns:
-            minmax(80px, 1fr) minmax(90px, 1fr) minmax(100px, 1fr)
+            minmax(80px, 1fr) minmax(90px, 1fr) minmax(110px, 1.2fr)
                         minmax(80px, 1fr) minmax(64px, 1.5fr) minmax(65px, 1.3fr) minmax(80px,1.7fr)
                         minmax(86px, 2.2fr) minmax(80px, 2.2fr) minmax(100px, 20%)`};
 `;

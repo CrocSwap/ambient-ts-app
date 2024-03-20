@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect } from 'react';
 import { fetchUserRecentChanges, fetchRecords } from '../ambient-utils/api';
-import useDebounce from '../App/hooks/useDebounce';
 import {
     TokenIF,
     PositionIF,
@@ -162,6 +161,7 @@ export const GraphDataContextProvider = (props: {
     const [liquidityFee, setLiquidityFee] = React.useState<number>(0);
     const {
         server: { isEnabled: isServerEnabled },
+        isUserIdle,
     } = useContext(AppStateContext);
 
     const { baseToken, quoteToken } = useContext(TradeDataContext);
@@ -396,15 +396,14 @@ export const GraphDataContextProvider = (props: {
                 ),
         );
 
-    // Wait 2 seconds before refreshing to give cache server time to sync from
-    // last block
-    const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
+    const onAccountRoute = location.pathname.includes('account');
 
     useEffect(() => {
         const fetchData = async () => {
             // This useEffect controls a series of other dispatches that fetch data on update of the user object
             // user Postions, limit orders, and recent changes are all governed here
             if (
+                isUserIdle ||
                 !isServerEnabled ||
                 !isUserConnected ||
                 !userAddress ||
@@ -472,7 +471,7 @@ export const GraphDataContextProvider = (props: {
                     graphCacheUrl: activeNetwork.graphCacheUrl,
                     provider,
                     lastBlockNumber: lastBlockNumber,
-                    n: 100, // fetch last 100 changes,
+                    n: 200, // fetch last 200 changes,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
                     cachedTokenDetails: cachedTokenDetails,
@@ -550,12 +549,13 @@ export const GraphDataContextProvider = (props: {
         };
         fetchData();
     }, [
+        isUserIdle,
         isServerEnabled,
         tokens.tokenUniv.length,
         isUserConnected,
         userAddress,
         chainData.chainId,
-        lastBlockNumWait,
+        Math.floor(Date.now() / (onAccountRoute ? 15000 : 60000)), // cache every 15 seconds while viewing portfolio, otherwise 1 minute
         !!crocEnv,
         !!provider,
     ]);
