@@ -178,9 +178,13 @@ export const ChainDataContextProvider = (props: {
         }
     };
 
+    const gasPricePollingCacheTime = Math.floor(
+        Date.now() / (isUserIdle ? 60000 : 10000),
+    ); // poll for new gas price every 60 seconds when user is idle, every 10 seconds when user is active
+
     useEffect(() => {
         fetchGasPrice();
-    }, [lastBlockNumber]);
+    }, [gasPricePollingCacheTime]);
 
     // used to trigger token balance refreshes every 5 minutes
     const everyFiveMinutes = Math.floor(Date.now() / 300000);
