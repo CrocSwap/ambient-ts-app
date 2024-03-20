@@ -44,6 +44,10 @@ export default function UserLevelDisplay(props: Props) {
         minFracDigits: 0,
         maxFracDigits: 0,
         isLevel: true,
+        mantissa:
+            (currentLevel || 1) >= 100000 && (currentLevel || 1) < 1000000
+                ? 0
+                : 1,
     });
 
     return (

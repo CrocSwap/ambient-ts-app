@@ -184,7 +184,6 @@ function Portfolio(props: PortfolioPropsIF) {
                     chainId: chainId,
                 })
                     .then((resolvedUserBlastXp) => {
-                        console.log({ resolvedUserBlastXp });
                         setResolvedUserBlastXp({
                             dataReceived: true,
                             data: resolvedUserBlastXp,
