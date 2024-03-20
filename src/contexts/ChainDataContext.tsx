@@ -237,7 +237,6 @@ export const ChainDataContextProvider = (props: {
                                         activeNetwork.graphCacheUrl,
                                         client,
                                         tokens.tokenUniv,
-                                        true,
                                     );
                                 const tokensWithLogos = tokenBalances.map(
                                     (token) => {
