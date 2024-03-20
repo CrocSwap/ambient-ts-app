@@ -273,6 +273,7 @@ export const ChainDataContextProvider = (props: {
         everyFiveMinutes,
         client !== undefined,
         activeNetwork.graphCacheUrl,
+        isActiveNetworkBlast,
     ]);
 
     const [connectedUserXp, setConnectedUserXp] = React.useState<UserXpDataIF>({

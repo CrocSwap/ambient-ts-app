@@ -244,6 +244,7 @@ function Portfolio(props: PortfolioPropsIF) {
                         activeNetwork.graphCacheUrl,
                         client,
                         tokens.tokenUniv,
+                        isActiveNetworkBlast,
                     );
 
                     const tokensWithLogos = tokenBalanceResults.map((token) => {
@@ -279,6 +280,7 @@ function Portfolio(props: PortfolioPropsIF) {
         everyFiveMinutes,
         connectedAccountActive,
         activeNetwork.graphCacheUrl,
+        isActiveNetworkBlast,
     ]);
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);
