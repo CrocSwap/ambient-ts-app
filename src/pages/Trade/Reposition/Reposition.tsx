@@ -276,6 +276,9 @@ function Reposition() {
         if (!position) {
             return;
         }
+        setNewValueNum(undefined);
+        setNewBaseQtyDisplay('...');
+        setNewQuoteQtyDisplay('...');
         const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
         const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
 
@@ -417,30 +420,36 @@ function Reposition() {
     const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
     const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
 
-    const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
-        isDenomBase,
-        position?.baseDecimals || 18,
-        position?.quoteDecimals || 18,
-        lowTick,
-        highTick,
-        lookupChain(position.chainId).gridSize,
-    );
+    const pinnedDisplayPrices =
+        Math.abs(lowTick) !== Infinity && Math.abs(highTick) !== Infinity
+            ? getPinnedPriceValuesFromTicks(
+                  isDenomBase,
+                  position?.baseDecimals || 18,
+                  position?.quoteDecimals || 18,
+                  lowTick,
+                  highTick,
+                  lookupChain(position.chainId).gridSize,
+              )
+            : undefined;
 
-    const pinnedMinPriceDisplayTruncated =
-        pinnedDisplayPrices.pinnedMinPriceDisplayTruncated;
-    const pinnedMaxPriceDisplayTruncated =
-        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
+    const pinnedMinPriceDisplayTruncated = pinnedDisplayPrices
+        ? pinnedDisplayPrices.pinnedMinPriceDisplayTruncated
+        : undefined;
+    const pinnedMaxPriceDisplayTruncated = pinnedDisplayPrices
+        ? pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated
+        : undefined;
 
     // -----------------------------TEMPORARY PLACE HOLDERS--------------
 
     const [minPriceDisplay, setMinPriceDisplay] = useState<string>(
-        pinnedMinPriceDisplayTruncated || '0.00',
+        pinnedMinPriceDisplayTruncated || '...',
     );
     const [maxPriceDisplay, setMaxPriceDisplay] = useState<string>(
-        pinnedMaxPriceDisplayTruncated || '0.00',
+        pinnedMaxPriceDisplayTruncated || '...',
     );
 
     useEffect(() => {
+        if (!pinnedMinPriceDisplayTruncated) return;
         setMinPriceDisplay(pinnedMinPriceDisplayTruncated.toString());
         if (pinnedMinPriceDisplayTruncated !== undefined) {
             setMinPrice(parseFloat(pinnedMinPriceDisplayTruncated));
@@ -448,17 +457,18 @@ function Reposition() {
     }, [pinnedMinPriceDisplayTruncated]);
 
     useEffect(() => {
+        if (!pinnedMaxPriceDisplayTruncated) return;
         setMaxPriceDisplay(pinnedMaxPriceDisplayTruncated);
         setMaxPrice(parseFloat(pinnedMaxPriceDisplayTruncated));
     }, [pinnedMaxPriceDisplayTruncated]);
 
     const [currentBaseQtyDisplayTruncated, setCurrentBaseQtyDisplayTruncated] =
-        useState<string>(position?.positionLiqBaseTruncated || '0.00');
+        useState<string>(position?.positionLiqBaseTruncated || '...');
 
     const [
         currentQuoteQtyDisplayTruncated,
         setCurrentQuoteQtyDisplayTruncated,
-    ] = useState<string>(position?.positionLiqQuoteTruncated || '0.00');
+    ] = useState<string>(position?.positionLiqQuoteTruncated || '...');
 
     const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/position_stats?'
@@ -527,8 +537,85 @@ function Reposition() {
         fetchCurrentCollateral();
     }, [lastBlockNumber, JSON.stringify(position), !!crocEnv, !!provider]);
 
+    const [newBaseQtyNum, setNewBaseQtyNum] = useState<number | undefined>();
+    const [newQuoteQtyNum, setNewQuoteQtyNum] = useState<number | undefined>();
     const [newBaseQtyDisplay, setNewBaseQtyDisplay] = useState<string>('...');
     const [newQuoteQtyDisplay, setNewQuoteQtyDisplay] = useState<string>('...');
+    const [newValueNum, setNewValueNum] = useState<number | undefined>();
+
+    const priceImpactString = useMemo(() => {
+        if (newValueNum === undefined) return '...';
+        const priceImpactNum =
+            (newValueNum - position.totalValueUSD) / position.totalValueUSD;
+        const isNegative = priceImpactNum < 0;
+        const formattedNum = getFormattedNumber({
+            value: Math.abs(priceImpactNum) * 100,
+            isPercentage: true,
+        });
+        const formattedDisplayString = isNegative
+            ? `(${formattedNum}%)`
+            : `${formattedNum}%`;
+        return formattedDisplayString;
+    }, [newValueNum, position.totalValueUSD]);
+
+    const newValueString = useMemo(() => {
+        if (newValueNum === undefined) return '...';
+        return getFormattedNumber({ value: newValueNum, prefix: '$' });
+    }, [newValueNum]);
+
+    const calcNewValue = async () => {
+        if (
+            !crocEnv ||
+            newBaseQtyNum === undefined ||
+            newQuoteQtyNum === undefined
+        )
+            return;
+
+        const basePricePromise = cachedFetchTokenPrice(
+            position.base,
+            position.chainId,
+            crocEnv,
+        );
+        const quotePricePromise = cachedFetchTokenPrice(
+            position.quote,
+            position.chainId,
+            crocEnv,
+        );
+        const basePrice = await basePricePromise;
+        const quotePrice = await quotePricePromise;
+
+        if (basePrice && quotePrice) {
+            const newValueNum =
+                newBaseQtyNum * basePrice.usdPrice +
+                newQuoteQtyNum * quotePrice.usdPrice;
+            setNewValueNum(newValueNum);
+        } else if (basePrice) {
+            const quotePrice =
+                basePrice.usdPrice * currentPoolDisplayPriceInQuote;
+            const newValueNum =
+                newBaseQtyNum * basePrice.usdPrice +
+                newQuoteQtyNum * quotePrice;
+            setNewValueNum(newValueNum);
+        } else if (quotePrice) {
+            const basePrice =
+                quotePrice.usdPrice / currentPoolDisplayPriceInQuote;
+            const newValueNum =
+                newBaseQtyNum * basePrice +
+                newQuoteQtyNum * quotePrice.usdPrice;
+            setNewValueNum(newValueNum);
+        } else {
+            setNewValueNum(newValueNum);
+        }
+    };
+
+    useEffect(() => {
+        calcNewValue();
+    }, [
+        currentPoolDisplayPriceInQuote,
+        position.base + position.quote,
+        newBaseQtyNum,
+        newQuoteQtyNum,
+    ]);
 
     const debouncedLowTick = useDebounce(pinnedLowTick, 500);
     const debouncedHighTick = useDebounce(pinnedHighTick, 500);
@@ -608,8 +695,8 @@ function Reposition() {
     useEffect(() => {
         if (
             !crocEnv ||
-            !debouncedLowTick ||
-            !debouncedHighTick ||
+            Math.abs(debouncedLowTick) === Infinity ||
+            Math.abs(debouncedHighTick) === Infinity ||
             !position.base ||
             !position.quote ||
             !concLiq
@@ -625,6 +712,8 @@ function Reposition() {
         });
 
         repo.postBalance().then(([base, quote]: [number, number]) => {
+            setNewBaseQtyNum(base);
+            setNewQuoteQtyNum(quote);
             setNewBaseQtyDisplay(getFormattedNumber({ value: base }));
             setNewQuoteQtyDisplay(getFormattedNumber({ value: quote }));
         });
@@ -728,6 +817,8 @@ function Reposition() {
                                 ? position?.highRangeDisplayInBase
                                 : position?.highRangeDisplayInQuote
                         }
+                        newValueString={newValueString}
+                        priceImpactString={priceImpactString}
                     />
                     <div className={styles.button_container}>
                         {bypassConfirmRepo.isEnabled && showConfirmation ? (

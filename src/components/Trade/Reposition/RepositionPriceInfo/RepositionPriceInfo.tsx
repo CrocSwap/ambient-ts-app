@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import styles from './RepositionPriceInfo.module.css';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
@@ -7,6 +7,7 @@ import { PositionIF } from '../../../../ambient-utils/types';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 
 interface IRepositionPriceInfoProps {
     position: PositionIF;
@@ -23,6 +24,8 @@ interface IRepositionPriceInfoProps {
     rangeGasPriceinDollars: string | undefined;
     currentMinPrice: string;
     currentMaxPrice: string;
+    newValueString: string;
+    priceImpactString: string;
 }
 
 // todo : take a look at RangePriceInfo.tsx. Should follow a similar approach.
@@ -41,6 +44,8 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         rangeGasPriceinDollars,
         currentMinPrice,
         currentMaxPrice,
+        newValueString,
+        priceImpactString,
     } = props;
 
     const { repoSlippage } = useContext(UserPreferenceContext);
@@ -50,6 +55,15 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     const quoteSymbol = position?.quoteSymbol;
 
     const { isDenomBase } = useContext(TradeDataContext);
+
+    const usdRemovalValue = useMemo(
+        () =>
+            getFormattedNumber({
+                value: position.totalValueUSD,
+                prefix: '$',
+            }),
+        [position],
+    );
 
     // JSX frag for estimated APR of position
     interface RowDisplayPropsIF {
@@ -170,6 +184,18 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
                     item1='Max Price'
                     item2={currentMaxPrice}
                     item3={rangeWidthPercentage === 100 ? '∞' : maxPriceDisplay}
+                />
+                <aside className={styles.divider} />
+
+                <RowDisplay
+                    item1='Value'
+                    item2={usdRemovalValue}
+                    item3={newValueString}
+                />
+                <RowDisplay
+                    item1='Price Impact'
+                    item2={''}
+                    item3={priceImpactString}
                 />
             </div>
             {gasPriceDropdown}
