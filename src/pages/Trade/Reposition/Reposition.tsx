@@ -543,7 +543,7 @@ function Reposition() {
     const [newQuoteQtyDisplay, setNewQuoteQtyDisplay] = useState<string>('...');
     const [newValueNum, setNewValueNum] = useState<number | undefined>();
 
-    const priceImpactString = useMemo(() => {
+    const valueImpactString = useMemo(() => {
         if (newValueNum === undefined) return '...';
         const priceImpactNum =
             (newValueNum - position.totalValueUSD) / position.totalValueUSD;
@@ -768,6 +768,10 @@ function Reposition() {
         </a>
     );
 
+    const isCurrenPositionEmpty =
+        currentBaseQtyDisplayTruncated === '0.00' &&
+        currentQuoteQtyDisplayTruncated === '0.00';
+
     const isCurrentPositionEmptyOrLoading =
         (currentBaseQtyDisplayTruncated === '0.00' &&
             currentQuoteQtyDisplayTruncated === '0.00') ||
@@ -818,7 +822,8 @@ function Reposition() {
                                 : position?.highRangeDisplayInQuote
                         }
                         newValueString={newValueString}
-                        priceImpactString={priceImpactString}
+                        valueImpactString={valueImpactString}
+                        isCurrenPositionEmpty={isCurrenPositionEmpty}
                     />
                     <div className={styles.button_container}>
                         {bypassConfirmRepo.isEnabled && showConfirmation ? (

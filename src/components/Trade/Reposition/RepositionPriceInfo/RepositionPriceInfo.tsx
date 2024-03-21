@@ -25,7 +25,8 @@ interface IRepositionPriceInfoProps {
     currentMinPrice: string;
     currentMaxPrice: string;
     newValueString: string;
-    priceImpactString: string;
+    valueImpactString: string;
+    isCurrenPositionEmpty: boolean;
 }
 
 // todo : take a look at RangePriceInfo.tsx. Should follow a similar approach.
@@ -45,7 +46,8 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         currentMinPrice,
         currentMaxPrice,
         newValueString,
-        priceImpactString,
+        valueImpactString,
+        isCurrenPositionEmpty,
     } = props;
 
     const { repoSlippage } = useContext(UserPreferenceContext);
@@ -166,36 +168,48 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
                 <RowDisplay
                     item1={position?.baseSymbol}
                     item2={currentBaseQtyDisplayTruncated}
-                    item3={newBaseQtyDisplay}
+                    item3={isCurrenPositionEmpty ? '...' : newBaseQtyDisplay}
                 />
                 <RowDisplay
                     item1={position?.quoteSymbol}
                     item2={currentQuoteQtyDisplayTruncated}
-                    item3={newQuoteQtyDisplay}
+                    item3={isCurrenPositionEmpty ? '...' : newQuoteQtyDisplay}
                 />
                 <aside className={styles.divider} />
 
                 <RowDisplay
                     item1='Min Price'
                     item2={currentMinPrice}
-                    item3={rangeWidthPercentage === 100 ? '0' : minPriceDisplay}
+                    item3={
+                        isCurrenPositionEmpty
+                            ? '...'
+                            : rangeWidthPercentage === 100
+                            ? '0'
+                            : minPriceDisplay
+                    }
                 />
                 <RowDisplay
                     item1='Max Price'
                     item2={currentMaxPrice}
-                    item3={rangeWidthPercentage === 100 ? '∞' : maxPriceDisplay}
+                    item3={
+                        isCurrenPositionEmpty
+                            ? '...'
+                            : rangeWidthPercentage === 100
+                            ? '∞'
+                            : maxPriceDisplay
+                    }
                 />
                 <aside className={styles.divider} />
 
                 <RowDisplay
                     item1='Value'
                     item2={usdRemovalValue}
-                    item3={newValueString}
+                    item3={isCurrenPositionEmpty ? '...' : newValueString}
                 />
                 <RowDisplay
-                    item1='Price Impact'
+                    item1='Impact'
                     item2={''}
-                    item3={priceImpactString}
+                    item3={isCurrenPositionEmpty ? '...' : valueImpactString}
                 />
             </div>
             {gasPriceDropdown}
