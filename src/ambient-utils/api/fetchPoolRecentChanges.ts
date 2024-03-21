@@ -25,7 +25,6 @@ interface argsIF {
     crocEnv: CrocEnv;
     graphCacheUrl: string;
     provider: Provider;
-    lastBlockNumber: number;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedQuerySpotPrice: SpotPriceFn;
     cachedTokenDetails: FetchContractDetailsFn;
@@ -50,7 +49,6 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
         crocEnv,
         graphCacheUrl,
         provider,
-        lastBlockNumber,
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
         cachedTokenDetails,
@@ -111,7 +109,6 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
                         crocEnv,
                         provider,
                         chainId,
-                        lastBlockNumber,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
