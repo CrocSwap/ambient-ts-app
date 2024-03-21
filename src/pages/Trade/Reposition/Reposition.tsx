@@ -273,12 +273,16 @@ function Reposition() {
     }, [simpleRangeWidth]);
 
     useEffect(() => {
-        if (!position) {
-            return;
-        }
         setNewValueNum(undefined);
         setNewBaseQtyDisplay('...');
         setNewQuoteQtyDisplay('...');
+    }, [position.positionId, rangeWidthPercentage]);
+
+    useEffect(() => {
+        if (!position) {
+            return;
+        }
+
         const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
         const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
 
