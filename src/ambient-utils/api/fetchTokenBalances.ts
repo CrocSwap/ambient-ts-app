@@ -4,7 +4,6 @@ import { TokenIF } from '../types/token/TokenIF';
 import { fetchDepositBalances } from './fetchDepositBalances';
 import { memoizePromiseFn } from '../dataLayer/functions/memoizePromiseFn';
 import { FetchContractDetailsFn } from './fetchContractDetails';
-import { Client } from '@covalenthq/client-sdk';
 import ambientTokenList from '../constants/ambient-token-list.json';
 import testnetTokenList from '../constants/testnet-token-list.json';
 
@@ -23,7 +22,6 @@ export const fetchTokenBalances = async (
     cachedTokenDetails: FetchContractDetailsFn,
     crocEnv: CrocEnv | undefined,
     graphCacheUrl: string,
-    client: Client,
     tokenList: TokenIF[],
 ): Promise<TokenIF[] | undefined> => {
     if (!crocEnv) return;
@@ -120,7 +118,6 @@ export type TokenBalancesQueryFn = (
     cachedTokenDetails: FetchContractDetailsFn,
     crocEnv: CrocEnv | undefined,
     graphCacheUrl: string,
-    client: Client,
     tokenList: TokenIF[],
 ) => Promise<TokenIF[]>;
 

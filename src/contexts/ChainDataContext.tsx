@@ -19,7 +19,6 @@ import { TokenIF } from '../ambient-utils/types';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
-import { Client } from '@covalenthq/client-sdk';
 import {
     BlastUserXpDataIF,
     UserDataContext,
@@ -39,7 +38,6 @@ interface ChainDataContextIF {
     setGasPriceinGwei: Dispatch<SetStateAction<number | undefined>>;
     lastBlockNumber: number;
     setLastBlockNumber: Dispatch<SetStateAction<number>>;
-    client: Client;
     connectedUserXp: UserXpDataIF;
     connectedUserBlastXp: BlastUserXpDataIF;
     isActiveNetworkBlast: boolean;
@@ -63,8 +61,6 @@ export const ChainDataContextProvider = (props: {
     const { cachedFetchTokenBalances, cachedTokenDetails } =
         useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
-
-    const client = new Client(process.env.REACT_APP_COVALENT_API_KEY || '');
 
     const { userAddress, isUserConnected } = useContext(UserDataContext);
 
@@ -200,8 +196,7 @@ export const ChainDataContextProvider = (props: {
                 crocEnv &&
                 isUserConnected &&
                 userAddress &&
-                chainData.chainId &&
-                client
+                chainData.chainId
             ) {
                 try {
                     const tokenBalances: TokenIF[] =
@@ -212,7 +207,6 @@ export const ChainDataContextProvider = (props: {
                             cachedTokenDetails,
                             crocEnv,
                             activeNetwork.graphCacheUrl,
-                            client,
                             tokens.tokenUniv,
                         );
                     const tokensWithLogos = tokenBalances.map((token) => {
@@ -242,7 +236,6 @@ export const ChainDataContextProvider = (props: {
         userAddress,
         chainData.chainId,
         everyFiveMinutes,
-        client !== undefined,
         activeNetwork.graphCacheUrl,
     ]);
 
@@ -318,7 +311,6 @@ export const ChainDataContextProvider = (props: {
         isActiveNetworkBlast,
         isActiveNetworkScroll,
         isActiveNetworkMainnet,
-        client,
         isActiveNetworkL2,
     };
 
