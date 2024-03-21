@@ -1410,16 +1410,18 @@ export default function TransactionDetailsGraph(
                                 'minmax(0em, max-content) auto 1fr auto',
                         }}
                     >
-                        <TransactionDetailsLiquidityGraph
-                            tx={tx}
-                            isDenomBase={
-                                !(!isAccountView
-                                    ? isDenomBase
-                                    : !isBaseTokenMoneynessGreaterOrEqual)
-                            }
-                            yScale={scaleData?.yScale}
-                            transactionType={transactionType}
-                        />
+                        {transactionType === 'liqchange' && (
+                            <TransactionDetailsLiquidityGraph
+                                tx={tx}
+                                isDenomBase={
+                                    !(!isAccountView
+                                        ? isDenomBase
+                                        : !isBaseTokenMoneynessGreaterOrEqual)
+                                }
+                                yScale={scaleData?.yScale}
+                                transactionType={transactionType}
+                            />
+                        )}
                         <d3fc-svg
                             id='d3PlotGraph'
                             ref={d3PlotGraph}
