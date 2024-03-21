@@ -260,6 +260,7 @@
 
 .verify_button:not(.verified) svg{
     color: #f3bc41cc;
+    cursor: default !important;
 }
 
 .verify_button:not(.verified):hover{
@@ -277,6 +278,9 @@
 
 
 
+.verify_button.verified svg{
+    cursor: default !important;
+}
 .verify_button.verified{
     border-color: rgba(21, 190, 111, 0.75);
     cursor: default;
