@@ -21,8 +21,8 @@ export default function TokenSelect(props: propsIF) {
     const { isUserConnected } = useContext(UserDataContext);
     const { tokenBalances } = useContext(TokenBalanceContext);
 
-    const isMatchingToken = (tokenInRtk: TokenIF) =>
-        tokenInRtk.address.toLowerCase() === token.address.toLowerCase();
+    const isMatchingToken = (tokenInBalances: TokenIF) =>
+        tokenInBalances.address.toLowerCase() === token.address.toLowerCase();
 
     const indexOfToken = tokenBalances
         ? tokenBalances.findIndex(isMatchingToken)
@@ -89,7 +89,7 @@ export default function TokenSelect(props: propsIF) {
                     {isUserConnected
                         ? tokenBalances !== undefined
                             ? combinedBalanceDisplayNum === 0
-                                ? '0'
+                                ? ''
                                 : combinedBalanceDisplayTruncated
                             : '...'
                         : ''}
