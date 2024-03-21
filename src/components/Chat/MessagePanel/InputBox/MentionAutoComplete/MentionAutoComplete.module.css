@@ -21,8 +21,12 @@
 }
 
 .ment_autocomp_wrapper_active{
-    max-height: 100vh;
+    max-height: 360px;
+    overflow-y: auto;
     opacity: 1;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,.1) transparent;
+    scrollbar-3dlight-color: transparent;
 }
 
 .ment_autocomp_user_wrapper{
@@ -83,6 +87,7 @@
     .ment_autocomp_wrapper_active{
         
         padding: 1rem 0;
+        max-height: 100vh;
     }
 
     .ment_autocomp_topbar{

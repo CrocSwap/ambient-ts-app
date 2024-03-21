@@ -1126,6 +1126,7 @@ function ChatPanel(props: propsIF) {
             selectedMessageForReply={selectedMessageforReply}
             setSelectedMessageForReply={setSelectedMessageForReply}
             sendMessageListener={sendMessageListener}
+            isChatOpen={isChatOpen}
         />
     );
 

@@ -57,6 +57,7 @@ interface MessageInputProps {
     setSelectedMessageForReply: Dispatch<SetStateAction<Message | undefined>>;
     sendMessageCooldown: number;
     sendMessageListener?: () => void;
+    isChatOpen?: boolean;
 }
 
 export default function MessageInput(props: MessageInputProps) {
@@ -649,7 +650,7 @@ export default function MessageInput(props: MessageInputProps) {
                         </div>
                     )}
 
-                    {mentionAutoComplete}
+                    {props.isChatOpen && mentionAutoComplete}
                 </div>
             )}
         </>
