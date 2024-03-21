@@ -114,12 +114,13 @@ export const ChainDataContextProvider = (props: {
     }
 
     useEffect(() => {
-        // Don't use polling, useWebSocket (below)
+        // Grab block right away, then poll on periodic basis; useful for initial load
+        pollBlockNum();
+
+        // Don't use polling, use WebSocket (below) if available
         if (chainData.wsUrl) {
             return;
         }
-        pollBlockNum();
-        // Grab block right away, then poll on periodic basis
 
         const interval = setInterval(async () => {
             pollBlockNum();
