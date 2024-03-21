@@ -37,7 +37,6 @@ interface RecordRequestIF {
     tokenUniv?: TokenIF[];
     crocEnv?: CrocEnv;
     provider?: Provider;
-    lastBlockNumber?: number;
     cachedFetchTokenPrice?: TokenPriceFn;
     cachedQuerySpotPrice?: SpotPriceFn;
     cachedTokenDetails?: FetchContractDetailsFn;
@@ -91,7 +90,6 @@ const decorateUserPositions = async ({
     crocEnv,
     provider,
     chainId,
-    lastBlockNumber,
     cachedFetchTokenPrice,
     cachedQuerySpotPrice,
     cachedTokenDetails,
@@ -103,7 +101,6 @@ const decorateUserPositions = async ({
     crocEnv: CrocEnv;
     provider: Provider;
     chainId: string;
-    lastBlockNumber: number;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedQuerySpotPrice: SpotPriceFn;
     cachedTokenDetails: FetchContractDetailsFn;
@@ -120,7 +117,6 @@ const decorateUserPositions = async ({
                         crocEnv,
                         provider,
                         chainId,
-                        lastBlockNumber,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
@@ -141,7 +137,6 @@ const decorateUserPositions = async ({
                         crocEnv,
                         provider,
                         chainId,
-                        lastBlockNumber,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
@@ -166,7 +161,6 @@ const fetchDecorated = async ({
     tokenUniv,
     crocEnv,
     provider,
-    lastBlockNumber,
     cachedFetchTokenPrice,
     cachedQuerySpotPrice,
     cachedTokenDetails,
@@ -188,7 +182,6 @@ const fetchDecorated = async ({
         tokenUniv,
         crocEnv,
         provider,
-        lastBlockNumber,
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
         cachedTokenDetails,
@@ -209,7 +202,6 @@ const fetchDecorated = async ({
             crocEnv: crocEnv!,
             provider: provider!,
             chainId: chainId,
-            lastBlockNumber: lastBlockNumber!,
             cachedFetchTokenPrice: cachedFetchTokenPrice!,
             cachedQuerySpotPrice: cachedQuerySpotPrice!,
             cachedTokenDetails: cachedTokenDetails!,
@@ -232,7 +224,6 @@ const fetchSimpleDecorated = async ({
     addValue = true,
     tokenUniv,
     crocEnv,
-    lastBlockNumber,
     cachedFetchTokenPrice,
     cachedQuerySpotPrice,
     cachedTokenDetails,
@@ -244,7 +235,6 @@ const fetchSimpleDecorated = async ({
         gcUrl: gcUrl,
         provider: provider,
         crocEnv: crocEnv,
-        lastBlockNumber: lastBlockNumber,
     });
 
     cachedFetchTokenPrice =
@@ -264,7 +254,6 @@ const fetchSimpleDecorated = async ({
         chainId: sess.chainId,
         gcUrl: sess.gcUrl,
         provider: sess.provider,
-        lastBlockNumber: sess.lastBlockNumber,
         tokenUniv: sess.tokenUniv,
         crocEnv: sess.crocEnv,
 

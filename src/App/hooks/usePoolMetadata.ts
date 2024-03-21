@@ -62,8 +62,12 @@ interface PoolParamsHookIF {
 
 // Hooks to update metadata and volume/TVL/liquidity curves on a per-pool basis
 export function usePoolMetadata(props: PoolParamsHookIF) {
-    const { tokenA, tokenB, defaultRangeWidthForActivePool } =
-        useContext(TradeDataContext);
+    const {
+        tokenA,
+        tokenB,
+        defaultRangeWidthForActivePool,
+        poolPriceNonDisplay,
+    } = useContext(TradeDataContext);
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const {
         setUserPositionsByPool,
@@ -130,43 +134,41 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
     // Token and range housekeeping when switching pairs
     useEffect(() => {
-        if (contextMatchesParams && props.crocEnv) {
-            const tokenAAddress = tokenA.address;
-            const tokenBAddress = tokenB.address;
+        if (
+            contextMatchesParams &&
+            props.crocEnv &&
+            tokenA.address &&
+            tokenB.address
+        ) {
+            const sortedTokens = sortBaseQuoteTokens(
+                tokenA.address,
+                tokenB.address,
+            );
+            if (!ticksInParams) {
+                setAdvancedLowTick(0);
+                setAdvancedHighTick(0);
+                setAdvancedMode(false);
+                props.setSimpleRangeWidth(defaultRangeWidthForActivePool);
+            }
 
-            if (tokenAAddress && tokenBAddress) {
-                const sortedTokens = sortBaseQuoteTokens(
-                    tokenAAddress,
-                    tokenBAddress,
-                );
-                if (!ticksInParams) {
-                    setAdvancedLowTick(0);
-                    setAdvancedHighTick(0);
-                    setAdvancedMode(false);
-                    props.setSimpleRangeWidth(defaultRangeWidthForActivePool);
-                }
-
-                setBaseTokenAddress(sortedTokens[0]);
-                setQuoteTokenAddress(sortedTokens[1]);
-                if (tokenA.address === sortedTokens[0]) {
-                    setIsTokenABase(true);
-                    setBaseTokenDecimals(tokenA.decimals);
-                    setQuoteTokenDecimals(tokenB.decimals);
-                } else {
-                    setIsTokenABase(false);
-                    setBaseTokenDecimals(tokenB.decimals);
-                    setQuoteTokenDecimals(tokenA.decimals);
-                }
+            setBaseTokenAddress(sortedTokens[0]);
+            setQuoteTokenAddress(sortedTokens[1]);
+            if (tokenA.address === sortedTokens[0]) {
+                setIsTokenABase(true);
+                setBaseTokenDecimals(tokenA.decimals);
+                setQuoteTokenDecimals(tokenB.decimals);
+            } else {
+                setIsTokenABase(false);
+                setBaseTokenDecimals(tokenB.decimals);
+                setQuoteTokenDecimals(tokenA.decimals);
             }
         }
     }, [
         contextMatchesParams,
-        tokenA.address,
-        tokenB.address,
-        quoteTokenAddress,
+        tokenA.address + tokenB.address,
         props.chainData.chainId,
         props.chainData.poolIndex,
-        props.searchableTokens,
+        // props.searchableTokens,
         props.lastBlockNumber == 0,
         !!props.crocEnv,
     ]);
@@ -296,7 +298,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             contextMatchesParams &&
             props.crocEnv &&
             props.provider !== undefined &&
-            !isUserIdle &&
             isServerEnabled
         ) {
             if (baseTokenAddress && quoteTokenAddress) {
@@ -351,7 +352,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                 crocEnv,
                                                 provider,
                                                 props.chainData.chainId,
-                                                props.lastBlockNumber,
                                                 props.cachedFetchTokenPrice,
                                                 props.cachedQuerySpotPrice,
                                                 props.cachedTokenDetails,
@@ -431,7 +431,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                 crocEnv,
                                                 provider,
                                                 props.chainData.chainId,
-                                                props.lastBlockNumber,
                                                 props.cachedFetchTokenPrice,
                                                 props.cachedQuerySpotPrice,
                                                 props.cachedTokenDetails,
@@ -492,7 +491,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         crocEnv: props.crocEnv,
                         graphCacheUrl: props.graphCacheUrl,
                         provider: props.provider,
-                        lastBlockNumber: props.lastBlockNumber,
                         cachedFetchTokenPrice: props.cachedFetchTokenPrice,
                         cachedQuerySpotPrice: props.cachedQuerySpotPrice,
                         cachedTokenDetails: props.cachedTokenDetails,
@@ -549,7 +547,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                 crocEnv,
                                                 provider,
                                                 props.chainData.chainId,
-                                                props.lastBlockNumber,
                                                 props.cachedFetchTokenPrice,
                                                 props.cachedQuerySpotPrice,
                                                 props.cachedTokenDetails,
@@ -625,7 +622,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                     crocEnv,
                                                     provider,
                                                     props.chainData.chainId,
-                                                    props.lastBlockNumber,
                                                     props.cachedFetchTokenPrice,
                                                     props.cachedQuerySpotPrice,
                                                     props.cachedTokenDetails,
@@ -693,7 +689,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                     crocEnv,
                                                     provider,
                                                     props.chainData.chainId,
-                                                    props.lastBlockNumber,
                                                     props.cachedFetchTokenPrice,
                                                     props.cachedQuerySpotPrice,
                                                     props.cachedTokenDetails,
@@ -768,7 +763,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                     crocEnv,
                                                     provider,
                                                     props.chainData.chainId,
-                                                    props.lastBlockNumber,
                                                     props.cachedFetchTokenPrice,
                                                     props.cachedQuerySpotPrice,
                                                     props.cachedTokenDetails,
@@ -814,10 +808,12 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         baseTokenAddress + quoteTokenAddress,
         props.chainData.chainId,
         props.searchableTokens,
-        Math.floor(Date.now() / 10000), // cache for 10 seconds
+        isUserIdle
+            ? Math.floor(Date.now() / 60000) // cache for 60 seconds if idle
+            : Math.floor(Date.now() / 10000), // cache for 10 seconds if not idle
         !!props.crocEnv,
         !!props.provider,
-        isUserIdle,
+
         isServerEnabled,
     ]);
 
@@ -830,22 +826,20 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             poolIndex: props.chainData.poolIndex,
         };
 
-        const crocEnv = props.crocEnv;
         if (
-            !isUserIdle &&
             props.isChartEnabled &&
+            poolPriceNonDisplay !== 0 &&
             baseTokenAddress &&
             quoteTokenAddress &&
-            props.chainData &&
-            props.lastBlockNumber &&
-            crocEnv
-        )
+            props.chainData.poolIndex &&
+            props.crocEnv
+        ) {
             fetchPoolLiquidity(
                 props.chainData.chainId,
                 baseTokenAddress.toLowerCase(),
                 quoteTokenAddress.toLowerCase(),
                 props.chainData.poolIndex,
-                crocEnv,
+                props.crocEnv,
                 props.graphCacheUrl,
                 props.cachedFetchTokenPrice,
             )
@@ -855,15 +849,15 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     }
                 })
                 .catch(console.error);
+        }
     }, [
-        baseTokenAddress,
-        quoteTokenAddress,
-        props.chainData.chainId,
-        props.chainData.poolIndex,
-        Math.floor(Date.now() / 10000), // cache for 10 seconds
-        props.lastBlockNumber !== 0,
+        baseTokenAddress +
+            quoteTokenAddress +
+            props.chainData.chainId +
+            props.chainData.poolIndex,
+        poolPriceNonDisplay,
         props.isChartEnabled,
-        isUserIdle,
+        props.crocEnv !== undefined,
     ]);
 
     return {
