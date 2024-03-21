@@ -22,7 +22,6 @@ export interface NetworkSessionIF {
     infuraUrl: string;
     provider: Provider;
     chainId: string;
-    lastBlockNumber: number;
     signer?: Signer;
     gcUrl: string;
     crocEnv: CrocEnv;

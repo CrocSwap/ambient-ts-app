@@ -496,7 +496,6 @@ function Reposition() {
                     crocEnv,
                     provider,
                     position.chainId,
-                    lastBlockNumber,
                     cachedFetchTokenPrice,
                     cachedQuerySpotPrice,
                     cachedTokenDetails,
