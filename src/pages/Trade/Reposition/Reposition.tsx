@@ -768,7 +768,7 @@ function Reposition() {
         </a>
     );
 
-    const isCurrenPositionEmpty =
+    const isCurrentPositionEmpty =
         currentBaseQtyDisplayTruncated === '0.00' &&
         currentQuoteQtyDisplayTruncated === '0.00';
 
@@ -823,7 +823,7 @@ function Reposition() {
                         }
                         newValueString={newValueString}
                         valueImpactString={valueImpactString}
-                        isCurrenPositionEmpty={isCurrenPositionEmpty}
+                        isCurrentPositionEmpty={isCurrentPositionEmpty}
                     />
                     <div className={styles.button_container}>
                         {bypassConfirmRepo.isEnabled && showConfirmation ? (

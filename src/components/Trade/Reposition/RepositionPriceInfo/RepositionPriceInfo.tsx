@@ -26,7 +26,7 @@ interface IRepositionPriceInfoProps {
     currentMaxPrice: string;
     newValueString: string;
     valueImpactString: string;
-    isCurrenPositionEmpty: boolean;
+    isCurrentPositionEmpty: boolean;
 }
 
 // todo : take a look at RangePriceInfo.tsx. Should follow a similar approach.
@@ -47,7 +47,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         currentMaxPrice,
         newValueString,
         valueImpactString,
-        isCurrenPositionEmpty,
+        isCurrentPositionEmpty,
     } = props;
 
     const { repoSlippage } = useContext(UserPreferenceContext);
@@ -72,15 +72,18 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         item1: string | number;
         item2: string | number;
         item3: string | number;
+        negative?: boolean;
     }
     function RowDisplay(props: RowDisplayPropsIF) {
-        const { item1, item2, item3 } = props;
+        const { item1, item2, item3, negative } = props;
 
         return (
             <div className={styles.row_display}>
                 <p>{item1 ? item1 : ''}</p>
                 <p>{item2 ? item2 : ''}</p>
-                <p>{item3 ? item3 : ''}</p>
+                <p style={negative ? { color: 'var(--negative)' } : undefined}>
+                    {item3 ? item3 : ''}
+                </p>
             </div>
         );
     }
@@ -168,12 +171,12 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
                 <RowDisplay
                     item1={position?.baseSymbol}
                     item2={currentBaseQtyDisplayTruncated}
-                    item3={isCurrenPositionEmpty ? '...' : newBaseQtyDisplay}
+                    item3={isCurrentPositionEmpty ? '...' : newBaseQtyDisplay}
                 />
                 <RowDisplay
                     item1={position?.quoteSymbol}
                     item2={currentQuoteQtyDisplayTruncated}
-                    item3={isCurrenPositionEmpty ? '...' : newQuoteQtyDisplay}
+                    item3={isCurrentPositionEmpty ? '...' : newQuoteQtyDisplay}
                 />
                 <aside className={styles.divider} />
 
@@ -181,7 +184,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
                     item1='Min Price'
                     item2={currentMinPrice}
                     item3={
-                        isCurrenPositionEmpty
+                        isCurrentPositionEmpty
                             ? '...'
                             : rangeWidthPercentage === 100
                             ? '0'
@@ -192,7 +195,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
                     item1='Max Price'
                     item2={currentMaxPrice}
                     item3={
-                        isCurrenPositionEmpty
+                        isCurrentPositionEmpty
                             ? '...'
                             : rangeWidthPercentage === 100
                             ? '∞'
@@ -204,12 +207,14 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
                 <RowDisplay
                     item1='Value'
                     item2={usdRemovalValue}
-                    item3={isCurrenPositionEmpty ? '...' : newValueString}
+                    item3={isCurrentPositionEmpty ? '...' : newValueString}
+                    negative={valueImpactString.includes('(')}
                 />
                 <RowDisplay
                     item1='Impact'
                     item2={''}
-                    item3={isCurrenPositionEmpty ? '...' : valueImpactString}
+                    item3={isCurrentPositionEmpty ? '...' : valueImpactString}
+                    negative={valueImpactString.includes('(')}
                 />
             </div>
             {gasPriceDropdown}
