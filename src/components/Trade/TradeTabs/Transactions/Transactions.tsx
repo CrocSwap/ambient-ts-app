@@ -27,7 +27,6 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
-import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { TransactionRowPlaceholder } from './TransactionsTable/TransactionRowPlaceholder';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import {
@@ -64,7 +63,6 @@ function Transactions(props: propsIF) {
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
     const { isCandleSelected } = useContext(CandleContext);
     const {
         cachedQuerySpotPrice,
@@ -211,7 +209,6 @@ function Transactions(props: propsIF) {
             crocEnv: crocEnv,
             graphCacheUrl: activeNetwork.graphCacheUrl,
             provider,
-            lastBlockNumber,
             cachedFetchTokenPrice: cachedFetchTokenPrice,
             cachedQuerySpotPrice: cachedQuerySpotPrice,
             cachedTokenDetails: cachedTokenDetails,

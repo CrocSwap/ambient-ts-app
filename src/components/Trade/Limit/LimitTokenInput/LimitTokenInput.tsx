@@ -68,7 +68,6 @@ function LimitTokenInput(props: propsIF) {
         isDenomBase,
         setIsTokenAPrimary,
         setLimitTick,
-        setPoolPriceNonDisplay,
         primaryQuantity,
         setPrimaryQuantity,
     } = useContext(TradeDataContext);
@@ -84,7 +83,6 @@ function LimitTokenInput(props: propsIF) {
 
     const reverseTokens = (): void => {
         setLimitTick(undefined);
-        setPoolPriceNonDisplay(0);
 
         const limitLinkParams: limitParamsIF = {
             chain: chainId,

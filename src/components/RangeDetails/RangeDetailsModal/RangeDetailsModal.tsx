@@ -12,7 +12,10 @@ import TransactionDetailsGraph from '../../Global/TransactionDetails/Transaction
 import { useProcessRange } from '../../../utils/hooks/useProcessRange';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { GCGO_OVERRIDE_URL } from '../../../ambient-utils/constants';
+import {
+    CACHE_UPDATE_FREQ_IN_MS,
+    GCGO_OVERRIDE_URL,
+} from '../../../ambient-utils/constants';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import {
@@ -389,7 +392,6 @@ function RangeDetailsModal(props: propsIF) {
                         crocEnv,
                         provider,
                         chainId,
-                        lastBlockNumber,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
@@ -401,7 +403,12 @@ function RangeDetailsModal(props: propsIF) {
                 })
                 .catch(console.error);
         }
-    }, [lastBlockNumber, !!crocEnv, !!provider, chainId]);
+    }, [
+        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+        !!crocEnv,
+        !!provider,
+        chainId,
+    ]);
 
     const [blastPointsData, setBlastPointsData] = useState<BlastPointsDataIF>({
         points: '...',

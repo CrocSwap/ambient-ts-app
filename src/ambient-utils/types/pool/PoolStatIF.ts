@@ -2,6 +2,8 @@ export interface PoolStatIF {
     baseLogoUri?: string;
     quoteLogoUri?: string;
     poolPrice?: string;
+    poolPriceDisplay: number | undefined;
+    isPoolInitialized: boolean | undefined;
     poolVolume?: string;
     poolVolume24h?: string;
     poolTvl?: string;
@@ -9,7 +11,7 @@ export interface PoolStatIF {
     poolApy?: string;
 
     poolPriceChangePercent?: string;
-    isPoolPriceChangePositive?: boolean;
+    isPoolPriceChangePositive: boolean;
 
     baseTokenCharacter?: string;
     quoteTokenCharacter?: string;
