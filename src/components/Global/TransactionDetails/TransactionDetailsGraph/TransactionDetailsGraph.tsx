@@ -21,6 +21,8 @@ import {
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { useMediaQuery } from '@material-ui/core';
 import TransactionDetailsLiquidityGraph from './TransactionDetailsLiquidityGraph';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../../../../ambient-utils/constants';
+import { toDisplayPrice } from '@crocswap-libs/sdk';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -42,7 +44,9 @@ export default function TransactionDetailsGraph(
         isAccountView,
     } = props;
     const { chainData, crocEnv, activeNetwork } = useContext(CrocEnvContext);
-    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+    const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
+        useContext(CachedDataContext);
+
     const oneHourMiliseconds = 60 * 60 * 1000;
     const oneWeekMiliseconds = oneHourMiliseconds * 24 * 7;
     const isServerEnabled =
@@ -74,6 +78,8 @@ export default function TransactionDetailsGraph(
     const [period, setPeriod] = useState<number | undefined>();
     const [yAxis, setYaxis] = useState<any>();
     const [xAxis, setXaxis] = useState<any>();
+    const [poolPricePixel, setPoolPricePixel] = useState(0);
+    const [poolPrice, setPoolPrice] = useState(0);
     const takeSmallerPeriodForRemoveRange = (diff: number) => {
         if (diff <= 600) {
             return 300;
@@ -114,6 +120,8 @@ export default function TransactionDetailsGraph(
         useState(false);
     const mobileView = useMediaQuery('(min-width: 800px)');
     const [svgWidth, setSvgWidth] = useState(0);
+
+    const { chainId, base, quote, baseDecimals, quoteDecimals } = props.tx;
 
     useEffect(() => {
         let timeoutId: NodeJS.Timeout;
@@ -208,6 +216,31 @@ export default function TransactionDetailsGraph(
                     if (!crocEnv) {
                         return;
                     }
+
+                    const poolPriceNonDisplay = cachedQuerySpotPrice(
+                        crocEnv,
+                        base,
+                        quote,
+                        chainId,
+                        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+                    );
+
+                    const poolPrice = toDisplayPrice(
+                        await poolPriceNonDisplay,
+                        baseDecimals,
+                        quoteDecimals,
+                    );
+
+                    const poolPriceDisplay = (
+                        !isAccountView
+                            ? isDenomBase
+                            : !isBaseTokenMoneynessGreaterOrEqual
+                    )
+                        ? 1 / poolPrice
+                        : poolPrice;
+
+                    setPoolPrice(poolPriceDisplay);
+
                     const graphData = await fetchCandleSeriesCroc(
                         fetchEnabled,
                         chainData,
@@ -815,6 +848,27 @@ export default function TransactionDetailsGraph(
     }, [scaleData]);
 
     useEffect(() => {
+        if (poolPricePixel && scaleData && transactionType === 'liqchange') {
+            const newMaxDomain = scaleData?.xScale
+                .invert(svgWidth + (svgWidth - poolPricePixel) + 8)
+                .getTime();
+
+            const oldMaxDomain = scaleData?.xScale.domain()[1];
+
+            addExtraCandle(
+                graphData[0].time + period,
+                poolPrice,
+                1 / poolPrice,
+            );
+            scaleData?.xScale.domain([
+                scaleData?.xScale.domain()[0],
+                Math.max(newMaxDomain, oldMaxDomain),
+            ]);
+            render();
+        }
+    }, [scaleData, poolPricePixel]);
+
+    useEffect(() => {
         if (scaleData) {
             const d3XaxisCanvas = d3
                 .select(d3Xaxis.current)
@@ -1420,6 +1474,9 @@ export default function TransactionDetailsGraph(
                                 }
                                 yScale={scaleData?.yScale}
                                 transactionType={transactionType}
+                                poolPriceDisplay={poolPrice}
+                                setPoolPricePixel={setPoolPricePixel}
+                                svgWidth={svgWidth}
                             />
                         )}
                         <d3fc-svg

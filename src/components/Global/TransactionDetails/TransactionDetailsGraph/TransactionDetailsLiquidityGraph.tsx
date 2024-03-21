@@ -1,21 +1,20 @@
 import React, {
+    Dispatch,
     useCallback,
     useContext,
     useEffect,
     useRef,
     useState,
 } from 'react';
+import * as d3 from 'd3';
+import * as d3fc from 'd3fc';
 import { fetchPoolLiquidity } from '../../../../ambient-utils/api';
-import { toDisplayPrice } from '@crocswap-libs/sdk';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import {
     LiquidityRangeIF,
     TransactionIF,
 } from '../../../../ambient-utils/types';
-import { CACHE_UPDATE_FREQ_IN_MS } from '../../../../ambient-utils/constants';
-import * as d3 from 'd3';
-import * as d3fc from 'd3fc';
 import {
     clipCanvas,
     setCanvasResolution,
@@ -28,6 +27,9 @@ interface TransactionDetailsLiquidityGraphIF {
     isDenomBase: boolean;
     yScale: d3.ScaleLinear<number, number> | undefined;
     transactionType: string;
+    poolPriceDisplay: number;
+    setPoolPricePixel: Dispatch<React.SetStateAction<number>>;
+    svgWidth: number;
 }
 
 type liquidityChartData = {
@@ -38,8 +40,7 @@ type liquidityChartData = {
 export default function TransactionDetailsLiquidityGraph(
     props: TransactionDetailsLiquidityGraphIF,
 ) {
-    const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
-        useContext(CachedDataContext);
+    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
     const { crocEnv, activeNetwork } = useContext(CrocEnvContext);
 
@@ -48,8 +49,6 @@ export default function TransactionDetailsLiquidityGraph(
         base,
         quote,
         poolIdx,
-        baseDecimals,
-        quoteDecimals,
         bidTickInvPriceDecimalCorrected,
         bidTickPriceDecimalCorrected,
         askTickInvPriceDecimalCorrected,
@@ -57,7 +56,14 @@ export default function TransactionDetailsLiquidityGraph(
         positionType,
     } = props.tx;
 
-    const { isDenomBase, yScale, transactionType } = props;
+    const {
+        isDenomBase,
+        yScale,
+        transactionType,
+        poolPriceDisplay,
+        setPoolPricePixel,
+        svgWidth,
+    } = props;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [liqAskSeries, setLiqAskSeries] = useState<any>();
@@ -117,25 +123,9 @@ export default function TransactionDetailsLiquidityGraph(
 
     useEffect(() => {
         (async () => {
-            if (!crocEnv) {
+            if (!crocEnv || !poolPriceDisplay) {
                 return;
             }
-
-            const poolPriceNonDisplay = cachedQuerySpotPrice(
-                crocEnv,
-                base,
-                quote,
-                chainId,
-                Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-            );
-
-            const poolPrice = toDisplayPrice(
-                await poolPriceNonDisplay,
-                baseDecimals,
-                quoteDecimals,
-            );
-
-            const poolPriceDisplay = isDenomBase ? poolPrice : 1 / poolPrice;
 
             await fetchPoolLiquidity(
                 chainId,
@@ -185,7 +175,7 @@ export default function TransactionDetailsLiquidityGraph(
                 }
             });
         })();
-    }, []);
+    }, [poolPriceDisplay]);
 
     useEffect(() => {
         if (yScale) {
@@ -221,9 +211,22 @@ export default function TransactionDetailsLiquidityGraph(
                     (d: LiquidityRangeIF) => liquidityScaleTemp(d.activeLiq),
                 ]);
 
-            liquidityScale.domain(liquidityExtent(unparsedLiquidityData));
+            liquidityScale
+                .domain(liquidityExtent(unparsedLiquidityData))
+                .range([svgWidth, svgWidth * 0.9]);
 
             setLiquidityScale(() => liquidityScale);
+
+            const liqBidData = liquidityData?.liquidityDataBid;
+            liquidityScale &&
+                liquidityData?.liquidityDataBid.length > 0 &&
+                setPoolPricePixel(
+                    liquidityScale(
+                        liquidityScaleTemp(
+                            liqBidData[liqBidData.length - 1].activeLiq,
+                        ),
+                    ),
+                );
 
             const d3CanvasLiqAskChart = createAreaSeriesLiquidity(
                 liquidityScaleTemp,
@@ -270,7 +273,7 @@ export default function TransactionDetailsLiquidityGraph(
             );
             setLineBidSeries(() => d3CanvasLiqChartBidLine);
         }
-    }, [yScale, liquidityData, isDenomBase]);
+    }, [yScale, liquidityData, isDenomBase, svgWidth]);
 
     const render = useCallback(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -301,7 +304,7 @@ export default function TransactionDetailsLiquidityGraph(
                 .on('measure', (event: CustomEvent) => {
                     liquidityScale.range([
                         event.detail.width,
-                        (event.detail.width / 10) * 6,
+                        event.detail.width * 0.9,
                     ]);
 
                     liqAskSeries?.context(ctx);
@@ -327,8 +330,7 @@ export default function TransactionDetailsLiquidityGraph(
             ref={d3CanvasLiq}
             style={{
                 position: 'relative',
-                width: '20%',
-                marginLeft: '80%',
+                width: '100%',
             }}
         ></d3fc-canvas>
     );
