@@ -218,7 +218,7 @@ export const useTokenSearch = (
         // will ignore changes that do not pass validation (eg adding whitespace)
     }, [
         chainId,
-        tokens.defaultTokens,
+        tokens.tokenUniv,
         walletTknAddresses,
         getRecentTokens().length,
         validatedInput,
