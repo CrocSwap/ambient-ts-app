@@ -23,7 +23,6 @@ import TokenInputWithWalletBalance from '../../Form/TokenInputWithWalletBalance'
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { RangeContext } from '../../../contexts/RangeContext';
 
 interface propsIF {
     sellQtyString: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -34,7 +33,16 @@ interface propsIF {
     isSaveAsDexSurplusChecked: boolean;
     slippageTolerancePercentage: number;
     setSwapAllowed: Dispatch<SetStateAction<boolean>>;
-    setPriceImpact: Dispatch<SetStateAction<CrocImpact | undefined>>;
+    setLastImpactQuery: Dispatch<
+        SetStateAction<
+            | {
+                  input: string;
+                  isInputSell: boolean;
+                  impact: CrocImpact | undefined;
+              }
+            | undefined
+        >
+    >;
     isLiquidityInsufficient: boolean;
     setIsLiquidityInsufficient: Dispatch<SetStateAction<boolean>>;
     toggleDexSelection: (tokenAorB: 'A' | 'B') => void;
@@ -51,7 +59,7 @@ function SwapTokenInput(props: propsIF) {
         isSaveAsDexSurplusChecked,
         slippageTolerancePercentage,
         setSwapAllowed,
-        setPriceImpact,
+        setLastImpactQuery,
         isLiquidityInsufficient,
         setIsLiquidityInsufficient,
         toggleDexSelection,
@@ -75,16 +83,12 @@ function SwapTokenInput(props: propsIF) {
     } = useContext(TradeTokenContext);
 
     const { showSwapPulseAnimation } = useContext(TradeTableContext);
-    const { setIsTokenAPrimaryRange, isTokenAPrimaryRange } =
-        useContext(RangeContext);
     const { isUserConnected } = useContext(UserDataContext);
     const {
         tokenA,
         tokenB,
         isTokenAPrimary,
         setIsTokenAPrimary,
-        disableReverseTokens,
-        setDisableReverseTokens,
         primaryQuantity,
         setPrimaryQuantity,
         setLimitTick,
@@ -100,8 +104,7 @@ function SwapTokenInput(props: propsIF) {
     const debouncedLastInput = useDebounce(lastInput, 750);
 
     const reverseTokens = (skipQuantityReverse?: boolean): void => {
-        if (disableReverseTokens || !isPoolInitialized) return;
-        setDisableReverseTokens(true);
+        if (!isPoolInitialized) return;
 
         linkGenAny.navigate({
             chain: chainId,
@@ -110,6 +113,13 @@ function SwapTokenInput(props: propsIF) {
         });
 
         if (!skipQuantityReverse) {
+            setLastImpactQuery(() => {
+                return {
+                    input: primaryQuantity,
+                    isInputSell: isTokenAPrimary,
+                    impact: undefined,
+                };
+            });
             !isTokenAPrimary
                 ? sellQtyString !== '' && parseFloat(sellQtyString) > 0
                     ? setIsSellLoading(true)
@@ -123,14 +133,12 @@ function SwapTokenInput(props: propsIF) {
                 setBuyQtyString(primaryQuantity);
             }
         }
-        setIsTokenAPrimaryRange(!isTokenAPrimaryRange);
 
         setLimitTick(undefined);
     };
 
     const handleBlockUpdate = () => {
         if (contextMatchesParams) {
-            setDisableReverseTokens(true);
             isTokenAPrimary
                 ? handleTokenAChangeEvent()
                 : handleTokenBChangeEvent();
@@ -162,10 +170,15 @@ function SwapTokenInput(props: propsIF) {
     ): Promise<number | undefined> {
         if (isNaN(parseFloat(input)) || parseFloat(input) === 0 || !crocEnv) {
             setIsLiquidityInsufficient(false);
-            setPriceImpact(undefined);
+            setLastImpactQuery((lastQuery) => {
+                return {
+                    input: lastQuery?.input || '',
+                    isInputSell: isTokenAPrimary,
+                    impact: undefined,
+                };
+            });
             return undefined;
         }
-
         const impact = await calcImpact(
             sellToken,
             crocEnv,
@@ -174,7 +187,24 @@ function SwapTokenInput(props: propsIF) {
             slippageTolerancePercentage / 100,
             input,
         );
-        setPriceImpact(impact);
+        setLastImpactQuery((lastQuery) => {
+            if (
+                lastQuery?.input === input &&
+                lastQuery?.isInputSell === isTokenAPrimary
+            ) {
+                return {
+                    input: input,
+                    isInputSell: isTokenAPrimary,
+                    impact: impact,
+                };
+            } else {
+                return {
+                    input: lastQuery?.input || '',
+                    isInputSell: isTokenAPrimary,
+                    impact: undefined,
+                };
+            }
+        });
 
         isTokenAPrimary ? setIsBuyLoading(false) : setIsSellLoading(false);
 
@@ -219,14 +249,24 @@ function SwapTokenInput(props: propsIF) {
     const handleTokenAChangeEvent = useMemo(
         () => async (value?: string) => {
             if (!crocEnv) return;
-            setDisableReverseTokens(true);
             let rawTokenBQty = undefined;
             if (value !== undefined) {
                 if (parseFloat(value) !== 0) {
                     const truncatedInputStr = formatTokenInput(value, tokenA);
+                    setLastImpactQuery({
+                        input: truncatedInputStr,
+                        isInputSell: true,
+                        impact: undefined,
+                    });
+
                     rawTokenBQty = await refreshImpact(truncatedInputStr, true);
                 }
             } else {
+                setLastImpactQuery({
+                    input: primaryQuantity,
+                    isInputSell: true,
+                    impact: undefined,
+                });
                 rawTokenBQty = await refreshImpact(primaryQuantity, true);
             }
 
@@ -238,7 +278,6 @@ function SwapTokenInput(props: propsIF) {
 
             setBuyQtyString(truncatedTokenBQty);
             setIsBuyLoading(false);
-            setDisableReverseTokens(false);
         },
         [
             crocEnv,
@@ -257,18 +296,27 @@ function SwapTokenInput(props: propsIF) {
     const handleTokenBChangeEvent = useMemo(
         () => async (value?: string) => {
             if (!crocEnv) return;
-            setDisableReverseTokens(true);
 
             let rawTokenAQty: number | undefined;
             if (value !== undefined) {
                 if (parseFloat(value) !== 0) {
                     const truncatedInputStr = formatTokenInput(value, tokenB);
+                    setLastImpactQuery({
+                        input: truncatedInputStr,
+                        isInputSell: false,
+                        impact: undefined,
+                    });
                     rawTokenAQty = await refreshImpact(
                         truncatedInputStr,
                         false,
                     );
                 }
             } else {
+                setLastImpactQuery({
+                    input: primaryQuantity,
+                    isInputSell: false,
+                    impact: undefined,
+                });
                 rawTokenAQty = await refreshImpact(primaryQuantity, false);
             }
 
@@ -279,7 +327,6 @@ function SwapTokenInput(props: propsIF) {
                 : '';
             setSellQtyString(truncatedTokenAQty);
             setIsSellLoading(false);
-            setDisableReverseTokens(false);
         },
         [
             crocEnv,
@@ -311,6 +358,18 @@ function SwapTokenInput(props: propsIF) {
     useEffect(() => {
         refreshTokenData();
     }, []);
+
+    useEffect(() => {
+        if (isTokenAPrimary) {
+            if (sellQtyString !== primaryQuantity) {
+                setSellQtyString && setSellQtyString(primaryQuantity);
+            }
+        } else {
+            if (buyQtyString !== primaryQuantity) {
+                setBuyQtyString && setBuyQtyString(primaryQuantity);
+            }
+        }
+    }, [isTokenAPrimary, sellQtyString, buyQtyString, primaryQuantity]);
 
     return (
         <FlexContainer flexDirection='column' gap={8}>
@@ -346,9 +405,7 @@ function SwapTokenInput(props: propsIF) {
                 alignItems='center'
             >
                 <TokensArrow
-                    disabled={
-                        disableReverseTokens || isBuyLoading || isSellLoading
-                    }
+                    disabled={isBuyLoading || isSellLoading}
                     onClick={() => {
                         isTokenAPrimary
                             ? sellQtyString !== '' &&

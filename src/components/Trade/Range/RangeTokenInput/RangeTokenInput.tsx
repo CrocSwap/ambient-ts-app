@@ -74,20 +74,19 @@ function RangeTokenInput(props: propsIF) {
         isTokenBEth,
     } = useContext(TradeTokenContext);
     const { showRangePulseAnimation } = useContext(TradeTableContext);
-    const {
-        isTokenAPrimaryRange,
-        rangeTicksCopied,
-        setIsTokenAPrimaryRange,
-        setPrimaryQuantityRange,
-        setRangeTicksCopied,
-    } = useContext(RangeContext);
+    const { rangeTicksCopied, setRangeTicksCopied } = useContext(RangeContext);
     // hook to generate navigation actions with pre-loaded path
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const { isUserConnected } = useContext(UserDataContext);
 
-    const { tokenA, tokenB, isTokenAPrimary, setIsTokenAPrimary } =
-        useContext(TradeDataContext);
+    const {
+        tokenA,
+        tokenB,
+        isTokenAPrimary,
+        setIsTokenAPrimary,
+        setPrimaryQuantity,
+    } = useContext(TradeDataContext);
     useEffect(() => {
         if (poolPriceNonDisplay) {
             updateTokenQty();
@@ -97,7 +96,7 @@ function RangeTokenInput(props: propsIF) {
     const resetTokenQuantities = () => {
         setTokenAInputQty('');
         setTokenBInputQty('');
-        setPrimaryQuantityRange('');
+        setPrimaryQuantity('');
     };
 
     const setTokenQtyValue = (inputValue: string, primaryToken: 'A' | 'B') => {
@@ -136,7 +135,7 @@ function RangeTokenInput(props: propsIF) {
         ? reverseTokens
         : (): void => {
               resetTokenQuantities();
-              setIsTokenAPrimaryRange(!isTokenAPrimaryRange);
+              setIsTokenAPrimary(!isTokenAPrimary);
               setIsTokenAPrimary(!isTokenAPrimary);
               if (!rangeTicksCopied && !isInitPage) {
                   // URL params for link to pool page
@@ -154,22 +153,22 @@ function RangeTokenInput(props: propsIF) {
     const handleTokenAChangeEvent = (value: string) => {
         const inputStr = formatTokenInput(value, tokenA);
 
-        setIsTokenAPrimaryRange(true);
-        setPrimaryQuantityRange(inputStr);
+        setIsTokenAPrimary(true);
+        setPrimaryQuantity(inputStr);
         setTokenQtyValue(value, 'A');
     };
 
     const handleTokenBChangeEvent = (value: string) => {
         const inputStr = formatTokenInput(value, tokenB);
 
-        setIsTokenAPrimaryRange(false);
-        setPrimaryQuantityRange(inputStr);
+        setIsTokenAPrimary(false);
+        setPrimaryQuantity(inputStr);
         setTokenQtyValue(value, 'B');
     };
 
     const updateTokenQty = () => {
         if (!isOutOfRange) {
-            isTokenAPrimaryRange
+            isTokenAPrimary
                 ? setTokenQtyValue(tokenAInputQty, 'A')
                 : setTokenQtyValue(tokenBInputQty, 'B');
         }

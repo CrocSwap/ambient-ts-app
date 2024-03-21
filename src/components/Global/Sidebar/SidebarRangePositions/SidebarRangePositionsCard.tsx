@@ -1,14 +1,13 @@
 import { PositionIF } from '../../../../ambient-utils/types';
 import {
     getFormattedNumber,
+    getMoneynessRankByAddr,
     getSymbols,
     getUnicodeCharacter,
 } from '../../../../ambient-utils/dataLayer';
 import { RangeItemContainer } from '../../../../styled/Components/Sidebar';
 import { FlexContainer } from '../../../../styled/Common';
 import { Status } from '../../../../styled/Components/Range';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { useContext } from 'react';
 
 interface propsIF {
     position: PositionIF;
@@ -17,7 +16,11 @@ interface propsIF {
 
 export default function SidebarRangePositionsCard(props: propsIF) {
     const { position, handleClick } = props;
-    const { isDenomBase } = useContext(TradeDataContext);
+
+    const baseTokenMoneyness = getMoneynessRankByAddr(position.base);
+    const quoteTokenMoneyness = getMoneynessRankByAddr(position.quote);
+
+    const isDenomBase = baseTokenMoneyness < quoteTokenMoneyness;
 
     // human-readable string showing the tokens in the pool
     const pair = getSymbols(
