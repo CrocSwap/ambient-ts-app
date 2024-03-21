@@ -506,13 +506,17 @@ function Reposition() {
                     positionStats.positionLiqBaseDecimalCorrected;
                 const liqQuoteNum =
                     positionStats.positionLiqQuoteDecimalCorrected;
+                const rewardsBaseNum =
+                    positionStats.feesLiqBaseDecimalCorrected;
+                const rewardsQuoteNum =
+                    positionStats.feesLiqQuoteDecimalCorrected;
                 const liqBaseDisplay = getFormattedNumber({
-                    value: liqBaseNum,
+                    value: liqBaseNum + (rewardsBaseNum || 0),
                 });
                 setCurrentBaseQtyDisplayTruncated(liqBaseDisplay || '0.00');
 
                 const liqQuoteDisplay = getFormattedNumber({
-                    value: liqQuoteNum,
+                    value: liqQuoteNum + (rewardsQuoteNum || 0),
                 });
                 setCurrentQuoteQtyDisplayTruncated(liqQuoteDisplay || '0.00');
             })
