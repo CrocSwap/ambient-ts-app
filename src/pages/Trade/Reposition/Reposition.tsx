@@ -563,14 +563,11 @@ function Reposition() {
         return getFormattedNumber({ value: newValueNum, prefix: '$' });
     }, [newValueNum]);
 
-    const calcNewValue = async () => {
-        if (
-            !crocEnv ||
-            newBaseQtyNum === undefined ||
-            newQuoteQtyNum === undefined
-        )
-            return;
+    const [basePrice, setBasePrice] = useState<number | undefined>();
+    const [quotePrice, setQuotePrice] = useState<number | undefined>();
 
+    useEffect(() => {
+        if (!crocEnv || !position) return;
         const basePricePromise = cachedFetchTokenPrice(
             position.base,
             position.chainId,
@@ -581,27 +578,35 @@ function Reposition() {
             position.chainId,
             crocEnv,
         );
-        const basePrice = await basePricePromise;
-        const quotePrice = await quotePricePromise;
+        Promise.all([basePricePromise, quotePricePromise]).then(
+            ([basePrice, quotePrice]) => {
+                setBasePrice(basePrice?.usdPrice);
+                setQuotePrice(quotePrice?.usdPrice);
+            },
+        );
+    }, [position.base + position.quote, crocEnv !== undefined]);
+
+    const calcNewValue = async () => {
+        if (
+            !crocEnv ||
+            newBaseQtyNum === undefined ||
+            newQuoteQtyNum === undefined
+        )
+            return;
 
         if (basePrice && quotePrice) {
             const newValueNum =
-                newBaseQtyNum * basePrice.usdPrice +
-                newQuoteQtyNum * quotePrice.usdPrice;
+                newBaseQtyNum * basePrice + newQuoteQtyNum * quotePrice;
             setNewValueNum(newValueNum);
         } else if (basePrice) {
-            const quotePrice =
-                basePrice.usdPrice * currentPoolDisplayPriceInQuote;
+            const quotePrice = basePrice * currentPoolDisplayPriceInQuote;
             const newValueNum =
-                newBaseQtyNum * basePrice.usdPrice +
-                newQuoteQtyNum * quotePrice;
+                newBaseQtyNum * basePrice + newQuoteQtyNum * quotePrice;
             setNewValueNum(newValueNum);
         } else if (quotePrice) {
-            const basePrice =
-                quotePrice.usdPrice / currentPoolDisplayPriceInQuote;
+            const basePrice = quotePrice / currentPoolDisplayPriceInQuote;
             const newValueNum =
-                newBaseQtyNum * basePrice +
-                newQuoteQtyNum * quotePrice.usdPrice;
+                newBaseQtyNum * basePrice + newQuoteQtyNum * quotePrice;
             setNewValueNum(newValueNum);
         } else {
             setNewValueNum(newValueNum);
@@ -612,9 +617,12 @@ function Reposition() {
         calcNewValue();
     }, [
         currentPoolDisplayPriceInQuote,
+        rangeWidthPercentage,
         position.base + position.quote,
         newBaseQtyNum,
         newQuoteQtyNum,
+        basePrice,
+        quotePrice,
     ]);
 
     const debouncedLowTick = useDebounce(pinnedLowTick, 500);

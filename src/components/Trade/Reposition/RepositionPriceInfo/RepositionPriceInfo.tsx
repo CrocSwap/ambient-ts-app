@@ -159,6 +159,9 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         </section>
     );
 
+    const isLoading =
+        newBaseQtyDisplay === '...' || newQuoteQtyDisplay === '...';
+
     return (
         <div className={styles.price_info_container}>
             <div className={styles.price_info_content}>
@@ -207,14 +210,22 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
                 <RowDisplay
                     item1='Value'
                     item2={usdRemovalValue}
-                    item3={isCurrentPositionEmpty ? '...' : newValueString}
-                    negative={valueImpactString.includes('(')}
+                    item3={
+                        isCurrentPositionEmpty || isLoading
+                            ? '...'
+                            : newValueString
+                    }
+                    negative={!isLoading && valueImpactString.includes('(')}
                 />
                 <RowDisplay
                     item1='Impact'
                     item2={''}
-                    item3={isCurrentPositionEmpty ? '...' : valueImpactString}
-                    negative={valueImpactString.includes('(')}
+                    item3={
+                        isCurrentPositionEmpty || isLoading
+                            ? '...'
+                            : valueImpactString
+                    }
+                    negative={!isLoading && valueImpactString.includes('(')}
                 />
             </div>
             {gasPriceDropdown}
