@@ -14,7 +14,7 @@ import DividerDark from '../Global/DividerDark/DividerDark';
 import ChatConfirmationPanel from './ChatConfirmationPanel/ChatConfirmationPanel';
 import styles from './ChatPanel.module.css';
 import ChatToaster from './ChatToaster/ChatToaster';
-import { LS_USER_VERIFY_TOKEN, setLS } from './ChatUtils';
+import { setLS } from './ChatUtils';
 import DomDebugger from './DomDebugger/DomDebugger';
 import { domDebug } from './DomDebugger/DomDebuggerUtils';
 import FullChat from './FullChat/FullChat';
@@ -27,6 +27,7 @@ import { UserSummaryModel } from './Model/UserSummaryModel';
 import useChatApi from './Service/ChatApi';
 import useChatSocket from './Service/useChatSocket';
 import { ChatVerificationTypes } from './ChatEnums';
+import { LS_USER_VERIFY_TOKEN } from './ChatConstants/ChatConstants';
 
 interface propsIF {
     isFullScreen: boolean;

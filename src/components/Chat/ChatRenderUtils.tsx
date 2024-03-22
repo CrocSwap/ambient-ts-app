@@ -1,10 +1,9 @@
 // import { ImageMarkerIF } from './ChatIFs';
 import { formatMessageTime, getShownName } from './ChatUtils';
+import { CROCODILE_LABS_LINKS } from './ChatConstants/ChatConstants';
 import { Message } from './Model/MessageModel';
 
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-
-import { CROCODILE_LABS_LINKS } from '../../ambient-utils/constants';
 
 export const getAvatarFromMessage = (message: Message) => {
     return (

@@ -9,29 +9,35 @@ import {
 } from '../../../ambient-utils/constants';
 
 import {
-    LS_USER_NON_VERIFIED_MESSAGES,
-    LS_USER_VERIFY_TOKEN,
-    addReactionEndpoint,
-    getAllMessagesEndpoint,
     getLS,
-    getMentionsWithRestEndpoint,
-    getMessageWithRestEndpoint,
-    getMessageWithRestWithPaginationEndpoint,
     getUnverifiedMsgList,
-    getUserDetailsEndpoint,
-    getUserIsVerified,
-    getUserListWithRestEndpoint,
     getUserVerifyToken,
     removeFromUnverifiedList,
     setLS,
+} from '../ChatUtils';
+
+import {
+    addReactionEndpoint,
+    getAllMessagesEndpoint,
+    getMentionsWithRestEndpoint,
+    getMessageWithRestEndpoint,
+    getMessageWithRestWithPaginationEndpoint,
+    getUserDetailsEndpoint,
+    getUserIsVerified,
+    getUserListWithRestEndpoint,
     updateLikesDislikesCountEndpoint,
     updateUnverifiedMessagesEndpoint,
     updateVerifiedDateEndpoint,
     verifyUserEndpoint,
-} from '../ChatUtils';
+} from '../ChatConstants/ChatEndpoints';
+
 import { Message } from '../Model/MessageModel';
 import { User } from '../Model/UserModel';
 import { LikeDislikePayload } from '../ChatIFs';
+import {
+    LS_USER_NON_VERIFIED_MESSAGES,
+    LS_USER_VERIFY_TOKEN,
+} from '../ChatConstants/ChatConstants';
 
 const useChatSocket = (
     room: string,

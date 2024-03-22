@@ -130,10 +130,3 @@ export const WALLETCONNECT_PROJECT_ID = process.env
     .REACT_APP_WALLETCONNECT_PROJECT_ID
     ? process.env.REACT_APP_WALLETCONNECT_PROJECT_ID
     : undefined;
-
-// Allowed links
-export const CROCODILE_LABS_LINKS = [
-    'https://twitter.com/',
-    'https://docs.ambient.finance/',
-    'https://ambient.finance/',
-];
