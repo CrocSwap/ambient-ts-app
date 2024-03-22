@@ -170,39 +170,56 @@ export default function TransactionDetailsLiquidityGraph(
                             if (liqLowerPrices <= poolPriceDisplay) {
                                 liqAsk.push(element);
                             } else {
-                                if (
-                                    liqUpperPrices >= poolPriceDisplay &&
-                                    liqUpperPrices < poolPriceDisplay * 15
-                                )
+                                if (liqUpperPrices < poolPriceDisplay * 15)
                                     liqBid.push(element);
                             }
                         }
                     });
 
-                    if (liqBid.length > 1 && liqAsk.length > 1) {
-                        const liqData = liqBid.find(
-                            (liqData) =>
-                                getBidPriceValue(liqData, isDenomBase) <
-                                poolPriceDisplay,
-                        );
-
-                        if (liqData) {
-                            liqBid.push({
-                                ...liqData,
-                                activeLiq: liqData.activeLiq,
-                                upperBoundPriceDecimalCorrected:
-                                    1 / poolPriceDisplay,
-                                lowerBoundInvPriceDecimalCorrected:
-                                    poolPriceDisplay,
-                            });
-                        }
-                    }
+                    liqBid.sort(
+                        (a: LiquidityRangeIF, b: LiquidityRangeIF) =>
+                            getBidPriceValue(b, isDenomBase) -
+                            getBidPriceValue(a, isDenomBase),
+                    );
 
                     liqAsk.sort(
                         (a: LiquidityRangeIF, b: LiquidityRangeIF) =>
                             b.upperBoundInvPriceDecimalCorrected -
                             a.upperBoundInvPriceDecimalCorrected,
                     );
+
+                    if (liqBid.length > 1 && liqAsk.length > 1) {
+                        const extent = d3.extent(
+                            liqAsk,
+                            (d: LiquidityRangeIF) => {
+                                return isDenomBase
+                                    ? d.upperBoundPriceDecimalCorrected
+                                    : d.lowerBoundInvPriceDecimalCorrected;
+                            },
+                        );
+
+                        const maxAskData = extent[1];
+                        const maxAskObject = liqAsk.find(
+                            (d: LiquidityRangeIF) => {
+                                return (
+                                    (isDenomBase
+                                        ? d.upperBoundPriceDecimalCorrected
+                                        : d.lowerBoundInvPriceDecimalCorrected) ===
+                                    maxAskData
+                                );
+                            },
+                        );
+
+                        if (maxAskObject)
+                            liqBid.push({
+                                ...liqBid[0],
+                                activeLiq: maxAskObject.activeLiq,
+                                upperBoundInvPriceDecimalCorrected:
+                                    maxAskObject.lowerBoundInvPriceDecimalCorrected,
+                                lowerBoundPriceDecimalCorrected:
+                                    maxAskObject.upperBoundPriceDecimalCorrected,
+                            });
+                    }
 
                     liqBid.sort(
                         (a: LiquidityRangeIF, b: LiquidityRangeIF) =>

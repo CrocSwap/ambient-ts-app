@@ -857,7 +857,7 @@ export default function TransactionDetailsGraph(
             transactionType === 'liqchange'
         ) {
             const lastDataPixel = scaleData.xScale(graphData[0].time * 1000);
-            const diff = lastDataPixel - poolPricePixel * 10 + 5;
+            const diff = lastDataPixel - poolPricePixel * 10 + 10;
 
             if (lastDataPixel > poolPricePixel * 10) {
                 const newMaxDomain = scaleData?.xScale
