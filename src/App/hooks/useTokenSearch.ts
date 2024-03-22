@@ -120,14 +120,16 @@ export const useTokenSearch = (
                           tokens.getTokensFromList(tokenListURIs.scroll),
                       )
                     : tokens.getTokensFromList(tokenListURIs.ambient);
+
+            // temporarily removing token universe verification
             // ERC-20 tokens from connected wallet subject to universe verification
-            const verifiedWalletTokens: TokenIF[] = walletTokens.filter(
-                (tkn: TokenIF) => tokens.verify(tkn.address),
-            );
+            // const verifiedWalletTokens: TokenIF[] = walletTokens.filter(
+            //     (tkn: TokenIF) => tokens.verify(tkn.address),
+            // );
             // array with tokens added to user's wallet (subject to verification)
             const withWalletTokens: TokenIF[] = patchLists(
                 baseTokenList,
-                verifiedWalletTokens,
+                walletTokens, // verifiedWalletTokens
             );
             // remove the wrapped native token (if present)
             const tknsNoWrappedNative = removeWrappedNative(
