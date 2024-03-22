@@ -1,6 +1,6 @@
 {
     "name": "ambient-ts-app",
-    "version": "2.3.25",
+    "version": "2.3.26",
     "private": true,
     "dependencies": {
         "@crocswap-libs/sdk": "^0.3.2",
