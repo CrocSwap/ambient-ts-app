@@ -179,6 +179,7 @@ function TokenIcon(props: propsIF) {
                             }}
                             src={processLogoSrc({
                                 token: token,
+                                symbol: alt,
                                 sourceURI: src,
                             })}
                             alt={alt}
