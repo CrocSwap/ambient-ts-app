@@ -15,6 +15,7 @@ type FormatParams = {
     removeCommas?: boolean;
     abbrevThreshold?: number;
     isLevel?: boolean;
+    isPercentage?: boolean;
     mantissa?: number;
 };
 
@@ -33,6 +34,7 @@ export function getFormattedNumber({
     removeCommas = false,
     abbrevThreshold = 10000,
     isLevel = false,
+    isPercentage = false,
     mantissa = 2,
 }: FormatParams) {
     let valueString = '';
@@ -74,7 +76,7 @@ export function getFormattedNumber({
                 maximumFractionDigits: maxFracDigits,
             });
         }
-    } else if (isLevel) {
+    } else if (isLevel || isPercentage) {
         if (Math.abs(value) >= abbrevThreshold) {
             // use abbreviations (k, M, B, T) for big numbers
             valueString = formatAbbrev(value, false, mantissa);
