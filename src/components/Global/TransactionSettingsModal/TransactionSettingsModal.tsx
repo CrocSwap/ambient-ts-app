@@ -10,6 +10,7 @@ import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationMo
 import Modal from '../Modal/Modal';
 import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import SendToDexBalControl from '../SendToDexBalControl/SendToDexBalControl';
 
 export type TransactionModuleType =
     | 'Swap'
@@ -101,6 +102,14 @@ export default function TransactionSettingsModal(props: propsIF) {
                             </div>
                         </FlexContainer>
                     )}
+                    {module === 'Swap' && (
+                        <SendToDexBalControl
+                            tempBypassConfirm={currentSkipConfirm}
+                            setTempBypassConfirm={setCurrentSkipConfirm}
+                            displayInSettings={true}
+                        />
+                    )}
+
                     <ConfirmationModalControl
                         tempBypassConfirm={currentSkipConfirm}
                         setTempBypassConfirm={setCurrentSkipConfirm}
@@ -119,7 +128,9 @@ export default function TransactionSettingsModal(props: propsIF) {
                         }
                         action={updateSettings}
                         disabled={
-                            module !== 'Limit Order' && currentSlippage <= 0
+                            (module !== 'Limit Order' &&
+                                currentSlippage <= 0) ||
+                            isNaN(currentSlippage)
                         }
                         flat
                         customAriaLabel={confirmAriaLabel}
