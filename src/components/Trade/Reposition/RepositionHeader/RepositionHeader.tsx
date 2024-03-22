@@ -15,6 +15,7 @@ import { RangeContext } from '../../../../contexts/RangeContext';
 import { useModal } from '../../../Global/Modal/useModal';
 import { TradeModuleHeaderContainer } from '../../../../styled/Components/TradeModules';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { MdArrowBackIosNew } from 'react-icons/md';
 
 interface propsIF {
     positionHash: string;
@@ -54,18 +55,7 @@ function RepositionHeader(props: propsIF) {
                 fontSize='header1'
                 color='text2'
             >
-                <img
-                    className={styles.settings_icon}
-                    src={settingsIcon}
-                    alt='settings'
-                    onClick={openModal}
-                />
-                <p className={styles.title}>
-                    {' '}
-                    {editPanel ? 'Edit' : 'Reposition'}: {positionHash}
-                </p>
-                <VscClose
-                    className={styles.close_icon}
+                <MdArrowBackIosNew
                     onClick={() => {
                         setAdvancedMode(false);
                         setRangeWidthPercentage(defaultRangeWidthForActivePool);
@@ -74,6 +64,19 @@ function RepositionHeader(props: propsIF) {
                         resetTxHash();
                         setCurrentRangeInReposition('');
                     }}
+                    className={styles.close_icon}
+                    size={12}
+                />
+
+                <p className={styles.title}>
+                    {' '}
+                    {editPanel ? 'Edit' : 'Reposition'}: {positionHash}
+                </p>
+                <img
+                    className={styles.settings_icon}
+                    src={settingsIcon}
+                    alt='settings'
+                    onClick={openModal}
                 />
             </TradeModuleHeaderContainer>
             {isOpen && (

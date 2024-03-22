@@ -245,7 +245,7 @@ function TokenInputQuantity(props: propsIF) {
                         size='2xl'
                     />
                     {tokenSymbol}
-                    <RiArrowDownSLine size={27} />
+                    {!disableTokenSelector && <RiArrowDownSLine size={27} />}
                 </TokenSelectButton>
             </TokenQuantityContainer>
 
