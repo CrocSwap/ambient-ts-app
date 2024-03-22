@@ -81,7 +81,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
             <div className={styles.row_display}>
                 <p>{item1 ? item1 : ''}</p>
                 <p>{item2 ? item2 : ''}</p>
-                <p style={negative ? { color: 'var(--negative)' } : undefined}>
+                <p style={negative ? { color: 'var(--other-red)' } : undefined}>
                     {item3 ? item3 : ''}
                 </p>
             </div>
