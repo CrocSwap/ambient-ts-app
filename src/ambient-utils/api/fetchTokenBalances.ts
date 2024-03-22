@@ -43,32 +43,44 @@ export const fetchTokenBalances = async (
             tokenList: tokenList,
         });
         if (dexBalancesFromCache !== undefined) {
-            dexBalancesFromCache.map(
-                (balanceFromCache: IDepositedTokenBalance) => {
-                    const indexOfExistingToken = (
-                        combinedBalances ?? []
-                    ).findIndex(
-                        (existingToken) =>
-                            existingToken.address.toLowerCase() ===
-                            balanceFromCache.token.toLowerCase(),
-                    );
+            await Promise.all(
+                dexBalancesFromCache.map(
+                    async (balanceFromCache: IDepositedTokenBalance) => {
+                        const indexOfExistingToken = (
+                            combinedBalances ?? []
+                        ).findIndex(
+                            (existingToken) =>
+                                existingToken.address.toLowerCase() ===
+                                balanceFromCache.token.toLowerCase(),
+                        );
 
-                    const newToken =
-                        getTokenInfoFromCacheBalance(balanceFromCache);
+                        const newToken =
+                            getTokenInfoFromCacheBalance(balanceFromCache);
 
-                    if (indexOfExistingToken === -1) {
-                        combinedBalances.push(newToken);
-                    } else {
-                        const existingToken =
-                            combinedBalances[indexOfExistingToken];
+                        if (indexOfExistingToken === -1) {
+                            const tokenBalanceInWallet = (
+                                await crocEnv
+                                    .token(newToken.address)
+                                    .wallet(address)
+                            ).toString();
+                            const updatedToken = {
+                                ...newToken,
+                                walletBalance: tokenBalanceInWallet,
+                            };
+                            combinedBalances.push(updatedToken);
+                        } else {
+                            const existingToken =
+                                combinedBalances[indexOfExistingToken];
 
-                        const updatedToken = { ...existingToken };
+                            const updatedToken = { ...existingToken };
 
-                        updatedToken.dexBalance = newToken.dexBalance;
+                            updatedToken.dexBalance = newToken.dexBalance;
 
-                        combinedBalances[indexOfExistingToken] = updatedToken;
-                    }
-                },
+                            combinedBalances[indexOfExistingToken] =
+                                updatedToken;
+                        }
+                    },
+                ),
             );
         }
     }
