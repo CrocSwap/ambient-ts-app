@@ -229,12 +229,16 @@ function Reposition() {
         closeModal();
     };
 
+    // if chart is at ambient width, keep ambient width, otherwise use the default
+    // otherwise the the width rapidly switches back and forth between the two when returning to an in progress reposition
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(
-        getDefaultRangeWidthForTokenPair(
-            position.chainId,
-            position.base.toLowerCase(),
-            position.quote.toLowerCase(),
-        ),
+        simpleRangeWidth === 100
+            ? 100
+            : getDefaultRangeWidthForTokenPair(
+                  position.chainId,
+                  position.base.toLowerCase(),
+                  position.quote.toLowerCase(),
+              ),
     );
 
     const [pinnedLowTick, setPinnedLowTick] = useState(0);
@@ -257,10 +261,14 @@ function Reposition() {
         setNewRepositionTransactionHash('');
     }, [position]);
 
+    // neccessary to get the liquidity chart to correctly show an ambient range width
     useEffect(() => {
-        if (rangeWidthPercentage !== undefined)
+        if (rangeWidthPercentage === 100) {
+            setSimpleRangeWidth(100);
+        } else {
             setSimpleRangeWidth(rangeWidthPercentage);
-    }, [rangeWidthPercentage]);
+        }
+    }, [rangeWidthPercentage === 100]);
 
     useEffect(() => {
         if (simpleRangeWidth !== rangeWidthPercentage) {
