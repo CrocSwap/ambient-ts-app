@@ -181,3 +181,20 @@ export const isLinkInCrocodileLabsLinksForInput = (word: string) => {
         }
     });
 };
+
+export const isMessageIdStoredInLS = (address: string, messageId: string) => {
+    const nonVrfMessages = getLS(LS_USER_NON_VERIFIED_MESSAGES, address);
+    if (nonVrfMessages) {
+        const messageIDs = nonVrfMessages.split(',');
+        const parsedMessages: string[] = [];
+        messageIDs.map((e) => {
+            parsedMessages.push(e.trim());
+        });
+
+        if (parsedMessages.includes(messageId)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+};

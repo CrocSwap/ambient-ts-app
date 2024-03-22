@@ -21,8 +21,6 @@ import styles from './SentMessagePanel.module.css';
 
 import { IoReturnUpForwardSharp } from 'react-icons/io5';
 import {
-    LS_USER_NON_VERIFIED_MESSAGES,
-    getLS,
     getShownName,
     hasEns,
     isLinkInCrocodileLabsLinks,
@@ -32,6 +30,7 @@ import {
 import Options from '../Options/Options';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
 import { LikeDislikePayload, MentFoundParam } from '../../ChatIFs';
+import { ChatVerificationTypes } from '../../ChatEnums';
 
 interface SentMessageProps {
     message: Message;
@@ -55,7 +54,7 @@ interface SentMessageProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     socketRef: any;
     userMap?: Map<string, User>;
-    verifyWalletWithMessage: (
+    verifyWallet: (
         verificationType: number,
         startDate: Date,
         e?: React.MouseEvent<HTMLDivElement>,
@@ -80,10 +79,6 @@ interface SentMessageProps {
     addReaction: (messageId: string, userId: string, reaction: string) => void;
     mentionHoverListener: (elementTop: number, walletID: string) => void;
     mentionMouseLeftListener: () => void;
-    handleConfirmationDialog: (
-        confirmationType: number,
-        startDate: Date,
-    ) => void;
     showDeleteConfirmation: boolean;
     setShowDeleteConfirmation: Dispatch<SetStateAction<boolean>>;
     setSelectedMessageIdForDeletion: React.Dispatch<
@@ -93,6 +88,8 @@ interface SentMessageProps {
     setShowVerifyWalletConfirmationInDelete: Dispatch<SetStateAction<boolean>>;
     showVerifyWalletConfirmationInDelete: boolean;
     scrollToMessage: (messageId: string, flashAnimation?: boolean) => void;
+    setShowVerifyOldMessagesPanel: Dispatch<SetStateAction<boolean>>;
+    setVerifyOldMessagesStartDate: Dispatch<SetStateAction<Date>>;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
@@ -731,26 +728,6 @@ function SentMessagePanel(props: SentMessageProps) {
         return false;
     }
 
-    function checkLocalStorage(messageId: string) {
-        const nonVrfMessages = getLS(
-            LS_USER_NON_VERIFIED_MESSAGES,
-            props.address,
-        );
-        if (nonVrfMessages) {
-            const messageIDs = nonVrfMessages.split(',');
-            const parsedMessages: string[] = [];
-            messageIDs.map((e) => {
-                parsedMessages.push(e.trim());
-            });
-
-            if (parsedMessages.includes(messageId)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    }
-
     function goToProfilePage() {
         if (
             location.pathname !==
@@ -1039,18 +1016,25 @@ function SentMessagePanel(props: SentMessageProps) {
                                                                 styles.update_verify_date_icon
                                                             }
                                                             onClick={() => {
-                                                                props.verifyWalletWithMessage(
-                                                                    checkLocalStorage(
-                                                                        props
-                                                                            .message
-                                                                            ._id,
-                                                                    )
-                                                                        ? 1
-                                                                        : 2,
-                                                                    new Date(
-                                                                        props.message.createdAt,
-                                                                    ),
-                                                                );
+                                                                if (
+                                                                    !props.isUserVerified
+                                                                ) {
+                                                                    props.verifyWallet(
+                                                                        ChatVerificationTypes.VerifyMessages,
+                                                                        new Date(
+                                                                            props.message.createdAt,
+                                                                        ),
+                                                                    );
+                                                                } else {
+                                                                    props.setShowVerifyOldMessagesPanel(
+                                                                        true,
+                                                                    );
+                                                                    props.setVerifyOldMessagesStartDate(
+                                                                        new Date(
+                                                                            props.message.createdAt,
+                                                                        ),
+                                                                    );
+                                                                }
                                                             }}
                                                         >
                                                             <AiOutlineCheck

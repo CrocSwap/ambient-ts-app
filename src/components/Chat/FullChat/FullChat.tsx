@@ -62,14 +62,12 @@ interface FullChatPropsIF {
     toastrText: string;
     toastrType?: 'success' | 'error' | 'warning' | 'info';
     showVerifyOldMessagesPanel: boolean;
-    getConfirmationPanelContent: () => string;
     activateToastr: (
         text: string,
         type: 'success' | 'error' | 'warning' | 'info',
     ) => void;
     updateUnverifiedMessages: (startDate: Date, endDate?: Date) => void;
     verifyOldMessagesStartDate: Date;
-    confirmationPanelContent: number;
     setShowVerifyOldMessagesPanel: Dispatch<SetStateAction<boolean>>;
     showPicker: boolean;
     addReactionEmojiPickListener: (
@@ -833,41 +831,23 @@ function FullChat(props: FullChatPropsIF) {
                 confirmListener={props.handleConfirmDelete}
                 cancelListener={props.handleCancelDelete}
             />
-            )
             <ChatConfirmationPanel
-                isActive={props.showVerifyOldMessagesPanel && props.isChatOpen}
+                isActive={props.showVerifyOldMessagesPanel}
                 title='Verify Old Messages'
-                content={props.getConfirmationPanelContent()}
+                content='Old messages will be verified. Do you want to verify?'
                 cancelListener={() => {
                     props.setShowVerifyOldMessagesPanel(false);
                 }}
                 confirmListener={async () => {
-                    if (!props.isVerified) {
-                        verifyBtnRef.current?.classList.add(styles.flashed);
-                        setTimeout(() => {
-                            verifyBtnRef.current?.classList.remove(
-                                styles.flashed,
-                            );
-                        }, 1500);
-                        return props.activateToastr(
-                            'Please verify your wallet to verify old messages.',
-                            'warning',
-                        );
-                    }
+                    props.setShowVerifyOldMessagesPanel(false);
                     await props.updateUnverifiedMessages(
                         props.verifyOldMessagesStartDate,
-                        props.confirmationPanelContent == 2
-                            ? new Date(
-                                  props.verifyOldMessagesStartDate.getTime() +
-                                      1000 * 60,
-                              )
-                            : undefined,
+                        new Date(),
                     );
                     props.activateToastr(
-                        'Old messages verified successfully',
+                        'Old messages are verified!',
                         'success',
                     );
-                    props.setShowVerifyOldMessagesPanel(false);
                 }}
             />
             {props.isChatOpen && props.showPicker && (

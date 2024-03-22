@@ -26,6 +26,7 @@ import { Message } from './Model/MessageModel';
 import { UserSummaryModel } from './Model/UserSummaryModel';
 import useChatApi from './Service/ChatApi';
 import useChatSocket from './Service/useChatSocket';
+import { ChatVerificationTypes } from './ChatEnums';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -112,8 +113,6 @@ function ChatPanel(props: propsIF) {
         showVerifyWalletConfirmationInDelete,
         setShowVerifyWalletConfirmationInDelete,
     ] = useState(false);
-
-    const [confirmationPanelContent, setConfirmationPanelContent] = useState(0);
 
     // some tricky date set for old messages verification. if it is not changed by confirmation panel, some future date will be used to not verify any messages
     const [verifyOldMessagesStartDate, setVerifyOldMessagesStartDate] =
@@ -671,68 +670,8 @@ function ChatPanel(props: propsIF) {
         }
     };
 
-    const handleConfirmationDialog = (
-        confirmationType: number,
-        startDate: Date,
-    ) => {
-        setConfirmationPanelContent(confirmationType);
-        setVerifyOldMessagesStartDate(startDate);
-        setShowVerifyOldMessagesPanel(true);
-    };
-
-    const verifyWalletWithMessage = (
-        verificationType: number,
-        startDate: Date,
-        // eslint-disable-next-line
-        e?: React.MouseEvent<HTMLDivElement>,
-    ) => {
-        if (e) e.stopPropagation();
-
-        if (isUserConnected == false)
-            activateToastr('Please connect your wallet first.', 'warning');
-
-        const message =
-            'Your wallet will be verified for chat. Please sign it for verification.';
-        let verifyDate = new Date();
-        setVerifyOldMessagesStartDate(startDate);
-        if (verificationType === 0) {
-            if (isVerified) return;
-        } else {
-            verifyDate = verifyOldMessagesStartDate;
-        }
-
-        window.ethereum
-            .request({
-                method: 'personal_sign',
-                params: [message, userAddress, ''],
-                // params: [message, '0x7D0CDcC61914001A5b9bF81063A2834119539911', ''],
-            })
-            // eslint-disable-next-line
-            .then((signedMessage: any) => {
-                verifyUser(signedMessage, verifyDate);
-                if (verifyOldMessagesStartDate) {
-                    setTimeout(() => {
-                        setShowVerifyOldMessagesPanel(false);
-                        updateUnverifiedMessages(
-                            verifyOldMessagesStartDate,
-                            new Date(),
-                        );
-                    }, 1000);
-                }
-                setLS(LS_USER_VERIFY_TOKEN, signedMessage, userAddress);
-                setTimeout(() => {
-                    updateUserCache();
-                    activateToastr('Your wallet is verified!', 'success');
-                }, 300);
-            })
-            // eslint-disable-next-line
-            .catch((error: any) => {
-                // Handle error
-            });
-    };
-
     const verifyWallet = (
-        verificationType: number,
+        verificationType: ChatVerificationTypes,
         verificationDate: Date,
         // eslint-disable-next-line
         e?: React.MouseEvent<HTMLDivElement>,
@@ -746,9 +685,11 @@ function ChatPanel(props: propsIF) {
             'Your wallet will be verified for chat. Please sign it for verification.';
         let verifyDate = new Date();
 
-        if (verificationType === 0) {
+        if (verificationType === ChatVerificationTypes.VerifyWallet) {
+            // verify wallet only
             if (isVerified) return;
         } else {
+            // verify wallet and old messages
             verifyDate = verificationDate;
         }
 
@@ -756,18 +697,14 @@ function ChatPanel(props: propsIF) {
             .request({
                 method: 'personal_sign',
                 params: [message, userAddress, ''],
-                // params: [message, '0x7D0CDcC61914001A5b9bF81063A2834119539911', ''],
             })
             // eslint-disable-next-line
             .then((signedMessage: any) => {
                 verifyUser(signedMessage, verifyDate);
-                if (verifyOldMessagesStartDate) {
+                if (verificationType != 0) {
                     setTimeout(() => {
                         setShowVerifyOldMessagesPanel(false);
-                        updateUnverifiedMessages(
-                            verifyOldMessagesStartDate,
-                            new Date(),
-                        );
+                        updateUnverifiedMessages(verificationDate, new Date());
                     }, 1000);
                 }
                 setLS(LS_USER_VERIFY_TOKEN, signedMessage, userAddress);
@@ -913,7 +850,7 @@ function ChatPanel(props: propsIF) {
                             updateLikeDislike={updateLikeDislike}
                             socketRef={socketRef}
                             userMap={userMap}
-                            verifyWalletWithMessage={verifyWalletWithMessage}
+                            verifyWallet={verifyWallet}
                             isUserVerified={isVerified}
                             showPopUp={showPopUp}
                             setShowPopUp={setShowPopUp}
@@ -942,7 +879,6 @@ function ChatPanel(props: propsIF) {
                             mentionMouseLeftListener={() => {
                                 setUserSummaryActive(false);
                             }}
-                            handleConfirmationDialog={handleConfirmationDialog}
                             showDeleteConfirmation={showDeleteConfirmation}
                             setShowDeleteConfirmation={
                                 setShowDeleteConfirmation
@@ -960,6 +896,12 @@ function ChatPanel(props: propsIF) {
                                 setShowVerifyWalletConfirmationInDelete
                             }
                             scrollToMessage={scrollToMessage}
+                            setShowVerifyOldMessagesPanel={
+                                setShowVerifyOldMessagesPanel
+                            }
+                            setVerifyOldMessagesStartDate={
+                                setVerifyOldMessagesStartDate
+                            }
                         />
                     );
                 })}
@@ -1139,22 +1081,6 @@ function ChatPanel(props: propsIF) {
         setShowDeleteConfirmation(false);
     };
 
-    const getConfirmationPanelContent = () => {
-        switch (confirmationPanelContent) {
-            case 1:
-                return 'Are you sure you want to delete this message?';
-
-            case 2:
-                return 'These messages may not sent from this browser. Do you want to verify?';
-
-            case 3:
-                return 'You should verify your wallet to delete that messgae. Do you want to verify?';
-
-            default:
-                return '';
-        }
-    };
-
     const contentHeight = isChatOpen ? '479px' : '30px';
     if (props.appPage)
         return (
@@ -1185,11 +1111,9 @@ function ChatPanel(props: propsIF) {
                     toastrText={toastrText}
                     toastrType={toastrType}
                     showVerifyOldMessagesPanel={showVerifyOldMessagesPanel}
-                    getConfirmationPanelContent={getConfirmationPanelContent}
                     activateToastr={activateToastr}
                     updateUnverifiedMessages={updateUnverifiedMessages}
                     verifyOldMessagesStartDate={verifyOldMessagesStartDate}
-                    confirmationPanelContent={confirmationPanelContent}
                     setShowVerifyOldMessagesPanel={
                         setShowVerifyOldMessagesPanel
                     }
@@ -1325,31 +1249,39 @@ function ChatPanel(props: propsIF) {
                     )}
                 </>
             )}
-            {showDeleteConfirmation && (
-                <ChatConfirmationPanel
-                    isActive={showDeleteConfirmation && isChatOpen}
-                    title='Delete Message'
-                    content='Are you sure you want to delete this message?'
-                    confirmListener={handleConfirmDelete}
-                    cancelListener={handleCancelDelete}
-                />
-            )}
+            <ChatConfirmationPanel
+                isActive={showDeleteConfirmation && isChatOpen}
+                title='Delete Message'
+                content='Are you sure you want to delete this message?'
+                confirmListener={handleConfirmDelete}
+                cancelListener={handleCancelDelete}
+            />
 
-            {showVerifyWalletConfirmationInDelete && (
-                <ChatConfirmationPanel
-                    isActive={
-                        showVerifyWalletConfirmationInDelete && isChatOpen
-                    }
-                    title='Verify Your Wallet'
-                    content='You should verify your wallet to delete that message.Do you want to verify?'
-                    cancelListener={() => {
-                        setShowVerifyWalletConfirmationInDelete(false);
-                    }}
-                    confirmListener={async (e) =>
-                        verifyWallet(0, new Date(), e)
-                    }
-                />
-            )}
+            <ChatConfirmationPanel
+                isActive={showVerifyWalletConfirmationInDelete && isChatOpen}
+                title='Verify Your Wallet'
+                content='You should verify your wallet to delete that message.Do you want to verify?'
+                cancelListener={() => {
+                    setShowVerifyWalletConfirmationInDelete(false);
+                }}
+                confirmListener={async (e) => verifyWallet(0, new Date(), e)}
+            />
+            <ChatConfirmationPanel
+                isActive={showVerifyOldMessagesPanel && isChatOpen}
+                title='Verify Old Messages'
+                content='Old messages will be verified. Do you want to verify?'
+                cancelListener={() => {
+                    setShowVerifyOldMessagesPanel(false);
+                }}
+                confirmListener={async () => {
+                    setShowVerifyOldMessagesPanel(false);
+                    await updateUnverifiedMessages(
+                        verifyOldMessagesStartDate,
+                        new Date(),
+                    );
+                    activateToastr('Old messages are verified!', 'success');
+                }}
+            />
             <ChatToaster
                 isActive={toastrActive && isChatOpen}
                 activator={setToastrActive}
