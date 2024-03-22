@@ -634,6 +634,7 @@ function Swap(props: propsIF) {
             header={
                 <TradeModuleHeader
                     slippage={swapSlippage}
+                    dexBalSwap={dexBalSwap}
                     bypassConfirm={bypassConfirmSwap}
                     settingsTitle='Swap'
                     isSwapPage={!isOnTradeRoute}
