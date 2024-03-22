@@ -17,6 +17,7 @@ import {
 } from '../../../../ambient-utils/types';
 import {
     clipCanvas,
+    fillLiqInfinity,
     setCanvasResolution,
 } from '../../../../pages/Chart/ChartUtils/chartUtils';
 import { createAreaSeriesLiquidity } from '../../../../pages/Chart/Liquidity/LiquiditySeries/AreaSeries';
@@ -176,6 +177,13 @@ export default function TransactionDetailsLiquidityGraph(
             });
         })();
     }, [poolPriceDisplay]);
+
+    useEffect(() => {
+        if (yScale) {
+            const yMax = yScale?.domain()[1];
+            fillLiqInfinity(yMax, liquidityData.liquidityDataBid, !isDenomBase);
+        }
+    }, [yScale?.domain()]);
 
     useEffect(() => {
         if (yScale) {
