@@ -527,7 +527,9 @@ export default function TransactionDetailsGraph(
                     if (svgWidth !== width) {
                         setSvgWidth(width);
                     } else {
-                        graphData && setIsDataLoading(false);
+                        graphData &&
+                            transactionType !== 'liqchange' &&
+                            setIsDataLoading(false);
                     }
                 });
 
@@ -1480,22 +1482,30 @@ export default function TransactionDetailsGraph(
                                 transactionType={transactionType}
                                 poolPriceDisplay={poolPrice}
                                 setPoolPricePixel={setPoolPricePixel}
+                                poolPricePixel={poolPricePixel}
                                 svgWidth={svgWidth}
                                 lastCandleData={
                                     graphData ? graphData[0] : undefined
                                 }
+                                setIsDataLoading={setIsDataLoading}
                             />
                         )}
                         <d3fc-svg
                             id='d3PlotGraph'
                             ref={d3PlotGraph}
-                            style={{ width: '100%' }}
+                            style={{
+                                width: '100%',
+                                display: isDataLoading ? 'none' : 'inline',
+                            }}
                         ></d3fc-svg>
                     </div>
                     <d3fc-canvas
                         className='y-axis'
                         ref={d3Yaxis}
-                        style={{ width: mobileView ? '10%' : '15%' }}
+                        style={{
+                            width: mobileView ? '10%' : '15%',
+                            display: isDataLoading ? 'none' : 'inline',
+                        }}
                     ></d3fc-canvas>
                 </div>
                 <d3fc-canvas

@@ -33,9 +33,11 @@ interface TransactionDetailsLiquidityGraphIF {
     yScale: d3.ScaleLinear<number, number> | undefined;
     transactionType: string;
     poolPriceDisplay: number;
+    poolPricePixel: number;
     setPoolPricePixel: Dispatch<React.SetStateAction<number>>;
     svgWidth: number;
     lastCandleData: CandleDataIF | undefined;
+    setIsDataLoading: Dispatch<React.SetStateAction<boolean>>;
 }
 
 type liquidityChartData = {
@@ -68,8 +70,10 @@ export default function TransactionDetailsLiquidityGraph(
         transactionType,
         poolPriceDisplay,
         setPoolPricePixel,
+        poolPricePixel,
         svgWidth,
         lastCandleData,
+        setIsDataLoading,
     } = props;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -159,13 +163,40 @@ export default function TransactionDetailsLiquidityGraph(
                             ? element.upperBoundPriceDecimalCorrected
                             : element.lowerBoundInvPriceDecimalCorrected;
 
-                        if (liqLowerPrices < poolPriceDisplay) {
-                            liqAsk.push(element);
-                        } else {
-                            if (liqUpperPrices <= poolPriceDisplay * 15)
-                                liqBid.push(element);
+                        if (
+                            Math.abs(liqUpperPrices) !== Infinity &&
+                            Math.abs(liqLowerPrices) !== Infinity
+                        ) {
+                            if (liqLowerPrices <= poolPriceDisplay) {
+                                liqAsk.push(element);
+                            } else {
+                                if (
+                                    liqUpperPrices >= poolPriceDisplay &&
+                                    liqUpperPrices < poolPriceDisplay * 15
+                                )
+                                    liqBid.push(element);
+                            }
                         }
                     });
+
+                    if (liqBid.length > 1 && liqAsk.length > 1) {
+                        const liqData = liqBid.find(
+                            (liqData) =>
+                                getBidPriceValue(liqData, isDenomBase) <
+                                poolPriceDisplay,
+                        );
+
+                        if (liqData) {
+                            liqBid.push({
+                                ...liqData,
+                                activeLiq: liqData.activeLiq,
+                                upperBoundPriceDecimalCorrected:
+                                    1 / poolPriceDisplay,
+                                lowerBoundInvPriceDecimalCorrected:
+                                    poolPriceDisplay,
+                            });
+                        }
+                    }
 
                     liqAsk.sort(
                         (a: LiquidityRangeIF, b: LiquidityRangeIF) =>
@@ -292,11 +323,19 @@ export default function TransactionDetailsLiquidityGraph(
 
     useEffect(() => {
         if (
-            liquidityScale &&
-            liquidityData?.liquidityDataBid.length > 0 &&
-            lastCandleData &&
-            activeLiqScale
+            liquidityData.liquidityDataAsk.length > 0 ||
+            liquidityData.liquidityDataBid.length > 0
         ) {
+            if (poolPriceDisplay) {
+                setIsDataLoading(false);
+            }
+        } else {
+            setIsDataLoading(false);
+        }
+    }, [liquidityData, poolPricePixel]);
+
+    useEffect(() => {
+        if (liquidityScale && lastCandleData && activeLiqScale) {
             const liqBidData = liquidityData.liquidityDataBid;
             const liqAskData = liquidityData.liquidityDataAsk;
 
@@ -304,7 +343,10 @@ export default function TransactionDetailsLiquidityGraph(
                 ? lastCandleData.invPriceCloseExclMEVDecimalCorrected
                 : lastCandleData.priceCloseExclMEVDecimalCorrected;
 
-            if (lastYData >= poolPriceDisplay) {
+            if (
+                lastYData >= poolPriceDisplay &&
+                liquidityData?.liquidityDataBid.length > 0
+            ) {
                 const closest = liqBidData.reduce((acc, curr) => {
                     const diffAcc = Math.abs(
                         lastYData - getBidPriceValue(acc, !isDenomBase),
@@ -320,20 +362,23 @@ export default function TransactionDetailsLiquidityGraph(
                         liquidityScale(activeLiqScale(closest.activeLiq)) * 0.1,
                     );
             } else {
-                const closest = liqAskData.reduce((acc, curr) => {
-                    const diffAcc = Math.abs(
-                        lastYData - getAskPriceValue(acc, !isDenomBase),
-                    );
-                    const diffCurr = Math.abs(
-                        lastYData - getAskPriceValue(curr, !isDenomBase),
-                    );
-                    return diffAcc < diffCurr ? acc : curr;
-                });
+                if (liquidityData?.liquidityDataAsk.length > 0) {
+                    const closest = liqAskData.reduce((acc, curr) => {
+                        const diffAcc = Math.abs(
+                            lastYData - getAskPriceValue(acc, !isDenomBase),
+                        );
+                        const diffCurr = Math.abs(
+                            lastYData - getAskPriceValue(curr, !isDenomBase),
+                        );
+                        return diffAcc < diffCurr ? acc : curr;
+                    });
 
-                closest &&
-                    setPoolPricePixel(
-                        liquidityScale(activeLiqScale(closest.activeLiq)) * 0.1,
-                    );
+                    closest &&
+                        setPoolPricePixel(
+                            liquidityScale(activeLiqScale(closest.activeLiq)) *
+                                0.1,
+                        );
+                }
             }
         }
     }, [lastCandleData, activeLiqScale]);
