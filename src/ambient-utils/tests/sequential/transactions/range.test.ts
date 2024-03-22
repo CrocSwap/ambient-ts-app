@@ -148,7 +148,7 @@ describe('submit a ETH/USDC liquidity position on Goerli', () => {
                     crocEnv,
                     isAmbient: false,
                     slippageTolerancePercentage: 5,
-                    isTokenAPrimaryRange: true,
+                    isTokenAPrimary: true,
                     tokenA: {
                         address: tokenA.address,
                         qty: tokenAQty,

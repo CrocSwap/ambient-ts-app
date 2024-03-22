@@ -132,6 +132,10 @@ export default function Account(props: propsIF) {
         minFracDigits: 0,
         maxFracDigits: 0,
         isLevel: true,
+        mantissa:
+            (currentLevel || 1) >= 100000 && (currentLevel || 1) < 1000000
+                ? 0
+                : 1,
     });
 
     const currentLevelDisplay =
