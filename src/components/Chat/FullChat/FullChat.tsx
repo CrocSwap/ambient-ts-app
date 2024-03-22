@@ -78,6 +78,7 @@ interface FullChatPropsIF {
     showDeleteConfirmation: boolean;
     handleConfirmDelete: () => void;
     handleCancelDelete: () => void;
+    rndShowPreviousMessages: () => JSX.Element;
 }
 
 interface ChannelDisplayPropsIF {
@@ -850,6 +851,7 @@ function FullChat(props: FullChatPropsIF) {
                     );
                 }}
             />
+            {props.rndShowPreviousMessages()}
             {props.isChatOpen && props.showPicker && (
                 <div
                     id='chatReactionWrapper'

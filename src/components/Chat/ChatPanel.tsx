@@ -1082,6 +1082,28 @@ function ChatPanel(props: propsIF) {
         setShowDeleteConfirmation(false);
     };
 
+    const rndPreviousMessagesButton = () => {
+        return (
+            <div className={styles.scroll_up}>
+                {showPreviousMessagesButton ? (
+                    <RiArrowUpSLine
+                        role='button'
+                        size={27}
+                        color='#7371fc'
+                        onClick={() => getPreviousMessages()}
+                        tabIndex={0}
+                        aria-label='Show previous messages'
+                        style={{ cursor: 'pointer' }}
+                        title='Show previous messages'
+                        className={styles.scroll_to_icon}
+                    />
+                ) : (
+                    ''
+                )}
+            </div>
+        );
+    };
+
     const contentHeight = isChatOpen ? '479px' : '30px';
     if (props.appPage)
         return (
@@ -1124,6 +1146,7 @@ function ChatPanel(props: propsIF) {
                     showDeleteConfirmation={showDeleteConfirmation}
                     handleConfirmDelete={handleConfirmDelete}
                     handleCancelDelete={handleCancelDelete}
+                    rndShowPreviousMessages={rndPreviousMessagesButton}
                 />
             </>
         );
@@ -1166,7 +1189,8 @@ function ChatPanel(props: propsIF) {
                     />
 
                     <DividerDark changeColor addMarginTop addMarginBottom />
-                    <div className={styles.scroll_up}>
+                    {rndPreviousMessagesButton()}
+                    {/* <div className={styles.scroll_up}>
                         {showPreviousMessagesButton ? (
                             <RiArrowUpSLine
                                 role='button'
@@ -1182,7 +1206,7 @@ function ChatPanel(props: propsIF) {
                         ) : (
                             ''
                         )}
-                    </div>
+                    </div> */}
                     {messageList}
 
                     {showPopUp ? sendingLink : ''}
