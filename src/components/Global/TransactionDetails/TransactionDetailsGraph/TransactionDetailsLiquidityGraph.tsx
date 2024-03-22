@@ -12,6 +12,7 @@ import { fetchPoolLiquidity } from '../../../../ambient-utils/api';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import {
+    CandleDataIF,
     LiquidityRangeIF,
     TransactionIF,
 } from '../../../../ambient-utils/types';
@@ -20,9 +21,12 @@ import {
     fillLiqInfinity,
     setCanvasResolution,
 } from '../../../../pages/Chart/ChartUtils/chartUtils';
-import { createAreaSeriesLiquidity } from '../../../../pages/Chart/Liquidity/LiquiditySeries/AreaSeries';
+import {
+    createAreaSeriesLiquidity,
+    getAskPriceValue,
+    getBidPriceValue,
+} from '../../../../pages/Chart/Liquidity/LiquiditySeries/AreaSeries';
 import { createLiquidityLineSeries } from '../../../../pages/Chart/Liquidity/LiquiditySeries/LineSeries';
-
 interface TransactionDetailsLiquidityGraphIF {
     tx: TransactionIF;
     isDenomBase: boolean;
@@ -31,6 +35,7 @@ interface TransactionDetailsLiquidityGraphIF {
     poolPriceDisplay: number;
     setPoolPricePixel: Dispatch<React.SetStateAction<number>>;
     svgWidth: number;
+    lastCandleData: CandleDataIF | undefined;
 }
 
 type liquidityChartData = {
@@ -64,6 +69,7 @@ export default function TransactionDetailsLiquidityGraph(
         poolPriceDisplay,
         setPoolPricePixel,
         svgWidth,
+        lastCandleData,
     } = props;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -85,6 +91,10 @@ export default function TransactionDetailsLiquidityGraph(
         liquidityDataAsk: [],
         liquidityDataBid: [],
     });
+
+    const [activeLiqScale, setActiveLiqScale] = useState<
+        d3.ScaleLinear<number, number, never> | undefined
+    >();
 
     const clipHighlightedLines = (canvas: HTMLCanvasElement) => {
         const bidPrice = !isDenomBase
@@ -149,10 +159,10 @@ export default function TransactionDetailsLiquidityGraph(
                             ? element.upperBoundPriceDecimalCorrected
                             : element.lowerBoundInvPriceDecimalCorrected;
 
-                        if (liqLowerPrices <= poolPriceDisplay) {
+                        if (liqLowerPrices < poolPriceDisplay) {
                             liqAsk.push(element);
                         } else {
-                            if (liqUpperPrices < poolPriceDisplay * 10)
+                            if (liqUpperPrices <= poolPriceDisplay * 15)
                                 liqBid.push(element);
                         }
                     });
@@ -165,8 +175,8 @@ export default function TransactionDetailsLiquidityGraph(
 
                     liqBid.sort(
                         (a: LiquidityRangeIF, b: LiquidityRangeIF) =>
-                            b.upperBoundInvPriceDecimalCorrected -
-                            a.upperBoundInvPriceDecimalCorrected,
+                            getBidPriceValue(b, isDenomBase) -
+                            getBidPriceValue(a, isDenomBase),
                     );
 
                     setLiquidityData({
@@ -210,6 +220,8 @@ export default function TransactionDetailsLiquidityGraph(
                 .domain([domainLeft, domainRight])
                 .range([30, 1000]);
 
+            setActiveLiqScale(() => liquidityScaleTemp);
+
             const liquidityScale = d3.scaleLinear();
 
             const liquidityExtent = d3fc
@@ -224,17 +236,6 @@ export default function TransactionDetailsLiquidityGraph(
                 .range([svgWidth, svgWidth * 0.9]);
 
             setLiquidityScale(() => liquidityScale);
-
-            const liqBidData = liquidityData?.liquidityDataBid;
-            liquidityScale &&
-                liquidityData?.liquidityDataBid.length > 0 &&
-                setPoolPricePixel(
-                    liquidityScale(
-                        liquidityScaleTemp(
-                            liqBidData[liqBidData.length - 1].activeLiq,
-                        ),
-                    ),
-                );
 
             const d3CanvasLiqAskChart = createAreaSeriesLiquidity(
                 liquidityScaleTemp,
@@ -288,6 +289,54 @@ export default function TransactionDetailsLiquidityGraph(
         const nd = d3.select(d3CanvasLiq.current).node() as any;
         nd?.requestRedraw();
     }, []);
+
+    useEffect(() => {
+        if (
+            liquidityScale &&
+            liquidityData?.liquidityDataBid.length > 0 &&
+            lastCandleData &&
+            activeLiqScale
+        ) {
+            const liqBidData = liquidityData.liquidityDataBid;
+            const liqAskData = liquidityData.liquidityDataAsk;
+
+            const lastYData = !isDenomBase
+                ? lastCandleData.invPriceCloseExclMEVDecimalCorrected
+                : lastCandleData.priceCloseExclMEVDecimalCorrected;
+
+            if (lastYData >= poolPriceDisplay) {
+                const closest = liqBidData.reduce((acc, curr) => {
+                    const diffAcc = Math.abs(
+                        lastYData - getBidPriceValue(acc, !isDenomBase),
+                    );
+                    const diffCurr = Math.abs(
+                        lastYData - getBidPriceValue(curr, !isDenomBase),
+                    );
+                    return diffAcc < diffCurr ? acc : curr;
+                });
+
+                closest &&
+                    setPoolPricePixel(
+                        liquidityScale(activeLiqScale(closest.activeLiq)) * 0.1,
+                    );
+            } else {
+                const closest = liqAskData.reduce((acc, curr) => {
+                    const diffAcc = Math.abs(
+                        lastYData - getAskPriceValue(acc, !isDenomBase),
+                    );
+                    const diffCurr = Math.abs(
+                        lastYData - getAskPriceValue(curr, !isDenomBase),
+                    );
+                    return diffAcc < diffCurr ? acc : curr;
+                });
+
+                closest &&
+                    setPoolPricePixel(
+                        liquidityScale(activeLiqScale(closest.activeLiq)) * 0.1,
+                    );
+            }
+        }
+    }, [lastCandleData, activeLiqScale]);
 
     useEffect(() => {
         const canvas = d3

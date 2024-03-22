@@ -207,10 +207,10 @@ export default function TransactionDetailsGraph(
                     maxNumCandlesNeeded,
                 );
 
-                const offsetInSeconds = 120;
+                const offsetInSeconds = oneHourMiliseconds / 1000;
 
                 const startBoundary =
-                    Math.floor(localMaxTime / 1000) - offsetInSeconds;
+                    Math.floor(localMaxTime / 1000) + offsetInSeconds;
 
                 try {
                     if (!crocEnv) {
@@ -848,25 +848,29 @@ export default function TransactionDetailsGraph(
     }, [scaleData]);
 
     useEffect(() => {
-        if (poolPricePixel && scaleData && transactionType === 'liqchange') {
-            const newMaxDomain = scaleData?.xScale
-                .invert(svgWidth + (svgWidth - poolPricePixel) + 8)
-                .getTime();
+        if (
+            poolPricePixel &&
+            scaleData &&
+            graphData.length > 0 &&
+            transactionType === 'liqchange'
+        ) {
+            const lastDataPixel = scaleData.xScale(graphData[0].time * 1000);
+            const diff = lastDataPixel - poolPricePixel * 10 + 5;
 
-            const oldMaxDomain = scaleData?.xScale.domain()[1];
+            if (lastDataPixel > poolPricePixel * 10) {
+                const newMaxDomain = scaleData?.xScale
+                    .invert(svgWidth + diff)
+                    .getTime();
 
-            addExtraCandle(
-                graphData[0].time + period,
-                poolPrice,
-                1 / poolPrice,
-            );
-            scaleData?.xScale.domain([
-                scaleData?.xScale.domain()[0],
-                Math.max(newMaxDomain, oldMaxDomain),
-            ]);
+                const oldMaxDomain = scaleData?.xScale.domain()[1];
+                scaleData?.xScale.domain([
+                    scaleData?.xScale.domain()[0],
+                    Math.max(newMaxDomain, oldMaxDomain),
+                ]);
+            }
             render();
         }
-    }, [scaleData, poolPricePixel]);
+    }, [scaleData, poolPricePixel, graphData]);
 
     useEffect(() => {
         if (scaleData) {
@@ -1477,6 +1481,9 @@ export default function TransactionDetailsGraph(
                                 poolPriceDisplay={poolPrice}
                                 setPoolPricePixel={setPoolPricePixel}
                                 svgWidth={svgWidth}
+                                lastCandleData={
+                                    graphData ? graphData[0] : undefined
+                                }
                             />
                         )}
                         <d3fc-svg
