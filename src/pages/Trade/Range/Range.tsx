@@ -52,7 +52,14 @@ import {
 export const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 export const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
 
-function Range() {
+interface RangePropsIF {
+    isEditPanel?: boolean;
+    prepopulatedBaseValue?: string;
+    prepopulatedQuoteValue?: string;
+}
+function Range(props: RangePropsIF) {
+    const { isEditPanel, prepopulatedBaseValue, prepopulatedQuoteValue } =
+        props;
     const {
         chainData: { chainId, gridSize },
         ethMainnetUsdPrice,
@@ -1035,13 +1042,16 @@ function Range() {
 
     return (
         <TradeModuleSkeleton
+            isEditPanel={isEditPanel}
             chainId={chainId}
             header={
-                <TradeModuleHeader
-                    slippage={mintSlippage}
-                    bypassConfirm={bypassConfirmRange}
-                    settingsTitle='Pool'
-                />
+                isEditPanel ? null : (
+                    <TradeModuleHeader
+                        slippage={mintSlippage}
+                        bypassConfirm={bypassConfirmRange}
+                        settingsTitle='Pool'
+                    />
+                )
             }
             input={
                 <RangeTokenInput
@@ -1054,11 +1064,17 @@ function Range() {
                     }}
                     isOutOfRange={isOutOfRange}
                     tokenAInputQty={{
-                        value: tokenAInputQty,
+                        value:
+                            isEditPanel && prepopulatedBaseValue
+                                ? prepopulatedBaseValue
+                                : tokenAInputQty,
                         set: setTokenAInputQty,
                     }}
                     tokenBInputQty={{
-                        value: tokenBInputQty,
+                        value:
+                            isEditPanel && prepopulatedQuoteValue
+                                ? prepopulatedQuoteValue
+                                : tokenBInputQty,
                         set: setTokenBInputQty,
                     }}
                     toggleDexSelection={toggleDexSelection}
@@ -1067,6 +1083,7 @@ function Range() {
                         tokenB: isTokenBInputDisabled,
                     }}
                     amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
+                    isEditPanel={isEditPanel}
                 />
             }
             inputOptions={

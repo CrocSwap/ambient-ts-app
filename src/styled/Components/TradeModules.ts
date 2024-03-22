@@ -241,7 +241,9 @@ export const TokenQuantityContainer = styled.div<AnimationProps>`
     ${Animations};
 `;
 
-export const TokenSelectButton = styled.button`
+export const TokenSelectButton = styled.button<{
+    disabled?: boolean;
+}>`
     width: 100%;
     display: flex;
     justify-content: space-between;
@@ -271,6 +273,8 @@ export const TokenSelectButton = styled.button`
     &:focus-visible {
         border: 1px solid var(--text1);
     }
+    ${({ disabled }) => disabled && 'cursor: wait !important; '}
+    ${({ disabled }) => disabled && 'pointer-events: none !important; '}
 `;
 
 export const RefreshButton = styled(IconButton)`

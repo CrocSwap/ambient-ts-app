@@ -276,35 +276,6 @@ function RangesMenu(props: propsIF) {
             Add
         </Chip>
     );
-    const editButton2 = (
-        <Chip
-            id={`edit_liquidity_position_${position.positionId}`}
-            onClick={() => {
-                // URL params for link to pool page
-                const poolLinkParams: poolParamsIF = {
-                    chain: chainId,
-                    tokenA:
-                        tokenAAddress.toLowerCase() ===
-                        position.quote.toLowerCase()
-                            ? position.quote
-                            : position.base,
-                    tokenB:
-                        tokenAAddress.toLowerCase() ===
-                        position.quote.toLowerCase()
-                            ? position.base
-                            : position.quote,
-                    lowTick: position.bidTick.toString(),
-                    highTick: position.askTick.toString(),
-                };
-                // navigate user to pool page with URL params defined above
-                linkGenPool.navigate(poolLinkParams);
-                handleCopyClick();
-                setCurrentRangeInAdd(position.positionId);
-            }}
-        >
-            Edit Another
-        </Chip>
-    );
 
     const detailsButton = <Chip onClick={openDetailsModal}>Details</Chip>;
     const harvestButton =
@@ -337,7 +308,6 @@ function RangesMenu(props: propsIF) {
         <div className={styles.actions_menu}>
             {tableView !== 'small' && showRepositionButton && repositionButton}
             {editButton}
-            {editButton2}
             {tableView !== 'small' &&
                 // !showRepositionButton &&
                 // userMatchesConnectedAccount &&

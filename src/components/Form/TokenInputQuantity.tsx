@@ -46,6 +46,7 @@ interface propsIF {
     disabledContent?: React.ReactNode;
     setTokenModalOpen?: Dispatch<SetStateAction<boolean>>;
     onInitPage?: boolean;
+    disableTokenSelector?: boolean;
 }
 
 function TokenInputQuantity(props: propsIF) {
@@ -63,6 +64,7 @@ function TokenInputQuantity(props: propsIF) {
         handleTokenInputEvent,
         reverseTokens,
         setTokenModalOpen = () => null,
+        disableTokenSelector,
     } = props;
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     const location = useLocation();
@@ -234,6 +236,7 @@ function TokenInputQuantity(props: propsIF) {
                     tabIndex={0}
                     aria-label='Open swap sell token modal.'
                     ref={tokenSelectRef}
+                    disabled={disableTokenSelector}
                 >
                     <TokenIcon
                         token={token}

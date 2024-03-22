@@ -34,6 +34,7 @@ interface propsIF {
     reverseTokens?: () => void;
     isMintLiqEnabled?: boolean;
     isInitPage?: boolean;
+    isEditPanel?: boolean;
     amountToReduceNativeTokenQty: number;
 }
 
@@ -59,6 +60,7 @@ function RangeTokenInput(props: propsIF) {
         isMintLiqEnabled = true,
         isInitPage,
         amountToReduceNativeTokenQty,
+        isEditPanel,
     } = props;
 
     const {
@@ -215,6 +217,7 @@ function RangeTokenInput(props: propsIF) {
                 amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
                 isInitPage={isInitPage}
                 tokenDecimals={tokenA.decimals}
+                isEditPanel={isEditPanel}
             />
             {!hidePlus && (
                 <FlexContainer
@@ -256,6 +259,7 @@ function RangeTokenInput(props: propsIF) {
                 isInitPage={isInitPage}
                 tokenDecimals={tokenB.decimals}
                 isWithdraw
+                isEditPanel={isEditPanel}
             />
         </FlexContainer>
     );

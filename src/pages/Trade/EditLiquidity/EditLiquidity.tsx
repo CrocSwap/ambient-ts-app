@@ -20,6 +20,7 @@ import { useProcessRange } from '../../../utils/hooks/useProcessRange';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import RepositionHeader from '../../../components/Trade/Reposition/RepositionHeader/RepositionHeader';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import Range from '../Range/Range';
 
 function EditLiquidity() {
     const { params } = useParams();
@@ -105,6 +106,9 @@ function EditLiquidity() {
     );
     const [newEditTransactionHash, setNewEditTransactionHash] = useState('');
 
+    console.log('base', position.positionLiqBaseDecimalCorrected);
+    console.log('quote', position.positionLiqQuoteDecimalCorrected);
+
     return (
         <>
             <div className={styles.repositionContainer}>
@@ -114,10 +118,12 @@ function EditLiquidity() {
                     resetTxHash={() => setNewEditTransactionHash('')}
                     editPanel
                 />
-                <p>use trade module skeleton</p>
-                <h1>EDIT TOKEN INPUT</h1>
-                <h1>EDIT BOUNDS</h1>
-                <h1>EDIT EXTRA INFO</h1>
+
+                <Range
+                    isEditPanel
+                    prepopulatedBaseValue={position?.positionLiqBaseDecimalCorrected.toString()}
+                    prepopulatedQuoteValue={position?.positionLiqQuoteDecimalCorrected.toString()}
+                />
             </div>
         </>
     );
