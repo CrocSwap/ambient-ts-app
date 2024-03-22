@@ -105,21 +105,20 @@ function SwapTokenInput(props: propsIF) {
 
     const reverseTokens = (skipQuantityReverse?: boolean): void => {
         if (!isPoolInitialized) return;
-
         linkGenAny.navigate({
             chain: chainId,
             tokenA: tokenB.address,
             tokenB: tokenA.address,
         });
 
+        setLastImpactQuery(() => {
+            return {
+                input: primaryQuantity,
+                isInputSell: !isTokenAPrimary,
+                impact: undefined,
+            };
+        });
         if (!skipQuantityReverse) {
-            setLastImpactQuery(() => {
-                return {
-                    input: primaryQuantity,
-                    isInputSell: isTokenAPrimary,
-                    impact: undefined,
-                };
-            });
             !isTokenAPrimary
                 ? sellQtyString !== '' && parseFloat(sellQtyString) > 0
                     ? setIsSellLoading(true)
@@ -262,11 +261,6 @@ function SwapTokenInput(props: propsIF) {
                     rawTokenBQty = await refreshImpact(truncatedInputStr, true);
                 }
             } else {
-                setLastImpactQuery({
-                    input: primaryQuantity,
-                    isInputSell: true,
-                    impact: undefined,
-                });
                 rawTokenBQty = await refreshImpact(primaryQuantity, true);
             }
 
@@ -312,11 +306,6 @@ function SwapTokenInput(props: propsIF) {
                     );
                 }
             } else {
-                setLastImpactQuery({
-                    input: primaryQuantity,
-                    isInputSell: false,
-                    impact: undefined,
-                });
                 rawTokenAQty = await refreshImpact(primaryQuantity, false);
             }
 
@@ -405,7 +394,6 @@ function SwapTokenInput(props: propsIF) {
                 alignItems='center'
             >
                 <TokensArrow
-                    disabled={isBuyLoading || isSellLoading}
                     onClick={() => {
                         isTokenAPrimary
                             ? sellQtyString !== '' &&
