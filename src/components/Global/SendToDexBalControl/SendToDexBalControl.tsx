@@ -48,7 +48,7 @@ export default function SaveToDexBalanceModalControl(props: propsIF) {
                             openGlobalPopup(
                                 <div>
                                     Deposited collateral can be traded later at
-                                    lower gas costs.
+                                    lower gas costs and withdrawn at any time.
                                 </div>,
                                 'Exchange Balance',
                                 'right',
