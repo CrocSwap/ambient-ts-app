@@ -58,7 +58,10 @@ function getAckTokensFromLS(): TokenIF[] {
 const INIT_LIST: TokenListIF[] = getTokenListsFromLS();
 const INIT_ACK: TokenIF[] = getAckTokensFromLS();
 
-export const useTokens = (chainId: string): tokenMethodsIF => {
+export const useTokens = (
+    chainId: string,
+    tokenBalances: TokenIF[] | undefined,
+): tokenMethodsIF => {
     // Token universe
     const [tokenLists, setTokenLists] = useState<TokenListIF[]>(INIT_LIST);
 
@@ -98,15 +101,16 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
 
     const tokenUniv: TokenIF[] = useMemo(() => {
         if (tokenMap.size) {
-            return [...tokenMap.values()];
+            return [...tokenMap.values()].concat(tokenBalances ?? []);
         } else {
             return defaultTokens
+                .concat(tokenBalances ?? [])
                 .filter((tkn: TokenIF) => tkn.chainId === parseInt(chainId))
                 .map((tkn: TokenIF) =>
                     deepCopyToken(tkn, tkn.fromList ?? tokenListURIs.ambient),
                 );
         }
-    }, [tokenMap.size]);
+    }, [tokenMap.size, tokenBalances]);
 
     // fn to make a deep copy of a token data object
     // without this we overrwrite token data in local storage in post-processing
