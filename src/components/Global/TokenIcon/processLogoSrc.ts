@@ -6,6 +6,7 @@ import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 // all args are optional; calling fn without data is handled
 interface argsIF {
     token?: TokenIF;
+    symbol?: string;
     sourceURI?: string;
 }
 
@@ -21,10 +22,11 @@ export default function processLogoSrc(args: argsIF): string {
                 args,
             );
     }
+    const localLogoLookupSymbol =
+        args.token?.symbol.toUpperCase() ?? args.symbol?.toUpperCase();
     // return a filepath (if local) or a URI string (if remote)
     return (
-        localLogos[
-            args.token?.symbol.toUpperCase() as keyof typeof localLogos
-        ] ?? uriToHttp(uri || '')
+        localLogos[localLogoLookupSymbol as keyof typeof localLogos] ??
+        uriToHttp(uri || '')
     );
 }
