@@ -5,6 +5,7 @@ import styles from './SendToDexBalControl.module.css';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
 import { ExplanationButton } from '../../Form/Icons/Icons.styles';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { FlexContainer } from '../../../styled/Common';
 
 interface propsIF {
     tempBypassConfirm: boolean;
@@ -41,7 +42,7 @@ export default function ConfirmationModalControl(props: propsIF) {
     return (
         <div className={styles.main_container}>
             {displayInSettings ? (
-                <div>
+                <FlexContainer alignItems='center' gap={8}>
                     <p tabIndex={0}>{'Send to exchange balance'}</p>
                     <ExplanationButton
                         onClick={() =>
@@ -58,7 +59,7 @@ export default function ConfirmationModalControl(props: propsIF) {
                     >
                         <AiOutlineInfoCircle color='var(--text2)' />
                     </ExplanationButton>
-                </div>
+                </FlexContainer>
             ) : (
                 <p tabIndex={0}>Send to exchange balance</p>
             )}
