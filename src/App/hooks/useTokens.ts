@@ -101,10 +101,21 @@ export const useTokens = (
 
     const tokenUniv: TokenIF[] = useMemo(() => {
         if (tokenMap.size) {
-            return [...tokenMap.values()].concat(tokenBalances ?? []);
+            const newArray = [...tokenMap.values()];
+            for (const token of tokenBalances ?? []) {
+                if (!newArray.some((tkn) => tkn.address === token.address)) {
+                    newArray.push(token);
+                }
+            }
+            return newArray;
         } else {
-            return defaultTokens
-                .concat(tokenBalances ?? [])
+            const newArray = [...defaultTokens];
+            for (const token of tokenBalances ?? []) {
+                if (!newArray.some((tkn) => tkn.address === token.address)) {
+                    newArray.push(token);
+                }
+            }
+            return newArray
                 .filter((tkn: TokenIF) => tkn.chainId === parseInt(chainId))
                 .map((tkn: TokenIF) =>
                     deepCopyToken(tkn, tkn.fromList ?? tokenListURIs.ambient),
