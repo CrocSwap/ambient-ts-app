@@ -108,7 +108,7 @@ export default function TabComponent(props: TabPropsIF) {
         shouldSyncWithTradeModules,
     ]);
 
-    function handleMobileMenuIcon(icon: string, label: string) {
+    function handleMobileMenuIcon(icon: string, label: string): JSX.Element {
         return (
             <div className={styles.tab_icon_container}>
                 <DefaultTooltip

@@ -18,15 +18,23 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
     const moneynessRank = {
         USDC: 100,
         USDB: 100,
+        AXLUSDC: 95,
+        LUSD: 95,
         DAI: 90,
         USDT: 80,
         FRAX: 70,
         WBTC: 60,
         ETH: 50,
+        WSTETH: 45,
+        RETH: 45,
+        PXETH: 45,
         PEPE: 0,
     };
 
-    const rank = moneynessRank[tokenSymbol as keyof typeof moneynessRank] ?? 0;
+    const rank =
+        moneynessRank[
+            tokenSymbol.toUpperCase() as keyof typeof moneynessRank
+        ] ?? 0;
     return rank;
 };
 
@@ -34,7 +42,7 @@ export const getMoneynessRankByAddr = (tokenAddress: string): number => {
     let moneynessRank = 0;
     defaultTokens.forEach((token) => {
         if (token.address.toLowerCase() === tokenAddress.toLowerCase()) {
-            moneynessRank = getMoneynessRank(token.symbol);
+            moneynessRank = getMoneynessRank(token.symbol.toUpperCase());
         }
     });
     return moneynessRank;

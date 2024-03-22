@@ -34,7 +34,6 @@ export type contentGroups = 'standard' | 'token' | 'wallet';
 export interface walletHexAndENS {
     hex: string;
     ens: string | null;
-    message?: string;
 }
 
 // shape of object returned by this hook
@@ -418,14 +417,7 @@ export const useSidebarSearch = (
                             ]);
                             setContentGroup('wallet');
                         } else {
-                            setOutputWallets([
-                                {
-                                    hex: '',
-                                    ens: '',
-                                    message:
-                                        'No address was found for this ENS name',
-                                },
-                            ]);
+                            setOutputWallets([]);
                             setContentGroup('wallet');
                         }
                     })

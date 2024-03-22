@@ -37,6 +37,8 @@ interface propsIF {
     baseTokenAddress: string;
     quoteTokenAddress: string;
     fillPercentage: number;
+    isAccountView: boolean;
+    isBaseTokenMoneynessGreaterOrEqual: boolean;
 }
 
 export default function PriceInfo(props: propsIF) {
@@ -56,6 +58,8 @@ export default function PriceInfo(props: propsIF) {
         baseTokenAddress,
         quoteTokenAddress,
         fillPercentage,
+        isAccountView,
+        isBaseTokenMoneynessGreaterOrEqual,
     } = props;
 
     const { pathname } = useLocation();
@@ -65,6 +69,10 @@ export default function PriceInfo(props: propsIF) {
     const quoteToken: TokenIF | undefined =
         tokens.getTokenByAddress(quoteTokenAddress);
     const isOnTradeRoute = pathname.includes('trade');
+
+    const isDenomBaseLocal = isAccountView
+        ? !isBaseTokenMoneynessGreaterOrEqual
+        : isDenomBase;
 
     const isLimitOrderPartiallyFilled = isFillStarted && !isOrderFilled;
 
@@ -110,25 +118,37 @@ export default function PriceInfo(props: propsIF) {
         </div>
     );
 
+    const baseTokenLargeDisplay = (
+        <TokenIcon
+            token={baseToken}
+            src={baseTokenLogo}
+            alt={baseTokenSymbol}
+            size='2xl'
+        />
+    );
+
+    const quoteTokenLargeDisplay = (
+        <TokenIcon
+            token={quoteToken}
+            src={quoteTokenLogo}
+            alt={quoteTokenSymbol}
+            size='2xl'
+        />
+    );
+
     const tokenPairDetails = (
         <div className={styles.token_pair_details}>
             <div className={styles.token_pair_images}>
-                <TokenIcon
-                    token={baseToken}
-                    src={baseTokenLogo}
-                    alt={baseTokenSymbol}
-                    size='2xl'
-                />
-                <TokenIcon
-                    token={quoteToken}
-                    src={quoteTokenLogo}
-                    alt={quoteTokenSymbol}
-                    size='2xl'
-                />
+                {isDenomBaseLocal
+                    ? baseTokenLargeDisplay
+                    : quoteTokenLargeDisplay}
+                {isDenomBaseLocal
+                    ? quoteTokenLargeDisplay
+                    : baseTokenLargeDisplay}
             </div>
             <p>
-                {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
-                {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
+                {isDenomBaseLocal ? baseTokenSymbol : quoteTokenSymbol} /{' '}
+                {isDenomBaseLocal ? quoteTokenSymbol : baseTokenSymbol}
             </p>
         </div>
     );
@@ -173,10 +193,10 @@ export default function PriceInfo(props: propsIF) {
             <div className={styles.price_info_container}>
                 {tokenPairDetails}
                 {orderType}
-                {(isDenomBase && isBid) || (!isDenomBase && !isBid)
+                {(isDenomBaseLocal && isBid) || (!isDenomBaseLocal && !isBid)
                     ? sellContent
                     : buyContent}
-                {(isDenomBase && isBid) || (!isDenomBase && !isBid)
+                {(isDenomBaseLocal && isBid) || (!isDenomBaseLocal && !isBid)
                     ? buyContent
                     : sellContent}
                 {totalValue}

@@ -290,8 +290,6 @@ function Orders(props: propsIF) {
         },
     ];
     // ---------------------
-    // orders per page media queries
-    const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 
     useEffect(() => {
         setCurrentPage(1);
@@ -328,6 +326,12 @@ function Orders(props: propsIF) {
     const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
         setPage(p);
         _DATA.jump(p);
+        const element = document.getElementById('current_row_scroll');
+        element?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+            inline: 'start',
+        });
     };
 
     const handleChangeRowsPerPage = (
@@ -458,10 +462,9 @@ function Orders(props: propsIF) {
             </ul>
             {
                 // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
-                // TODO (#1804): we should instead be adding results to RTK
                 !isTradeTableExpanded &&
                     !isAccountView &&
-                    sortedLimits.length > NUM_RANGES_WHEN_COLLAPSED && (
+                    sortedLimits.length > rowsPerPage && (
                         <FlexContainer
                             justifyContent='center'
                             alignItems='center'

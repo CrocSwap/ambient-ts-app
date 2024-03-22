@@ -77,7 +77,6 @@ export const orderRowConstants = (props: propsIF) => {
         quoteTokenSymbol,
         elapsedTimeString,
         isAccountView,
-        priceCharacter,
         truncatedDisplayPrice,
         truncatedDisplayPriceDenomByMoneyness,
         sideType,
@@ -257,7 +256,7 @@ export const orderRowConstants = (props: propsIF) => {
             {isOwnerActiveAccount ? (
                 <RowItem hover>
                     <Link to={linkGenLimit.getFullURL(limitLinkParams)}>
-                        <span>
+                        <span style={{ textTransform: 'none' }}>
                             {baseTokenSymbol} / {quoteTokenSymbol}
                         </span>
                         <FiExternalLink
@@ -275,7 +274,7 @@ export const orderRowConstants = (props: propsIF) => {
                         rel='noreferrer'
                     >
                         <div>
-                            <span>
+                            <span style={{ textTransform: 'none' }}>
                                 {baseTokenSymbol} / {quoteTokenSymbol}
                             </span>
                             <FiExternalLink
@@ -383,7 +382,6 @@ export const orderRowConstants = (props: propsIF) => {
         >
             {(
                 <p>
-                    <span>{priceCharacter}</span>
                     <span>
                         {isAccountView
                             ? truncatedDisplayPriceDenomByMoneyness

@@ -1,14 +1,21 @@
 import PriceInfo from '.././PriceInfo/PriceInfo';
 import styles from '../../../components/Global/TransactionDetails/TransactionDetailsModal.module.css';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
-import { PositionIF, PositionServerIF } from '../../../ambient-utils/types';
+import {
+    PositionIF,
+    BlastPointsDataIF,
+    PositionServerIF,
+} from '../../../ambient-utils/types';
 import RangeDetailsHeader from '.././RangeDetailsHeader/RangeDetailsHeader';
 import RangeDetailsSimplify from '.././RangeDetailsSimplify/RangeDetailsSimplify';
 import TransactionDetailsGraph from '../../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
 import { useProcessRange } from '../../../utils/hooks/useProcessRange';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { GCGO_OVERRIDE_URL } from '../../../ambient-utils/constants';
+import {
+    CACHE_UPDATE_FREQ_IN_MS,
+    GCGO_OVERRIDE_URL,
+} from '../../../ambient-utils/constants';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import {
@@ -22,7 +29,14 @@ import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import Modal from '../../Global/Modal/Modal';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { bigNumToFloat } from '@crocswap-libs/sdk';
+import {
+    baseTokenForConcLiq,
+    bigNumToFloat,
+    quoteTokenForConcLiq,
+    tickToPrice,
+    toDisplayPrice,
+} from '@crocswap-libs/sdk';
+import { fetchPositionRewardsData } from '../../../ambient-utils/api/fetchPositionRewards';
 
 interface propsIF {
     position: PositionIF;
@@ -53,14 +67,20 @@ function RangeDetailsModal(props: propsIF) {
 
     const {
         posHash,
-        serverPositionId,
+        // serverPositionId,
         isAmbient,
         isBaseTokenMoneynessGreaterOrEqual,
         minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness,
         ambientOrMin: lowRangeDisplay,
         ambientOrMax: highRangeDisplay,
+        baseTokenCharacter,
+        quoteTokenCharacter,
     } = useProcessRange(position, userAddress);
+
+    const [serverPositionId, setServerPositionId] = useState<
+        string | undefined
+    >();
 
     const {
         snackbar: { open: openSnackbar },
@@ -75,7 +95,8 @@ function RangeDetailsModal(props: propsIF) {
         chainData: { chainId, poolIndex },
         provider,
     } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { lastBlockNumber, isActiveNetworkBlast } =
+        useContext(ChainDataContext);
 
     const detailsRef = useRef(null);
 
@@ -123,7 +144,7 @@ function RangeDetailsModal(props: propsIF) {
         openSnackbar(`${posHash.toString()} copied`, 'info');
     }
 
-    const updateRewards = async () => {
+    const updateLiq = async () => {
         try {
             if (!crocEnv || !position) return;
             const pos = crocEnv.positions(
@@ -132,9 +153,98 @@ function RangeDetailsModal(props: propsIF) {
                 position.user,
             );
 
+            const basePricePromise = cachedFetchTokenPrice(
+                baseTokenAddress,
+                chainId,
+                crocEnv,
+            );
+            const quotePricePromise = cachedFetchTokenPrice(
+                quoteTokenAddress,
+                chainId,
+                crocEnv,
+            );
+
+            const poolPriceNonDisplay = await cachedQuerySpotPrice(
+                crocEnv,
+                baseTokenAddress,
+                quoteTokenAddress,
+                chainId,
+                lastBlockNumber,
+            );
+
+            const basePrice = await basePricePromise;
+            const quotePrice = await quotePricePromise;
+            const poolPrice = toDisplayPrice(
+                poolPriceNonDisplay,
+                position.baseDecimals,
+                position.quoteDecimals,
+            );
+
             if (isAmbient) {
                 setBaseFeesDisplay('...');
                 setQuoteFeesDisplay('...');
+
+                const ambientLiqBigNum = (await pos.queryAmbient()).seeds;
+                const liqNum = bigNumToFloat(ambientLiqBigNum);
+                const liqBaseNum = liqNum * Math.sqrt(poolPriceNonDisplay);
+                const liqQuoteNum = liqNum / Math.sqrt(poolPriceNonDisplay);
+
+                const positionLiqBaseDecimalCorrected =
+                    liqBaseNum / Math.pow(10, position.baseDecimals);
+                const positionLiqQuoteDecimalCorrected =
+                    liqQuoteNum / Math.pow(10, position.quoteDecimals);
+
+                setBaseCollateralDisplay(
+                    getFormattedNumber({
+                        value: positionLiqBaseDecimalCorrected,
+                        zeroDisplay: '0',
+                    }),
+                );
+
+                setQuoteCollateralDisplay(
+                    getFormattedNumber({
+                        value: positionLiqQuoteDecimalCorrected,
+                        zeroDisplay: '0',
+                    }),
+                );
+
+                if (basePrice?.usdPrice && quotePrice?.usdPrice) {
+                    setUsdValue(
+                        getFormattedNumber({
+                            value:
+                                basePrice.usdPrice *
+                                    positionLiqBaseDecimalCorrected +
+                                quotePrice.usdPrice *
+                                    positionLiqQuoteDecimalCorrected,
+                            zeroDisplay: '0',
+                            prefix: '$',
+                        }),
+                    );
+                } else if (basePrice?.usdPrice) {
+                    const quotePrice = basePrice.usdPrice * poolPrice;
+                    setUsdValue(
+                        getFormattedNumber({
+                            value:
+                                basePrice.usdPrice *
+                                    positionLiqBaseDecimalCorrected +
+                                quotePrice * positionLiqQuoteDecimalCorrected,
+                            zeroDisplay: '0',
+                            prefix: '$',
+                        }),
+                    );
+                } else if (quotePrice?.usdPrice) {
+                    const basePrice = quotePrice.usdPrice / poolPrice;
+                    setUsdValue(
+                        getFormattedNumber({
+                            value:
+                                quotePrice.usdPrice *
+                                    positionLiqQuoteDecimalCorrected +
+                                basePrice * positionLiqBaseDecimalCorrected,
+                            zeroDisplay: '0',
+                            prefix: '$',
+                        }),
+                    );
+                }
             } else {
                 const positionRewards = await pos.queryRewards(
                     position.bidTick,
@@ -162,6 +272,84 @@ function RangeDetailsModal(props: propsIF) {
                     zeroDisplay: '0',
                 });
                 setQuoteFeesDisplay(quoteFeesDisplayTruncated);
+
+                const concLiqBigNum = (
+                    await pos.queryRangePos(position.bidTick, position.askTick)
+                ).liq;
+
+                const positionLiqBaseNum = bigNumToFloat(
+                    baseTokenForConcLiq(
+                        poolPriceNonDisplay,
+                        concLiqBigNum,
+                        tickToPrice(position.bidTick),
+                        tickToPrice(position.askTick),
+                    ),
+                );
+
+                const positionLiqQuoteNum = bigNumToFloat(
+                    quoteTokenForConcLiq(
+                        poolPriceNonDisplay,
+                        concLiqBigNum,
+                        tickToPrice(position.bidTick),
+                        tickToPrice(position.askTick),
+                    ),
+                );
+
+                const positionLiqBaseDecimalCorrected =
+                    positionLiqBaseNum / Math.pow(10, position.baseDecimals);
+                const positionLiqQuoteDecimalCorrected =
+                    positionLiqQuoteNum / Math.pow(10, position.quoteDecimals);
+
+                setBaseCollateralDisplay(
+                    getFormattedNumber({
+                        value: positionLiqBaseDecimalCorrected,
+                        zeroDisplay: '0',
+                    }),
+                );
+
+                setQuoteCollateralDisplay(
+                    getFormattedNumber({
+                        value: positionLiqQuoteDecimalCorrected,
+                        zeroDisplay: '0',
+                    }),
+                );
+                if (basePrice?.usdPrice && quotePrice?.usdPrice) {
+                    setUsdValue(
+                        getFormattedNumber({
+                            value:
+                                basePrice.usdPrice *
+                                    positionLiqBaseDecimalCorrected +
+                                quotePrice.usdPrice *
+                                    positionLiqQuoteDecimalCorrected,
+                            zeroDisplay: '0',
+                            prefix: '$',
+                        }),
+                    );
+                } else if (basePrice?.usdPrice) {
+                    const quotePrice = basePrice.usdPrice * poolPrice;
+                    setUsdValue(
+                        getFormattedNumber({
+                            value:
+                                basePrice.usdPrice *
+                                    positionLiqBaseDecimalCorrected +
+                                quotePrice * positionLiqQuoteDecimalCorrected,
+                            zeroDisplay: '0',
+                            prefix: '$',
+                        }),
+                    );
+                } else if (quotePrice?.usdPrice) {
+                    const basePrice = quotePrice.usdPrice / poolPrice;
+                    setUsdValue(
+                        getFormattedNumber({
+                            value:
+                                quotePrice.usdPrice *
+                                    positionLiqQuoteDecimalCorrected +
+                                basePrice * positionLiqBaseDecimalCorrected,
+                            zeroDisplay: '0',
+                            prefix: '$',
+                        }),
+                    );
+                }
             }
         } catch (error) {
             console.error(error);
@@ -172,6 +360,8 @@ function RangeDetailsModal(props: propsIF) {
         const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
             ? GCGO_OVERRIDE_URL + '/position_stats?'
             : activeNetwork.graphCacheUrl + '/position_stats?';
+
+        updateLiq();
 
         if (position.positionType) {
             fetch(
@@ -190,57 +380,57 @@ function RangeDetailsModal(props: propsIF) {
                 .then((response) => response?.json())
                 .then(async (json) => {
                     if (!crocEnv || !provider || !json?.data) {
-                        setBaseCollateralDisplay(undefined);
-                        setQuoteCollateralDisplay(undefined);
-                        setUsdValue(undefined);
-                        setBaseFeesDisplay(undefined);
-                        setQuoteFeesDisplay(undefined);
                         return;
                     }
+                    setServerPositionId(json?.data?.positionId);
                     // temporarily skip ENS fetch
                     const skipENSFetch = true;
                     const positionPayload = json?.data as PositionServerIF;
-                    await updateRewards();
                     const positionStats = await getPositionData(
                         positionPayload,
                         tokens.tokenUniv,
                         crocEnv,
                         provider,
                         chainId,
-                        lastBlockNumber,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
                         cachedEnsResolve,
                         skipENSFetch,
                     );
-                    const liqBaseNum =
-                        positionStats.positionLiqBaseDecimalCorrected;
-                    const liqQuoteNum =
-                        positionStats.positionLiqQuoteDecimalCorrected;
-
-                    const liqBaseDisplay = getFormattedNumber({
-                        value: liqBaseNum,
-                    });
-                    setBaseCollateralDisplay(liqBaseDisplay);
-
-                    const liqQuoteDisplay = getFormattedNumber({
-                        value: liqQuoteNum,
-                    });
-                    setQuoteCollateralDisplay(liqQuoteDisplay);
-
-                    setUsdValue(
-                        getFormattedNumber({
-                            value: position.totalValueUSD,
-                            prefix: '$',
-                        }),
-                    );
 
                     setUpdatedPositionApy(positionStats.aprEst * 100);
                 })
                 .catch(console.error);
         }
-    }, [lastBlockNumber, !!crocEnv, !!provider, chainId]);
+    }, [
+        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+        !!crocEnv,
+        !!provider,
+        chainId,
+    ]);
+
+    const [blastPointsData, setBlastPointsData] = useState<BlastPointsDataIF>({
+        points: '...',
+    });
+
+    useEffect(() => {
+        if (isActiveNetworkBlast) {
+            fetchPositionRewardsData({ position }).then((rewards) => {
+                rewards && setBlastPointsData(rewards);
+            });
+        }
+    }, [serverPositionId, isActiveNetworkBlast]);
+
+    const [timeFirstMintMemo, setTimeFirstMintMemo] = useState<number>(
+        position.timeFirstMint,
+    );
+
+    useEffect(() => {
+        if (position.timeFirstMint) {
+            setTimeFirstMintMemo(position.timeFirstMint);
+        }
+    }, [position.timeFirstMint]);
 
     const shareComponent = (
         <div
@@ -251,6 +441,7 @@ function RangeDetailsModal(props: propsIF) {
             <div className={styles.main_content}>
                 <div className={styles.left_container}>
                     <PriceInfo
+                        position={position}
                         usdValue={usdValue !== undefined ? usdValue : '…'}
                         lowRangeDisplay={lowRangeDisplay}
                         highRangeDisplay={highRangeDisplay}
@@ -269,12 +460,19 @@ function RangeDetailsModal(props: propsIF) {
                         maxRangeDenomByMoneyness={maxRangeDenomByMoneyness}
                         baseTokenAddress={baseTokenAddress}
                         quoteTokenAddress={quoteTokenAddress}
-                        positionId={serverPositionId}
+                        blastPointsData={blastPointsData}
+                        isBaseTokenMoneynessGreaterOrEqual={
+                            isBaseTokenMoneynessGreaterOrEqual
+                        }
+                        isAccountView={isAccountView}
+                        baseTokenCharacter={baseTokenCharacter}
+                        quoteTokenCharacter={quoteTokenCharacter}
                     />
                 </div>
                 <div className={styles.right_container}>
                     <TransactionDetailsGraph
                         tx={position}
+                        timeFirstMintMemo={timeFirstMintMemo}
                         transactionType={'liqchange'}
                         isBaseTokenMoneynessGreaterOrEqual={
                             isBaseTokenMoneynessGreaterOrEqual
@@ -302,10 +500,12 @@ function RangeDetailsModal(props: propsIF) {
                 ) : (
                     <RangeDetailsSimplify
                         position={position}
+                        timeFirstMintMemo={timeFirstMintMemo}
                         baseFeesDisplay={baseFeesDisplay}
                         quoteFeesDisplay={quoteFeesDisplay}
                         isAccountView={isAccountView}
                         updatedPositionApy={updatedPositionApy}
+                        blastPointsData={blastPointsData}
                     />
                 )}
             </div>

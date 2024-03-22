@@ -67,10 +67,6 @@ function Range() {
         advancedMode,
         setAdvancedHighTick,
         setAdvancedLowTick,
-        isTokenAPrimaryRange,
-        primaryQuantityRange,
-        setPrimaryQuantityRange,
-        setIsTokenAPrimaryRange,
         isLinesSwitched,
 
         simpleRangeWidth,
@@ -112,14 +108,18 @@ function Range() {
         baseToken,
         quoteToken,
         poolPriceNonDisplay,
+        isTokenAPrimary,
+        primaryQuantity,
+        setPrimaryQuantity,
+        setIsTokenAPrimary,
     } = useContext(TradeDataContext);
 
     // RangeTokenInput state values
     const [tokenAInputQty, setTokenAInputQty] = useState<string>(
-        isTokenAPrimaryRange ? primaryQuantityRange : '',
+        isTokenAPrimary ? primaryQuantity : '',
     );
     const [tokenBInputQty, setTokenBInputQty] = useState<string>(
-        !isTokenAPrimaryRange ? primaryQuantityRange : '',
+        !isTokenAPrimary ? primaryQuantity : '',
     );
 
     const [rangeWidthPercentage, setRangeWidthPercentage] =
@@ -465,6 +465,7 @@ function Range() {
             defaultHighTick,
             isDenomBase,
         );
+
     useEffect(() => {
         if (rangeWidthPercentage === 100 && !advancedMode) {
             setIsAmbient(true);
@@ -524,8 +525,8 @@ function Range() {
     ]);
 
     useEffect(() => {
-        if (isTokenAInputDisabled) setIsTokenAPrimaryRange(false);
-        if (isTokenBInputDisabled) setIsTokenAPrimaryRange(true);
+        if (isTokenAInputDisabled) setIsTokenAPrimary(false);
+        if (isTokenBInputDisabled) setIsTokenAPrimary(true);
     }, [isTokenAInputDisabled, isTokenBInputDisabled]);
 
     useEffect(() => {
@@ -829,7 +830,7 @@ function Range() {
     // reset activeTxHash when the pair changes or user updates quantity
     useEffect(() => {
         activeRangeTxHash.current = '';
-    }, [tokenA.address + tokenB.address, primaryQuantityRange]);
+    }, [tokenA.address + tokenB.address, primaryQuantity]);
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
@@ -864,15 +865,10 @@ function Range() {
                 ethMainnetUsdPrice;
 
             setRangeGasPriceinDollars(
-                isActiveNetworkBlast
-                    ? getFormattedNumber({
-                          value: gasPriceInDollarsNum + extraL1GasFeePool,
-                          prefix: '$',
-                      })
-                    : getFormattedNumber({
-                          value: gasPriceInDollarsNum + extraL1GasFeePool,
-                          isUSD: true,
-                      }),
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum + extraL1GasFeePool,
+                    isUSD: true,
+                }),
             );
         }
     }, [
@@ -936,7 +932,7 @@ function Range() {
     const clearTokenInputs = () => {
         setTokenAInputQty('');
         setTokenBInputQty('');
-        setPrimaryQuantityRange('');
+        setPrimaryQuantity('');
     };
 
     const {

@@ -3,7 +3,6 @@ import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
 import DividerDark from '../../../../Global/DividerDark/DividerDark';
 import { useContext } from 'react';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
-import { RangeContext } from '../../../../../contexts/RangeContext';
 
 interface propsIF {
     txErrorMessage: string;
@@ -12,16 +11,13 @@ interface propsIF {
 export default function TransactionException(props: propsIF) {
     const { txErrorMessage } = props;
     const rangeModuleActive = location.pathname.includes('/trade/pool');
-    const { isTokenAPrimaryRange } = useContext(RangeContext);
-    const { tokenA, tokenB } = useContext(TradeDataContext);
+    const { tokenA, tokenB, isTokenAPrimary } = useContext(TradeDataContext);
 
     const isNativeTokenSecondary =
-        (isTokenAPrimaryRange && tokenB.address === ZERO_ADDRESS) ||
-        (!isTokenAPrimaryRange && tokenA.address === ZERO_ADDRESS);
+        (isTokenAPrimary && tokenB.address === ZERO_ADDRESS) ||
+        (!isTokenAPrimary && tokenA.address === ZERO_ADDRESS);
 
-    const primaryTokenSymbol = isTokenAPrimaryRange
-        ? tokenA.symbol
-        : tokenB.symbol;
+    const primaryTokenSymbol = isTokenAPrimary ? tokenA.symbol : tokenB.symbol;
 
     const formattedErrorMessage =
         'Error Message: ' + txErrorMessage?.replace('err: ', '');
@@ -33,7 +29,9 @@ export default function TransactionException(props: propsIF) {
         </p>
     );
 
-    const isSlippageError = txErrorMessage === 'execution reverted: K';
+    const isSlippageError =
+        txErrorMessage === 'execution reverted: K' ||
+        txErrorMessage === 'Internal JSON-RPC error.';
 
     return (
         <div className={styles.removal_pending}>
@@ -69,8 +67,8 @@ export default function TransactionException(props: propsIF) {
                         suggestionToCheckWalletETHBalance
                     ) : isSlippageError ? (
                         <p>
-                            Please try increasing your slippage tolerance in
-                            settings
+                            Consider increasing your slippage tolerance in
+                            settings.
                         </p>
                     ) : (
                         <p>

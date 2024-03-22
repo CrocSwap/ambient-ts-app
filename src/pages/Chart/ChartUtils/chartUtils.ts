@@ -7,12 +7,13 @@ import {
 } from 'react';
 import * as d3 from 'd3';
 import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
-import { CandleDataIF } from '../../../ambient-utils/types';
+import { CandleDataIF, LiquidityRangeIF } from '../../../ambient-utils/types';
 import {
     LS_KEY_CHART_ANNOTATIONS,
     initialDisplayCandleCount,
     initialDisplayCandleCountForMobile,
 } from './chartConstants';
+import { getBidPriceValue } from '../Liquidity/LiquiditySeries/AreaSeries';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -261,6 +262,37 @@ export function fillLiqAdvanced(
                         standardDeviation,
                     deltaAverageUSD: 0,
                     cumAverageUSD: 0,
+                });
+            }
+        }
+    }
+}
+
+export interface LiquidityRangeIFChart extends LiquidityRangeIF {
+    isFakeData?: boolean;
+}
+
+export function fillLiqInfinity(
+    yScaleMaxDomain: number,
+    liquidityBidData: LiquidityRangeIFChart[],
+    isDenomBase: boolean,
+) {
+    if (liquidityBidData.length > 1) {
+        const newFakeValue = yScaleMaxDomain * 2;
+
+        const lastBidData = liquidityBidData[liquidityBidData.length - 1];
+        if (yScaleMaxDomain >= getBidPriceValue(lastBidData, isDenomBase)) {
+            if (isDenomBase) {
+                liquidityBidData.push({
+                    ...lastBidData,
+                    isFakeData: true,
+                    upperBoundInvPriceDecimalCorrected: newFakeValue,
+                });
+            } else {
+                liquidityBidData.push({
+                    ...lastBidData,
+                    isFakeData: true,
+                    lowerBoundPriceDecimalCorrected: newFakeValue,
                 });
             }
         }

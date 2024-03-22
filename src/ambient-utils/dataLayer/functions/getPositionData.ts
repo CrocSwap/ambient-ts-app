@@ -12,6 +12,7 @@ import { FetchAddrFn, FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { SpotPriceFn } from './querySpotPrice';
 import { getFormattedNumber } from './getFormattedNumber';
 import { Provider } from '@ethersproject/providers';
+import { getPositionHash } from './getPositionHash';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../constants';
 
 export const getPositionData = async (
@@ -20,14 +21,16 @@ export const getPositionData = async (
     crocEnv: CrocEnv,
     provider: Provider,
     chainId: string,
-    lastBlockNumber: number,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
     cachedEnsResolve: FetchAddrFn,
     skipENSFetch?: boolean,
 ): Promise<PositionIF> => {
-    const newPosition = { ...position } as PositionIF;
+    const newPosition = {
+        serverPositionId: position.positionId,
+        ...position,
+    } as PositionIF;
 
     const baseTokenAddress =
         position.base.length === 40 ? '0x' + position.base : position.base;
@@ -138,6 +141,16 @@ export const getPositionData = async (
 
     const lowerPriceNonDisplay = tickToPrice(position.bidTick);
     const upperPriceNonDisplay = tickToPrice(position.askTick);
+
+    const posHash = getPositionHash(undefined, {
+        isPositionTypeAmbient: position.positionType === 'ambient',
+        user: position.user,
+        baseAddress: position.base,
+        quoteAddress: position.quote,
+        poolIdx: position.poolIdx,
+        bidTick: position.bidTick,
+        askTick: position.askTick,
+    });
 
     const lowerPriceDisplayInBase =
         1 /
@@ -275,8 +288,12 @@ export const getPositionData = async (
 
     if (quotePrice && basePrice) {
         newPosition.totalValueUSD =
-            quotePrice.usdPrice * newPosition.positionLiqQuoteDecimalCorrected +
-            basePrice.usdPrice * newPosition.positionLiqBaseDecimalCorrected;
+            quotePrice.usdPrice *
+                (newPosition.positionLiqQuoteDecimalCorrected +
+                    (newPosition.feesLiqQuoteDecimalCorrected || 0)) +
+            basePrice.usdPrice *
+                (newPosition.positionLiqBaseDecimalCorrected +
+                    (newPosition.feesLiqBaseDecimalCorrected || 0));
         if (
             newPosition.feesLiqQuoteDecimalCorrected &&
             newPosition.feesLiqBaseDecimalCorrected
@@ -287,16 +304,24 @@ export const getPositionData = async (
     } else if (basePrice) {
         const quotePrice = basePrice.usdPrice * poolPrice;
         newPosition.totalValueUSD =
-            quotePrice * newPosition.positionLiqQuoteDecimalCorrected +
-            basePrice.usdPrice * newPosition.positionLiqBaseDecimalCorrected;
+            quotePrice *
+                (newPosition.positionLiqQuoteDecimalCorrected +
+                    (newPosition.feesLiqQuoteDecimalCorrected || 0)) +
+            basePrice.usdPrice *
+                (newPosition.positionLiqBaseDecimalCorrected +
+                    (newPosition.feesLiqBaseDecimalCorrected || 0));
         if (newPosition.feesLiqBaseDecimalCorrected)
             newPosition.feesValueUSD =
                 basePrice.usdPrice * newPosition.feesLiqBaseDecimalCorrected;
     } else if (quotePrice) {
         const basePrice = quotePrice.usdPrice / poolPrice;
         newPosition.totalValueUSD =
-            basePrice * newPosition.positionLiqBaseDecimalCorrected +
-            quotePrice.usdPrice * newPosition.positionLiqQuoteDecimalCorrected;
+            basePrice *
+                (newPosition.positionLiqBaseDecimalCorrected +
+                    (newPosition.feesLiqBaseDecimalCorrected || 0)) +
+            quotePrice.usdPrice *
+                (newPosition.positionLiqQuoteDecimalCorrected +
+                    (newPosition.feesLiqQuoteDecimalCorrected || 0));
         if (newPosition.feesLiqQuoteDecimalCorrected)
             newPosition.feesValueUSD =
                 quotePrice.usdPrice * newPosition.feesLiqQuoteDecimalCorrected;
@@ -308,6 +333,8 @@ export const getPositionData = async (
     newPosition.apy = position.aprEst * 100;
 
     newPosition.serverPositionId = position.positionId;
+
+    newPosition.positionId = posHash;
 
     return newPosition;
 };
