@@ -29,7 +29,6 @@ import TableInfo from '../TableInfo/TableInfo';
 import Transactions2 from './Transactions2/Transactions2';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-
 interface propsIF {
     filter: CandleDataIF | undefined;
     setTransactionFilter: Dispatch<SetStateAction<CandleDataIF | undefined>>;
