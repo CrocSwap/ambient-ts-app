@@ -111,13 +111,6 @@ function SwapTokenInput(props: propsIF) {
             tokenB: tokenA.address,
         });
 
-        setLastImpactQuery(() => {
-            return {
-                input: primaryQuantity,
-                isInputSell: !isTokenAPrimary,
-                impact: undefined,
-            };
-        });
         if (!skipQuantityReverse) {
             !isTokenAPrimary
                 ? sellQtyString !== '' && parseFloat(sellQtyString) > 0
@@ -169,13 +162,7 @@ function SwapTokenInput(props: propsIF) {
     ): Promise<number | undefined> {
         if (isNaN(parseFloat(input)) || parseFloat(input) === 0 || !crocEnv) {
             setIsLiquidityInsufficient(false);
-            setLastImpactQuery((lastQuery) => {
-                return {
-                    input: lastQuery?.input || '',
-                    isInputSell: isTokenAPrimary,
-                    impact: undefined,
-                };
-            });
+
             return undefined;
         }
         const impact = await calcImpact(
@@ -186,23 +173,12 @@ function SwapTokenInput(props: propsIF) {
             slippageTolerancePercentage / 100,
             input,
         );
-        setLastImpactQuery((lastQuery) => {
-            if (
-                lastQuery?.input === input &&
-                lastQuery?.isInputSell === isTokenAPrimary
-            ) {
-                return {
-                    input: input,
-                    isInputSell: isTokenAPrimary,
-                    impact: impact,
-                };
-            } else {
-                return {
-                    input: lastQuery?.input || '',
-                    isInputSell: isTokenAPrimary,
-                    impact: undefined,
-                };
-            }
+        setLastImpactQuery(() => {
+            return {
+                input: input,
+                isInputSell: isTokenAPrimary,
+                impact: impact,
+            };
         });
 
         isTokenAPrimary ? setIsBuyLoading(false) : setIsSellLoading(false);
@@ -252,11 +228,6 @@ function SwapTokenInput(props: propsIF) {
             if (value !== undefined) {
                 if (parseFloat(value) !== 0) {
                     const truncatedInputStr = formatTokenInput(value, tokenA);
-                    setLastImpactQuery({
-                        input: truncatedInputStr,
-                        isInputSell: true,
-                        impact: undefined,
-                    });
 
                     rawTokenBQty = await refreshImpact(truncatedInputStr, true);
                 }
@@ -295,11 +266,7 @@ function SwapTokenInput(props: propsIF) {
             if (value !== undefined) {
                 if (parseFloat(value) !== 0) {
                     const truncatedInputStr = formatTokenInput(value, tokenB);
-                    setLastImpactQuery({
-                        input: truncatedInputStr,
-                        isInputSell: false,
-                        impact: undefined,
-                    });
+
                     rawTokenAQty = await refreshImpact(
                         truncatedInputStr,
                         false,
