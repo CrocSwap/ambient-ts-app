@@ -10,6 +10,8 @@ import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationMo
 import Modal from '../Modal/Modal';
 import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import SendToDexBalControl from '../SendToDexBalControl/SendToDexBalControl';
+import { dexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 
 export type TransactionModuleType =
     | 'Swap'
@@ -21,12 +23,13 @@ export type TransactionModuleType =
 interface propsIF {
     module: TransactionModuleType;
     slippage: SlippageMethodsIF;
+    dexBalSwap?: dexBalanceMethodsIF;
     bypassConfirm: skipConfirmIF;
     onClose: () => void;
 }
 
 export default function TransactionSettingsModal(props: propsIF) {
-    const { module, slippage, onClose, bypassConfirm } = props;
+    const { module, slippage, dexBalSwap, onClose, bypassConfirm } = props;
     const { tokenA, tokenB } = useContext(TradeDataContext);
 
     const isPairStable = isStablePair(tokenA.address, tokenB.address);
@@ -39,8 +42,15 @@ export default function TransactionSettingsModal(props: propsIF) {
         ? slippage.stable
         : slippage.volatile;
 
+    const persistedSaveSwapToDexBal: boolean = dexBalSwap
+        ? dexBalSwap.outputToDexBal.isEnabled
+        : false;
+
     const [currentSlippage, setCurrentSlippage] =
         useState<number>(persistedSlippage);
+
+    const [currentSaveSwapToDexBal, setCurrentSaveSwapToDexBal] =
+        useState<boolean>(persistedSaveSwapToDexBal);
 
     const [currentSkipConfirm, setCurrentSkipConfirm] = useState<boolean>(
         bypassConfirm.isEnabled,
@@ -51,6 +61,11 @@ export default function TransactionSettingsModal(props: propsIF) {
             ? slippage.updateStable(currentSlippage)
             : slippage.updateVolatile(currentSlippage);
         bypassConfirm.setValue(currentSkipConfirm);
+        dexBalSwap
+            ? currentSaveSwapToDexBal
+                ? dexBalSwap.outputToDexBal.enable()
+                : dexBalSwap.outputToDexBal.disable()
+            : undefined;
         onClose();
     };
 
@@ -101,6 +116,14 @@ export default function TransactionSettingsModal(props: propsIF) {
                             </div>
                         </FlexContainer>
                     )}
+                    {module === 'Swap' && (
+                        <SendToDexBalControl
+                            tempSaveToDex={currentSaveSwapToDexBal}
+                            setTempSaveToDex={setCurrentSaveSwapToDexBal}
+                            displayInSettings={true}
+                        />
+                    )}
+
                     <ConfirmationModalControl
                         tempBypassConfirm={currentSkipConfirm}
                         setTempBypassConfirm={setCurrentSkipConfirm}
@@ -119,7 +142,9 @@ export default function TransactionSettingsModal(props: propsIF) {
                         }
                         action={updateSettings}
                         disabled={
-                            module !== 'Limit Order' && currentSlippage <= 0
+                            (module !== 'Limit Order' &&
+                                currentSlippage <= 0) ||
+                            isNaN(currentSlippage)
                         }
                         flat
                         customAriaLabel={confirmAriaLabel}
