@@ -63,6 +63,7 @@ function SwapTokenInput(props: propsIF) {
         setIsLiquidityInsufficient,
         toggleDexSelection,
         amountToReduceNativeTokenQty,
+        setLastImpactQuery,
     } = props;
 
     const {
@@ -174,6 +175,11 @@ function SwapTokenInput(props: propsIF) {
             input,
         );
         if (impact === undefined) return;
+        setLastImpactQuery({
+            input,
+            isInputSell: sellToken,
+            impact,
+        });
         if (sellToken) {
             const rawTokenBQty = parseFloat(impact.buyQty);
             const truncatedTokenBQty = rawTokenBQty
@@ -181,13 +187,12 @@ function SwapTokenInput(props: propsIF) {
                     ? rawTokenBQty.toPrecision(6)
                     : truncateDecimals(rawTokenBQty, rawTokenBQty < 100 ? 3 : 2)
                 : '';
-            IS_LOCAL_ENV && console.log({ userTriggeredImpactQueryInProgress });
             setUserTriggeredImpactQueryInProgress((isUserQueryInProgress) => {
-                console.log({
-                    isUserQueryInProgress,
-                    isBlockUpdate,
-                    truncatedTokenBQty,
-                });
+                // console.log({
+                //     isUserQueryInProgress,
+                //     isBlockUpdate,
+                //     truncatedTokenBQty,
+                // });
                 if (isUserQueryInProgress && !isBlockUpdate) {
                     setBuyQtyString(truncatedTokenBQty);
                     setIsBuyLoading(false);
