@@ -18,8 +18,8 @@ function mapPositionRewardsResponseToPositionRewards(
     positionGold: BlastPositionGoldServerIF,
 ): BlastRewardsDataIF {
     const res = {
-        points: Math.floor(positionPoints.points).toLocaleString(),
-        gold: Math.floor(positionGold.points).toLocaleString(),
+        points: Math.floor(positionPoints.points || 0).toLocaleString(),
+        gold: Math.floor(positionGold.gold || 0).toLocaleString(),
     };
     return res as BlastRewardsDataIF;
 }
