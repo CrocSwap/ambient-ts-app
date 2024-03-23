@@ -13,16 +13,19 @@ import { TradeModuleHeaderContainer } from '../../../styled/Components/TradeModu
 import { Text } from '../../../styled/Common';
 import { SettingsSvg } from '../../../assets/images/icons/settingsSvg';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { dexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 
 interface propsIF {
     slippage: SlippageMethodsIF;
+    dexBalSwap?: dexBalanceMethodsIF;
     bypassConfirm: skipConfirmIF;
     settingsTitle: TransactionModuleType;
     isSwapPage?: boolean;
 }
 
 function TradeModuleHeader(props: propsIF) {
-    const { slippage, bypassConfirm, settingsTitle, isSwapPage } = props;
+    const { slippage, dexBalSwap, bypassConfirm, settingsTitle, isSwapPage } =
+        props;
 
     const [isSettingsModalOpen, openSettingsModal, closeSettingsModal] =
         useModal();
@@ -92,6 +95,7 @@ function TradeModuleHeader(props: propsIF) {
                 <TransactionSettingsModal
                     module={settingsTitle}
                     slippage={slippage}
+                    dexBalSwap={dexBalSwap}
                     bypassConfirm={bypassConfirm}
                     onClose={closeSettingsModal}
                 />
