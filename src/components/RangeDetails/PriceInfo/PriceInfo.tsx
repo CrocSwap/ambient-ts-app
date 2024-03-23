@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import {
     PositionIF,
-    BlastPointsDataIF,
+    BlastRewardsDataIF,
     TokenIF,
 } from '../../../ambient-utils/types';
 import { useContext } from 'react';
@@ -32,7 +32,7 @@ interface propsIF {
     maxRangeDenomByMoneyness: string;
     baseTokenAddress: string;
     quoteTokenAddress: string;
-    blastPointsData: BlastPointsDataIF;
+    blastRewardsData: BlastRewardsDataIF;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isAccountView: boolean;
     baseTokenCharacter: string;
@@ -59,7 +59,7 @@ export default function PriceInfo(props: propsIF) {
         maxRangeDenomByMoneyness,
         baseTokenAddress,
         quoteTokenAddress,
-        blastPointsData,
+        blastRewardsData,
         isBaseTokenMoneynessGreaterOrEqual,
         isAccountView,
         baseTokenCharacter,
@@ -216,13 +216,13 @@ export default function PriceInfo(props: propsIF) {
             <BlastRewardRow
                 key={'BLAST points'}
                 rewardType={'BLAST points'}
-                reward={blastPointsData.points}
+                reward={blastRewardsData.points}
                 logo={blastLogo}
             />
             <BlastRewardRow
                 key={'BLAST gold'}
                 rewardType={'BLAST gold'}
-                reward={'...'}
+                reward={blastRewardsData.gold}
                 logo={blastLogo}
             />
             {/* {Object.entries(blastPointsData).map(([rewardType, reward]) => {

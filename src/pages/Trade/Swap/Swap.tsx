@@ -575,6 +575,14 @@ function Swap(props: propsIF) {
         }
     };
 
+    useEffect(() => {
+        if (dexBalSwap.outputToDexBal.isEnabled) {
+            setIsSaveAsDexSurplusChecked(true);
+        } else {
+            setIsSaveAsDexSurplusChecked(false);
+        }
+    }, [dexBalSwap.outputToDexBal.isEnabled]);
+
     // logic to acknowledge one or both tokens as necessary
     const ackAsNeeded = (): void => {
         needConfirmTokenA && tokens.acknowledge(tokenA);
@@ -634,6 +642,7 @@ function Swap(props: propsIF) {
             header={
                 <TradeModuleHeader
                     slippage={swapSlippage}
+                    dexBalSwap={dexBalSwap}
                     bypassConfirm={bypassConfirmSwap}
                     settingsTitle='Swap'
                     isSwapPage={!isOnTradeRoute}
