@@ -49,8 +49,8 @@ export const fetchPositionRewardsData = async (args: argsIF) => {
 
     const positionGoldEndpointBase =
         position.positionType === 'ambient'
-            ? 'https://ambindexer.net/blastPoints/v1/byLP/bridge/ambient/'
-            : 'https://ambindexer.net/blastPoints/v1/byLP/bridge/concentrated/';
+            ? 'https://ambindexer.net/blastPoints/v1/byLP/gold/ambient/'
+            : 'https://ambindexer.net/blastPoints/v1/byLP/gold/concentrated/';
 
     const positionGoldEndpoint =
         positionGoldEndpointBase +
