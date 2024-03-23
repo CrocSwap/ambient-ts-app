@@ -2,19 +2,26 @@
 // import { getFormattedNumber } from '../dataLayer';
 import { IS_LOCAL_ENV } from '../constants';
 
-import { PositionIF, BlastPointsDataIF, BlastPointsServerIF } from '../types';
+import {
+    PositionIF,
+    BlastPositionPointsServerIF,
+    BlastPositionGoldServerIF,
+    BlastRewardsDataIF,
+} from '../types';
 
 interface argsIF {
     position: PositionIF;
 }
 
 function mapPositionRewardsResponseToPositionRewards(
-    positionRewards: BlastPointsServerIF,
-): BlastPointsDataIF {
+    positionPoints: BlastPositionPointsServerIF,
+    positionGold: BlastPositionGoldServerIF,
+): BlastRewardsDataIF {
     const res = {
-        points: Math.floor(positionRewards.points).toLocaleString(),
+        points: Math.floor(positionPoints.points).toLocaleString(),
+        gold: Math.floor(positionGold.points).toLocaleString(),
     };
-    return res as BlastPointsDataIF;
+    return res as BlastRewardsDataIF;
 }
 
 export const fetchPositionRewardsData = async (args: argsIF) => {
@@ -24,13 +31,13 @@ export const fetchPositionRewardsData = async (args: argsIF) => {
             `Fetching Xp for positionId ${position.serverPositionId} for user ${position.user}...`,
         );
 
-    const positionRewardsEndpointBase =
+    const positionPointsEndpointBase =
         position.positionType === 'ambient'
             ? 'https://ambindexer.net/blastPoints/v1/byLP/bridge/ambient/'
             : 'https://ambindexer.net/blastPoints/v1/byLP/bridge/concentrated/';
 
-    const positionRewardsEndpoint =
-        positionRewardsEndpointBase +
+    const positionPointsEndpoint =
+        positionPointsEndpointBase +
         position.user +
         '/' +
         position.base +
@@ -40,17 +47,42 @@ export const fetchPositionRewardsData = async (args: argsIF) => {
         position.poolIdx +
         '?';
 
-    const positionRewardsFetchData = fetch(
-        positionRewardsEndpoint +
+    const positionGoldEndpointBase =
+        position.positionType === 'ambient'
+            ? 'https://ambindexer.net/blastPoints/v1/byLP/bridge/ambient/'
+            : 'https://ambindexer.net/blastPoints/v1/byLP/bridge/concentrated/';
+
+    const positionGoldEndpoint =
+        positionGoldEndpointBase +
+        position.user +
+        '/' +
+        position.base +
+        '/' +
+        position.quote +
+        '/' +
+        position.poolIdx +
+        '?';
+
+    const positionPointsFetchData = fetch(
+        positionPointsEndpoint +
             new URLSearchParams({
                 bidTick: `${position.bidTick}`,
                 askTick: `${position.askTick}`,
             }),
-    )
-        .then((response) => response?.json())
-        .then((parsedResponse) => {
-            return mapPositionRewardsResponseToPositionRewards(parsedResponse);
-        });
+    ).then((response) => response?.json());
+
+    const positionGoldFetchData = fetch(
+        positionGoldEndpoint +
+            new URLSearchParams({
+                bidTick: `${position.bidTick}`,
+                askTick: `${position.askTick}`,
+            }),
+    ).then((response) => response?.json());
+
+    const blastPositionData = mapPositionRewardsResponseToPositionRewards(
+        await positionPointsFetchData,
+        await positionGoldFetchData,
+    );
     // .catch(console.error);
-    return positionRewardsFetchData;
+    return blastPositionData;
 };
