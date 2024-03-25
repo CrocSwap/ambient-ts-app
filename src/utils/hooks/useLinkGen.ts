@@ -153,6 +153,7 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
         navigate(getFullURL(paramsObj));
     }
 
+    // fn with same mode of action as `navigateUser()` with history stack replacement
     function redirectUser(paramsObj?: anyParamsIF | string): void {
         navigate(getFullURL(paramsObj), { replace: true });
     }
