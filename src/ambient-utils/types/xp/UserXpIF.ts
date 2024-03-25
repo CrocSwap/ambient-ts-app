@@ -23,7 +23,7 @@ export interface BlastUserXpServerIF {
     endBlock: number;
 }
 export interface BlastUserGoldServerIF {
-    gold: number;
+    points: number;
     startBlock: number;
     endBlock: number;
 }
