@@ -10,10 +10,16 @@ export const fetchPoolLiquidity = async (
     crocEnv: CrocEnv,
     graphCacheUrl: string,
     cachedFetchTokenPrice: TokenPriceFn,
+    poolPriceNonDisplay?: number,
 ): Promise<LiquidityDataIF | undefined> => {
     const poolLiquidityCacheEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/pool_liq_curve?'
         : graphCacheUrl + '/pool_liq_curve?';
+
+    const currentPoolPriceTick =
+        poolPriceNonDisplay === undefined
+            ? undefined
+            : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
     return fetch(
         poolLiquidityCacheEndpoint +
@@ -38,6 +44,7 @@ export const fetchPoolLiquidity = async (
                 chainId,
                 crocEnv,
                 cachedFetchTokenPrice,
+                currentPoolPriceTick,
             );
         });
 };
@@ -50,10 +57,10 @@ async function expandLiquidityData(
     chainId: string,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
+    currentPoolPriceTick?: number,
 ): Promise<LiquidityDataIF> {
     const pool = crocEnv.pool(base, quote);
-    const curveTick = pool.spotTick();
-
+    const curveTick = currentPoolPriceTick || pool.spotTick();
     const basePricePromise = cachedFetchTokenPrice(base, chainId, crocEnv);
     const quotePricePromise = cachedFetchTokenPrice(quote, chainId, crocEnv);
 

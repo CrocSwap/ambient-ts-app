@@ -843,6 +843,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                 props.crocEnv,
                 props.graphCacheUrl,
                 props.cachedFetchTokenPrice,
+                poolPriceNonDisplay,
             )
                 .then((liqCurve) => {
                     if (liqCurve) {
