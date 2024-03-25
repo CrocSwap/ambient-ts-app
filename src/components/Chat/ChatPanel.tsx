@@ -437,6 +437,10 @@ function ChatPanel(props: propsIF) {
         if (messages.length == 0) return;
     }, [messages, setMessages]);
 
+    useEffect(() => {
+        resetReplyState();
+    }, [room]);
+
     // domDebug('address', userAddress);
 
     function handleCloseChatPanel() {
@@ -718,6 +722,11 @@ function ChatPanel(props: propsIF) {
             .catch((error: any) => {
                 // Handle error
             });
+    };
+
+    const resetReplyState = () => {
+        setIsReplyButtonPressed(false);
+        setSelectedMessageForReply(undefined);
     };
 
     const header = (
