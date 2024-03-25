@@ -15,6 +15,8 @@ import { actionButtons, actionButtonsMenu, infoCells } from './data';
 import TxType from './TxType';
 import TxPrice from './TxPrice';
 import TxToken from './TxToken';
+import TxTokens from './TxTokens';
+import { RowItem } from '../../../../styled/Components/TransactionTable';
 
 export type btnIconNameType =
     | 'overflowBtn'
@@ -31,6 +33,13 @@ export type btnIconNameType =
 
 interface propsIF {
     tx: TransactionIF;
+    head?: {
+        updateSort: (slug: string | number) => void;
+        overrides: {
+            txBase: string;
+            txQuote: string;
+        };
+    };
     columnsToShow: columnMetaWithIdIF[];
     isAccountPage: boolean;
     isMenuOpen: boolean;
@@ -41,6 +50,7 @@ interface propsIF {
 export default function TransactionRow2(props: propsIF) {
     const {
         tx,
+        head,
         columnsToShow,
         isAccountPage,
         isMenuOpen,
@@ -97,6 +107,9 @@ export default function TransactionRow2(props: propsIF) {
                 break;
             case 'txQuote':
                 elemForDOM = <TxToken tx={tx} width={colWidth} isAccountPage={isAccountPage} isBase={false} />;
+                break;
+            case 'txTokens':
+                elemForDOM = <TxTokens tx={tx} width={colWidth} isAccountPage={isAccountPage} isBase={false} />;
                 break;
             case 'overflowBtn':
                 elemForDOM = (
@@ -217,22 +230,53 @@ export default function TransactionRow2(props: propsIF) {
         return elemForDOM;
     };
 
+    const getHeaderContent = (col: columnSlugsType): JSX.Element|null => {
+        const elemMeta: columnMetaWithIdIF|undefined = columnsToShow.find(
+            (c: columnMetaWithIdIF) => c.id === col
+        );
+        const text: string = elemMeta?.readable ?? '';
+        const width: number = elemMeta?.width ?? 0;
+        return (
+            <RowItem
+                justifyContent='center'
+                data-label='side'
+                tabIndex={0}
+                width={width}
+            >
+                {text}
+            </RowItem>
+        );
+    };
+
     const menuItemRef = useRef<HTMLDivElement>(null);
     useOnClickOutside(menuItemRef, hideMenu);
 
     return (
-        <li className={styles.tx_li}>
-            {infoCells.map((elem: columnSlugsType) => renderElem(elem))}
+        head ? (<li className={styles.tx_li}>
+            {infoCells.map((elem: columnSlugsType) => getHeaderContent(elem))}
             <div className={styles.action_buttons} ref={menuItemRef}>
-                {actionButtons.map((elem: columnSlugsType) => renderElem(elem))}
+                {actionButtons.map((elem: columnSlugsType) => getHeaderContent(elem))}
                 {isMenuOpen && (
                     <div className={styles.overflow_menu_container}>
                         {actionButtonsMenu.map((elem: columnSlugsType) =>
-                            renderElem(elem),
+                            getHeaderContent(elem),
                         )}
                     </div>
                 )}
             </div>
-        </li>
+        </li>) : (<li className={styles.tx_li}>
+        {infoCells.map((elem: columnSlugsType) => renderElem(elem))}
+        <div className={styles.action_buttons} ref={menuItemRef}>
+            {actionButtons.map((elem: columnSlugsType) => renderElem(elem))}
+            {isMenuOpen && (
+                <div className={styles.overflow_menu_container}>
+                    {actionButtonsMenu.map((elem: columnSlugsType) =>
+                        renderElem(elem),
+                    )}
+                </div>
+            )}
+        </div>
+    </li>)
     );
+
 }

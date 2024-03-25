@@ -9,8 +9,9 @@ export const infoCells: columnSlugsType[] = [
     'txType',
     'txSide',
     'txValue',
-    'txBase',
-    'txQuote',
+    // 'txBase',
+    // 'txQuote',
+    'txTokens'
 ];
 
 // left-to-right DOM sequence for action buttons
@@ -29,8 +30,9 @@ export const priorityInDOM: columnSlugsType[] = [
     'txValue',
     'txId',
     'txSide',
-    'txBase',
-    'txQuote',
+    // 'txBase',
+    // 'txQuote',
+    'txTokens',
     'editBtn',
     'removeBtn',
 ];

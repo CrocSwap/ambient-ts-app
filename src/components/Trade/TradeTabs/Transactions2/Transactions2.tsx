@@ -4,7 +4,6 @@ import TransactionRow2 from './TransactionRow2';
 import { CandleDataIF, TransactionIF } from '../../../../ambient-utils/types';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
-import TxHeader from './TxHeader';
 import { priorityInDOM } from './data';
 import useSort, { useSortIF } from './useSort';
 
@@ -21,7 +20,7 @@ interface allColumnMetaIF {
 // columns to display in table and px width to alot for each
 const columnMetaInfo: allColumnMetaIF = {
     timeStamp: {
-        width: 60,
+        width: 80,
         readable: 'Timestamp',
         isSortable: true,
     },
@@ -46,7 +45,7 @@ const columnMetaInfo: allColumnMetaIF = {
         isSortable: true,
     },
     txSide: {
-        width: 80,
+        width: 60,
         readable: 'Side',
         isSortable: false,
     },
@@ -62,6 +61,11 @@ const columnMetaInfo: allColumnMetaIF = {
     },
     txQuote: {
         width: 100,
+        readable: '',
+        isSortable: false,
+    },
+    txTokens: {
+        width: 200,
         readable: '',
         isSortable: false,
     },
@@ -214,7 +218,7 @@ export default function Transactions2(props: propsIF) {
 
     // array of `<li>` elements to display transactions in the DOM, recalculates when new
     // ... data is received or the DOM width of the table changes
-    const transactionRows = useMemo<JSX.Element[]>(() => {
+    const transactionRows = useMemo<JSX.Element>(() => {
         // slightly faster version of `JSON.stringify()` per Justin
         const makeString = (tx: TransactionIF): string => {
             let theId = tx.txId ? tx.txId.toString() : 'nullId';
@@ -223,7 +227,23 @@ export default function Transactions2(props: propsIF) {
             theId += tx.txHash ? tx.txHash.toString() : 'txHash';
             return theId;
         };
-        return sortedTxs.data.map((tx: TransactionIF) => {
+        const header: JSX.Element|null = sortedTxs.data.length ? <TransactionRow2
+        key={'table_header'}
+        head={{
+            updateSort: sortedTxs.update,
+            overrides: {
+                txBase: transactionsData[0]?.baseSymbol ?? 'Base Token',
+                txQuote: transactionsData[0]?.quoteSymbol ?? 'Quote Token'
+            }
+        }}
+        tx={sortedTxs.data[0]}
+        columnsToShow={columnsToRender}
+        isAccountPage={isAccountPage}
+        isMenuOpen={openMenuRow === makeString(sortedTxs.data[0])}
+        onMenuToggle={() => makeString(sortedTxs.data[0])}
+        hideMenu={() => handleMenuToggle('')}
+    /> : null;
+        const rows: JSX.Element[] = sortedTxs.data.map((tx: TransactionIF) => {
             // make a key string for differencing (react and internal use)
             const txString: string = makeString(tx);
             // return a JSX element
@@ -239,18 +259,15 @@ export default function Transactions2(props: propsIF) {
                 />
             );
         });
-    }, [JSON.stringify(sortedTxs), columnsToRender.length]);
+        return (<>
+            {header}
+            {rows}
+            </>
+        );
+    }, [JSON.stringify(sortedTxs), JSON.stringify(columnsToRender)]);
 
     return (
         <ol className={styles.tx_ol} ref={containerRef}>
-            <TxHeader
-                activeColumns={columnsToRender}
-                updateSort={sortedTxs.update}
-                overrides={{
-                    txBase: transactionsData[0]?.baseSymbol ?? 'Base Token',
-                    txQuote: transactionsData[0]?.quoteSymbol ?? 'Quote Token'
-                }}
-            />
             {transactionRows}
         </ol>
     );
