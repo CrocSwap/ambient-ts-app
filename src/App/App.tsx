@@ -314,6 +314,8 @@ export default function App() {
                             }
                         />
                         <Route path='explore' element={<Explore />} />
+                        <Route path='explore/pools' element={<Explore />} />
+                        <Route path='explore/tokens' element={<Explore />} />
                         <Route path='swap/:params' element={<Swap />} />
                         <Route path='terms' element={<TermsOfService />} />
                         <Route path='privacy' element={<PrivacyPolicy />} />
