@@ -827,6 +827,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         };
 
         if (
+            contextMatchesParams &&
             props.isChartEnabled &&
             poolPriceNonDisplay !== 0 &&
             baseTokenAddress &&
@@ -858,6 +859,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         poolPriceNonDisplay,
         props.isChartEnabled,
         props.crocEnv !== undefined,
+        contextMatchesParams,
     ]);
 
     return {
