@@ -5,7 +5,7 @@ export interface BlastPositionPointsServerIF {
     endBlock: number;
 }
 export interface BlastPositionGoldServerIF {
-    gold: number;
+    points: number;
     startBlock: number;
     endBlock: number;
 }
