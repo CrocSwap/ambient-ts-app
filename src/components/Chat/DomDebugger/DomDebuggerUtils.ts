@@ -1,7 +1,12 @@
 import styles from './DomDebugger.module.css';
 
-export const domDebug = (key: string, value: string | number) => {
-    value = value.toString();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const domDebug = (key: string, value: any) => {
+    if (value instanceof Object) {
+        value = JSON.stringify(value).toString();
+    } else {
+        value = value.toString();
+    }
     const el = document.getElementById('dom-debugger');
     if (el === null) {
         return; // not in debug mode
