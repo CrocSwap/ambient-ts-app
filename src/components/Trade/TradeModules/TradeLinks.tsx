@@ -56,17 +56,17 @@ export default function TradeLinks(props: propsIF) {
     const routes: routeIF[] = [
         {
             path: linkGenMarket.getFullURL(marketParams),
-            baseURL: linkGenMarket.baseURL,
+            baseURL: linkGenMarket.current.baseURL,
             name: 'Swap',
         },
         {
             path: linkGenLimit.getFullURL(limitParams),
-            baseURL: linkGenLimit.baseURL,
+            baseURL: linkGenLimit.current.baseURL,
             name: 'Limit',
         },
         {
             path: linkGenPool.getFullURL(poolParams),
-            baseURL: linkGenPool.baseURL,
+            baseURL: linkGenPool.current.baseURL,
             name: 'Pool',
         },
     ];

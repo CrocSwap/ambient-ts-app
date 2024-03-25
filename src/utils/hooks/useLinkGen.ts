@@ -73,8 +73,10 @@ export type pageNames = keyof typeof BASE_URL_PATHS;
 export type baseURLs = typeof BASE_URL_PATHS[pageNames];
 
 export interface linkGenMethodsIF {
-    currentPage: pageNames;
-    baseURL: baseURLs;
+    current: {
+        page: pageNames;
+        baseURL: baseURLs;
+    };
     getFullURL: (paramsObj?: anyParamsIF | string) => string;
     navigate: (paramsObj?: anyParamsIF | string) => void;
     redirect: (paramsObj?: anyParamsIF | string) => void;
@@ -128,11 +130,15 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
     }
 
     class Nav implements linkGenMethodsIF {
-        currentPage: pageNames;
-        baseURL: baseURLs;
+        current: {
+            page: pageNames;
+            baseURL: baseURLs;
+        };
         constructor(page: pageNames = getPageFromLocation()) {
-            this.currentPage = page;
-            this.baseURL = BASE_URL_PATHS[page];
+            this.current = {
+                page: page,
+                baseURL: BASE_URL_PATHS[page],
+            };
         }
         getFullURL(paramsObj?: anyParamsIF | string): baseURLs | string {
             let paramsSlug = '';
@@ -149,7 +155,7 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
                             .join('&');
                 }
             }
-            return this.baseURL + paramsSlug;
+            return this.current.baseURL + paramsSlug;
         }
         navigate(paramsObj?: anyParamsIF | string): void {
             navigate(this.getFullURL(paramsObj));
