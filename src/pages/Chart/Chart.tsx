@@ -221,8 +221,7 @@ export default function Chart(props: propsIF) {
     const [liqMaxActiveLiq, setLiqMaxActiveLiq] = useState<
         number | undefined
     >();
-    const { setIsTokenAPrimaryRange, setIsLinesSwitched } =
-        useContext(RangeContext);
+    const { advancedMode, setIsLinesSwitched } = useContext(RangeContext);
     const [isUpdatingShape, setIsUpdatingShape] = useState(false);
 
     const [isDragActive, setIsDragActive] = useState(false);
@@ -263,8 +262,6 @@ export default function Chart(props: propsIF) {
 
     const [chartHeights, setChartHeights] = useState(0);
     const { isUserConnected } = useContext(UserDataContext);
-
-    const { isTokenAPrimaryRange, advancedMode } = useContext(RangeContext);
 
     const [minTickForLimit, setMinTickForLimit] = useState<number>(0);
     const [maxTickForLimit, setMaxTickForLimit] = useState<number>(0);
@@ -5347,13 +5344,12 @@ export default function Chart(props: propsIF) {
             reverseTokenForChart(limitPreviousData, newLimitValue)
                 ? (() => {
                       setIsTokenAPrimary(!isTokenAPrimary);
-                      setIsTokenAPrimaryRange(!isTokenAPrimaryRange),
-                          linkGenLimit.redirect({
-                              chain: chainData.chainId,
-                              tokenA: tokenB.address,
-                              tokenB: tokenA.address,
-                              limitTick: pinnedTick,
-                          });
+                      linkGenLimit.redirect({
+                          chain: chainData.chainId,
+                          tokenA: tokenB.address,
+                          tokenB: tokenA.address,
+                          limitTick: pinnedTick,
+                      });
                   })()
                 : updateURL({ update: [['limitTick', pinnedTick]] });
 

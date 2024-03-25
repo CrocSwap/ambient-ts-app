@@ -200,6 +200,12 @@ function Ranges(props: propsIF) {
     const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
         setPage(p);
         _DATA.jump(p);
+        const element = document.getElementById('current_row_scroll');
+        element?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+            inline: 'start',
+        });
     };
 
     const handleChangeRowsPerPage = (
@@ -560,7 +566,6 @@ function Ranges(props: propsIF) {
                         crocEnv,
                         provider,
                         chainId,
-                        lastBlockNumber,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,

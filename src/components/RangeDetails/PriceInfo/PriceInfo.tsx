@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import {
     PositionIF,
-    BlastPointsDataIF,
+    BlastRewardsDataIF,
     TokenIF,
 } from '../../../ambient-utils/types';
 import { useContext } from 'react';
@@ -32,7 +32,11 @@ interface propsIF {
     maxRangeDenomByMoneyness: string;
     baseTokenAddress: string;
     quoteTokenAddress: string;
-    blastPointsData: BlastPointsDataIF;
+    blastRewardsData: BlastRewardsDataIF;
+    isBaseTokenMoneynessGreaterOrEqual: boolean;
+    isAccountView: boolean;
+    baseTokenCharacter: string;
+    quoteTokenCharacter: string;
 }
 
 export default function PriceInfo(props: propsIF) {
@@ -55,7 +59,11 @@ export default function PriceInfo(props: propsIF) {
         maxRangeDenomByMoneyness,
         baseTokenAddress,
         quoteTokenAddress,
-        blastPointsData,
+        blastRewardsData,
+        isBaseTokenMoneynessGreaterOrEqual,
+        isAccountView,
+        baseTokenCharacter,
+        quoteTokenCharacter,
     } = props;
 
     const { pathname } = useLocation();
@@ -64,6 +72,11 @@ export default function PriceInfo(props: propsIF) {
     const isOnTradeRoute = pathname.includes('trade');
     const { tokens } = useContext(TokenContext);
     const { isActiveNetworkBlast } = useContext(ChainDataContext);
+
+    const isDenomBaseLocal = isAccountView
+        ? !isBaseTokenMoneynessGreaterOrEqual
+        : isDenomBase;
+
     const baseToken: TokenIF | undefined =
         tokens.getTokenByAddress(baseTokenAddress);
     const quoteToken: TokenIF | undefined =
@@ -133,8 +146,12 @@ export default function PriceInfo(props: propsIF) {
                     {isAmbient
                         ? '0'
                         : isOnTradeRoute
-                        ? lowRangeDisplay
-                        : minRangeDenomByMoneyness}
+                        ? (isDenomBaseLocal
+                              ? quoteTokenCharacter
+                              : baseTokenCharacter) + lowRangeDisplay
+                        : (isDenomBaseLocal
+                              ? quoteTokenCharacter
+                              : baseTokenCharacter) + minRangeDenomByMoneyness}
                 </h2>
             </section>
 
@@ -144,32 +161,48 @@ export default function PriceInfo(props: propsIF) {
                     {isAmbient
                         ? '∞'
                         : isOnTradeRoute
-                        ? highRangeDisplay
-                        : maxRangeDenomByMoneyness}
+                        ? (isDenomBaseLocal
+                              ? quoteTokenCharacter
+                              : baseTokenCharacter) + highRangeDisplay
+                        : (isDenomBaseLocal
+                              ? quoteTokenCharacter
+                              : baseTokenCharacter) + maxRangeDenomByMoneyness}
                 </h2>
             </section>
         </div>
     );
 
+    const baseTokenLargeDisplay = (
+        <TokenIcon
+            token={baseToken}
+            src={baseTokenLogoURI}
+            alt={baseTokenSymbol}
+            size='2xl'
+        />
+    );
+
+    const quoteTokenLargeDisplay = (
+        <TokenIcon
+            token={quoteToken}
+            src={quoteTokenLogoURI}
+            alt={quoteTokenSymbol}
+            size='2xl'
+        />
+    );
+
     const tokenPairDetails = (
         <div className={styles.token_pair_details}>
             <div className={styles.token_pair_images}>
-                <TokenIcon
-                    token={baseToken}
-                    src={baseTokenLogoURI}
-                    alt={baseTokenSymbol}
-                    size='2xl'
-                />
-                <TokenIcon
-                    token={quoteToken}
-                    src={quoteTokenLogoURI}
-                    alt={quoteTokenSymbol}
-                    size='2xl'
-                />
+                {isDenomBaseLocal
+                    ? baseTokenLargeDisplay
+                    : quoteTokenLargeDisplay}
+                {isDenomBaseLocal
+                    ? quoteTokenLargeDisplay
+                    : baseTokenLargeDisplay}
             </div>
             <p>
-                {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
-                {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
+                {isDenomBaseLocal ? baseTokenSymbol : quoteTokenSymbol} /{' '}
+                {isDenomBaseLocal ? quoteTokenSymbol : baseTokenSymbol}
             </p>
         </div>
     );
@@ -183,13 +216,13 @@ export default function PriceInfo(props: propsIF) {
             <BlastRewardRow
                 key={'BLAST points'}
                 rewardType={'BLAST points'}
-                reward={blastPointsData.points}
+                reward={blastRewardsData.points}
                 logo={blastLogo}
             />
             <BlastRewardRow
                 key={'BLAST gold'}
                 rewardType={'BLAST gold'}
-                reward={'...'}
+                reward={blastRewardsData.gold}
                 logo={blastLogo}
             />
             {/* {Object.entries(blastPointsData).map(([rewardType, reward]) => {

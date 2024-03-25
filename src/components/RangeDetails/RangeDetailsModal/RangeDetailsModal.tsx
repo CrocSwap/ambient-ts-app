@@ -3,7 +3,7 @@ import styles from '../../../components/Global/TransactionDetails/TransactionDet
 import { memo, useContext, useEffect, useRef, useState } from 'react';
 import {
     PositionIF,
-    BlastPointsDataIF,
+    BlastRewardsDataIF,
     PositionServerIF,
 } from '../../../ambient-utils/types';
 import RangeDetailsHeader from '.././RangeDetailsHeader/RangeDetailsHeader';
@@ -12,7 +12,10 @@ import TransactionDetailsGraph from '../../Global/TransactionDetails/Transaction
 import { useProcessRange } from '../../../utils/hooks/useProcessRange';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { GCGO_OVERRIDE_URL } from '../../../ambient-utils/constants';
+import {
+    CACHE_UPDATE_FREQ_IN_MS,
+    GCGO_OVERRIDE_URL,
+} from '../../../ambient-utils/constants';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import {
@@ -71,6 +74,8 @@ function RangeDetailsModal(props: propsIF) {
         maxRangeDenomByMoneyness,
         ambientOrMin: lowRangeDisplay,
         ambientOrMax: highRangeDisplay,
+        baseTokenCharacter,
+        quoteTokenCharacter,
     } = useProcessRange(position, userAddress);
 
     const [serverPositionId, setServerPositionId] = useState<
@@ -387,7 +392,6 @@ function RangeDetailsModal(props: propsIF) {
                         crocEnv,
                         provider,
                         chainId,
-                        lastBlockNumber,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
@@ -399,16 +403,23 @@ function RangeDetailsModal(props: propsIF) {
                 })
                 .catch(console.error);
         }
-    }, [lastBlockNumber, !!crocEnv, !!provider, chainId]);
+    }, [
+        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+        !!crocEnv,
+        !!provider,
+        chainId,
+    ]);
 
-    const [blastPointsData, setBlastPointsData] = useState<BlastPointsDataIF>({
-        points: '...',
-    });
+    const [blastRewardsData, setBlastRewardsData] =
+        useState<BlastRewardsDataIF>({
+            points: '...',
+            gold: '...',
+        });
 
     useEffect(() => {
         if (isActiveNetworkBlast) {
             fetchPositionRewardsData({ position }).then((rewards) => {
-                rewards && setBlastPointsData(rewards);
+                rewards && setBlastRewardsData(rewards);
             });
         }
     }, [serverPositionId, isActiveNetworkBlast]);
@@ -451,7 +462,13 @@ function RangeDetailsModal(props: propsIF) {
                         maxRangeDenomByMoneyness={maxRangeDenomByMoneyness}
                         baseTokenAddress={baseTokenAddress}
                         quoteTokenAddress={quoteTokenAddress}
-                        blastPointsData={blastPointsData}
+                        blastRewardsData={blastRewardsData}
+                        isBaseTokenMoneynessGreaterOrEqual={
+                            isBaseTokenMoneynessGreaterOrEqual
+                        }
+                        isAccountView={isAccountView}
+                        baseTokenCharacter={baseTokenCharacter}
+                        quoteTokenCharacter={quoteTokenCharacter}
                     />
                 </div>
                 <div className={styles.right_container}>
@@ -490,7 +507,7 @@ function RangeDetailsModal(props: propsIF) {
                         quoteFeesDisplay={quoteFeesDisplay}
                         isAccountView={isAccountView}
                         updatedPositionApy={updatedPositionApy}
-                        blastPointsData={blastPointsData}
+                        blastRewardsData={blastRewardsData}
                     />
                 )}
             </div>

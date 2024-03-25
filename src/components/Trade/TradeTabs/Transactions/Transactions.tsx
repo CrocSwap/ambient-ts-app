@@ -27,7 +27,6 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
-import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { TransactionRowPlaceholder } from './TransactionsTable/TransactionRowPlaceholder';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import {
@@ -64,7 +63,6 @@ function Transactions(props: propsIF) {
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
     const { isCandleSelected } = useContext(CandleContext);
     const {
         cachedQuerySpotPrice,
@@ -211,7 +209,6 @@ function Transactions(props: propsIF) {
             crocEnv: crocEnv,
             graphCacheUrl: activeNetwork.graphCacheUrl,
             provider,
-            lastBlockNumber,
             cachedFetchTokenPrice: cachedFetchTokenPrice,
             cachedQuerySpotPrice: cachedQuerySpotPrice,
             cachedTokenDetails: cachedTokenDetails,
@@ -441,9 +438,17 @@ function Transactions(props: propsIF) {
         count,
         fullData,
     } = _DATA;
+    const listRef = useRef<HTMLUListElement>(null);
+
     const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
         setPage(p);
         _DATA.jump(p);
+        const element = document.getElementById('current_row_scroll');
+        element?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+            inline: 'start',
+        });
     };
 
     const handleChangeRowsPerPage = (
@@ -456,7 +461,6 @@ function Transactions(props: propsIF) {
 
     const tradePageCheck = isTradeTableExpanded && txDataToDisplay.length > 30;
 
-    const listRef = useRef<HTMLUListElement>(null);
     const sPagination = useMediaQuery('(max-width: 800px)');
     const footerDisplay = rowsPerPage > 0 &&
         ((isAccountView && txDataToDisplay.length > 10) ||
@@ -649,7 +653,9 @@ function Transactions(props: propsIF) {
                     })}
                 <TableRows
                     type='Transaction'
-                    data={_DATA.currentData}
+                    data={_DATA.currentData.filter(
+                        (tx) => tx.changeType !== 'cross',
+                    )}
                     fullData={fullData}
                     tableView={tableView}
                     isAccountView={isAccountView}
