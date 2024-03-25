@@ -70,7 +70,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
         cachedTokenDetails,
-        cachedGet24hChange,
     } = useContext(CachedDataContext);
 
     const { crocEnv, chainData, activeNetwork, provider } =
@@ -165,6 +164,15 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
 
         const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
 
+        const nowPrice = poolStatsNow?.lastPriceIndic;
+        const ydayPrice = poolStats24hAgo?.lastPriceIndic;
+
+        const priceChangeRaw =
+            ydayPrice && nowPrice && ydayPrice > 0 && nowPrice > 0
+                ? shouldInvert
+                    ? ydayPrice / nowPrice - 1.0
+                    : nowPrice / ydayPrice - 1.0
+                : 0.0;
         if (
             !poolStatsNow ||
             (!isActiveNetworkBlast && poolStatsNow.tvlTotalUsd < 100)
@@ -206,15 +214,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             : '';
         // human readable price change over last 24 hours
         let priceChangePercent: string;
-        const priceChangeRaw: number | undefined = await cachedGet24hChange(
-            chainId,
-            pool.base.address,
-            pool.quote.address,
-            poolIdx,
-            shouldInvert,
-            activeNetwork.graphCacheUrl,
-            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-        );
+
         if (!priceChangeRaw) {
             priceChangePercent = '';
         } else if (priceChangeRaw * 100 >= 0.01) {

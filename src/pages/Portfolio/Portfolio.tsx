@@ -66,7 +66,7 @@ function Portfolio(props: PortfolioPropsIF) {
         activeNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { client, isActiveNetworkBlast } = useContext(ChainDataContext);
+    const { isActiveNetworkBlast } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
     const { setOutsideControl, setSelectedOutsideTab } =
         useContext(TradeTableContext);
@@ -184,7 +184,6 @@ function Portfolio(props: PortfolioPropsIF) {
                     chainId: chainId,
                 })
                     .then((resolvedUserBlastXp) => {
-                        console.log({ resolvedUserBlastXp });
                         setResolvedUserBlastXp({
                             dataReceived: true,
                             data: resolvedUserBlastXp,
@@ -226,7 +225,6 @@ function Portfolio(props: PortfolioPropsIF) {
         (async () => {
             if (
                 crocEnv &&
-                client &&
                 resolvedAddress &&
                 chainId &&
                 !connectedAccountActive
@@ -242,7 +240,6 @@ function Portfolio(props: PortfolioPropsIF) {
                         cachedTokenDetails,
                         crocEnv,
                         activeNetwork.graphCacheUrl,
-                        client,
                         tokens.tokenUniv,
                     );
 
@@ -273,7 +270,6 @@ function Portfolio(props: PortfolioPropsIF) {
         })();
     }, [
         crocEnv,
-        client !== undefined,
         resolvedAddress,
         chainId,
         everyFiveMinutes,

@@ -8,8 +8,10 @@ import TransactionDetailsSimplify from './TransactionDetailsSimplify/Transaction
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import modalBackground from '../../../assets/images/backgrounds/background.png';
-import { GCGO_OVERRIDE_URL } from '../../../ambient-utils/constants';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import {
+    CACHE_UPDATE_FREQ_IN_MS,
+    GCGO_OVERRIDE_URL,
+} from '../../../ambient-utils/constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import {
     getPositionData,
@@ -40,7 +42,6 @@ function TransactionDetailsModal(props: propsIF) {
         cachedEnsResolve,
     } = useContext(CachedDataContext);
 
-    const { lastBlockNumber } = useContext(ChainDataContext);
     const {
         crocEnv,
         activeNetwork,
@@ -86,7 +87,6 @@ function TransactionDetailsModal(props: propsIF) {
                     crocEnv,
                     provider,
                     chainId,
-                    lastBlockNumber,
                     cachedFetchTokenPrice,
                     cachedQuerySpotPrice,
                     cachedTokenDetails,
@@ -101,7 +101,12 @@ function TransactionDetailsModal(props: propsIF) {
                 setUpdatedPositionApy(positionStats.aprEst * 100);
             })
             .catch(console.error);
-    }, [lastBlockNumber, !!crocEnv, !!provider, chainId]);
+    }, [
+        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+        !!crocEnv,
+        !!provider,
+        chainId,
+    ]);
 
     const [showSettings, setShowSettings] = useState(false);
     const [showShareComponent, setShowShareComponent] = useState(true);
@@ -153,6 +158,7 @@ function TransactionDetailsModal(props: propsIF) {
                         tx={tx}
                         controlItems={controlItems}
                         positionApy={updatedPositionApy}
+                        isAccountView={isAccountView}
                     />
                 </div>
                 <div className={styles.right_container}>

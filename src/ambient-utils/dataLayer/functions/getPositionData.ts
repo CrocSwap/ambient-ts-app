@@ -21,7 +21,6 @@ export const getPositionData = async (
     crocEnv: CrocEnv,
     provider: Provider,
     chainId: string,
-    lastBlockNumber: number,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
@@ -289,8 +288,12 @@ export const getPositionData = async (
 
     if (quotePrice && basePrice) {
         newPosition.totalValueUSD =
-            quotePrice.usdPrice * newPosition.positionLiqQuoteDecimalCorrected +
-            basePrice.usdPrice * newPosition.positionLiqBaseDecimalCorrected;
+            quotePrice.usdPrice *
+                (newPosition.positionLiqQuoteDecimalCorrected +
+                    (newPosition.feesLiqQuoteDecimalCorrected || 0)) +
+            basePrice.usdPrice *
+                (newPosition.positionLiqBaseDecimalCorrected +
+                    (newPosition.feesLiqBaseDecimalCorrected || 0));
         if (
             newPosition.feesLiqQuoteDecimalCorrected &&
             newPosition.feesLiqBaseDecimalCorrected
@@ -301,16 +304,24 @@ export const getPositionData = async (
     } else if (basePrice) {
         const quotePrice = basePrice.usdPrice * poolPrice;
         newPosition.totalValueUSD =
-            quotePrice * newPosition.positionLiqQuoteDecimalCorrected +
-            basePrice.usdPrice * newPosition.positionLiqBaseDecimalCorrected;
+            quotePrice *
+                (newPosition.positionLiqQuoteDecimalCorrected +
+                    (newPosition.feesLiqQuoteDecimalCorrected || 0)) +
+            basePrice.usdPrice *
+                (newPosition.positionLiqBaseDecimalCorrected +
+                    (newPosition.feesLiqBaseDecimalCorrected || 0));
         if (newPosition.feesLiqBaseDecimalCorrected)
             newPosition.feesValueUSD =
                 basePrice.usdPrice * newPosition.feesLiqBaseDecimalCorrected;
     } else if (quotePrice) {
         const basePrice = quotePrice.usdPrice / poolPrice;
         newPosition.totalValueUSD =
-            basePrice * newPosition.positionLiqBaseDecimalCorrected +
-            quotePrice.usdPrice * newPosition.positionLiqQuoteDecimalCorrected;
+            basePrice *
+                (newPosition.positionLiqBaseDecimalCorrected +
+                    (newPosition.feesLiqBaseDecimalCorrected || 0)) +
+            quotePrice.usdPrice *
+                (newPosition.positionLiqQuoteDecimalCorrected +
+                    (newPosition.feesLiqQuoteDecimalCorrected || 0));
         if (newPosition.feesLiqQuoteDecimalCorrected)
             newPosition.feesValueUSD =
                 quotePrice.usdPrice * newPosition.feesLiqQuoteDecimalCorrected;

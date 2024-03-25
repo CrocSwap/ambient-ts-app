@@ -43,7 +43,7 @@ export default function PoolRow(props: propsIF) {
         [pool],
     );
 
-    const mobileScrenView = useMediaQuery('(max-width: 500px)');
+    const mobileScrenView = useMediaQuery('(max-width: 640px)');
 
     return (
         <TableRow
