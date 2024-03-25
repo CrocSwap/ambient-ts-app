@@ -14,7 +14,12 @@ import Toggle from '../../components/Form/Toggle';
 import { FlexContainer, Text } from '../../styled/Common';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 
-export default function Explore() {
+interface ExploreIF {
+    view: 'pools' | 'tokens';
+}
+
+export default function Explore(props: ExploreIF) {
+    const { view } = props;
     // full expanded data set
     const exploreData: ExploreContextIF = useContext(ExploreContext);
     const { crocEnv, chainData } = useContext(CrocEnvContext);
@@ -89,17 +94,27 @@ export default function Explore() {
         : 'Top Pools on Ambient';
 
     const titleTextForDOM: string =
-        exploreData.tab.active === 'pools' ? titleTextPools : titleTextTokens;
+        view === 'pools' ? titleTextPools : titleTextTokens;
 
     // logic router to dispatch the correct action for a refresh button click
     function handleRefresh(): void {
-        switch (exploreData.tab.active) {
+        switch (view) {
             case 'pools':
                 getAllPools();
                 break;
             case 'tokens':
                 exploreData.tokens.update();
                 break;
+        }
+    }
+
+    const linkGenExplorePools: linkGenMethodsIF = useLinkGen('explorePools');
+    const linkGenExploreTokens: linkGenMethodsIF = useLinkGen('exploreTokens');
+    function changeView(current: 'pools' | 'tokens') {
+        if (current === 'pools') {
+            linkGenExploreTokens.navigate();
+        } else if (current === 'tokens') {
+            linkGenExplorePools.navigate();
         }
     }
 
@@ -117,9 +132,9 @@ export default function Explore() {
                 >
                     <Text>Pools</Text>
                     <Toggle
-                        isOn={exploreData.tab.active === 'tokens'}
+                        isOn={view === 'tokens'}
                         id={'explore_page_'}
-                        handleToggle={() => exploreData.tab.toggle()}
+                        handleToggle={() => changeView(view)}
                     />
                     <Text>Tokens</Text>
                 </FlexContainer>
@@ -130,13 +145,13 @@ export default function Explore() {
                 </Refresh>
             </OptionsWrapper>
 
-            {exploreData.tab.active === 'pools' && (
+            {view === 'pools' && (
                 <TopPools
                     allPools={exploreData.pools.all}
                     goToMarket={goToMarket}
                 />
             )}
-            {exploreData.tab.active === 'tokens' && (
+            {view === 'tokens' && (
                 <DexTokens
                     dexTokens={exploreData.tokens.data}
                     chainId={chainData.chainId}

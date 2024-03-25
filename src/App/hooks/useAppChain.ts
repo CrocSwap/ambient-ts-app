@@ -123,6 +123,7 @@ export const useAppChain = (): {
                             pathname.includes('/xp');
                         const isPathPointsTabOnAccount =
                             pathname.includes('/points');
+                        const isPathOnExplore = pathname.includes('/explore');
 
                         if (chainInURLValidated === incomingChainFromWallet) {
                             // generate params chain manually and navigate user
@@ -149,7 +150,8 @@ export const useAppChain = (): {
                             } else if (
                                 isPathUserAddress ||
                                 isPathUserXpOrLeaderboard ||
-                                isPathPointsTabOnAccount
+                                isPathPointsTabOnAccount ||
+                                isPathOnExplore
                             ) {
                                 window.location.reload();
                             } else {
@@ -230,6 +232,7 @@ export const useAppChain = (): {
             pathname.slice(1)?.length == 42;
         const isPathUserAddress = isPathENS || isPathHex;
         const isPathUserXpOrLeaderboard = pathname.includes('/xp');
+        const isPathOnExplore = pathname.includes('/explore');
         if (
             linkGenCurrent.currentPage === 'initpool' ||
             linkGenCurrent.currentPage === 'reposition'
@@ -239,7 +242,11 @@ export const useAppChain = (): {
             linkGenSwap.navigate(`chain=${network.chainId}`);
         } else if (pathname.includes('chain')) {
             linkGenCurrent.navigate(`chain=${network.chainId}`);
-        } else if (isPathUserAddress || isPathUserXpOrLeaderboard) {
+        } else if (
+            isPathUserAddress ||
+            isPathUserXpOrLeaderboard ||
+            isPathOnExplore
+        ) {
             window.location.reload();
         } else {
             linkGenCurrent.navigate();
