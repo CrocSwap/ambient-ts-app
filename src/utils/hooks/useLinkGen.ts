@@ -59,6 +59,8 @@ const BASE_URL_PATHS = {
     initpool: '/initpool',
     reposition: '/trade/reposition',
     explore: '/explore',
+    explorePools: '/explore/pools',
+    exploreTokens: '/explore/tokens',
     tos: '/terms',
     testpage: '/testpage',
     account: '/account',
@@ -111,6 +113,10 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
             pageName = 'reposition';
         } else if (pathname.startsWith(BASE_URL_PATHS.explore)) {
             pageName = 'explore';
+        } else if (pathname.startsWith(BASE_URL_PATHS.explorePools)) {
+            pageName = 'explorePools';
+        } else if (pathname.startsWith(BASE_URL_PATHS.exploreTokens)) {
+            pageName = 'exploreTokens';
         } else if (pathname.startsWith(BASE_URL_PATHS.tos)) {
             pageName = 'tos';
         } else if (pathname.startsWith(BASE_URL_PATHS.testpage)) {
@@ -147,6 +153,7 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
         navigate(getFullURL(paramsObj));
     }
 
+    // fn with same mode of action as `navigateUser()` with history stack replacement
     function redirectUser(paramsObj?: anyParamsIF | string): void {
         navigate(getFullURL(paramsObj), { replace: true });
     }
