@@ -22,13 +22,7 @@ import { PoolContext } from './PoolContext';
 import { useTokenStatsIF, useTokenStats } from '../pages/Explore/useTokenStats';
 import { TokenContext } from './TokenContext';
 
-type tabs = 'pools' | 'tokens';
-
 export interface ExploreContextIF {
-    tab: {
-        active: tabs;
-        toggle: () => void;
-    };
     pools: {
         all: Array<PoolDataIF>;
         getLimited(poolList: PoolIF[], crocEnv: CrocEnv, chainId: string): void;
@@ -354,20 +348,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             });
     }
 
-    const [activeTab, setActiveTab] = useState<tabs>('pools');
-    function toggleTab(): void {
-        let newTab: tabs;
-        switch (activeTab) {
-            case 'pools':
-                newTab = 'tokens';
-                break;
-            case 'tokens':
-                newTab = 'pools';
-                break;
-        }
-        setActiveTab(newTab);
-    }
-
     const dexTokens: useTokenStatsIF = useTokenStats(
         chainData.chainId,
         crocEnv,
@@ -379,10 +359,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     );
 
     const exploreContext: ExploreContextIF = {
-        tab: {
-            active: activeTab,
-            toggle: toggleTab,
-        },
         pools: {
             all: allPools,
             getLimited: getLimitedPoolData,
