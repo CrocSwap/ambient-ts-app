@@ -3,7 +3,7 @@ import styles from '../../../components/Global/TransactionDetails/TransactionDet
 import { memo, useContext, useEffect, useRef, useState } from 'react';
 import {
     PositionIF,
-    BlastPointsDataIF,
+    BlastRewardsDataIF,
     PositionServerIF,
 } from '../../../ambient-utils/types';
 import RangeDetailsHeader from '.././RangeDetailsHeader/RangeDetailsHeader';
@@ -410,14 +410,16 @@ function RangeDetailsModal(props: propsIF) {
         chainId,
     ]);
 
-    const [blastPointsData, setBlastPointsData] = useState<BlastPointsDataIF>({
-        points: '...',
-    });
+    const [blastRewardsData, setBlastRewardsData] =
+        useState<BlastRewardsDataIF>({
+            points: '...',
+            gold: '...',
+        });
 
     useEffect(() => {
         if (isActiveNetworkBlast) {
             fetchPositionRewardsData({ position }).then((rewards) => {
-                rewards && setBlastPointsData(rewards);
+                rewards && setBlastRewardsData(rewards);
             });
         }
     }, [serverPositionId, isActiveNetworkBlast]);
@@ -460,7 +462,7 @@ function RangeDetailsModal(props: propsIF) {
                         maxRangeDenomByMoneyness={maxRangeDenomByMoneyness}
                         baseTokenAddress={baseTokenAddress}
                         quoteTokenAddress={quoteTokenAddress}
-                        blastPointsData={blastPointsData}
+                        blastRewardsData={blastRewardsData}
                         isBaseTokenMoneynessGreaterOrEqual={
                             isBaseTokenMoneynessGreaterOrEqual
                         }
@@ -505,7 +507,7 @@ function RangeDetailsModal(props: propsIF) {
                         quoteFeesDisplay={quoteFeesDisplay}
                         isAccountView={isAccountView}
                         updatedPositionApy={updatedPositionApy}
-                        blastPointsData={blastPointsData}
+                        blastRewardsData={blastRewardsData}
                     />
                 )}
             </div>
