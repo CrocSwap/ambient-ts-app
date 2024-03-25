@@ -90,10 +90,6 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
     // callable fn to navigate the user to a given URL path in the app
     const navigate = useNavigate();
 
-    // base URL of the user's location in the app, primarily uses provided
-    // ... argument but will read the current URL pathname as a backup check
-    const baseURL: baseURLs = BASE_URL_PATHS[page ?? getPageFromLocation()];
-
     // fn to infer the current page in the app based on the URL path
     function getPageFromLocation(): pageNames {
         let pageName: pageNames;
@@ -131,38 +127,37 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
         return pageName;
     }
 
-    // fn to build a URL for a given page including parameters
-    function getFullURL(paramsObj?: anyParamsIF | string): baseURLs | string {
-        let paramsSlug = '';
-        if (paramsObj) {
-            if (typeof paramsObj === 'string') {
-                paramsSlug = '/' + paramsObj;
-            } else {
-                paramsSlug =
-                    '/' +
-                    Object.entries(paramsObj)
-                        .map((tup: [string, string | number]) => tup.join('='))
-                        .join('&');
-            }
+    class Nav implements linkGenMethodsIF {
+        currentPage: pageNames;
+        baseURL: baseURLs;
+        constructor(page: pageNames = getPageFromLocation()) {
+            this.currentPage = page;
+            this.baseURL = BASE_URL_PATHS[page];
         }
-        return baseURL + paramsSlug;
+        getFullURL(paramsObj?: anyParamsIF | string): baseURLs | string {
+            let paramsSlug = '';
+            if (paramsObj) {
+                if (typeof paramsObj === 'string') {
+                    paramsSlug = '/' + paramsObj;
+                } else {
+                    paramsSlug =
+                        '/' +
+                        Object.entries(paramsObj)
+                            .map((tup: [string, string | number]) =>
+                                tup.join('='),
+                            )
+                            .join('&');
+                }
+            }
+            return this.baseURL + paramsSlug;
+        }
+        navigate(paramsObj?: anyParamsIF | string): void {
+            navigate(this.getFullURL(paramsObj));
+        }
+        redirect(paramsObj?: anyParamsIF | string): void {
+            navigate(this.getFullURL(paramsObj), { replace: true });
+        }
     }
 
-    // fn to build a full URL including params AND navigate the user
-    function navigateUser(paramsObj?: anyParamsIF | string): void {
-        navigate(getFullURL(paramsObj));
-    }
-
-    // fn with same mode of action as `navigateUser()` with history stack replacement
-    function redirectUser(paramsObj?: anyParamsIF | string): void {
-        navigate(getFullURL(paramsObj), { replace: true });
-    }
-
-    return {
-        currentPage: getPageFromLocation(),
-        baseURL,
-        getFullURL,
-        navigate: navigateUser,
-        redirect: redirectUser,
-    };
+    return new Nav(page);
 };
