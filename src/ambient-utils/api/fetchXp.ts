@@ -67,7 +67,7 @@ function mapBlastUserXpResponseToBlastUserXp(
     blastUserGold: BlastUserGoldServerIF,
 ): BlastUserXpIF {
     const points = Math.floor(blastUserXp.points || 0);
-    const gold = Math.floor(blastUserGold.gold || 0);
+    const gold = Math.floor(blastUserGold.points || 0);
     return {
         points,
         gold,
