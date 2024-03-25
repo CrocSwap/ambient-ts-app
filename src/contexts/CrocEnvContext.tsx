@@ -159,8 +159,8 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
                 console.debug('setting crocEnv to undefined');
             setCrocEnv(undefined);
             return;
-        } else if (!signer && !!crocEnv) {
-            APP_ENVIRONMENT === 'local' && console.debug('keeping provider');
+        } else if (!signer && provider && !!crocEnv) {
+            setCrocEnv(new CrocEnv(provider));
             return;
         } else if (provider && !crocEnv) {
             const newCrocEnv = new CrocEnv(
