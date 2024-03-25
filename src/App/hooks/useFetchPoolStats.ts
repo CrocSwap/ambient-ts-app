@@ -17,6 +17,7 @@ import { PoolIF, PoolStatIF } from '../../ambient-utils/types';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../ambient-utils/constants';
 import { TokenContext } from '../../contexts/TokenContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 
 const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
     const {
@@ -31,6 +32,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
     } = useContext(CachedDataContext);
     const { poolPriceNonDisplay, setPoolPriceNonDisplay, setLimitTick } =
         useContext(TradeDataContext);
+    const { contextMatchesParams } = useContext(TradeTokenContext);
     const {
         crocEnv,
         activeNetwork,
@@ -94,7 +96,8 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                     if (
                         isTradePair &&
                         spotPrice &&
-                        spotPrice !== poolPriceNonDisplay
+                        spotPrice !== poolPriceNonDisplay &&
+                        contextMatchesParams
                     ) {
                         setPoolPriceNonDisplay(spotPrice);
                     }
@@ -143,6 +146,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         pool.base.address,
         pool.quote.address,
         isTradePair,
+        contextMatchesParams,
     ]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
