@@ -93,20 +93,24 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                 if (spotPrice) {
                     setIsPoolInitialized(true);
 
-                    if (
-                        isTradePair &&
-                        spotPrice &&
-                        spotPrice !== poolPriceNonDisplay &&
-                        contextMatchesParams
-                    ) {
-                        setPoolPriceNonDisplay(spotPrice);
-                    }
-                    const displayPrice = toDisplayPrice(
-                        spotPrice,
-                        pool.base.decimals,
-                        pool.quote.decimals,
-                    );
+                    let displayPrice;
 
+                    if (isTradePair) {
+                        if (spotPrice && contextMatchesParams) {
+                            setPoolPriceNonDisplay(spotPrice);
+                            displayPrice = toDisplayPrice(
+                                spotPrice,
+                                pool.base.decimals,
+                                pool.quote.decimals,
+                            );
+                        }
+                    } else {
+                        displayPrice = toDisplayPrice(
+                            spotPrice,
+                            pool.base.decimals,
+                            pool.quote.decimals,
+                        );
+                    }
                     setPoolPriceDisplayNum(displayPrice);
 
                     const isBaseTokenMoneynessGreaterOrEqual =
@@ -121,9 +125,12 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
 
                     setShouldInvertDisplay(shouldInvertDisplay);
 
-                    const displayPriceWithInversion = shouldInvertDisplay
-                        ? 1 / displayPrice
-                        : displayPrice;
+                    const displayPriceWithInversion =
+                        displayPrice !== undefined
+                            ? shouldInvertDisplay
+                                ? 1 / displayPrice
+                                : displayPrice
+                            : undefined;
 
                     const displayPriceWithFormatting = getFormattedNumber({
                         value: displayPriceWithInversion,
