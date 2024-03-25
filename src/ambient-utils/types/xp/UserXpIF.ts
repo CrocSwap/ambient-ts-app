@@ -29,8 +29,8 @@ export interface BlastUserGoldServerIF {
 }
 
 export interface BlastUserXpIF {
-    points: number;
-    gold: number;
+    points: string;
+    gold: string;
 }
 export interface XpSnapshotIF {
     addedPoints: number;
