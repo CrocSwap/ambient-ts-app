@@ -1,0 +1,14 @@
+.header_row {
+    display: inline-flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    width: auto;
+    font-size: 10px;
+}
+
+.col_header {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    position: relative;
+}
