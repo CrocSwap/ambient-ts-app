@@ -4013,8 +4013,6 @@ export default function Chart(props: propsIF) {
             const min = minPrice;
             const max = maxPrice;
 
-            ranges[0] = { name: 'Min', value: minPrice };
-            ranges[1] = { name: 'Max', value: maxPrice };
             if (!market) {
                 scaleData.yScale.domain(
                     scaleData.priceRange(visibleCandleData),
@@ -4030,6 +4028,9 @@ export default function Chart(props: propsIF) {
                 minYBoundary !== undefined
             ) {
                 if (simpleRangeWidth !== 100 || advancedMode) {
+                    ranges[0] = { name: 'Min', value: minPrice };
+                    ranges[1] = { name: 'Max', value: maxPrice };
+
                     const low = Math.min(min, max, minYBoundary, market);
 
                     const high = Math.max(min, max, maxYBoundary, market);
@@ -4129,6 +4130,8 @@ export default function Chart(props: propsIF) {
         isLineDrag,
         minPrice,
         maxPrice,
+        advancedMode,
+        simpleRangeWidth,
     ]);
 
     useEffect(() => {
