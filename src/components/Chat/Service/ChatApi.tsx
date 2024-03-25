@@ -67,6 +67,18 @@ const useChatApi = () => {
         return data;
     }
 
+    async function getRepliedMessageInfo(_id: string) {
+        const response = await fetch(
+            host + '/chat/api/messages/getMsgWithId/' + _id,
+            {
+                method: 'GET',
+            },
+        );
+        const data = await response.json();
+
+        return data;
+    }
+
     async function updateUser(
         _id: string,
         ensName: string,
@@ -103,15 +115,18 @@ const useChatApi = () => {
         return data;
     }
 
-    async function deleteMessage(_id: string) {
+    async function deleteMessage(_id: string, isModerator: boolean) {
         const response = await fetch(
-            host + '/chat/api/messages/deleteMessage/' + _id,
+            host + '/chat/api/messages/deleteMessagev2/' + _id,
             {
-                method: 'DELETE',
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    isModerator: isModerator,
+                }),
             },
         );
         const data = await response.json();
-
         return data;
     }
 
@@ -138,6 +153,7 @@ const useChatApi = () => {
         updateMessageUser,
         saveUser,
         deleteMessage,
+        getRepliedMessageInfo,
     };
 };
 export default useChatApi;
