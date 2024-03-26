@@ -57,7 +57,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
         <FlexContainer justifyContent='flex-end' alignItems='center' gap={16}>
             <DefaultTooltip
                 interactive
-                title={'Toggle Price Displays in USD Estimation'}
+                title={'Toggle USD Price Estimations'}
                 enterDelay={500}
             >
                 <HeaderButtons

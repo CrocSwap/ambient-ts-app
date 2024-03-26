@@ -11,6 +11,7 @@ import Toggle from '../../components/Form/Toggle';
 import { FlexContainer, Text } from '../../styled/Common';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { AiOutlineDollarCircle } from 'react-icons/ai';
+import { DefaultTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
 
 interface ExploreIF {
     view: 'pools' | 'tokens';
@@ -140,24 +141,41 @@ export default function Explore(props: ExploreIF) {
                     marginLeft='12px'
                 >
                     {view === 'pools' && (
+                        <DefaultTooltip
+                            interactive
+                            title={'Toggle USD Price Estimations'}
+                            enterDelay={500}
+                        >
+                            <Refresh>
+                                <RefreshButton
+                                    onClick={() =>
+                                        setArePricesDollarized((prev) => !prev)
+                                    }
+                                >
+                                    <DollarizationIcon
+                                        arePricesDollarized={
+                                            arePricesDollarized
+                                        }
+                                    />
+                                </RefreshButton>
+                            </Refresh>
+                        </DefaultTooltip>
+                    )}
+                    <DefaultTooltip
+                        interactive
+                        title={
+                            view === 'pools'
+                                ? 'Refresh Top Pools'
+                                : 'Refresh Active Tokens'
+                        }
+                        enterDelay={500}
+                    >
                         <Refresh>
-                            <RefreshButton
-                                onClick={() =>
-                                    setArePricesDollarized((prev) => !prev)
-                                }
-                            >
-                                <DollarizationIcon
-                                    arePricesDollarized={arePricesDollarized}
-                                />
+                            <RefreshButton onClick={() => handleRefresh()}>
+                                <RefreshIcon />
                             </RefreshButton>
                         </Refresh>
-                    )}
-
-                    <Refresh>
-                        <RefreshButton onClick={() => handleRefresh()}>
-                            <RefreshIcon />
-                        </RefreshButton>
-                    </Refresh>
+                    </DefaultTooltip>
                 </FlexContainer>
             </OptionsWrapper>
 
