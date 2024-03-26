@@ -143,7 +143,7 @@ export default function Explore(props: ExploreIF) {
                     {view === 'pools' && (
                         <DefaultTooltip
                             interactive
-                            title={'Toggle USD Price Estimations'}
+                            title={'Toggle USD Price Estimates'}
                             enterDelay={500}
                         >
                             <Refresh>

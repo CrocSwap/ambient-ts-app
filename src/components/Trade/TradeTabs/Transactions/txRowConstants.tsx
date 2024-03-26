@@ -550,7 +550,9 @@ export const txRowConstants = (props: propsIF) => {
                 </span>
                 <span>
                     {isAccountView
-                        ? truncatedLowDisplayPriceDenomByMoneyness
+                        ? isUsdConversionEnabled
+                            ? formattedLowUsdPrice
+                            : truncatedLowDisplayPriceDenomByMoneyness
                         : isUsdConversionEnabled
                         ? formattedLowUsdPrice
                         : truncatedLowDisplayPrice}
@@ -566,7 +568,9 @@ export const txRowConstants = (props: propsIF) => {
                 </span>
                 <span>
                     {isAccountView
-                        ? truncatedHighDisplayPriceDenomByMoneyness
+                        ? isUsdConversionEnabled
+                            ? formattedLowUsdPrice
+                            : truncatedHighDisplayPriceDenomByMoneyness
                         : isUsdConversionEnabled
                         ? formattedHighUsdPrice
                         : truncatedHighDisplayPrice}
@@ -596,7 +600,8 @@ export const txRowConstants = (props: propsIF) => {
                     <span>
                         {(
                             isAccountView
-                                ? truncatedDisplayPriceDenomByMoneyness
+                                ? !isUsdConversionEnabled &&
+                                  truncatedDisplayPriceDenomByMoneyness
                                 : !isUsdConversionEnabled &&
                                   truncatedDisplayPrice
                         )
@@ -607,7 +612,9 @@ export const txRowConstants = (props: propsIF) => {
                     </span>
                     <span>
                         {isAccountView
-                            ? truncatedDisplayPriceDenomByMoneyness
+                            ? isUsdConversionEnabled
+                                ? formattedUsdPrice
+                                : truncatedDisplayPriceDenomByMoneyness
                             : isUsdConversionEnabled
                             ? formattedUsdPrice
                             : truncatedDisplayPrice}

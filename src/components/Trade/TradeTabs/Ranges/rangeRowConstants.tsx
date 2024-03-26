@@ -398,7 +398,9 @@ export default function rangeRowConstants(props: propsIF) {
             <span>{!isUsdConversionEnabled && sideCharacter}</span>
             <span>
                 {isAccountView && !isAmbient
-                    ? minRangeDenomByMoneyness || '…'
+                    ? isUsdConversionEnabled
+                        ? lowDisplayPriceInUsd
+                        : minRangeDenomByMoneyness || '…'
                     : isUsdConversionEnabled
                     ? lowDisplayPriceInUsd
                     : ambientOrMin || '…'}
@@ -429,7 +431,9 @@ export default function rangeRowConstants(props: propsIF) {
             <span>{!isUsdConversionEnabled && sideCharacter}</span>
             <span>
                 {isAccountView
-                    ? maxRangeDenomByMoneyness || '…'
+                    ? isUsdConversionEnabled
+                        ? highDisplayPriceInUsd
+                        : maxRangeDenomByMoneyness || '…'
                     : isUsdConversionEnabled
                     ? highDisplayPriceInUsd
                     : ambientOrMax || '…'}
@@ -448,7 +452,9 @@ export default function rangeRowConstants(props: propsIF) {
                 <span>{!isUsdConversionEnabled && sideCharacter}</span>
                 <span>
                     {isAccountView && !isAmbient
-                        ? minRangeDenomByMoneyness || '…'
+                        ? isUsdConversionEnabled
+                            ? lowDisplayPriceInUsd
+                            : minRangeDenomByMoneyness || '…'
                         : isUsdConversionEnabled
                         ? lowDisplayPriceInUsd
                         : ambientOrMin || '…'}
@@ -458,7 +464,9 @@ export default function rangeRowConstants(props: propsIF) {
                 <span>{!isUsdConversionEnabled && sideCharacter}</span>
                 <span>
                     {isAccountView
-                        ? maxRangeDenomByMoneyness || '…'
+                        ? isUsdConversionEnabled
+                            ? highDisplayPriceInUsd
+                            : maxRangeDenomByMoneyness || '…'
                         : isUsdConversionEnabled
                         ? highDisplayPriceInUsd
                         : ambientOrMax || '…'}

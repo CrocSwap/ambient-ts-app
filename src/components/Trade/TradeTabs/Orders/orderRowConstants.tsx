@@ -388,7 +388,9 @@ export const orderRowConstants = (props: propsIF) => {
                 <p>
                     <span>
                         {isAccountView
-                            ? truncatedDisplayPriceDenomByMoneyness
+                            ? isUsdConversionEnabled
+                                ? displayPriceInUsd
+                                : truncatedDisplayPriceDenomByMoneyness
                             : isUsdConversionEnabled
                             ? displayPriceInUsd
                             : truncatedDisplayPrice}
