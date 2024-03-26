@@ -22,13 +22,7 @@ import { PoolContext } from './PoolContext';
 import { useTokenStatsIF, useTokenStats } from '../pages/Explore/useTokenStats';
 import { TokenContext } from './TokenContext';
 
-type tabs = 'pools' | 'tokens';
-
 export interface ExploreContextIF {
-    tab: {
-        active: tabs;
-        toggle: () => void;
-    };
     pools: {
         all: Array<PoolDataIF>;
         getLimited(poolList: PoolIF[], crocEnv: CrocEnv, chainId: string): void;
@@ -70,7 +64,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
         cachedTokenDetails,
-        cachedGet24hChange,
     } = useContext(CachedDataContext);
 
     const { crocEnv, chainData, activeNetwork, provider } =
@@ -165,6 +158,15 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
 
         const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
 
+        const nowPrice = poolStatsNow?.lastPriceIndic;
+        const ydayPrice = poolStats24hAgo?.lastPriceIndic;
+
+        const priceChangeRaw =
+            ydayPrice && nowPrice && ydayPrice > 0 && nowPrice > 0
+                ? shouldInvert
+                    ? ydayPrice / nowPrice - 1.0
+                    : nowPrice / ydayPrice - 1.0
+                : 0.0;
         if (
             !poolStatsNow ||
             (!isActiveNetworkBlast && poolStatsNow.tvlTotalUsd < 100)
@@ -206,15 +208,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             : '';
         // human readable price change over last 24 hours
         let priceChangePercent: string;
-        const priceChangeRaw: number | undefined = await cachedGet24hChange(
-            chainId,
-            pool.base.address,
-            pool.quote.address,
-            poolIdx,
-            shouldInvert,
-            activeNetwork.graphCacheUrl,
-            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-        );
+
         if (!priceChangeRaw) {
             priceChangePercent = '';
         } else if (priceChangeRaw * 100 >= 0.01) {
@@ -354,20 +348,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             });
     }
 
-    const [activeTab, setActiveTab] = useState<tabs>('pools');
-    function toggleTab(): void {
-        let newTab: tabs;
-        switch (activeTab) {
-            case 'pools':
-                newTab = 'tokens';
-                break;
-            case 'tokens':
-                newTab = 'pools';
-                break;
-        }
-        setActiveTab(newTab);
-    }
-
     const dexTokens: useTokenStatsIF = useTokenStats(
         chainData.chainId,
         crocEnv,
@@ -379,10 +359,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     );
 
     const exploreContext: ExploreContextIF = {
-        tab: {
-            active: activeTab,
-            toggle: toggleTab,
-        },
         pools: {
             all: allPools,
             getLimited: getLimitedPoolData,

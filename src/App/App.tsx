@@ -318,7 +318,19 @@ export default function App() {
                                 <Navigate replace to={defaultUrlParams.swap} />
                             }
                         />
-                        <Route path='explore' element={<Explore />} />
+                        {/* refactor EXPLORE as a nested route */}
+                        <Route
+                            path='explore'
+                            element={<Navigate to='/explore/pools' replace />}
+                        />
+                        <Route
+                            path='explore/pools'
+                            element={<Explore view='pools' />}
+                        />
+                        <Route
+                            path='explore/tokens'
+                            element={<Explore view='tokens' />}
+                        />
                         <Route path='swap/:params' element={<Swap />} />
                         <Route path='terms' element={<TermsOfService />} />
                         <Route path='privacy' element={<PrivacyPolicy />} />

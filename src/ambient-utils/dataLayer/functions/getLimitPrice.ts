@@ -2,7 +2,7 @@ import { LimitOrderIF, TokenMethodsIF } from '../../types';
 import { getUnicodeCharacter } from './getUnicodeCharacter';
 import { getFormattedNumber } from './getFormattedNumber';
 
-export const getLimitPrice = (
+export const getLimitPriceForSidebar = (
     limitOrder: LimitOrderIF,
     tokens: TokenMethodsIF,
     isDenomBase: boolean,

@@ -74,10 +74,6 @@ function Range(props: RangePropsIF) {
         advancedMode,
         setAdvancedHighTick,
         setAdvancedLowTick,
-        isTokenAPrimaryRange,
-        primaryQuantityRange,
-        setPrimaryQuantityRange,
-        setIsTokenAPrimaryRange,
         isLinesSwitched,
 
         simpleRangeWidth,
@@ -119,14 +115,18 @@ function Range(props: RangePropsIF) {
         baseToken,
         quoteToken,
         poolPriceNonDisplay,
+        isTokenAPrimary,
+        primaryQuantity,
+        setPrimaryQuantity,
+        setIsTokenAPrimary,
     } = useContext(TradeDataContext);
 
     // RangeTokenInput state values
     const [tokenAInputQty, setTokenAInputQty] = useState<string>(
-        isTokenAPrimaryRange ? primaryQuantityRange : '',
+        isTokenAPrimary ? primaryQuantity : '',
     );
     const [tokenBInputQty, setTokenBInputQty] = useState<string>(
-        !isTokenAPrimaryRange ? primaryQuantityRange : '',
+        !isTokenAPrimary ? primaryQuantity : '',
     );
 
     const [rangeWidthPercentage, setRangeWidthPercentage] =
@@ -532,8 +532,8 @@ function Range(props: RangePropsIF) {
     ]);
 
     useEffect(() => {
-        if (isTokenAInputDisabled) setIsTokenAPrimaryRange(false);
-        if (isTokenBInputDisabled) setIsTokenAPrimaryRange(true);
+        if (isTokenAInputDisabled) setIsTokenAPrimary(false);
+        if (isTokenBInputDisabled) setIsTokenAPrimary(true);
     }, [isTokenAInputDisabled, isTokenBInputDisabled]);
 
     useEffect(() => {
@@ -837,7 +837,7 @@ function Range(props: RangePropsIF) {
     // reset activeTxHash when the pair changes or user updates quantity
     useEffect(() => {
         activeRangeTxHash.current = '';
-    }, [tokenA.address + tokenB.address, primaryQuantityRange]);
+    }, [tokenA.address + tokenB.address, primaryQuantity]);
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
@@ -939,7 +939,7 @@ function Range(props: RangePropsIF) {
     const clearTokenInputs = () => {
         setTokenAInputQty('');
         setTokenBInputQty('');
-        setPrimaryQuantityRange('');
+        setPrimaryQuantity('');
     };
 
     const {

@@ -236,7 +236,7 @@ function decorateCandleData(
                 isCrocData: true,
                 tvlData: {
                     time: p.time,
-                    tvl: p.tvlBase * baseUsdMult + p.tvlQuote * quoteDecMult,
+                    tvl: p.tvlBase * baseUsdMult + p.tvlQuote * quoteUsdMult,
                 },
                 volumeUSD:
                     (p.volumeBase * baseUsdMult +

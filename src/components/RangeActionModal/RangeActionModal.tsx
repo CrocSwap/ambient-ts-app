@@ -229,7 +229,6 @@ function RangeActionModal(props: propsIF) {
                                 crocEnv,
                                 provider,
                                 chainId,
-                                lastBlockNumber,
                                 cachedFetchTokenPrice,
                                 cachedQuerySpotPrice,
                                 cachedTokenDetails,
@@ -258,77 +257,7 @@ function RangeActionModal(props: propsIF) {
                     .catch((error) => console.error({ error }));
             })();
         }
-    }, [lastBlockNumber]);
-
-    const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
-    const [quoteTokenBalance, setQuoteTokenBalance] = useState<string>('');
-    const [baseTokenDexBalance, setBaseTokenDexBalance] = useState<string>('');
-    const [quoteTokenDexBalance, setQuoteTokenDexBalance] =
-        useState<string>('');
-
-    // useEffect to update selected token balances
-    useEffect(() => {
-        (async () => {
-            if (crocEnv && position.user && position.base && position.quote) {
-                crocEnv
-                    .token(position.base)
-                    .walletDisplay(position.user)
-                    .then((bal: string) => {
-                        if (bal !== baseTokenBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug(
-                                    'setting base token wallet balance',
-                                );
-                            setBaseTokenBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(position.base)
-                    .balanceDisplay(position.user)
-                    .then((bal: string) => {
-                        if (bal !== baseTokenDexBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug('setting base token dex balance');
-                            setBaseTokenDexBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(position.quote)
-                    .walletDisplay(position.user)
-                    .then((bal: string) => {
-                        if (bal !== quoteTokenBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug('setting quote token balance');
-
-                            setQuoteTokenBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(position.quote)
-                    .balanceDisplay(position.user)
-                    .then((bal: string) => {
-                        if (bal !== quoteTokenDexBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug(
-                                    'setting quote token dex balance',
-                                );
-
-                            setQuoteTokenDexBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-            }
-        })();
-    }, [
-        crocEnv,
-        position.user,
-        position.base,
-        position.quote,
-        lastBlockNumber,
-    ]);
+    }, [Math.floor(Date.now() / 10000)]); // update every 10 seconds
 
     const [showSettings, setShowSettings] = useState(false);
 
