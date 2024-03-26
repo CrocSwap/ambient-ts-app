@@ -17,6 +17,7 @@ import { RowItem } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
+import { PoolContext } from '../../../../contexts/PoolContext';
 
 interface propsIF {
     posHashTruncated: string;
@@ -33,6 +34,8 @@ interface propsIF {
     ownerId: string;
     ambientOrMin: string;
     ambientOrMax: string;
+    lowDisplayPriceInUsd: string;
+    highDisplayPriceInUsd: string;
     apyClassname: string | undefined;
     apyString: string | undefined;
     minRangeDenomByMoneyness: string | undefined;
@@ -74,6 +77,8 @@ export default function rangeRowConstants(props: propsIF) {
         rank,
         elapsedTimeString,
         maxRangeDenomByMoneyness,
+        lowDisplayPriceInUsd,
+        highDisplayPriceInUsd,
         isAccountView,
         isAmbient,
         minRangeDenomByMoneyness,
@@ -86,6 +91,8 @@ export default function rangeRowConstants(props: propsIF) {
         baseTokenAddress,
         quoteTokenAddress,
     } = props;
+
+    const { isUsdConversionEnabled } = useContext(PoolContext);
 
     const { tokens } = useContext(TokenContext);
     const baseToken: TokenIF | undefined =
@@ -388,10 +395,12 @@ export default function rangeRowConstants(props: propsIF) {
             data-label='min price'
             className='base_color'
         >
-            <span>{sideCharacter}</span>
+            <span>{!isUsdConversionEnabled && sideCharacter}</span>
             <span>
                 {isAccountView && !isAmbient
                     ? minRangeDenomByMoneyness || '…'
+                    : isUsdConversionEnabled
+                    ? lowDisplayPriceInUsd
                     : ambientOrMin || '…'}
             </span>
         </FlexContainer>
@@ -417,10 +426,12 @@ export default function rangeRowConstants(props: propsIF) {
             data-label='max price'
             className='base_color'
         >
-            <span>{sideCharacter}</span>
+            <span>{!isUsdConversionEnabled && sideCharacter}</span>
             <span>
                 {isAccountView
                     ? maxRangeDenomByMoneyness || '…'
+                    : isUsdConversionEnabled
+                    ? highDisplayPriceInUsd
                     : ambientOrMax || '…'}
             </span>
         </FlexContainer>
@@ -434,18 +445,22 @@ export default function rangeRowConstants(props: propsIF) {
             className='base_color'
         >
             <p>
-                <span>{sideCharacter}</span>
+                <span>{!isUsdConversionEnabled && sideCharacter}</span>
                 <span>
                     {isAccountView && !isAmbient
                         ? minRangeDenomByMoneyness || '…'
+                        : isUsdConversionEnabled
+                        ? lowDisplayPriceInUsd
                         : ambientOrMin || '…'}
                 </span>
             </p>
             <p>
-                <span>{sideCharacter}</span>
+                <span>{!isUsdConversionEnabled && sideCharacter}</span>
                 <span>
                     {isAccountView
                         ? maxRangeDenomByMoneyness || '…'
+                        : isUsdConversionEnabled
+                        ? highDisplayPriceInUsd
                         : ambientOrMax || '…'}
                 </span>
             </p>
