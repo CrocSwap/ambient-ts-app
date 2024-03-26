@@ -23,7 +23,8 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
         isCandleDataNull,
     } = useContext(ChartContext);
 
-    const { setIsUsdConversionEnabled } = useContext(PoolContext);
+    const { isUsdConversionEnabled, setIsUsdConversionEnabled } =
+        useContext(PoolContext);
 
     const [, copy] = useCopyToClipboard();
     const {
@@ -67,6 +68,11 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                         size={20}
                         id='trade_dollarized_prices_button'
                         aria-label='Toggle dollarized prices button'
+                        style={{
+                            color: isUsdConversionEnabled
+                                ? 'var(--accent1)'
+                                : undefined,
+                        }}
                     />
                 </HeaderButtons>
             </DefaultTooltip>

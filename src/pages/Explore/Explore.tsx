@@ -146,7 +146,9 @@ export default function Explore(props: ExploreIF) {
                                     setArePricesDollarized((prev) => !prev)
                                 }
                             >
-                                <DollarizationIcon />
+                                <DollarizationIcon
+                                    arePricesDollarized={arePricesDollarized}
+                                />
                             </RefreshButton>
                         </Refresh>
                     )}
@@ -247,7 +249,11 @@ const RefreshIcon = styled(FiRefreshCw)`
     cursor: pointer;
 `;
 
-const DollarizationIcon = styled(AiOutlineDollarCircle)`
+const DollarizationIcon = styled(AiOutlineDollarCircle)<{
+    arePricesDollarized?: boolean;
+}>`
     font-size: var(--header2-size);
     cursor: pointer;
+    color: ${({ arePricesDollarized }) =>
+        arePricesDollarized && 'var(--accent1)'};
 `;
