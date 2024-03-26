@@ -2,10 +2,13 @@ import styles from './PoolCard.module.css';
 import { Link } from 'react-router-dom';
 import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
 import TokenIcon from '../TokenIcon/TokenIcon';
-import { uriToHttp } from '../../../ambient-utils/dataLayer';
+import {
+    getFormattedNumber,
+    uriToHttp,
+} from '../../../ambient-utils/dataLayer';
 import { PoolIF } from '../../../ambient-utils/types';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
@@ -21,20 +24,39 @@ export default function PoolCard(props: propsIF) {
     } = useContext(CrocEnvContext);
     const { tokenA, tokenB } = useContext(TradeDataContext);
 
+    const [isHovered, setIsHovered] = useState(false);
     const poolData = useFetchPoolStats(pool);
 
     const {
         poolVolume24h,
         poolPrice,
+        poolPriceDisplay,
         poolTvl,
         poolPriceChangePercent,
         isPoolPriceChangePositive,
         shouldInvertDisplay,
+        basePrice,
+        quotePrice,
     } = poolData;
+
+    const usdPrice =
+        poolPriceDisplay && basePrice && quotePrice
+            ? shouldInvertDisplay
+                ? (1 / poolPriceDisplay) * quotePrice
+                : poolPriceDisplay * basePrice
+            : undefined;
 
     const poolPriceDisplayDOM = (
         <div className={styles.price}>
-            {poolPrice === undefined ? '…' : poolPrice}
+            {isHovered
+                ? `${
+                      usdPrice
+                          ? getFormattedNumber({ value: usdPrice, prefix: '$' })
+                          : '…'
+                  }`
+                : poolPrice === undefined
+                ? '…'
+                : poolPrice}
         </div>
     );
 
@@ -87,6 +109,8 @@ export default function PoolCard(props: propsIF) {
             tabIndex={0}
             role='presentation'
             aria-label={ariaDescription}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
         >
             <div className={styles.main_container}>
                 <div className={styles.row} style={{ padding: '4px' }}>
