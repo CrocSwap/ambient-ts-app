@@ -47,6 +47,7 @@ import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
 import ExampleForm from '../pages/InitPool/FormExample';
 import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
+import { linkGenMethodsIF, useLinkGen } from '../utils/hooks/useLinkGen';
 
 /** ***** React Function *******/
 export default function App() {
@@ -75,9 +76,12 @@ export default function App() {
 
     const smallScreen = useMediaQuery('(max-width: 500px)');
 
+    // methods to determine current page occupied by the user
+    const linkGenCurrent: linkGenMethodsIF = useLinkGen();
+
     // Take away margin from left if we are on homepage or swap
     const swapBodyStyle =
-        currentLocation.startsWith('/swap') && !smallScreen
+        linkGenCurrent.current.isPage('swap') && !smallScreen
             ? 'swap-body'
             : null;
 
@@ -85,13 +89,21 @@ export default function App() {
     const sidebarRender = smallScreen ? (
         <Sidebar />
     ) : (
-        currentLocation !== '/' &&
-        currentLocation !== '/swap' &&
-        currentLocation !== '/404' &&
-        currentLocation !== '/terms' &&
-        currentLocation !== '/privacy' &&
-        !currentLocation.includes('/chat') &&
-        !currentLocation.includes('/initpool') &&
+        // currentLocation !== '/' &&
+        // currentLocation !== '/swap' &&
+        // currentLocation !== '/404' &&
+        // currentLocation !== '/terms' &&
+        // currentLocation !== '/privacy' &&
+        // !currentLocation.includes('/chat') &&
+        // !currentLocation.includes('/initpool') &&
+        !linkGenCurrent.current.isPage(
+            'index',
+            'swap',
+            'notFound',
+            'tos',
+            'privacy',
+            'initpool',
+        ) &&
         !fullScreenChart && (
             // isChainSupported &&
             <Sidebar />
@@ -104,13 +116,20 @@ export default function App() {
 
     const showSidebarOrNullStyle = smallScreen
         ? sidebarDislayStyle
-        : currentLocation == '/' ||
-          currentLocation == '/swap' ||
-          currentLocation == '/404' ||
-          currentLocation == '/terms' ||
-          currentLocation == '/privacy' ||
-          currentLocation.includes('/chat') ||
-          currentLocation.startsWith('/swap')
+        : // : currentLocation == '/' ||
+        //     currentLocation == '/swap' ||
+        //     currentLocation == '/404' ||
+        //     currentLocation == '/terms' ||
+        //     currentLocation == '/privacy' ||
+        //     currentLocation.includes('/chat') ||
+        //     currentLocation.startsWith('/swap') ||
+        linkGenCurrent.current.isPage(
+              'index',
+              'swap',
+              'notFound',
+              'tos',
+              'privacy',
+          )
         ? 'hide_sidebar'
         : sidebarDislayStyle;
 

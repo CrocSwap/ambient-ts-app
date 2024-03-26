@@ -53,6 +53,7 @@ const BASE_URL_PATHS = {
     index: '',
     home: '',
     swap: '/swap',
+    
     market: '/trade/market',
     limit: '/trade/limit',
     pool: '/trade/pool',
@@ -65,6 +66,7 @@ const BASE_URL_PATHS = {
     testpage: '/testpage',
     account: '/account',
     privacy: '/privacy',
+    notFound: '/404',
 } as const;
 
 // string-literal union type of keys in `BASE_URL_PATHS`
