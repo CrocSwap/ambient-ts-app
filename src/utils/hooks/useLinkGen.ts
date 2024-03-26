@@ -83,9 +83,6 @@ export interface linkGenMethodsIF {
     redirect: (paramsObj?: anyParamsIF | string) => void;
 }
 
-// TODO:    @Emily: it probably makes sense to expand this hook to
-// TODO:    .... centralize URLs to link external resources
-
 export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
     // current URL path of the app relative to index page
     const { pathname } = useLocation();
