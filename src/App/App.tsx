@@ -1,12 +1,6 @@
 /** ***** Import React and Dongles *******/
 import { useContext, useEffect } from 'react';
-import {
-    Routes,
-    Route,
-    useLocation,
-    Navigate,
-    useNavigate,
-} from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
 
 /** ***** Import JSX Files *******/
@@ -52,8 +46,6 @@ import { linkGenMethodsIF, useLinkGen } from '../utils/hooks/useLinkGen';
 /** ***** React Function *******/
 export default function App() {
     const navigate = useNavigate();
-    const location = useLocation();
-    const currentLocation = location.pathname;
 
     const {
         chat: {
@@ -133,7 +125,7 @@ export default function App() {
         ? 'hide_sidebar'
         : sidebarDislayStyle;
 
-    const containerStyle = currentLocation.includes('trade')
+    const containerStyle = linkGenCurrent.current.isPage('trade')
         ? 'content-container-trade'
         : 'content-container';
 
@@ -203,7 +195,7 @@ export default function App() {
                 <section
                     className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
                 >
-                    {(!currentLocation.startsWith('/swap') || smallScreen) &&
+                    {(!linkGenCurrent.current.isPage('swap') || smallScreen) &&
                         sidebarRender}
                     <Routes>
                         <Route index element={<Home />} />
@@ -377,15 +369,24 @@ export default function App() {
                 </section>
             </FlexContainer>
             <div className='footer_container'>
-                {currentLocation !== '/' &&
-                    currentLocation !== '/404' &&
-                    currentLocation !== '/terms' &&
-                    currentLocation !== '/privacy' &&
-                    !currentLocation.includes('/chat') &&
-                    isChatEnabled && <ChatPanel isFullScreen={false} />}
-                {showMobileVersion && currentLocation !== '/' && (
-                    <SidebarFooter />
-                )}
+                {
+                    // currentLocation !== '/' &&
+                    //     currentLocation !== '/404' &&
+                    //     currentLocation !== '/terms' &&
+                    //     currentLocation !== '/privacy' &&
+                    //     !currentLocation.includes('/chat') &&
+                    !linkGenCurrent.current.isPage(
+                        'index',
+                        'notFound',
+                        'tos',
+                        'privacy',
+                    ) &&
+                        isChatEnabled && <ChatPanel isFullScreen={false} />
+                }
+                {showMobileVersion &&
+                    !linkGenCurrent.current.isPage('index') && (
+                        <SidebarFooter />
+                    )}
             </div>
             <GlobalPopup />
             <SnackbarComponent />
