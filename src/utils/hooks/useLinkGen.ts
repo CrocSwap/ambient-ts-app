@@ -53,7 +53,7 @@ const BASE_URL_PATHS = {
     index: '',
     home: '',
     swap: '/swap',
-    
+    trade: '/trade',
     market: '/trade/market',
     limit: '/trade/limit',
     pool: '/trade/pool',
@@ -113,8 +113,6 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
             pageName = 'initpool';
         } else if (pathname.startsWith(BASE_URL_PATHS.reposition)) {
             pageName = 'reposition';
-        } else if (pathname.startsWith(BASE_URL_PATHS.explore)) {
-            pageName = 'explore';
         } else if (pathname.startsWith(BASE_URL_PATHS.explorePools)) {
             pageName = 'explorePools';
         } else if (pathname.startsWith(BASE_URL_PATHS.exploreTokens)) {
@@ -164,8 +162,22 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
     function isPage(...p: pageNames[]): boolean {
         // must get page from current location, not from args for hook
         const currentPage: pageNames = getPageFromLocation();
+        // array to hold nested routes
+        const addedPages: pageNames[] = [];
+        // fn to add data to the `addedPages` array without duplication
+        function addPages(...pagesToAdd: pageNames[]): void {
+            const nonDuplicated: pageNames[] = pagesToAdd.filter(
+                (page: pageNames) =>
+                    !p.includes(page) && !addedPages.includes(page),
+            );
+            addedPages.concat(nonDuplicated);
+        }
+        // add nested routes is this fn is called on a parent route
+        p.includes('trade') &&
+            addPages('market', 'limit', 'pool', 'reposition');
+        p.includes('explore') && addPages('explorePools', 'exploreTokens');
         // determine if current page matches any on the args provided
-        return p.includes(currentPage);
+        return p.concat(addedPages).includes(currentPage);
     }
 
     return {
