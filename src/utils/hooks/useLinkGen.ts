@@ -73,7 +73,10 @@ export type pageNames = keyof typeof BASE_URL_PATHS;
 export type baseURLs = typeof BASE_URL_PATHS[pageNames];
 
 export interface linkGenMethodsIF {
-    currentPage: pageNames;
+    current: {
+        page: pageNames;
+        isPage: (...p: pageNames[]) => boolean;
+    };
     baseURL: baseURLs;
     getFullURL: (paramsObj?: anyParamsIF | string) => string;
     navigate: (paramsObj?: anyParamsIF | string) => void;
@@ -158,8 +161,19 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
         navigate(getFullURL(paramsObj), { replace: true });
     }
 
+    // fn to determine whether user is currently on one of some number of pages
+    function isPage(...p: pageNames[]): boolean {
+        // must get page from current location, not from args for hook
+        const currentPage: pageNames = getPageFromLocation();
+        // determine if current page matches any on the args provided
+        return p.includes(currentPage);
+    }
+
     return {
-        currentPage: getPageFromLocation(),
+        current: {
+            page: getPageFromLocation(),
+            isPage,
+        },
         baseURL,
         getFullURL,
         navigate: navigateUser,
