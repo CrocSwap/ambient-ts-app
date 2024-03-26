@@ -81,13 +81,6 @@ export default function App() {
     const sidebarRender = smallScreen ? (
         <Sidebar />
     ) : (
-        // currentLocation !== '/' &&
-        // currentLocation !== '/swap' &&
-        // currentLocation !== '/404' &&
-        // currentLocation !== '/terms' &&
-        // currentLocation !== '/privacy' &&
-        // !currentLocation.includes('/chat') &&
-        // !currentLocation.includes('/initpool') &&
         !linkGenCurrent.current.isPage(
             'index',
             'swap',
@@ -96,10 +89,7 @@ export default function App() {
             'privacy',
             'initpool',
         ) &&
-        !fullScreenChart && (
-            // isChainSupported &&
-            <Sidebar />
-        )
+        !fullScreenChart && <Sidebar />
     );
 
     const sidebarDislayStyle = isSidebarOpen
@@ -108,14 +98,7 @@ export default function App() {
 
     const showSidebarOrNullStyle = smallScreen
         ? sidebarDislayStyle
-        : // : currentLocation == '/' ||
-        //     currentLocation == '/swap' ||
-        //     currentLocation == '/404' ||
-        //     currentLocation == '/terms' ||
-        //     currentLocation == '/privacy' ||
-        //     currentLocation.includes('/chat') ||
-        //     currentLocation.startsWith('/swap') ||
-        linkGenCurrent.current.isPage(
+        : linkGenCurrent.current.isPage(
               'index',
               'swap',
               'notFound',
@@ -369,20 +352,13 @@ export default function App() {
                 </section>
             </FlexContainer>
             <div className='footer_container'>
-                {
-                    // currentLocation !== '/' &&
-                    //     currentLocation !== '/404' &&
-                    //     currentLocation !== '/terms' &&
-                    //     currentLocation !== '/privacy' &&
-                    //     !currentLocation.includes('/chat') &&
-                    !linkGenCurrent.current.isPage(
-                        'index',
-                        'notFound',
-                        'tos',
-                        'privacy',
-                    ) &&
-                        isChatEnabled && <ChatPanel isFullScreen={false} />
-                }
+                {!linkGenCurrent.current.isPage(
+                    'index',
+                    'notFound',
+                    'tos',
+                    'privacy',
+                ) &&
+                    isChatEnabled && <ChatPanel isFullScreen={false} />}
                 {showMobileVersion &&
                     !linkGenCurrent.current.isPage('index') && (
                         <SidebarFooter />
