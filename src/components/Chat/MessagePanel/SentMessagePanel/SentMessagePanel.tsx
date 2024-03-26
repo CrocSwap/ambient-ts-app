@@ -813,12 +813,12 @@ function SentMessagePanel(props: SentMessageProps) {
                     className={styles.msg_bubble_content + ' messageBubble'}
                 >
                     <div className={styles.msg_bubble_front}>
-                        {/* <div
+                        <div
                             className={styles.flip_trigger}
                             onClick={() => {
                                 setFlipped(true);
                             }}
-                        ></div> */}
+                        ></div>
                         <div
                             ref={optionsButtonRef}
                             className={styles.options_button}

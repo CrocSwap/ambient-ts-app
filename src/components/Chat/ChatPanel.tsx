@@ -1258,9 +1258,14 @@ function ChatPanel(props: propsIF) {
                     cancelListener={() => {
                         setShowVerifyWalletConfirmationInDelete(false);
                     }}
-                    confirmListener={async (e) =>
-                        verifyWallet(0, new Date(), e)
-                    }
+                    confirmListener={async (e) => {
+                        try {
+                            verifyWallet(0, new Date(), e);
+                            setShowVerifyWalletConfirmationInDelete(false);
+                        } catch (error) {
+                            console.error('Error in confirmListener:', error);
+                        }
+                    }}
                 />
             )}
             <ChatToaster
