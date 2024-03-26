@@ -45,7 +45,7 @@ export const useUrlParams = (
     // generate an array of required params in the URL based on route
     const requiredParams = useMemo<validParamsType[]>(() => {
         // name of page currently in the DOM
-        const pageName: pageNames = linkGenCurrent.currentPage;
+        const pageName: pageNames = linkGenCurrent.current.page;
         // global params for all parameterized pathways
         const globalParams: validParamsType[] = ['chain', 'tokenA', 'tokenB'];
         // output variable
@@ -67,7 +67,7 @@ export const useUrlParams = (
         }
         // return array of required URL params
         return paramsForPage;
-    }, [linkGenCurrent.currentPage]);
+    }, [linkGenCurrent.current.page]);
 
     // map of all params in the current URL string
     const urlParamMap = useMemo<Map<validParamsType, string>>(() => {
