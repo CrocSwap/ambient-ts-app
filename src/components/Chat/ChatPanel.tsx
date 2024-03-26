@@ -1292,15 +1292,6 @@ function ChatPanel(props: propsIF) {
             />
 
             <ChatConfirmationPanel
-                isActive={showVerifyWalletConfirmationInDelete && isChatOpen}
-                title='Verify Your Wallet'
-                content='You should verify your wallet to delete that message.Do you want to verify?'
-                cancelListener={() => {
-                    setShowVerifyWalletConfirmationInDelete(false);
-                }}
-                confirmListener={async (e) => verifyWallet(0, new Date(), e)}
-            />
-            <ChatConfirmationPanel
                 isActive={showVerifyOldMessagesPanel && isChatOpen}
                 title='Verify Old Messages'
                 content='Old messages will be verified. Do you want to verify?'
@@ -1314,6 +1305,22 @@ function ChatPanel(props: propsIF) {
                         new Date(),
                     );
                     activateToastr('Old messages are verified!', 'success');
+                }}
+            />
+            <ChatConfirmationPanel
+                isActive={showVerifyWalletConfirmationInDelete && isChatOpen}
+                title='Verify Your Wallet'
+                content='You should verify your wallet to delete that message.Do you want to verify?'
+                cancelListener={() => {
+                    setShowVerifyWalletConfirmationInDelete(false);
+                }}
+                confirmListener={async (e) => {
+                    try {
+                        verifyWallet(0, new Date(), e);
+                        setShowVerifyWalletConfirmationInDelete(false);
+                    } catch (error) {
+                        console.error('Error in confirmListener:', error);
+                    }
                 }}
             />
             <ChatToaster
