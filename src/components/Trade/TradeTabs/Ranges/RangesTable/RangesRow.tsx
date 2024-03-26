@@ -122,11 +122,11 @@ function RangesRow(props: propsIF) {
         ? baseTokenCharacter
         : quoteTokenCharacter;
 
-    function scrollToDiv() {
+    function scrollToDiv(block?: 'start' | 'center' | 'end' | 'nearest') {
         const element = document.getElementById(positionDomId);
         element?.scrollIntoView({
             behavior: 'smooth',
-            block: 'start',
+            block: block || 'nearest',
             inline: 'nearest',
         });
     }
@@ -141,6 +141,14 @@ function RangesRow(props: propsIF) {
         copy(posHash.toString());
         openSnackbar(`${posHash.toString()} copied`, 'info');
     }
+
+    useEffect(() => {
+        position.onChainConstructedPosition &&
+        position.positionId === currentPositionActive
+            ? // scroll to show the placeholder and unindexed position row
+              scrollToDiv('end')
+            : null;
+    }, [position.onChainConstructedPosition]);
 
     useEffect(() => {
         position.positionId === currentPositionActive ? scrollToDiv() : null;

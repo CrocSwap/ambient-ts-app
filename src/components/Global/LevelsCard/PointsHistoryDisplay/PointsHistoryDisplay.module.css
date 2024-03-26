@@ -1,0 +1,50 @@
+.point_history_container{
+    
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap:8px;
+
+width: 100%;
+  
+
+}
+.points_history_content{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: 1px solid var(--dark3);
+    border-radius: 4px;
+    /* height: 101px; */
+    overflow-y: scroll;
+    padding: 0 8px;
+}
+
+
+
+.points_history_header{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 0 8px;
+}
+.hide_scroll{
+    overflow-y: hidden;
+}
+.view_more_link{
+    background: var(--dark2);
+    border: none;
+    outline: none;
+    box-shadow: 2px 1000px 1px var(--dark2) inset;
+    transition: var(--transition);
+    white-space: nowrap;
+    height: 23px;
+    padding: 1px 12px;
+    text-decoration: none;
+    border-radius: 6.25rem;
+    cursor: pointer;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+    font-size: 11px;
+    color: var(--text2);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

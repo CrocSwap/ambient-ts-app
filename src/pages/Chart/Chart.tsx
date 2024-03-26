@@ -154,7 +154,7 @@ interface propsIF {
     candleTime: candleTimeIF;
     unparsedData: CandlesByPoolAndDurationIF;
     prevPeriod: number;
-    candleTimeInSeconds: number;
+    candleTimeInSeconds: number | undefined;
     updateURL: (changes: updatesIF) => void;
     userTransactionData: Array<TransactionIF> | undefined;
 }
@@ -221,8 +221,7 @@ export default function Chart(props: propsIF) {
     const [liqMaxActiveLiq, setLiqMaxActiveLiq] = useState<
         number | undefined
     >();
-    const { setIsTokenAPrimaryRange, setIsLinesSwitched } =
-        useContext(RangeContext);
+    const { advancedMode, setIsLinesSwitched } = useContext(RangeContext);
     const [isUpdatingShape, setIsUpdatingShape] = useState(false);
 
     const [isDragActive, setIsDragActive] = useState(false);
@@ -264,11 +263,10 @@ export default function Chart(props: propsIF) {
     const [chartHeights, setChartHeights] = useState(0);
     const { isUserConnected } = useContext(UserDataContext);
 
-    const { isTokenAPrimaryRange, advancedMode } = useContext(RangeContext);
-
     const [minTickForLimit, setMinTickForLimit] = useState<number>(0);
     const [maxTickForLimit, setMaxTickForLimit] = useState<number>(0);
     const [isShowFloatingToolbar, setIsShowFloatingToolbar] = useState(false);
+    const [handleDocumentEvent, setHandleDocumentEvent] = useState();
     const period = unparsedData.duration;
 
     const side =
@@ -868,6 +866,7 @@ export default function Chart(props: propsIF) {
                     lastCandleDate: Math.floor(domainMax / 1000),
                     nCandles: nCandles,
                     isShowLatestCandle: isShowLatestCandle,
+                    isFetchFirst200Candle: false,
                 };
             });
         }
@@ -915,7 +914,7 @@ export default function Chart(props: propsIF) {
                         render();
 
                         if (rescale) {
-                            changeScale();
+                            changeScale(true);
                         }
 
                         if (wheelTimeout) {
@@ -1028,7 +1027,7 @@ export default function Chart(props: propsIF) {
                                 setCursorStyleTrigger(true);
 
                                 if (rescale) {
-                                    changeScale();
+                                    changeScale(true);
                                 } else {
                                     let domain = undefined;
                                     if (
@@ -1070,7 +1069,6 @@ export default function Chart(props: propsIF) {
 
                                 clickedForLine = true;
                                 setPrevLastCandleTime(lastCandleData.time);
-                                calculateOrderHistoryTooltipPlacements();
 
                                 render();
                             }
@@ -1255,7 +1253,7 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         if (scaleData !== undefined && liquidityData !== undefined) {
             if (rescale) {
-                changeScale();
+                changeScale(false);
 
                 if (
                     location.pathname.includes('pool') ||
@@ -2312,7 +2310,7 @@ export default function Chart(props: propsIF) {
             setXScaleDefault();
             fetchCandleForResetOrLatest();
             setIsChangeScaleChart(false);
-            changeScale();
+            changeScale(false);
         }
     }
 
@@ -2686,7 +2684,7 @@ export default function Chart(props: propsIF) {
 
             return () => resizeObserver.unobserve(canvasDiv.node());
         }
-    }, []);
+    }, [handleDocumentEvent]);
 
     useEffect(() => {
         if (d3Container) {
@@ -2701,7 +2699,7 @@ export default function Chart(props: propsIF) {
 
             return () => resizeObserver.unobserve(canvasDiv.node());
         }
-    }, []);
+    }, [handleDocumentEvent]);
 
     useEffect(() => {
         const canvas = d3
@@ -3903,7 +3901,7 @@ export default function Chart(props: propsIF) {
         isDenomBase,
     ]);
 
-    const getYAxisBoundary = () => {
+    const getYAxisBoundary = (isTriggeredByZoom: boolean) => {
         let minYBoundary = undefined;
         let maxYBoundary = undefined;
         if (scaleData) {
@@ -3914,9 +3912,10 @@ export default function Chart(props: propsIF) {
                 (data: CandleDataIF) =>
                     data.time * 1000 >= xmin && data.time * 1000 <= xmax,
             );
+
             if (
                 filtered !== undefined &&
-                filtered.length > 10 &&
+                (!isTriggeredByZoom || filtered.length > 10) &&
                 poolPriceWithoutDenom
             ) {
                 const placeHolderPrice = denomInBase
@@ -3945,13 +3944,14 @@ export default function Chart(props: propsIF) {
         return { minYBoundary: minYBoundary, maxYBoundary: maxYBoundary };
     };
 
-    function changeScaleSwap() {
+    function changeScaleSwap(isTriggeredByZoom: boolean) {
         if (scaleData && poolPriceWithoutDenom && rescale) {
             const placeHolderPrice = denomInBase
                 ? 1 / poolPriceWithoutDenom
                 : poolPriceWithoutDenom;
 
-            const { minYBoundary, maxYBoundary } = getYAxisBoundary();
+            const { minYBoundary, maxYBoundary } =
+                getYAxisBoundary(isTriggeredByZoom);
 
             if (maxYBoundary !== undefined && minYBoundary !== undefined) {
                 const diffBoundary = Math.abs(maxYBoundary - minYBoundary);
@@ -3972,9 +3972,10 @@ export default function Chart(props: propsIF) {
         render();
     }
 
-    function changeScaleLimit() {
+    function changeScaleLimit(isTriggeredByZoom: boolean) {
         if (scaleData && market && rescale) {
-            const { minYBoundary, maxYBoundary } = getYAxisBoundary();
+            const { minYBoundary, maxYBoundary } =
+                getYAxisBoundary(isTriggeredByZoom);
 
             if (maxYBoundary !== undefined && minYBoundary !== undefined) {
                 const value = limit;
@@ -4007,20 +4008,19 @@ export default function Chart(props: propsIF) {
         render();
     }
 
-    function changeScaleRangeOrReposition() {
+    function changeScaleRangeOrReposition(isTriggeredByZoom: boolean) {
         if (scaleData && rescale) {
             const min = minPrice;
             const max = maxPrice;
 
-            ranges[0] = { name: 'Min', value: minPrice };
-            ranges[1] = { name: 'Max', value: maxPrice };
             if (!market) {
                 scaleData.yScale.domain(
                     scaleData.priceRange(visibleCandleData),
                 );
             }
 
-            const { minYBoundary, maxYBoundary } = getYAxisBoundary();
+            const { minYBoundary, maxYBoundary } =
+                getYAxisBoundary(isTriggeredByZoom);
 
             if (
                 maxYBoundary !== undefined &&
@@ -4028,6 +4028,9 @@ export default function Chart(props: propsIF) {
                 minYBoundary !== undefined
             ) {
                 if (simpleRangeWidth !== 100 || advancedMode) {
+                    ranges[0] = { name: 'Min', value: minPrice };
+                    ranges[1] = { name: 'Max', value: maxPrice };
+
                     const low = Math.min(min, max, minYBoundary, market);
 
                     const high = Math.max(min, max, maxYBoundary, market);
@@ -4075,16 +4078,16 @@ export default function Chart(props: propsIF) {
         render();
     }
 
-    function changeScale() {
+    function changeScale(isTriggeredByZoom: boolean) {
         if (location.pathname.includes('limit')) {
-            changeScaleLimit();
+            changeScaleLimit(isTriggeredByZoom);
         } else if (
             location.pathname.includes('pool') ||
             location.pathname.includes('reposition')
         ) {
-            changeScaleRangeOrReposition();
+            changeScaleRangeOrReposition(isTriggeredByZoom);
         } else {
-            changeScaleSwap();
+            changeScaleSwap(isTriggeredByZoom);
         }
     }
 
@@ -4095,7 +4098,7 @@ export default function Chart(props: propsIF) {
             prevPeriod === period &&
             candleTimeInSeconds === period
         ) {
-            changeScale();
+            changeScale(false);
         }
     }, [
         period,
@@ -4106,7 +4109,7 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (location.pathname.includes('/market')) {
-            changeScaleSwap();
+            changeScaleSwap(false);
         }
     }, [isDenomBase, poolPriceWithoutDenom, location.pathname]);
 
@@ -4117,7 +4120,7 @@ export default function Chart(props: propsIF) {
                 location.pathname.includes('pool') ||
                 location.pathname.includes('reposition')
             ) {
-                changeScaleRangeOrReposition();
+                changeScaleRangeOrReposition(false);
             }
         }
     }, [
@@ -4127,11 +4130,13 @@ export default function Chart(props: propsIF) {
         isLineDrag,
         minPrice,
         maxPrice,
+        advancedMode,
+        simpleRangeWidth,
     ]);
 
     useEffect(() => {
         if (!isLineDrag && location.pathname.includes('limit')) {
-            changeScaleLimit();
+            changeScaleLimit(false);
         }
     }, [location.pathname.includes('limit'), limit, isLineDrag]);
 
@@ -4198,12 +4203,14 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const handleDocumentClick = (event: any) => {
+            setHandleDocumentEvent(event);
             if (
                 d3Container.current &&
                 !d3Container.current.contains(event.target)
             ) {
                 setIsShowFloatingToolbar(false);
             }
+            render();
         };
 
         document.addEventListener('click', handleDocumentClick);
@@ -4782,10 +4789,6 @@ export default function Chart(props: propsIF) {
     };
 
     useEffect(() => {
-        setCurrentTxActiveInTransactions('');
-    }, [denomInBase]);
-
-    useEffect(() => {
         if (!hoverOHTooltip) {
             setHoveredOrderHistory(undefined);
             setIsHoveredOrderHistory(false);
@@ -5003,6 +5006,7 @@ export default function Chart(props: propsIF) {
         });
 
         if (selectedDate === undefined) {
+            props.setShowTooltip(true);
             props.setCurrentData(nearest);
             props.setCurrentVolumeData(nearest?.volumeUSD);
         } else if (selectedDate) {
@@ -5343,13 +5347,12 @@ export default function Chart(props: propsIF) {
             reverseTokenForChart(limitPreviousData, newLimitValue)
                 ? (() => {
                       setIsTokenAPrimary(!isTokenAPrimary);
-                      setIsTokenAPrimaryRange(!isTokenAPrimaryRange),
-                          linkGenLimit.redirect({
-                              chain: chainData.chainId,
-                              tokenA: tokenB.address,
-                              tokenB: tokenA.address,
-                              limitTick: pinnedTick,
-                          });
+                      linkGenLimit.redirect({
+                          chain: chainData.chainId,
+                          tokenA: tokenB.address,
+                          tokenB: tokenA.address,
+                          limitTick: pinnedTick,
+                      });
                   })()
                 : updateURL({ update: [['limitTick', pinnedTick]] });
 
@@ -5478,7 +5481,7 @@ export default function Chart(props: propsIF) {
         isUpdatingShape,
     };
 
-    const calculateOrderHistoryTooltipPlacements = () => {
+    const calculateOrderHistoryTooltipPlacements = (scaleData: scaleData) => {
         if (scaleData && circleScale) {
             const scale = d3.scaleLinear().range([60, 75]).domain([1000, 3000]);
 
@@ -5561,7 +5564,7 @@ export default function Chart(props: propsIF) {
     };
 
     useEffect(() => {
-        calculateOrderHistoryTooltipPlacements();
+        if (scaleData) calculateOrderHistoryTooltipPlacements(scaleData);
     }, [
         isSelectedOrderHistory,
         isHoveredOrderHistory,

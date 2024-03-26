@@ -16,7 +16,7 @@ import InitPoolTokenSelect from '../../components/Global/InitPoolTokenSelect/Ini
 
 import { PoolContext } from '../../contexts/PoolContext';
 import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
-import { LuEdit2 } from 'react-icons/lu';
+import { LuPencil } from 'react-icons/lu';
 import { FiExternalLink, FiRefreshCw } from 'react-icons/fi';
 import { FlexContainer, Text } from '../../styled/Common';
 import Toggle from '../../components/Form/Toggle';
@@ -122,11 +122,15 @@ export default function InitPool() {
         advancedLowTick,
         setAdvancedHighTick,
         setAdvancedLowTick,
-        setIsTokenAPrimaryRange,
-        setPrimaryQuantityRange,
     } = useContext(RangeContext);
-    const { tokenA, tokenB, baseToken, quoteToken } =
-        useContext(TradeDataContext);
+    const {
+        tokenA,
+        tokenB,
+        baseToken,
+        quoteToken,
+        setIsTokenAPrimary,
+        setPrimaryQuantity,
+    } = useContext(TradeDataContext);
 
     useEffect(() => {
         setIsWithdrawTokenAFromDexChecked(parseFloat(tokenADexBalance) > 0);
@@ -1022,8 +1026,8 @@ export default function InitPool() {
         );
 
     useEffect(() => {
-        if (isTokenAInputDisabled) setIsTokenAPrimaryRange(false);
-        if (isTokenBInputDisabled) setIsTokenAPrimaryRange(true);
+        if (isTokenAInputDisabled) setIsTokenAPrimary(false);
+        if (isTokenBInputDisabled) setIsTokenAPrimary(true);
     }, [isTokenAInputDisabled, isTokenBInputDisabled]);
 
     const isInitPage = true;
@@ -1031,7 +1035,7 @@ export default function InitPool() {
     const clearTokenInputs = () => {
         setTokenACollateral('');
         setTokenBCollateral('');
-        setPrimaryQuantityRange('');
+        setPrimaryQuantity('');
     };
 
     const {
@@ -1397,7 +1401,7 @@ export default function InitPool() {
             ) : (
                 <FiRefreshCw size={20} onClick={handleRefresh} />
             )}
-            <LuEdit2 size={20} onClick={() => openEditMode()} />
+            <LuPencil size={20} onClick={() => openEditMode()} />
         </FlexContainer>
     );
 

@@ -42,10 +42,8 @@ export function useTokenPairAllowance(props: PoolPricingPropsIF) {
         })();
     }, [
         crocEnv,
-        tokenA.address,
-        tokenA.chainId,
+        tokenA.address + tokenA.chainId + props.userAddress,
         props.lastBlockNumber,
-        props.userAddress,
         recheckTokenAApproval,
     ]);
 
@@ -72,10 +70,9 @@ export function useTokenPairAllowance(props: PoolPricingPropsIF) {
         })();
     }, [
         crocEnv,
-        tokenB.address,
-        tokenB.chainId,
+        tokenB.address + tokenB.chainId + props.userAddress,
         props.lastBlockNumber,
-        props.userAddress,
+
         recheckTokenBApproval,
     ]);
 

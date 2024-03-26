@@ -58,7 +58,8 @@ function Range() {
         ethMainnetUsdPrice,
         crocEnv,
     } = useContext(CrocEnvContext);
-    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { gasPriceInGwei, isActiveNetworkBlast } =
+        useContext(ChainDataContext);
     const { poolPriceDisplay, ambientApy, dailyVol } = useContext(PoolContext);
     const {
         advancedHighTick,
@@ -66,10 +67,6 @@ function Range() {
         advancedMode,
         setAdvancedHighTick,
         setAdvancedLowTick,
-        isTokenAPrimaryRange,
-        primaryQuantityRange,
-        setPrimaryQuantityRange,
-        setIsTokenAPrimaryRange,
         isLinesSwitched,
 
         simpleRangeWidth,
@@ -111,14 +108,18 @@ function Range() {
         baseToken,
         quoteToken,
         poolPriceNonDisplay,
+        isTokenAPrimary,
+        primaryQuantity,
+        setPrimaryQuantity,
+        setIsTokenAPrimary,
     } = useContext(TradeDataContext);
 
     // RangeTokenInput state values
     const [tokenAInputQty, setTokenAInputQty] = useState<string>(
-        isTokenAPrimaryRange ? primaryQuantityRange : '',
+        isTokenAPrimary ? primaryQuantity : '',
     );
     const [tokenBInputQty, setTokenBInputQty] = useState<string>(
-        !isTokenAPrimaryRange ? primaryQuantityRange : '',
+        !isTokenAPrimary ? primaryQuantity : '',
     );
 
     const [rangeWidthPercentage, setRangeWidthPercentage] =
@@ -464,6 +465,7 @@ function Range() {
             defaultHighTick,
             isDenomBase,
         );
+
     useEffect(() => {
         if (rangeWidthPercentage === 100 && !advancedMode) {
             setIsAmbient(true);
@@ -523,8 +525,8 @@ function Range() {
     ]);
 
     useEffect(() => {
-        if (isTokenAInputDisabled) setIsTokenAPrimaryRange(false);
-        if (isTokenBInputDisabled) setIsTokenAPrimaryRange(true);
+        if (isTokenAInputDisabled) setIsTokenAPrimary(false);
+        if (isTokenBInputDisabled) setIsTokenAPrimary(true);
     }, [isTokenAInputDisabled, isTokenBInputDisabled]);
 
     useEffect(() => {
@@ -811,8 +813,12 @@ function Range() {
     ] = useState<number>(0.0007);
 
     const isScroll = chainId === '0x82750' || chainId === '0x8274f';
-    const [l1GasFeePoolInGwei] = useState<number>(isScroll ? 0.0009 * 1e9 : 0);
-    const [extraL1GasFeePool] = useState(isScroll ? 2.3 : 0);
+    const [l1GasFeePoolInGwei] = useState<number>(
+        isScroll ? 0.0004 * 1e9 : isActiveNetworkBlast ? 0.00025 * 1e9 : 0,
+    );
+    const [extraL1GasFeePool] = useState(
+        isScroll ? 1.5 : isActiveNetworkBlast ? 0.5 : 0,
+    );
 
     const amountToReduceNativeTokenQty =
         chainId === '0x82750' || chainId === '0x8274f'
@@ -824,7 +830,7 @@ function Range() {
     // reset activeTxHash when the pair changes or user updates quantity
     useEffect(() => {
         activeRangeTxHash.current = '';
-    }, [tokenA.address + tokenB.address, primaryQuantityRange]);
+    }, [tokenA.address + tokenB.address, primaryQuantity]);
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
@@ -926,7 +932,7 @@ function Range() {
     const clearTokenInputs = () => {
         setTokenAInputQty('');
         setTokenBInputQty('');
-        setPrimaryQuantityRange('');
+        setPrimaryQuantity('');
     };
 
     const {

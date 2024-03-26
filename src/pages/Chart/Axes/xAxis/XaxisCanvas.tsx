@@ -535,7 +535,7 @@ function XAxisCanvas(props: xAxisIF) {
                                     previousTouch,
                                 );
                             }
-                            changeScale();
+                            changeScale(true);
                             render();
                         }
                     }

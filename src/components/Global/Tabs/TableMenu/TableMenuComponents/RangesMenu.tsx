@@ -11,7 +11,6 @@ import {
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
-import { IS_LOCAL_ENV } from '../../../../../ambient-utils/constants';
 import { RangeContext } from '../../../../../contexts/RangeContext';
 import {
     useLinkGen,
@@ -93,7 +92,8 @@ function RangesMenu(props: propsIF) {
 
     const { isUserConnected } = useContext(UserDataContext);
 
-    const { tokenA, tokenB } = useContext(TradeDataContext);
+    const { tokenA, tokenB, getDefaultRangeWidthForTokenPair } =
+        useContext(TradeDataContext);
     const tokenAAddress = tokenA.address;
     const tokenBAddress = tokenB.address;
 
@@ -104,6 +104,9 @@ function RangesMenu(props: propsIF) {
 
     const showRepositionButton =
         !isPositionInRange && !isPositionEmpty && userMatchesConnectedAccount;
+
+    const feesAvailableForHarvest =
+        (position.feesLiqBase || 0) + (position.feesLiqQuote || 0) > 0;
 
     const showAbbreviatedCopyTradeButton = isAccountView
         ? sidebar.isOpen
@@ -126,7 +129,6 @@ function RangesMenu(props: propsIF) {
             setSimpleRangeWidth(100);
             setAdvancedMode(false);
         } else {
-            IS_LOCAL_ENV && console.debug({ position });
             setAdvancedLowTick(position.bidTick);
             setAdvancedHighTick(position.askTick);
             setAdvancedMode(true);
@@ -157,7 +159,13 @@ function RangesMenu(props: propsIF) {
             })}
             onClick={() => {
                 setActiveMobileComponent('trade');
-                setSimpleRangeWidth(10);
+                setSimpleRangeWidth(
+                    getDefaultRangeWidthForTokenPair(
+                        position.chainId,
+                        position.base.toLowerCase(),
+                        position.quote.toLowerCase(),
+                    ),
+                );
                 setCurrentRangeInReposition(position.positionId);
                 setCurrentRangeInAdd('');
             }}
@@ -236,7 +244,10 @@ function RangesMenu(props: propsIF) {
 
     const detailsButton = <Chip onClick={openDetailsModal}>Details</Chip>;
     const harvestButton =
-        !isAmbient && positionMatchesLoggedInUser ? (
+        !isAmbient &&
+        positionMatchesLoggedInUser &&
+        // show harvest button if fees are available for harvest or if on mainnet
+        (feesAvailableForHarvest || chainId === '0x1') ? (
             <Chip
                 id={`harvest_position_${position.positionId}`}
                 onClick={() => openActionModal('Harvest')}

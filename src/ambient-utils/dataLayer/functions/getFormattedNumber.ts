@@ -14,6 +14,9 @@ type FormatParams = {
     isToken?: boolean;
     removeCommas?: boolean;
     abbrevThreshold?: number;
+    isLevel?: boolean;
+    isPercentage?: boolean;
+    mantissa?: number;
 };
 
 export function getFormattedNumber({
@@ -30,6 +33,9 @@ export function getFormattedNumber({
     isToken = false,
     removeCommas = false,
     abbrevThreshold = 10000,
+    isLevel = false,
+    isPercentage = false,
+    mantissa = 2,
 }: FormatParams) {
     let valueString = '';
     if (value === 0) {
@@ -70,6 +76,16 @@ export function getFormattedNumber({
                 maximumFractionDigits: maxFracDigits,
             });
         }
+    } else if (isLevel || isPercentage) {
+        if (Math.abs(value) >= abbrevThreshold) {
+            // use abbreviations (k, M, B, T) for big numbers
+            valueString = formatAbbrev(value, false, mantissa);
+        } else {
+            valueString = value.toLocaleString('en-US', {
+                minimumFractionDigits: minFracDigits,
+                maximumFractionDigits: maxFracDigits,
+            });
+        }
     } else if (Math.abs(value) <= 0.0001) {
         // use subscript format for small numbers
         if (value < 0) {
@@ -77,24 +93,34 @@ export function getFormattedNumber({
         } else {
             valueString = formatSubscript(value);
         }
+    } else if (Math.abs(value) < 0.1) {
+        // show 4 significant digits (after 0s) -- useful for ETH/WBTC
+        valueString = value.toPrecision(4);
     } else if (Math.abs(value) < 0.9) {
         // show 3 significant digits (after 0s)
         valueString = value.toPrecision(3);
-    } else if (Math.abs(value) < 2) {
-        // restrict to 3 places after decimal
+    } else if (Math.abs(value) < 1.2) {
+        // restrict to 5 places after decimal
         valueString = value.toLocaleString('en-US', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 5,
         });
+    } else if (Math.abs(value) < 100) {
+        // restrict to 3 places after decimal
+        valueString = value.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 3,
+        });
     } else if (Math.abs(value) >= abbrevThreshold && !isInput) {
         // use abbreviations (k, M, B, T) for big numbers
-        valueString = formatAbbrev(value, isTvl);
+        valueString = formatAbbrev(value, isTvl, mantissa);
     } else {
         valueString = value.toLocaleString('en-US', {
             minimumFractionDigits: minFracDigits,
             maximumFractionDigits: maxFracDigits,
         });
     }
+
     if (removeCommas) valueString = valueString.replaceAll(',', '');
     return `${prefix}${valueString}${suffix}`;
 }
@@ -134,11 +160,11 @@ const formatSubscript = (value: number, precision = 3) => {
     return `0.${subscriptUnicode[zeros]}${valueNonZero}`;
 };
 
-const formatAbbrev = (value: number, isTvl?: boolean) => {
+const formatAbbrev = (value: number, isTvl?: boolean, mantissa = 2) => {
     return numbro(value).format({
         average: true,
         ...(isTvl && { roundingFunction: (num: number) => Math.floor(num) }),
-        mantissa: 2,
+        mantissa: mantissa,
         abbreviations: {
             thousand: 'k',
             million: 'M',
