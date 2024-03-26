@@ -66,8 +66,11 @@ function mapBlastUserXpResponseToBlastUserXp(
     blastUserXp: BlastUserXpServerIF,
     blastUserGold: BlastUserGoldServerIF,
 ): BlastUserXpIF {
-    const points = Math.floor(blastUserXp.points || 0);
-    const gold = Math.floor(blastUserGold.gold || 0);
+    const points = Math.floor(blastUserXp.points || 0).toLocaleString();
+    const gold = (blastUserGold.points || 0).toLocaleString('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+    });
     return {
         points,
         gold,

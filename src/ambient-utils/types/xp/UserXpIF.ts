@@ -23,14 +23,14 @@ export interface BlastUserXpServerIF {
     endBlock: number;
 }
 export interface BlastUserGoldServerIF {
-    gold: number;
+    points: number;
     startBlock: number;
     endBlock: number;
 }
 
 export interface BlastUserXpIF {
-    points: number;
-    gold: number;
+    points: string;
+    gold: string;
 }
 export interface XpSnapshotIF {
     addedPoints: number;
