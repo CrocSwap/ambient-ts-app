@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { AiOutlineFullscreen } from 'react-icons/ai';
+import { AiOutlineFullscreen, AiOutlineDollarCircle } from 'react-icons/ai';
 import { FiCopy } from 'react-icons/fi';
 import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
@@ -10,6 +10,7 @@ import TradeChartsTokenInfo from '../TradeChartsComponents/TradeChartsTokenInfo'
 import { useSimulatedIsPoolInitialized } from '../../../../App/hooks/useSimulatedIsPoolInitialized';
 import { FlexContainer } from '../../../../styled/Common';
 import { HeaderButtons } from '../../../../styled/Components/Chart';
+import { PoolContext } from '../../../../contexts/PoolContext';
 
 export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     const {
@@ -21,6 +22,8 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
         tradeTableState,
         isCandleDataNull,
     } = useContext(ChartContext);
+
+    const { setIsUsdConversionEnabled } = useContext(PoolContext);
 
     const [, copy] = useCopyToClipboard();
     const {
@@ -51,6 +54,22 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
 
     const graphSettingsContent = (
         <FlexContainer justifyContent='flex-end' alignItems='center' gap={16}>
+            <DefaultTooltip
+                interactive
+                title={'Toggle Price Displays in USD Estimation'}
+                enterDelay={500}
+            >
+                <HeaderButtons
+                    mobileHide
+                    onClick={() => setIsUsdConversionEnabled((prev) => !prev)}
+                >
+                    <AiOutlineDollarCircle
+                        size={20}
+                        id='trade_dollarized_prices_button'
+                        aria-label='Toggle dollarized prices button'
+                    />
+                </HeaderButtons>
+            </DefaultTooltip>
             <DefaultTooltip
                 interactive
                 title={'Toggle Full Screen Chart'}
