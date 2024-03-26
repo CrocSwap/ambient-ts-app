@@ -12,12 +12,15 @@ import {
     trimString,
     getFormattedNumber,
     getUnicodeCharacter,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    getChainExplorer,
 } from '../../../../ambient-utils/dataLayer';
 import { PositionIF, TransactionIF } from '../../../../ambient-utils/types';
 import styles from './PositionBox.module.css';
 import { motion } from 'framer-motion';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 interface propsIF {
     message: string;
@@ -30,6 +33,11 @@ interface propsIF {
 }
 
 export default function PositionBox(props: propsIF) {
+    const {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        chainData: { blockExplorer, chainId },
+    } = useContext(CrocEnvContext);
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isPoolPriceChangePositive] = useState<boolean>(false);
     const message = props.message;
@@ -259,11 +267,12 @@ that will merged manually
     }
 
     function handleOpenExplorer() {
+        // chainData may be changed!!
         if (sPositions === undefined && position !== undefined) {
             const hashMsg = message
                 .split(' ')
                 .find((item) => item.includes('0x'));
-            const explorerUrl = 'https://goerli.etherscan.io/tx/' + hashMsg;
+            const explorerUrl = `${blockExplorer}tx/${hashMsg}`;
             window.open(explorerUrl);
         } else {
             const walletUrl = props.isCurrentUser
