@@ -194,20 +194,6 @@ export const useUrlParams = (
         }
     }
 
-    // function inflateProvider(chainId: string) {
-    //     if (!provider) {
-    //         provider = useProvider({ chainId: parseInt(chainId) });
-    //         if (!provider) {
-    //             console.warn(
-    //                 'Cannot set provider to lookup token address on chain',
-    //                 chainId,
-    //             );
-    //             return undefined;
-    //         }
-    //     }
-    //     return provider;
-    // }
-
     function processOptParam(
         paramName: validParamsType,
         processFn: (val: string) => void,
