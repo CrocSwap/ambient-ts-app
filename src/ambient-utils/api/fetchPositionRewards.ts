@@ -19,7 +19,10 @@ function mapPositionRewardsResponseToPositionRewards(
 ): BlastRewardsDataIF {
     const res = {
         points: Math.floor(positionPoints.points || 0).toLocaleString(),
-        gold: Math.floor(positionGold.gold || 0).toLocaleString(),
+        gold: (positionGold.points || 0).toLocaleString('en-US', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2,
+        }),
     };
     return res as BlastRewardsDataIF;
 }
