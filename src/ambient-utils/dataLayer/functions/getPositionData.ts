@@ -285,6 +285,7 @@ export const getPositionData = async (
         baseTokenDecimals,
         quoteTokenDecimals,
     );
+    newPosition.curentPoolPriceDisplayNum = poolPrice;
 
     if (quotePrice && basePrice) {
         newPosition.totalValueUSD =

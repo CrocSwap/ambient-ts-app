@@ -34,6 +34,11 @@ import {
     standardDeviation,
 } from '../../ChartUtils/chartUtils';
 import { RangeContext } from '../../../../contexts/RangeContext';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import useFetchPoolStats from '../../../../App/hooks/useFetchPoolStats';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { PoolIF } from '../../../../ambient-utils/types';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 interface yAxisIF {
     scaleData: scaleData | undefined;
@@ -126,10 +131,35 @@ function YAxisCanvas(props: yAxisIF) {
         useState<d3.ZoomBehavior<Element, unknown>>();
 
     const [yAxisCanvasWidth, setYaxisCanvasWidth] = useState(70);
+    const { chainData } = useContext(CrocEnvContext);
+    const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
 
     const { advancedMode } = useContext(RangeContext);
+    const { isUsdConversionEnabled } = useContext(PoolContext);
+
+    const poolArg: PoolIF = {
+        base: baseToken,
+        quote: quoteToken,
+        chainId: chainData.chainId,
+        poolIdx: chainData.poolIndex,
+    };
+
+    const poolData = useFetchPoolStats(poolArg, true);
 
     const location = useLocation();
+
+    const { basePrice, quotePrice } = poolData;
+
+    function getDollarPrice(price: number) {
+        if (basePrice && quotePrice) {
+            const dollarPrice = isDenomBase
+                ? (1 / price) * quotePrice
+                : price * basePrice;
+            return getFormattedNumber({ value: dollarPrice, prefix: '$' });
+        }
+
+        return price;
+    }
 
     useEffect(() => {
         if (scaleData) {
@@ -376,7 +406,11 @@ function YAxisCanvas(props: yAxisIF) {
                     X,
                     'white',
                     'black',
-                    marketTick,
+                    isUsdConversionEnabled
+                        ? getDollarPrice(
+                              !isDenomBase ? market : 1 / market,
+                          )?.toString()
+                        : marketTick,
                     undefined,
                     yAxisCanvasWidth,
                     marketSubString,
@@ -431,7 +465,11 @@ function YAxisCanvas(props: yAxisIF) {
                         X,
                         low > passValue ? lineSellColor : lineBuyColor,
                         low > passValue ? 'white' : 'black',
-                        lowTick,
+                        isUsdConversionEnabled
+                            ? getDollarPrice(
+                                  !isDenomBase ? low : 1 / low,
+                              )?.toString()
+                            : lowTick,
                         undefined,
                         yAxisCanvasWidth,
                         lowSubString,
@@ -472,7 +510,11 @@ function YAxisCanvas(props: yAxisIF) {
                         X,
                         high > passValue ? lineSellColor : lineBuyColor,
                         high > passValue ? 'white' : 'black',
-                        highTick,
+                        isUsdConversionEnabled
+                            ? getDollarPrice(
+                                  !isDenomBase ? high : 1 / high,
+                              )?.toString()
+                            : highTick,
                         undefined,
                         yAxisCanvasWidth,
                         highSubString,
@@ -957,6 +999,9 @@ function YAxisCanvas(props: yAxisIF) {
         crosshairActive,
         selectedDrawnShape,
         isUpdatingShape,
+        isUsdConversionEnabled,
+        basePrice,
+        quotePrice,
     ]);
 
     function addYaxisLabel(y: number) {
