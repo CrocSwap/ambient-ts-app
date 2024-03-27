@@ -66,7 +66,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
     } = useContext(TradeTokenContext);
-    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+    const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
+        useContext(CachedDataContext);
 
     const [abortController, setAbortController] =
         useState<AbortController | null>(null);
@@ -233,6 +234,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 nCandles,
                 crocEnv,
                 cachedFetchTokenPrice,
+                cachedQuerySpotPrice,
             ).then((candles) => {
                 setCandleData(candles);
 
@@ -309,6 +311,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             numDurations,
             crocEnv,
             cachedFetchTokenPrice,
+            cachedQuerySpotPrice,
             signal,
         )
             .then((incrCandles) => {
