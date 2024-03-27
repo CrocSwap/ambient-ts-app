@@ -210,15 +210,35 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
 
                 if (baseTokenPrice) {
                     setBasePrice(baseTokenPrice);
+                } else if (poolPriceDisplayNum && quoteTokenPrice) {
+                    // calculation of estimated base price below may be backwards;
+                    // having a hard time finding an example of base missing a price
+                    const estimatedBasePrice =
+                        quoteTokenPrice / poolPriceDisplayNum;
+                    setBasePrice(estimatedBasePrice);
+                } else {
+                    setBasePrice(undefined);
                 }
                 if (quoteTokenPrice) {
                     setQuotePrice(quoteTokenPrice);
+                } else if (poolPriceDisplayNum && baseTokenPrice) {
+                    const estimatedQuotePrice =
+                        baseTokenPrice * poolPriceDisplayNum;
+                    setQuotePrice(estimatedQuotePrice);
+                } else {
+                    setQuotePrice(undefined);
                 }
             };
 
             fetchTokenPrice();
         }
-    }, [baseAddr, quoteAddr, chainId, crocEnv !== undefined]);
+    }, [
+        baseAddr,
+        quoteAddr,
+        chainId,
+        crocEnv !== undefined,
+        poolPriceDisplayNum,
+    ]);
 
     const fetchPoolStats = async () => {
         if (
