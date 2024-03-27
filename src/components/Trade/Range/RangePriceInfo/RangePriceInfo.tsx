@@ -49,7 +49,8 @@ function RangePriceInfo(props: propsIF) {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
-    const { isUsdConversionEnabled } = useContext(PoolContext);
+    const { isUsdConversionEnabled, setIsUsdConversionEnabled } =
+        useContext(PoolContext);
     const {
         chainData: { chainId },
         crocEnv,
@@ -173,26 +174,15 @@ function RangePriceInfo(props: propsIF) {
         tokenAPrice,
     ]);
 
-    const handleMinMaxPriceClick = () => {
-        setUserFlippedMaxMinDisplay(!userFlippedMaxMinDisplay);
-    };
-
     // JSX frag for lowest price in range
-
-    const denomTokenDollarEquivalentExists = isDenomTokenA
-        ? tokenAPrice !== undefined
-        : tokenBPrice !== undefined;
 
     const nonDenomTokenDollarEquivalentExists = !isDenomTokenA
         ? tokenAPrice !== undefined
         : tokenBPrice !== undefined;
 
     const minimumPrice =
-        denomTokenDollarEquivalentExists && !isEitherTokenStable ? (
-            <div
-                className={styles.price_display}
-                onClick={handleMinMaxPriceClick}
-            >
+        nonDenomTokenDollarEquivalentExists && !isEitherTokenStable ? (
+            <div className={styles.price_display}>
                 <h4 className={styles.price_title}>Min Price</h4>
                 <span id='min_price_readable' className={styles.min_price}>
                     {isUsdConversionEnabled ? minPriceUsdEquivalent : minPrice}
@@ -210,10 +200,7 @@ function RangePriceInfo(props: propsIF) {
     // JSX frag for highest price in range
     const maximumPrice =
         nonDenomTokenDollarEquivalentExists && !isEitherTokenStable ? (
-            <div
-                className={styles.price_display}
-                onClick={handleMinMaxPriceClick}
-            >
+            <div className={styles.price_display}>
                 <h4 className={styles.price_title}>Max Price</h4>
                 <span id='max_price_readable' className={styles.max_price}>
                     {isUsdConversionEnabled ? maxPriceUsdEquivalent : maxPrice}
@@ -231,7 +218,10 @@ function RangePriceInfo(props: propsIF) {
     // TODO: remove unnecessary top-level wrapper
 
     return (
-        <div className={styles.price_info_container}>
+        <div
+            className={styles.price_info_container}
+            onClick={() => setIsUsdConversionEnabled((prev) => !prev)}
+        >
             <div className={styles.price_info_content}>
                 {/* {aprDisplay} */}
                 {minimumPrice}
