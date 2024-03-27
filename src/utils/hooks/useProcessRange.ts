@@ -6,15 +6,18 @@ import {
     getFormattedNumber,
 } from '../../ambient-utils/dataLayer';
 import { PositionIF } from '../../ambient-utils/types';
-import { useContext, useMemo } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import moment from 'moment';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { useFetchBatch } from '../../App/hooks/useFetchBatch';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
+import { CrocEnv } from '@crocswap-libs/sdk';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 
 export const useProcessRange = (
     position: PositionIF,
+    crocEnv: CrocEnv | undefined,
     account = '',
     isAccountView?: boolean,
 ) => {
@@ -22,6 +25,7 @@ export const useProcessRange = (
 
     const { isDenomBase, poolPriceNonDisplay } = useContext(TradeDataContext);
     const { ensName: ensNameConnectedUser } = useContext(UserDataContext);
+    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
     const tokenAAddress = position.base;
     const tokenBAddress = position.quote;
@@ -87,6 +91,46 @@ export const useProcessRange = (
     const isOwnerActiveAccount =
         position.user.toLowerCase() === account?.toLowerCase();
 
+    const [basePrice, setBasePrice] = useState<number | undefined>();
+    const [quotePrice, setQuotePrice] = useState<number | undefined>();
+
+    useEffect(() => {
+        if (crocEnv) {
+            const fetchTokenPrice = async () => {
+                const baseTokenPrice =
+                    (
+                        await cachedFetchTokenPrice(
+                            position.base,
+                            position.chainId,
+                            crocEnv,
+                        )
+                    )?.usdPrice || 0.0;
+                const quoteTokenPrice =
+                    (
+                        await cachedFetchTokenPrice(
+                            position.quote,
+                            position.chainId,
+                            crocEnv,
+                        )
+                    )?.usdPrice || 0.0;
+
+                if (baseTokenPrice) {
+                    setBasePrice(baseTokenPrice);
+                }
+                if (quoteTokenPrice) {
+                    setQuotePrice(quoteTokenPrice);
+                }
+            };
+
+            fetchTokenPrice();
+        }
+    }, [
+        position.base,
+        position.quote,
+        position.chainId,
+        crocEnv !== undefined,
+    ]);
+
     // -------------------------------POSITION HASH------------------------
 
     const posHash = getPositionHash(position);
@@ -107,6 +151,12 @@ export const useProcessRange = (
 
     const positionBaseAddressLowerCase = position.base.toLowerCase();
     const positionQuoteAddressLowerCase = position.quote.toLowerCase();
+    const bidTickPriceDecimalCorrected = position.bidTickPriceDecimalCorrected;
+    const bidTickInvPriceDecimalCorrected =
+        position.bidTickInvPriceDecimalCorrected;
+    const askTickPriceDecimalCorrected = position.askTickPriceDecimalCorrected;
+    const askTickInvPriceDecimalCorrected =
+        position.askTickInvPriceDecimalCorrected;
 
     const tokenAAddressLowerCase = tokenAAddress.toLowerCase();
     const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
@@ -156,6 +206,50 @@ export const useProcessRange = (
     const maxRange = isDenomBase
         ? position.highRangeDisplayInBase
         : position.highRangeDisplayInQuote;
+
+    const lowDisplayPriceInUsdNum = isAccountView
+        ? basePrice && quotePrice
+            ? isBaseTokenMoneynessGreaterOrEqual
+                ? bidTickPriceDecimalCorrected * basePrice
+                : bidTickInvPriceDecimalCorrected * quotePrice
+            : undefined
+        : basePrice && quotePrice
+        ? isDenomBase
+            ? bidTickInvPriceDecimalCorrected * quotePrice
+            : bidTickPriceDecimalCorrected * basePrice
+        : undefined;
+
+    const lowDisplayPriceInUsd =
+        position.positionType === 'ambient'
+            ? '0'
+            : lowDisplayPriceInUsdNum
+            ? getFormattedNumber({
+                  value: lowDisplayPriceInUsdNum,
+                  prefix: '$',
+              })
+            : '...';
+
+    const highDisplayPriceInUsdNum = isAccountView
+        ? basePrice && quotePrice
+            ? isBaseTokenMoneynessGreaterOrEqual
+                ? askTickPriceDecimalCorrected * basePrice
+                : askTickInvPriceDecimalCorrected * quotePrice
+            : undefined
+        : basePrice && quotePrice
+        ? isDenomBase
+            ? askTickInvPriceDecimalCorrected * quotePrice
+            : askTickPriceDecimalCorrected * basePrice
+        : undefined;
+
+    const highDisplayPriceInUsd =
+        position.positionType === 'ambient'
+            ? '∞'
+            : highDisplayPriceInUsdNum
+            ? getFormattedNumber({
+                  value: highDisplayPriceInUsdNum,
+                  prefix: '$',
+              })
+            : '...';
 
     const ambientOrMin = position.positionType === 'ambient' ? '0' : minRange;
     const ambientOrMax = position.positionType === 'ambient' ? '∞' : maxRange;
@@ -296,6 +390,8 @@ export const useProcessRange = (
         // position matches select token data
         positionMatchesSelectedTokens,
         isDenomBase,
+        lowDisplayPriceInUsd,
+        highDisplayPriceInUsd,
         minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,

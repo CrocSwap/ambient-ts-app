@@ -53,7 +53,7 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
         timeFirstMintMemo,
     } = props;
 
-    const { chainData } = useContext(CrocEnvContext);
+    const { chainData, crocEnv } = useContext(CrocEnvContext);
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -81,7 +81,7 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
         elapsedTimeString,
         elapsedTimeSinceFirstMintString,
         elapsedTimeSinceCrossString,
-    } = useProcessOrder(limitOrder, userAddress, isAccountView);
+    } = useProcessOrder(limitOrder, crocEnv, userAddress, isAccountView);
 
     const showFullAddresses = useMediaQuery('(min-width: 768px)');
 
