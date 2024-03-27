@@ -252,6 +252,7 @@ export default function TransactionDetailsGraph(
                         numCandlesNeeded,
                         crocEnv,
                         cachedFetchTokenPrice,
+                        cachedQuerySpotPrice,
                     );
 
                     if (graphData) {

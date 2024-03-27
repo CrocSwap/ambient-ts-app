@@ -569,7 +569,7 @@ export const txRowConstants = (props: propsIF) => {
                 <span>
                     {isAccountView
                         ? isUsdConversionEnabled
-                            ? formattedLowUsdPrice
+                            ? formattedHighUsdPrice
                             : truncatedHighDisplayPriceDenomByMoneyness
                         : isUsdConversionEnabled
                         ? formattedHighUsdPrice

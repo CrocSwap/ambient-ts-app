@@ -7,6 +7,7 @@ export interface LimitOrderIF {
     base: string;
     quote: string;
     poolIdx: number;
+    curentPoolPriceDisplayNum: number;
     bidTick: number;
     askTickInvPriceDecimalCorrected: number;
     askTickPriceDecimalCorrected: number;
