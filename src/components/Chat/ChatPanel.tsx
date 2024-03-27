@@ -149,7 +149,7 @@ function ChatPanel(props: propsIF) {
             messageEnd.current.scrollTo({
                 left: 0,
                 top: messageEnd.current.scrollHeight,
-                behavior: 'instant',
+                behavior: 'instant' as ScrollBehavior,
             });
         }
     };
