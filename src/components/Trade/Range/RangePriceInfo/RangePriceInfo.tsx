@@ -1,7 +1,6 @@
 // START: Import Local Files
 import styles from './RangePriceInfo.module.css';
 import { memo, useContext, useEffect, useMemo, useState } from 'react';
-import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import {
     isStableToken,
     getFormattedNumber,
@@ -56,8 +55,7 @@ function RangePriceInfo(props: propsIF) {
         crocEnv,
     } = useContext(CrocEnvContext);
 
-    const { isDenomBase, tokenA, tokenB, baseToken, quoteToken } =
-        useContext(TradeDataContext);
+    const { isDenomBase, tokenA, tokenB } = useContext(TradeDataContext);
 
     const [tokenAPrice, setTokenAPrice] = useState<number | undefined>();
     const [tokenBPrice, setTokenBPrice] = useState<number | undefined>();
@@ -191,28 +189,15 @@ function RangePriceInfo(props: propsIF) {
 
     const minimumPrice =
         denomTokenDollarEquivalentExists && !isEitherTokenStable ? (
-            <DefaultTooltip
-                interactive
-                title={`${minPriceUsdEquivalent} USD per ${
-                    isDenomBase ? baseToken.symbol : quoteToken.symbol
-                } `}
-                placement={'bottom'}
-                arrow
-                enterDelay={100}
-                leaveDelay={200}
+            <div
+                className={styles.price_display}
+                onClick={handleMinMaxPriceClick}
             >
-                <div
-                    className={styles.price_display}
-                    onClick={handleMinMaxPriceClick}
-                >
-                    <h4 className={styles.price_title}>Min Price</h4>
-                    <span id='min_price_readable' className={styles.min_price}>
-                        {isUsdConversionEnabled
-                            ? minPriceUsdEquivalent
-                            : minPrice}
-                    </span>
-                </div>
-            </DefaultTooltip>
+                <h4 className={styles.price_title}>Min Price</h4>
+                <span id='min_price_readable' className={styles.min_price}>
+                    {isUsdConversionEnabled ? minPriceUsdEquivalent : minPrice}
+                </span>
+            </div>
         ) : (
             <div className={styles.price_display} style={{ cursor: 'default' }}>
                 <h4 className={styles.price_title}>Min Price</h4>
@@ -225,28 +210,15 @@ function RangePriceInfo(props: propsIF) {
     // JSX frag for highest price in range
     const maximumPrice =
         nonDenomTokenDollarEquivalentExists && !isEitherTokenStable ? (
-            <DefaultTooltip
-                interactive
-                title={`${maxPriceUsdEquivalent} USD per ${
-                    isDenomBase ? baseToken.symbol : quoteToken.symbol
-                } `}
-                placement={'bottom'}
-                arrow
-                enterDelay={100}
-                leaveDelay={200}
+            <div
+                className={styles.price_display}
+                onClick={handleMinMaxPriceClick}
             >
-                <div
-                    className={styles.price_display}
-                    onClick={handleMinMaxPriceClick}
-                >
-                    <h4 className={styles.price_title}>Max Price</h4>
-                    <span id='max_price_readable' className={styles.max_price}>
-                        {isUsdConversionEnabled
-                            ? maxPriceUsdEquivalent
-                            : maxPrice}
-                    </span>
-                </div>
-            </DefaultTooltip>
+                <h4 className={styles.price_title}>Max Price</h4>
+                <span id='max_price_readable' className={styles.max_price}>
+                    {isUsdConversionEnabled ? maxPriceUsdEquivalent : maxPrice}
+                </span>
+            </div>
         ) : (
             <div className={styles.price_display} style={{ cursor: 'default' }}>
                 <h4 className={styles.price_title}>Max Price</h4>
