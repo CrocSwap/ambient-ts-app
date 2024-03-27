@@ -116,9 +116,24 @@ export const useProcessRange = (
 
                 if (baseTokenPrice) {
                     setBasePrice(baseTokenPrice);
+                } else if (
+                    quoteTokenPrice &&
+                    position.curentPoolPriceDisplayNum
+                ) {
+                    // this may be backwards
+                    const estimatedBasePrice =
+                        quoteTokenPrice / position.curentPoolPriceDisplayNum;
+                    setBasePrice(estimatedBasePrice);
                 }
                 if (quoteTokenPrice) {
                     setQuotePrice(quoteTokenPrice);
+                } else if (
+                    baseTokenPrice &&
+                    position.curentPoolPriceDisplayNum
+                ) {
+                    const estimatedQuotePrice =
+                        baseTokenPrice * position.curentPoolPriceDisplayNum;
+                    setQuotePrice(estimatedQuotePrice);
                 }
             };
 
@@ -129,6 +144,7 @@ export const useProcessRange = (
         position.quote,
         position.chainId,
         crocEnv !== undefined,
+        position.curentPoolPriceDisplayNum,
     ]);
 
     // -------------------------------POSITION HASH------------------------

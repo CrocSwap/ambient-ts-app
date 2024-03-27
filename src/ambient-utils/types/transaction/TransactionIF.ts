@@ -24,6 +24,7 @@ export interface TransactionIF {
     timeFirstMint: number;
     txHash: string;
     user: string;
+    curentPoolPriceDisplayNum: number;
     limitPrice: number;
     bidTick: number;
     askTick: number;

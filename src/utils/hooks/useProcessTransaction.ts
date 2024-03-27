@@ -99,15 +99,30 @@ export const useProcessTransaction = (
 
                 if (baseTokenPrice) {
                     setBasePrice(baseTokenPrice);
+                } else if (quoteTokenPrice && tx.curentPoolPriceDisplayNum) {
+                    // this may be backwards
+                    const estimatedBasePrice =
+                        quoteTokenPrice / tx.curentPoolPriceDisplayNum;
+                    setBasePrice(estimatedBasePrice);
                 }
                 if (quoteTokenPrice) {
                     setQuotePrice(quoteTokenPrice);
+                } else if (baseTokenPrice && tx.curentPoolPriceDisplayNum) {
+                    const estimatedQuotePrice =
+                        baseTokenPrice * tx.curentPoolPriceDisplayNum;
+                    setQuotePrice(estimatedQuotePrice);
                 }
             };
 
             fetchTokenPrice();
         }
-    }, [tx.base, tx.quote, tx.chainId, crocEnv !== undefined]);
+    }, [
+        tx.base,
+        tx.quote,
+        tx.chainId,
+        crocEnv !== undefined,
+        tx.curentPoolPriceDisplayNum,
+    ]);
 
     let displayPriceNumInUsd;
     let lowDisplayPriceInUsd;
