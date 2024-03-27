@@ -1,7 +1,6 @@
 // START: Import Local Files
 import styles from './RangePriceInfo.module.css';
 import { memo, useContext, useEffect, useMemo, useState } from 'react';
-import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import {
     isStableToken,
     getFormattedNumber,
@@ -11,6 +10,7 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { PoolContext } from '../../../../contexts/PoolContext';
 
 // interface for component props
 interface propsIF {
@@ -49,13 +49,14 @@ function RangePriceInfo(props: propsIF) {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+    const { isUsdConversionEnabled, setIsUsdConversionEnabled } =
+        useContext(PoolContext);
     const {
         chainData: { chainId },
         crocEnv,
     } = useContext(CrocEnvContext);
 
-    const { isDenomBase, tokenA, tokenB, baseToken, quoteToken } =
-        useContext(TradeDataContext);
+    const { isDenomBase, tokenA, tokenB } = useContext(TradeDataContext);
 
     const [tokenAPrice, setTokenAPrice] = useState<number | undefined>();
     const [tokenBPrice, setTokenBPrice] = useState<number | undefined>();
@@ -154,14 +155,14 @@ function RangePriceInfo(props: propsIF) {
         const minDisplayUsdPriceString = getFormattedNumber({
             value: minPriceNum,
             zeroDisplay: '…',
-            prefix: '~$',
+            prefix: '$',
         });
         setMinPriceUsdEquivalent(minDisplayUsdPriceString);
 
         const maxDisplayUsdPriceString = getFormattedNumber({
             value: maxPriceNum,
             zeroDisplay: '…',
-            prefix: '~$',
+            prefix: '$',
         });
         setMaxPriceUsdEquivalent(maxDisplayUsdPriceString);
     }, [
@@ -173,42 +174,20 @@ function RangePriceInfo(props: propsIF) {
         tokenAPrice,
     ]);
 
-    const handleMinMaxPriceClick = () => {
-        setUserFlippedMaxMinDisplay(!userFlippedMaxMinDisplay);
-    };
-
     // JSX frag for lowest price in range
-
-    const denomTokenDollarEquivalentExists = isDenomTokenA
-        ? tokenAPrice !== undefined
-        : tokenBPrice !== undefined;
 
     const nonDenomTokenDollarEquivalentExists = !isDenomTokenA
         ? tokenAPrice !== undefined
         : tokenBPrice !== undefined;
 
     const minimumPrice =
-        denomTokenDollarEquivalentExists && !isEitherTokenStable ? (
-            <DefaultTooltip
-                interactive
-                title={`${minPriceUsdEquivalent} USD per ${
-                    isDenomBase ? baseToken.symbol : quoteToken.symbol
-                } `}
-                placement={'bottom'}
-                arrow
-                enterDelay={100}
-                leaveDelay={200}
-            >
-                <div
-                    className={styles.price_display}
-                    onClick={handleMinMaxPriceClick}
-                >
-                    <h4 className={styles.price_title}>Min Price</h4>
-                    <span id='min_price_readable' className={styles.min_price}>
-                        {minPrice}
-                    </span>
-                </div>
-            </DefaultTooltip>
+        nonDenomTokenDollarEquivalentExists && !isEitherTokenStable ? (
+            <div className={styles.price_display}>
+                <h4 className={styles.price_title}>Min Price</h4>
+                <span id='min_price_readable' className={styles.min_price}>
+                    {isUsdConversionEnabled ? minPriceUsdEquivalent : minPrice}
+                </span>
+            </div>
         ) : (
             <div className={styles.price_display} style={{ cursor: 'default' }}>
                 <h4 className={styles.price_title}>Min Price</h4>
@@ -221,26 +200,12 @@ function RangePriceInfo(props: propsIF) {
     // JSX frag for highest price in range
     const maximumPrice =
         nonDenomTokenDollarEquivalentExists && !isEitherTokenStable ? (
-            <DefaultTooltip
-                interactive
-                title={`${maxPriceUsdEquivalent} USD per ${
-                    isDenomBase ? baseToken.symbol : quoteToken.symbol
-                } `}
-                placement={'bottom'}
-                arrow
-                enterDelay={100}
-                leaveDelay={200}
-            >
-                <div
-                    className={styles.price_display}
-                    onClick={handleMinMaxPriceClick}
-                >
-                    <h4 className={styles.price_title}>Max Price</h4>
-                    <span id='max_price_readable' className={styles.max_price}>
-                        {maxPrice}
-                    </span>
-                </div>
-            </DefaultTooltip>
+            <div className={styles.price_display}>
+                <h4 className={styles.price_title}>Max Price</h4>
+                <span id='max_price_readable' className={styles.max_price}>
+                    {isUsdConversionEnabled ? maxPriceUsdEquivalent : maxPrice}
+                </span>
+            </div>
         ) : (
             <div className={styles.price_display} style={{ cursor: 'default' }}>
                 <h4 className={styles.price_title}>Max Price</h4>
@@ -253,7 +218,15 @@ function RangePriceInfo(props: propsIF) {
     // TODO: remove unnecessary top-level wrapper
 
     return (
-        <div className={styles.price_info_container}>
+        <div
+            className={styles.price_info_container}
+            // below needed to prevent an area between the two price displays from having different cursor
+            style={!isEitherTokenStable ? { cursor: 'pointer' } : undefined}
+            onClick={() =>
+                !isEitherTokenStable &&
+                setIsUsdConversionEnabled((prev) => !prev)
+            }
+        >
             <div className={styles.price_info_content}>
                 {/* {aprDisplay} */}
                 {minimumPrice}
