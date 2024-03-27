@@ -36,6 +36,7 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
         timeFirstMintMemo,
     } = props;
     const { userAddress } = useContext(UserDataContext);
+    const { chainData, crocEnv } = useContext(CrocEnvContext);
 
     const {
         ensName,
@@ -68,7 +69,7 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
         quoteDisplayFrontend,
         elapsedTimeString,
         elapsedTimeSinceFirstMintString,
-    } = useProcessRange(position, userAddress, isAccountView);
+    } = useProcessRange(position, crocEnv, userAddress, isAccountView);
 
     const showFullAddresses = useMediaQuery('(min-width: 768px)');
 
@@ -76,7 +77,6 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
 
-    const { chainData } = useContext(CrocEnvContext);
     const { isActiveNetworkBlast } = useContext(ChainDataContext);
 
     const [_, copy] = useCopyToClipboard();

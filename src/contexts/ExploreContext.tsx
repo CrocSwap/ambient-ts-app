@@ -1,5 +1,7 @@
 import {
+    Dispatch,
     ReactNode,
+    SetStateAction,
     createContext,
     useContext,
     useEffect,
@@ -22,13 +24,7 @@ import { PoolContext } from './PoolContext';
 import { useTokenStatsIF, useTokenStats } from '../pages/Explore/useTokenStats';
 import { TokenContext } from './TokenContext';
 
-type tabs = 'pools' | 'tokens';
-
 export interface ExploreContextIF {
-    tab: {
-        active: tabs;
-        toggle: () => void;
-    };
     pools: {
         all: Array<PoolDataIF>;
         getLimited(poolList: PoolIF[], crocEnv: CrocEnv, chainId: string): void;
@@ -40,6 +36,8 @@ export interface ExploreContextIF {
         reset: () => void;
     };
     tokens: useTokenStatsIF;
+    arePricesDollarized: boolean;
+    setArePricesDollarized: Dispatch<SetStateAction<boolean>>;
 }
 
 export interface PoolDataIF extends PoolIF {
@@ -56,6 +54,7 @@ export interface PoolDataIF extends PoolIF {
         base: number;
         quote: number;
     };
+    usdPriceMoneynessBased: number;
 }
 
 export const ExploreContext = createContext<ExploreContextIF>(
@@ -78,6 +77,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
 
     const [limitedPools, setLimitedPools] = useState<Array<PoolDataIF>>([]);
     const [extraPools, setExtraPools] = useState<Array<PoolDataIF>>([]);
+    const [arePricesDollarized, setArePricesDollarized] = useState(false);
 
     const allPools = useMemo(
         () => limitedPools.concat(extraPools),
@@ -193,6 +193,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                     base: 0,
                     quote: 0,
                 },
+                usdPriceMoneynessBased: 0,
             };
             return poolData;
         }
@@ -253,6 +254,24 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                   pool.quote.decimals,
               );
 
+        const tokenPriceForUsd = shouldInvert
+            ? (
+                  await cachedFetchTokenPrice(
+                      pool.quote.address,
+                      pool.chainId,
+                      crocEnv,
+                  )
+              )?.usdPrice || 0
+            : (
+                  await cachedFetchTokenPrice(
+                      pool.base.address,
+                      pool.chainId,
+                      crocEnv,
+                  )
+              )?.usdPrice || 0;
+
+        const usdPriceMoneynessBased = displayPrice * tokenPriceForUsd;
+
         // return variable
         const poolData: PoolDataIF = {
             ...pool,
@@ -272,6 +291,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 base: baseMoneyness,
                 quote: quoteMoneyness,
             },
+            usdPriceMoneynessBased,
         };
         // write a pool name should it not be there already
         poolData.name =
@@ -354,20 +374,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             });
     }
 
-    const [activeTab, setActiveTab] = useState<tabs>('pools');
-    function toggleTab(): void {
-        let newTab: tabs;
-        switch (activeTab) {
-            case 'pools':
-                newTab = 'tokens';
-                break;
-            case 'tokens':
-                newTab = 'pools';
-                break;
-        }
-        setActiveTab(newTab);
-    }
-
     const dexTokens: useTokenStatsIF = useTokenStats(
         chainData.chainId,
         crocEnv,
@@ -379,10 +385,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     );
 
     const exploreContext: ExploreContextIF = {
-        tab: {
-            active: activeTab,
-            toggle: toggleTab,
-        },
         pools: {
             all: allPools,
             getLimited: getLimitedPoolData,
@@ -393,6 +395,8 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             },
         },
         tokens: dexTokens,
+        arePricesDollarized,
+        setArePricesDollarized,
     };
 
     return (

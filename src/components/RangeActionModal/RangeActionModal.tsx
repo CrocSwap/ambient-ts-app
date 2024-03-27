@@ -57,6 +57,13 @@ function RangeActionModal(props: propsIF) {
     const { type, position, onClose, isAccountView } = props;
 
     const { userAddress } = useContext(UserDataContext);
+    const {
+        crocEnv,
+        activeNetwork,
+        provider,
+        chainData: { chainId, poolIndex },
+        ethMainnetUsdPrice,
+    } = useContext(CrocEnvContext);
 
     const {
         isAmbient,
@@ -67,7 +74,7 @@ function RangeActionModal(props: propsIF) {
         baseTokenSymbol,
         quoteTokenSymbol,
         isPositionInRange,
-    } = useProcessRange(position, userAddress, isAccountView);
+    } = useProcessRange(position, crocEnv, userAddress, isAccountView);
 
     const { lastBlockNumber, gasPriceInGwei } = useContext(ChainDataContext);
 
@@ -77,13 +84,7 @@ function RangeActionModal(props: propsIF) {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const {
-        crocEnv,
-        activeNetwork,
-        provider,
-        chainData: { chainId, poolIndex },
-        ethMainnetUsdPrice,
-    } = useContext(CrocEnvContext);
+
     const { mintSlippage, dexBalRange } = useContext(UserPreferenceContext);
     const {
         addPendingTx,
