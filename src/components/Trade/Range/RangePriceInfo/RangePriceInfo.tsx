@@ -11,6 +11,7 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { PoolContext } from '../../../../contexts/PoolContext';
 
 // interface for component props
 interface propsIF {
@@ -49,6 +50,7 @@ function RangePriceInfo(props: propsIF) {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+    const { isUsdConversionEnabled } = useContext(PoolContext);
     const {
         chainData: { chainId },
         crocEnv,
@@ -154,14 +156,14 @@ function RangePriceInfo(props: propsIF) {
         const minDisplayUsdPriceString = getFormattedNumber({
             value: minPriceNum,
             zeroDisplay: '…',
-            prefix: '~$',
+            prefix: '$',
         });
         setMinPriceUsdEquivalent(minDisplayUsdPriceString);
 
         const maxDisplayUsdPriceString = getFormattedNumber({
             value: maxPriceNum,
             zeroDisplay: '…',
-            prefix: '~$',
+            prefix: '$',
         });
         setMaxPriceUsdEquivalent(maxDisplayUsdPriceString);
     }, [
@@ -205,7 +207,9 @@ function RangePriceInfo(props: propsIF) {
                 >
                     <h4 className={styles.price_title}>Min Price</h4>
                     <span id='min_price_readable' className={styles.min_price}>
-                        {minPrice}
+                        {isUsdConversionEnabled
+                            ? minPriceUsdEquivalent
+                            : minPrice}
                     </span>
                 </div>
             </DefaultTooltip>
@@ -237,7 +241,9 @@ function RangePriceInfo(props: propsIF) {
                 >
                     <h4 className={styles.price_title}>Max Price</h4>
                     <span id='max_price_readable' className={styles.max_price}>
-                        {maxPrice}
+                        {isUsdConversionEnabled
+                            ? maxPriceUsdEquivalent
+                            : maxPrice}
                     </span>
                 </div>
             </DefaultTooltip>
