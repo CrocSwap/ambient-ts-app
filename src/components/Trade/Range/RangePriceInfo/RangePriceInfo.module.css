@@ -4,7 +4,6 @@
     display: flex;
     flex-direction: column;
     transition: var(--transition);
-    cursor: pointer;
 }
 
 .price_info_content {
@@ -22,6 +21,7 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    cursor: pointer;
 }
 .price_title,
 .min_price,

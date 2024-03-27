@@ -220,7 +220,12 @@ function RangePriceInfo(props: propsIF) {
     return (
         <div
             className={styles.price_info_container}
-            onClick={() => setIsUsdConversionEnabled((prev) => !prev)}
+            // below needed to prevent an area between the two price displays from having different cursor
+            style={!isEitherTokenStable ? { cursor: 'pointer' } : undefined}
+            onClick={() =>
+                !isEitherTokenStable &&
+                setIsUsdConversionEnabled((prev) => !prev)
+            }
         >
             <div className={styles.price_info_content}>
                 {/* {aprDisplay} */}
