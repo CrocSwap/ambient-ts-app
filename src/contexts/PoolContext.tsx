@@ -30,6 +30,9 @@ interface PoolContextIF {
     ambientApy: number | undefined;
     dailyVol: number | undefined;
     poolData: PoolStatIF;
+    usdPrice: number | undefined;
+    isUsdConversionEnabled: boolean;
+    setIsUsdConversionEnabled: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const PoolContext = createContext<PoolContextIF>({} as PoolContextIF);
@@ -43,7 +46,10 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         quoteToken: { address: quoteTokenAddress },
     } = useContext(TradeTokenContext);
 
-    const { baseToken, quoteToken } = useContext(TradeDataContext);
+    const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
+
+    const [isUsdConversionEnabled, setIsUsdConversionEnabled] = useState(false);
+
     const poolList: PoolIF[] = usePoolList(
         activeNetwork.graphCacheUrl,
         crocEnv,
@@ -108,10 +114,21 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
     const [ambientApy, setAmbientApy] = useState<number | undefined>();
     const [dailyVol] = useState<number | undefined>();
 
-    const poolPriceDisplay = poolData.poolPriceDisplay;
-    const isPoolPriceChangePositive = poolData.isPoolPriceChangePositive;
-    const poolPriceChangePercent = poolData.poolPriceChangePercent;
-    const isPoolInitialized = poolData.isPoolInitialized;
+    const {
+        poolPriceDisplay,
+        poolPriceChangePercent,
+        isPoolPriceChangePositive,
+        basePrice,
+        quotePrice,
+        isPoolInitialized,
+    } = poolData;
+
+    const usdPrice =
+        poolPriceDisplay && basePrice && quotePrice
+            ? isDenomBase
+                ? (1 / poolPriceDisplay) * quotePrice
+                : poolPriceDisplay * basePrice
+            : undefined;
 
     // Asynchronously query the APY and volatility estimates from the backend
     useEffect(() => {
@@ -155,6 +172,9 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         ambientApy,
         dailyVol,
         poolData,
+        usdPrice,
+        isUsdConversionEnabled,
+        setIsUsdConversionEnabled,
     };
 
     return (
