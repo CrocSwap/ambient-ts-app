@@ -914,7 +914,7 @@ export default function Chart(props: propsIF) {
                         render();
 
                         if (rescale) {
-                            changeScale();
+                            changeScale(true);
                         }
 
                         if (wheelTimeout) {
@@ -1027,7 +1027,7 @@ export default function Chart(props: propsIF) {
                                 setCursorStyleTrigger(true);
 
                                 if (rescale) {
-                                    changeScale();
+                                    changeScale(true);
                                 } else {
                                     let domain = undefined;
                                     if (
@@ -1253,7 +1253,7 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         if (scaleData !== undefined && liquidityData !== undefined) {
             if (rescale) {
-                changeScale();
+                changeScale(false);
 
                 if (
                     location.pathname.includes('pool') ||
@@ -2310,7 +2310,7 @@ export default function Chart(props: propsIF) {
             setXScaleDefault();
             fetchCandleForResetOrLatest();
             setIsChangeScaleChart(false);
-            changeScale();
+            changeScale(false);
         }
     }
 
@@ -3901,7 +3901,7 @@ export default function Chart(props: propsIF) {
         isDenomBase,
     ]);
 
-    const getYAxisBoundary = () => {
+    const getYAxisBoundary = (isTriggeredByZoom: boolean) => {
         let minYBoundary = undefined;
         let maxYBoundary = undefined;
         if (scaleData) {
@@ -3912,9 +3912,10 @@ export default function Chart(props: propsIF) {
                 (data: CandleDataIF) =>
                     data.time * 1000 >= xmin && data.time * 1000 <= xmax,
             );
+
             if (
                 filtered !== undefined &&
-                filtered.length > 10 &&
+                (!isTriggeredByZoom || filtered.length > 10) &&
                 poolPriceWithoutDenom
             ) {
                 const placeHolderPrice = denomInBase
@@ -3943,13 +3944,14 @@ export default function Chart(props: propsIF) {
         return { minYBoundary: minYBoundary, maxYBoundary: maxYBoundary };
     };
 
-    function changeScaleSwap() {
+    function changeScaleSwap(isTriggeredByZoom: boolean) {
         if (scaleData && poolPriceWithoutDenom && rescale) {
             const placeHolderPrice = denomInBase
                 ? 1 / poolPriceWithoutDenom
                 : poolPriceWithoutDenom;
 
-            const { minYBoundary, maxYBoundary } = getYAxisBoundary();
+            const { minYBoundary, maxYBoundary } =
+                getYAxisBoundary(isTriggeredByZoom);
 
             if (maxYBoundary !== undefined && minYBoundary !== undefined) {
                 const diffBoundary = Math.abs(maxYBoundary - minYBoundary);
@@ -3970,9 +3972,10 @@ export default function Chart(props: propsIF) {
         render();
     }
 
-    function changeScaleLimit() {
+    function changeScaleLimit(isTriggeredByZoom: boolean) {
         if (scaleData && market && rescale) {
-            const { minYBoundary, maxYBoundary } = getYAxisBoundary();
+            const { minYBoundary, maxYBoundary } =
+                getYAxisBoundary(isTriggeredByZoom);
 
             if (maxYBoundary !== undefined && minYBoundary !== undefined) {
                 const value = limit;
@@ -4005,20 +4008,19 @@ export default function Chart(props: propsIF) {
         render();
     }
 
-    function changeScaleRangeOrReposition() {
+    function changeScaleRangeOrReposition(isTriggeredByZoom: boolean) {
         if (scaleData && rescale) {
             const min = minPrice;
             const max = maxPrice;
 
-            ranges[0] = { name: 'Min', value: minPrice };
-            ranges[1] = { name: 'Max', value: maxPrice };
             if (!market) {
                 scaleData.yScale.domain(
                     scaleData.priceRange(visibleCandleData),
                 );
             }
 
-            const { minYBoundary, maxYBoundary } = getYAxisBoundary();
+            const { minYBoundary, maxYBoundary } =
+                getYAxisBoundary(isTriggeredByZoom);
 
             if (
                 maxYBoundary !== undefined &&
@@ -4026,6 +4028,9 @@ export default function Chart(props: propsIF) {
                 minYBoundary !== undefined
             ) {
                 if (simpleRangeWidth !== 100 || advancedMode) {
+                    ranges[0] = { name: 'Min', value: minPrice };
+                    ranges[1] = { name: 'Max', value: maxPrice };
+
                     const low = Math.min(min, max, minYBoundary, market);
 
                     const high = Math.max(min, max, maxYBoundary, market);
@@ -4073,16 +4078,16 @@ export default function Chart(props: propsIF) {
         render();
     }
 
-    function changeScale() {
+    function changeScale(isTriggeredByZoom: boolean) {
         if (location.pathname.includes('limit')) {
-            changeScaleLimit();
+            changeScaleLimit(isTriggeredByZoom);
         } else if (
             location.pathname.includes('pool') ||
             location.pathname.includes('reposition')
         ) {
-            changeScaleRangeOrReposition();
+            changeScaleRangeOrReposition(isTriggeredByZoom);
         } else {
-            changeScaleSwap();
+            changeScaleSwap(isTriggeredByZoom);
         }
     }
 
@@ -4093,7 +4098,7 @@ export default function Chart(props: propsIF) {
             prevPeriod === period &&
             candleTimeInSeconds === period
         ) {
-            changeScale();
+            changeScale(false);
         }
     }, [
         period,
@@ -4104,7 +4109,7 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (location.pathname.includes('/market')) {
-            changeScaleSwap();
+            changeScaleSwap(false);
         }
     }, [isDenomBase, poolPriceWithoutDenom, location.pathname]);
 
@@ -4115,7 +4120,7 @@ export default function Chart(props: propsIF) {
                 location.pathname.includes('pool') ||
                 location.pathname.includes('reposition')
             ) {
-                changeScaleRangeOrReposition();
+                changeScaleRangeOrReposition(false);
             }
         }
     }, [
@@ -4125,11 +4130,13 @@ export default function Chart(props: propsIF) {
         isLineDrag,
         minPrice,
         maxPrice,
+        advancedMode,
+        simpleRangeWidth,
     ]);
 
     useEffect(() => {
         if (!isLineDrag && location.pathname.includes('limit')) {
-            changeScaleLimit();
+            changeScaleLimit(false);
         }
     }, [location.pathname.includes('limit'), limit, isLineDrag]);
 

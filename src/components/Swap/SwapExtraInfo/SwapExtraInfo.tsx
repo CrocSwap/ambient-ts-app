@@ -28,7 +28,8 @@ function SwapExtraInfo(props: propsIF) {
         showExtraInfoDropdown,
     } = props;
 
-    const { poolPriceDisplay } = useContext(PoolContext);
+    const { poolPriceDisplay, isUsdConversionEnabled, usdPrice } =
+        useContext(PoolContext);
 
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
 
@@ -43,6 +44,10 @@ function SwapExtraInfo(props: propsIF) {
     const displayPriceString = getFormattedNumber({
         value: displayPriceWithDenom,
     });
+
+    const usdPriceDisplay = usdPrice
+        ? getFormattedNumber({ value: usdPrice })
+        : '…';
 
     const finalPriceWithDenom = !isDenomBase
         ? 1 / (priceImpact?.finalPrice || 1)
@@ -110,9 +115,17 @@ function SwapExtraInfo(props: propsIF) {
         },
     ];
 
-    const conversionRate = isDenomBase
+    const conversionRateNonUsd = isDenomBase
         ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
         : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`;
+
+    const conversionRateUsd = isDenomBase
+        ? `1 ${baseTokenSymbol} ≈ ${usdPriceDisplay} USD`
+        : `1 ${quoteTokenSymbol} ≈ ${usdPriceDisplay} USD`;
+
+    const conversionRate = isUsdConversionEnabled
+        ? conversionRateUsd
+        : conversionRateNonUsd;
 
     return (
         <ExtraInfo

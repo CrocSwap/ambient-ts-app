@@ -1043,7 +1043,9 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 left: divLeft + 'px',
                 top: divTop + 'px',
                 visibility:
-                    selectedDrawnShape !== undefined && divLeft && divTop
+                    selectedDrawnShape !== undefined &&
+                    divLeft !== undefined &&
+                    divTop !== undefined
                         ? 'visible'
                         : 'hidden',
             }}
