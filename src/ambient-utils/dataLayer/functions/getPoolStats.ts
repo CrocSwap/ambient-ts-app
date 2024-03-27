@@ -107,8 +107,19 @@ export async function expandPoolStats(
     const basePricePromise = cachedFetchTokenPrice(base, chainId, crocEnv);
     const quotePricePromise = cachedFetchTokenPrice(quote, chainId, crocEnv);
 
-    const basePrice = (await basePricePromise)?.usdPrice || 0.0;
-    const quotePrice = (await quotePricePromise)?.usdPrice || 0.0;
+    const baseUsdPrice = (await basePricePromise)?.usdPrice;
+    const quoteUsdPrice = (await quotePricePromise)?.usdPrice;
+
+    const basePrice = baseUsdPrice
+        ? baseUsdPrice
+        : payload.lastPriceIndic && quoteUsdPrice
+        ? quoteUsdPrice / payload.lastPriceIndic
+        : 0.0;
+    const quotePrice = quoteUsdPrice
+        ? quoteUsdPrice
+        : payload.lastPriceIndic && baseUsdPrice
+        ? baseUsdPrice * payload.lastPriceIndic
+        : 0.0;
 
     const baseTokenListedDecimals = tokenList.find(
         (token) => token.address.toLowerCase() === base.toLowerCase(),
@@ -140,7 +151,6 @@ function decoratePoolStats(
     quotePrice: number,
 ): PoolStatsIF {
     const stats = Object.assign({}, payload) as PoolStatsIF;
-
     stats.baseTvlDecimal = payload.baseTvl / Math.pow(10, baseDecimals);
     stats.quoteTvlDecimal = payload.quoteTvl / Math.pow(10, quoteDecimals);
     stats.baseVolumeDecimal = payload.baseVolume / Math.pow(10, baseDecimals);
