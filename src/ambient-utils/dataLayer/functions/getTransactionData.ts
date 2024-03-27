@@ -178,6 +178,8 @@ export const getTransactionData = async (
         quoteTokenDecimals,
     );
 
+    newTx.curentPoolPriceDisplayNum = poolPrice;
+
     if (quotePrice && basePrice) {
         newTx.totalValueUSD =
             basePrice.usdPrice * Math.abs(newTx.baseFlowDecimalCorrected) +

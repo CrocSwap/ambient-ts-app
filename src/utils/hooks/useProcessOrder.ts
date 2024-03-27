@@ -79,9 +79,24 @@ export const useProcessOrder = (
 
                 if (baseTokenPrice) {
                     setBasePrice(baseTokenPrice);
+                } else if (
+                    quoteTokenPrice &&
+                    limitOrder.curentPoolPriceDisplayNum
+                ) {
+                    // this may be backwards
+                    const estimatedBasePrice =
+                        quoteTokenPrice / limitOrder.curentPoolPriceDisplayNum;
+                    setBasePrice(estimatedBasePrice);
                 }
                 if (quoteTokenPrice) {
                     setQuotePrice(quoteTokenPrice);
+                } else if (
+                    baseTokenPrice &&
+                    limitOrder.curentPoolPriceDisplayNum
+                ) {
+                    const estimatedQuotePrice =
+                        baseTokenPrice * limitOrder.curentPoolPriceDisplayNum;
+                    setQuotePrice(estimatedQuotePrice);
                 }
             };
 
@@ -92,6 +107,7 @@ export const useProcessOrder = (
         limitOrder.quote,
         limitOrder.chainId,
         crocEnv !== undefined,
+        limitOrder.curentPoolPriceDisplayNum,
     ]);
 
     /* eslint-disable-next-line camelcase */
@@ -339,10 +355,12 @@ export const useProcessOrder = (
             });
 
             const displayPriceNumInUsd = isAccountView
-                ? basePrice && quotePrice
-                    ? isBaseTokenMoneynessGreaterOrEqual
+                ? isBaseTokenMoneynessGreaterOrEqual
+                    ? basePrice
                         ? priceDecimalCorrected * basePrice
-                        : invPriceDecimalCorrected * quotePrice
+                        : undefined
+                    : quotePrice
+                    ? invPriceDecimalCorrected * quotePrice
                     : undefined
                 : basePrice && quotePrice
                 ? isDenomBase
