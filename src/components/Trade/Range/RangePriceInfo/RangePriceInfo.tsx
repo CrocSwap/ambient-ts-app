@@ -1,10 +1,7 @@
 // START: Import Local Files
 import styles from './RangePriceInfo.module.css';
-import { memo, useContext, useEffect, useMemo, useState } from 'react';
-import {
-    isStableToken,
-    getFormattedNumber,
-} from '../../../../ambient-utils/dataLayer';
+import { memo, useContext, useEffect, useState } from 'react';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
@@ -41,7 +38,6 @@ function RangePriceInfo(props: propsIF) {
         poolPriceCharacter,
         // aprPercentage,
         pinnedDisplayPrices,
-        isTokenABase,
         isAmbient,
     } = props;
     const {
@@ -49,17 +45,20 @@ function RangePriceInfo(props: propsIF) {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
-    const { isUsdConversionEnabled, setIsUsdConversionEnabled } =
-        useContext(PoolContext);
+    const {
+        isUsdConversionEnabled,
+        setIsUsdConversionEnabled,
+        poolPriceDisplay,
+    } = useContext(PoolContext);
     const {
         chainData: { chainId },
         crocEnv,
     } = useContext(CrocEnvContext);
 
-    const { isDenomBase, tokenA, tokenB } = useContext(TradeDataContext);
+    const { isDenomBase, baseToken, quoteToken } = useContext(TradeDataContext);
 
-    const [tokenAPrice, setTokenAPrice] = useState<number | undefined>();
-    const [tokenBPrice, setTokenBPrice] = useState<number | undefined>();
+    const [basePrice, setBasePrice] = useState<number | undefined>();
+    const [quotePrice, setQuotePrice] = useState<number | undefined>();
 
     const [userFlippedMaxMinDisplay, setUserFlippedMaxMinDisplay] =
         useState<boolean>(false);
@@ -69,9 +68,6 @@ function RangePriceInfo(props: propsIF) {
     // eslint-disable-next-line
     const [maxPriceUsdEquivalent, setMaxPriceUsdEquivalent] =
         useState<string>('');
-
-    const tokenAAddress = tokenA.address;
-    const tokenBAddress = tokenB.address;
 
     const minPrice = userFlippedMaxMinDisplay
         ? isAmbient
@@ -95,61 +91,57 @@ function RangePriceInfo(props: propsIF) {
           pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas
         : '...';
 
-    const isDenomTokenA =
-        (isDenomBase && isTokenABase) || (!isDenomBase && !isTokenABase);
-
     const pinnedMinPrice = pinnedDisplayPrices?.pinnedMinPriceDisplayTruncated;
     const pinnedMaxPrice = pinnedDisplayPrices?.pinnedMaxPriceDisplayTruncated;
 
-    const isStableTokenA = useMemo(
-        () => isStableToken(tokenAAddress),
-        [tokenAAddress, chainId],
-    );
-
-    const isStableTokenB = useMemo(
-        () => isStableToken(tokenBAddress),
-        [tokenBAddress, chainId],
-    );
-
-    const isEitherTokenStable = isStableTokenA || isStableTokenB;
-
     const updateMainnetPricesAsync = async () => {
         if (!crocEnv) return;
-        const tokenAPrice = await cachedFetchTokenPrice(
-            tokenAAddress,
-            chainId,
-            crocEnv,
-        );
+        const baseTokenPrice =
+            (await cachedFetchTokenPrice(baseToken.address, chainId, crocEnv))
+                ?.usdPrice || 0;
 
-        const tokenBPrice = await cachedFetchTokenPrice(
-            tokenBAddress,
-            chainId,
-            crocEnv,
-        );
+        const quoteTokenPrice =
+            (await cachedFetchTokenPrice(quoteToken.address, chainId, crocEnv))
+                ?.usdPrice || 0;
 
-        setTokenAPrice(tokenAPrice?.usdPrice);
-        setTokenBPrice(tokenBPrice?.usdPrice);
+        if (baseTokenPrice) {
+            setBasePrice(baseTokenPrice);
+        } else if (quoteTokenPrice && poolPriceDisplay) {
+            // this may be backwards
+            const estimatedBasePrice = quoteTokenPrice / poolPriceDisplay;
+            setBasePrice(estimatedBasePrice);
+        }
+        if (quoteTokenPrice) {
+            setQuotePrice(quoteTokenPrice);
+        } else if (baseTokenPrice && poolPriceDisplay) {
+            const estimatedQuotePrice = baseTokenPrice * poolPriceDisplay;
+            setQuotePrice(estimatedQuotePrice);
+        }
     };
 
     useEffect(() => {
         setUserFlippedMaxMinDisplay(false);
 
         updateMainnetPricesAsync();
-    }, [crocEnv, tokenAAddress + tokenBAddress, isDenomTokenA]);
+    }, [
+        crocEnv !== undefined,
+        baseToken.address + quoteToken.address,
+        poolPriceDisplay,
+    ]);
 
     useEffect(() => {
         if (!pinnedMinPrice || !pinnedMaxPrice) return;
 
         let minPriceNum, maxPriceNum;
 
-        if (isDenomTokenA) {
-            minPriceNum = parseFloat(pinnedMinPrice) * (tokenBPrice || 0);
+        if (isDenomBase) {
+            minPriceNum = parseFloat(pinnedMinPrice) * (quotePrice || 0);
 
-            maxPriceNum = parseFloat(pinnedMaxPrice) * (tokenBPrice || 0);
+            maxPriceNum = parseFloat(pinnedMaxPrice) * (quotePrice || 0);
         } else {
-            minPriceNum = parseFloat(pinnedMinPrice) * (tokenAPrice || 0);
+            minPriceNum = parseFloat(pinnedMinPrice) * (basePrice || 0);
 
-            maxPriceNum = parseFloat(pinnedMaxPrice) * (tokenAPrice || 0);
+            maxPriceNum = parseFloat(pinnedMaxPrice) * (basePrice || 0);
         }
 
         const minDisplayUsdPriceString = getFormattedNumber({
@@ -165,55 +157,46 @@ function RangePriceInfo(props: propsIF) {
             prefix: '$',
         });
         setMaxPriceUsdEquivalent(maxDisplayUsdPriceString);
-    }, [
-        pinnedMinPrice,
-        pinnedMaxPrice,
-        userFlippedMaxMinDisplay,
-        isDenomTokenA,
-        tokenBPrice,
-        tokenAPrice,
-    ]);
+    }, [pinnedMinPrice, pinnedMaxPrice, isDenomBase, basePrice, quotePrice]);
 
     // JSX frag for lowest price in range
 
-    const nonDenomTokenDollarEquivalentExists = !isDenomTokenA
-        ? tokenAPrice !== undefined
-        : tokenBPrice !== undefined;
+    const nonDenomTokenDollarEquivalentExists = !isDenomBase
+        ? quotePrice !== undefined
+        : basePrice !== undefined;
 
-    const minimumPrice =
-        nonDenomTokenDollarEquivalentExists && !isEitherTokenStable ? (
-            <div className={styles.price_display}>
-                <h4 className={styles.price_title}>Min Price</h4>
-                <span id='min_price_readable' className={styles.min_price}>
-                    {isUsdConversionEnabled ? minPriceUsdEquivalent : minPrice}
-                </span>
-            </div>
-        ) : (
-            <div className={styles.price_display} style={{ cursor: 'default' }}>
-                <h4 className={styles.price_title}>Min Price</h4>
-                <span id='min_price_readable' className={styles.min_price}>
-                    {minPrice}
-                </span>
-            </div>
-        );
+    const minimumPrice = nonDenomTokenDollarEquivalentExists ? (
+        <div className={styles.price_display}>
+            <h4 className={styles.price_title}>Min Price</h4>
+            <span id='min_price_readable' className={styles.min_price}>
+                {isUsdConversionEnabled ? minPriceUsdEquivalent : minPrice}
+            </span>
+        </div>
+    ) : (
+        <div className={styles.price_display} style={{ cursor: 'default' }}>
+            <h4 className={styles.price_title}>Min Price</h4>
+            <span id='min_price_readable' className={styles.min_price}>
+                {minPrice}
+            </span>
+        </div>
+    );
 
     // JSX frag for highest price in range
-    const maximumPrice =
-        nonDenomTokenDollarEquivalentExists && !isEitherTokenStable ? (
-            <div className={styles.price_display}>
-                <h4 className={styles.price_title}>Max Price</h4>
-                <span id='max_price_readable' className={styles.max_price}>
-                    {isUsdConversionEnabled ? maxPriceUsdEquivalent : maxPrice}
-                </span>
-            </div>
-        ) : (
-            <div className={styles.price_display} style={{ cursor: 'default' }}>
-                <h4 className={styles.price_title}>Max Price</h4>
-                <span id='max_price_readable' className={styles.max_price}>
-                    {maxPrice}
-                </span>
-            </div>
-        );
+    const maximumPrice = nonDenomTokenDollarEquivalentExists ? (
+        <div className={styles.price_display}>
+            <h4 className={styles.price_title}>Max Price</h4>
+            <span id='max_price_readable' className={styles.max_price}>
+                {isUsdConversionEnabled ? maxPriceUsdEquivalent : maxPrice}
+            </span>
+        </div>
+    ) : (
+        <div className={styles.price_display} style={{ cursor: 'default' }}>
+            <h4 className={styles.price_title}>Max Price</h4>
+            <span id='max_price_readable' className={styles.max_price}>
+                {maxPrice}
+            </span>
+        </div>
+    );
 
     // TODO: remove unnecessary top-level wrapper
 
@@ -221,11 +204,8 @@ function RangePriceInfo(props: propsIF) {
         <div
             className={styles.price_info_container}
             // below needed to prevent an area between the two price displays from having different cursor
-            style={!isEitherTokenStable ? { cursor: 'pointer' } : undefined}
-            onClick={() =>
-                !isEitherTokenStable &&
-                setIsUsdConversionEnabled((prev) => !prev)
-            }
+            style={{ cursor: 'pointer' }}
+            onClick={() => setIsUsdConversionEnabled((prev) => !prev)}
         >
             <div className={styles.price_info_content}>
                 {/* {aprDisplay} */}
