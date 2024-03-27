@@ -217,7 +217,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
                     }
                     negative={!isLoading && valueImpactString.includes('(')}
                 />
-                <RowDisplay
+                {/* <RowDisplay
                     item1='Impact'
                     item2={''}
                     item3={
@@ -226,7 +226,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
                             : valueImpactString
                     }
                     negative={!isLoading && valueImpactString.includes('(')}
-                />
+                /> */}
             </div>
             {gasPriceDropdown}
         </div>
