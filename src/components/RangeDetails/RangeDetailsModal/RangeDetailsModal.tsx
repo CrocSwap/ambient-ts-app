@@ -47,7 +47,12 @@ interface propsIF {
 function RangeDetailsModal(props: propsIF) {
     const [showShareComponent, setShowShareComponent] = useState(true);
     const { isDenomBase } = useContext(TradeDataContext);
-
+    const {
+        chainData: { chainId, poolIndex },
+        provider,
+        crocEnv,
+        activeNetwork,
+    } = useContext(CrocEnvContext);
     const { position, isAccountView, onClose } = props;
 
     const {
@@ -76,7 +81,7 @@ function RangeDetailsModal(props: propsIF) {
         ambientOrMax: highRangeDisplay,
         baseTokenCharacter,
         quoteTokenCharacter,
-    } = useProcessRange(position, userAddress);
+    } = useProcessRange(position, crocEnv, userAddress);
 
     const [serverPositionId, setServerPositionId] = useState<
         string | undefined
@@ -91,10 +96,7 @@ function RangeDetailsModal(props: propsIF) {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const {
-        chainData: { chainId, poolIndex },
-        provider,
-    } = useContext(CrocEnvContext);
+
     const { lastBlockNumber, isActiveNetworkBlast } =
         useContext(ChainDataContext);
 
@@ -134,8 +136,6 @@ function RangeDetailsModal(props: propsIF) {
     const [updatedPositionApy, setUpdatedPositionApy] = useState<
         number | undefined
     >(positionApy);
-
-    const { crocEnv, activeNetwork } = useContext(CrocEnvContext);
 
     const [_, copy] = useCopyToClipboard();
 
