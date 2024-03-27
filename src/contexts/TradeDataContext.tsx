@@ -105,6 +105,7 @@ export const TradeDataContextProvider = (props: {
             };
         }
     }, [tokenA, tokenB]);
+
     const toggleDidUserFlipDenom = () => {
         setDidUserFlipDenom(!didUserFlipDenom);
     };
@@ -133,6 +134,12 @@ export const TradeDataContextProvider = (props: {
         undefined,
     );
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = React.useState(0);
+
+    useEffect(() => {
+        setPoolPriceNonDisplay(0);
+        setDidUserFlipDenom(false);
+    }, [baseToken.address + quoteToken.address]);
+
     const [slippageTolerance, setSlippageTolerance] = React.useState(0.5);
 
     const getDefaultRangeWidthForTokenPair = (

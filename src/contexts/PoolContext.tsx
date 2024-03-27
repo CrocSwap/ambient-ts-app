@@ -7,17 +7,13 @@ import React, {
     useState,
 } from 'react';
 import { estimateFrom24HrAmbientApr } from '../ambient-utils/api';
-import { usePoolPricing } from '../App/hooks/usePoolPricing';
-import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
 import { usePoolList } from '../App/hooks/usePoolList';
 import { PoolIF, PoolStatIF, TokenIF } from '../ambient-utils/types';
 import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
-import { UserDataContext } from './UserDataContext';
 import { TradeDataContext } from './TradeDataContext';
-import { ReceiptContext } from './ReceiptContext';
 import { isWethToken } from '../ambient-utils/dataLayer';
 
 interface PoolContextIF {
@@ -34,26 +30,26 @@ interface PoolContextIF {
     ambientApy: number | undefined;
     dailyVol: number | undefined;
     poolData: PoolStatIF;
+    usdPrice: number | undefined;
+    isUsdConversionEnabled: boolean;
+    setIsUsdConversionEnabled: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const PoolContext = createContext<PoolContextIF>({} as PoolContextIF);
 
 export const PoolContextProvider = (props: { children: React.ReactNode }) => {
-    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const { crocEnv, provider, chainData, activeNetwork } =
         useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const {
-        baseToken: { address: baseTokenAddress, decimals: baseTokenDecimals },
-        quoteToken: {
-            address: quoteTokenAddress,
-            decimals: quoteTokenDecimals,
-        },
+        baseToken: { address: baseTokenAddress },
+        quoteToken: { address: quoteTokenAddress },
     } = useContext(TradeTokenContext);
 
-    const { sessionReceipts } = useContext(ReceiptContext);
-    const { baseToken, quoteToken } = useContext(TradeDataContext);
-    const { isUserConnected } = useContext(UserDataContext);
+    const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
+
+    const [isUsdConversionEnabled, setIsUsdConversionEnabled] = useState(false);
+
     const poolList: PoolIF[] = usePoolList(
         activeNetwork.graphCacheUrl,
         crocEnv,
@@ -113,29 +109,26 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         poolIdx: chainData.poolIndex,
     };
 
-    const poolData = useFetchPoolStats(poolArg);
+    const poolData = useFetchPoolStats(poolArg, true);
 
     const [ambientApy, setAmbientApy] = useState<number | undefined>();
     const [dailyVol] = useState<number | undefined>();
 
     const {
-        isPoolInitialized,
         poolPriceDisplay,
-        isPoolPriceChangePositive,
         poolPriceChangePercent,
-    } = usePoolPricing({
-        crocEnv,
-        pathname: location.pathname,
-        baseTokenAddress,
-        quoteTokenAddress,
-        baseTokenDecimals,
-        quoteTokenDecimals,
-        chainData,
-        receiptCount: sessionReceipts.length,
-        isUserLoggedIn: !!isUserConnected,
-        lastBlockNumber,
-        cachedQuerySpotPrice,
-    });
+        isPoolPriceChangePositive,
+        basePrice,
+        quotePrice,
+        isPoolInitialized,
+    } = poolData;
+
+    const usdPrice =
+        poolPriceDisplay && basePrice && quotePrice
+            ? isDenomBase
+                ? (1 / poolPriceDisplay) * quotePrice
+                : poolPriceDisplay * basePrice
+            : undefined;
 
     // Asynchronously query the APY and volatility estimates from the backend
     useEffect(() => {
@@ -179,6 +172,9 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         ambientApy,
         dailyVol,
         poolData,
+        usdPrice,
+        isUsdConversionEnabled,
+        setIsUsdConversionEnabled,
     };
 
     return (

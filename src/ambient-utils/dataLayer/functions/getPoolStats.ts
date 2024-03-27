@@ -45,13 +45,9 @@ const fetchPoolStats = async (
     quote: string,
     poolIdx: number,
     _cacheTimeTag: number | string,
-    crocEnv: CrocEnv,
     graphCacheUrl: string,
-    cachedFetchTokenPrice: TokenPriceFn,
-    cachedTokenDetails: FetchContractDetailsFn,
-    tokenList: TokenIF[],
     histTime?: number,
-): Promise<PoolStatsIF | undefined> => {
+): Promise<PoolStatsServerIF | undefined> => {
     const poolStatsFreshEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/pool_stats?'
         : graphCacheUrl + '/pool_stats?';
@@ -73,18 +69,7 @@ const fetchPoolStats = async (
                     return;
                 }
                 const payload = json.data as PoolStatsServerIF;
-
-                return expandPoolStats(
-                    payload,
-                    base,
-                    quote,
-                    poolIdx,
-                    chainId,
-                    crocEnv,
-                    cachedFetchTokenPrice,
-                    cachedTokenDetails,
-                    tokenList,
-                );
+                return payload;
             });
     } else {
         return fetch(
@@ -102,27 +87,15 @@ const fetchPoolStats = async (
                     return;
                 }
                 const payload = json.data as PoolStatsServerIF;
-
-                return expandPoolStats(
-                    payload,
-                    base,
-                    quote,
-                    poolIdx,
-                    chainId,
-                    crocEnv,
-                    cachedFetchTokenPrice,
-                    cachedTokenDetails,
-                    tokenList,
-                );
+                return payload;
             });
     }
 };
 
-async function expandPoolStats(
+export async function expandPoolStats(
     payload: PoolStatsServerIF,
     base: string,
     quote: string,
-    poolIdx: number,
     chainId: string,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
@@ -434,13 +407,9 @@ export type PoolStatsFn = (
     quoteToken: string,
     poolIdx: number,
     _cacheTimeTag: number | string,
-    crocEnv: CrocEnv,
     graphCacheUrl: string,
-    cachedFetchTokenPrice: TokenPriceFn,
-    cachedTokenDetails: FetchContractDetailsFn,
-    tokenList: TokenIF[],
     histTime?: number,
-) => Promise<PoolStatsIF>;
+) => Promise<PoolStatsServerIF>;
 
 export type Change24Fn = (
     chainId: string,

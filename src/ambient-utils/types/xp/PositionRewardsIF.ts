@@ -1,10 +1,16 @@
 // TODO: complete this when the real API is ready
-export interface BlastPointsServerIF {
+export interface BlastPositionPointsServerIF {
+    points: number;
+    startBlock: number;
+    endBlock: number;
+}
+export interface BlastPositionGoldServerIF {
     points: number;
     startBlock: number;
     endBlock: number;
 }
 
-export interface BlastPointsDataIF {
+export interface BlastRewardsDataIF {
     points: string;
+    gold: string;
 }

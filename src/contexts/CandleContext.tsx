@@ -177,19 +177,16 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     ]);
 
     useEffect(() => {
-        if (
-            isChartEnabled &&
-            isUserOnline &&
-            !isUserIdle &&
-            candleScale.isShowLatestCandle
-        ) {
+        if (isChartEnabled && isUserOnline && candleScale.isShowLatestCandle) {
             fetchCandles(true);
         }
     }, [
         isChartEnabled,
         isUserOnline,
-        isUserIdle,
-        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+
+        isUserIdle
+            ? Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS)
+            : Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS)),
         baseTokenAddress + quoteTokenAddress,
         candleScale?.isFetchForTimeframe,
         candleScale.nCandles,
@@ -209,8 +206,11 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             const candleTime = candleScale.isShowLatestCandle
                 ? Date.now() / 1000
                 : candleScale.lastCandleDate || 0;
-            const nCandles =
-                candleScale?.nCandles > 2999 ? 2999 : candleScale?.nCandles;
+
+            const nCandles = Math.min(
+                Math.max(candleScale?.nCandles || 7, 7),
+                2999,
+            );
 
             !bypassSpinner && setIsFetchingCandle(true);
             setTimeOfEndCandle(undefined);

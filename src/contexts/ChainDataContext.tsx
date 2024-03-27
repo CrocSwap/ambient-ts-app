@@ -10,6 +10,7 @@ import useWebSocket from 'react-use-websocket';
 import {
     BLOCK_POLLING_RPC_URL,
     IS_LOCAL_ENV,
+    SCROLL_RPC_URL,
     SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
     supportedNetworks,
 } from '../ambient-utils/constants';
@@ -18,7 +19,6 @@ import { TokenIF } from '../ambient-utils/types';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
-import { Client } from '@covalenthq/client-sdk';
 import {
     BlastUserXpDataIF,
     UserDataContext,
@@ -31,13 +31,13 @@ import {
     fetchUserXpData,
 } from '../ambient-utils/api';
 import { BLAST_RPC_URL } from '../ambient-utils/constants/networks/blastNetwork';
+import { AppStateContext } from './AppStateContext';
 
 interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
     setGasPriceinGwei: Dispatch<SetStateAction<number | undefined>>;
     lastBlockNumber: number;
     setLastBlockNumber: Dispatch<SetStateAction<number>>;
-    client: Client;
     connectedUserXp: UserXpDataIF;
     connectedUserBlastXp: BlastUserXpDataIF;
     isActiveNetworkBlast: boolean;
@@ -53,6 +53,7 @@ export const ChainDataContext = createContext<ChainDataContextIF>(
 export const ChainDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
+    const { isUserIdle } = useContext(AppStateContext);
     const { setTokenBalances } = useContext(TokenBalanceContext);
 
     const { chainData, activeNetwork, crocEnv, provider } =
@@ -60,8 +61,6 @@ export const ChainDataContextProvider = (props: {
     const { cachedFetchTokenBalances, cachedTokenDetails } =
         useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
-
-    const client = new Client(process.env.REACT_APP_COVALENT_API_KEY || '');
 
     const { userAddress, isUserConnected } = useContext(UserDataContext);
 
@@ -92,6 +91,8 @@ export const ChainDataContextProvider = (props: {
     // boolean representing whether the active network is an L2
     const isActiveNetworkL2: boolean = L2_NETWORKS.includes(chainData.chainId);
 
+    const BLOCK_NUM_POLL_MS = isUserIdle ? 15000 : 5000; // poll for new block every 15 seconds when user is idle, every 5 seconds when user is active
+
     async function pollBlockNum(): Promise<void> {
         // if default RPC is Infura, use key from env variable
         const nodeUrl =
@@ -101,6 +102,8 @@ export const ChainDataContextProvider = (props: {
                   process.env.REACT_APP_INFURA_KEY
                 : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
                 ? BLAST_RPC_URL
+                : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
+                ? SCROLL_RPC_URL
                 : blockPollingUrl;
         try {
             const lastBlockNumber = await fetchBlockNumber(nodeUrl);
@@ -110,21 +113,19 @@ export const ChainDataContextProvider = (props: {
         }
     }
 
-    const BLOCK_NUM_POLL_MS = 5000;
     useEffect(() => {
-        (async () => {
-            await pollBlockNum();
-            // Don't use polling, useWebSocket (below)
-            if (chainData.wsUrl) {
-                return;
-            }
-            // Grab block right away, then poll on periodic basis
+        // Grab block right away, then poll on periodic basis; useful for initial load
+        pollBlockNum();
 
-            const interval = setInterval(async () => {
-                await pollBlockNum();
-            }, BLOCK_NUM_POLL_MS);
-            return () => clearInterval(interval);
-        })();
+        // Don't use polling, use WebSocket (below) if available
+        if (chainData.wsUrl) {
+            return;
+        }
+
+        const interval = setInterval(async () => {
+            pollBlockNum();
+        }, BLOCK_NUM_POLL_MS);
+        return () => clearInterval(interval);
     }, [blockPollingUrl, BLOCK_NUM_POLL_MS]);
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
@@ -177,9 +178,13 @@ export const ChainDataContextProvider = (props: {
         }
     };
 
+    const gasPricePollingCacheTime = Math.floor(
+        Date.now() / (isUserIdle ? 60000 : 10000),
+    ); // poll for new gas price every 60 seconds when user is idle, every 10 seconds when user is active
+
     useEffect(() => {
         fetchGasPrice();
-    }, [lastBlockNumber]);
+    }, [gasPricePollingCacheTime]);
 
     // used to trigger token balance refreshes every 5 minutes
     const everyFiveMinutes = Math.floor(Date.now() / 300000);
@@ -192,8 +197,7 @@ export const ChainDataContextProvider = (props: {
                 crocEnv &&
                 isUserConnected &&
                 userAddress &&
-                chainData.chainId &&
-                client
+                chainData.chainId
             ) {
                 try {
                     const tokenBalances: TokenIF[] =
@@ -204,7 +208,6 @@ export const ChainDataContextProvider = (props: {
                             cachedTokenDetails,
                             crocEnv,
                             activeNetwork.graphCacheUrl,
-                            client,
                             tokens.tokenUniv,
                         );
                     const tokensWithLogos = tokenBalances.map((token) => {
@@ -234,7 +237,6 @@ export const ChainDataContextProvider = (props: {
         userAddress,
         chainData.chainId,
         everyFiveMinutes,
-        client !== undefined,
         activeNetwork.graphCacheUrl,
     ]);
 
@@ -310,7 +312,6 @@ export const ChainDataContextProvider = (props: {
         isActiveNetworkBlast,
         isActiveNetworkScroll,
         isActiveNetworkMainnet,
-        client,
         isActiveNetworkL2,
     };
 

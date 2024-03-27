@@ -5,7 +5,6 @@ import {
     useContext,
     useEffect,
     useState,
-    useMemo,
     memo,
 } from 'react';
 import { calcImpact } from '../../../App/functions/calcImpact';
@@ -23,6 +22,7 @@ import TokenInputWithWalletBalance from '../../Form/TokenInputWithWalletBalance'
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 
 interface propsIF {
     sellQtyString: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -59,11 +59,11 @@ function SwapTokenInput(props: propsIF) {
         isSaveAsDexSurplusChecked,
         slippageTolerancePercentage,
         setSwapAllowed,
-        setLastImpactQuery,
         isLiquidityInsufficient,
         setIsLiquidityInsufficient,
         toggleDexSelection,
         amountToReduceNativeTokenQty,
+        setLastImpactQuery,
     } = props;
 
     const {
@@ -71,7 +71,7 @@ function SwapTokenInput(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
-    const { poolPriceDisplay, isPoolInitialized } = useContext(PoolContext);
+    const { isPoolInitialized } = useContext(PoolContext);
     const {
         tokenABalance,
         tokenBBalance,
@@ -105,7 +105,6 @@ function SwapTokenInput(props: propsIF) {
 
     const reverseTokens = (skipQuantityReverse?: boolean): void => {
         if (!isPoolInitialized) return;
-
         linkGenAny.navigate({
             chain: chainId,
             tokenA: tokenB.address,
@@ -113,13 +112,6 @@ function SwapTokenInput(props: propsIF) {
         });
 
         if (!skipQuantityReverse) {
-            setLastImpactQuery(() => {
-                return {
-                    input: primaryQuantity,
-                    isInputSell: isTokenAPrimary,
-                    impact: undefined,
-                };
-            });
             !isTokenAPrimary
                 ? sellQtyString !== '' && parseFloat(sellQtyString) > 0
                     ? setIsSellLoading(true)
@@ -166,17 +158,12 @@ function SwapTokenInput(props: propsIF) {
 
     async function refreshImpact(
         input: string,
+        isBlockUpdate: boolean,
         sellToken: boolean,
     ): Promise<number | undefined> {
         if (isNaN(parseFloat(input)) || parseFloat(input) === 0 || !crocEnv) {
             setIsLiquidityInsufficient(false);
-            setLastImpactQuery((lastQuery) => {
-                return {
-                    input: lastQuery?.input || '',
-                    isInputSell: isTokenAPrimary,
-                    impact: undefined,
-                };
-            });
+
             return undefined;
         }
         const impact = await calcImpact(
@@ -187,26 +174,59 @@ function SwapTokenInput(props: propsIF) {
             slippageTolerancePercentage / 100,
             input,
         );
-        setLastImpactQuery((lastQuery) => {
-            if (
-                lastQuery?.input === input &&
-                lastQuery?.isInputSell === isTokenAPrimary
-            ) {
-                return {
-                    input: input,
-                    isInputSell: isTokenAPrimary,
-                    impact: impact,
-                };
-            } else {
-                return {
-                    input: lastQuery?.input || '',
-                    isInputSell: isTokenAPrimary,
-                    impact: undefined,
-                };
-            }
+        if (impact === undefined) return;
+        setLastImpactQuery({
+            input,
+            isInputSell: sellToken,
+            impact,
         });
-
-        isTokenAPrimary ? setIsBuyLoading(false) : setIsSellLoading(false);
+        if (sellToken) {
+            const rawTokenBQty = parseFloat(impact.buyQty);
+            const truncatedTokenBQty = rawTokenBQty
+                ? rawTokenBQty < 2
+                    ? rawTokenBQty.toPrecision(6)
+                    : truncateDecimals(rawTokenBQty, rawTokenBQty < 100 ? 3 : 2)
+                : '';
+            setUserTriggeredImpactQueryInProgress((isUserQueryInProgress) => {
+                // console.log({
+                //     isUserQueryInProgress,
+                //     isBlockUpdate,
+                //     truncatedTokenBQty,
+                // });
+                if (isUserQueryInProgress && !isBlockUpdate) {
+                    setBuyQtyString(truncatedTokenBQty);
+                    setIsBuyLoading(false);
+                    return false;
+                } else if (!isUserQueryInProgress && isBlockUpdate) {
+                    setBuyQtyString(truncatedTokenBQty);
+                    setIsBuyLoading(false);
+                    return false;
+                } else {
+                    return isUserQueryInProgress;
+                }
+            });
+        } else {
+            const rawTokenAQty = parseFloat(impact.sellQty);
+            const truncatedTokenAQty = rawTokenAQty
+                ? rawTokenAQty < 2
+                    ? rawTokenAQty.toPrecision(6)
+                    : truncateDecimals(rawTokenAQty, rawTokenAQty < 100 ? 3 : 2)
+                : '';
+            IS_LOCAL_ENV && console.log({ userTriggeredImpactQueryInProgress });
+            setUserTriggeredImpactQueryInProgress((isUserQueryInProgress) => {
+                if (isUserQueryInProgress && !isBlockUpdate) {
+                    setSellQtyString(truncatedTokenAQty);
+                    setIsSellLoading(false);
+                    return false;
+                } else if (!isUserQueryInProgress && isBlockUpdate) {
+                    setSellQtyString(truncatedTokenAQty);
+                    setIsSellLoading(false);
+                    return false;
+                } else {
+                    return isUserQueryInProgress;
+                }
+            });
+        }
 
         // prevent swaps with a price impact in excess of -99.99% or 1 million percent
         if (impact) {
@@ -229,6 +249,7 @@ function SwapTokenInput(props: propsIF) {
     }
 
     const debouncedTokenAChangeEvent = (value: string) => {
+        setUserTriggeredImpactQueryInProgress(true);
         if (parseFloat(value) > 0) setIsBuyLoading(true);
         setSellQtyString(value);
         setPrimaryQuantity(value);
@@ -238,6 +259,7 @@ function SwapTokenInput(props: propsIF) {
     };
 
     const debouncedTokenBChangeEvent = (value: string) => {
+        setUserTriggeredImpactQueryInProgress(true);
         if (parseFloat(value) > 0) setIsSellLoading(true);
         setBuyQtyString(value);
         setPrimaryQuantity(value);
@@ -246,101 +268,36 @@ function SwapTokenInput(props: propsIF) {
         setIsTokenAPrimary(false);
     };
 
-    const handleTokenAChangeEvent = useMemo(
-        () => async (value?: string) => {
-            if (!crocEnv) return;
-            let rawTokenBQty = undefined;
-            if (value !== undefined) {
-                if (parseFloat(value) !== 0) {
-                    const truncatedInputStr = formatTokenInput(value, tokenA);
-                    setLastImpactQuery({
-                        input: truncatedInputStr,
-                        isInputSell: true,
-                        impact: undefined,
-                    });
+    const [
+        userTriggeredImpactQueryInProgress,
+        setUserTriggeredImpactQueryInProgress,
+    ] = useState<boolean>(false);
 
-                    rawTokenBQty = await refreshImpact(truncatedInputStr, true);
-                }
-            } else {
-                setLastImpactQuery({
-                    input: primaryQuantity,
-                    isInputSell: true,
-                    impact: undefined,
-                });
-                rawTokenBQty = await refreshImpact(primaryQuantity, true);
+    const handleTokenAChangeEvent = async (value?: string) => {
+        if (value !== undefined) {
+            if (parseFloat(value) !== 0) {
+                const truncatedInputStr = formatTokenInput(value, tokenA);
+
+                await refreshImpact(truncatedInputStr, false, true);
+                setUserTriggeredImpactQueryInProgress(false);
             }
+        } else {
+            await refreshImpact(primaryQuantity, true, true);
+        }
+    };
 
-            const truncatedTokenBQty = rawTokenBQty
-                ? rawTokenBQty < 2
-                    ? rawTokenBQty.toPrecision(6)
-                    : truncateDecimals(rawTokenBQty, rawTokenBQty < 100 ? 3 : 2)
-                : '';
+    const handleTokenBChangeEvent = async (value?: string) => {
+        if (value !== undefined) {
+            if (parseFloat(value) !== 0) {
+                const truncatedInputStr = formatTokenInput(value, tokenB);
 
-            setBuyQtyString(truncatedTokenBQty);
-            setIsBuyLoading(false);
-        },
-        [
-            crocEnv,
-            isPoolInitialized,
-            poolPriceDisplay,
-            tokenA.address,
-            tokenB.address,
-            slippageTolerancePercentage,
-            isTokenAPrimary,
-            sellQtyString,
-            buyQtyString,
-            primaryQuantity,
-        ],
-    );
-
-    const handleTokenBChangeEvent = useMemo(
-        () => async (value?: string) => {
-            if (!crocEnv) return;
-
-            let rawTokenAQty: number | undefined;
-            if (value !== undefined) {
-                if (parseFloat(value) !== 0) {
-                    const truncatedInputStr = formatTokenInput(value, tokenB);
-                    setLastImpactQuery({
-                        input: truncatedInputStr,
-                        isInputSell: false,
-                        impact: undefined,
-                    });
-                    rawTokenAQty = await refreshImpact(
-                        truncatedInputStr,
-                        false,
-                    );
-                }
-            } else {
-                setLastImpactQuery({
-                    input: primaryQuantity,
-                    isInputSell: false,
-                    impact: undefined,
-                });
-                rawTokenAQty = await refreshImpact(primaryQuantity, false);
+                await refreshImpact(truncatedInputStr, false, false);
             }
-
-            const truncatedTokenAQty = rawTokenAQty
-                ? rawTokenAQty < 2
-                    ? rawTokenAQty.toPrecision(6)
-                    : truncateDecimals(rawTokenAQty, rawTokenAQty < 100 ? 3 : 2)
-                : '';
-            setSellQtyString(truncatedTokenAQty);
-            setIsSellLoading(false);
-        },
-        [
-            crocEnv,
-            poolPriceDisplay,
-            isPoolInitialized,
-            tokenA.address,
-            tokenB.address,
-            slippageTolerancePercentage,
-            isTokenAPrimary,
-            sellQtyString,
-            buyQtyString,
-            primaryQuantity,
-        ],
-    );
+            setUserTriggeredImpactQueryInProgress(false);
+        } else {
+            await refreshImpact(primaryQuantity, true, false);
+        }
+    };
 
     const refreshTokenData = async () => {
         if (isTokenAPrimary) {
@@ -362,10 +319,12 @@ function SwapTokenInput(props: propsIF) {
     useEffect(() => {
         if (isTokenAPrimary) {
             if (sellQtyString !== primaryQuantity) {
+                console.log({ primaryQuantity });
                 setSellQtyString && setSellQtyString(primaryQuantity);
             }
         } else {
             if (buyQtyString !== primaryQuantity) {
+                console.log({ primaryQuantity });
                 setBuyQtyString && setBuyQtyString(primaryQuantity);
             }
         }
@@ -405,7 +364,6 @@ function SwapTokenInput(props: propsIF) {
                 alignItems='center'
             >
                 <TokensArrow
-                    disabled={isBuyLoading || isSellLoading}
                     onClick={() => {
                         isTokenAPrimary
                             ? sellQtyString !== '' &&
@@ -420,6 +378,7 @@ function SwapTokenInput(props: propsIF) {
                         if (!isTokenAPrimary) {
                             setSellQtyString(primaryQuantity);
                         } else {
+                            console.log({ primaryQuantity });
                             setBuyQtyString(primaryQuantity);
                         }
                         setIsTokenAPrimary(!isTokenAPrimary);
