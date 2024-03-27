@@ -132,29 +132,31 @@ export async function expandPoolStats(
             (await cachedTokenDetails(provider, quote, chainId))?.decimals) ??
         DEFAULT_DECIMALS;
 
-    const spotPrice = await cachedQuerySpotPrice(
-        crocEnv,
-        base,
-        quote,
-        chainId,
-        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-    );
-
-    const displayPoolPrice = toDisplayPrice(
-        spotPrice,
-        baseDecimals,
-        quoteDecimals,
-    );
+    const getSpotPrice = async () => {
+        const spotPrice = await cachedQuerySpotPrice(
+            crocEnv,
+            base,
+            quote,
+            chainId,
+            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+        );
+        const displayPoolPrice = toDisplayPrice(
+            spotPrice,
+            baseDecimals,
+            quoteDecimals,
+        );
+        return displayPoolPrice;
+    };
 
     const basePrice = baseUsdPrice
         ? baseUsdPrice
-        : displayPoolPrice && quoteUsdPrice
-        ? quoteUsdPrice / displayPoolPrice
+        : quoteUsdPrice
+        ? quoteUsdPrice / (await getSpotPrice())
         : 0.0;
     const quotePrice = quoteUsdPrice
         ? quoteUsdPrice
-        : displayPoolPrice && baseUsdPrice
-        ? baseUsdPrice * displayPoolPrice
+        : baseUsdPrice
+        ? baseUsdPrice * (await getSpotPrice())
         : 0.0;
 
     return decoratePoolStats(
