@@ -50,6 +50,8 @@ const useChatSocket = (
     address?: string,
     ensName?: string | null,
     currentUserID?: string,
+    freezePanel?: () => void,
+    activatePanel?: () => void,
 ) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const socketRef: any = useRef();
@@ -318,6 +320,7 @@ const useChatSocket = (
         }
 
         async function getRest() {
+            if (freezePanel) freezePanel();
             const data =
                 room === 'Admins'
                     ? await getAllMessages(0)
@@ -336,6 +339,7 @@ const useChatSocket = (
             });
             setUserMap(usmp);
             setUsers(userListData);
+            if (activatePanel) activatePanel();
         }
 
         getRest();

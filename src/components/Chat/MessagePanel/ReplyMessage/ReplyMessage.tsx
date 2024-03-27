@@ -193,6 +193,7 @@ export default function ReplyMessage(props: propsIF) {
         </motion.div>
     ) : (
         <>
+            <div className={`${styles.shown_name} `}></div>
             <span className={styles.deleted_msg_text}>
                 This message has been deleted
             </span>

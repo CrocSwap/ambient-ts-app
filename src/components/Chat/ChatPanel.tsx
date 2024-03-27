@@ -87,6 +87,10 @@ function ChatPanel(props: propsIF) {
     const [notConnectedUserInterval, setNotConnectedUserInterval] =
         useState<NodeJS.Timer>();
 
+    const [detectLastScrolled, setDetectLastScrolled] = useState(true);
+    const detectLastScrolledRef = useRef<boolean>();
+    detectLastScrolledRef.current = detectLastScrolled;
+
     // that block toggled when message count limit is handled --------------------------------------------
 
     // const [isInputDisabled, setIsInputDisabled] = useState<boolean>(false);
@@ -136,6 +140,20 @@ function ChatPanel(props: propsIF) {
         setToastrType(type);
     };
 
+    const freezePanel = () => {
+        messageEnd.current?.style.setProperty('opacity', '0');
+    };
+    const activatePanel = () => {
+        messageEnd.current?.style.setProperty('opacity', '1');
+        if (messageEnd.current) {
+            messageEnd.current.scrollTo({
+                left: 0,
+                top: messageEnd.current.scrollHeight,
+                behavior: 'instant',
+            });
+        }
+    };
+
     const {
         messages,
         getMsg,
@@ -166,6 +184,8 @@ function ChatPanel(props: propsIF) {
         userAddress,
         ens,
         currentUser,
+        freezePanel,
+        activatePanel,
     );
 
     const { getID, updateUser, updateMessageUser } = useChatApi();
@@ -266,10 +286,6 @@ function ChatPanel(props: propsIF) {
     });
 
     useEffect(() => {
-        return clearInterval(notConnectedUserInterval);
-    }, []);
-
-    useEffect(() => {
         if (room == undefined) {
             return;
         }
@@ -303,12 +319,12 @@ function ChatPanel(props: propsIF) {
                 }
             } else if (messageUser === currentUser) {
                 setIsScrollToBottomButtonPressed(true);
-                scrollToBottom();
+                // scrollToBottom();
 
                 setNotificationCount(0);
             }
         } else {
-            scrollToBottom();
+            // scrollToBottom();
         }
     }, [lastMessage]);
 
@@ -367,12 +383,20 @@ function ChatPanel(props: propsIF) {
 
     useEffect(() => {
         setIsScrollToBottomButtonPressed(false);
-        scrollToBottom();
+        // scrollToBottom();
         setNotificationCount(0);
-        getMsg();
         setShowPreviousMessagesButton(false);
         setPage(0);
-    }, [room, isChatOpen === false]);
+
+        // handle reply for room change
+        resetReplyState();
+
+        // disable detecting last scroll for 2 seconds
+        setLastScrollListenerActive(false);
+        setTimeout(() => {
+            setLastScrollListenerActive(true);
+        }, 2000);
+    }, [room]);
 
     // useEffect(() => {
     //     if (isMessageDeleted) {
@@ -417,7 +441,9 @@ function ChatPanel(props: propsIF) {
                 setLastScrollListenerActive(true);
             }, 1000);
             if (lastScrolledMessage && lastScrolledMessage.length > 0) {
-                scrollToMessage(lastScrolledMessage);
+                setTimeout(() => {
+                    scrollToMessage(lastScrolledMessage);
+                }, 700);
             }
         } else {
             setLastScrollListenerActive(false);
@@ -437,10 +463,6 @@ function ChatPanel(props: propsIF) {
         if (messages.length == 0) return;
     }, [messages, setMessages]);
 
-    useEffect(() => {
-        resetReplyState();
-    }, [room]);
-
     // domDebug('address', userAddress);
 
     function handleCloseChatPanel() {
@@ -449,8 +471,6 @@ function ChatPanel(props: propsIF) {
 
     const scrollToBottomButton = async () => {
         if (!messageEnd.current) return;
-
-        console.log('scroll to bottom button');
 
         messageEnd.current.scrollTo(0, messageEnd.current.scrollHeight);
         setTimeout(() => {
@@ -539,7 +559,11 @@ function ChatPanel(props: propsIF) {
     };
 
     const handleFocusedMessageOnScroll = () => {
-        if (messageEnd && messageEnd.current) {
+        if (
+            messageEnd &&
+            messageEnd.current &&
+            lastScrollListenerRef.current == true
+        ) {
             const rect = messageEnd.current.getBoundingClientRect();
             const bubbles = document.querySelectorAll('.messageBubble');
             for (let i = 0; i < bubbles.length; i++) {
@@ -576,7 +600,8 @@ function ChatPanel(props: propsIF) {
                     handleFocusedMessageOnScroll();
                 } else {
                     domDebug('selected message', '');
-                    setLastScrolledMessage('');
+
+                    // setLastScrolledMessage('');
                 }
             }
         }
@@ -716,7 +741,7 @@ function ChatPanel(props: propsIF) {
                 setTimeout(() => {
                     updateUserCache();
                     activateToastr('Your wallet is verified!', 'success');
-                }, 300);
+                }, 500);
             })
             // eslint-disable-next-line
             .catch((error: any) => {
