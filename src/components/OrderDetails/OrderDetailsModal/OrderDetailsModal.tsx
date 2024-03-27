@@ -73,7 +73,7 @@ export default function OrderDetailsModal(props: propsIF) {
         truncatedDisplayPriceDenomByMoneyness,
         posHash,
         fillPercentage,
-    } = useProcessOrder(limitOrder, userAddress);
+    } = useProcessOrder(limitOrder, crocEnv, userAddress);
 
     const [isClaimable, setIsClaimable] = useState<boolean>(isOrderFilled);
 

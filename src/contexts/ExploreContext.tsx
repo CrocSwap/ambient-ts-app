@@ -1,5 +1,7 @@
 import {
+    Dispatch,
     ReactNode,
+    SetStateAction,
     createContext,
     useContext,
     useEffect,
@@ -34,6 +36,8 @@ export interface ExploreContextIF {
         reset: () => void;
     };
     tokens: useTokenStatsIF;
+    arePricesDollarized: boolean;
+    setArePricesDollarized: Dispatch<SetStateAction<boolean>>;
 }
 
 export interface PoolDataIF extends PoolIF {
@@ -50,6 +54,7 @@ export interface PoolDataIF extends PoolIF {
         base: number;
         quote: number;
     };
+    usdPriceMoneynessBased: number;
 }
 
 export const ExploreContext = createContext<ExploreContextIF>(
@@ -72,6 +77,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
 
     const [limitedPools, setLimitedPools] = useState<Array<PoolDataIF>>([]);
     const [extraPools, setExtraPools] = useState<Array<PoolDataIF>>([]);
+    const [arePricesDollarized, setArePricesDollarized] = useState(false);
 
     const allPools = useMemo(
         () => limitedPools.concat(extraPools),
@@ -187,6 +193,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                     base: 0,
                     quote: 0,
                 },
+                usdPriceMoneynessBased: 0,
             };
             return poolData;
         }
@@ -247,6 +254,24 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                   pool.quote.decimals,
               );
 
+        const tokenPriceForUsd = shouldInvert
+            ? (
+                  await cachedFetchTokenPrice(
+                      pool.quote.address,
+                      pool.chainId,
+                      crocEnv,
+                  )
+              )?.usdPrice || 0
+            : (
+                  await cachedFetchTokenPrice(
+                      pool.base.address,
+                      pool.chainId,
+                      crocEnv,
+                  )
+              )?.usdPrice || 0;
+
+        const usdPriceMoneynessBased = displayPrice * tokenPriceForUsd;
+
         // return variable
         const poolData: PoolDataIF = {
             ...pool,
@@ -266,6 +291,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 base: baseMoneyness,
                 quote: quoteMoneyness,
             },
+            usdPriceMoneynessBased,
         };
         // write a pool name should it not be there already
         poolData.name =
@@ -369,6 +395,8 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             },
         },
         tokens: dexTokens,
+        arePricesDollarized,
+        setArePricesDollarized,
     };
 
     return (

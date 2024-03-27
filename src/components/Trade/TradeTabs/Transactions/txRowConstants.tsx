@@ -15,6 +15,8 @@ import { TokenContext } from '../../../../contexts/TokenContext';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { RowItem } from '../../../../styled/Components/TransactionTable';
 import { Link } from 'react-router-dom';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 
 interface propsIF {
     txHashTruncated: string;
@@ -38,6 +40,9 @@ interface propsIF {
     truncatedLowDisplayPrice: string | undefined;
     truncatedHighDisplayPrice: string | undefined;
     priceCharacter: string;
+    displayPriceNumInUsd: number | undefined;
+    lowDisplayPriceInUsd: number | undefined;
+    highDisplayPriceInUsd: number | undefined;
     truncatedLowDisplayPriceDenomByMoneyness: string | undefined;
     truncatedHighDisplayPriceDenomByMoneyness: string | undefined;
     truncatedDisplayPriceDenomByMoneyness: string | undefined;
@@ -91,6 +96,9 @@ export const txRowConstants = (props: propsIF) => {
         type,
         truncatedLowDisplayPrice,
         truncatedHighDisplayPrice,
+        displayPriceNumInUsd,
+        lowDisplayPriceInUsd,
+        highDisplayPriceInUsd,
         priceCharacter,
         truncatedHighDisplayPriceDenomByMoneyness,
         truncatedLowDisplayPriceDenomByMoneyness,
@@ -99,8 +107,8 @@ export const txRowConstants = (props: propsIF) => {
         handleWalletClick,
         handleWalletCopy,
     } = props;
-
     const { tokens } = useContext(TokenContext);
+    const { isUsdConversionEnabled } = useContext(PoolContext);
     const baseToken: TokenIF | undefined = tokens.getTokenByAddress(tx.base);
     const quoteToken: TokenIF | undefined = tokens.getTokenByAddress(tx.quote);
 
@@ -142,6 +150,18 @@ export const txRowConstants = (props: propsIF) => {
             </TextOnlyTooltip>
         </RowItem>
     );
+
+    const formattedUsdPrice = displayPriceNumInUsd
+        ? getFormattedNumber({ value: displayPriceNumInUsd, prefix: '$' })
+        : '...';
+
+    const formattedLowUsdPrice = lowDisplayPriceInUsd
+        ? getFormattedNumber({ value: lowDisplayPriceInUsd, prefix: '$' })
+        : '...';
+
+    const formattedHighUsdPrice = highDisplayPriceInUsd
+        ? getFormattedNumber({ value: highDisplayPriceInUsd, prefix: '$' })
+        : '...';
 
     const usdValueWithTooltip = (
         <RowItem
@@ -521,18 +541,38 @@ export const txRowConstants = (props: propsIF) => {
             tabIndex={0}
         >
             <p>
-                <span>{truncatedLowDisplayPrice ? priceCharacter : '…'}</span>
+                <span>
+                    {truncatedLowDisplayPrice && !isUsdConversionEnabled
+                        ? priceCharacter
+                        : isUsdConversionEnabled
+                        ? ''
+                        : '…'}
+                </span>
                 <span>
                     {isAccountView
-                        ? truncatedLowDisplayPriceDenomByMoneyness
+                        ? isUsdConversionEnabled
+                            ? formattedLowUsdPrice
+                            : truncatedLowDisplayPriceDenomByMoneyness
+                        : isUsdConversionEnabled
+                        ? formattedLowUsdPrice
                         : truncatedLowDisplayPrice}
                 </span>
             </p>
             <p>
-                <span>{truncatedHighDisplayPrice ? priceCharacter : '…'}</span>
+                <span>
+                    {truncatedHighDisplayPrice && !isUsdConversionEnabled
+                        ? priceCharacter
+                        : isUsdConversionEnabled
+                        ? ''
+                        : '…'}
+                </span>
                 <span>
                     {isAccountView
-                        ? truncatedHighDisplayPriceDenomByMoneyness
+                        ? isUsdConversionEnabled
+                            ? formattedLowUsdPrice
+                            : truncatedHighDisplayPriceDenomByMoneyness
+                        : isUsdConversionEnabled
+                        ? formattedHighUsdPrice
                         : truncatedHighDisplayPrice}
                 </span>
             </p>
@@ -560,15 +600,23 @@ export const txRowConstants = (props: propsIF) => {
                     <span>
                         {(
                             isAccountView
-                                ? truncatedDisplayPriceDenomByMoneyness
-                                : truncatedDisplayPrice
+                                ? !isUsdConversionEnabled &&
+                                  truncatedDisplayPriceDenomByMoneyness
+                                : !isUsdConversionEnabled &&
+                                  truncatedDisplayPrice
                         )
                             ? priceCharacter
+                            : isUsdConversionEnabled
+                            ? ''
                             : '…'}
                     </span>
                     <span>
                         {isAccountView
-                            ? truncatedDisplayPriceDenomByMoneyness
+                            ? isUsdConversionEnabled
+                                ? formattedUsdPrice
+                                : truncatedDisplayPriceDenomByMoneyness
+                            : isUsdConversionEnabled
+                            ? formattedUsdPrice
                             : truncatedDisplayPrice}
                     </span>
                 </p>

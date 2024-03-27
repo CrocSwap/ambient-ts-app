@@ -194,6 +194,31 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         resetPoolStats();
     }, [baseAddr + quoteAddr]);
 
+    const [basePrice, setBasePrice] = useState<number | undefined>();
+    const [quotePrice, setQuotePrice] = useState<number | undefined>();
+
+    useEffect(() => {
+        if (crocEnv) {
+            const fetchTokenPrice = async () => {
+                const baseTokenPrice =
+                    (await cachedFetchTokenPrice(baseAddr, chainId, crocEnv))
+                        ?.usdPrice || 0.0;
+                const quoteTokenPrice =
+                    (await cachedFetchTokenPrice(quoteAddr, chainId, crocEnv))
+                        ?.usdPrice || 0.0;
+
+                if (baseTokenPrice) {
+                    setBasePrice(baseTokenPrice);
+                }
+                if (quoteTokenPrice) {
+                    setQuotePrice(quoteTokenPrice);
+                }
+            };
+
+            fetchTokenPrice();
+        }
+    }, [baseAddr, quoteAddr, chainId, crocEnv !== undefined]);
+
     const fetchPoolStats = async () => {
         if (
             poolIndex &&
@@ -396,6 +421,8 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         baseTvlUsd,
         quoteTvlDecimal,
         baseTvlDecimal,
+        basePrice,
+        quotePrice,
     };
 };
 export default useFetchPoolStats;

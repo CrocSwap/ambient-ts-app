@@ -141,7 +141,7 @@ function Reposition() {
         ? repoSlippage.stable
         : repoSlippage.volatile;
 
-    const { posHashTruncated } = useProcessRange(position);
+    const { posHashTruncated } = useProcessRange(position, crocEnv);
 
     useEffect(() => {
         setCurrentRangeInReposition('');
