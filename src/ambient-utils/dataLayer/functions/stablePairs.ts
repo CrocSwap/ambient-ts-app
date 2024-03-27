@@ -3,6 +3,7 @@
 // NOTE: Definition of what constitutes a "stable pair" is arbitrary and just based
 //       on the devs discretion. Users should not assume that true/false implies
 
+import { ZERO_ADDRESS } from '../../constants';
 import {
     arbGoerliDAI,
     arbGoerliUSDC,
@@ -18,6 +19,11 @@ import {
     sepoliaUSDC,
     scrollSepoliaUSDC,
     scrollUSDC,
+    scrollUSDT,
+    mainnetWBTC,
+    scrollWBTC,
+    mainnetWstETH,
+    scrollWstETH,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -34,6 +40,18 @@ export function isStableToken(addr: string): boolean {
 
 export function isUsdcToken(addr: string): boolean {
     return USDC_TOKENS.includes(addr.toLowerCase());
+}
+
+export function isStakedEthToken(addr: string): boolean {
+    return STAKED_ETH_TOKENS.includes(addr.toLowerCase());
+}
+
+export function isWbtcToken(addr: string): boolean {
+    return WBTC_TOKENS.includes(addr.toLowerCase());
+}
+
+export function isEthPairWithStakedEth(base: string, quote: string): boolean {
+    return base === ZERO_ADDRESS && isStakedEthToken(quote);
 }
 
 // @return true if the token is a WETH or wrapped native token asset
@@ -53,6 +71,7 @@ export const STABLE_USD_TOKENS = [
     arbGoerliDAI.address,
     arbGoerliUSDC.address,
     scrollUSDC.address,
+    scrollUSDT.address,
     scrollAxlUSDC.address,
     sepoliaUSDC.address,
     blastSepoliaUSDB.address,
@@ -68,6 +87,15 @@ export const USDC_TOKENS = [
     blastSepoliaUSDB.address,
     scrollSepoliaUSDC.address,
     scrollUSDC.address,
+].map((x) => x.toLowerCase());
+
+export const WBTC_TOKENS = [mainnetWBTC.address, scrollWBTC.address].map((x) =>
+    x.toLowerCase(),
+);
+
+export const STAKED_ETH_TOKENS = [
+    mainnetWstETH.address,
+    scrollWstETH.address,
 ].map((x) => x.toLowerCase());
 
 export const WETH_TOKENS = [

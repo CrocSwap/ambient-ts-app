@@ -41,6 +41,11 @@ interface propsIF {
 export default function LimitActionModal(props: propsIF) {
     const { limitOrder, type, onClose, isAccountView } = props;
     const { userAddress } = useContext(UserDataContext);
+    const {
+        crocEnv,
+        ethMainnetUsdPrice,
+        chainData: { poolIndex },
+    } = useContext(CrocEnvContext);
 
     const {
         addPendingTx,
@@ -69,13 +74,7 @@ export default function LimitActionModal(props: propsIF) {
         baseTokenAddress,
         quoteTokenAddress,
         fillPercentage,
-    } = useProcessOrder(limitOrder, userAddress);
-
-    const {
-        crocEnv,
-        ethMainnetUsdPrice,
-        chainData: { poolIndex },
-    } = useContext(CrocEnvContext);
+    } = useProcessOrder(limitOrder, crocEnv, userAddress);
 
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
 
