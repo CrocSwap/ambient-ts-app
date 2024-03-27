@@ -4,6 +4,9 @@ import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
 import TokenIcon from '../TokenIcon/TokenIcon';
 import {
     getFormattedNumber,
+    isEthPairWithStakedEth,
+    isStableToken,
+    isWbtcToken,
     uriToHttp,
 } from '../../../ambient-utils/dataLayer';
 import { PoolIF } from '../../../ambient-utils/types';
@@ -39,6 +42,19 @@ export default function PoolCard(props: propsIF) {
         quotePrice,
     } = poolData;
 
+    const denomTokenIsStableToken = shouldInvertDisplay
+        ? isStableToken(pool.quote.address)
+        : isStableToken(pool.base.address);
+
+    const denomTokenIsWBTCToken = shouldInvertDisplay
+        ? isWbtcToken(pool.quote.address)
+        : isWbtcToken(pool.base.address);
+
+    const isEthStakedEthPair = isEthPairWithStakedEth(
+        pool.base.address,
+        pool.quote.address,
+    );
+
     const usdPrice =
         poolPriceDisplay && basePrice && quotePrice
             ? shouldInvertDisplay
@@ -48,15 +64,28 @@ export default function PoolCard(props: propsIF) {
 
     const poolPriceDisplayDOM = (
         <div className={styles.price}>
-            {isHovered
-                ? `${
+            {isHovered || denomTokenIsStableToken
+                ? denomTokenIsWBTCToken || isEthStakedEthPair
+                    ? `${
+                          usdPrice
+                              ? getFormattedNumber({
+                                    value: usdPrice,
+                                    prefix: '$',
+                                })
+                              : '…'
+                      }`
+                    : poolPrice === undefined
+                    ? '…'
+                    : poolPrice
+                : denomTokenIsWBTCToken || isEthStakedEthPair
+                ? poolPrice === undefined
+                    ? '…'
+                    : poolPrice
+                : `${
                       usdPrice
                           ? getFormattedNumber({ value: usdPrice, prefix: '$' })
                           : '…'
-                  }`
-                : poolPrice === undefined
-                ? '…'
-                : poolPrice}
+                  }`}
         </div>
     );
 
