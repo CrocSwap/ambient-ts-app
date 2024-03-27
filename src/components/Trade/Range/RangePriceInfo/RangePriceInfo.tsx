@@ -98,8 +98,8 @@ function RangePriceInfo(props: propsIF) {
     const isDenomTokenA =
         (isDenomBase && isTokenABase) || (!isDenomBase && !isTokenABase);
 
-    const pinnedMinPrice = pinnedDisplayPrices?.pinnedMinPriceDisplay;
-    const pinnedMaxPrice = pinnedDisplayPrices?.pinnedMaxPriceDisplay;
+    const pinnedMinPrice = pinnedDisplayPrices?.pinnedMinPriceDisplayTruncated;
+    const pinnedMaxPrice = pinnedDisplayPrices?.pinnedMaxPriceDisplayTruncated;
 
     const isStableTokenA = useMemo(
         () => isStableToken(tokenAAddress),
