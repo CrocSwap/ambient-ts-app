@@ -180,15 +180,19 @@ export const useProcessTransaction = (
                 : nonInvertedPriceTruncated;
 
             displayPriceNumInUsd = isAccountView
-                ? basePrice && quotePrice
-                    ? isBaseTokenMoneynessGreaterOrEqual
+                ? isBaseTokenMoneynessGreaterOrEqual
+                    ? basePrice
                         ? priceDecimalCorrected * basePrice
-                        : invPriceDecimalCorrected * quotePrice
-                    : undefined
-                : basePrice && quotePrice
-                ? isDenomBase
+                        : undefined
+                    : quotePrice
                     ? invPriceDecimalCorrected * quotePrice
-                    : priceDecimalCorrected * basePrice
+                    : undefined
+                : isDenomBase
+                ? quotePrice
+                    ? invPriceDecimalCorrected * quotePrice
+                    : undefined
+                : basePrice
+                ? priceDecimalCorrected * basePrice
                 : undefined;
         } else {
             truncatedDisplayPrice = undefined;
@@ -238,27 +242,35 @@ export const useProcessTransaction = (
                     : `${invertedAskPriceTruncated}`;
 
             lowDisplayPriceInUsd = isAccountView
-                ? basePrice && quotePrice
-                    ? isBaseTokenMoneynessGreaterOrEqual
+                ? isBaseTokenMoneynessGreaterOrEqual
+                    ? basePrice
                         ? bidTickPriceDecimalCorrected * basePrice
-                        : bidTickInvPriceDecimalCorrected * quotePrice
-                    : undefined
-                : basePrice && quotePrice
-                ? isDenomBase
+                        : undefined
+                    : quotePrice
                     ? bidTickInvPriceDecimalCorrected * quotePrice
-                    : bidTickPriceDecimalCorrected * basePrice
+                    : undefined
+                : isDenomBase
+                ? quotePrice
+                    ? bidTickInvPriceDecimalCorrected * quotePrice
+                    : undefined
+                : basePrice
+                ? bidTickPriceDecimalCorrected * basePrice
                 : undefined;
 
             highDisplayPriceInUsd = isAccountView
-                ? basePrice && quotePrice
-                    ? isBaseTokenMoneynessGreaterOrEqual
+                ? isBaseTokenMoneynessGreaterOrEqual
+                    ? basePrice
                         ? askTickPriceDecimalCorrected * basePrice
-                        : askTickInvPriceDecimalCorrected * quotePrice
-                    : undefined
-                : basePrice && quotePrice
-                ? isDenomBase
+                        : undefined
+                    : quotePrice
                     ? askTickInvPriceDecimalCorrected * quotePrice
-                    : askTickPriceDecimalCorrected * basePrice
+                    : undefined
+                : isDenomBase
+                ? quotePrice
+                    ? askTickInvPriceDecimalCorrected * quotePrice
+                    : undefined
+                : basePrice
+                ? askTickPriceDecimalCorrected * basePrice
                 : undefined;
         } else {
             truncatedLowDisplayPrice = undefined;
@@ -285,15 +297,19 @@ export const useProcessTransaction = (
             : nonInvertedPriceTruncated;
 
         displayPriceNumInUsd = isAccountView
-            ? basePrice && quotePrice
-                ? isBaseTokenMoneynessGreaterOrEqual
+            ? isBaseTokenMoneynessGreaterOrEqual
+                ? basePrice
                     ? priceDecimalCorrected * basePrice
-                    : invPriceDecimalCorrected * quotePrice
-                : undefined
-            : basePrice && quotePrice
-            ? isDenomBase
+                    : undefined
+                : quotePrice
                 ? invPriceDecimalCorrected * quotePrice
-                : priceDecimalCorrected * basePrice
+                : undefined
+            : isDenomBase
+            ? quotePrice
+                ? invPriceDecimalCorrected * quotePrice
+                : undefined
+            : basePrice
+            ? priceDecimalCorrected * basePrice
             : undefined;
     }
 

@@ -210,9 +210,13 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
 
                 if (baseTokenPrice) {
                     setBasePrice(baseTokenPrice);
+                } else {
+                    setBasePrice(undefined);
                 }
                 if (quoteTokenPrice) {
                     setQuotePrice(quoteTokenPrice);
+                } else {
+                    setQuotePrice(undefined);
                 }
             };
 

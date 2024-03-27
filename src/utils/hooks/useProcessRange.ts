@@ -208,17 +208,20 @@ export const useProcessRange = (
         : position.highRangeDisplayInQuote;
 
     const lowDisplayPriceInUsdNum = isAccountView
-        ? basePrice && quotePrice
-            ? isBaseTokenMoneynessGreaterOrEqual
+        ? isBaseTokenMoneynessGreaterOrEqual
+            ? basePrice
                 ? bidTickPriceDecimalCorrected * basePrice
-                : bidTickInvPriceDecimalCorrected * quotePrice
-            : undefined
-        : basePrice && quotePrice
-        ? isDenomBase
+                : undefined
+            : quotePrice
             ? bidTickInvPriceDecimalCorrected * quotePrice
-            : bidTickPriceDecimalCorrected * basePrice
+            : undefined
+        : isDenomBase
+        ? quotePrice
+            ? bidTickInvPriceDecimalCorrected * quotePrice
+            : undefined
+        : basePrice
+        ? bidTickPriceDecimalCorrected * basePrice
         : undefined;
-
     const lowDisplayPriceInUsd =
         position.positionType === 'ambient'
             ? '0'
@@ -230,17 +233,20 @@ export const useProcessRange = (
             : '...';
 
     const highDisplayPriceInUsdNum = isAccountView
-        ? basePrice && quotePrice
-            ? isBaseTokenMoneynessGreaterOrEqual
+        ? isBaseTokenMoneynessGreaterOrEqual
+            ? basePrice
                 ? askTickPriceDecimalCorrected * basePrice
-                : askTickInvPriceDecimalCorrected * quotePrice
-            : undefined
-        : basePrice && quotePrice
-        ? isDenomBase
+                : undefined
+            : quotePrice
             ? askTickInvPriceDecimalCorrected * quotePrice
-            : askTickPriceDecimalCorrected * basePrice
+            : undefined
+        : isDenomBase
+        ? quotePrice
+            ? askTickInvPriceDecimalCorrected * quotePrice
+            : undefined
+        : basePrice
+        ? askTickPriceDecimalCorrected * basePrice
         : undefined;
-
     const highDisplayPriceInUsd =
         position.positionType === 'ambient'
             ? '∞'

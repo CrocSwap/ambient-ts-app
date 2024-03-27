@@ -339,10 +339,12 @@ export const useProcessOrder = (
             });
 
             const displayPriceNumInUsd = isAccountView
-                ? basePrice && quotePrice
-                    ? isBaseTokenMoneynessGreaterOrEqual
+                ? isBaseTokenMoneynessGreaterOrEqual
+                    ? basePrice
                         ? priceDecimalCorrected * basePrice
-                        : invPriceDecimalCorrected * quotePrice
+                        : undefined
+                    : quotePrice
+                    ? invPriceDecimalCorrected * quotePrice
                     : undefined
                 : basePrice && quotePrice
                 ? isDenomBase
