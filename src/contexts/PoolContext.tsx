@@ -123,12 +123,15 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         isPoolInitialized,
     } = poolData;
 
-    const usdPrice =
-        poolPriceDisplay && basePrice && quotePrice
-            ? isDenomBase
+    const usdPrice = poolPriceDisplay
+        ? isDenomBase
+            ? quotePrice
                 ? (1 / poolPriceDisplay) * quotePrice
-                : poolPriceDisplay * basePrice
-            : undefined;
+                : undefined
+            : basePrice
+            ? poolPriceDisplay * basePrice
+            : undefined
+        : undefined;
 
     // Asynchronously query the APY and volatility estimates from the backend
     useEffect(() => {

@@ -274,6 +274,7 @@ export const getLimitOrderData = async (
         baseTokenDecimals,
         quoteTokenDecimals,
     );
+    newOrder.curentPoolPriceDisplayNum = poolPrice;
 
     newOrder.limitPrice = order.isBid
         ? tickToPrice(order.bidTick)
