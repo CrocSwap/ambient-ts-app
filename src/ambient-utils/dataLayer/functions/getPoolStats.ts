@@ -1,8 +1,9 @@
-import { CrocEnv } from '@crocswap-libs/sdk';
-import { GCGO_OVERRIDE_URL } from '../../constants';
+import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
+import { CACHE_UPDATE_FREQ_IN_MS, GCGO_OVERRIDE_URL } from '../../constants';
 import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 import { TokenIF } from '../../types';
+import { PoolQueryFn } from './querySpotPrice';
 
 const getLiquidityFee = async (
     base: string,
@@ -15,7 +16,6 @@ const getLiquidityFee = async (
     const poolStatsFreshEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/pool_stats?'
         : graphCacheUrl + '/pool_stats?';
-
     return fetch(
         poolStatsFreshEndpoint +
             new URLSearchParams({
@@ -69,6 +69,7 @@ const fetchPoolStats = async (
                     return;
                 }
                 const payload = json.data as PoolStatsServerIF;
+                payload.isHistorical = true;
                 return payload;
             });
     } else {
@@ -87,6 +88,7 @@ const fetchPoolStats = async (
                     return;
                 }
                 const payload = json.data as PoolStatsServerIF;
+                payload.isHistorical = false;
                 return payload;
             });
     }
@@ -100,6 +102,7 @@ export async function expandPoolStats(
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
+    cachedQuerySpotPrice: PoolQueryFn,
     tokenList: TokenIF[],
 ): Promise<PoolStatsIF> {
     const provider = (await crocEnv.context).provider;
@@ -110,17 +113,6 @@ export async function expandPoolStats(
     const baseUsdPrice = (await basePricePromise)?.usdPrice;
     const quoteUsdPrice = (await quotePricePromise)?.usdPrice;
 
-    const basePrice = baseUsdPrice
-        ? baseUsdPrice
-        : payload.lastPriceIndic && quoteUsdPrice
-        ? quoteUsdPrice / payload.lastPriceIndic
-        : 0.0;
-    const quotePrice = quoteUsdPrice
-        ? quoteUsdPrice
-        : payload.lastPriceIndic && baseUsdPrice
-        ? baseUsdPrice * payload.lastPriceIndic
-        : 0.0;
-
     const baseTokenListedDecimals = tokenList.find(
         (token) => token.address.toLowerCase() === base.toLowerCase(),
     )?.decimals;
@@ -130,14 +122,45 @@ export async function expandPoolStats(
 
     const DEFAULT_DECIMALS = 18;
 
-    return decoratePoolStats(
-        payload,
+    const baseDecimals =
         (baseTokenListedDecimals ||
             (await cachedTokenDetails(provider, base, chainId))?.decimals) ??
-            DEFAULT_DECIMALS,
+        DEFAULT_DECIMALS;
+
+    const quoteDecimals =
         (quoteTokenListedDecimals ||
             (await cachedTokenDetails(provider, quote, chainId))?.decimals) ??
-            DEFAULT_DECIMALS,
+        DEFAULT_DECIMALS;
+
+    const spotPrice = await cachedQuerySpotPrice(
+        crocEnv,
+        base,
+        quote,
+        chainId,
+        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+    );
+
+    const displayPoolPrice = toDisplayPrice(
+        spotPrice,
+        baseDecimals,
+        quoteDecimals,
+    );
+
+    const basePrice = baseUsdPrice
+        ? baseUsdPrice
+        : displayPoolPrice && quoteUsdPrice
+        ? quoteUsdPrice / displayPoolPrice
+        : 0.0;
+    const quotePrice = quoteUsdPrice
+        ? quoteUsdPrice
+        : displayPoolPrice && baseUsdPrice
+        ? baseUsdPrice * displayPoolPrice
+        : 0.0;
+
+    return decoratePoolStats(
+        payload,
+        baseDecimals,
+        quoteDecimals,
         basePrice,
         quotePrice,
     );
@@ -183,6 +206,7 @@ interface PoolStatsServerIF {
     quoteFees: number;
     lastPriceIndic: number;
     feeRate: number;
+    isHistorical: boolean;
 }
 
 type PoolStatsIF = PoolStatsServerIF & {

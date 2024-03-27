@@ -149,6 +149,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             crocEnv,
             cachedFetchTokenPrice,
             cachedTokenDetails,
+            cachedQuerySpotPrice,
             tokens.tokenUniv,
         );
         const ydayTime = Math.floor(Date.now() / 1000 - 24 * 3600);
@@ -171,6 +172,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             crocEnv,
             cachedFetchTokenPrice,
             cachedTokenDetails,
+            cachedQuerySpotPrice,
             tokens.tokenUniv,
         );
 
