@@ -266,6 +266,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                 crocEnv,
                 cachedFetchTokenPrice,
                 cachedTokenDetails,
+                cachedQuerySpotPrice,
                 tokens.tokenUniv,
             );
 
@@ -278,7 +279,6 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                 poolIndex,
                 Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
                 activeNetwork.graphCacheUrl,
-
                 ydayTime,
             );
 
@@ -290,12 +290,12 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                 crocEnv,
                 cachedFetchTokenPrice,
                 cachedTokenDetails,
+                cachedQuerySpotPrice,
                 tokens.tokenUniv,
             );
 
             const volumeTotalNow = expandedPoolStatsNow?.volumeTotalUsd;
             const volumeTotal24hAgo = expandedPoolStats24hAgo?.volumeTotalUsd;
-
             const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
 
             const nowPrice = expandedPoolStatsNow?.lastPriceIndic;
