@@ -206,8 +206,11 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             const candleTime = candleScale.isShowLatestCandle
                 ? Date.now() / 1000
                 : candleScale.lastCandleDate || 0;
-            const nCandles =
-                candleScale?.nCandles > 2999 ? 2999 : candleScale?.nCandles;
+
+            const nCandles = Math.min(
+                Math.max(candleScale?.nCandles || 7, 7),
+                2999,
+            );
 
             !bypassSpinner && setIsFetchingCandle(true);
             setTimeOfEndCandle(undefined);
