@@ -53,6 +53,7 @@ const BASE_URL_PATHS = {
     index: '',
     home: '',
     swap: '/swap',
+    trade: '/trade',
     market: '/trade/market',
     limit: '/trade/limit',
     pool: '/trade/pool',
@@ -65,6 +66,7 @@ const BASE_URL_PATHS = {
     testpage: '/testpage',
     account: '/account',
     privacy: '/privacy',
+    notFound: '/404',
 } as const;
 
 // string-literal union type of keys in `BASE_URL_PATHS`
@@ -73,15 +75,15 @@ export type pageNames = keyof typeof BASE_URL_PATHS;
 export type baseURLs = typeof BASE_URL_PATHS[pageNames];
 
 export interface linkGenMethodsIF {
-    currentPage: pageNames;
+    current: {
+        page: pageNames;
+        isPage: (...p: pageNames[]) => boolean;
+    };
     baseURL: baseURLs;
     getFullURL: (paramsObj?: anyParamsIF | string) => string;
     navigate: (paramsObj?: anyParamsIF | string) => void;
     redirect: (paramsObj?: anyParamsIF | string) => void;
 }
-
-// TODO:    @Emily: it probably makes sense to expand this hook to
-// TODO:    .... centralize URLs to link external resources
 
 export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
     // current URL path of the app relative to index page
@@ -111,8 +113,6 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
             pageName = 'initpool';
         } else if (pathname.startsWith(BASE_URL_PATHS.reposition)) {
             pageName = 'reposition';
-        } else if (pathname.startsWith(BASE_URL_PATHS.explore)) {
-            pageName = 'explore';
         } else if (pathname.startsWith(BASE_URL_PATHS.explorePools)) {
             pageName = 'explorePools';
         } else if (pathname.startsWith(BASE_URL_PATHS.exploreTokens)) {
@@ -158,8 +158,33 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
         navigate(getFullURL(paramsObj), { replace: true });
     }
 
+    // fn to determine whether user is currently on one of some number of pages
+    function isPage(...p: pageNames[]): boolean {
+        // must get page from current location, not from args for hook
+        const currentPage: pageNames = getPageFromLocation();
+        // array to hold nested routes
+        const addedPages: pageNames[] = [];
+        // fn to add data to the `addedPages` array without duplication
+        function addPages(...pagesToAdd: pageNames[]): void {
+            const nonDuplicated: pageNames[] = pagesToAdd.filter(
+                (page: pageNames) =>
+                    !p.includes(page) && !addedPages.includes(page),
+            );
+            addedPages.concat(nonDuplicated);
+        }
+        // add nested routes is this fn is called on a parent route
+        p.includes('trade') &&
+            addPages('market', 'limit', 'pool', 'reposition');
+        p.includes('explore') && addPages('explorePools', 'exploreTokens');
+        // determine if current page matches any on the args provided
+        return p.concat(addedPages).includes(currentPage);
+    }
+
     return {
-        currentPage: getPageFromLocation(),
+        current: {
+            page: getPageFromLocation(),
+            isPage,
+        },
         baseURL,
         getFullURL,
         navigate: navigateUser,

@@ -1,12 +1,6 @@
 /** ***** Import React and Dongles *******/
 import { useContext, useEffect } from 'react';
-import {
-    Routes,
-    Route,
-    useLocation,
-    Navigate,
-    useNavigate,
-} from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
 
 /** ***** Import JSX Files *******/
@@ -47,12 +41,11 @@ import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
 import ExampleForm from '../pages/InitPool/FormExample';
 import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
+import { linkGenMethodsIF, useLinkGen } from '../utils/hooks/useLinkGen';
 
 /** ***** React Function *******/
 export default function App() {
     const navigate = useNavigate();
-    const location = useLocation();
-    const currentLocation = location.pathname;
 
     const {
         chat: {
@@ -75,9 +68,12 @@ export default function App() {
 
     const smallScreen = useMediaQuery('(max-width: 500px)');
 
+    // methods to determine current page occupied by the user
+    const linkGenCurrent: linkGenMethodsIF = useLinkGen();
+
     // Take away margin from left if we are on homepage or swap
     const swapBodyStyle =
-        currentLocation.startsWith('/swap') && !smallScreen
+        linkGenCurrent.current.isPage('swap') && !smallScreen
             ? 'swap-body'
             : null;
 
@@ -85,17 +81,15 @@ export default function App() {
     const sidebarRender = smallScreen ? (
         <Sidebar />
     ) : (
-        currentLocation !== '/' &&
-        currentLocation !== '/swap' &&
-        currentLocation !== '/404' &&
-        currentLocation !== '/terms' &&
-        currentLocation !== '/privacy' &&
-        !currentLocation.includes('/chat') &&
-        !currentLocation.includes('/initpool') &&
-        !fullScreenChart && (
-            // isChainSupported &&
-            <Sidebar />
-        )
+        !linkGenCurrent.current.isPage(
+            'index',
+            'swap',
+            'notFound',
+            'tos',
+            'privacy',
+            'initpool',
+        ) &&
+        !fullScreenChart && <Sidebar />
     );
 
     const sidebarDislayStyle = isSidebarOpen
@@ -104,17 +98,17 @@ export default function App() {
 
     const showSidebarOrNullStyle = smallScreen
         ? sidebarDislayStyle
-        : currentLocation == '/' ||
-          currentLocation == '/swap' ||
-          currentLocation == '/404' ||
-          currentLocation == '/terms' ||
-          currentLocation == '/privacy' ||
-          currentLocation.includes('/chat') ||
-          currentLocation.startsWith('/swap')
+        : linkGenCurrent.current.isPage(
+              'index',
+              'swap',
+              'notFound',
+              'tos',
+              'privacy',
+          )
         ? 'hide_sidebar'
         : sidebarDislayStyle;
 
-    const containerStyle = currentLocation.includes('trade')
+    const containerStyle = linkGenCurrent.current.isPage('trade')
         ? 'content-container-trade'
         : 'content-container';
 
@@ -184,7 +178,7 @@ export default function App() {
                 <section
                     className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
                 >
-                    {(!currentLocation.startsWith('/swap') || smallScreen) &&
+                    {(!linkGenCurrent.current.isPage('swap') || smallScreen) &&
                         sidebarRender}
                     <Routes>
                         <Route index element={<Home />} />
@@ -358,15 +352,17 @@ export default function App() {
                 </section>
             </FlexContainer>
             <div className='footer_container'>
-                {currentLocation !== '/' &&
-                    currentLocation !== '/404' &&
-                    currentLocation !== '/terms' &&
-                    currentLocation !== '/privacy' &&
-                    !currentLocation.includes('/chat') &&
+                {!linkGenCurrent.current.isPage(
+                    'index',
+                    'notFound',
+                    'tos',
+                    'privacy',
+                ) &&
                     isChatEnabled && <ChatPanel isFullScreen={false} />}
-                {showMobileVersion && currentLocation !== '/' && (
-                    <SidebarFooter />
-                )}
+                {showMobileVersion &&
+                    !linkGenCurrent.current.isPage('index') && (
+                        <SidebarFooter />
+                    )}
             </div>
             <GlobalPopup />
             <SnackbarComponent />

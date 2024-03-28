@@ -137,8 +137,10 @@ export const useAppChain = (): {
                                 // navigate to index page only if "chain" or "network" in URL
                                 linkGenIndex.navigate();
                             } else if (
-                                linkGenCurrent.currentPage === 'initpool' ||
-                                linkGenCurrent.currentPage === 'reposition'
+                                linkGenCurrent.current.isPage(
+                                    'initpool',
+                                    'reposition',
+                                )
                             ) {
                                 linkGenPool.navigate(
                                     `chain=${incomingChainFromWallet}`,
@@ -233,12 +235,9 @@ export const useAppChain = (): {
         const isPathUserAddress = isPathENS || isPathHex;
         const isPathUserXpOrLeaderboard = pathname.includes('/xp');
         const isPathOnExplore = pathname.includes('/explore');
-        if (
-            linkGenCurrent.currentPage === 'initpool' ||
-            linkGenCurrent.currentPage === 'reposition'
-        ) {
+        if (linkGenCurrent.current.isPage('initpool', 'reposition')) {
             linkGenPool.navigate(`chain=${network.chainId}`);
-        } else if (linkGenCurrent.currentPage === 'swap') {
+        } else if (linkGenCurrent.current.isPage('swap')) {
             linkGenSwap.navigate(`chain=${network.chainId}`);
         } else if (pathname.includes('chain')) {
             linkGenCurrent.navigate(`chain=${network.chainId}`);

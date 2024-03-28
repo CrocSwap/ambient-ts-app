@@ -166,7 +166,7 @@ export const TradeTableContextProvider = (props: {
 
     useEffect(() => {
         if (location.pathname.includes('/trade')) toggleTradeTabBasedOnRoute();
-        switch (linkGenCurrent.currentPage) {
+        switch (linkGenCurrent.current.page) {
             case 'market':
                 setCurrentPositionActive('');
                 setCurrentLimitOrderActive('');
@@ -182,7 +182,7 @@ export const TradeTableContextProvider = (props: {
             default:
                 break;
         }
-    }, [linkGenCurrent.currentPage]);
+    }, [linkGenCurrent.current.page]);
 
     const resetTable = () => {
         if (
