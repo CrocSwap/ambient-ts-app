@@ -81,7 +81,13 @@ function FeeRateChart(props: FreeRateData) {
     useEffect(() => {
         const domain = [-0.002, 0.0125];
 
-        const yScale = d3.scaleSymlog().domain(domain).range([0, 1]);
+        const canvas = d3
+            .select(d3CanvasArea.current)
+            .select('canvas')
+            .node() as any;
+
+        const canvasHeight = canvas.getBoundingClientRect().height;
+        const yScale = d3.scaleSymlog().domain(domain).range([canvasHeight, 0]);
 
         setFeeRateyScale(() => {
             return yScale;
