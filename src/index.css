@@ -313,7 +313,7 @@
     color: var(--text2);
 }
 
-[data-theme='light'] {
+[data-theme='purple_light'] {
     --portfolio-banner: linear-gradient(to right, #f0f2f0, #000c40);
 
     /* colors */
