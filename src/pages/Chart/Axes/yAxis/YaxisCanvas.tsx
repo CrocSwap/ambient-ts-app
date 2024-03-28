@@ -153,7 +153,7 @@ function YAxisCanvas(props: yAxisIF) {
     function getDollarPrice(price: number) {
         if (basePrice && quotePrice) {
             const dollarPrice = isDenomBase
-                ? (1 / price) * quotePrice
+                ? price * quotePrice
                 : price * basePrice;
             return getFormattedNumber({ value: dollarPrice, prefix: '$' });
         }
@@ -407,9 +407,7 @@ function YAxisCanvas(props: yAxisIF) {
                     'white',
                     'black',
                     isUsdConversionEnabled
-                        ? getDollarPrice(
-                              !isDenomBase ? market : 1 / market,
-                          )?.toString()
+                        ? getDollarPrice(market)?.toString()
                         : marketTick,
                     undefined,
                     yAxisCanvasWidth,
@@ -466,9 +464,7 @@ function YAxisCanvas(props: yAxisIF) {
                         low > passValue ? lineSellColor : lineBuyColor,
                         low > passValue ? 'white' : 'black',
                         isUsdConversionEnabled
-                            ? getDollarPrice(
-                                  !isDenomBase ? low : 1 / low,
-                              )?.toString()
+                            ? getDollarPrice(low)?.toString()
                             : lowTick,
                         undefined,
                         yAxisCanvasWidth,
@@ -511,9 +507,7 @@ function YAxisCanvas(props: yAxisIF) {
                         high > passValue ? lineSellColor : lineBuyColor,
                         high > passValue ? 'white' : 'black',
                         isUsdConversionEnabled
-                            ? getDollarPrice(
-                                  !isDenomBase ? high : 1 / high,
-                              )?.toString()
+                            ? getDollarPrice(high)?.toString()
                             : highTick,
                         undefined,
                         yAxisCanvasWidth,
@@ -565,7 +559,9 @@ function YAxisCanvas(props: yAxisIF) {
                             ? lineSellColor
                             : lineBuyColor,
                         sellOrderStyle === 'order_sell' ? 'white' : 'black',
-                        limitTick,
+                        isUsdConversionEnabled
+                            ? getDollarPrice(limit)?.toString()
+                            : limitTick,
                         undefined,
                         yAxisCanvasWidth,
                         limitSubString,
@@ -577,7 +573,9 @@ function YAxisCanvas(props: yAxisIF) {
                         X,
                         '#7772FE',
                         'white',
-                        limitTick,
+                        isUsdConversionEnabled
+                            ? getDollarPrice(limit)?.toString()
+                            : limitTick,
                         undefined,
                         yAxisCanvasWidth,
                         limitSubString,
