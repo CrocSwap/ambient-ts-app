@@ -21,6 +21,8 @@ export * from './transaction';
 // UserXpIF, XpLeaderboardIF
 export * from './xp';
 
+export * from './themes';
+
 export * from './fetchBatch';
 
 export * from './GCServerPoolIF';
