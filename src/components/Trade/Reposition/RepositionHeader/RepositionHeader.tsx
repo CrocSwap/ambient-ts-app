@@ -80,7 +80,7 @@ function RepositionHeader(props: propsIF) {
             </TradeModuleHeaderContainer>
             {isOpen && (
                 <TransactionSettingsModal
-                    module='Reposition'
+                    module={editPanel ? 'Pool' : 'Reposition'}
                     slippage={repoSlippage}
                     bypassConfirm={bypassConfirmRepo}
                     onClose={closeModal}
