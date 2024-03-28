@@ -9,7 +9,7 @@ export interface MentFoundParam {
 
 export interface ChatWsQueryParams {
     roomId: string;
-    transport: string;
+    transport?: string;
     address?: string;
     ensName?: string;
 }

@@ -72,7 +72,10 @@ const useChatSocket = (
     const messagesRef = useRef<Message[]>([]);
     messagesRef.current = messages;
 
-    let queryParams: ChatWsQueryParams = { roomId: room, transport: 'polling' };
+    let queryParams: ChatWsQueryParams = {
+        roomId: room,
+        // , transport: 'polling'
+    };
     if (address != undefined) {
         queryParams = { ...queryParams, address: address };
     }
@@ -81,9 +84,10 @@ const useChatSocket = (
     }
 
     const { sendMessage: socketSendMessage, lastMessage: socketLastMessage } =
-        useWebSocket(CHAT_BACKEND_WSS_URL + '/chat/api/subscribe/', {
+        useWebSocket(CHAT_BACKEND_WSS_URL + '/chat/api/subscribe', {
+            fromSocketIO: true,
             queryParams: { ...queryParams },
-            share: true,
+            // share: true,
             onOpen: () => {
                 domDebug('opening connection', new Date().getTime());
             },
