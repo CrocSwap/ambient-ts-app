@@ -21,7 +21,6 @@ import {
     getCtaDismissalsFromLocalStorage,
     saveCtaDismissalToLocalStorage,
 } from '../App/functions/localStorage';
-import { themes } from '../ambient-utils/types';
 
 interface AppStateContextIF {
     appOverlay: { isActive: boolean; setIsActive: (val: boolean) => void };
@@ -34,10 +33,6 @@ interface AppStateContextIF {
     snackbar: snackbarMethodsIF;
     tutorial: { isActive: boolean; setIsActive: (val: boolean) => void };
     skin: skinMethodsIF;
-    theme: {
-        selected: themes;
-        setSelected: (val: themes) => void;
-    };
     chat: {
         isOpen: boolean;
         setIsOpen: (val: boolean) => void;
@@ -65,7 +60,6 @@ export const AppStateContext = createContext<AppStateContextIF>(
 export const AppStateContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const [theme, setTheme] = useState<themes>('orange');
     const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
     const [isAppHeaderDropdown, setIsAppHeaderDropdown] = useState(false);
     const [isTutorialMode, setIsTutorialMode] = useState(false);
@@ -162,7 +156,6 @@ export const AppStateContextProvider = (props: {
                 setIsActive: setIsTutorialMode,
             },
             skin,
-            theme: { selected: theme, setSelected: setTheme },
             chat: {
                 isOpen: isChatOpen,
                 setIsOpen: setIsChatOpen,
