@@ -147,7 +147,7 @@ export default function Limit() {
     ] = useState<number>(0.0005);
 
     const amountToReduceNativeTokenQty =
-        chainId === '0x82750' || chainId === '0x8274f'
+        chainId === '0x82750' || chainId === '0x8274f' || chainId === '0x13e31'
             ? amountToReduceNativeTokenQtyScroll
             : amountToReduceNativeTokenQtyMainnet;
 

@@ -812,7 +812,8 @@ function Range() {
         setAmountToReduceNativeTokenQtyScroll,
     ] = useState<number>(0.0007);
 
-    const isScroll = chainId === '0x82750' || chainId === '0x8274f';
+    const isScroll =
+        chainId === '0x82750' || chainId === '0x8274f' || chainId === '0x13e31';
     const [l1GasFeePoolInGwei] = useState<number>(
         isScroll ? 0.0004 * 1e9 : isActiveNetworkBlast ? 0.00025 * 1e9 : 0,
     );

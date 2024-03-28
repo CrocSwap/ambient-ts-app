@@ -236,7 +236,7 @@ function Swap(props: propsIF) {
     ] = useState<number>(0.0003);
 
     const amountToReduceNativeTokenQty =
-        chainId === '0x82750' || chainId === '0x8274f'
+        chainId === '0x82750' || chainId === '0x8274f' || chainId === '0x13e31'
             ? amountToReduceNativeTokenQtyScroll
             : amountToReduceNativeTokenQtyMainnet;
 
@@ -328,7 +328,7 @@ function Swap(props: propsIF) {
     }, [baseToken.address + quoteToken.address]);
 
     const [l1GasFeeSwapInGwei, setL1GasFeeSwapInGwei] = useState<number>(
-        isActiveNetworkScroll ? 0.0007 : isActiveNetworkBlast ? 0.0001 : 0,
+        isActiveNetworkScroll ? 200000 : isActiveNetworkBlast ? 70000 : 0,
     );
     const [extraL1GasFeeSwap, setExtraL1GasFeeSwap] = useState(
         isActiveNetworkScroll ? 1 : isActiveNetworkBlast ? 0.3 : 0,
@@ -354,10 +354,11 @@ function Swap(props: propsIF) {
             const costOfMainnetSwapInETH =
                 gasPriceInGwei * averageSwapCostInGasDrops * NUM_GWEI_IN_WEI;
 
+            console.log({ costOfMainnetSwapInETH });
             setAmountToReduceNativeTokenQtyMainnet(
                 SWAP_BUFFER_MULTIPLIER_MAINNET * costOfMainnetSwapInETH,
             );
-
+            console.log({ isActiveNetworkBlast, l1GasFeeSwapInGwei });
             const l1costOfScrollSwapInETH =
                 l1GasFeeSwapInGwei / NUM_GWEI_IN_ETH;
 
@@ -420,10 +421,12 @@ function Swap(props: propsIF) {
             const costOfEthInCents = BigNumber.from(
                 Math.floor((ethMainnetUsdPrice || 0) * 100),
             );
-            const l1GasInGwei = l1Gas ? l1Gas.div(NUM_WEI_IN_GWEI) : undefined;
+            const l1GasInGwei =
+                l1Gas && l1Gas.toNumber() !== 0
+                    ? l1Gas.div(NUM_WEI_IN_GWEI)
+                    : undefined;
             l1GasInGwei &&
                 setL1GasFeeSwapInGwei(bigNumToFloat(l1GasInGwei) || 0);
-
             const l1GasCents = l1GasInGwei
                 ? l1GasInGwei.mul(costOfEthInCents).div(NUM_GWEI_IN_ETH)
                 : undefined;
@@ -431,7 +434,13 @@ function Swap(props: propsIF) {
             const l1GasDollarsNum = l1GasCents
                 ? bigNumToFloat(l1GasCents) / 100
                 : undefined;
-
+            console.log({
+                l1GasDollarsNum,
+                l1GasCents,
+                l1Gas,
+                l1GasInGwei,
+                l1GasFeeSwapInGwei,
+            });
             if (l1GasDollarsNum) setExtraL1GasFeeSwap(l1GasDollarsNum);
         })();
     }, [
