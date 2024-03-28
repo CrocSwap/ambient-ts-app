@@ -2,7 +2,6 @@
 import { Dispatch, memo, SetStateAction, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import settingsIcon from '../../../../assets/images/icons/settings.svg';
-import { VscClose } from 'react-icons/vsc';
 
 // START: Import JSX Components
 import TransactionSettingsModal from '../../../Global/TransactionSettingsModal/TransactionSettingsModal';

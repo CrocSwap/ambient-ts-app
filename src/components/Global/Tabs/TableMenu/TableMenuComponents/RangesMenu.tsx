@@ -102,8 +102,8 @@ function RangesMenu(props: propsIF) {
     // const view1 = useMediaQuery('(max-width: 600px)');
     // const view3 = useMediaQuery('(min-width: 1800px)');
 
-    const showRepositionButton = true;
-    // !isPositionInRange && !isPositionEmpty && userMatchesConnectedAccount;
+    const showRepositionButton =
+        !isPositionInRange && !isPositionEmpty && userMatchesConnectedAccount;
 
     const feesAvailableForHarvest =
         (position.feesLiqBase || 0) + (position.feesLiqQuote || 0) > 0;
@@ -307,10 +307,9 @@ function RangesMenu(props: propsIF) {
     const rangesMenu = (
         <div className={styles.actions_menu}>
             {tableView !== 'small' && showRepositionButton && repositionButton}
-            {editButton}
             {tableView !== 'small' &&
-                // !showRepositionButton &&
-                // userMatchesConnectedAccount &&
+                !showRepositionButton &&
+                userMatchesConnectedAccount &&
                 addButton}
             {(tableView === 'large' ||
                 (!showRepositionButton && tableView !== 'small')) &&
@@ -320,6 +319,7 @@ function RangesMenu(props: propsIF) {
             {!userMatchesConnectedAccount &&
                 tableView !== 'small' &&
                 copyButton}
+            {editButton}
         </div>
     );
 

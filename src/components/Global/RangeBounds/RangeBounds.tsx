@@ -6,6 +6,7 @@ import MinMaxPrice from '../../Trade/Range/AdvancedModeComponents/MinMaxPrice/Mi
 import { motion } from 'framer-motion';
 import AdvancedModeToggle from '../../Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import { RangeContext } from '../../../contexts/RangeContext';
+import EditLiqPriceInfo from '../../Trade/EditLiquidity/EditLiqPriceInfo/EditLiqPriceInfo';
 
 interface RangeBoundsProps {
     customSwitch?: boolean;
@@ -54,6 +55,7 @@ interface RangeBoundsProps {
     minPrice: number;
     setMaxPrice: Dispatch<SetStateAction<number>>;
     setMinPrice: Dispatch<SetStateAction<number>>;
+    isEditPanel?: boolean;
 }
 
 export default function RangeBounds(props: RangeBoundsProps) {
@@ -89,6 +91,7 @@ export default function RangeBounds(props: RangeBoundsProps) {
 
         isRangeBoundsDisabled,
         customSwitch = false,
+        isEditPanel,
     } = props;
     const rangeWidthProps = {
         rangeWidthPercentage,
@@ -139,7 +142,11 @@ export default function RangeBounds(props: RangeBoundsProps) {
             >
                 <RangeWidth {...rangeWidthProps} />
             </motion.div>
-            <RangePriceInfo {...rangePriceInfoProps} />
+            {isEditPanel ? (
+                <EditLiqPriceInfo />
+            ) : (
+                <RangePriceInfo {...rangePriceInfoProps} />
+            )}
         </div>
     );
     const advancedModeContent = (

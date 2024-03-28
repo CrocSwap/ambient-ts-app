@@ -1092,6 +1092,7 @@ function Range(props: RangePropsIF) {
                     {...rangeWidthProps}
                     {...rangePriceInfoProps}
                     {...minMaxPriceProps}
+                    isEditPanel={isEditPanel}
                 />
             }
             transactionDetails={<RangeExtraInfo {...rangeExtraInfoProps} />}

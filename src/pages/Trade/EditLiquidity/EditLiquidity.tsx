@@ -1,80 +1,21 @@
 // START: Import React and Dongles
-import { useContext, useEffect, useMemo, useState, memo } from 'react';
+import { useContext, useState } from 'react';
 import { useLocation, useParams, Navigate } from 'react-router-dom';
-import { CrocReposition, toDisplayPrice } from '@crocswap-libs/sdk';
 
 // START: Import Other Local Files
 import styles from './EditLiquidity.module.css';
-import { PositionIF, PositionServerIF } from '../../../ambient-utils/types';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
-import { TokenContext } from '../../../contexts/TokenContext';
-import { ReceiptContext } from '../../../contexts/ReceiptContext';
-import { UserDataContext } from '../../../contexts/UserDataContext';
-import { useModal } from '../../../components/Global/Modal/useModal';
+import { PositionIF } from '../../../ambient-utils/types';
+
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
-import { RangeContext } from '../../../contexts/RangeContext';
 import { useProcessRange } from '../../../utils/hooks/useProcessRange';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import RepositionHeader from '../../../components/Trade/Reposition/RepositionHeader/RepositionHeader';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import Range from '../Range/Range';
 
 function EditLiquidity() {
     const { params } = useParams();
-    const {
-        cachedQuerySpotPrice,
-        cachedFetchTokenPrice,
-        cachedTokenDetails,
-        cachedEnsResolve,
-    } = useContext(CachedDataContext);
-    const {
-        crocEnv,
-        activeNetwork,
-        provider,
-        ethMainnetUsdPrice,
-        chainData: { blockExplorer },
-    } = useContext(CrocEnvContext);
-    const { tokens } = useContext(TokenContext);
-    const {
-        gasPriceInGwei,
-        lastBlockNumber,
-        isActiveNetworkBlast,
-        isActiveNetworkScroll,
-    } = useContext(ChainDataContext);
-    const { bypassConfirmRepo, repoSlippage } = useContext(
-        UserPreferenceContext,
-    );
-    const {
-        addPendingTx,
-        addReceipt,
-        addTransactionByType,
-        addPositionUpdate,
-        removePendingTx,
-        updateTransactionHash,
-    } = useContext(ReceiptContext);
-    const {
-        isDenomBase,
-        tokenA,
-        tokenB,
-        isTokenABase,
-        poolPriceNonDisplay: currentPoolPriceNonDisplay,
-        getDefaultRangeWidthForTokenPair,
-    } = useContext(TradeDataContext);
-    const {
-        simpleRangeWidth,
-        setSimpleRangeWidth,
-        setMaxRangePrice: setMaxPrice,
-        setMinRangePrice: setMinPrice,
-        setCurrentRangeInReposition,
-        setRescaleRangeBoundariesWithSlider,
-        setAdvancedMode,
-    } = useContext(RangeContext);
-    const { userAddress } = useContext(UserDataContext);
 
-    const [isOpen, openModal, closeModal] = useModal();
+    const { getDefaultRangeWidthForTokenPair } = useContext(TradeDataContext);
 
     const locationHook = useLocation();
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
@@ -96,7 +37,7 @@ function EditLiquidity() {
 
     const { position } = locationHook.state as { position: PositionIF };
     const { posHashTruncated } = useProcessRange(position);
-
+    // eslint-disable-next-line
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(
         getDefaultRangeWidthForTokenPair(
             position.chainId,
@@ -104,10 +45,8 @@ function EditLiquidity() {
             position.quote.toLowerCase(),
         ),
     );
+    // eslint-disable-next-line
     const [newEditTransactionHash, setNewEditTransactionHash] = useState('');
-
-    console.log('base', position.positionLiqBaseDecimalCorrected);
-    console.log('quote', position.positionLiqQuoteDecimalCorrected);
 
     return (
         <>

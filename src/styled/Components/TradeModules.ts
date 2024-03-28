@@ -255,7 +255,7 @@ export const TokenSelectButton = styled.button<{
     background: var(--dark1);
     outline: none;
     border: 0.5px solid transparent;
-    padding: 0 4px;
+    padding: 0 8px;
     border-radius: 50px;
     height: 40px;
 
