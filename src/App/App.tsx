@@ -60,7 +60,7 @@ export default function App() {
             setIsOpen: setChatOpen,
             isEnabled: isChatEnabled,
         },
-        theme: { selected: selectedTheme },
+        skin,
         wagmiModal: { isOpen: isWagmiModalOpen },
         appHeaderDropdown,
         showPointSystemPopup,
@@ -167,7 +167,7 @@ export default function App() {
             <FlexContainer
                 flexDirection='column'
                 className={containerStyle}
-                data-theme={selectedTheme}
+                data-theme={skin.active}
             >
                 {!isWalletChainSupported && <SwitchNetwork />}
                 {showPointSystemPopup && (

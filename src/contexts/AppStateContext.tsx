@@ -95,7 +95,7 @@ export const AppStateContextProvider = (props: {
     // I.e. updated if and only if their conrents need to be updated.
     const snackbar = useSnackbar();
     const globalPopup = useGlobalPopup();
-    const skin = useSkin('purple_dark');
+    const skin = useSkin('orange');
 
     const [
         isWagmiModalOpenWallet,
@@ -196,7 +196,7 @@ export const AppStateContextProvider = (props: {
             areSubscriptionsEnabled,
             isAppOverlayActive,
             isTutorialMode,
-            theme,
+            // theme,
             isWagmiModalOpenWallet,
             openWagmiModalWallet,
             closeWagmiModalWallet,
