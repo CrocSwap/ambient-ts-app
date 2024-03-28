@@ -4,8 +4,7 @@ export type skins = 'purple_dark' | 'purple_light' | 'orange';
 
 export interface skinMethodsIF {
     skin: skins;
-    choosePurpleDark: () => void;
-    choosePurpleLight: () => void;
+    setSkin: (s: skins) => void;
 }
 
 export const useSkin = (defaultSkin: skins): skinMethodsIF => {
@@ -26,8 +25,7 @@ export const useSkin = (defaultSkin: skins): skinMethodsIF => {
     return useMemo(
         () => ({
             skin,
-            choosePurpleDark: () => setSkin('purple_dark'),
-            choosePurpleLight: () => setSkin('purple_light'),
+            setSkin: (s: skins) => setSkin(s),
         }),
         [skin],
     );
