@@ -143,8 +143,8 @@ function ChatPanel(props: propsIF) {
     const freezePanel = () => {
         messageEnd.current?.style.setProperty('opacity', '0');
     };
-    const activatePanel = () => {
-        messageEnd.current?.style.setProperty('opacity', '1');
+
+    const scrollToVeryBottom = () => {
         if (messageEnd.current) {
             messageEnd.current.scrollTo({
                 left: 0,
@@ -152,6 +152,14 @@ function ChatPanel(props: propsIF) {
                 behavior: 'instant' as ScrollBehavior,
             });
         }
+    };
+
+    const activatePanel = () => {
+        messageEnd.current?.style.setProperty('opacity', '1');
+        scrollToVeryBottom();
+        setTimeout(() => {
+            scrollToVeryBottom();
+        }, 200);
     };
 
     const {
