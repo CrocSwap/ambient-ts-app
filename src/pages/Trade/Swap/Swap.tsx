@@ -1,5 +1,5 @@
-import { CrocImpact } from '@crocswap-libs/sdk';
-import { useContext, useState, useEffect, memo, useRef } from 'react';
+import { CrocImpact, bigNumToFloat } from '@crocswap-libs/sdk';
+import { useContext, useState, useEffect, memo, useRef, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
     getFormattedNumber,
@@ -71,7 +71,8 @@ function Swap(props: propsIF) {
         provider,
     } = useContext(CrocEnvContext);
     const { userAddress } = useContext(UserDataContext);
-    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
+        useContext(ChainDataContext);
     const { isPoolInitialized } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
 
@@ -134,7 +135,9 @@ function Swap(props: propsIF) {
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] =
         useState<boolean>(false);
     const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] =
-        useState<boolean>(dexBalSwap.outputToDexBal.isEnabled);
+        useState<boolean>(
+            isActiveNetworkBlast ? false : dexBalSwap.outputToDexBal.isEnabled,
+        );
 
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
@@ -142,7 +145,19 @@ function Swap(props: propsIF) {
     const [swapButtonErrorMessage, setSwapButtonErrorMessage] =
         useState<string>('');
 
-    const [priceImpact, setPriceImpact] = useState<CrocImpact | undefined>();
+    const [lastImpactQuery, setLastImpactQuery] = useState<
+        | {
+              input: string;
+              isInputSell: boolean;
+              impact: CrocImpact | undefined;
+          }
+        | undefined
+    >();
+
+    const priceImpact = useMemo(
+        () => lastImpactQuery?.impact,
+        [JSON.stringify(lastImpactQuery)],
+    );
     const [swapGasPriceinDollars, setSwapGasPriceinDollars] = useState<
         string | undefined
     >();
@@ -167,6 +182,14 @@ function Swap(props: propsIF) {
     const priceImpactNum = !priceImpact?.percentChange
         ? undefined
         : Math.abs(priceImpact.percentChange) * 100;
+
+    const [priceImpactNumMemo, setPriceImpactNumMemo] = useState<
+        number | undefined
+    >();
+
+    useEffect(() => {
+        if (priceImpactNum) setPriceImpactNumMemo(priceImpactNum);
+    }, [priceImpactNum]);
 
     const tokenASurplusMinusTokenARemainderNum =
         parseFloat(tokenADexBalance || '0') - parseFloat(sellQtyString || '0');
@@ -304,12 +327,11 @@ function Swap(props: propsIF) {
         setNewSwapTransactionHash('');
     }, [baseToken.address + quoteToken.address]);
 
-    const isScroll = chainId === '0x82750' || chainId === '0x8274f';
     const [l1GasFeeSwapInGwei, setL1GasFeeSwapInGwei] = useState<number>(
-        isScroll ? 0.0007 : 0,
+        isActiveNetworkScroll ? 0.0007 : isActiveNetworkBlast ? 0.0001 : 0,
     );
     const [extraL1GasFeeSwap, setExtraL1GasFeeSwap] = useState(
-        isScroll ? 1 : 0,
+        isActiveNetworkScroll ? 1 : isActiveNetworkBlast ? 0.3 : 0,
     );
 
     // calculate price of gas for swap
@@ -382,29 +404,32 @@ function Swap(props: propsIF) {
 
             if (qty === '' || parseFloat(qty) === 0) return;
 
-            const l1Gas = await calcL1Gas({
-                crocEnv,
-                isQtySell: isTokenAPrimary,
-                qty,
-                buyTokenAddress: tokenB.address,
-                sellTokenAddress: tokenA.address,
-                slippageTolerancePercentage,
-                isWithdrawFromDexChecked,
-                isSaveAsDexSurplusChecked,
-            });
+            const l1Gas = userAddress
+                ? await calcL1Gas({
+                      crocEnv,
+                      isQtySell: isTokenAPrimary,
+                      qty,
+                      buyTokenAddress: tokenB.address,
+                      sellTokenAddress: tokenA.address,
+                      slippageTolerancePercentage,
+                      isWithdrawFromDexChecked,
+                      isSaveAsDexSurplusChecked,
+                  })
+                : undefined;
 
             const costOfEthInCents = BigNumber.from(
                 Math.floor((ethMainnetUsdPrice || 0) * 100),
             );
             const l1GasInGwei = l1Gas ? l1Gas.div(NUM_WEI_IN_GWEI) : undefined;
-            setL1GasFeeSwapInGwei(l1GasInGwei?.toNumber() || 0);
+            l1GasInGwei &&
+                setL1GasFeeSwapInGwei(bigNumToFloat(l1GasInGwei) || 0);
 
             const l1GasCents = l1GasInGwei
                 ? l1GasInGwei.mul(costOfEthInCents).div(NUM_GWEI_IN_ETH)
                 : undefined;
 
             const l1GasDollarsNum = l1GasCents
-                ? l1GasCents?.toNumber() / 100
+                ? bigNumToFloat(l1GasCents) / 100
                 : undefined;
 
             if (l1GasDollarsNum) setExtraL1GasFeeSwap(l1GasDollarsNum);
@@ -550,6 +575,14 @@ function Swap(props: propsIF) {
         }
     };
 
+    useEffect(() => {
+        if (dexBalSwap.outputToDexBal.isEnabled) {
+            setIsSaveAsDexSurplusChecked(true);
+        } else {
+            setIsSaveAsDexSurplusChecked(false);
+        }
+    }, [dexBalSwap.outputToDexBal.isEnabled]);
+
     // logic to acknowledge one or both tokens as necessary
     const ackAsNeeded = (): void => {
         needConfirmTokenA && tokens.acknowledge(tokenA);
@@ -574,7 +607,9 @@ function Swap(props: propsIF) {
     ) : undefined;
 
     const priceImpactWarning =
-        !isLiquidityInsufficient && priceImpactNum && priceImpactNum > 2 ? (
+        !isLiquidityInsufficient &&
+        priceImpactNumMemo &&
+        priceImpactNumMemo > 2 ? (
             <WarningContainer
                 flexDirection='row'
                 justifyContent='space-between'
@@ -596,7 +631,7 @@ function Swap(props: propsIF) {
                         placement='bottom'
                     />
                 </FlexContainer>
-                <div>{getPriceImpactString(priceImpactNum)}%</div>
+                <div>{getPriceImpactString(priceImpactNumMemo)}%</div>
             </WarningContainer>
         ) : undefined;
 
@@ -607,6 +642,7 @@ function Swap(props: propsIF) {
             header={
                 <TradeModuleHeader
                     slippage={swapSlippage}
+                    dexBalSwap={dexBalSwap}
                     bypassConfirm={bypassConfirmSwap}
                     settingsTitle='Swap'
                     isSwapPage={!isOnTradeRoute}
@@ -617,7 +653,7 @@ function Swap(props: propsIF) {
                     isLiquidityInsufficient={isLiquidityInsufficient}
                     setIsLiquidityInsufficient={setIsLiquidityInsufficient}
                     slippageTolerancePercentage={slippageTolerancePercentage}
-                    setPriceImpact={setPriceImpact}
+                    setLastImpactQuery={setLastImpactQuery}
                     sellQtyString={{
                         value: sellQtyString,
                         set: setSellQtyString,

@@ -6,7 +6,7 @@ import {
 import { favePoolsMethodsIF, useFavePools } from '../App/hooks/useFavePools';
 import { skipConfirmIF, useSkipConfirm } from '../App/hooks/useSkipConfirm';
 import { SlippageMethodsIF, useSlippage } from '../App/hooks/useSlippage';
-import { IS_LOCAL_ENV, slippage } from '../ambient-utils/constants';
+import { IS_LOCAL_ENV } from '../ambient-utils/constants';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
 import { TradeDataContext } from './TradeDataContext';
@@ -46,9 +46,9 @@ export const UserPreferenceContextProvider = (props: {
 
     const userPreferencesProps = {
         favePools: useFavePools(),
-        swapSlippage: useSlippage('swap', slippage.swap),
-        mintSlippage: useSlippage('mint', slippage.mint),
-        repoSlippage: useSlippage('repo', slippage.reposition),
+        swapSlippage: useSlippage('swap'),
+        mintSlippage: useSlippage('mint'),
+        repoSlippage: useSlippage('repo'),
         dexBalSwap: useExchangePrefs('swap'),
         dexBalLimit: useExchangePrefs('limit'),
         dexBalRange: useExchangePrefs('range'),

@@ -100,6 +100,7 @@ function RangeHeader(props: propsIF) {
                                 ? 'center'
                                 : 'left'
                         }
+                        style={{ textTransform: 'none' }}
                     >
                         {name} {arrow}
                     </Text>

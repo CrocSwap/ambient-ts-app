@@ -14,6 +14,7 @@ import {
 } from '../../../../utils/hooks/useLinkGen';
 import { RowItem } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
+import { Link } from 'react-router-dom';
 
 interface propsIF {
     posHashTruncated: string;
@@ -76,7 +77,6 @@ export const orderRowConstants = (props: propsIF) => {
         quoteTokenSymbol,
         elapsedTimeString,
         isAccountView,
-        priceCharacter,
         truncatedDisplayPrice,
         truncatedDisplayPriceDenomByMoneyness,
         sideType,
@@ -253,14 +253,10 @@ export const orderRowConstants = (props: propsIF) => {
             className='base_color'
             onClick={(event) => event.stopPropagation()}
         >
-            <RowItem hover>
-                <a
-                    href={linkGenLimit.getFullURL(limitLinkParams)}
-                    target='_blank'
-                    rel='noreferrer'
-                >
-                    <div>
-                        <span>
+            {isOwnerActiveAccount ? (
+                <RowItem hover>
+                    <Link to={linkGenLimit.getFullURL(limitLinkParams)}>
+                        <span style={{ textTransform: 'none' }}>
                             {baseTokenSymbol} / {quoteTokenSymbol}
                         </span>
                         <FiExternalLink
@@ -268,9 +264,28 @@ export const orderRowConstants = (props: propsIF) => {
                             color='white'
                             style={{ marginLeft: '.5rem' }}
                         />
-                    </div>
-                </a>
-            </RowItem>
+                    </Link>
+                </RowItem>
+            ) : (
+                <RowItem hover>
+                    <a
+                        href={linkGenLimit.getFullURL(limitLinkParams)}
+                        target='_blank'
+                        rel='noreferrer'
+                    >
+                        <div>
+                            <span style={{ textTransform: 'none' }}>
+                                {baseTokenSymbol} / {quoteTokenSymbol}
+                            </span>
+                            <FiExternalLink
+                                size={10}
+                                color='white'
+                                style={{ marginLeft: '.5rem' }}
+                            />
+                        </div>
+                    </a>
+                </RowItem>
+            )}
         </div>
     );
 
@@ -367,7 +382,6 @@ export const orderRowConstants = (props: propsIF) => {
         >
             {(
                 <p>
-                    <span>{priceCharacter}</span>
                     <span>
                         {isAccountView
                             ? truncatedDisplayPriceDenomByMoneyness

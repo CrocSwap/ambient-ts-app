@@ -1,4 +1,5 @@
 import React, { createContext, useEffect, useMemo, useState } from 'react';
+import { useIdleTimer } from 'react-idle-timer';
 import {
     globalPopupMethodsIF,
     useGlobalPopup,
@@ -13,10 +14,21 @@ import {
 import {
     CHAT_ENABLED,
     CACHE_UPDATE_FREQ_IN_MS,
+    DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES,
+    DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES,
 } from '../ambient-utils/constants';
+import {
+    getCtaDismissalsFromLocalStorage,
+    saveCtaDismissalToLocalStorage,
+} from '../App/functions/localStorage';
 
 interface AppStateContextIF {
     appOverlay: { isActive: boolean; setIsActive: (val: boolean) => void };
+    appHeaderDropdown: {
+        isActive: boolean;
+        setIsActive: (val: boolean) => void;
+    };
+
     globalPopup: globalPopupMethodsIF;
     snackbar: snackbarMethodsIF;
     tutorial: { isActive: boolean; setIsActive: (val: boolean) => void };
@@ -38,6 +50,11 @@ interface AppStateContextIF {
         open: () => void;
         close: () => void;
     };
+    showPointSystemPopup: boolean;
+    dismissPointSystemPopup: () => void;
+    showTopPtsBanner: boolean;
+    dismissTopBannerPopup: () => void;
+    isUserIdle: boolean;
 }
 
 export const AppStateContext = createContext<AppStateContextIF>(
@@ -49,10 +66,12 @@ export const AppStateContextProvider = (props: {
 }) => {
     const [theme, setTheme] = useState<'dark' | 'light'>('dark');
     const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
+    const [isAppHeaderDropdown, setIsAppHeaderDropdown] = useState(false);
     const [isTutorialMode, setIsTutorialMode] = useState(false);
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isChatEnabled, setIsChatEnabled] = useState(CHAT_ENABLED);
     const [isUserOnline, setIsUserOnline] = useState(navigator.onLine);
+    const [isUserIdle, setIsUserIdle] = useState(false);
 
     window.ononline = () => setIsUserOnline(true);
     window.onoffline = () => setIsUserOnline(false);
@@ -83,11 +102,57 @@ export const AppStateContextProvider = (props: {
         closeWagmiModalWallet,
     ] = useModal();
 
+    const pointsModalDismissalDuration =
+        DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES || 1440;
+
+    const pointsBannerDismissalDuration =
+        DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES || 1440;
+
+    const ctaPopupDismissalTime =
+        getCtaDismissalsFromLocalStorage().find(
+            (x) => x.ctaId === 'points_modal_cta',
+        )?.unixTimeOfDismissal || 0;
+
+    const [showPointSystemPopup, setShowPointSystemPopup] = useState(
+        !ctaPopupDismissalTime ||
+            ctaPopupDismissalTime <
+                Math.floor(
+                    Date.now() / 1000 - 60 * pointsModalDismissalDuration,
+                ),
+    );
+
+    const dismissPointSystemPopup = () => {
+        setShowPointSystemPopup(false);
+        saveCtaDismissalToLocalStorage({ ctaId: 'points_modal_cta' });
+    };
+
+    const ctaBannerDismissalTime =
+        getCtaDismissalsFromLocalStorage().find(
+            (x) => x.ctaId === 'top_points_banner_cta',
+        )?.unixTimeOfDismissal || 0;
+
+    const [showTopPtsBanner, setShowTopPtsBanner] = useState<boolean>(
+        !ctaBannerDismissalTime ||
+            ctaBannerDismissalTime <
+                Math.floor(
+                    Date.now() / 1000 - 60 * pointsBannerDismissalDuration,
+                ),
+    );
+
+    const dismissTopBannerPopup = () => {
+        setShowTopPtsBanner(false);
+        saveCtaDismissalToLocalStorage({ ctaId: 'top_points_banner_cta' });
+    };
+
     const appStateContext = useMemo(
         () => ({
             appOverlay: {
                 isActive: isAppOverlayActive,
                 setIsActive: setIsAppOverlayActive,
+            },
+            appHeaderDropdown: {
+                isActive: isAppHeaderDropdown,
+                setIsActive: setIsAppHeaderDropdown,
             },
             globalPopup,
             snackbar,
@@ -104,12 +169,17 @@ export const AppStateContextProvider = (props: {
                 setIsEnabled: setIsChatEnabled,
             },
             server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
+            isUserIdle,
             subscriptions: { isEnabled: areSubscriptionsEnabled },
             wagmiModal: {
                 isOpen: isWagmiModalOpenWallet,
                 open: openWagmiModalWallet,
                 close: closeWagmiModalWallet,
             },
+            showPointSystemPopup,
+            dismissPointSystemPopup,
+            showTopPtsBanner,
+            dismissTopBannerPopup,
         }),
         [
             // Dependency list includes the memoized use*() values from above and any primitives
@@ -121,6 +191,7 @@ export const AppStateContextProvider = (props: {
             isChatEnabled,
             isServerEnabled,
             isUserOnline,
+            isUserIdle,
             areSubscriptionsEnabled,
             isAppOverlayActive,
             isTutorialMode,
@@ -128,8 +199,56 @@ export const AppStateContextProvider = (props: {
             isWagmiModalOpenWallet,
             openWagmiModalWallet,
             closeWagmiModalWallet,
+            isAppHeaderDropdown,
+            setIsAppHeaderDropdown,
+            showPointSystemPopup,
+            dismissPointSystemPopup,
+            showTopPtsBanner,
+            dismissTopBannerPopup,
         ],
     );
+
+    const onIdle = () => {
+        setIsUserIdle(true);
+    };
+
+    const onActive = () => {
+        setIsUserIdle(false);
+    };
+
+    useIdleTimer({
+        //    onPrompt,
+        onIdle,
+        onActive,
+        //    onAction,
+        timeout: 1000 * 60 * 1, // set user to idle after 1 minute
+        promptTimeout: 0,
+        events: [
+            'mousemove',
+            'keydown',
+            'wheel',
+            'DOMMouseScroll',
+            'mousewheel',
+            'mousedown',
+            'touchstart',
+            'touchmove',
+            'MSPointerDown',
+            'MSPointerMove',
+            'visibilitychange',
+        ],
+        immediateEvents: [],
+        debounce: 0,
+        throttle: 0,
+        eventsThrottle: 200,
+        element: document,
+        startOnMount: true,
+        startManually: false,
+        stopOnIdle: false,
+        crossTab: false,
+        name: 'idle-timer',
+        syncTimers: 0,
+        leaderElection: false,
+    });
 
     // Heartbeat that checks if the chat server is reachable and has a stable db connection every 60 seconds.
     const { getStatus } = useChatApi();

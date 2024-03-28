@@ -4,13 +4,15 @@ import {
     createContext,
     useContext,
     useEffect,
+    useMemo,
     useState,
 } from 'react';
-import { useProvider, useSigner } from 'wagmi';
+import { useSigner } from 'wagmi';
 import { useBlacklist } from '../App/hooks/useBlacklist';
 import { useTopPools } from '../App/hooks/useTopPools';
 import { CachedDataContext } from './CachedDataContext';
 import { Provider } from '@ethersproject/providers';
+import { BatchedJsonRpcProvider } from '../utils/batchedProvider';
 import {
     limitParamsIF,
     linkGenMethodsIF,
@@ -25,9 +27,12 @@ import {
     ethereumMainnet,
     mainnetETH,
     getDefaultPairForChain,
+    BLAST_RPC_URL,
+    SCROLL_RPC_URL,
 } from '../ambient-utils/constants';
 import { UserDataContext } from './UserDataContext';
 import { TradeDataContext } from './TradeDataContext';
+import { ethers } from 'ethers';
 
 interface UrlRoutesTemplate {
     swap: string;
@@ -45,15 +50,30 @@ interface CrocEnvContextIF {
     topPools: PoolIF[];
     ethMainnetUsdPrice: number | undefined;
     defaultUrlParams: UrlRoutesTemplate;
-    provider: Provider | undefined;
+    provider: Provider;
     activeNetwork: NetworkIF;
     chooseNetwork: (network: NetworkIF) => void;
     mainnetProvider: Provider | undefined;
+    scrollProvider: Provider | undefined;
+    blastProvider: Provider | undefined;
 }
 
 export const CrocEnvContext = createContext<CrocEnvContextIF>(
     {} as CrocEnvContextIF,
 );
+const mainnetProvider = new BatchedJsonRpcProvider(
+    new ethers.providers.InfuraProvider(
+        'mainnet',
+        process.env.REACT_APP_INFURA_KEY || '360ea5fda45b4a22883de8522ebd639e',
+    ),
+).proxy;
+
+const scrollProvider = new BatchedJsonRpcProvider(
+    new ethers.providers.JsonRpcProvider(SCROLL_RPC_URL),
+).proxy;
+const blastProvider = new BatchedJsonRpcProvider(
+    new ethers.providers.JsonRpcProvider(BLAST_RPC_URL),
+).proxy;
 
 export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
@@ -110,8 +130,17 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const [defaultUrlParams, setDefaultUrlParams] =
         useState<UrlRoutesTemplate>(initUrl);
 
-    const provider = useProvider({ chainId: +chainData.chainId });
-    const mainnetProvider = useProvider({ chainId: +'0x1' });
+    const provider = useMemo(
+        () =>
+            chainData.chainId === '0x1'
+                ? mainnetProvider
+                : chainData.chainId === '0x82750'
+                ? scrollProvider
+                : chainData.chainId === '0x13e31'
+                ? blastProvider
+                : new ethers.providers.JsonRpcProvider(chainData.nodeUrl),
+        [chainData.chainId],
+    );
 
     useBlacklist(userAddress);
 
@@ -196,6 +225,8 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         defaultUrlParams,
         provider,
         mainnetProvider,
+        scrollProvider,
+        blastProvider,
         activeNetwork,
         chooseNetwork,
     };

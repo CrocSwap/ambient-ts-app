@@ -1,4 +1,11 @@
-import { ReactNode, createContext, useContext, useMemo, useState } from 'react';
+import {
+    ReactNode,
+    createContext,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
@@ -11,6 +18,9 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { CrocEnvContext } from './CrocEnvContext';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../ambient-utils/constants';
 import ambientTokenList from '../ambient-utils/constants/ambient-token-list.json';
+import { PoolContext } from './PoolContext';
+import { useTokenStatsIF, useTokenStats } from '../pages/Explore/useTokenStats';
+import { TokenContext } from './TokenContext';
 
 export interface ExploreContextIF {
     pools: {
@@ -21,8 +31,9 @@ export interface ExploreContextIF {
             crocEnv: CrocEnv,
             chainId: string,
         ) => void;
-        resetPoolData: () => void;
+        reset: () => void;
     };
+    tokens: useTokenStatsIF;
 }
 
 export interface PoolDataIF extends PoolIF {
@@ -46,15 +57,18 @@ export const ExploreContext = createContext<ExploreContextIF>(
 );
 
 export const ExploreContextProvider = (props: { children: ReactNode }) => {
-    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { isActiveNetworkBlast } = useContext(ChainDataContext);
+
     const {
         cachedPoolStatsFetch,
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
-        cachedGet24hChange,
+        cachedTokenDetails,
     } = useContext(CachedDataContext);
 
-    const { activeNetwork } = useContext(CrocEnvContext);
+    const { crocEnv, chainData, activeNetwork, provider } =
+        useContext(CrocEnvContext);
+    const { tokens } = useContext(TokenContext);
 
     const [limitedPools, setLimitedPools] = useState<Array<PoolDataIF>>([]);
     const [extraPools, setExtraPools] = useState<Array<PoolDataIF>>([]);
@@ -63,6 +77,37 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         () => limitedPools.concat(extraPools),
         [limitedPools, extraPools],
     );
+    // metadata only
+    const { poolList } = useContext(PoolContext);
+
+    const getLimitedPools = async (): Promise<void> => {
+        if (crocEnv && poolList.length) {
+            getLimitedPoolData(poolList, crocEnv, chainData.chainId);
+        }
+    };
+
+    const getAllPools = async (): Promise<void> => {
+        // make sure crocEnv exists and pool metadata is present
+        if (crocEnv && poolList.length) {
+            // clear text in DOM for time since last update
+            setLimitedPools([]);
+            setExtraPools([]);
+            // use metadata to get expanded pool data
+            getLimitedPools().then(() => {
+                getExtraPoolData(poolList, crocEnv, chainData.chainId);
+            });
+        }
+    };
+
+    // get expanded pool metadata
+    useEffect(() => {
+        // wait 5 seconds to get data
+        setTimeout(() => {
+            if (crocEnv !== undefined && poolList.length > 0) {
+                getAllPools();
+            }
+        }, 5000);
+    }, [crocEnv, poolList.length]);
 
     // fn to get data on a single pool
     async function getPoolData(
@@ -80,7 +125,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         // pool index
         const poolIdx: number = lookupChain(chainId).poolIndex;
 
-        const poolStats = await cachedPoolStatsFetch(
+        const poolStatsNow = await cachedPoolStatsFetch(
             chainId,
             pool.base.address,
             pool.quote.address,
@@ -89,9 +134,43 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             crocEnv,
             activeNetwork.graphCacheUrl,
             cachedFetchTokenPrice,
+            cachedTokenDetails,
+            tokens.tokenUniv,
+        );
+        const ydayTime = Math.floor(Date.now() / 1000 - 24 * 3600);
+
+        const poolStats24hAgo = await cachedPoolStatsFetch(
+            chainId,
+            pool.base.address,
+            pool.quote.address,
+            poolIdx,
+            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+            crocEnv,
+            activeNetwork.graphCacheUrl,
+            cachedFetchTokenPrice,
+            cachedTokenDetails,
+            tokens.tokenUniv,
+            ydayTime,
         );
 
-        if (!poolStats || poolStats.tvlTotalUsd < 100) {
+        const volumeTotalNow = poolStatsNow?.volumeTotalUsd;
+        const volumeTotal24hAgo = poolStats24hAgo?.volumeTotalUsd;
+
+        const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
+
+        const nowPrice = poolStatsNow?.lastPriceIndic;
+        const ydayPrice = poolStats24hAgo?.lastPriceIndic;
+
+        const priceChangeRaw =
+            ydayPrice && nowPrice && ydayPrice > 0 && nowPrice > 0
+                ? shouldInvert
+                    ? ydayPrice / nowPrice - 1.0
+                    : nowPrice / ydayPrice - 1.0
+                : 0.0;
+        if (
+            !poolStatsNow ||
+            (!isActiveNetworkBlast && poolStatsNow.tvlTotalUsd < 100)
+        ) {
             // return early
             const poolData: PoolDataIF = {
                 ...pool,
@@ -113,31 +192,23 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         }
 
         // format TVL, use empty string as backup value
-        const tvlDisplay: string = poolStats.tvlTotalUsd
+        const tvlDisplay: string = poolStatsNow.tvlTotalUsd
             ? getFormattedNumber({
-                  value: poolStats.tvlTotalUsd,
+                  value: poolStatsNow.tvlTotalUsd,
                   isTvl: true,
                   prefix: '$',
               })
             : '';
         // format volume, use empty string as backup value
-        const volumeDisplay: string = poolStats.volumeTotalUsd
+        const volumeDisplay: string = volumeChange24h
             ? getFormattedNumber({
-                  value: poolStats.volumeTotalUsd,
+                  value: volumeChange24h,
                   prefix: '$',
               })
             : '';
         // human readable price change over last 24 hours
         let priceChangePercent: string;
-        const priceChangeRaw: number | undefined = await cachedGet24hChange(
-            chainId,
-            pool.base.address,
-            pool.quote.address,
-            poolIdx,
-            shouldInvert,
-            activeNetwork.graphCacheUrl,
-            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-        );
+
         if (!priceChangeRaw) {
             priceChangePercent = '';
         } else if (priceChangeRaw * 100 >= 0.01) {
@@ -164,7 +235,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             pool.base.address,
             pool.quote.address,
             chainId,
-            lastBlockNumber,
+            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
         );
         // display price, inverted if necessary
         const displayPrice: number = shouldInvert
@@ -185,9 +256,9 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
             }),
             poolIdx,
-            tvl: poolStats.tvlTotalUsd,
+            tvl: poolStatsNow.tvlTotalUsd,
             tvlStr: tvlDisplay,
-            volume: poolStats.volumeTotalUsd,
+            volume: volumeChange24h,
             volumeStr: volumeDisplay,
             priceChange: priceChangeRaw ?? 0,
             priceChangeStr: priceChangePercent,
@@ -277,16 +348,27 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             });
     }
 
+    const dexTokens: useTokenStatsIF = useTokenStats(
+        chainData.chainId,
+        crocEnv,
+        activeNetwork.graphCacheUrl,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        tokens,
+        provider,
+    );
+
     const exploreContext: ExploreContextIF = {
         pools: {
             all: allPools,
             getLimited: getLimitedPoolData,
             getExtra: getExtraPoolData,
-            resetPoolData: () => {
+            reset: () => {
                 setLimitedPools([]);
                 setExtraPools([]);
             },
         },
+        tokens: dexTokens,
     };
 
     return (

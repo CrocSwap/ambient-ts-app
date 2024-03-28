@@ -45,7 +45,7 @@ export const CachedDataContext = createContext<CachedDataIF>(
 export const CachedDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const cachedDataState = {
+    const cachedDataState: CachedDataIF = {
         cachedFetchTokenBalances: memoizeFetchTokenBalances(),
         cachedFetchTokenPrice: memoizeTokenPrice(),
         cachedPoolStatsFetch: memoizePoolStats(),

@@ -8,6 +8,7 @@ import React, {
 import { useAccount, useConnect, useDisconnect, useEnsName } from 'wagmi';
 import { ConnectArgs, Connector } from '@wagmi/core';
 import { checkBlacklist } from '../ambient-utils/constants';
+import { BlastUserXpIF, UserXpIF } from '../ambient-utils/types';
 import { fetchEnsAddress } from '../ambient-utils/api';
 import useChatApi from '../components/Chat/Service/ChatApi';
 
@@ -30,7 +31,20 @@ interface UserDataContextIF {
     setUserAccountProfile: Dispatch<SetStateAction<string | undefined>>;
     isfetchNftTriggered: boolean;
     setIsfetchNftTriggered: Dispatch<SetStateAction<boolean>>;
+    secondaryEnsFromContext: string;
+    setSecondaryEnsInContext: Dispatch<SetStateAction<string>>;
 }
+
+export interface UserXpDataIF {
+    dataReceived: boolean;
+    data: UserXpIF | undefined;
+}
+
+export interface BlastUserXpDataIF {
+    dataReceived: boolean;
+    data: BlastUserXpIF | undefined;
+}
+
 export const UserDataContext = createContext<UserDataContextIF>(
     {} as UserDataContextIF,
 );
@@ -39,6 +53,8 @@ export const UserDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const [resolvedAddressFromContext, setResolvedAddressInContext] =
+        React.useState<string>('');
+    const [secondaryEnsFromContext, setSecondaryEnsInContext] =
         React.useState<string>('');
 
     const { address: userAddress, isConnected: isUserConnected } = useAccount();
@@ -122,6 +138,8 @@ export const UserDataContextProvider = (props: {
         pendingConnector,
         resolvedAddressFromContext,
         setResolvedAddressInContext,
+        secondaryEnsFromContext,
+        setSecondaryEnsInContext,
         userAccountProfile,
         setUserAccountProfile,
         setIsfetchNftTriggered,

@@ -8,7 +8,9 @@ import React, {
 } from 'react';
 import useWebSocket from 'react-use-websocket';
 import {
+    BLOCK_POLLING_RPC_URL,
     IS_LOCAL_ENV,
+    SCROLL_RPC_URL,
     SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
     supportedNetworks,
 } from '../ambient-utils/constants';
@@ -17,15 +19,19 @@ import { TokenIF } from '../ambient-utils/types';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
-import { Client } from '@covalenthq/client-sdk';
-import { UserDataContext } from './UserDataContext';
 import {
-    NftDataIF,
-    NftListByChain,
-    TokenBalanceContext,
-} from './TokenBalanceContext';
-import { fetchBlockNumber } from '../ambient-utils/api';
-import { fetchNFT } from '../ambient-utils/api/fetchNft';
+    BlastUserXpDataIF,
+    UserDataContext,
+    UserXpDataIF,
+} from './UserDataContext';
+import { TokenBalanceContext } from './TokenBalanceContext';
+import {
+    fetchBlastUserXpData,
+    fetchBlockNumber,
+    fetchUserXpData,
+} from '../ambient-utils/api';
+import { BLAST_RPC_URL } from '../ambient-utils/constants/networks/blastNetwork';
+import { AppStateContext } from './AppStateContext';
 import moment from 'moment';
 
 interface ChainDataContextIF {
@@ -33,7 +39,12 @@ interface ChainDataContextIF {
     setGasPriceinGwei: Dispatch<SetStateAction<number | undefined>>;
     lastBlockNumber: number;
     setLastBlockNumber: Dispatch<SetStateAction<number>>;
-    client: Client;
+    connectedUserXp: UserXpDataIF;
+    connectedUserBlastXp: BlastUserXpDataIF;
+    isActiveNetworkBlast: boolean;
+    isActiveNetworkScroll: boolean;
+    isActiveNetworkMainnet: boolean;
+    isActiveNetworkL2: boolean;
 }
 
 export const ChainDataContext = createContext<ChainDataContextIF>(
@@ -43,6 +54,7 @@ export const ChainDataContext = createContext<ChainDataContextIF>(
 export const ChainDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
+    const { isUserIdle } = useContext(AppStateContext);
     const { setTokenBalances, setNFTData } = useContext(TokenBalanceContext);
 
     const { chainData, activeNetwork, crocEnv, provider } =
@@ -50,9 +62,6 @@ export const ChainDataContextProvider = (props: {
     const { cachedFetchTokenBalances, cachedTokenDetails, cachedFetchNFT } =
         useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
-
-    // const client = new Client('cqt_rQdWPMQV7YGRkVfmvTd7FFRBXHR4');
-    const client = new Client('cqt_wFBFjbVQ94kqCqVYxTJgWyQkg6cg');
 
     const {
         userAddress,
@@ -64,6 +73,32 @@ export const ChainDataContextProvider = (props: {
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
 
+    const isActiveNetworkBlast = ['0x13e31', '0xa0c71fd'].includes(
+        chainData.chainId,
+    );
+
+    const isActiveNetworkScroll = ['0x82750', '0x8274f'].includes(
+        chainData.chainId,
+    );
+    const isActiveNetworkMainnet = ['0x1'].includes(chainData.chainId);
+
+    const blockPollingUrl = BLOCK_POLLING_RPC_URL
+        ? BLOCK_POLLING_RPC_URL
+        : chainData.nodeUrl;
+
+    // array of network IDs for supported L2 networks
+    const L2_NETWORKS: string[] = [
+        '0x13e31',
+        '0xa0c71fd',
+        '0x82750',
+        '0x8274f',
+    ];
+
+    // boolean representing whether the active network is an L2
+    const isActiveNetworkL2: boolean = L2_NETWORKS.includes(chainData.chainId);
+
+    const BLOCK_NUM_POLL_MS = isUserIdle ? 15000 : 5000; // poll for new block every 15 seconds when user is idle, every 5 seconds when user is active
+
     async function pollBlockNum(): Promise<void> {
         // if default RPC is Infura, use key from env variable
         const nodeUrl =
@@ -71,7 +106,11 @@ export const ChainDataContextProvider = (props: {
             process.env.REACT_APP_INFURA_KEY
                 ? chainData.nodeUrl.slice(0, -32) +
                   process.env.REACT_APP_INFURA_KEY
-                : chainData.nodeUrl;
+                : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
+                ? BLAST_RPC_URL
+                : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
+                ? SCROLL_RPC_URL
+                : blockPollingUrl;
         try {
             const lastBlockNumber = await fetchBlockNumber(nodeUrl);
             if (lastBlockNumber > 0) setLastBlockNumber(lastBlockNumber);
@@ -80,26 +119,31 @@ export const ChainDataContextProvider = (props: {
         }
     }
 
-    const BLOCK_NUM_POLL_MS = 2000;
     useEffect(() => {
-        (async () => {
-            await pollBlockNum();
-            // Don't use polling, useWebSocket (below)
-            if (chainData.wsUrl) {
-                return;
-            }
-            // Grab block right away, then poll on periodic basis
+        // Grab block right away, then poll on periodic basis; useful for initial load
+        pollBlockNum();
 
-            const interval = setInterval(async () => {
-                await pollBlockNum();
-            }, BLOCK_NUM_POLL_MS);
-            return () => clearInterval(interval);
-        })();
-    }, [chainData.nodeUrl, BLOCK_NUM_POLL_MS]);
+        // Don't use polling, use WebSocket (below) if available
+        if (chainData.wsUrl) {
+            return;
+        }
+
+        const interval = setInterval(async () => {
+            pollBlockNum();
+        }, BLOCK_NUM_POLL_MS);
+        return () => clearInterval(interval);
+    }, [blockPollingUrl, BLOCK_NUM_POLL_MS]);
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
+
+    const wsUrl =
+        chainData.wsUrl?.toLowerCase().includes('infura') &&
+        process.env.REACT_APP_INFURA_KEY
+            ? chainData.wsUrl.slice(0, -32) + process.env.REACT_APP_INFURA_KEY
+            : chainData.wsUrl;
+
     const { sendMessage: sendBlockHeaderSub, lastMessage: lastNewHeadMessage } =
-        useWebSocket(chainData.wsUrl || null, {
+        useWebSocket(wsUrl || null, {
             onOpen: () => {
                 sendBlockHeaderSub(
                     '{"jsonrpc":"2.0","method":"eth_subscribe","params":["newHeads"],"id":5}',
@@ -140,114 +184,118 @@ export const ChainDataContextProvider = (props: {
         }
     };
 
+    const gasPricePollingCacheTime = Math.floor(
+        Date.now() / (isUserIdle ? 60000 : 10000),
+    ); // poll for new gas price every 60 seconds when user is idle, every 10 seconds when user is active
+
     useEffect(() => {
         fetchGasPrice();
-    }, [lastBlockNumber]);
+    }, [gasPricePollingCacheTime]);
 
     // used to trigger token balance refreshes every 5 minutes
     const everyFiveMinutes = Math.floor(Date.now() / 300000);
 
-    useEffect(() => {
-        const nftLocalData = localStorage.getItem('user_nft_data');
+    // useEffect(() => {
+    //     const nftLocalData = localStorage.getItem('user_nft_data');
 
-        const actionKey = userAddress;
+    //     const actionKey = userAddress;
 
-        const localNftDataParsed = nftLocalData
-            ? new Map(JSON.parse(nftLocalData))
-            : undefined;
+    //     const localNftDataParsed = nftLocalData
+    //         ? new Map(JSON.parse(nftLocalData))
+    //         : undefined;
 
-        const nftDataMap = localNftDataParsed?.get(actionKey) as any;
+    //     const nftDataMap = localNftDataParsed?.get(actionKey) as any;
 
-        if (
-            isfetchNftTriggered ||
-            !nftLocalData ||
-            (nftDataMap &&
-                moment(Date.now()).diff(
-                    moment(nftDataMap.lastFetchTime),
-                    'days',
-                ) >= 7) ||
-            (localNftDataParsed && !localNftDataParsed.has(actionKey))
-        ) {
-            (async () => {
-                if (
-                    crocEnv &&
-                    isUserConnected &&
-                    userAddress &&
-                    chainData.chainId &&
-                    client
-                ) {
-                    try {
-                        const NFTData = await cachedFetchNFT(
-                            '0xF005Bc919B57DC1a95070A614C0d51A2897d11ff', // '0x8e42AEcF40b5cC4c25fFA74E352b3840759aefa2',
-                            chainData.chainId,
-                            crocEnv,
-                            client,
-                        );
+    //     if (
+    //         isfetchNftTriggered ||
+    //         !nftLocalData ||
+    //         (nftDataMap &&
+    //             moment(Date.now()).diff(
+    //                 moment(nftDataMap.lastFetchTime),
+    //                 'days',
+    //             ) >= 7) ||
+    //         (localNftDataParsed && !localNftDataParsed.has(actionKey))
+    //     ) {
+    //         (async () => {
+    //             if (
+    //                 crocEnv &&
+    //                 isUserConnected &&
+    //                 userAddress &&
+    //                 chainData.chainId &&
+    //                 client
+    //             ) {
+    //                 try {
+    //                     const NFTData = await cachedFetchNFT(
+    //                         '0xF005Bc919B57DC1a95070A614C0d51A2897d11ff', // '0x8e42AEcF40b5cC4c25fFA74E352b3840759aefa2',
+    //                         chainData.chainId,
+    //                         crocEnv,
+    //                         client,
+    //                     );
 
-                        const nftDataMap = localNftDataParsed
-                            ? localNftDataParsed
-                            : new Map<string, Array<NftListByChain>>();
+    //                     const nftDataMap = localNftDataParsed
+    //                         ? localNftDataParsed
+    //                         : new Map<string, Array<NftListByChain>>();
 
-                        const mapValue: Array<NftListByChain> = [];
+    //                     const mapValue: Array<NftListByChain> = [];
 
-                        const actionKey = userAddress;
+    //                     const actionKey = userAddress;
 
-                        NFTData.map((item: any) => {
-                            const nftData = Object.values(item.nft_data);
+    //                     NFTData.map((item: any) => {
+    //                         const nftData = Object.values(item.nft_data);
 
-                            const nftImgArray: Array<NftDataIF> = [];
+    //                         const nftImgArray: Array<NftDataIF> = [];
 
-                            nftData.map((element: any) => {
-                                if (element.external_data)
-                                    nftImgArray.push({
-                                        tokenUrl: element.token_url,
-                                        nftImage: element.external_data.image,
-                                    });
-                            });
+    //                         nftData.map((element: any) => {
+    //                             if (element.external_data)
+    //                                 nftImgArray.push({
+    //                                     tokenUrl: element.token_url,
+    //                                     nftImage: element.external_data.image,
+    //                                 });
+    //                         });
 
-                            mapValue.push({
-                                contractAddress: item.contract_address,
-                                contractName: item.contract_name,
-                                data: nftImgArray,
-                            });
+    //                         mapValue.push({
+    //                             contractAddress: item.contract_address,
+    //                             contractName: item.contract_name,
+    //                             data: nftImgArray,
+    //                         });
 
-                            const mapWithFetchTime = {
-                                lastFetchTime: Date.now(),
-                                mapValue: mapValue,
-                            };
+    //                         const mapWithFetchTime = {
+    //                             lastFetchTime: Date.now(),
+    //                             mapValue: mapValue,
+    //                         };
 
-                            nftDataMap.set(actionKey, mapWithFetchTime);
-                        });
+    //                         nftDataMap.set(actionKey, mapWithFetchTime);
+    //                     });
 
-                        localStorage.setItem(
-                            'user_nft_data',
-                            JSON.stringify(Array.from(nftDataMap)),
-                        );
+    //                     localStorage.setItem(
+    //                         'user_nft_data',
+    //                         JSON.stringify(Array.from(nftDataMap)),
+    //                     );
 
-                        setNFTData(mapValue);
-                        setIsfetchNftTriggered(() => false);
-                    } catch (error) {
-                        console.error({ error });
-                    }
-                }
-            })();
-        } else {
-            if (localNftDataParsed && localNftDataParsed.has(actionKey)) {
-                if (nftDataMap) {
-                    setNFTData(() => nftDataMap.mapValue as NftListByChain[]);
-                }
-            }
-        }
-    }, [
-        crocEnv,
-        isUserConnected,
-        userAddress,
-        chainData.chainId,
-        everyFiveMinutes,
-        client !== undefined,
-        activeNetwork.graphCacheUrl,
-        isfetchNftTriggered,
-    ]);
+    //                     setNFTData(mapValue);
+    //                     setIsfetchNftTriggered(() => false);
+    //                 } catch (error) {
+    //                     console.error({ error });
+    //                 }
+    //             }
+    //         })();
+    //     } else {
+    //         if (localNftDataParsed && localNftDataParsed.has(actionKey)) {
+    //             if (nftDataMap) {
+    //                 setNFTData(() => nftDataMap.mapValue as NftListByChain[]);
+    //             }
+    //         }
+    //     }
+    // }, [
+    //     crocEnv,
+    //     isUserConnected,
+    //     userAddress,
+    //     chainData.chainId,
+    //     everyFiveMinutes,
+    //     client !== undefined,
+    //     activeNetwork.graphCacheUrl,
+    //     isfetchNftTriggered,
+    // ]);
 
     useEffect(() => {
         (async () => {
@@ -257,8 +305,7 @@ export const ChainDataContextProvider = (props: {
                 crocEnv &&
                 isUserConnected &&
                 userAddress &&
-                chainData.chainId &&
-                client
+                chainData.chainId
             ) {
                 try {
                     const tokenBalances: TokenIF[] =
@@ -269,20 +316,25 @@ export const ChainDataContextProvider = (props: {
                             cachedTokenDetails,
                             crocEnv,
                             activeNetwork.graphCacheUrl,
-                            client,
+                            tokens.tokenUniv,
                         );
                     const tokensWithLogos = tokenBalances.map((token) => {
                         const oldToken: TokenIF | undefined =
                             tokens.getTokenByAddress(token.address);
                         const newToken = { ...token };
-                        newToken.name = oldToken ? oldToken.name : '';
-                        newToken.logoURI = oldToken ? oldToken.logoURI : '';
+
+                        newToken.decimals =
+                            oldToken?.decimals || newToken?.decimals || 18;
+                        newToken.name = oldToken?.name || newToken.name || '';
+                        newToken.logoURI =
+                            oldToken?.logoURI || newToken.logoURI || '';
+                        newToken.symbol =
+                            oldToken?.symbol || newToken.symbol || '';
                         return newToken;
                     });
-
                     setTokenBalances(tokensWithLogos);
                 } catch (error) {
-                    setTokenBalances([]);
+                    // setTokenBalances(undefined);
                     console.error({ error });
                 }
             }
@@ -293,16 +345,82 @@ export const ChainDataContextProvider = (props: {
         userAddress,
         chainData.chainId,
         everyFiveMinutes,
-        client !== undefined,
         activeNetwork.graphCacheUrl,
     ]);
+
+    const [connectedUserXp, setConnectedUserXp] = React.useState<UserXpDataIF>({
+        dataReceived: false,
+        data: undefined,
+    });
+
+    const [connectedUserBlastXp, setConnectedUserBlastXp] =
+        React.useState<BlastUserXpDataIF>({
+            dataReceived: false,
+            data: undefined,
+        });
+
+    React.useEffect(() => {
+        if (userAddress) {
+            fetchUserXpData({
+                user: userAddress,
+                chainId: chainData.chainId,
+            })
+                .then((data) => {
+                    setConnectedUserXp({
+                        dataReceived: true,
+                        data: data,
+                    });
+                })
+                .catch((error) => {
+                    console.error(error);
+                    setConnectedUserXp({
+                        dataReceived: false,
+                        data: undefined,
+                    });
+                });
+
+            if (isActiveNetworkBlast) {
+                fetchBlastUserXpData({
+                    user: userAddress,
+                    chainId: chainData.chainId,
+                })
+                    .then((data) => {
+                        setConnectedUserBlastXp({
+                            dataReceived: true,
+                            data: data,
+                        });
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        setConnectedUserBlastXp({
+                            dataReceived: false,
+                            data: undefined,
+                        });
+                    });
+            }
+        } else {
+            setConnectedUserXp({
+                dataReceived: false,
+                data: undefined,
+            });
+            setConnectedUserBlastXp({
+                dataReceived: false,
+                data: undefined,
+            });
+        }
+    }, [userAddress, isActiveNetworkBlast]);
 
     const chainDataContext = {
         lastBlockNumber,
         setLastBlockNumber,
         gasPriceInGwei,
+        connectedUserXp,
+        connectedUserBlastXp,
         setGasPriceinGwei,
-        client,
+        isActiveNetworkBlast,
+        isActiveNetworkScroll,
+        isActiveNetworkMainnet,
+        isActiveNetworkL2,
     };
 
     return (

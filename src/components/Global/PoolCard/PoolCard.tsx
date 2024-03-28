@@ -4,6 +4,10 @@ import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
 import TokenIcon from '../TokenIcon/TokenIcon';
 import { uriToHttp } from '../../../ambient-utils/dataLayer';
 import { PoolIF } from '../../../ambient-utils/types';
+import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
+import { useContext } from 'react';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface propsIF {
     pool: PoolIF;
@@ -12,16 +16,19 @@ interface propsIF {
 export default function PoolCard(props: propsIF) {
     const { pool } = props;
 
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const { tokenA, tokenB } = useContext(TradeDataContext);
+
     const poolData = useFetchPoolStats(pool);
 
     const {
-        poolVolume,
+        poolVolume24h,
         poolPrice,
         poolTvl,
-        poolApy,
         poolPriceChangePercent,
         isPoolPriceChangePositive,
-        poolLink,
         shouldInvertDisplay,
     } = poolData;
 
@@ -30,6 +37,23 @@ export default function PoolCard(props: propsIF) {
             {poolPrice === undefined ? '…' : poolPrice}
         </div>
     );
+
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+
+    const [addrTokenA, addrTokenB] =
+        tokenA.address.toLowerCase() === pool.base.address.toLowerCase()
+            ? [pool.base.address, pool.quote.address]
+            : tokenA.address.toLowerCase() === pool.quote.address.toLowerCase()
+            ? [pool.quote.address, pool.base.address]
+            : tokenB.address.toLowerCase() === pool.base.address.toLowerCase()
+            ? [pool.quote.address, pool.base.address]
+            : [pool.base.address, pool.quote.address];
+
+    const poolLink = linkGenMarket.getFullURL({
+        chain: chainId,
+        tokenA: addrTokenA,
+        tokenB: addrTokenB,
+    });
 
     const poolPriceChangeDisplay = (
         <div className={styles.pool_price_change}>
@@ -50,9 +74,9 @@ export default function PoolCard(props: propsIF) {
 
     const ariaDescription = `pool for ${pool.base.symbol} and ${
         pool.quote.symbol
-    }. 24 hour volume is ${poolVolume ? poolVolume : 'not available'}. APY is ${
-        poolApy ? poolApy + '%' : 'not available'
-    }. TVL is ${poolTvl}. 24 hours pool price change is ${poolPriceChangePercent}. Pool price is ${
+    }. 24 hour volume is ${
+        poolVolume24h ? poolVolume24h : 'not available'
+    }.  TVL is ${poolTvl}. 24 hours pool price change is ${poolPriceChangePercent}. Pool price is ${
         poolPrice ? poolPrice : 'not available'
     }. `;
 
@@ -141,11 +165,11 @@ export default function PoolCard(props: propsIF) {
                             </div>
                         </div> */}
                         <div className={styles.row}>
-                            <div className={styles.row_title}>Volume</div>
+                            <div className={styles.row_title}>24h Vol.</div>
                             <div className={styles.vol}>
-                                {poolVolume === undefined
+                                {poolVolume24h === undefined
                                     ? '…'
-                                    : `$${poolVolume}`}
+                                    : `$${poolVolume24h}`}
                             </div>
                         </div>
                         <div className={styles.row}>

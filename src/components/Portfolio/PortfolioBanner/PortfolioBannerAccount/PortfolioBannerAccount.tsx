@@ -53,9 +53,7 @@ export default function PortfolioBannerAccount(
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
 
-    const ensNameToDisplay = ensNameAvailable
-        ? ensName
-        : truncatedAccountAddress;
+    const ensNameToDisplay = ensName !== '' ? ensName : truncatedAccountAddress;
 
     const addressToDisplay = resolvedAddress
         ? resolvedAddress
@@ -149,7 +147,7 @@ export default function PortfolioBannerAccount(
                     {updateProfile}
                 </ProfileSettingsContainer>
 
-                <FlexContainer flexDirection='column'>
+                <FlexContainer flexDirection='column' gap={4}>
                     <FlexContainer
                         fontWeight='300'
                         fontSize='header1'

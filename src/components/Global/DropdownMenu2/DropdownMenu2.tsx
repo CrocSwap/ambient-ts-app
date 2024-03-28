@@ -1,9 +1,11 @@
-import { useState, useRef, ReactNode } from 'react';
+import { useState, useRef, ReactNode, useContext, useEffect } from 'react';
 import { FaAngleDown } from 'react-icons/fa';
 import { dropdownAnimation } from '../../../utils/others/FramerMotionAnimations';
 import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { MenuContainer, Menu, MenuItem, Icon } from './DropdownMenu2.styles';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import useKeyPress from '../../../App/hooks/useKeyPress';
 
 // Interface for React functional components
 interface DropdownMenuPropsIF {
@@ -19,17 +21,35 @@ interface DropdownMenuPropsIF {
 export default function DropdownMenu2(props: DropdownMenuPropsIF) {
     const { title, children, marginTop, titleWidth, logo, left, right } = props;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+    const { appHeaderDropdown } = useContext(AppStateContext);
     const dropdownRefItem = useRef<HTMLDivElement>(null);
 
-    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-    const clickOutsideHandler = () => setIsMenuOpen(false);
+    const isEscapePressed = useKeyPress('Escape');
+    useEffect(() => {
+        if (isEscapePressed) {
+            setIsMenuOpen(false);
+            appHeaderDropdown.setIsActive(false);
+        }
+    }, [isEscapePressed]);
+
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen);
+        if (!isMenuOpen) {
+            appHeaderDropdown.setIsActive(true);
+        } else appHeaderDropdown.setIsActive(false);
+    };
+    const clickOutsideHandler = () => {
+        setIsMenuOpen(false);
+    };
 
     UseOnClickOutside(dropdownRefItem, clickOutsideHandler);
 
     const dropdownMenuContent = (
         <MenuContainer
-            onClick={() => setIsMenuOpen(false)}
+            onClick={() => {
+                setIsMenuOpen(false);
+                appHeaderDropdown.setIsActive(false);
+            }}
             variants={dropdownAnimation}
             initial='hidden'
             animate='show'
@@ -45,7 +65,6 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
     );
 
     const desktopScreen = useMediaQuery('(min-width: 1020px)');
-
     return (
         <div ref={dropdownRefItem}>
             <Menu
@@ -69,14 +88,22 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
                             <img
                                 src={logo}
                                 alt={title}
-                                width={title === 'Scroll' ? '20px' : '15px'}
+                                width={
+                                    title.includes('Scroll') ||
+                                    title.includes('Blast')
+                                        ? '20px'
+                                        : '15px'
+                                }
                                 height='20px'
                                 style={{
                                     borderRadius: '50%',
                                     marginLeft: '2px',
                                 }}
                             />
-                            {title === 'Scroll Sepolia' ? 'Sepolia' : title}
+                            {title === 'Scroll Sepolia' ||
+                            title === 'Blast Sepolia'
+                                ? 'Sepolia'
+                                : title}
                         </Icon>
                     )}
                     {!desktopScreen && (

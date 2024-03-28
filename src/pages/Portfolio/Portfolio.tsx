@@ -10,10 +10,15 @@ import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileS
 
 // START: Import Other Local Files
 import { TokenIF } from '../../ambient-utils/types';
-import { fetchEnsAddress } from '../../ambient-utils/api';
+import {
+    fetchBlastUserXpData,
+    fetchEnsAddress,
+    fetchUserXpData,
+} from '../../ambient-utils/api';
 import { Navigate, useParams } from 'react-router-dom';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { trimString } from '../../ambient-utils/dataLayer';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { TokenContext } from '../../contexts/TokenContext';
@@ -25,11 +30,29 @@ import {
     PortfolioTabsContainer,
 } from '../../styled/Components/Portfolio';
 import { FlexContainer, Text } from '../../styled/Common';
-import { UserDataContext } from '../../contexts/UserDataContext';
+import {
+    BlastUserXpDataIF,
+    UserDataContext,
+    UserXpDataIF,
+} from '../../contexts/UserDataContext';
+import Level from '../Level/Level';
+import { TradeTableContext } from '../../contexts/TradeTableContext';
 
-function Portfolio() {
-    const { userAddress, setResolvedAddressInContext, ensName } =
-        useContext(UserDataContext);
+interface PortfolioPropsIF {
+    isLevelsPage?: boolean;
+    isRanksPage?: boolean;
+    isViewMoreActive?: boolean;
+    isPointsTab?: boolean;
+}
+
+function Portfolio(props: PortfolioPropsIF) {
+    const {
+        userAddress,
+        setResolvedAddressInContext,
+        ensName,
+        setSecondaryEnsInContext,
+    } = useContext(UserDataContext);
+    const { isLevelsPage, isRanksPage, isViewMoreActive, isPointsTab } = props;
 
     const isUserConnected = useSimulatedIsUserConnected();
 
@@ -43,8 +66,10 @@ function Portfolio() {
         activeNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { client } = useContext(ChainDataContext);
+    const { isActiveNetworkBlast } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
+    const { setOutsideControl, setSelectedOutsideTab } =
+        useContext(TradeTableContext);
 
     const { mainnetProvider } = useContext(CrocEnvContext);
 
@@ -61,14 +86,16 @@ function Portfolio() {
         undefined,
     );
 
-    const connectedAccountActive = useMemo(
+    const connectedAccountActive: boolean = useMemo(
         () =>
             userAddress
                 ? addressFromParams
-                    ? resolvedAddress?.toLowerCase() ===
-                      userAddress.toLowerCase()
-                        ? true
-                        : false
+                    ? resolvedAddress
+                        ? resolvedAddress?.toLowerCase() ===
+                          userAddress.toLowerCase()
+                            ? true
+                            : false
+                        : true
                     : true
                 : false,
         [addressFromParams, resolvedAddress, userAddress],
@@ -78,6 +105,7 @@ function Portfolio() {
         (async () => {
             if (addressFromParams && isAddressEns && mainnetProvider) {
                 try {
+                    // @emily
                     const newResolvedAddress =
                         await mainnetProvider.resolveName(addressFromParams);
                     setResolvedAddress(newResolvedAddress ?? '');
@@ -103,17 +131,74 @@ function Portfolio() {
                 try {
                     const ensName = await fetchEnsAddress(addressFromParams);
 
-                    if (ensName) setSecondaryEnsName(ensName);
-                    else setSecondaryEnsName('');
+                    if (ensName) {
+                        setSecondaryEnsName(ensName);
+                        setSecondaryEnsInContext(ensName);
+                    } else {
+                        setSecondaryEnsName('');
+                        setSecondaryEnsInContext('');
+                    }
                 } catch (error) {
                     setSecondaryEnsName('');
+                    setSecondaryEnsInContext('');
                     console.error({ error });
                 }
             } else if (addressFromParams && isAddressEns) {
                 setSecondaryEnsName(addressFromParams);
+                setSecondaryEnsInContext(addressFromParams);
             }
         })();
     }, [addressFromParams, isAddressEns]);
+
+    const [resolvedUserXp, setResolvedUserXp] = useState<UserXpDataIF>({
+        dataReceived: false,
+        data: undefined,
+    });
+
+    const [resolvedUserBlastXp, setResolvedUserBlastXp] =
+        useState<BlastUserXpDataIF>({
+            dataReceived: false,
+            data: undefined,
+        });
+
+    // fetch xp data for resolved address if not connected user account
+    useEffect(() => {
+        if (!connectedAccountActive && resolvedAddress) {
+            fetchUserXpData({ user: resolvedAddress, chainId: chainId })
+                .then((resolvedUserXp) => {
+                    setResolvedUserXp({
+                        dataReceived: true,
+                        data: resolvedUserXp,
+                    });
+                })
+                .catch((error) => {
+                    console.error({ error });
+                    setResolvedUserXp({
+                        dataReceived: false,
+                        data: undefined,
+                    });
+                });
+            if (isActiveNetworkBlast) {
+                fetchBlastUserXpData({
+                    user: resolvedAddress,
+                    chainId: chainId,
+                })
+                    .then((resolvedUserBlastXp) => {
+                        setResolvedUserBlastXp({
+                            dataReceived: true,
+                            data: resolvedUserBlastXp,
+                        });
+                    })
+                    .catch((error) => {
+                        console.error({ error });
+                        setResolvedUserBlastXp({
+                            dataReceived: false,
+                            data: undefined,
+                        });
+                    });
+            }
+        }
+    }, [connectedAccountActive, resolvedAddress, isActiveNetworkBlast]);
 
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
     const exchangeBalanceComponent = (
@@ -140,7 +225,6 @@ function Portfolio() {
         (async () => {
             if (
                 crocEnv &&
-                client &&
                 resolvedAddress &&
                 chainId &&
                 !connectedAccountActive
@@ -156,7 +240,7 @@ function Portfolio() {
                         cachedTokenDetails,
                         crocEnv,
                         activeNetwork.graphCacheUrl,
-                        client,
+                        tokens.tokenUniv,
                     );
 
                     const tokensWithLogos = tokenBalanceResults.map((token) => {
@@ -186,7 +270,6 @@ function Portfolio() {
         })();
     }, [
         crocEnv,
-        client !== undefined,
         resolvedAddress,
         chainId,
         everyFiveMinutes,
@@ -250,6 +333,8 @@ function Portfolio() {
         resolvedAddress: resolvedAddress,
         connectedAccountActive: connectedAccountActive,
         fullLayoutActive: fullLayoutActive,
+        resolvedUserXp: resolvedUserXp,
+        resolvedUserBlastXp: resolvedUserBlastXp,
     };
 
     const portfolioBannerProps = {
@@ -261,6 +346,24 @@ function Portfolio() {
         resolvedAddress: resolvedAddress ?? '',
         setShowProfileSettings: setShowProfileSettings,
         connectedAccountActive: connectedAccountActive,
+        resolvedUserXp: resolvedUserXp,
+    };
+
+    const truncatedAccountAddressOrEnsName = connectedAccountActive
+        ? ensName
+            ? ensName
+            : trimString(userAddress ?? '', 6, 6, '…')
+        : secondaryEnsName
+        ? secondaryEnsName
+        : trimString(resolvedAddress ?? '', 6, 6, '…');
+
+    const levelsProps = {
+        resolvedAddress: resolvedAddress ?? '',
+        truncatedAccountAddressOrEnsName: truncatedAccountAddressOrEnsName,
+        connectedAccountActive: connectedAccountActive,
+        isDisplayRank: isRanksPage,
+        resolvedUserXp,
+        isViewMoreActive,
     };
 
     const profileSettingsProps = {
@@ -283,6 +386,25 @@ function Portfolio() {
         }
     })();
 
+    // tab control on account from pageheader
+    const onTradeRoute = location.pathname.includes('trade');
+    const onAccountRoute = location.pathname.includes('account');
+
+    const tabToSwitchToBasedOnRoute = onTradeRoute
+        ? 0
+        : onAccountRoute || addressFromParams
+        ? 3
+        : 0;
+
+    useEffect(() => {
+        if (isPointsTab) {
+            setOutsideControl(true);
+            setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
+        }
+    }, [isPointsTab]);
+
+    // end of tab control on account from page header
+
     const mobilePortfolio = (
         <FlexContainer
             flexDirection='column'
@@ -297,8 +419,8 @@ function Portfolio() {
             {contentToRenderOnMobile}
         </FlexContainer>
     );
-
-    if (showActiveMobileComponent) return mobilePortfolio;
+    if (showActiveMobileComponent && !isLevelsPage) return mobilePortfolio;
+    if (isLevelsPage) return <Level {...levelsProps} />;
 
     return (
         <PortfolioContainer
