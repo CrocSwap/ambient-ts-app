@@ -313,7 +313,6 @@ function SwapTokenInput(props: propsIF) {
             }
         } else {
             if (buyQtyString !== primaryQuantity) {
-                console.log({ primaryQuantity });
                 setBuyQtyString && setBuyQtyString(primaryQuantity);
             }
         }
