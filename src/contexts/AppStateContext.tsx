@@ -189,7 +189,6 @@ export const AppStateContextProvider = (props: {
             areSubscriptionsEnabled,
             isAppOverlayActive,
             isTutorialMode,
-            // theme,
             isWagmiModalOpenWallet,
             openWagmiModalWallet,
             closeWagmiModalWallet,
