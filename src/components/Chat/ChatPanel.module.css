@@ -124,8 +124,8 @@
     scrollbar-width: thin;
     scrollbar-color: rgba(255,255,255,.1) transparent;
     scrollbar-3dlight-color: transparent;
+    /* transition: opacity .5s ease-in-out; */
 }
-
 
 @media only screen and (min-width: 1280px) {
     .main_container {
