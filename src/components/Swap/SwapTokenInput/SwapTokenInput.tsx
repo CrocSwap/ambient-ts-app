@@ -6,6 +6,7 @@ import {
     useEffect,
     useState,
     memo,
+    useRef,
 } from 'react';
 import { calcImpact } from '../../../App/functions/calcImpact';
 import useDebounce from '../../../App/hooks/useDebounce';
@@ -155,9 +156,10 @@ function SwapTokenInput(props: propsIF) {
         }
     }, [debouncedLastInput]);
 
+    const lastQuery = useRef({ isAutoUpdate: false, inputValue: '' });
+
     async function refreshImpact(
         input: string,
-        isBlockUpdate: boolean,
         sellToken: boolean,
     ): Promise<number | undefined> {
         if (isNaN(parseFloat(input)) || parseFloat(input) === 0 || !crocEnv) {
@@ -186,19 +188,12 @@ function SwapTokenInput(props: propsIF) {
                     ? rawTokenBQty.toPrecision(6)
                     : truncateDecimals(rawTokenBQty, rawTokenBQty < 100 ? 3 : 2)
                 : '';
-            setUserTriggeredImpactQueryInProgress((isUserQueryInProgress) => {
-                if (isUserQueryInProgress && !isBlockUpdate) {
-                    setBuyQtyString(truncatedTokenBQty);
-                    setIsBuyLoading(false);
-                    return false;
-                } else if (!isUserQueryInProgress && isBlockUpdate) {
-                    setBuyQtyString(truncatedTokenBQty);
-                    setIsBuyLoading(false);
-                    return false;
-                } else {
-                    return isUserQueryInProgress;
-                }
-            });
+
+            // prevent writing result of impact query to the UI if a new query has been made
+            if (lastQuery.current.inputValue === input) {
+                setBuyQtyString(truncatedTokenBQty);
+                setIsBuyLoading(false);
+            }
         } else {
             const rawTokenAQty = parseFloat(impact.sellQty);
             const truncatedTokenAQty = rawTokenAQty
@@ -206,19 +201,12 @@ function SwapTokenInput(props: propsIF) {
                     ? rawTokenAQty.toPrecision(6)
                     : truncateDecimals(rawTokenAQty, rawTokenAQty < 100 ? 3 : 2)
                 : '';
-            setUserTriggeredImpactQueryInProgress((isUserQueryInProgress) => {
-                if (isUserQueryInProgress && !isBlockUpdate) {
-                    setSellQtyString(truncatedTokenAQty);
-                    setIsSellLoading(false);
-                    return false;
-                } else if (!isUserQueryInProgress && isBlockUpdate) {
-                    setSellQtyString(truncatedTokenAQty);
-                    setIsSellLoading(false);
-                    return false;
-                } else {
-                    return isUserQueryInProgress;
-                }
-            });
+
+            // prevent writing result of impact query to the UI if a new query has been made
+            if (lastQuery.current.inputValue === input) {
+                setSellQtyString(truncatedTokenAQty);
+                setIsSellLoading(false);
+            }
         }
 
         // prevent swaps with a price impact in excess of -99.99% or 1 million percent
@@ -246,6 +234,7 @@ function SwapTokenInput(props: propsIF) {
         setSellQtyString(value);
         setPrimaryQuantity(value);
         setLastInput(value);
+        lastQuery.current = { isAutoUpdate: false, inputValue: value };
 
         setIsTokenAPrimary(true);
     };
@@ -255,37 +244,38 @@ function SwapTokenInput(props: propsIF) {
         setBuyQtyString(value);
         setPrimaryQuantity(value);
         setLastInput(value);
+        lastQuery.current = { isAutoUpdate: false, inputValue: value };
 
         setIsTokenAPrimary(false);
     };
 
-    const [, setUserTriggeredImpactQueryInProgress] = useState<boolean>(false);
-
     const handleTokenAChangeEvent = async (value?: string) => {
         if (value !== undefined) {
-            setUserTriggeredImpactQueryInProgress(true);
             if (parseFloat(value) !== 0) {
                 const truncatedInputStr = formatTokenInput(value, tokenA);
-
-                await refreshImpact(truncatedInputStr, false, true);
-                setUserTriggeredImpactQueryInProgress(false);
+                await refreshImpact(truncatedInputStr, true);
             }
         } else {
-            await refreshImpact(primaryQuantity, true, true);
+            lastQuery.current = {
+                isAutoUpdate: true,
+                inputValue: primaryQuantity,
+            };
+            await refreshImpact(primaryQuantity, true);
         }
     };
 
     const handleTokenBChangeEvent = async (value?: string) => {
         if (value !== undefined) {
-            setUserTriggeredImpactQueryInProgress(true);
             if (parseFloat(value) !== 0) {
                 const truncatedInputStr = formatTokenInput(value, tokenB);
-
-                await refreshImpact(truncatedInputStr, false, false);
-                setUserTriggeredImpactQueryInProgress(false);
+                await refreshImpact(truncatedInputStr, false);
             }
         } else {
-            await refreshImpact(primaryQuantity, true, false);
+            lastQuery.current = {
+                isAutoUpdate: true,
+                inputValue: primaryQuantity,
+            };
+            await refreshImpact(primaryQuantity, false);
         }
     };
 
