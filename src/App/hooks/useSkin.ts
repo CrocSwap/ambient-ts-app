@@ -3,8 +3,8 @@ import { useEffect, useMemo, useState } from 'react';
 export type skins = 'purple_dark' | 'purple_light' | 'orange';
 
 export interface skinMethodsIF {
-    skin: skins;
-    setSkin: (s: skins) => void;
+    active: skins;
+    changeTo: (s: skins) => void;
 }
 
 export const useSkin = (defaultSkin: skins): skinMethodsIF => {
@@ -24,8 +24,8 @@ export const useSkin = (defaultSkin: skins): skinMethodsIF => {
 
     return useMemo(
         () => ({
-            skin,
-            setSkin: (s: skins) => setSkin(s),
+            active: skin,
+            changeTo: (s: skins) => setSkin(s),
         }),
         [skin],
     );
