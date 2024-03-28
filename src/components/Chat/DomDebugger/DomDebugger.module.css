@@ -1,0 +1,97 @@
+.dom_debugger_wrapper{
+
+
+    transition: all .4s ease-in-out;
+    position: fixed;
+    width: 40vw;
+    left: 0;
+    top: 0;
+    transform: translateY(120%);
+    z-index: 999;
+    background: black;
+    color: white;
+
+
+    display: block;
+    font-size: .82rem;
+
+    left: 30vw;
+    border: 0;
+    bottom: 0;
+    top: auto;
+    
+    backdrop-filter: blur(10px);
+    background-color: rgba(0,0,0, .2);
+    border: 1px solid #7371fc4f;
+    padding: 1rem;
+    border-radius: 0.4rem 0.4rem 0 0;
+    padding-top: 1.5rem;
+    max-height: 0vh;
+    
+}
+
+.dom_debug_clear{
+    transition: all .2s ease-in-out;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: .5rem;
+    cursor: pointer;
+    color: white;
+    opacity: .5;
+    padding: .2rem 1rem;
+    border: 1px solid rgba(255,255,255,.2);
+}
+
+.dom_debug_clear:hover{
+    opacity: 1;
+}
+
+.dom_debugger_wrapper.active{
+    transform: translateY(0);
+    max-height: 100vh;
+}
+
+
+.dom_debug_node{
+    display: inline-block;
+    margin: .5rem;
+    width: 10rem;
+    border-right: 1px solid rgba(255,255,255,.2);
+    padding: .4rem;
+}
+
+.dom_debug_node:nth-child(4n){
+    /* border-right: none; */
+}
+
+.dom_debug_key{
+    color: white;
+    opacity: .5;
+}
+
+
+@keyframes dom_debugger_val_signal {
+    0%, 100% {
+        background-color: transparent;
+    }
+    50% {
+        background-color: #7977ff2e;
+    }
+}
+
+.dom_debug_value{
+    color: #9b9aff;
+    opacity: 1;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.dom_debug_signal{
+    animation: dom_debugger_val_signal .2s forwards ease-in-out;
+}
+
+.dom_debug_nodes_wrapper{
+
+}
