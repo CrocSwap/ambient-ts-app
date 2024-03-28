@@ -6,3 +6,10 @@ export interface LikeDislikePayload {
 export interface MentFoundParam {
     val: boolean;
 }
+
+export interface ChatWsQueryParams {
+    roomId: string;
+    transport: string;
+    address?: string;
+    ensName?: string;
+}

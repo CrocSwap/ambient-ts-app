@@ -33,11 +33,13 @@ import {
 
 import { Message } from '../Model/MessageModel';
 import { User } from '../Model/UserModel';
-import { LikeDislikePayload } from '../ChatIFs';
+import { ChatWsQueryParams, LikeDislikePayload } from '../ChatIFs';
 import {
     LS_USER_NON_VERIFIED_MESSAGES,
     LS_USER_VERIFY_TOKEN,
 } from '../ChatConstants/ChatConstants';
+import useWebSocket from 'react-use-websocket';
+import { domDebug } from '../DomDebugger/DomDebuggerUtils';
 
 const useChatSocket = (
     room: string,
@@ -69,6 +71,37 @@ const useChatSocket = (
 
     const messagesRef = useRef<Message[]>([]);
     messagesRef.current = messages;
+
+    let queryParams: ChatWsQueryParams = { roomId: room, transport: 'polling' };
+    if (address != undefined) {
+        queryParams = { ...queryParams, address: address };
+    }
+    if (ensName != undefined && ensName.length > 0) {
+        queryParams = { ...queryParams, ensName: ensName };
+    }
+
+    const { sendMessage: socketSendMessage, lastMessage: socketLastMessage } =
+        useWebSocket(CHAT_BACKEND_WSS_URL + '/chat/api/subscribe/', {
+            queryParams: { ...queryParams },
+            share: true,
+            onOpen: () => {
+                domDebug('opening connection', new Date().getTime());
+            },
+
+            onClose(event) {
+                domDebug('closed connection', event);
+            },
+            onError: (e) => {
+                domDebug('connection error', e);
+            },
+            shouldReconnect: () => true,
+        });
+
+    useEffect(() => {
+        console.log('........................................');
+        console.log(socketLastMessage);
+        console.log('........................................');
+    }, [socketLastMessage]);
 
     async function getMsgWithRest(roomInfo: string) {
         const encodedRoomInfo = encodeURIComponent(roomInfo);
@@ -296,6 +329,8 @@ const useChatSocket = (
     }
 
     useEffect(() => {
+        return;
+
         async function checkVerified() {
             const data = await isUserVerified();
             const userToken = getLS(LS_USER_VERIFY_TOKEN, address);
