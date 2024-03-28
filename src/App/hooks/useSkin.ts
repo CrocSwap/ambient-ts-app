@@ -3,17 +3,17 @@ import { useMemo, useState } from 'react';
 export type skins = 'purple_dark' | 'purple_light' | 'orange';
 
 export interface skinMethodsIF {
-    colors: Record<string, unknown>;
+    colors: Record<skins, unknown>;
     choosePurpleDark: () => void;
     choosePurpleLight: () => void;
 }
 
-export const useSkin = (defaultSkin: string): skinMethodsIF => {
+export const useSkin = (defaultSkin: skins): skinMethodsIF => {
     const LS_KEY = 'skin';
 
     // name of the current skin in use by the app
     // defaults to value in local storage, uses value from params as fallback
-    const [skin, setSkin] = useState<string>(
+    const [skin, setSkin] = useState<skins>(
         localStorage[LS_KEY] ?? defaultSkin,
     );
 
