@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 export type skins = 'purple_dark' | 'purple_light' | 'orange';
 
 export interface skinMethodsIF {
-    colors: Record<skins, unknown>;
+    skin: skins;
     choosePurpleDark: () => void;
     choosePurpleLight: () => void;
 }
@@ -19,17 +19,17 @@ export const useSkin = (defaultSkin: skins): skinMethodsIF => {
 
     // hook to hold a single color set for the app to return
     // updates local storage when needed as an accessory function
-    const colors = useMemo(() => {
-        localStorage.setItem('skin', skin);
-        return {};
-    }, [skin]);
+    // const colors = useMemo(() => {
+    //     localStorage.setItem('skin', skin);
+    //     return {};
+    // }, [skin]);
 
     return useMemo(
         () => ({
-            colors,
+            skin,
             choosePurpleDark: () => setSkin('purple_dark'),
             choosePurpleLight: () => setSkin('purple_light'),
         }),
-        [colors],
+        [skin],
     );
 };
