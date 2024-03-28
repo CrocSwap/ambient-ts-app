@@ -230,14 +230,12 @@ function Swap(props: propsIF) {
         amountToReduceNativeTokenQtyMainnet,
         setAmountToReduceNativeTokenQtyMainnet,
     ] = useState<number>(0.001);
-    const [
-        amountToReduceNativeTokenQtyScroll,
-        setAmountToReduceNativeTokenQtyScroll,
-    ] = useState<number>(0.0003);
+    const [amountToReduceNativeTokenQtyL2, setAmountToReduceNativeTokenQtyL2] =
+        useState<number>(0.0003);
 
     const amountToReduceNativeTokenQty =
         chainId === '0x82750' || chainId === '0x8274f' || chainId === '0x13e31'
-            ? amountToReduceNativeTokenQtyScroll
+            ? amountToReduceNativeTokenQtyL2
             : amountToReduceNativeTokenQtyMainnet;
 
     const activeTxHash = useRef<string>('');
@@ -252,7 +250,12 @@ function Swap(props: propsIF) {
     }, [tokenA.address + tokenB.address, primaryQuantity]);
 
     useEffect(() => {
-        if (isSellLoading || isBuyLoading) {
+        if (
+            isSellLoading ||
+            isBuyLoading ||
+            (sellQtyString !== '' && buyQtyString === '') ||
+            (buyQtyString !== '' && sellQtyString === '')
+        ) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('...');
         } else if (isPoolInitialized === false) {
@@ -300,7 +303,9 @@ function Swap(props: propsIF) {
             ) {
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage(
-                    'Wallet Balance Insufficient to Cover Gas',
+                    `${
+                        tokenA.address === ZERO_ADDRESS ? 'ETH ' : ''
+                    } Wallet Balance Insufficient to Cover Gas`,
                 );
             } else {
                 setSwapAllowed(true);
@@ -312,6 +317,7 @@ function Swap(props: propsIF) {
         isPoolInitialized === undefined, // Needed to distinguish false from undefined
         tokenA.address,
         tokenB.address,
+        buyQtyString,
         sellQtyString,
         isWithdrawFromDexChecked,
         isBuyLoading,
@@ -328,7 +334,7 @@ function Swap(props: propsIF) {
     }, [baseToken.address + quoteToken.address]);
 
     const [l1GasFeeSwapInGwei, setL1GasFeeSwapInGwei] = useState<number>(
-        isActiveNetworkScroll ? 200000 : isActiveNetworkBlast ? 70000 : 0,
+        isActiveNetworkScroll ? 700000 : isActiveNetworkBlast ? 300000 : 0,
     );
     const [extraL1GasFeeSwap, setExtraL1GasFeeSwap] = useState(
         isActiveNetworkScroll ? 1 : isActiveNetworkBlast ? 0.3 : 0,
@@ -354,11 +360,9 @@ function Swap(props: propsIF) {
             const costOfMainnetSwapInETH =
                 gasPriceInGwei * averageSwapCostInGasDrops * NUM_GWEI_IN_WEI;
 
-            console.log({ costOfMainnetSwapInETH });
             setAmountToReduceNativeTokenQtyMainnet(
                 SWAP_BUFFER_MULTIPLIER_MAINNET * costOfMainnetSwapInETH,
             );
-            console.log({ isActiveNetworkBlast, l1GasFeeSwapInGwei });
             const l1costOfScrollSwapInETH =
                 l1GasFeeSwapInGwei / NUM_GWEI_IN_ETH;
 
@@ -367,7 +371,7 @@ function Swap(props: propsIF) {
             const costOfScrollSwapInETH =
                 l1costOfScrollSwapInETH + l2costOfScrollSwapInETH;
 
-            setAmountToReduceNativeTokenQtyScroll(
+            setAmountToReduceNativeTokenQtyL2(
                 SWAP_BUFFER_MULTIPLIER_SCROLL * costOfScrollSwapInETH,
             );
 
@@ -404,7 +408,6 @@ function Swap(props: propsIF) {
                 : buyQtyString.replaceAll(',', '');
 
             if (qty === '' || parseFloat(qty) === 0) return;
-
             const l1Gas = userAddress
                 ? await calcL1Gas({
                       crocEnv,
@@ -434,13 +437,6 @@ function Swap(props: propsIF) {
             const l1GasDollarsNum = l1GasCents
                 ? bigNumToFloat(l1GasCents) / 100
                 : undefined;
-            console.log({
-                l1GasDollarsNum,
-                l1GasCents,
-                l1Gas,
-                l1GasInGwei,
-                l1GasFeeSwapInGwei,
-            });
             if (l1GasDollarsNum) setExtraL1GasFeeSwap(l1GasDollarsNum);
         })();
     }, [

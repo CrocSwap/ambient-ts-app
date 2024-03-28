@@ -22,7 +22,6 @@ import TokenInputWithWalletBalance from '../../Form/TokenInputWithWalletBalance'
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 
 interface propsIF {
     sellQtyString: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -188,11 +187,6 @@ function SwapTokenInput(props: propsIF) {
                     : truncateDecimals(rawTokenBQty, rawTokenBQty < 100 ? 3 : 2)
                 : '';
             setUserTriggeredImpactQueryInProgress((isUserQueryInProgress) => {
-                // console.log({
-                //     isUserQueryInProgress,
-                //     isBlockUpdate,
-                //     truncatedTokenBQty,
-                // });
                 if (isUserQueryInProgress && !isBlockUpdate) {
                     setBuyQtyString(truncatedTokenBQty);
                     setIsBuyLoading(false);
@@ -212,7 +206,6 @@ function SwapTokenInput(props: propsIF) {
                     ? rawTokenAQty.toPrecision(6)
                     : truncateDecimals(rawTokenAQty, rawTokenAQty < 100 ? 3 : 2)
                 : '';
-            IS_LOCAL_ENV && console.log({ userTriggeredImpactQueryInProgress });
             setUserTriggeredImpactQueryInProgress((isUserQueryInProgress) => {
                 if (isUserQueryInProgress && !isBlockUpdate) {
                     setSellQtyString(truncatedTokenAQty);
@@ -249,7 +242,6 @@ function SwapTokenInput(props: propsIF) {
     }
 
     const debouncedTokenAChangeEvent = (value: string) => {
-        setUserTriggeredImpactQueryInProgress(true);
         if (parseFloat(value) > 0) setIsBuyLoading(true);
         setSellQtyString(value);
         setPrimaryQuantity(value);
@@ -259,7 +251,6 @@ function SwapTokenInput(props: propsIF) {
     };
 
     const debouncedTokenBChangeEvent = (value: string) => {
-        setUserTriggeredImpactQueryInProgress(true);
         if (parseFloat(value) > 0) setIsSellLoading(true);
         setBuyQtyString(value);
         setPrimaryQuantity(value);
@@ -268,13 +259,11 @@ function SwapTokenInput(props: propsIF) {
         setIsTokenAPrimary(false);
     };
 
-    const [
-        userTriggeredImpactQueryInProgress,
-        setUserTriggeredImpactQueryInProgress,
-    ] = useState<boolean>(false);
+    const [, setUserTriggeredImpactQueryInProgress] = useState<boolean>(false);
 
     const handleTokenAChangeEvent = async (value?: string) => {
         if (value !== undefined) {
+            setUserTriggeredImpactQueryInProgress(true);
             if (parseFloat(value) !== 0) {
                 const truncatedInputStr = formatTokenInput(value, tokenA);
 
@@ -288,12 +277,13 @@ function SwapTokenInput(props: propsIF) {
 
     const handleTokenBChangeEvent = async (value?: string) => {
         if (value !== undefined) {
+            setUserTriggeredImpactQueryInProgress(true);
             if (parseFloat(value) !== 0) {
                 const truncatedInputStr = formatTokenInput(value, tokenB);
 
                 await refreshImpact(truncatedInputStr, false, false);
+                setUserTriggeredImpactQueryInProgress(false);
             }
-            setUserTriggeredImpactQueryInProgress(false);
         } else {
             await refreshImpact(primaryQuantity, true, false);
         }
@@ -319,7 +309,6 @@ function SwapTokenInput(props: propsIF) {
     useEffect(() => {
         if (isTokenAPrimary) {
             if (sellQtyString !== primaryQuantity) {
-                console.log({ primaryQuantity });
                 setSellQtyString && setSellQtyString(primaryQuantity);
             }
         } else {
@@ -378,7 +367,6 @@ function SwapTokenInput(props: propsIF) {
                         if (!isTokenAPrimary) {
                             setSellQtyString(primaryQuantity);
                         } else {
-                            console.log({ primaryQuantity });
                             setBuyQtyString(primaryQuantity);
                         }
                         setIsTokenAPrimary(!isTokenAPrimary);
