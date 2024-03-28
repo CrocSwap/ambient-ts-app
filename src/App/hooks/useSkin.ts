@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export type skins = 'purple_dark' | 'purple_light' | 'orange';
 
@@ -19,10 +19,9 @@ export const useSkin = (defaultSkin: skins): skinMethodsIF => {
 
     // hook to hold a single color set for the app to return
     // updates local storage when needed as an accessory function
-    // const colors = useMemo(() => {
-    //     localStorage.setItem('skin', skin);
-    //     return {};
-    // }, [skin]);
+    useEffect(() => {
+        localStorage.setItem(LS_KEY, skin);
+    }, [skin]);
 
     return useMemo(
         () => ({
