@@ -30,8 +30,3 @@ export const useSkin = (defaultSkin: skins): skinMethodsIF => {
         [skin],
     );
 };
-
-export const SCROLL_SETTINGS = {
-    color: 'purpleDark',
-    homepageBanner: 'scroll',
-};
