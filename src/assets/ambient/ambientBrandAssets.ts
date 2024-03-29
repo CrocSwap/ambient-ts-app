@@ -2,7 +2,7 @@ import { chainIds } from '../../ambient-utils/types';
 import { skins } from '../../App/hooks/useSkin';
 
 export interface brandAssetsIF {
-    color: Record<chainIds, skins>;
+    color: Partial<Record<chainIds, skins>>;
     platformName: string;
 }
 
