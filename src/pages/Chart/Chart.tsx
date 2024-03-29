@@ -29,7 +29,6 @@ import {
     diffHashSig,
     diffHashSigChart,
     diffHashSigScaleData,
-    getFormattedNumber,
     getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
     getPinnedTickFromDisplayPrice,
@@ -118,6 +117,7 @@ import {
 import OrderHistoryCanvas from './OrderHistoryCh/OrderHistoryCanvas';
 import OrderHistoryTooltip from './OrderHistoryCh/OrderHistoryTooltip';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
+import useDollarPrice from './ChartUtils/getDollarPrice';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -245,7 +245,6 @@ export default function Chart(props: propsIF) {
     } = useContext(RangeContext);
 
     const currentPool = useContext(TradeDataContext);
-
     const {
         tokenA,
         tokenB,
@@ -382,6 +381,7 @@ export default function Chart(props: propsIF) {
     const smallScreen = useMediaQuery('(max-width: 500px)');
 
     const drawSettings = useDrawSettings();
+    const getDollarPrice = useDollarPrice();
 
     const {
         setCurrentTxActiveInTransactions,
@@ -3169,10 +3169,8 @@ export default function Chart(props: propsIF) {
                                                     : 0;
 
                                             ctx.fillText(
-                                                getFormattedNumber({
-                                                    value: heightAsPrice,
-                                                    abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
-                                                }) +
+                                                getDollarPrice(heightAsPrice)
+                                                    .formattedValue +
                                                     ' ' +
                                                     ' (' +
                                                     heightAsPercentage.toString() +
@@ -3720,6 +3718,7 @@ export default function Chart(props: propsIF) {
         denomInBase,
         period,
         isShapeEdited,
+        getDollarPrice,
         // anglePointSeries,
     ]);
 

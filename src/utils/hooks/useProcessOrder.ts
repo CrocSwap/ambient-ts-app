@@ -12,6 +12,7 @@ import {
 import { LimitOrderIF } from '../../ambient-utils/types';
 
 import {
+    CrocEnv,
     priceHalfAboveTick,
     priceHalfBelowTick,
     toDisplayPrice,
@@ -24,14 +25,17 @@ import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { useFetchBatch } from '../../App/hooks/useFetchBatch';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
+    crocEnv: CrocEnv | undefined,
     account = '',
     isAccountView = false,
 ) => {
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
     const { ensName: ensNameConnectedUser } = useContext(UserDataContext);
+    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
     const blockExplorer = getChainExplorer(limitOrder.chainId);
 
@@ -49,6 +53,62 @@ export const useProcessOrder = (
 
     const isOwnerActiveAccount =
         limitOrder.user.toLowerCase() === account?.toLowerCase();
+
+    const [basePrice, setBasePrice] = useState<number | undefined>();
+    const [quotePrice, setQuotePrice] = useState<number | undefined>();
+
+    useEffect(() => {
+        if (crocEnv) {
+            const fetchTokenPrice = async () => {
+                const baseTokenPrice =
+                    (
+                        await cachedFetchTokenPrice(
+                            limitOrder.base,
+                            limitOrder.chainId,
+                            crocEnv,
+                        )
+                    )?.usdPrice || 0.0;
+                const quoteTokenPrice =
+                    (
+                        await cachedFetchTokenPrice(
+                            limitOrder.quote,
+                            limitOrder.chainId,
+                            crocEnv,
+                        )
+                    )?.usdPrice || 0.0;
+
+                if (baseTokenPrice) {
+                    setBasePrice(baseTokenPrice);
+                } else if (
+                    quoteTokenPrice &&
+                    limitOrder.curentPoolPriceDisplayNum
+                ) {
+                    // this may be backwards
+                    const estimatedBasePrice =
+                        quoteTokenPrice / limitOrder.curentPoolPriceDisplayNum;
+                    setBasePrice(estimatedBasePrice);
+                }
+                if (quoteTokenPrice) {
+                    setQuotePrice(quoteTokenPrice);
+                } else if (
+                    baseTokenPrice &&
+                    limitOrder.curentPoolPriceDisplayNum
+                ) {
+                    const estimatedQuotePrice =
+                        baseTokenPrice * limitOrder.curentPoolPriceDisplayNum;
+                    setQuotePrice(estimatedQuotePrice);
+                }
+            };
+
+            fetchTokenPrice();
+        }
+    }, [
+        limitOrder.base,
+        limitOrder.quote,
+        limitOrder.chainId,
+        crocEnv !== undefined,
+        limitOrder.curentPoolPriceDisplayNum,
+    ]);
 
     /* eslint-disable-next-line camelcase */
     const body = { config_path: 'ens_address', address: limitOrder.user };
@@ -81,6 +141,10 @@ export const useProcessOrder = (
     const posHashTruncated = trimString(posHash ?? '', 9, 0, '…');
 
     const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<
+        string | undefined
+    >();
+
+    const [displayPriceInUsd, setDisplayPriceInUsd] = useState<
         string | undefined
     >();
 
@@ -290,6 +354,29 @@ export const useProcessOrder = (
                 zeroDisplay: '0',
             });
 
+            const displayPriceNumInUsd = isAccountView
+                ? isBaseTokenMoneynessGreaterOrEqual
+                    ? basePrice
+                        ? priceDecimalCorrected * basePrice
+                        : undefined
+                    : quotePrice
+                    ? invPriceDecimalCorrected * quotePrice
+                    : undefined
+                : basePrice && quotePrice
+                ? isDenomBase
+                    ? invPriceDecimalCorrected * quotePrice
+                    : priceDecimalCorrected * basePrice
+                : undefined;
+
+            const formattedUsdPrice = displayPriceNumInUsd
+                ? getFormattedNumber({
+                      value: displayPriceNumInUsd,
+                      prefix: '$',
+                  })
+                : '...';
+
+            setDisplayPriceInUsd(formattedUsdPrice);
+
             const truncatedDisplayPriceDenomByMoneyness =
                 isBaseTokenMoneynessGreaterOrEqual
                     ? baseTokenCharacter + nonInvertedPriceTruncated
@@ -445,7 +532,13 @@ export const useProcessOrder = (
                     : invIntialTokenQtyTruncated,
             );
         }
-    }, [diffHashSig(limitOrder), isDenomBase, isAccountView]);
+    }, [
+        diffHashSig(limitOrder),
+        isDenomBase,
+        isAccountView,
+        basePrice,
+        quotePrice,
+    ]);
 
     return {
         // wallet and id data
@@ -505,6 +598,7 @@ export const useProcessOrder = (
         middlePriceDisplayDenomByMoneyness,
         finishPriceDisplay,
         finishPriceDisplayDenomByMoneyness,
+        displayPriceInUsd,
 
         // transaction matches selected token
         orderMatchesSelectedTokens,

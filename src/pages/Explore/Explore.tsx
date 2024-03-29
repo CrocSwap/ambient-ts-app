@@ -2,10 +2,7 @@ import { useContext, useEffect } from 'react';
 import { FiRefreshCw } from 'react-icons/fi';
 import TopPools from '../../components/Global/Analytics/TopPools';
 import DexTokens from '../../components/Global/Analytics/DexTokens';
-import {
-    ExploreContext,
-    ExploreContextIF,
-} from '../../contexts/ExploreContext';
+import { ExploreContext } from '../../contexts/ExploreContext';
 import styled from 'styled-components/macro';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
@@ -13,6 +10,8 @@ import { ChainDataContext } from '../../contexts/ChainDataContext';
 import Toggle from '../../components/Form/Toggle';
 import { FlexContainer, Text } from '../../styled/Common';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
+import { AiOutlineDollarCircle } from 'react-icons/ai';
+import { DefaultTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
 
 interface ExploreIF {
     view: 'pools' | 'tokens';
@@ -21,7 +20,8 @@ interface ExploreIF {
 export default function Explore(props: ExploreIF) {
     const { view } = props;
     // full expanded data set
-    const exploreData: ExploreContextIF = useContext(ExploreContext);
+    const { pools, tokens, arePricesDollarized, setArePricesDollarized } =
+        useContext(ExploreContext);
     const { crocEnv, chainData } = useContext(CrocEnvContext);
     const { poolList } = useContext(PoolContext);
     const {
@@ -32,15 +32,15 @@ export default function Explore(props: ExploreIF) {
 
     const getLimitedPools = async (): Promise<void> => {
         if (crocEnv && poolList.length) {
-            exploreData.pools.getLimited(poolList, crocEnv, chainData.chainId);
+            pools.getLimited(poolList, crocEnv, chainData.chainId);
         }
     };
 
     // trigger process to fetch and format token data when page loads with
     // ... gatekeeping to prevent re-fetch if data is already loaded
     useEffect(() => {
-        if (crocEnv !== undefined && exploreData.tokens.data.length === 0) {
-            exploreData.tokens.update();
+        if (crocEnv !== undefined && tokens.data.length === 0) {
+            tokens.update();
         }
     }, [crocEnv !== undefined]);
 
@@ -48,14 +48,10 @@ export default function Explore(props: ExploreIF) {
         // make sure crocEnv exists and pool metadata is present
         if (crocEnv && poolList.length) {
             // clear text in DOM for time since last update
-            exploreData.pools.reset();
+            pools.reset();
             // use metadata to get expanded pool data
             getLimitedPools().then(() => {
-                exploreData.pools.getExtra(
-                    poolList,
-                    crocEnv,
-                    chainData.chainId,
-                );
+                pools.getExtra(poolList, crocEnv, chainData.chainId);
             });
         }
     };
@@ -103,7 +99,7 @@ export default function Explore(props: ExploreIF) {
                 getAllPools();
                 break;
             case 'tokens':
-                exploreData.tokens.update();
+                tokens.update();
                 break;
         }
     }
@@ -138,22 +134,61 @@ export default function Explore(props: ExploreIF) {
                     />
                     <Text>Tokens</Text>
                 </FlexContainer>
-                <Refresh>
-                    <RefreshButton onClick={() => handleRefresh()}>
-                        <RefreshIcon />
-                    </RefreshButton>
-                </Refresh>
+                <FlexContainer
+                    flexDirection='row'
+                    alignItems='center'
+                    gap={12}
+                    marginLeft='12px'
+                >
+                    {view === 'pools' && (
+                        <DefaultTooltip
+                            interactive
+                            title={'Toggle USD Price Estimates'}
+                            enterDelay={500}
+                        >
+                            <Refresh>
+                                <RefreshButton
+                                    onClick={() =>
+                                        setArePricesDollarized((prev) => !prev)
+                                    }
+                                >
+                                    <DollarizationIcon
+                                        arePricesDollarized={
+                                            arePricesDollarized
+                                        }
+                                    />
+                                </RefreshButton>
+                            </Refresh>
+                        </DefaultTooltip>
+                    )}
+                    <DefaultTooltip
+                        interactive
+                        title={
+                            view === 'pools'
+                                ? 'Refresh Top Pools'
+                                : 'Refresh Active Tokens'
+                        }
+                        enterDelay={500}
+                    >
+                        <Refresh>
+                            <RefreshButton onClick={() => handleRefresh()}>
+                                <RefreshIcon />
+                            </RefreshButton>
+                        </Refresh>
+                    </DefaultTooltip>
+                </FlexContainer>
             </OptionsWrapper>
 
             {view === 'pools' && (
                 <TopPools
-                    allPools={exploreData.pools.all}
+                    allPools={pools.all}
                     goToMarket={goToMarket}
+                    arePricesDollarized={arePricesDollarized}
                 />
             )}
             {view === 'tokens' && (
                 <DexTokens
-                    dexTokens={exploreData.tokens.data}
+                    dexTokens={tokens.data}
                     chainId={chainData.chainId}
                     goToMarket={goToMarket}
                 />
@@ -230,4 +265,13 @@ const RefreshButton = styled.button`
 const RefreshIcon = styled(FiRefreshCw)`
     font-size: var(--header2-size);
     cursor: pointer;
+`;
+
+const DollarizationIcon = styled(AiOutlineDollarCircle)<{
+    arePricesDollarized?: boolean;
+}>`
+    font-size: var(--header2-size);
+    cursor: pointer;
+    color: ${({ arePricesDollarized }) =>
+        arePricesDollarized && 'var(--accent1)'};
 `;
