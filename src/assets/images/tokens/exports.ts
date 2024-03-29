@@ -20,6 +20,7 @@ import ETHX from './ETHX.svg';
 import JUICE from './JUICE.svg';
 import EZETH from './EZETH.png';
 import GLORY from './GLORY.png';
+import OHNO from './OHNO.png';
 
 // export { DAI, ETH, PEPE, USDC, USDT, WBTC, FRAX, BAL };
 export {
@@ -45,4 +46,5 @@ export {
     JUICE,
     EZETH,
     GLORY,
+    OHNO,
 };
