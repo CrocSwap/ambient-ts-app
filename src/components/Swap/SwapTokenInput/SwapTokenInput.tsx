@@ -6,6 +6,7 @@ import {
     useEffect,
     useState,
     memo,
+    useRef,
 } from 'react';
 import { calcImpact } from '../../../App/functions/calcImpact';
 import useDebounce from '../../../App/hooks/useDebounce';
@@ -22,7 +23,6 @@ import TokenInputWithWalletBalance from '../../Form/TokenInputWithWalletBalance'
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 
 interface propsIF {
     sellQtyString: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -156,9 +156,10 @@ function SwapTokenInput(props: propsIF) {
         }
     }, [debouncedLastInput]);
 
+    const lastQuery = useRef({ isAutoUpdate: false, inputValue: '' });
+
     async function refreshImpact(
         input: string,
-        isBlockUpdate: boolean,
         sellToken: boolean,
     ): Promise<number | undefined> {
         if (isNaN(parseFloat(input)) || parseFloat(input) === 0 || !crocEnv) {
@@ -187,24 +188,12 @@ function SwapTokenInput(props: propsIF) {
                     ? rawTokenBQty.toPrecision(6)
                     : truncateDecimals(rawTokenBQty, rawTokenBQty < 100 ? 3 : 2)
                 : '';
-            setUserTriggeredImpactQueryInProgress((isUserQueryInProgress) => {
-                // console.log({
-                //     isUserQueryInProgress,
-                //     isBlockUpdate,
-                //     truncatedTokenBQty,
-                // });
-                if (isUserQueryInProgress && !isBlockUpdate) {
-                    setBuyQtyString(truncatedTokenBQty);
-                    setIsBuyLoading(false);
-                    return false;
-                } else if (!isUserQueryInProgress && isBlockUpdate) {
-                    setBuyQtyString(truncatedTokenBQty);
-                    setIsBuyLoading(false);
-                    return false;
-                } else {
-                    return isUserQueryInProgress;
-                }
-            });
+
+            // prevent writing result of impact query to the UI if a new query has been made
+            if (lastQuery.current.inputValue === input) {
+                setBuyQtyString(truncatedTokenBQty);
+                setIsBuyLoading(false);
+            }
         } else {
             const rawTokenAQty = parseFloat(impact.sellQty);
             const truncatedTokenAQty = rawTokenAQty
@@ -212,20 +201,12 @@ function SwapTokenInput(props: propsIF) {
                     ? rawTokenAQty.toPrecision(6)
                     : truncateDecimals(rawTokenAQty, rawTokenAQty < 100 ? 3 : 2)
                 : '';
-            IS_LOCAL_ENV && console.log({ userTriggeredImpactQueryInProgress });
-            setUserTriggeredImpactQueryInProgress((isUserQueryInProgress) => {
-                if (isUserQueryInProgress && !isBlockUpdate) {
-                    setSellQtyString(truncatedTokenAQty);
-                    setIsSellLoading(false);
-                    return false;
-                } else if (!isUserQueryInProgress && isBlockUpdate) {
-                    setSellQtyString(truncatedTokenAQty);
-                    setIsSellLoading(false);
-                    return false;
-                } else {
-                    return isUserQueryInProgress;
-                }
-            });
+
+            // prevent writing result of impact query to the UI if a new query has been made
+            if (lastQuery.current.inputValue === input) {
+                setSellQtyString(truncatedTokenAQty);
+                setIsSellLoading(false);
+            }
         }
 
         // prevent swaps with a price impact in excess of -99.99% or 1 million percent
@@ -249,40 +230,37 @@ function SwapTokenInput(props: propsIF) {
     }
 
     const debouncedTokenAChangeEvent = (value: string) => {
-        setUserTriggeredImpactQueryInProgress(true);
         if (parseFloat(value) > 0) setIsBuyLoading(true);
         setSellQtyString(value);
         setPrimaryQuantity(value);
         setLastInput(value);
+        lastQuery.current = { isAutoUpdate: false, inputValue: value };
 
         setIsTokenAPrimary(true);
     };
 
     const debouncedTokenBChangeEvent = (value: string) => {
-        setUserTriggeredImpactQueryInProgress(true);
         if (parseFloat(value) > 0) setIsSellLoading(true);
         setBuyQtyString(value);
         setPrimaryQuantity(value);
         setLastInput(value);
+        lastQuery.current = { isAutoUpdate: false, inputValue: value };
 
         setIsTokenAPrimary(false);
     };
-
-    const [
-        userTriggeredImpactQueryInProgress,
-        setUserTriggeredImpactQueryInProgress,
-    ] = useState<boolean>(false);
 
     const handleTokenAChangeEvent = async (value?: string) => {
         if (value !== undefined) {
             if (parseFloat(value) !== 0) {
                 const truncatedInputStr = formatTokenInput(value, tokenA);
-
-                await refreshImpact(truncatedInputStr, false, true);
-                setUserTriggeredImpactQueryInProgress(false);
+                await refreshImpact(truncatedInputStr, true);
             }
         } else {
-            await refreshImpact(primaryQuantity, true, true);
+            lastQuery.current = {
+                isAutoUpdate: true,
+                inputValue: primaryQuantity,
+            };
+            await refreshImpact(primaryQuantity, true);
         }
     };
 
@@ -290,12 +268,14 @@ function SwapTokenInput(props: propsIF) {
         if (value !== undefined) {
             if (parseFloat(value) !== 0) {
                 const truncatedInputStr = formatTokenInput(value, tokenB);
-
-                await refreshImpact(truncatedInputStr, false, false);
+                await refreshImpact(truncatedInputStr, false);
             }
-            setUserTriggeredImpactQueryInProgress(false);
         } else {
-            await refreshImpact(primaryQuantity, true, false);
+            lastQuery.current = {
+                isAutoUpdate: true,
+                inputValue: primaryQuantity,
+            };
+            await refreshImpact(primaryQuantity, false);
         }
     };
 
@@ -319,12 +299,10 @@ function SwapTokenInput(props: propsIF) {
     useEffect(() => {
         if (isTokenAPrimary) {
             if (sellQtyString !== primaryQuantity) {
-                console.log({ primaryQuantity });
                 setSellQtyString && setSellQtyString(primaryQuantity);
             }
         } else {
             if (buyQtyString !== primaryQuantity) {
-                console.log({ primaryQuantity });
                 setBuyQtyString && setBuyQtyString(primaryQuantity);
             }
         }
@@ -378,7 +356,6 @@ function SwapTokenInput(props: propsIF) {
                         if (!isTokenAPrimary) {
                             setSellQtyString(primaryQuantity);
                         } else {
-                            console.log({ primaryQuantity });
                             setBuyQtyString(primaryQuantity);
                         }
                         setIsTokenAPrimary(!isTokenAPrimary);
