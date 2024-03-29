@@ -253,10 +253,25 @@ function Swap(props: propsIF) {
         if (
             isNaN(parseFloat(sellQtyString)) ||
             isNaN(parseFloat(buyQtyString)) ||
-            (sellQtyString === '' && buyQtyString === '')
+            (sellQtyString === '' && buyQtyString === '') ||
+            (isTokenAPrimary && parseFloat(sellQtyString) <= 0) ||
+            (!isTokenAPrimary && parseFloat(buyQtyString) <= 0)
         ) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Enter an Amount');
+            if (
+                isBuyLoading &&
+                (sellQtyString === '' || parseFloat(sellQtyString) <= 0)
+            ) {
+                setIsBuyLoading(false);
+                setLastImpactQuery(undefined);
+            } else if (
+                isSellLoading &&
+                (buyQtyString === '' || parseFloat(buyQtyString) <= 0)
+            ) {
+                setIsSellLoading(false);
+                setLastImpactQuery(undefined);
+            }
         } else if (isSellLoading || isBuyLoading) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('...');
@@ -266,9 +281,6 @@ function Swap(props: propsIF) {
         } else if (isLiquidityInsufficient) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Liquidity Insufficient');
-        } else if (parseFloat(sellQtyString) <= 0) {
-            setSwapAllowed(false);
-            setSwapButtonErrorMessage('Enter an Amount');
         } else {
             const hurdle = isWithdrawFromDexChecked
                 ? parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
@@ -323,6 +335,7 @@ function Swap(props: propsIF) {
         tokenAQtyCoveredByWalletBalance,
         amountToReduceNativeTokenQty,
         activeTxHashInPendingTxs,
+        isTokenAPrimary,
     ]);
 
     useEffect(() => {
@@ -685,7 +698,10 @@ function Swap(props: propsIF) {
                     slippageTolerance={slippageTolerancePercentage}
                     liquidityProviderFeeString={liquidityProviderFeeString}
                     swapGasPriceinDollars={swapGasPriceinDollars}
-                    showExtraInfoDropdown={primaryQuantity !== ''}
+                    showExtraInfoDropdown={
+                        primaryQuantity !== '' &&
+                        parseFloat(primaryQuantity) > 0
+                    }
                 />
             }
             modal={
