@@ -149,8 +149,10 @@ function TokenInputWithWalletBalance(props: propsIF) {
             const balance = subtractBuffer(
                 isDexSelected ? walletBalance : walletAndExchangeBalance,
             );
-            parseTokenInput && parseTokenInput(balance);
-            handleTokenInputEvent(balance);
+            if (walletBalance !== walletAndExchangeBalance) {
+                parseTokenInput && parseTokenInput(balance);
+                handleTokenInputEvent(balance);
+            }
         }
         handleToggleDexSelection();
     };
