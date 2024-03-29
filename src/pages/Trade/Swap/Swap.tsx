@@ -250,7 +250,14 @@ function Swap(props: propsIF) {
     }, [tokenA.address + tokenB.address, primaryQuantity]);
 
     useEffect(() => {
-        if (isSellLoading || isBuyLoading) {
+        if (
+            isNaN(parseFloat(sellQtyString)) ||
+            isNaN(parseFloat(buyQtyString)) ||
+            (sellQtyString === '' && buyQtyString === '')
+        ) {
+            setSwapAllowed(false);
+            setSwapButtonErrorMessage('Enter an Amount');
+        } else if (isSellLoading || isBuyLoading) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('...');
         } else if (isPoolInitialized === false) {
@@ -259,12 +266,6 @@ function Swap(props: propsIF) {
         } else if (isLiquidityInsufficient) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Liquidity Insufficient');
-        } else if (
-            isNaN(parseFloat(sellQtyString)) ||
-            isNaN(parseFloat(buyQtyString))
-        ) {
-            setSwapAllowed(false);
-            setSwapButtonErrorMessage('Enter an Amount');
         } else if (parseFloat(sellQtyString) <= 0) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Enter an Amount');
