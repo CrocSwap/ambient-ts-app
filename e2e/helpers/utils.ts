@@ -74,10 +74,10 @@ export async function prepareBrowser() {
 export async function initWallet(context: BrowserContext) {
     await waiter(5);
 
-    console.log('.............................');
-    console.log(process.env);
-    console.log(process.env.local);
-    console.log('.............................');
+    // console.log('.............................');
+    // console.log(process.env);
+    // console.log(process.env.local);
+    // console.log('.............................');
 
     const seedEnv = process.env.TEST_METAMASK_SEED
         ? process.env.TEST_METAMASK_SEED
@@ -146,7 +146,7 @@ export async function initWallet(context: BrowserContext) {
         setTimeout(async () => {
             const spanElement = await page
                 .locator(
-                    '.multichain-network-list-menu-content-wrapper span:text("Goerli")',
+                    '.multichain-network-list-menu-content-wrapper span:text("Sepolia")',
                 )
                 .first();
             if (spanElement) {
