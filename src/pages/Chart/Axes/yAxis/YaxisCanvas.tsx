@@ -349,9 +349,9 @@ function YAxisCanvas(props: yAxisIF) {
                 ? formatPoolPriceAxis
                 : formatAmountChartData;
 
-            const splitText = '0.0';
-
             yScaleTicks.forEach((d: number) => {
+                const splitText = d > 0 ? '0.0' : '-0.0';
+
                 const digit = d.toString().split('.')[1]?.length;
 
                 const value = getDollarPrice(d).formattedValue.replace(',', '');
