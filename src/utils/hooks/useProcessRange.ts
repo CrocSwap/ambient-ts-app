@@ -116,9 +116,24 @@ export const useProcessRange = (
 
                 if (baseTokenPrice) {
                     setBasePrice(baseTokenPrice);
+                } else if (
+                    quoteTokenPrice &&
+                    position.curentPoolPriceDisplayNum
+                ) {
+                    // this may be backwards
+                    const estimatedBasePrice =
+                        quoteTokenPrice / position.curentPoolPriceDisplayNum;
+                    setBasePrice(estimatedBasePrice);
                 }
                 if (quoteTokenPrice) {
                     setQuotePrice(quoteTokenPrice);
+                } else if (
+                    baseTokenPrice &&
+                    position.curentPoolPriceDisplayNum
+                ) {
+                    const estimatedQuotePrice =
+                        baseTokenPrice * position.curentPoolPriceDisplayNum;
+                    setQuotePrice(estimatedQuotePrice);
                 }
             };
 
@@ -129,6 +144,7 @@ export const useProcessRange = (
         position.quote,
         position.chainId,
         crocEnv !== undefined,
+        position.curentPoolPriceDisplayNum,
     ]);
 
     // -------------------------------POSITION HASH------------------------
@@ -208,17 +224,20 @@ export const useProcessRange = (
         : position.highRangeDisplayInQuote;
 
     const lowDisplayPriceInUsdNum = isAccountView
-        ? basePrice && quotePrice
-            ? isBaseTokenMoneynessGreaterOrEqual
+        ? isBaseTokenMoneynessGreaterOrEqual
+            ? basePrice
                 ? bidTickPriceDecimalCorrected * basePrice
-                : bidTickInvPriceDecimalCorrected * quotePrice
-            : undefined
-        : basePrice && quotePrice
-        ? isDenomBase
+                : undefined
+            : quotePrice
             ? bidTickInvPriceDecimalCorrected * quotePrice
-            : bidTickPriceDecimalCorrected * basePrice
+            : undefined
+        : isDenomBase
+        ? quotePrice
+            ? bidTickInvPriceDecimalCorrected * quotePrice
+            : undefined
+        : basePrice
+        ? bidTickPriceDecimalCorrected * basePrice
         : undefined;
-
     const lowDisplayPriceInUsd =
         position.positionType === 'ambient'
             ? '0'
@@ -230,17 +249,20 @@ export const useProcessRange = (
             : '...';
 
     const highDisplayPriceInUsdNum = isAccountView
-        ? basePrice && quotePrice
-            ? isBaseTokenMoneynessGreaterOrEqual
+        ? isBaseTokenMoneynessGreaterOrEqual
+            ? basePrice
                 ? askTickPriceDecimalCorrected * basePrice
-                : askTickInvPriceDecimalCorrected * quotePrice
-            : undefined
-        : basePrice && quotePrice
-        ? isDenomBase
+                : undefined
+            : quotePrice
             ? askTickInvPriceDecimalCorrected * quotePrice
-            : askTickPriceDecimalCorrected * basePrice
+            : undefined
+        : isDenomBase
+        ? quotePrice
+            ? askTickInvPriceDecimalCorrected * quotePrice
+            : undefined
+        : basePrice
+        ? askTickPriceDecimalCorrected * basePrice
         : undefined;
-
     const highDisplayPriceInUsd =
         position.positionType === 'ambient'
             ? '∞'
