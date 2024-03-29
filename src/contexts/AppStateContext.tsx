@@ -4,7 +4,7 @@ import {
     globalPopupMethodsIF,
     useGlobalPopup,
 } from '../App/components/GlobalPopup/useGlobalPopup';
-import { skinMethodsIF, skins, useSkin } from '../App/hooks/useSkin';
+import { skinMethodsIF, useSkin } from '../App/hooks/useSkin';
 import useChatApi from '../components/Chat/Service/ChatApi';
 import { useModal } from '../components/Global/Modal/useModal';
 import {
@@ -89,9 +89,7 @@ export const AppStateContextProvider = (props: {
     // I.e. updated if and only if their conrents need to be updated.
     const snackbar = useSnackbar();
     const globalPopup = useGlobalPopup();
-    const skin: skinMethodsIF = useSkin(
-        (process.env.REACT_APP_SKIN as skins) ?? 'purple_dark',
-    );
+    const skin: skinMethodsIF = useSkin('purple_dark');
 
     const [
         isWagmiModalOpenWallet,
