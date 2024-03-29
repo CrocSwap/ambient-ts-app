@@ -1,11 +1,11 @@
 import { skins } from '../../App/hooks/useSkin';
 
-interface brandAssetsIF {
+export interface brandAssetsIF {
     color: { [key: string]: skins };
     platformName: string;
 }
 
-export const ambient: brandAssetsIF = {
+export const ambientBrandAssets: brandAssetsIF = {
     color: {
         '0x1': 'purple_dark',
         '0x82750': 'purple_dark',

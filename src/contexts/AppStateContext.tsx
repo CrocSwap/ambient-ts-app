@@ -20,6 +20,10 @@ import {
     getCtaDismissalsFromLocalStorage,
     saveCtaDismissalToLocalStorage,
 } from '../App/functions/localStorage';
+import {
+    ambientBrandAssets,
+    brandAssetsIF,
+} from '../assets/ambient/ambientBrandAssets';
 
 interface AppStateContextIF {
     appOverlay: { isActive: boolean; setIsActive: (val: boolean) => void };
@@ -65,6 +69,14 @@ export const AppStateContextProvider = (props: {
     const [isChatEnabled, setIsChatEnabled] = useState(CHAT_ENABLED);
     const [isUserOnline, setIsUserOnline] = useState(navigator.onLine);
     const [isUserIdle, setIsUserIdle] = useState(false);
+
+    let brandAssetSet: brandAssetsIF;
+    switch (process.env.REACT_APP_BRAND_ASSET_SET ?? 'ambient') {
+        case 'ambient':
+        default:
+            brandAssetSet = ambientBrandAssets;
+            break;
+    }
 
     window.ononline = () => setIsUserOnline(true);
     window.onoffline = () => setIsUserOnline(false);
@@ -170,7 +182,7 @@ export const AppStateContextProvider = (props: {
             dismissPointSystemPopup,
             showTopPtsBanner,
             dismissTopBannerPopup,
-            brandAssetSet: process.env.REACT_APP_BRAND_ASSET_SET ?? 'ambient',
+            brandAssetSet,
         }),
         [
             // Dependency list includes the memoized use*() values from above and any primitives
