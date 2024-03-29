@@ -48,6 +48,7 @@ interface AppStateContextIF {
     showTopPtsBanner: boolean;
     dismissTopBannerPopup: () => void;
     isUserIdle: boolean;
+    brandAssetSet: string;
 }
 
 export const AppStateContext = createContext<AppStateContextIF>(
@@ -169,6 +170,7 @@ export const AppStateContextProvider = (props: {
             dismissPointSystemPopup,
             showTopPtsBanner,
             dismissTopBannerPopup,
+            brandAssetSet: process.env.REACT_APP_BRAND_ASSET_SET ?? 'ambient',
         }),
         [
             // Dependency list includes the memoized use*() values from above and any primitives
@@ -204,10 +206,8 @@ export const AppStateContextProvider = (props: {
     };
 
     useIdleTimer({
-        //    onPrompt,
         onIdle,
         onActive,
-        //    onAction,
         timeout: 1000 * 60 * 1, // set user to idle after 1 minute
         promptTimeout: 0,
         events: [
