@@ -24,6 +24,7 @@ import {
     scrollWBTC,
     mainnetWstETH,
     scrollWstETH,
+    blastEzETH,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -96,6 +97,7 @@ export const WBTC_TOKENS = [mainnetWBTC.address, scrollWBTC.address].map((x) =>
 export const STAKED_ETH_TOKENS = [
     mainnetWstETH.address,
     scrollWstETH.address,
+    blastEzETH.address,
 ].map((x) => x.toLowerCase());
 
 export const WETH_TOKENS = [
