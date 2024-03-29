@@ -87,10 +87,6 @@ function ChatPanel(props: propsIF) {
     const [notConnectedUserInterval, setNotConnectedUserInterval] =
         useState<NodeJS.Timer>();
 
-    const [detectLastScrolled, setDetectLastScrolled] = useState(true);
-    const detectLastScrolledRef = useRef<boolean>();
-    detectLastScrolledRef.current = detectLastScrolled;
-
     // that block toggled when message count limit is handled --------------------------------------------
 
     // const [isInputDisabled, setIsInputDisabled] = useState<boolean>(false);
@@ -164,7 +160,6 @@ function ChatPanel(props: propsIF) {
 
     const {
         messages,
-        getMsg,
         lastMessage,
         messageUser,
         sendMsg,
