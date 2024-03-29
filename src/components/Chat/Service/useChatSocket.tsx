@@ -40,6 +40,7 @@ import {
 } from '../ChatConstants/ChatConstants';
 import useWebSocket from 'react-use-websocket';
 import { domDebug } from '../DomDebugger/DomDebuggerUtils';
+import { WebSocketLike } from 'react-use-websocket/dist/lib/types';
 
 const useChatSocket = (
     room: string,
@@ -83,36 +84,39 @@ const useChatSocket = (
         queryParams = { ...queryParams, ensName: ensName };
     }
 
-    const { sendMessage: socketSendMessage, lastMessage: socketLastMessage } =
-        useWebSocket(CHAT_BACKEND_WSS_URL + '/chat/api/subscribe', {
-            fromSocketIO: true,
-            queryParams: { ...queryParams },
-            share: true,
-            onOpen: () => {
-                domDebug('opening connection', new Date().getTime());
-                console.log('opening connection');
-            },
+    const {
+        sendMessage: socketSendMessage,
+        lastMessage: socketLastMessage,
+        getWebSocket,
+    } = useWebSocket(CHAT_BACKEND_WSS_URL + '/chat/api/subscribe', {
+        fromSocketIO: true,
+        queryParams: { ...queryParams },
+        share: true,
+        onOpen: () => {
+            domDebug('opening connection', new Date().getTime());
+            console.log('opening connection');
+        },
 
-            onClose(event) {
-                domDebug('closed connection', event);
-            },
-            onError: (e) => {
-                domDebug('connection error', e);
-            },
-            onMessage: (e) => {
-                console.log('on message');
-                console.log(e);
-                const data = e.data as string;
-                if (data.length > 2) {
-                    const dataJson = JSON.parse(data.substring(2));
-                    console.log(dataJson[0]);
-                    if (dataJson.length > 1) {
-                        console.log(dataJson[1]);
-                    }
+        onClose(event) {
+            domDebug('closed connection', event);
+        },
+        onError: (e) => {
+            domDebug('connection error', e);
+        },
+        onMessage: (e) => {
+            console.log('on message');
+            console.log(e);
+            const data = e.data as string;
+            if (data.length > 2) {
+                const dataJson = JSON.parse(data.substring(2));
+                console.log(dataJson[0]);
+                if (dataJson.length > 1) {
+                    console.log(dataJson[1]);
                 }
-            },
-            shouldReconnect: () => true,
-        });
+            }
+        },
+        shouldReconnect: () => true,
+    });
 
     async function getMsgWithRest(roomInfo: string) {
         const encodedRoomInfo = encodeURIComponent(roomInfo);
@@ -509,7 +513,7 @@ const useChatSocket = (
         repliedMessage?: string | undefined,
         repliedMessageRoomInfo?: string | undefined,
     ) {
-        socketRef.current.emit('send-msg', {
+        const payload = {
             from: currentUser,
             message: msg,
             roomInfo: room,
@@ -521,7 +525,25 @@ const useChatSocket = (
             repliedMessage: repliedMessage,
             repliedMessageRoomInfo: repliedMessageRoomInfo,
             senderToken: userVrfToken,
-        });
+        };
+
+        console.log('socket send msg -------------------->>>>>>>>>>>>>>>');
+
+        socketSendMessage(JSON.stringify(payload));
+
+        // socketRef.current.emit('send-msg', {
+        //     from: currentUser,
+        //     message: msg,
+        //     roomInfo: room,
+        //     ensName: ensName,
+        //     walletID: walletID,
+        //     mentionedName: mentionedName,
+        //     isMentionMessage: mentionedName ? true : false,
+        //     mentionedWalletID,
+        //     repliedMessage: repliedMessage,
+        //     repliedMessageRoomInfo: repliedMessageRoomInfo,
+        //     senderToken: userVrfToken,
+        // });
     }
 
     async function addReaction(
