@@ -141,7 +141,7 @@ function Reposition() {
         ? repoSlippage.stable
         : repoSlippage.volatile;
 
-    const { posHashTruncated } = useProcessRange(position);
+    const { posHashTruncated } = useProcessRange(position, crocEnv);
 
     useEffect(() => {
         setCurrentRangeInReposition('');
@@ -555,6 +555,14 @@ function Reposition() {
     const [newQuoteQtyDisplay, setNewQuoteQtyDisplay] = useState<string>('...');
     const [newValueNum, setNewValueNum] = useState<number | undefined>();
 
+    const valueLossExceedsThreshold = useMemo(() => {
+        if (newValueNum === undefined) return false;
+        const priceImpactNum =
+            (newValueNum - position.totalValueUSD) / position.totalValueUSD;
+        return priceImpactNum < -0.02;
+        // change color to red if value loss greater than 2%
+    }, [newValueNum, position.totalValueUSD]);
+
     const valueImpactString = useMemo(() => {
         if (newValueNum === undefined) return '...';
         const priceImpactNum =
@@ -843,6 +851,7 @@ function Reposition() {
                         }
                         newValueString={newValueString}
                         valueImpactString={valueImpactString}
+                        valueLossExceedsThreshold={valueLossExceedsThreshold}
                         isCurrentPositionEmpty={isCurrentPositionEmpty}
                     />
                     <div className={styles.button_container}>

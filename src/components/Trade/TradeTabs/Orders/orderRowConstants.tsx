@@ -15,6 +15,7 @@ import {
 import { RowItem } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { Link } from 'react-router-dom';
+import { PoolContext } from '../../../../contexts/PoolContext';
 
 interface propsIF {
     posHashTruncated: string;
@@ -38,6 +39,7 @@ interface propsIF {
     sideCharacter: string;
     limitOrder: LimitOrderIF;
     priceCharacter: string;
+    displayPriceInUsd: string | undefined;
     truncatedDisplayPriceDenomByMoneyness: string | undefined;
     truncatedDisplayPrice: string | undefined;
     isOwnerActiveAccount: boolean;
@@ -78,6 +80,7 @@ export const orderRowConstants = (props: propsIF) => {
         elapsedTimeString,
         isAccountView,
         truncatedDisplayPrice,
+        displayPriceInUsd,
         truncatedDisplayPriceDenomByMoneyness,
         sideType,
         sideCharacter,
@@ -93,6 +96,7 @@ export const orderRowConstants = (props: propsIF) => {
     } = props;
 
     const { tokens } = useContext(TokenContext);
+    const { isUsdConversionEnabled } = useContext(PoolContext);
     const baseToken: TokenIF | undefined =
         tokens.getTokenByAddress(baseTokenAddress);
     const quoteToken: TokenIF | undefined =
@@ -384,7 +388,11 @@ export const orderRowConstants = (props: propsIF) => {
                 <p>
                     <span>
                         {isAccountView
-                            ? truncatedDisplayPriceDenomByMoneyness
+                            ? isUsdConversionEnabled
+                                ? displayPriceInUsd
+                                : truncatedDisplayPriceDenomByMoneyness
+                            : isUsdConversionEnabled
+                            ? displayPriceInUsd
                             : truncatedDisplayPrice}
                     </span>
                 </p>
