@@ -74,7 +74,7 @@ const useChatSocket = (
 
     let queryParams: ChatWsQueryParams = {
         roomId: room,
-        // , transport: 'polling'
+        // transport: 'polling'
     };
     if (address != undefined) {
         queryParams = { ...queryParams, address: address };
@@ -87,9 +87,10 @@ const useChatSocket = (
         useWebSocket(CHAT_BACKEND_WSS_URL + '/chat/api/subscribe', {
             fromSocketIO: true,
             queryParams: { ...queryParams },
-            // share: true,
+            share: true,
             onOpen: () => {
                 domDebug('opening connection', new Date().getTime());
+                console.log('opening connection');
             },
 
             onClose(event) {
@@ -98,14 +99,20 @@ const useChatSocket = (
             onError: (e) => {
                 domDebug('connection error', e);
             },
+            onMessage: (e) => {
+                console.log('on message');
+                console.log(e);
+                const data = e.data as string;
+                if (data.length > 2) {
+                    const dataJson = JSON.parse(data.substring(2));
+                    console.log(dataJson[0]);
+                    if (dataJson.length > 1) {
+                        console.log(dataJson[1]);
+                    }
+                }
+            },
             shouldReconnect: () => true,
         });
-
-    useEffect(() => {
-        console.log('........................................');
-        console.log(socketLastMessage);
-        console.log('........................................');
-    }, [socketLastMessage]);
 
     async function getMsgWithRest(roomInfo: string) {
         const encodedRoomInfo = encodeURIComponent(roomInfo);
