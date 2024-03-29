@@ -4,7 +4,6 @@ import {
     globalPopupMethodsIF,
     useGlobalPopup,
 } from '../App/components/GlobalPopup/useGlobalPopup';
-import { skinMethodsIF, useSkin } from '../App/hooks/useSkin';
 import useChatApi from '../components/Chat/Service/ChatApi';
 import { useModal } from '../components/Global/Modal/useModal';
 import {
@@ -28,11 +27,9 @@ interface AppStateContextIF {
         isActive: boolean;
         setIsActive: (val: boolean) => void;
     };
-
     globalPopup: globalPopupMethodsIF;
     snackbar: snackbarMethodsIF;
     tutorial: { isActive: boolean; setIsActive: (val: boolean) => void };
-    skin: skinMethodsIF;
     chat: {
         isOpen: boolean;
         setIsOpen: (val: boolean) => void;
@@ -89,7 +86,6 @@ export const AppStateContextProvider = (props: {
     // I.e. updated if and only if their conrents need to be updated.
     const snackbar = useSnackbar();
     const globalPopup = useGlobalPopup();
-    const skin: skinMethodsIF = useSkin('purple_dark');
 
     const [
         isWagmiModalOpenWallet,
@@ -155,7 +151,6 @@ export const AppStateContextProvider = (props: {
                 isActive: isTutorialMode,
                 setIsActive: setIsTutorialMode,
             },
-            skin,
             chat: {
                 isOpen: isChatOpen,
                 setIsOpen: setIsChatOpen,
@@ -180,7 +175,6 @@ export const AppStateContextProvider = (props: {
             // directly references in above appState object
             snackbar,
             globalPopup,
-            skin,
             isChatOpen,
             isChatEnabled,
             isServerEnabled,

@@ -47,6 +47,7 @@ import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
 import ExampleForm from '../pages/InitPool/FormExample';
 import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
+import { skinMethodsIF, useSkin } from './hooks/useSkin';
 
 /** ***** React Function *******/
 export default function App() {
@@ -60,7 +61,6 @@ export default function App() {
             setIsOpen: setChatOpen,
             isEnabled: isChatEnabled,
         },
-        skin,
         wagmiModal: { isOpen: isWagmiModalOpen },
         appHeaderDropdown,
         showPointSystemPopup,
@@ -80,6 +80,8 @@ export default function App() {
         currentLocation.startsWith('/swap') && !smallScreen
             ? 'swap-body'
             : null;
+
+    const skin: skinMethodsIF = useSkin('purple_dark');
 
     // Show sidebar on all pages except for home, swap, chat, and 404
     const sidebarRender = smallScreen ? (
