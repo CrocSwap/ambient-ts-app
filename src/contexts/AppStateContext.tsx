@@ -52,7 +52,7 @@ interface AppStateContextIF {
     showTopPtsBanner: boolean;
     dismissTopBannerPopup: () => void;
     isUserIdle: boolean;
-    brandAssetSet: string;
+    brandAssetSet: brandAssetsIF;
 }
 
 export const AppStateContext = createContext<AppStateContextIF>(
