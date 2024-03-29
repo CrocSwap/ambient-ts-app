@@ -250,12 +250,7 @@ function Swap(props: propsIF) {
     }, [tokenA.address + tokenB.address, primaryQuantity]);
 
     useEffect(() => {
-        if (
-            isSellLoading ||
-            isBuyLoading ||
-            (sellQtyString !== '' && buyQtyString === '') ||
-            (buyQtyString !== '' && sellQtyString === '')
-        ) {
+        if (isSellLoading || isBuyLoading) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('...');
         } else if (isPoolInitialized === false) {
